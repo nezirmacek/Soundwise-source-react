@@ -90,7 +90,6 @@ class _Header extends Component {
       }
   }
 
-
   render() {
     return (
       <div>
