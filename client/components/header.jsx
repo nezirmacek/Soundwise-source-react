@@ -60,8 +60,6 @@ class _Header extends Component {
       if(this.props.isLoggedIn) {
           return (
           <ul className="nav navbar-nav">
-            <li className="propClone" style={{display: 'none'}}><Link to='/courses' className="inner-link">COURSES</Link>
-            </li>
             <li className="propClone" style={styles.navItem}>
               <a className='dropdown-toggle' data-toggle="dropdown">
               {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
@@ -86,8 +84,7 @@ class _Header extends Component {
       } else {
           return (
             <ul className="nav navbar-nav">
-                <li className="propClone" style={styles.navItem}><Link to='/courses' className="inner-link">COURSES</Link></li>
-                <li className="propClone" style={styles.navItem}><Link className="inner-link" to='/signup'>LOG IN / SIGN UP</Link></li>
+                <li className="propClone" style={styles.navItem}><Link className="inner-link" to='/signup'>LOG IN</Link></li>
             </ul>
           )
       }
