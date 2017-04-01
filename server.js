@@ -5,7 +5,7 @@ var handlePayment = require('./server/payment.js').handlePayment
 var bodyParser = require('body-parser')
 var path = require('path')
 // var jwt = require('express-jwt')
-require('dotenv').config()
+
 
 //------------Express server-------------------
 var app = express()

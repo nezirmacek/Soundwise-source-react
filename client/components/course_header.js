@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
-import { Layout } from 'antd'
 import { Link, Redirect } from 'react-router-dom'
-const { Header, Footer, Sider, Content } = Layout
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import ReactStars from 'react-stars'
