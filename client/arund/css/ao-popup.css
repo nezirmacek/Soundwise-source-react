@@ -1,0 +1,87 @@
+/*! aRund v.1.7.3 - 2017-01-20 */
+
+.ao-close,
+.ao-close-btn {
+  display: inline-block;
+  text-align: center;
+  -webkit-transition: all 0.2s linear 0s;
+  -moz-transition: all 0.2s linear 0s;
+  -o-transition: all 0.2s linear 0s;
+  -ms-transition: all 0.2s linear 0s;
+  transition: all 0.2s linear 0s;
+}
+.ao-close *,
+.ao-close-btn * {
+  vertical-align: middle;
+}
+.ao-close {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 24px;
+  color: inherit;
+}
+.ao-close .fa-times {
+  position: relative;
+  top: -2px;
+}
+.ao-close:hover,
+.ao-close:focus {
+  font-size: 28px;
+}
+.ao-close:hover .ao-times,
+.ao-close:focus .ao-times {
+  width: 24px;
+  height: 24px;
+}
+.ao-close-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 19px;
+  color: #f6f6f6;
+  background-color: #d8d8d8;
+}
+.ao-close-btn:hover,
+.ao-close-btn:focus {
+  color: #8b8b8b;
+}
+.ao-times {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  -webkit-transition: all 0.2s linear 0s;
+  -moz-transition: all 0.2s linear 0s;
+  -o-transition: all 0.2s linear 0s;
+  -ms-transition: all 0.2s linear 0s;
+  transition: all 0.2s linear 0s;
+}
+.ao-times:before,
+.ao-times:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid;
+}
+.ao-times:after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.ao-times:before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.ao-popup {
+  display: none;
+  font-size: 18px;
+  line-height: 1.234;
+}
