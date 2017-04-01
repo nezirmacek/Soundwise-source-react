@@ -25,7 +25,6 @@
     "webpack-dev-server": "^1.14.0"
   },
   "dependencies": {
-    "antd": "^2.8.1",
     "axios": "^0.15.1",
     "babel-preset-stage-1": "^6.1.18",
     "body-parser": "^1.15.2",
@@ -44,9 +43,6 @@
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",
     "react-router-redux": "^4.0.6",
-    "react-scrollbar": "^0.5.1",
-    "react-scrollbar-js": "^1.0.1",
-    "react-scrollchor": "^2.1.4",
     "react-star-rating": "^1.4.2",
     "react-stars": "^2.1.0",
     "react-swipeable-views": "^0.11.1",
