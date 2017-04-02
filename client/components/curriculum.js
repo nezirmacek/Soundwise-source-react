@@ -12,6 +12,9 @@ let interval, player, source
 const styles = {
   moduleTitle: {
     fontSize: 24,
+    backgroundColor: '#F76B1C'
+  },
+  sectionTitle: {
     backgroundColor: orange50
   },
   curriculumContainer: {
@@ -94,7 +97,6 @@ class _Curriculum extends Component {
           <div className="">
               <div className="row">
                   <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                    <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">WHAT YOU WILL LEARN</h2>
                     <div className="text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text">{this.props.course.description}</div>
                   </div>
               </div>

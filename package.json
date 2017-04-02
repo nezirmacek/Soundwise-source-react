@@ -2,7 +2,7 @@
   "name": "Soundwise",
   "version": "1.0.0",
   "description": "Soundwise web app",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
   },

@@ -8265,7 +8265,7 @@
 
 	var _routes = __webpack_require__(537);
 
-	var _reducers = __webpack_require__(1069);
+	var _reducers = __webpack_require__(1070);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -34483,15 +34483,15 @@
 
 	var _courses = __webpack_require__(801);
 
-	var _mycourses = __webpack_require__(1037);
+	var _mycourses = __webpack_require__(1015);
 
 	var _course_page = __webpack_require__(815);
 
-	var _course_page_purchased = __webpack_require__(1038);
+	var _course_page_purchased = __webpack_require__(1016);
 
-	var _cart = __webpack_require__(1040);
+	var _cart = __webpack_require__(1041);
 
-	var _checkout = __webpack_require__(1041);
+	var _checkout = __webpack_require__(1042);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34554,13 +34554,12 @@
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/about', component: _about2.default }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/signup', component: _app_signup.AppSignup }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/signin', component: _app_signin.AppSignin }),
-	            _react2.default.createElement(_reactRouterDom.Route, { path: '/courses', component: _courses.Courses }),
 	            _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/myprograms', component: _mycourses.MyCourses }),
 	            _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/myprograms/:courseId', component: _course_page_purchased.Course_Purchased }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/cart', component: _cart.Cart }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/checkout', component: _checkout.Checkout }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/confirmation', component: _order_confirmation2.default }),
-	            _react2.default.createElement(_reactRouterDom.Route, { path: '/:courseId', component: _course_page.Course })
+	            _react2.default.createElement(_reactRouterDom.Route, { path: '/courses/:courseId', component: _course_page.Course })
 	          )
 	        )
 	      );
@@ -34569,6 +34568,8 @@
 
 	  return _Routes;
 	}(_react.Component);
+
+	// <Route path="/courses" component={Courses}/>
 
 	function mapDispatchToProps(dispatch) {
 	  return (0, _redux.bindActionCreators)({ loadCourses: _index.loadCourses, signinUser: _index.signinUser }, dispatch);
@@ -36229,6 +36230,7 @@
 	exports.changePlayStatus = changePlayStatus;
 	exports.openSignupbox = openSignupbox;
 	exports.openConfirmationbox = openConfirmationbox;
+	exports.openReviewbox = openReviewbox;
 	exports.addCourseToCart = addCourseToCart;
 	exports.deleteCourseFromCart = deleteCourseFromCart;
 	exports.deleteCart = deleteCart;
@@ -36332,6 +36334,18 @@
 	  }
 	}
 
+	function openReviewbox(open) {
+	  if (open) {
+	    return {
+	      type: types.OPEN_REVIEWBOX
+	    };
+	  } else {
+	    return {
+	      type: types.CLOSE_REVIEWBOX
+	    };
+	  }
+	}
+
 	function addCourseToCart(course) {
 	  return {
 	    type: types.ADDTOCART,
@@ -36378,6 +36392,8 @@
 	var DELETE_FROM_CART = exports.DELETE_FROM_CART = 'DELETE_FROM_CART';
 	var DELETE_ALL = exports.DELETE_ALL = 'DELETE_ALL';
 	var USER_COURSES = exports.USER_COURSES = 'USER_COURSES';
+	var OPEN_REVIEWBOX = exports.OPEN_REVIEWBOX = 'OPEN_REVIEWBOX';
+	var CLOSE_REVIEWBOX = exports.CLOSE_REVIEWBOX = 'CLOSE_REVIEWBOX';
 
 /***/ },
 /* 563 */
@@ -56389,7 +56405,10 @@
 	      course: {
 	        price: '',
 	        name: '',
-	        description: ''
+	        description: '',
+	        modules: [{
+	          sections: []
+	        }]
 	      },
 	      userCourses: {}
 	    };
@@ -56397,8 +56416,8 @@
 	  }
 
 	  _createClass(_Course, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
 	      var that = this;
 	      _firebase2.default.database().ref('courses/' + this.props.match.params.courseId).once('value').then(function (snapshot) {
 	        // console.log('course fetched from firebase: ', snapshot.val())
@@ -79656,6 +79675,8 @@
 
 	var _course_signup = __webpack_require__(977);
 
+	var _review_modal = __webpack_require__(1071);
+
 	var _socialshare = __webpack_require__(991);
 
 	var _socialshare2 = _interopRequireDefault(_socialshare);
@@ -79682,99 +79703,108 @@
 	  _createClass(_CourseHeaderPurchased, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+
 	      var rt_hour = Math.floor(this.props.course.run_time / 3600);
 	      var rt_min = Math.floor(this.props.course.run_time / 60 - rt_hour * 60);
 	      var rt_sec = this.props.course.run_time % 60;
 	      var run_time = rt_hour > 0 ? rt_hour + 'h ' + rt_min + 'm' : rt_min + 'm ' + rt_sec + 's';
 
 	      return _react2.default.createElement(
-	        'section',
-	        { className: ' bg-white', id: 'content-section23', style: { paddingBottom: '15px' } },
+	        'div',
+	        null,
 	        _react2.default.createElement(
-	          'div',
-	          { className: 'container' },
+	          'section',
+	          { className: ' bg-white', id: 'content-section23', style: { paddingBottom: '15px' } },
 	          _react2.default.createElement(
 	            'div',
-	            { className: 'row equalize sm-equalize-auto equalize-display-inherit' },
+	            { className: 'container' },
 	            _react2.default.createElement(
 	              'div',
-	              { className: 'col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin', style: { height: '378px' } },
+	              { className: 'row equalize sm-equalize-auto equalize-display-inherit' },
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'display-table-cell-vertical-middle' },
+	                { className: 'col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin', style: { height: '378px' } },
 	                _react2.default.createElement(
 	                  'div',
-	                  { className: 'row' },
+	                  { className: 'display-table-cell-vertical-middle' },
 	                  _react2.default.createElement(
 	                    'div',
-	                    { className: 'col-md-12 col-sm-12 col-xs-12' },
-	                    _react2.default.createElement(
-	                      'h2',
-	                      { className: 'title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text' },
-	                      this.props.course.name
-	                    ),
+	                    { className: 'row' },
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: 'row', style: { margin: '0.5em', marginBottom: '2em' } },
-	                      _react2.default.createElement(_reactStars2.default, {
-	                        count: 5,
-	                        value: 4.5,
-	                        size: 28,
-	                        edit: false,
-	                        color2: '#ffd700',
-	                        style: { float: 'left', display: 'inline' } }),
+	                      { className: 'col-md-12 col-sm-12 col-xs-12' },
+	                      _react2.default.createElement(
+	                        'h2',
+	                        { className: 'title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text' },
+	                        this.props.course.name
+	                      ),
+	                      _react2.default.createElement(
+	                        'div',
+	                        { className: 'row', style: { margin: '0.5em', marginBottom: '2em' } },
+	                        _react2.default.createElement(_reactStars2.default, {
+	                          count: 5,
+	                          value: 4.5,
+	                          size: 28,
+	                          edit: false,
+	                          color2: '#ffd700',
+	                          style: { float: 'left', display: 'inline' } }),
+	                        _react2.default.createElement(
+	                          'span',
+	                          { style: { float: 'right', position: 'absolute' } },
+	                          '(2)'
+	                        )
+	                      ),
 	                      _react2.default.createElement(
 	                        'span',
-	                        { style: { float: 'right', position: 'absolute' } },
-	                        '(2)'
+	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
+	                        this.props.course.description + ' '
+	                      ),
+	                      _react2.default.createElement(
+	                        'span',
+	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
+	                        'Run Time: ' + run_time
 	                      )
-	                    ),
-	                    _react2.default.createElement(
-	                      'span',
-	                      { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                      this.props.course.description + ' '
-	                    ),
-	                    _react2.default.createElement(
-	                      'span',
-	                      { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                      'Run Time: ' + run_time
 	                    )
-	                  )
-	                ),
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'row' },
+	                  ),
 	                  _react2.default.createElement(
 	                    'div',
-	                    { className: 'col-md-6 col-sm-12 col-xs-12 ',
-	                      style: { paddingBottom: '30px' } },
+	                    { className: 'row' },
 	                    _react2.default.createElement(
-	                      'a',
-	                      { className: 'btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing', onClick: this.addToCart
-
-	                      },
+	                      'div',
+	                      { className: 'col-md-6 col-sm-12 col-xs-12 ',
+	                        style: { paddingBottom: '30px' } },
 	                      _react2.default.createElement(
-	                        'span',
-	                        { className: 'text-extra-large sm-text-extra-large tz-text' },
-	                        'Write A Review'
+	                        'a',
+	                        { className: 'btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing', onClick: function onClick() {
+	                            return _this2.props.openReviewbox(true);
+	                          }
+
+	                        },
+	                        _react2.default.createElement(
+	                          'span',
+	                          { className: 'text-extra-large sm-text-extra-large tz-text' },
+	                          'Write A Review'
+	                        )
 	                      )
 	                    )
 	                  )
 	                )
-	              )
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
+	              ),
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'pull-right' },
-	                _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
-	                  style: { width: '350px', height: '350px' } })
+	                { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'pull-right' },
+	                  _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
+	                    style: { width: '350px', height: '350px' } })
+	                )
 	              )
 	            )
 	          )
-	        )
+	        ),
+	        _react2.default.createElement(_review_modal.ReviewModal, { course: this.props.course })
 	      );
 	    }
 	  }]);
@@ -79783,7 +79813,7 @@
 	}(_react.Component);
 
 	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ openConfirmationbox: _index.openConfirmationbox, openSignupbox: _index.openSignupbox, addCourseToCart: _index.addCourseToCart }, dispatch);
+	  return (0, _redux.bindActionCreators)({ openReviewbox: _index.openReviewbox }, dispatch);
 	}
 
 	var CourseHeaderPurchased = exports.CourseHeaderPurchased = (0, _reactRedux.connect)(null, mapDispatchToProps)(_CourseHeaderPurchased);
@@ -79812,15 +79842,13 @@
 
 	var _colors = __webpack_require__(755);
 
-	var _instructor = __webpack_require__(1011);
+	var _course_outline = __webpack_require__(1011);
 
-	var _instructor2 = _interopRequireDefault(_instructor);
+	var _course_outline2 = _interopRequireDefault(_course_outline);
 
-	var _curriculum = __webpack_require__(1012);
+	var _player_bar = __webpack_require__(1013);
 
-	var _player_bar = __webpack_require__(1035);
-
-	var _reviews = __webpack_require__(1036);
+	var _reviews = __webpack_require__(1014);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -79877,10 +79905,10 @@
 	  _createClass(CourseBody, [{
 	    key: 'render',
 	    value: function render() {
+
 	      styles.tab = [];
 	      styles.tab[0] = styles.tabs;
 	      styles.tab[1] = styles.tabs;
-	      styles.tab[2] = styles.tabs;
 	      styles.tab[this.state.slideIndex] = Object.assign({}, styles.tab[this.state.slideIndex], styles.active_tab);
 
 	      return _react2.default.createElement(
@@ -79896,8 +79924,7 @@
 	              value: this.state.slideIndex
 	            },
 	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'OVERVIEW', value: 0 }),
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 1 }),
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[2], label: 'REVIEWS', value: 2 })
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'REVIEWS', value: 1 })
 	          ),
 	          _react2.default.createElement(
 	            _reactSwipeableViews2.default,
@@ -79908,12 +79935,7 @@
 	            _react2.default.createElement(
 	              'div',
 	              null,
-	              _react2.default.createElement(_instructor2.default, { course: this.props.course })
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { style: styles.slide },
-	              _react2.default.createElement(_curriculum.Curriculum, { course: this.props.course })
+	              _react2.default.createElement(_course_outline2.default, { course: this.props.course })
 	            ),
 	            _react2.default.createElement(
 	              'div',
@@ -79929,6 +79951,11 @@
 
 	  return CourseBody;
 	}(_react2.default.Component);
+
+	// <div style={styles.slide}>
+	//   <Curriculum course = {this.props.course} />
+	// </div>
+
 
 	exports.default = CourseBody;
 
@@ -81970,6 +81997,141 @@
 /* 1011 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Card = __webpack_require__(803);
+
+	var _colors = __webpack_require__(755);
+
+	var _instructor = __webpack_require__(1012);
+
+	var _instructor2 = _interopRequireDefault(_instructor);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var styles = {
+	  moduleTitle: {
+	    fontSize: 24,
+	    backgroundColor: '#F76B1C'
+	  },
+	  sectionTitle: {
+	    backgroundColor: _colors.orange50
+	  },
+	  curriculumContainer: {
+	    marginTop: '3em'
+	  }
+	};
+
+	var renderModules = function renderModules(course) {
+	  return course.modules.map(function (module) {
+	    return _react2.default.createElement(
+	      _Card.Card,
+	      { key: module.module_id },
+	      _react2.default.createElement(_Card.CardHeader, {
+	        title: module.module_title,
+	        style: styles.moduleTitle
+	      }),
+	      _react2.default.createElement(
+	        'div',
+	        { className: '' },
+	        module.sections.map(function (section) {
+	          return _react2.default.createElement(
+	            'div',
+	            null,
+	            _react2.default.createElement(
+	              _Card.Card,
+	              null,
+	              _react2.default.createElement(_Card.CardHeader, {
+	                title: section.title,
+	                style: styles.sectionTitle
+	              }),
+	              _react2.default.createElement(
+	                _Card.CardText,
+	                null,
+	                section.content
+	              )
+	            )
+	          );
+	        })
+	      )
+	    );
+	  });
+	};
+
+	var CourseOutline = function CourseOutline(props) {
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement(
+	      'section',
+	      { className: 'padding-80px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
+	      _react2.default.createElement(
+	        'div',
+	        { className: 'container' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: '' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'row padding-60px-tb' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	              _react2.default.createElement(
+	                'h2',
+	                { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                'WHAT YOU WILL LEARN'
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
+	                props.course.description
+	              )
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { style: styles.curriculumContainer },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'row' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	              _react2.default.createElement(
+	                'h2',
+	                { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                'CONTENT'
+	              )
+	            )
+	          ),
+	          renderModules(props.course)
+	        )
+	      )
+	    ),
+	    _react2.default.createElement(_instructor2.default, { course: props.course })
+	  );
+	};
+
+	exports.default = CourseOutline;
+
+	// <div style={styles.curriculumContainer}>
+	//             {renderModules(props.course)}
+	//           </div>
+
+/***/ },
+/* 1012 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -81989,7 +82151,7 @@
 	var Instructor = function Instructor(props) {
 	    return _react2.default.createElement(
 	        "section",
-	        { className: "about-style3 padding-110px-tb xs-padding-60px-tb bg-white builder-bg", id: "team-section4" },
+	        { className: "about-style3 padding-60px-tb xs-padding-60px-tb bg-white builder-bg", id: "team-section4" },
 	        _react2.default.createElement(
 	            "div",
 	            { className: "container" },
@@ -82051,7 +82213,1000 @@
 	// <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" id="tz-slider-text126">{props.course.teacher}</div>
 
 /***/ },
-/* 1012 */
+/* 1013 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.PlayerBar = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(522);
+
+	var _colors = __webpack_require__(755);
+
+	var _index = __webpack_require__(561);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var player = void 0,
+	    source = void 0;
+
+	var _PlayerBar = function (_Component) {
+	  _inherits(_PlayerBar, _Component);
+
+	  function _PlayerBar(props) {
+	    _classCallCheck(this, _PlayerBar);
+
+	    var _this = _possibleConstructorReturn(this, (_PlayerBar.__proto__ || Object.getPrototypeOf(_PlayerBar)).call(this, props));
+
+	    _this.handlePlayerClick = _this.handlePlayerClick.bind(_this);
+	    _this.handleForward = _this.handleForward.bind(_this);
+	    _this.handleRewind = _this.handleRewind.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(_PlayerBar, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      player = document.getElementById('audio');
+	      source = document.getElementById('audioSource');
+	    }
+	  }, {
+	    key: 'togglePlayOrPause',
+	    value: function togglePlayOrPause() {
+	      var _this2 = this;
+
+	      if (!this.props.playing) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(
+	            'a',
+	            { className: 'jp-play', onClick: function onClick() {
+	                return _this2.handlePlayerClick();
+	              } },
+	            _react2.default.createElement('i', { className: 'icon-control-play i-2x' })
+	          )
+	        );
+	      } else {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(
+	            'a',
+	            { className: 'jp-pause', onClick: function onClick() {
+	                return _this2.handlePlayerClick();
+	              } },
+	            _react2.default.createElement('i', { className: 'icon-control-pause i-2x' })
+	          )
+	        );
+	      }
+	    }
+	  }, {
+	    key: 'handlePlayerClick',
+	    value: function handlePlayerClick() {
+	      player = document.getElementById('audio');
+
+	      if (this.props.playing) {
+	        player.pause();
+	        this.props.changePlayStatus(false);
+	      } else {
+	        player.play();
+	        this.props.changePlayStatus(true);
+	      }
+	    }
+	  }, {
+	    key: 'handleRewind',
+	    value: function handleRewind() {
+	      var previous = this.props.currentPlaylist.indexOf(this.props.currentSection) - 1;
+	      if (previous >= 0) {
+	        this.props.setCurrentPlaySection(this.props.currentPlaylist[previous]);
+	        source.src = this.props.currentPlaylist[previous].section_url;
+	        player.load();
+	        player.play();
+	        this.props.changePlayStatus(true);
+	      }
+	    }
+	  }, {
+	    key: 'handleForward',
+	    value: function handleForward() {
+	      var next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1;
+	      if (next <= this.props.currentPlaylist.length - 1) {
+	        this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
+	        source.src = this.props.currentPlaylist[next].section_url;
+	        player.load();
+	        player.play();
+	        this.props.changePlayStatus(true);
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this3 = this;
+
+	      var currentMin = '__',
+	          currentSec = '__',
+	          totalMin = '__',
+	          totalSec = '__';
+	      if (this.props.currentTime > 0) {
+	        currentMin = Math.floor(this.props.currentTime / 60);
+	        currentSec = Math.floor(this.props.currentTime % 60);
+	      }
+
+	      if (this.props.currentDuration > 1) {
+	        totalMin = Math.floor(this.props.currentDuration / 60);
+	        totalSec = Math.floor(this.props.currentDuration % 60);
+	      }
+
+	      var currentPercent = this.props.currentTime / this.props.currentDuration * 100;
+	      var displayed = this.props.playerLaunched ? '' : 'none';
+
+	      return _react2.default.createElement(
+	        'footer',
+	        { className: 'footer bg-info dker', style: { display: displayed } },
+	        _react2.default.createElement(
+	          'div',
+	          { id: 'jp_container_N' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'jp-type-playlist' },
+	            _react2.default.createElement('div', { id: 'jplayer_N', className: 'jp-jplayer hide' }),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'jp-gui' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'jp-interface' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'jp-controls' },
+	                  _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                      'a',
+	                      { className: 'jp-previous', onClick: function onClick() {
+	                          return _this3.handleRewind();
+	                        } },
+	                      _react2.default.createElement('i', { className: 'icon-control-rewind i-lg' })
+	                    )
+	                  ),
+	                  this.togglePlayOrPause(),
+	                  _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                      'a',
+	                      { className: 'jp-next', onClick: function onClick() {
+	                          return _this3.handleForward();
+	                        } },
+	                      _react2.default.createElement('i', { className: 'icon-control-forward i-lg' })
+	                    )
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: 'hide' },
+	                    _react2.default.createElement(
+	                      'a',
+	                      { className: 'jp-stop' },
+	                      _react2.default.createElement('i', { className: 'fa fa-stop' })
+	                    )
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: 'jp-progress ' },
+	                    _react2.default.createElement(
+	                      'div',
+	                      { className: 'jp-seek-bar dk', style: { width: '100%', backgroundColor: _colors.grey50 } },
+	                      _react2.default.createElement('div', { className: 'jp-play-bar bg-info', style: { width: currentPercent + '%', backgroundColor: '#F76B1C' } }),
+	                      _react2.default.createElement(
+	                        'div',
+	                        { className: 'jp-title text-lt' },
+	                        _react2.default.createElement(
+	                          'ul',
+	                          null,
+	                          _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            this.props.currentSection.title
+	                          )
+	                        )
+	                      )
+	                    )
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: ' jp-current-time text-xs text-muted' },
+	                    currentMin + ':' + currentSec
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: ' jp-duration text-xs text-muted' },
+	                    totalMin + ':' + totalSec
+	                  )
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'jp-playlist dropup', id: 'playlist' },
+	              _react2.default.createElement(
+	                'ul',
+	                { className: 'dropdown-menu aside-xl dker' },
+	                _react2.default.createElement('li', { className: 'list-group-item' })
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'jp-no-solution hide' },
+	              _react2.default.createElement(
+	                'span',
+	                null,
+	                'Update Required'
+	              ),
+	              'To play the media you will need to either update your browser to a recent version or update your ',
+	              _react2.default.createElement(
+	                'a',
+	                { href: 'http://get.adobe.com/flashplayer/', target: '_blank' },
+	                'Flash plugin'
+	              ),
+	              '.'
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return _PlayerBar;
+	}(_react.Component);
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ setCurrentPlaySection: _index.setCurrentPlaySection, changePlayStatus: _index.changePlayStatus }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var isLoggedIn = state.user.isLoggedIn;
+	  var _state$setCourses = state.setCourses,
+	      currentSection = _state$setCourses.currentSection,
+	      playing = _state$setCourses.playing,
+	      playerLaunched = _state$setCourses.playerLaunched,
+	      currentTime = _state$setCourses.currentTime,
+	      currentDuration = _state$setCourses.currentDuration,
+	      currentPlaylist = _state$setCourses.currentPlaylist;
+
+	  return {
+	    isLoggedIn: isLoggedIn, currentSection: currentSection, playing: playing, playerLaunched: playerLaunched, currentTime: currentTime, currentDuration: currentDuration, currentPlaylist: currentPlaylist
+	  };
+	};
+
+	var PlayerBar = exports.PlayerBar = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_PlayerBar);
+
+	// <div className="hidden-xs hidden-sm">
+	//   <a className="jp-mute" title="mute"><i className="icon-volume-2"></i></a>
+	//   <a className="jp-unmute hid" title="unmute"><i className="icon-volume-off"></i></a>
+	// </div>
+	// <div className="hidden-xs hidden-sm jp-volume">
+	//   <div className="jp-volume-bar dk">
+	//     <div className="jp-volume-bar-value lter"></div>
+	//   </div>
+	// </div>
+
+/***/ },
+/* 1014 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Reviews = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(522);
+
+	var _firebase = __webpack_require__(530);
+
+	var firebase = _interopRequireWildcard(_firebase);
+
+	var _Card = __webpack_require__(803);
+
+	var _reactStars = __webpack_require__(817);
+
+	var _reactStars2 = _interopRequireDefault(_reactStars);
+
+	var _review_modal = __webpack_require__(1071);
+
+	var _index = __webpack_require__(561);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _Reviews = function (_Component) {
+	  _inherits(_Reviews, _Component);
+
+	  function _Reviews(props) {
+	    _classCallCheck(this, _Reviews);
+
+	    var _this = _possibleConstructorReturn(this, (_Reviews.__proto__ || Object.getPrototypeOf(_Reviews)).call(this, props));
+
+	    _this.state = {
+	      reviews: [{
+	        reviewer: 'Tash C.',
+	        date: '10/12/2016',
+	        pic: '../images/smiley_face.jpg',
+	        rating: 5,
+	        content: 'This is a great program. Learned a lot.'
+	      }, {
+	        reviewer: 'Brian A.',
+	        date: '01/11/2017',
+	        pic: '../images/smiley_face.jpg',
+	        rating: 4,
+	        content: 'I like it.'
+	      }]
+	    };
+	    return _this;
+	  }
+
+	  _createClass(_Reviews, [{
+	    key: 'renderRow',
+	    value: function renderRow(review) {
+
+	      return _react2.default.createElement(
+	        _Card.Card,
+	        null,
+	        _react2.default.createElement(_Card.CardHeader, {
+	          title: review.reviewer,
+	          subtitle: review.date,
+	          avatar: review.pic
+	        }),
+	        _react2.default.createElement(
+	          _Card.CardText,
+	          null,
+	          _react2.default.createElement(_reactStars2.default, {
+	            count: 5,
+	            value: review.rating,
+	            size: 15,
+	            edit: false,
+	            color2: '#ffd700' }),
+	          _react2.default.createElement(
+	            'div',
+	            null,
+	            review.content
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'section',
+	          { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'container' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-8 center-col col-sm-12 text-center' },
+	                _react2.default.createElement(
+	                  'h3',
+	                  { className: 'title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text' },
+	                  'How do you like this program?'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1.5em', margin: '2em' } },
+	                _react2.default.createElement(
+	                  'button',
+	                  { onClick: function onClick() {
+	                      return _this2.props.openReviewbox(true);
+	                    }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color', style: { backgroundColor: '#61E1FB' } },
+	                  _react2.default.createElement(
+	                    'span',
+	                    { className: 'tz-text' },
+	                    'Write A Review'
+	                  )
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row', style: { marginBottom: '3em' } },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-6 center-col col-sm-12 text-center' },
+	                _react2.default.createElement(
+	                  'h3',
+	                  { className: 'title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text' },
+	                  'Reviews'
+	                ),
+	                _react2.default.createElement(
+	                  'h3',
+	                  { className: 'title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text' },
+	                  'Average Rating: 4.5'
+	                ),
+	                _react2.default.createElement(
+	                  'div',
+	                  { style: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2em' } },
+	                  _react2.default.createElement(_reactStars2.default, {
+	                    count: 5,
+	                    value: 4.5,
+	                    size: 28,
+	                    color2: '#ffd700',
+	                    edit: false
+	                  })
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-8 center-col col-sm-12' },
+	              this.state.reviews.map(function (review) {
+	                return _this2.renderRow(review);
+	              })
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(_review_modal.ReviewModal, { course: this.props.course })
+	      );
+	    }
+	  }]);
+
+	  return _Reviews;
+	}(_react.Component);
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ openReviewbox: _index.openReviewbox }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var _state$user = state.user,
+	      userInfo = _state$user.userInfo,
+	      isLoggedIn = _state$user.isLoggedIn;
+
+	  return {
+	    userInfo: userInfo, isLoggedIn: isLoggedIn
+	  };
+	};
+
+	var Reviews = exports.Reviews = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Reviews);
+
+/***/ },
+/* 1015 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.MyCourses = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(522);
+
+	var _reactRouterDom = __webpack_require__(538);
+
+	var _firebase = __webpack_require__(530);
+
+	var _firebase2 = _interopRequireDefault(_firebase);
+
+	var _soundwise_header = __webpack_require__(750);
+
+	var _course_card = __webpack_require__(802);
+
+	var _course_card2 = _interopRequireDefault(_course_card);
+
+	var _index = __webpack_require__(561);
+
+	var _course_page = __webpack_require__(815);
+
+	var _footer = __webpack_require__(746);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _MyCourses = function (_Component) {
+	  _inherits(_MyCourses, _Component);
+
+	  function _MyCourses(props) {
+	    _classCallCheck(this, _MyCourses);
+
+	    return _possibleConstructorReturn(this, (_MyCourses.__proto__ || Object.getPrototypeOf(_MyCourses)).call(this, props));
+	  }
+
+	  _createClass(_MyCourses, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      // const userId = firebase.auth().currentUser.uid
+	      // firebase.database().ref('users/' + userId + '/courses')
+	      //         .once('value')
+	      //         .then(snapshot => {
+	      //           this.props.loadUserCourses(snapshot.val())
+	      //         })
+
+	      var that = this;
+	      _firebase2.default.auth().onAuthStateChanged(function (user) {
+	        if (user) {
+	          var userId = user.uid;
+	          console.log('user uid: ', userId);
+	          _firebase2.default.database().ref('users/' + userId + '/courses').once('value').then(function (snapshot) {
+	            that.props.loadUserCourses(snapshot.val());
+	          });
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var courses = this.props.userCourses;
+	      var isLoggedIn = this.props.isLoggedIn;
+
+	      var courseArr = [];
+	      for (var key in courses) {
+	        courseArr.push(courses[key]);
+	      }
+
+	      if (!isLoggedIn) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'PLEASE LOG IN FIRST'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
+	      }
+
+	      if (courseArr.length === 0) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'YOU HAVEN\'T SIGNED UP FOR ANY PROGRAMS YET'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
+	      }
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	        _react2.default.createElement(
+	          'section',
+	          { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'container' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                _react2.default.createElement(
+	                  'h2',
+	                  { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                  'MY PROGRAMS'
+	                )
+	              ),
+	              courseArr.map(function (course) {
+	                return _react2.default.createElement(_course_card2.default, { course: course, key: course.id, match: _this2.props.match });
+	              })
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(_footer2.default, null)
+	      );
+	    }
+	  }]);
+
+	  return _MyCourses;
+	}(_react.Component);
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ loadUserCourses: _index.loadUserCourses }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var _state$user = state.user,
+	      userInfo = _state$user.userInfo,
+	      isLoggedIn = _state$user.isLoggedIn;
+	  var userCourses = state.setCourses.userCourses;
+
+	  return {
+	    userInfo: userInfo, isLoggedIn: isLoggedIn, userCourses: userCourses
+	  };
+	};
+
+	var MyCourses = exports.MyCourses = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_MyCourses);
+
+/***/ },
+/* 1016 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Course_Purchased = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(538);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(522);
+
+	var _firebase = __webpack_require__(530);
+
+	var _firebase2 = _interopRequireDefault(_firebase);
+
+	var _reactRouter = __webpack_require__(475);
+
+	var _MuiThemeProvider = __webpack_require__(751);
+
+	var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
+
+	var _getMuiTheme = __webpack_require__(752);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _course_header_purchased = __webpack_require__(992);
+
+	var _course_body_purchased = __webpack_require__(1017);
+
+	var _course_body_purchased2 = _interopRequireDefault(_course_body_purchased);
+
+	var _course_body = __webpack_require__(993);
+
+	var _course_body2 = _interopRequireDefault(_course_body);
+
+	var _socialshare = __webpack_require__(991);
+
+	var _socialshare2 = _interopRequireDefault(_socialshare);
+
+	var _soundwise_header = __webpack_require__(750);
+
+	var _index = __webpack_require__(561);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _Course_Purchased = function (_Component) {
+	  _inherits(_Course_Purchased, _Component);
+
+	  function _Course_Purchased(props) {
+	    _classCallCheck(this, _Course_Purchased);
+
+	    var _this = _possibleConstructorReturn(this, (_Course_Purchased.__proto__ || Object.getPrototypeOf(_Course_Purchased)).call(this, props));
+
+	    _this.state = {
+	      course: {
+	        price: '',
+	        name: '',
+	        description: ''
+	      },
+	      userCourses: {}
+	    };
+	    return _this;
+	  }
+
+	  _createClass(_Course_Purchased, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+
+	      var that = this;
+	      _firebase2.default.database().ref('courses/' + this.props.match.params.courseId).once('value').then(function (snapshot) {
+	        // console.log('course fetched from firebase: ', snapshot.val())
+	        that.setState({
+	          course: snapshot.val()
+	        });
+	        var sections = [];
+	        that.state.course.modules.forEach(function (module) {
+	          // build a playlist of sections
+	          module.sections.forEach(function (section) {
+	            sections.push(section);
+	          });
+	        });
+	        that.props.setCurrentPlaylist(sections);
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      // const course = this.props.courses[this.props.match.params.courseId]
+	      var course = this.state.course;
+
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	        _react2.default.createElement(_course_header_purchased.CourseHeaderPurchased, { course: course }),
+	        _react2.default.createElement(
+	          _MuiThemeProvider2.default,
+	          null,
+	          _react2.default.createElement(_course_body_purchased2.default, { course: course })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return _Course_Purchased;
+	}(_react.Component);
+
+	// <SocialShare />
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ setCurrentPlaylist: _index.setCurrentPlaylist }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var _state$user = state.user,
+	      userInfo = _state$user.userInfo,
+	      isLoggedIn = _state$user.isLoggedIn;
+	  var _state$setCourses = state.setCourses,
+	      courses = _state$setCourses.courses,
+	      currentPlaylist = _state$setCourses.currentPlaylist;
+
+	  return {
+	    userInfo: userInfo, isLoggedIn: isLoggedIn, courses: courses, currentPlaylist: currentPlaylist
+	  };
+	};
+
+	var Course_Purchases_worouter = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Course_Purchased);
+
+	var Course_Purchased = exports.Course_Purchased = (0, _reactRouter.withRouter)(Course_Purchases_worouter);
+
+/***/ },
+/* 1017 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Tabs = __webpack_require__(994);
+
+	var _reactSwipeableViews = __webpack_require__(999);
+
+	var _reactSwipeableViews2 = _interopRequireDefault(_reactSwipeableViews);
+
+	var _colors = __webpack_require__(755);
+
+	var _instructor = __webpack_require__(1012);
+
+	var _instructor2 = _interopRequireDefault(_instructor);
+
+	var _curriculum = __webpack_require__(1018);
+
+	var _player_bar = __webpack_require__(1013);
+
+	var _reviews = __webpack_require__(1014);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+	  headline: {
+	    fontSize: 24,
+	    paddingTop: 16,
+	    marginBottom: 12,
+	    fontWeight: 400
+	  },
+	  slide: {
+	    padding: 10
+	  },
+	  tabs: {
+	    color: _colors.deepOrange800,
+	    backgroundColor: 'white',
+	    // fontSize: 20,
+	    fontFamily: 'lato'
+	  },
+	  active_tab: {
+	    color: _colors.deepOrange800,
+	    backgroundColor: _colors.orange50,
+	    // fontSize: 24,
+	    fontFamily: 'lato'
+	  }
+	};
+
+	var CourseBodyPurchased = function (_React$Component) {
+	  _inherits(CourseBodyPurchased, _React$Component);
+
+	  function CourseBodyPurchased(props) {
+	    _classCallCheck(this, CourseBodyPurchased);
+
+	    var _this = _possibleConstructorReturn(this, (CourseBodyPurchased.__proto__ || Object.getPrototypeOf(CourseBodyPurchased)).call(this, props));
+
+	    _this.handleChange = function (value) {
+	      _this.setState({
+	        slideIndex: value
+	      });
+	    };
+
+	    _this.state = {
+	      slideIndex: 1
+	    };
+	    return _this;
+	  }
+
+	  _createClass(CourseBodyPurchased, [{
+	    key: 'render',
+	    value: function render() {
+	      styles.tab = [];
+	      styles.tab[0] = styles.tabs;
+	      styles.tab[1] = styles.tabs;
+	      // styles.tab[2] = styles.tabs
+	      styles.tab[this.state.slideIndex] = Object.assign({}, styles.tab[this.state.slideIndex], styles.active_tab);
+
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'vbox' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: '' },
+	          _react2.default.createElement(
+	            _Tabs.Tabs,
+	            {
+	              onChange: this.handleChange,
+	              value: this.state.slideIndex
+	            },
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 0 }),
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 1 })
+	          ),
+	          _react2.default.createElement(
+	            _reactSwipeableViews2.default,
+	            {
+	              index: this.state.slideIndex,
+	              onChangeIndex: this.handleChange
+	            },
+	            _react2.default.createElement(
+	              'div',
+	              null,
+	              'Lots of great resources...'
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { style: styles.slide },
+	              _react2.default.createElement(_curriculum.Curriculum, { course: this.props.course })
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(_player_bar.PlayerBar, null)
+	      );
+	    }
+	  }]);
+
+	  return CourseBodyPurchased;
+	}(_react2.default.Component);
+
+	exports.default = CourseBodyPurchased;
+
+/***/ },
+/* 1018 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82075,7 +83230,7 @@
 
 	var _colors = __webpack_require__(755);
 
-	var _course_section = __webpack_require__(1013);
+	var _course_section = __webpack_require__(1019);
 
 	var _index = __webpack_require__(561);
 
@@ -82094,6 +83249,9 @@
 	var styles = {
 	  moduleTitle: {
 	    fontSize: 24,
+	    backgroundColor: '#F76B1C'
+	  },
+	  sectionTitle: {
 	    backgroundColor: _colors.orange50
 	  },
 	  curriculumContainer: {
@@ -82204,11 +83362,6 @@
 	                'div',
 	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
 	                _react2.default.createElement(
-	                  'h2',
-	                  { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                  'WHAT YOU WILL LEARN'
-	                ),
-	                _react2.default.createElement(
 	                  'div',
 	                  { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
 	                  this.props.course.description
@@ -82248,7 +83401,7 @@
 	var Curriculum = exports.Curriculum = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Curriculum);
 
 /***/ },
-/* 1013 */
+/* 1019 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82274,7 +83427,7 @@
 
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 
-	var _Snackbar = __webpack_require__(1014);
+	var _Snackbar = __webpack_require__(1020);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
@@ -82286,15 +83439,15 @@
 
 	var _FontIcon2 = _interopRequireDefault(_FontIcon);
 
-	var _Checkbox = __webpack_require__(1018);
+	var _Checkbox = __webpack_require__(1024);
 
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
-	var _Slider = __webpack_require__(1023);
+	var _Slider = __webpack_require__(1029);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Toolbar = __webpack_require__(1027);
+	var _Toolbar = __webpack_require__(1033);
 
 	var _colors = __webpack_require__(755);
 
@@ -82306,7 +83459,7 @@
 
 	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
 
-	var _Levels = __webpack_require__(1032);
+	var _Levels = __webpack_require__(1038);
 
 	var _Levels2 = _interopRequireDefault(_Levels);
 
@@ -82344,6 +83497,9 @@
 	    maxWidth: 'none',
 	    bottom: '0%',
 	    paddingTop: '30%'
+	  },
+	  sectionTitle: {
+	    backgroundColor: _colors.orange50
 	  },
 	  playerContainer: {
 	    bottom: '0%',
@@ -82489,6 +83645,7 @@
 	          null,
 	          _react2.default.createElement(_Card.CardHeader, {
 	            title: 'Section ' + sectionNumber + ':',
+	            style: styles.sectionTitle,
 	            actAsExpander: true,
 	            showExpandableButton: true
 	          }),
@@ -82569,7 +83726,7 @@
 	//     </Dialog>
 
 /***/ },
-/* 1014 */
+/* 1020 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -82579,7 +83736,7 @@
 	});
 	exports.default = undefined;
 
-	var _Snackbar = __webpack_require__(1015);
+	var _Snackbar = __webpack_require__(1021);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
@@ -82588,7 +83745,7 @@
 	exports.default = _Snackbar2.default;
 
 /***/ },
-/* 1015 */
+/* 1021 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -82641,7 +83798,7 @@
 
 	var _ClickAwayListener2 = _interopRequireDefault(_ClickAwayListener);
 
-	var _SnackbarBody = __webpack_require__(1016);
+	var _SnackbarBody = __webpack_require__(1022);
 
 	var _SnackbarBody2 = _interopRequireDefault(_SnackbarBody);
 
@@ -82903,7 +84060,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1016 */
+/* 1022 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -82933,7 +84090,7 @@
 
 	var _transitions2 = _interopRequireDefault(_transitions);
 
-	var _withWidth = __webpack_require__(1017);
+	var _withWidth = __webpack_require__(1023);
 
 	var _withWidth2 = _interopRequireDefault(_withWidth);
 
@@ -83075,7 +84232,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1017 */
+/* 1023 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -83225,7 +84382,7 @@
 	}
 
 /***/ },
-/* 1018 */
+/* 1024 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -83235,7 +84392,7 @@
 	});
 	exports.default = undefined;
 
-	var _Checkbox = __webpack_require__(1019);
+	var _Checkbox = __webpack_require__(1025);
 
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
@@ -83244,7 +84401,7 @@
 	exports.default = _Checkbox2.default;
 
 /***/ },
-/* 1019 */
+/* 1025 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -83289,7 +84446,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _EnhancedSwitch = __webpack_require__(1020);
+	var _EnhancedSwitch = __webpack_require__(1026);
 
 	var _EnhancedSwitch2 = _interopRequireDefault(_EnhancedSwitch);
 
@@ -83297,11 +84454,11 @@
 
 	var _transitions2 = _interopRequireDefault(_transitions);
 
-	var _checkBoxOutlineBlank = __webpack_require__(1021);
+	var _checkBoxOutlineBlank = __webpack_require__(1027);
 
 	var _checkBoxOutlineBlank2 = _interopRequireDefault(_checkBoxOutlineBlank);
 
-	var _checkBox = __webpack_require__(1022);
+	var _checkBox = __webpack_require__(1028);
 
 	var _checkBox2 = _interopRequireDefault(_checkBox);
 
@@ -83540,7 +84697,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1020 */
+/* 1026 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -83996,7 +85153,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1021 */
+/* 1027 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -84033,7 +85190,7 @@
 	exports.default = ToggleCheckBoxOutlineBlank;
 
 /***/ },
-/* 1022 */
+/* 1028 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -84070,7 +85227,7 @@
 	exports.default = ToggleCheckBox;
 
 /***/ },
-/* 1023 */
+/* 1029 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -84080,7 +85237,7 @@
 	});
 	exports.default = undefined;
 
-	var _Slider = __webpack_require__(1024);
+	var _Slider = __webpack_require__(1030);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
@@ -84089,7 +85246,7 @@
 	exports.default = _Slider2.default;
 
 /***/ },
-/* 1024 */
+/* 1030 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -84126,7 +85283,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _defineProperty2 = __webpack_require__(1025);
+	var _defineProperty2 = __webpack_require__(1031);
 
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
@@ -84154,7 +85311,7 @@
 
 	var _FocusRipple2 = _interopRequireDefault(_FocusRipple);
 
-	var _deprecatedPropType = __webpack_require__(1026);
+	var _deprecatedPropType = __webpack_require__(1032);
 
 	var _deprecatedPropType2 = _interopRequireDefault(_deprecatedPropType);
 
@@ -84943,7 +86100,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1025 */
+/* 1031 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -84972,7 +86129,7 @@
 	};
 
 /***/ },
-/* 1026 */
+/* 1032 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -85016,7 +86173,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1027 */
+/* 1033 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85026,19 +86183,19 @@
 	});
 	exports.default = exports.ToolbarTitle = exports.ToolbarSeparator = exports.ToolbarGroup = exports.Toolbar = undefined;
 
-	var _Toolbar2 = __webpack_require__(1028);
+	var _Toolbar2 = __webpack_require__(1034);
 
 	var _Toolbar3 = _interopRequireDefault(_Toolbar2);
 
-	var _ToolbarGroup2 = __webpack_require__(1029);
+	var _ToolbarGroup2 = __webpack_require__(1035);
 
 	var _ToolbarGroup3 = _interopRequireDefault(_ToolbarGroup2);
 
-	var _ToolbarSeparator2 = __webpack_require__(1030);
+	var _ToolbarSeparator2 = __webpack_require__(1036);
 
 	var _ToolbarSeparator3 = _interopRequireDefault(_ToolbarSeparator2);
 
-	var _ToolbarTitle2 = __webpack_require__(1031);
+	var _ToolbarTitle2 = __webpack_require__(1037);
 
 	var _ToolbarTitle3 = _interopRequireDefault(_ToolbarTitle2);
 
@@ -85051,7 +86208,7 @@
 	exports.default = _Toolbar3.default;
 
 /***/ },
-/* 1028 */
+/* 1034 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -85177,7 +86334,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1029 */
+/* 1035 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -85391,7 +86548,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1030 */
+/* 1036 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -85498,7 +86655,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1031 */
+/* 1037 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -85618,7 +86775,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1032 */
+/* 1038 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85627,7 +86784,7 @@
 	  value: true
 	});
 
-	var _Levels = __webpack_require__(1033);
+	var _Levels = __webpack_require__(1039);
 
 	var _Levels2 = _interopRequireDefault(_Levels);
 
@@ -85636,7 +86793,7 @@
 	exports.default = _Levels2.default;
 
 /***/ },
-/* 1033 */
+/* 1039 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85649,7 +86806,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _activityIndicator = __webpack_require__(1034);
+	var _activityIndicator = __webpack_require__(1040);
 
 	var _activityIndicator2 = _interopRequireDefault(_activityIndicator);
 
@@ -85675,7 +86832,7 @@
 	exports.default = (0, _activityIndicator2.default)(Levels, 1.5);
 
 /***/ },
-/* 1034 */
+/* 1040 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85754,987 +86911,7 @@
 	};
 
 /***/ },
-/* 1035 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.PlayerBar = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _redux = __webpack_require__(501);
-
-	var _reactRedux = __webpack_require__(522);
-
-	var _colors = __webpack_require__(755);
-
-	var _index = __webpack_require__(561);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var player = void 0,
-	    source = void 0;
-
-	var _PlayerBar = function (_Component) {
-	  _inherits(_PlayerBar, _Component);
-
-	  function _PlayerBar(props) {
-	    _classCallCheck(this, _PlayerBar);
-
-	    var _this = _possibleConstructorReturn(this, (_PlayerBar.__proto__ || Object.getPrototypeOf(_PlayerBar)).call(this, props));
-
-	    _this.handlePlayerClick = _this.handlePlayerClick.bind(_this);
-	    _this.handleForward = _this.handleForward.bind(_this);
-	    _this.handleRewind = _this.handleRewind.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(_PlayerBar, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      player = document.getElementById('audio');
-	      source = document.getElementById('audioSource');
-	    }
-	  }, {
-	    key: 'togglePlayOrPause',
-	    value: function togglePlayOrPause() {
-	      var _this2 = this;
-
-	      if (!this.props.playing) {
-	        return _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(
-	            'a',
-	            { className: 'jp-play', onClick: function onClick() {
-	                return _this2.handlePlayerClick();
-	              } },
-	            _react2.default.createElement('i', { className: 'icon-control-play i-2x' })
-	          )
-	        );
-	      } else {
-	        return _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(
-	            'a',
-	            { className: 'jp-pause', onClick: function onClick() {
-	                return _this2.handlePlayerClick();
-	              } },
-	            _react2.default.createElement('i', { className: 'icon-control-pause i-2x' })
-	          )
-	        );
-	      }
-	    }
-	  }, {
-	    key: 'handlePlayerClick',
-	    value: function handlePlayerClick() {
-	      player = document.getElementById('audio');
-
-	      if (this.props.playing) {
-	        player.pause();
-	        this.props.changePlayStatus(false);
-	      } else {
-	        player.play();
-	        this.props.changePlayStatus(true);
-	      }
-	    }
-	  }, {
-	    key: 'handleRewind',
-	    value: function handleRewind() {
-	      var previous = this.props.currentPlaylist.indexOf(this.props.currentSection) - 1;
-	      if (previous >= 0) {
-	        this.props.setCurrentPlaySection(this.props.currentPlaylist[previous]);
-	        source.src = this.props.currentPlaylist[previous].section_url;
-	        player.load();
-	        player.play();
-	        this.props.changePlayStatus(true);
-	      }
-	    }
-	  }, {
-	    key: 'handleForward',
-	    value: function handleForward() {
-	      var next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1;
-	      if (next <= this.props.currentPlaylist.length - 1) {
-	        this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
-	        source.src = this.props.currentPlaylist[next].section_url;
-	        player.load();
-	        player.play();
-	        this.props.changePlayStatus(true);
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this3 = this;
-
-	      var currentMin = '__',
-	          currentSec = '__',
-	          totalMin = '__',
-	          totalSec = '__';
-	      if (this.props.currentTime > 0) {
-	        currentMin = Math.floor(this.props.currentTime / 60);
-	        currentSec = Math.floor(this.props.currentTime % 60);
-	      }
-
-	      if (this.props.currentDuration > 1) {
-	        totalMin = Math.floor(this.props.currentDuration / 60);
-	        totalSec = Math.floor(this.props.currentDuration % 60);
-	      }
-
-	      var currentPercent = this.props.currentTime / this.props.currentDuration * 100;
-	      var displayed = this.props.playerLaunched ? '' : 'none';
-
-	      return _react2.default.createElement(
-	        'footer',
-	        { className: 'footer bg-info dker', style: { display: displayed } },
-	        _react2.default.createElement(
-	          'div',
-	          { id: 'jp_container_N' },
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'jp-type-playlist' },
-	            _react2.default.createElement('div', { id: 'jplayer_N', className: 'jp-jplayer hide' }),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'jp-gui' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'jp-interface' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'jp-controls' },
-	                  _react2.default.createElement(
-	                    'div',
-	                    null,
-	                    _react2.default.createElement(
-	                      'a',
-	                      { className: 'jp-previous', onClick: function onClick() {
-	                          return _this3.handleRewind();
-	                        } },
-	                      _react2.default.createElement('i', { className: 'icon-control-rewind i-lg' })
-	                    )
-	                  ),
-	                  this.togglePlayOrPause(),
-	                  _react2.default.createElement(
-	                    'div',
-	                    null,
-	                    _react2.default.createElement(
-	                      'a',
-	                      { className: 'jp-next', onClick: function onClick() {
-	                          return _this3.handleForward();
-	                        } },
-	                      _react2.default.createElement('i', { className: 'icon-control-forward i-lg' })
-	                    )
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { className: 'hide' },
-	                    _react2.default.createElement(
-	                      'a',
-	                      { className: 'jp-stop' },
-	                      _react2.default.createElement('i', { className: 'fa fa-stop' })
-	                    )
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { className: 'jp-progress ' },
-	                    _react2.default.createElement(
-	                      'div',
-	                      { className: 'jp-seek-bar dk', style: { width: '100%', backgroundColor: _colors.grey50 } },
-	                      _react2.default.createElement('div', { className: 'jp-play-bar bg-info', style: { width: currentPercent + '%', backgroundColor: '#F76B1C' } }),
-	                      _react2.default.createElement(
-	                        'div',
-	                        { className: 'jp-title text-lt' },
-	                        _react2.default.createElement(
-	                          'ul',
-	                          null,
-	                          _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            this.props.currentSection.title
-	                          )
-	                        )
-	                      )
-	                    )
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { className: ' jp-current-time text-xs text-muted' },
-	                    currentMin + ':' + currentSec
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { className: ' jp-duration text-xs text-muted' },
-	                    totalMin + ':' + totalSec
-	                  )
-	                )
-	              )
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'jp-playlist dropup', id: 'playlist' },
-	              _react2.default.createElement(
-	                'ul',
-	                { className: 'dropdown-menu aside-xl dker' },
-	                _react2.default.createElement('li', { className: 'list-group-item' })
-	              )
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'jp-no-solution hide' },
-	              _react2.default.createElement(
-	                'span',
-	                null,
-	                'Update Required'
-	              ),
-	              'To play the media you will need to either update your browser to a recent version or update your ',
-	              _react2.default.createElement(
-	                'a',
-	                { href: 'http://get.adobe.com/flashplayer/', target: '_blank' },
-	                'Flash plugin'
-	              ),
-	              '.'
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return _PlayerBar;
-	}(_react.Component);
-
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ setCurrentPlaySection: _index.setCurrentPlaySection, changePlayStatus: _index.changePlayStatus }, dispatch);
-	}
-
-	var mapStateToProps = function mapStateToProps(state) {
-	  var isLoggedIn = state.user.isLoggedIn;
-	  var _state$setCourses = state.setCourses,
-	      currentSection = _state$setCourses.currentSection,
-	      playing = _state$setCourses.playing,
-	      playerLaunched = _state$setCourses.playerLaunched,
-	      currentTime = _state$setCourses.currentTime,
-	      currentDuration = _state$setCourses.currentDuration,
-	      currentPlaylist = _state$setCourses.currentPlaylist;
-
-	  return {
-	    isLoggedIn: isLoggedIn, currentSection: currentSection, playing: playing, playerLaunched: playerLaunched, currentTime: currentTime, currentDuration: currentDuration, currentPlaylist: currentPlaylist
-	  };
-	};
-
-	var PlayerBar = exports.PlayerBar = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_PlayerBar);
-
-	// <div className="hidden-xs hidden-sm">
-	//   <a className="jp-mute" title="mute"><i className="icon-volume-2"></i></a>
-	//   <a className="jp-unmute hid" title="unmute"><i className="icon-volume-off"></i></a>
-	// </div>
-	// <div className="hidden-xs hidden-sm jp-volume">
-	//   <div className="jp-volume-bar dk">
-	//     <div className="jp-volume-bar-value lter"></div>
-	//   </div>
-	// </div>
-
-/***/ },
-/* 1036 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Reviews = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _redux = __webpack_require__(501);
-
-	var _reactRedux = __webpack_require__(522);
-
-	var _firebase = __webpack_require__(530);
-
-	var firebase = _interopRequireWildcard(_firebase);
-
-	var _Card = __webpack_require__(803);
-
-	var _reactStars = __webpack_require__(817);
-
-	var _reactStars2 = _interopRequireDefault(_reactStars);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _Reviews = function (_Component) {
-	  _inherits(_Reviews, _Component);
-
-	  function _Reviews(props) {
-	    _classCallCheck(this, _Reviews);
-
-	    var _this = _possibleConstructorReturn(this, (_Reviews.__proto__ || Object.getPrototypeOf(_Reviews)).call(this, props));
-
-	    _this.state = {
-	      reviews: [{
-	        reviewer: 'Tash C.',
-	        date: '10/12/2016',
-	        pic: '',
-	        rating: 5,
-	        content: 'This is a great program. Learned a lot.'
-	      }, {
-	        reviewer: 'Brian Cooper',
-	        date: '01/11/2017',
-	        pic: '',
-	        rating: 4,
-	        content: 'I like it.'
-	      }]
-	    };
-	    return _this;
-	  }
-
-	  _createClass(_Reviews, [{
-	    key: 'renderRow',
-	    value: function renderRow(review) {
-
-	      return _react2.default.createElement(
-	        _Card.Card,
-	        null,
-	        _react2.default.createElement(_Card.CardHeader, {
-	          title: review.reviewer,
-	          subtitle: review.date,
-	          avatar: review.pic
-	        }),
-	        _react2.default.createElement(
-	          _Card.CardText,
-	          null,
-	          _react2.default.createElement(_reactStars2.default, {
-	            count: 5,
-	            value: review.rating,
-	            size: 15,
-	            edit: false,
-	            color2: '#ffd700' }),
-	          _react2.default.createElement(
-	            'div',
-	            null,
-	            review.content
-	          )
-	        )
-	      );
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      return _react2.default.createElement(
-	        'section',
-	        { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'container' },
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'row' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-8 center-col col-sm-12 text-center' },
-	              _react2.default.createElement(
-	                'h3',
-	                { className: 'title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text' },
-	                'How do you like this program?'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1.5em', margin: '2em' } },
-	              _react2.default.createElement(
-	                'button',
-	                { onClick: function onClick() {
-	                    return _this2.handleFBAuth();
-	                  }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color', style: { backgroundColor: '#61E1FB' } },
-	                _react2.default.createElement(
-	                  'span',
-	                  { className: 'tz-text' },
-	                  'Write A Review'
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'row', style: { marginBottom: '3em' } },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-6 center-col col-sm-12 text-center' },
-	              _react2.default.createElement(
-	                'h3',
-	                { className: 'title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text' },
-	                'Reviews'
-	              ),
-	              _react2.default.createElement(
-	                'h3',
-	                { className: 'title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text' },
-	                'Average Rating: 4.5'
-	              ),
-	              _react2.default.createElement(
-	                'div',
-	                { style: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2em' } },
-	                _react2.default.createElement(_reactStars2.default, {
-	                  count: 5,
-	                  value: 4.5,
-	                  size: 28,
-	                  color2: '#ffd700',
-	                  edit: false
-	                })
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'col-md-8 center-col col-sm-12' },
-	            this.state.reviews.map(function (review) {
-	              return _this2.renderRow(review);
-	            })
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return _Reviews;
-	}(_react.Component);
-
-	var mapStateToProps = function mapStateToProps(state) {
-	  var _state$user = state.user,
-	      userInfo = _state$user.userInfo,
-	      isLoggedIn = _state$user.isLoggedIn;
-
-	  return {
-	    userInfo: userInfo, isLoggedIn: isLoggedIn
-	  };
-	};
-
-	var Reviews = exports.Reviews = (0, _reactRedux.connect)(mapStateToProps, null)(_Reviews);
-
-/***/ },
-/* 1037 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.MyCourses = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _redux = __webpack_require__(501);
-
-	var _reactRedux = __webpack_require__(522);
-
-	var _reactRouterDom = __webpack_require__(538);
-
-	var _firebase = __webpack_require__(530);
-
-	var _firebase2 = _interopRequireDefault(_firebase);
-
-	var _soundwise_header = __webpack_require__(750);
-
-	var _course_card = __webpack_require__(802);
-
-	var _course_card2 = _interopRequireDefault(_course_card);
-
-	var _index = __webpack_require__(561);
-
-	var _course_page = __webpack_require__(815);
-
-	var _footer = __webpack_require__(746);
-
-	var _footer2 = _interopRequireDefault(_footer);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _MyCourses = function (_Component) {
-	  _inherits(_MyCourses, _Component);
-
-	  function _MyCourses(props) {
-	    _classCallCheck(this, _MyCourses);
-
-	    return _possibleConstructorReturn(this, (_MyCourses.__proto__ || Object.getPrototypeOf(_MyCourses)).call(this, props));
-	  }
-
-	  _createClass(_MyCourses, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      // const userId = firebase.auth().currentUser.uid
-	      // firebase.database().ref('users/' + userId + '/courses')
-	      //         .once('value')
-	      //         .then(snapshot => {
-	      //           this.props.loadUserCourses(snapshot.val())
-	      //         })
-
-	      var that = this;
-	      _firebase2.default.auth().onAuthStateChanged(function (user) {
-	        if (user) {
-	          var userId = user.uid;
-	          console.log('user uid: ', userId);
-	          _firebase2.default.database().ref('users/' + userId + '/courses').once('value').then(function (snapshot) {
-	            that.props.loadUserCourses(snapshot.val());
-	          });
-	        }
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      var courses = this.props.userCourses;
-	      var isLoggedIn = this.props.isLoggedIn;
-
-	      var courseArr = [];
-	      for (var key in courses) {
-	        courseArr.push(courses[key]);
-	      }
-
-	      if (!isLoggedIn) {
-	        return _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	          _react2.default.createElement(
-	            'section',
-	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'container' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                  _react2.default.createElement(
-	                    'h2',
-	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                    'PLEASE LOG IN FIRST'
-	                  )
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(_footer2.default, null)
-	        );
-	      }
-
-	      if (courseArr.length === 0) {
-	        return _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	          _react2.default.createElement(
-	            'section',
-	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'container' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                  _react2.default.createElement(
-	                    'h2',
-	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                    'YOU HAVEN\'T SIGNED UP FOR ANY PROGRAMS YET'
-	                  )
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(_footer2.default, null)
-	        );
-	      }
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	        _react2.default.createElement(
-	          'section',
-	          { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'container' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'row' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                _react2.default.createElement(
-	                  'h2',
-	                  { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                  'MY PROGRAMS'
-	                )
-	              ),
-	              courseArr.map(function (course) {
-	                return _react2.default.createElement(_course_card2.default, { course: course, key: course.id, match: _this2.props.match });
-	              })
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(_footer2.default, null)
-	      );
-	    }
-	  }]);
-
-	  return _MyCourses;
-	}(_react.Component);
-
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ loadUserCourses: _index.loadUserCourses }, dispatch);
-	}
-
-	var mapStateToProps = function mapStateToProps(state) {
-	  var _state$user = state.user,
-	      userInfo = _state$user.userInfo,
-	      isLoggedIn = _state$user.isLoggedIn;
-	  var userCourses = state.setCourses.userCourses;
-
-	  return {
-	    userInfo: userInfo, isLoggedIn: isLoggedIn, userCourses: userCourses
-	  };
-	};
-
-	var MyCourses = exports.MyCourses = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_MyCourses);
-
-/***/ },
-/* 1038 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Course_Purchased = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouterDom = __webpack_require__(538);
-
-	var _redux = __webpack_require__(501);
-
-	var _reactRedux = __webpack_require__(522);
-
-	var _firebase = __webpack_require__(530);
-
-	var _firebase2 = _interopRequireDefault(_firebase);
-
-	var _reactRouter = __webpack_require__(475);
-
-	var _MuiThemeProvider = __webpack_require__(751);
-
-	var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
-
-	var _getMuiTheme = __webpack_require__(752);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	var _course_header_purchased = __webpack_require__(992);
-
-	var _course_body_purchased = __webpack_require__(1039);
-
-	var _course_body_purchased2 = _interopRequireDefault(_course_body_purchased);
-
-	var _course_body = __webpack_require__(993);
-
-	var _course_body2 = _interopRequireDefault(_course_body);
-
-	var _socialshare = __webpack_require__(991);
-
-	var _socialshare2 = _interopRequireDefault(_socialshare);
-
-	var _soundwise_header = __webpack_require__(750);
-
-	var _index = __webpack_require__(561);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _Course_Purchased = function (_Component) {
-	  _inherits(_Course_Purchased, _Component);
-
-	  function _Course_Purchased(props) {
-	    _classCallCheck(this, _Course_Purchased);
-
-	    var _this = _possibleConstructorReturn(this, (_Course_Purchased.__proto__ || Object.getPrototypeOf(_Course_Purchased)).call(this, props));
-
-	    _this.state = {
-	      course: {
-	        price: '',
-	        name: '',
-	        description: ''
-	      },
-	      userCourses: {}
-	    };
-	    return _this;
-	  }
-
-	  _createClass(_Course_Purchased, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-
-	      var that = this;
-	      _firebase2.default.database().ref('courses/' + this.props.match.params.courseId).once('value').then(function (snapshot) {
-	        // console.log('course fetched from firebase: ', snapshot.val())
-	        that.setState({
-	          course: snapshot.val()
-	        });
-	        var sections = [];
-	        that.state.course.modules.forEach(function (module) {
-	          // build a playlist of sections
-	          module.sections.forEach(function (section) {
-	            sections.push(section);
-	          });
-	        });
-	        that.props.setCurrentPlaylist(sections);
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      // const course = this.props.courses[this.props.match.params.courseId]
-	      var course = this.state.course;
-
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	        _react2.default.createElement(_course_header_purchased.CourseHeaderPurchased, { course: course }),
-	        _react2.default.createElement(
-	          _MuiThemeProvider2.default,
-	          null,
-	          _react2.default.createElement(_course_body_purchased2.default, { course: course })
-	        )
-	      );
-	    }
-	  }]);
-
-	  return _Course_Purchased;
-	}(_react.Component);
-
-	// <SocialShare />
-
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ setCurrentPlaylist: _index.setCurrentPlaylist }, dispatch);
-	}
-
-	var mapStateToProps = function mapStateToProps(state) {
-	  var _state$user = state.user,
-	      userInfo = _state$user.userInfo,
-	      isLoggedIn = _state$user.isLoggedIn;
-	  var _state$setCourses = state.setCourses,
-	      courses = _state$setCourses.courses,
-	      currentPlaylist = _state$setCourses.currentPlaylist;
-
-	  return {
-	    userInfo: userInfo, isLoggedIn: isLoggedIn, courses: courses, currentPlaylist: currentPlaylist
-	  };
-	};
-
-	var Course_Purchases_worouter = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Course_Purchased);
-
-	var Course_Purchased = exports.Course_Purchased = (0, _reactRouter.withRouter)(Course_Purchases_worouter);
-
-/***/ },
-/* 1039 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Tabs = __webpack_require__(994);
-
-	var _reactSwipeableViews = __webpack_require__(999);
-
-	var _reactSwipeableViews2 = _interopRequireDefault(_reactSwipeableViews);
-
-	var _colors = __webpack_require__(755);
-
-	var _instructor = __webpack_require__(1011);
-
-	var _instructor2 = _interopRequireDefault(_instructor);
-
-	var _curriculum = __webpack_require__(1012);
-
-	var _player_bar = __webpack_require__(1035);
-
-	var _reviews = __webpack_require__(1036);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var styles = {
-	  headline: {
-	    fontSize: 24,
-	    paddingTop: 16,
-	    marginBottom: 12,
-	    fontWeight: 400
-	  },
-	  slide: {
-	    padding: 10
-	  },
-	  tabs: {
-	    color: _colors.deepOrange800,
-	    backgroundColor: 'white',
-	    // fontSize: 20,
-	    fontFamily: 'lato'
-	  },
-	  active_tab: {
-	    color: _colors.deepOrange800,
-	    backgroundColor: _colors.orange50,
-	    // fontSize: 24,
-	    fontFamily: 'lato'
-	  }
-	};
-
-	var CourseBodyPurchased = function (_React$Component) {
-	  _inherits(CourseBodyPurchased, _React$Component);
-
-	  function CourseBodyPurchased(props) {
-	    _classCallCheck(this, CourseBodyPurchased);
-
-	    var _this = _possibleConstructorReturn(this, (CourseBodyPurchased.__proto__ || Object.getPrototypeOf(CourseBodyPurchased)).call(this, props));
-
-	    _this.handleChange = function (value) {
-	      _this.setState({
-	        slideIndex: value
-	      });
-	    };
-
-	    _this.state = {
-	      slideIndex: 1
-	    };
-	    return _this;
-	  }
-
-	  _createClass(CourseBodyPurchased, [{
-	    key: 'render',
-	    value: function render() {
-	      styles.tab = [];
-	      styles.tab[0] = styles.tabs;
-	      styles.tab[1] = styles.tabs;
-	      // styles.tab[2] = styles.tabs
-	      styles.tab[this.state.slideIndex] = Object.assign({}, styles.tab[this.state.slideIndex], styles.active_tab);
-
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'vbox' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: '' },
-	          _react2.default.createElement(
-	            _Tabs.Tabs,
-	            {
-	              onChange: this.handleChange,
-	              value: this.state.slideIndex
-	            },
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 0 }),
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 1 })
-	          ),
-	          _react2.default.createElement(
-	            _reactSwipeableViews2.default,
-	            {
-	              index: this.state.slideIndex,
-	              onChangeIndex: this.handleChange
-	            },
-	            _react2.default.createElement(
-	              'div',
-	              null,
-	              'Lots of great resources...'
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { style: styles.slide },
-	              _react2.default.createElement(_curriculum.Curriculum, { course: this.props.course })
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(_player_bar.PlayerBar, null)
-	      );
-	    }
-	  }]);
-
-	  return CourseBodyPurchased;
-	}(_react2.default.Component);
-
-	exports.default = CourseBodyPurchased;
-
-/***/ },
-/* 1040 */
+/* 1041 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86982,7 +87159,7 @@
 	var Cart = exports.Cart = (0, _reactRouter.withRouter)(Cart_woroute);
 
 /***/ },
-/* 1041 */
+/* 1042 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -86998,7 +87175,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _axios = __webpack_require__(1042);
+	var _axios = __webpack_require__(1043);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
@@ -87008,7 +87185,7 @@
 
 	var _reactRouterDom = __webpack_require__(538);
 
-	var _Dots = __webpack_require__(1067);
+	var _Dots = __webpack_require__(1068);
 
 	var _Dots2 = _interopRequireDefault(_Dots);
 
@@ -87507,21 +87684,21 @@
 	var Checkout = exports.Checkout = (0, _reactRouter.withRouter)(Checkout_worouter);
 
 /***/ },
-/* 1042 */
+/* 1043 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1043);
+	module.exports = __webpack_require__(1044);
 
 /***/ },
-/* 1043 */
+/* 1044 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
-	var bind = __webpack_require__(1045);
-	var Axios = __webpack_require__(1046);
-	var defaults = __webpack_require__(1047);
+	var utils = __webpack_require__(1045);
+	var bind = __webpack_require__(1046);
+	var Axios = __webpack_require__(1047);
+	var defaults = __webpack_require__(1048);
 
 	/**
 	 * Create an instance of Axios
@@ -87554,15 +87731,15 @@
 	};
 
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(1064);
-	axios.CancelToken = __webpack_require__(1065);
-	axios.isCancel = __webpack_require__(1061);
+	axios.Cancel = __webpack_require__(1065);
+	axios.CancelToken = __webpack_require__(1066);
+	axios.isCancel = __webpack_require__(1062);
 
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(1066);
+	axios.spread = __webpack_require__(1067);
 
 	module.exports = axios;
 
@@ -87571,12 +87748,12 @@
 
 
 /***/ },
-/* 1044 */
+/* 1045 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(1045);
+	var bind = __webpack_require__(1046);
 
 	/*global toString:true*/
 
@@ -87876,7 +88053,7 @@
 
 
 /***/ },
-/* 1045 */
+/* 1046 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -87893,17 +88070,17 @@
 
 
 /***/ },
-/* 1046 */
+/* 1047 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(1047);
-	var utils = __webpack_require__(1044);
-	var InterceptorManager = __webpack_require__(1058);
-	var dispatchRequest = __webpack_require__(1059);
-	var isAbsoluteURL = __webpack_require__(1062);
-	var combineURLs = __webpack_require__(1063);
+	var defaults = __webpack_require__(1048);
+	var utils = __webpack_require__(1045);
+	var InterceptorManager = __webpack_require__(1059);
+	var dispatchRequest = __webpack_require__(1060);
+	var isAbsoluteURL = __webpack_require__(1063);
+	var combineURLs = __webpack_require__(1064);
 
 	/**
 	 * Create a new instance of Axios
@@ -87984,13 +88161,13 @@
 
 
 /***/ },
-/* 1047 */
+/* 1048 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(1044);
-	var normalizeHeaderName = __webpack_require__(1048);
+	var utils = __webpack_require__(1045);
+	var normalizeHeaderName = __webpack_require__(1049);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -88007,10 +88184,10 @@
 	  var adapter;
 	  if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(1049);
+	    adapter = __webpack_require__(1050);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(1049);
+	    adapter = __webpack_require__(1050);
 	  }
 	  return adapter;
 	}
@@ -88084,12 +88261,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1048 */
+/* 1049 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -88102,18 +88279,18 @@
 
 
 /***/ },
-/* 1049 */
+/* 1050 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(1044);
-	var settle = __webpack_require__(1050);
-	var buildURL = __webpack_require__(1053);
-	var parseHeaders = __webpack_require__(1054);
-	var isURLSameOrigin = __webpack_require__(1055);
-	var createError = __webpack_require__(1051);
-	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(1056);
+	var utils = __webpack_require__(1045);
+	var settle = __webpack_require__(1051);
+	var buildURL = __webpack_require__(1054);
+	var parseHeaders = __webpack_require__(1055);
+	var isURLSameOrigin = __webpack_require__(1056);
+	var createError = __webpack_require__(1052);
+	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(1057);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -88209,7 +88386,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(1057);
+	      var cookies = __webpack_require__(1058);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -88286,12 +88463,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1050 */
+/* 1051 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(1051);
+	var createError = __webpack_require__(1052);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -88317,12 +88494,12 @@
 
 
 /***/ },
-/* 1051 */
+/* 1052 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(1052);
+	var enhanceError = __webpack_require__(1053);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -88340,7 +88517,7 @@
 
 
 /***/ },
-/* 1052 */
+/* 1053 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88365,12 +88542,12 @@
 
 
 /***/ },
-/* 1053 */
+/* 1054 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -88439,12 +88616,12 @@
 
 
 /***/ },
-/* 1054 */
+/* 1055 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	/**
 	 * Parse headers into an object
@@ -88482,12 +88659,12 @@
 
 
 /***/ },
-/* 1055 */
+/* 1056 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -88556,7 +88733,7 @@
 
 
 /***/ },
-/* 1056 */
+/* 1057 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88598,12 +88775,12 @@
 
 
 /***/ },
-/* 1057 */
+/* 1058 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -88657,12 +88834,12 @@
 
 
 /***/ },
-/* 1058 */
+/* 1059 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -88715,15 +88892,15 @@
 
 
 /***/ },
-/* 1059 */
+/* 1060 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
-	var transformData = __webpack_require__(1060);
-	var isCancel = __webpack_require__(1061);
-	var defaults = __webpack_require__(1047);
+	var utils = __webpack_require__(1045);
+	var transformData = __webpack_require__(1061);
+	var isCancel = __webpack_require__(1062);
+	var defaults = __webpack_require__(1048);
 
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -88800,12 +88977,12 @@
 
 
 /***/ },
-/* 1060 */
+/* 1061 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1044);
+	var utils = __webpack_require__(1045);
 
 	/**
 	 * Transform the data for a request or a response
@@ -88826,7 +89003,7 @@
 
 
 /***/ },
-/* 1061 */
+/* 1062 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88837,7 +89014,7 @@
 
 
 /***/ },
-/* 1062 */
+/* 1063 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88857,7 +89034,7 @@
 
 
 /***/ },
-/* 1063 */
+/* 1064 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88875,7 +89052,7 @@
 
 
 /***/ },
-/* 1064 */
+/* 1065 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88900,12 +89077,12 @@
 
 
 /***/ },
-/* 1065 */
+/* 1066 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Cancel = __webpack_require__(1064);
+	var Cancel = __webpack_require__(1065);
 
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -88963,7 +89140,7 @@
 
 
 /***/ },
-/* 1066 */
+/* 1067 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -88996,7 +89173,7 @@
 
 
 /***/ },
-/* 1067 */
+/* 1068 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89005,7 +89182,7 @@
 	  value: true
 	});
 
-	var _Dots = __webpack_require__(1068);
+	var _Dots = __webpack_require__(1069);
 
 	var _Dots2 = _interopRequireDefault(_Dots);
 
@@ -89014,7 +89191,7 @@
 	exports.default = _Dots2.default;
 
 /***/ },
-/* 1068 */
+/* 1069 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89027,7 +89204,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _activityIndicator = __webpack_require__(1034);
+	var _activityIndicator = __webpack_require__(1040);
 
 	var _activityIndicator2 = _interopRequireDefault(_activityIndicator);
 
@@ -89058,7 +89235,7 @@
 	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
 
 /***/ },
-/* 1069 */
+/* 1070 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89155,6 +89332,26 @@
 	  }
 	}
 
+	function reviewBox() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+	    reviewFormOpen: false
+	  };
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case types.OPEN_REVIEWBOX:
+	      return _extends({}, state, {
+	        reviewFormOpen: true
+	      });
+	    case types.CLOSE_REVIEWBOX:
+	      return _extends({}, state, {
+	        reviewFormOpen: false
+	      });
+	    default:
+	      return state;
+	  }
+	}
+
 	function signupBox() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
 	    signupFormOpen: false,
@@ -89215,11 +89412,237 @@
 	  setCourses: setCourses,
 	  routing: _reactRouterRedux.routerReducer,
 	  signupBox: signupBox,
+	  reviewBox: reviewBox,
 	  user: user,
 	  checkoutProcess: checkoutProcess
 	});
 
 	exports.default = rootReducer;
+
+/***/ },
+/* 1071 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.ReviewModal = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(522);
+
+	var _firebase = __webpack_require__(530);
+
+	var firebase = _interopRequireWildcard(_firebase);
+
+	var _TextField = __webpack_require__(978);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	var _Dialog = __webpack_require__(984);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _FlatButton = __webpack_require__(988);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	var _colors = __webpack_require__(755);
+
+	var _MuiThemeProvider = __webpack_require__(751);
+
+	var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
+
+	var _getMuiTheme = __webpack_require__(752);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _reactRouterDom = __webpack_require__(538);
+
+	var _reactRouter = __webpack_require__(475);
+
+	var _reactStars = __webpack_require__(817);
+
+	var _reactStars2 = _interopRequireDefault(_reactStars);
+
+	var _index = __webpack_require__(561);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _ReviewModal = function (_Component) {
+	  _inherits(_ReviewModal, _Component);
+
+	  function _ReviewModal(props) {
+	    _classCallCheck(this, _ReviewModal);
+
+	    var _this = _possibleConstructorReturn(this, (_ReviewModal.__proto__ || Object.getPrototypeOf(_ReviewModal)).call(this, props));
+
+	    _this.state = {
+	      rating: 5,
+	      review: ''
+	    };
+
+	    _this.ratingChanged = _this.ratingChanged.bind(_this);
+	    _this.handleReviewChange = _this.handleReviewChange.bind(_this);
+	    _this.handleSubmit = _this.handleSubmit.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(_ReviewModal, [{
+	    key: 'ratingChanged',
+	    value: function ratingChanged(newRating) {
+	      console.log('new rating: ', newRating);
+	      this.setState({
+	        rating: newRating
+	      });
+	    }
+	  }, {
+	    key: 'handleReviewChange',
+	    value: function handleReviewChange(e) {
+	      e.preventDefault();
+
+	      this.setState({
+	        review: e.target.value
+	      });
+	    }
+	  }, {
+	    key: 'handleSubmit',
+	    value: function handleSubmit() {
+	      var _state = this.state,
+	          rating = _state.rating,
+	          review = _state.review;
+
+	      var time = new Date();
+	      var date = time.toDateString();
+	      var reviewer = this.props.userInfo.firstName + ' ' + this.props.userInfo.lastName.slice(0, 1) + '.';
+
+	      console.log('review: ', { date: date, reviewer: reviewer, rating: rating, review: review });
+
+	      firebase.database().ref('courses/' + this.props.course.id).child('reviews').push({ date: date, reviewer: reviewer, rating: rating, review: review });
+
+	      this.props.openReviewbox(false);
+	    }
+	  }, {
+	    key: 'reviewForm',
+	    value: function reviewForm() {
+	      return _react2.default.createElement(
+	        'section',
+	        { className: 'padding-110px-tb xs-padding-60px-tb bg-gray builder-bg contact-form-style6 border-none', id: 'contact-section12' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: '' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'row' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-8 col-sm-12 col-xs-12 center-col text-center' },
+	              _react2.default.createElement(
+	                'h2',
+	                { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-six-bottom xs-margin-fifteen-bottom tz-text' },
+	                'How would you rate this program?'
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { style: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2em' } },
+	                _react2.default.createElement(_reactStars2.default, {
+	                  count: 5,
+	                  value: this.state.rating,
+	                  size: 28,
+	                  onChange: this.ratingChanged,
+	                  color2: '#ffd700',
+	                  style: { float: 'left', display: 'inline' } })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'text-medium width-90 sm-width-100 center-col tz-text margin-thirteen-bottom xs-margin-nineteen-bottom' },
+	                'Tell us what you think of the program. Your review will help other people decide if this class is right for them. (Optional)'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-6 col-sm-12 col-xs-12 center-col text-center' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'width-100' },
+	                _react2.default.createElement('textarea', { name: 'review',
+	                  id: 'review', placeholder: 'Your review', className: 'medium-input border-radius-4',
+	                  onChange: this.handleReviewChange,
+	                  value: this.state.review }),
+	                _react2.default.createElement(
+	                  'button',
+	                  {
+	                    onClick: this.handleSubmit,
+	                    type: 'submit', className: 'contact-submit btn btn-large propClone bg-sky-blue btn-3d text-white tz-text' },
+	                  'Submit'
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      return _react2.default.createElement(
+	        _MuiThemeProvider2.default,
+	        null,
+	        _react2.default.createElement(
+	          _Dialog2.default
+	          // title="Get Started"
+	          ,
+	          { modal: false,
+	            open: this.props.reviewFormOpen,
+	            autoScrollBodyContent: true,
+	            onRequestClose: function onRequestClose() {
+	              return _this2.props.openReviewbox(false);
+	            }
+	          },
+	          this.reviewForm()
+	        )
+	      );
+	    }
+	  }]);
+
+	  return _ReviewModal;
+	}(_react.Component);
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ openReviewbox: _index.openReviewbox }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var _state$user = state.user,
+	      userInfo = _state$user.userInfo,
+	      isLoggedIn = _state$user.isLoggedIn;
+	  var reviewFormOpen = state.reviewBox.reviewFormOpen;
+
+	  return {
+	    userInfo: userInfo, isLoggedIn: isLoggedIn, reviewFormOpen: reviewFormOpen
+	  };
+	};
+
+	var ReviewModal = exports.ReviewModal = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_ReviewModal);
 
 /***/ }
 /******/ ]);

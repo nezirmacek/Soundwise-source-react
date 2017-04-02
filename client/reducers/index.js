@@ -82,6 +82,25 @@ function setCourses(state={
   }
 }
 
+function reviewBox(state={
+  reviewFormOpen: false
+}, action) {
+  switch(action.type) {
+    case types.OPEN_REVIEWBOX:
+      return {
+        ...state,
+        reviewFormOpen: true
+      }
+    case types.CLOSE_REVIEWBOX:
+      return {
+        ...state,
+        reviewFormOpen: false
+      }
+    default:
+      return state
+  }
+}
+
 function signupBox(state= {
   signupFormOpen: false,
   confirmationBoxOpen: false
@@ -143,6 +162,7 @@ const rootReducer = combineReducers({
   setCourses,
   routing,
   signupBox,
+  reviewBox,
   user,
   checkoutProcess
 })

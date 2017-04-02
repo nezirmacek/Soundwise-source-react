@@ -93,6 +93,18 @@ export function openConfirmationbox(open) {
   }
 }
 
+export function openReviewbox(open) {
+  if(open) {
+    return {
+      type: types.OPEN_REVIEWBOX
+    }
+  } else {
+    return {
+      type: types.CLOSE_REVIEWBOX
+    }
+  }
+}
+
 export function addCourseToCart(course) {
   return {
     type: types.ADDTOCART,

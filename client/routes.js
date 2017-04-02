@@ -63,19 +63,21 @@ class _Routes extends Component {
              <Route path="/about" component={About}/>
              <Route path='/signup' component={AppSignup} />
              <Route path='/signin' component={AppSignin} />
-             <Route path="/courses" component={Courses}/>
+
              <Route exact path="/myprograms" component={MyCourses}/>
              <Route exact path="/myprograms/:courseId" component={Course_Purchased}/>
              <Route path="/cart" component={Cart} />
              <Route path="/checkout" component={Checkout} />
              <Route path="/confirmation" component={OrderConfirmation} />
-             <Route path="/:courseId" component={Course} />
+             <Route path="/courses/:courseId" component={Course} />
           </Switch>
         </div>
       </Router>
     )
   }
 }
+
+             // <Route path="/courses" component={Courses}/>
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ loadCourses, signinUser }, dispatch)

@@ -4,7 +4,7 @@ import React from 'react'
 // import ReactScrollbar from 'react-scrollbar-js'
 
 const Instructor = (props) => (
-  <section className="about-style3 padding-110px-tb xs-padding-60px-tb bg-white builder-bg" id="team-section4">
+  <section className="about-style3 padding-60px-tb xs-padding-60px-tb bg-white builder-bg" id="team-section4">
       <div className="container">
           <div className="row">
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">

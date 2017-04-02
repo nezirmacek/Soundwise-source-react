@@ -39,6 +39,9 @@ const styles = {
     bottom: '0%',
     paddingTop: '30%'
   },
+  sectionTitle: {
+    backgroundColor: orange50
+  },
   playerContainer: {
     bottom: '0%',
     top: '20%'
@@ -166,6 +169,7 @@ class _CourseSection extends Component {
       <Card>
         <CardHeader
           title={`Section ${sectionNumber}:`}
+          style={styles.sectionTitle}
           actAsExpander={true}
           showExpandableButton={true}
         />

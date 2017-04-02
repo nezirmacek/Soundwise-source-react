@@ -21,13 +21,18 @@ class _Course extends Component {
       course: {
         price: '',
         name: '',
-        description: ''
+        description: '',
+        modules: [
+          {
+            sections: []
+          }
+        ]
       },
       userCourses: {}
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const that = this
     firebase.database().ref('courses/' + this.props.match.params.courseId)
       .once('value')
