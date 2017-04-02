@@ -94,7 +94,7 @@ export default class CourseOutline extends Component {
             <div style={styles.curriculumContainer}>
                 <div className="row">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                      <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">CONTENT</h2>
+                      <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">CONTENT OUTLINE</h2>
                     </div>
                 </div>
                 {renderModules(this.state.course)}

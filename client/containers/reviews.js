@@ -16,6 +16,7 @@ class _Reviews extends Component {
         {}
       ]
     }
+    this.handleReviewRequest = this.handleReviewRequest.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -53,6 +54,14 @@ class _Reviews extends Component {
     )
   }
 
+  handleReviewRequest() {
+    if(!this.props.isLoggedIn) {
+      alert('Please log in first!')
+    } else {
+      this.props.openReviewbox(true)
+    }
+  }
+
   render() {
     const ratings = this.state.reviews.map(review => review.rating)
     const total = ratings.reduce((sum, cur) => (sum + cur), 0)
@@ -67,7 +76,7 @@ class _Reviews extends Component {
                     <h3 className="title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text" >How do you like this program?</h3>
                 </div>
                 <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1.5em', margin: '2em'}}>
-                    <button onClick={() => this.props.openReviewbox(true)}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">Write A Review</span></button>
+                    <button onClick={this.handleReviewRequest}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">Write A Review</span></button>
                 </div>
             </div>
             <div className='row' style={{marginBottom: '3em'}}>

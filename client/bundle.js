@@ -36648,7 +36648,7 @@
 	            { className: 'propClone', style: styles.navItem },
 	            _react2.default.createElement(
 	              _reactRouterDom.Link,
-	              { className: 'inner-link', to: '/signup' },
+	              { className: 'inner-link', to: '/signin' },
 	              'LOG IN'
 	            )
 	          )
@@ -54797,7 +54797,7 @@
 	                {
 	                  overlay: _react2.default.createElement(_Card.CardTitle, { title: props.course.name })
 	                },
-	                _react2.default.createElement('img', { alt: '', src: props.course.img_url_web, 'data-img-size': '(W)800px X (H)533px' })
+	                _react2.default.createElement('img', { alt: '', src: props.course.img_url_mobile, 'data-img-size': '(W)800px X (H)533px', style: { height: '400px', objectFit: 'cover' } })
 	              )
 	            )
 	          ),
@@ -56570,10 +56570,13 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var rt_hour = Math.floor(this.props.course.run_time / 3600);
-	      var rt_min = Math.floor(this.props.course.run_time / 60 - rt_hour * 60);
-	      var rt_sec = this.props.course.run_time % 60;
-	      var run_time = rt_hour > 0 ? rt_hour + 'h ' + rt_min + 'm' : rt_min + 'm ' + rt_sec + 's';
+	      var run_time = '';
+	      if (this.props.course.run_time) {
+	        var rt_hour = Math.floor(this.props.course.run_time / 3600);
+	        var rt_min = Math.floor(this.props.course.run_time / 60 - rt_hour * 60);
+	        var rt_sec = this.props.course.run_time % 60;
+	        run_time = rt_hour > 0 ? rt_hour + 'h ' + rt_min + 'm' : rt_min + 'm ' + rt_sec + 's';
+	      }
 
 	      var average_rating = 0,
 	          ratings = [];
@@ -56600,16 +56603,6 @@
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'row equalize sm-equalize-auto equalize-display-inherit' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'display-table-cell-vertical-middle' },
-	                _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
-	                  style: { width: '350px', height: '350px' } })
-	              )
-	            ),
 	            _react2.default.createElement(
 	              'div',
 	              { className: 'col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin', style: { height: '378px' } },
@@ -56657,7 +56650,7 @@
 	                ),
 	                _react2.default.createElement(
 	                  'div',
-	                  { className: 'row' },
+	                  { className: 'row', style: { paddingBottom: '30px' } },
 	                  _react2.default.createElement(
 	                    'div',
 	                    { className: 'col-md-6 col-sm-6 col-xs-6 feature-box-details-second' },
@@ -56683,6 +56676,16 @@
 	                    )
 	                  )
 	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'pull-right' },
+	                _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
+	                  style: { width: '350px', height: '350px' } })
 	              )
 	            )
 	          )
@@ -79738,10 +79741,29 @@
 	    value: function render() {
 	      var _this2 = this;
 
-	      var rt_hour = Math.floor(this.props.course.run_time / 3600);
-	      var rt_min = Math.floor(this.props.course.run_time / 60 - rt_hour * 60);
-	      var rt_sec = this.props.course.run_time % 60;
-	      var run_time = rt_hour > 0 ? rt_hour + 'h ' + rt_min + 'm' : rt_min + 'm ' + rt_sec + 's';
+	      var run_time = '';
+	      if (this.props.course.run_time) {
+	        var rt_hour = Math.floor(this.props.course.run_time / 3600);
+	        var rt_min = Math.floor(this.props.course.run_time / 60 - rt_hour * 60);
+	        var rt_sec = this.props.course.run_time % 60;
+	        run_time = rt_hour > 0 ? rt_hour + 'h ' + rt_min + 'm' : rt_min + 'm ' + rt_sec + 's';
+	      }
+
+	      var average_rating = 0,
+	          ratings = [];
+
+	      var reviews = [];
+	      for (var key in this.props.course.reviews) {
+	        reviews.push(this.props.course.reviews[key]);
+	      }
+
+	      ratings = reviews.map(function (review) {
+	        return review.rating;
+	      });
+	      var total = ratings.reduce(function (sum, cur) {
+	        return sum + cur;
+	      }, 0);
+	      average_rating = Math.floor(total / ratings.length * 10) / 10;
 
 	      return _react2.default.createElement(
 	        'div',
@@ -79774,18 +79796,18 @@
 	                      ),
 	                      _react2.default.createElement(
 	                        'div',
-	                        { className: 'row', style: { margin: '0.5em', marginBottom: '2em' } },
+	                        { className: 'row', style: { margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' } },
 	                        _react2.default.createElement(_reactStars2.default, {
 	                          count: 5,
 	                          value: 4.5,
 	                          size: 28,
 	                          edit: false,
-	                          color2: '#ffd700',
-	                          style: { float: 'left', display: 'inline' } }),
+	                          color2: '#ffd700'
+	                        }),
 	                        _react2.default.createElement(
 	                          'span',
-	                          { style: { float: 'right', position: 'absolute' } },
-	                          '(2)'
+	                          { style: { marginLeft: '5px', fontSize: '18' } },
+	                          '(' + ratings.length + ')'
 	                        )
 	                      ),
 	                      _react2.default.createElement(
@@ -82203,7 +82225,7 @@
 	                  _react2.default.createElement(
 	                    'h2',
 	                    { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                    'CONTENT'
+	                    'CONTENT OUTLINE'
 	                  )
 	                )
 	              ),
@@ -82663,6 +82685,7 @@
 	    _this.state = {
 	      reviews: [{}]
 	    };
+	    _this.handleReviewRequest = _this.handleReviewRequest.bind(_this);
 	    return _this;
 	  }
 
@@ -82708,6 +82731,15 @@
 	      );
 	    }
 	  }, {
+	    key: 'handleReviewRequest',
+	    value: function handleReviewRequest() {
+	      if (!this.props.isLoggedIn) {
+	        alert('Please log in first!');
+	      } else {
+	        this.props.openReviewbox(true);
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
@@ -82746,9 +82778,7 @@
 	                { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1.5em', margin: '2em' } },
 	                _react2.default.createElement(
 	                  'button',
-	                  { onClick: function onClick() {
-	                      return _this2.props.openReviewbox(true);
-	                    }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color', style: { backgroundColor: '#61E1FB' } },
+	                  { onClick: this.handleReviewRequest, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color', style: { backgroundColor: '#61E1FB' } },
 	                  _react2.default.createElement(
 	                    'span',
 	                    { className: 'tz-text' },

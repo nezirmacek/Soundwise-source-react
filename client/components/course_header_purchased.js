@@ -16,10 +16,24 @@ class _CourseHeaderPurchased extends Component {
   }
 
   render() {
-    const rt_hour = Math.floor(this.props.course.run_time/3600)
-    const rt_min = Math.floor(this.props.course.run_time/60 - rt_hour*60)
-    const rt_sec = this.props.course.run_time % 60
-    const run_time = rt_hour > 0 ? `${rt_hour}h ${rt_min}m` : `${rt_min}m ${rt_sec}s`
+    let run_time = ''
+    if(this.props.course.run_time) {
+      const rt_hour = Math.floor(this.props.course.run_time/3600)
+      const rt_min = Math.floor(this.props.course.run_time/60 - rt_hour*60)
+      const rt_sec = this.props.course.run_time % 60
+      run_time = rt_hour > 0 ? `${rt_hour}h ${rt_min}m` : `${rt_min}m ${rt_sec}s`
+    }
+
+    let average_rating = 0, ratings = []
+
+    const reviews = []
+    for(var key in this.props.course.reviews) {
+      reviews.push(this.props.course.reviews[key])
+    }
+
+    ratings = reviews.map(review => review.rating)
+    const total = ratings.reduce((sum, cur) => (sum + cur), 0)
+    average_rating = Math.floor(total / ratings.length * 10) / 10
 
     return (
       <div>
@@ -31,15 +45,15 @@ class _CourseHeaderPurchased extends Component {
                             <div className="row">
                                 <div className="col-md-12 col-sm-12 col-xs-12">
                                     <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{this.props.course.name}</h2>
-                                    <div className='row' style={{margin: '0.5em', marginBottom: '2em'}}>
+                                    <div className='row' style={{margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                                       <ReactStars
                                         count={5}
                                         value = {4.5}
                                         size={28}
                                         edit={false}
                                         color2={'#ffd700'}
-                                        style={{float: 'left', display: 'inline'}}/>
-                                      <span style={{float: 'right', position: 'absolute'}}>(2)</span>
+                                      />
+                                      <span style={{marginLeft: '5px', fontSize: '18'}}>{`(${ratings.length})`}</span>
                                     </div>
                                     <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} `}</span>
                                     <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`Run Time: ${run_time}`}</span>

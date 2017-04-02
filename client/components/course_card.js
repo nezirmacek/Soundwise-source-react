@@ -14,7 +14,7 @@ const CourseCard = (props) => (
                 <CardMedia
                   overlay={<CardTitle title={props.course.name}/>}
                 >
-                  <img alt="" src={props.course.img_url_web} data-img-size="(W)800px X (H)533px"/>
+                  <img alt="" src={props.course.img_url_mobile} data-img-size="(W)800px X (H)533px" style={{height: '400px', objectFit: 'cover'}}/>
                 </CardMedia>
               </Link>
           </div>
