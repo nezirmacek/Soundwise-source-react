@@ -19,6 +19,7 @@ class _Course_Purchased extends Component {
     super(props)
     this.state = {
       course: {
+        runtime: '',
         price: '',
         name: '',
         description: ''

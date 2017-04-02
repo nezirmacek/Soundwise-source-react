@@ -9,16 +9,17 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
 import { CourseHeader } from '../components/course_header'
 import { CourseHeaderPurchased } from '../components/course_header_purchased'
-import CourseBody from '../components/course_body'
+import { CourseBody } from '../components/course_body'
 import SocialShare from '../components/socialshare'
 import { SoundwiseHeader } from '../components/soundwise_header'
-import {setCurrentPlaylist} from '../actions/index'
+import {setCurrentPlaylist, setCurrentCourse} from '../actions/index'
 
 class _Course extends Component {
   constructor(props) {
     super(props)
     this.state = {
       course: {
+        runtime: '',
         price: '',
         name: '',
         description: '',
@@ -41,6 +42,9 @@ class _Course extends Component {
         that.setState({
           course: snapshot.val(),
         })
+
+        that.props.setCurrentCourse(snapshot.val())
+
         let sections = []
         that.state.course.modules.forEach(module => { // build a playlist of sections
           module.sections.forEach(section => {
@@ -63,7 +67,7 @@ class _Course extends Component {
          <CourseHeader course={course}/>
 
         <MuiThemeProvider >
-          <CourseBody course={course} />
+          <CourseBody  course={this.props.currentCourse}/>
         </MuiThemeProvider>
       </div>
     )
@@ -73,14 +77,14 @@ class _Course extends Component {
         // <SocialShare />
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setCurrentPlaylist }, dispatch)
+  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse }, dispatch)
 }
 
 const mapStateToProps = state => {
   const { userInfo, isLoggedIn } = state.user
-  const { courses, currentPlaylist } = state.setCourses
+  const { courses, currentPlaylist, currentCourse } = state.setCourses
   return {
-    userInfo, isLoggedIn, courses, currentPlaylist
+    userInfo, isLoggedIn, courses, currentPlaylist, currentCourse
   }
 }
 

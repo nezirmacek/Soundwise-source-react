@@ -14,6 +14,13 @@ import ReactStars from 'react-stars'
 
 import { openReviewbox } from '../actions/index'
 
+const styles = {
+  modal: {
+    width: '100%',
+    maxWidth: 'none'
+  }
+}
+
 class _ReviewModal extends Component {
   constructor(props) {
     super(props)
@@ -47,12 +54,11 @@ class _ReviewModal extends Component {
     const {rating, review} = this.state
     const time = new Date()
     const date = time.toDateString()
+    const pic = this.userInfo.profile_pic || '../images/smiley_face.jpg'
     const reviewer = `${this.props.userInfo.firstName} ${this.props.userInfo.lastName.slice(0,1)}.`
 
-    console.log('review: ', {date, reviewer, rating, review})
-
     firebase.database().ref('courses/' + this.props.course.id)
-      .child('reviews').push({date, reviewer, rating, review})
+      .child('reviews').push({date, reviewer, rating, review, pic})
 
     this.props.openReviewbox(false)
   }
@@ -100,6 +106,7 @@ class _ReviewModal extends Component {
         // title="Get Started"
         modal={false}
         open={this.props.reviewFormOpen}
+        contentStyle={styles.modal}
         autoScrollBodyContent={true}
         onRequestClose={() => this.props.openReviewbox(false)}
       >

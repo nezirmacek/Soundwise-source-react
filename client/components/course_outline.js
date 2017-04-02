@@ -1,6 +1,7 @@
-import React from 'react'
+import React, {Component} from 'react'
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card'
 import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors'
+import { connect } from 'react-redux'
 
 import Instructor from './instructor'
 const styles = {
@@ -46,7 +47,38 @@ const renderModules = (course) => {
     )
   }
 
-const CourseOutline = (props) => {
+export default class CourseOutline extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      course: {
+        price: '',
+        name: '',
+        description: '',
+        modules: [
+          {
+            sections: []
+          }
+        ]
+      },
+      userCourses: {}
+    }
+  }
+
+  componentDidMount() {
+    console.log('currentCourse: ', this.props.course)
+    this.setState({
+      course: this.props.course
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      course: nextProps.course
+    })
+  }
+
+  render() {
     return (
       <div>
         <section className="padding-80px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
@@ -55,7 +87,7 @@ const CourseOutline = (props) => {
                 <div className="row padding-60px-tb">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                       <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">WHAT YOU WILL LEARN</h2>
-                      <div className="text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text">{props.course.description}</div>
+                      <div className="text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text">{this.state.course.description}</div>
                     </div>
                 </div>
             </div>
@@ -65,18 +97,16 @@ const CourseOutline = (props) => {
                       <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">CONTENT</h2>
                     </div>
                 </div>
-                {renderModules(props.course)}
+                {renderModules(this.state.course)}
             </div>
           </div>
         </section>
-        <Instructor course={props.course}/>
+        <Instructor course={this.state.course}/>
       </div>
     )
+  }
 }
 
-
-
-export default CourseOutline
 
 // <div style={styles.curriculumContainer}>
 //             {renderModules(props.course)}

@@ -31,6 +31,7 @@ function user(state= {
 
 function setCourses(state={
   courses: {},
+  currentCourse: {},
   userCourses: {},
   currentSection: {},
   playing: false,
@@ -49,6 +50,11 @@ function setCourses(state={
      return {
        ...state,
        userCourses: action.payload
+     }
+    case types.CURRENT_COURSE:
+     return {
+       ...state,
+       currentCourse: action.payload
      }
     case types.CURRENT_SECTION:
       return {

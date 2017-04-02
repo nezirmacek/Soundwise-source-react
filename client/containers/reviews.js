@@ -12,22 +12,21 @@ class _Reviews extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      reviews: [{
-        reviewer: 'Tash C.',
-        date: '10/12/2016',
-        pic: '../images/smiley_face.jpg',
-        rating: 5,
-        content: 'This is a great program. Learned a lot.'
-      },
-      {
-        reviewer: 'Brian A.',
-        date: '01/11/2017',
-        pic: '../images/smiley_face.jpg',
-        rating: 4,
-        content: 'I like it.'
-      },
+      reviews: [
+        {}
       ]
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const reviews = []
+    for(var key in nextProps.course.reviews) {
+      reviews.push(nextProps.course.reviews[key])
+    }
+
+    this.setState({
+      reviews
+    })
   }
 
   renderRow(review) {
@@ -47,7 +46,7 @@ class _Reviews extends Component {
             edit={false}
             color2={'#ffd700'} />
           <div>
-          {review.content}
+          {review.review}
           </div>
         </CardText>
       </Card>
@@ -55,6 +54,10 @@ class _Reviews extends Component {
   }
 
   render() {
+    const ratings = this.state.reviews.map(review => review.rating)
+    const total = ratings.reduce((sum, cur) => (sum + cur), 0)
+    const average_rating = Math.floor(total / ratings.length * 10) / 10
+
     return (
       <div>
         <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
@@ -69,20 +72,22 @@ class _Reviews extends Component {
             </div>
             <div className='row' style={{marginBottom: '3em'}}>
                 <div className="col-md-6 center-col col-sm-12 text-center">
-                    <h3 className="title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text" >Reviews</h3>
-                    <h3 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" >Average Rating: 4.5</h3>
+                    <h3 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" >{`Average Rating: ${average_rating}`}</h3>
                     <div style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2em'}}>
                       <ReactStars
                         count={5}
-                        value = {4.5}
+                        value = {average_rating}
                         size={28}
                         color2={'#ffd700'}
                         edit={false}
-                        />
+                        /> <span style={{marginLeft: '10px', fontSize: '20'}}>{`(${ratings.length})`}</span>
                     </div>
                 </div>
             </div>
             <div className='col-md-8 center-col col-sm-12'>
+              <div className="col-md-6 center-col col-sm-12 text-center">
+                <h3 className="title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text" >Reviews</h3>
+              </div>
               {this.state.reviews.map(review => this.renderRow(review))}
             </div>
           </div>

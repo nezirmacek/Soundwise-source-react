@@ -34493,6 +34493,10 @@
 
 	var _checkout = __webpack_require__(1042);
 
+	var _page_ = __webpack_require__(1072);
+
+	var _page_2 = _interopRequireDefault(_page_);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -34555,11 +34559,12 @@
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/signup', component: _app_signup.AppSignup }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/signin', component: _app_signin.AppSignin }),
 	            _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/myprograms', component: _mycourses.MyCourses }),
-	            _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/myprograms/:courseId', component: _course_page_purchased.Course_Purchased }),
+	            _react2.default.createElement(_reactRouterDom.Route, { path: '/myprograms/:courseId', component: _course_page_purchased.Course_Purchased }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/cart', component: _cart.Cart }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/checkout', component: _checkout.Checkout }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/confirmation', component: _order_confirmation2.default }),
-	            _react2.default.createElement(_reactRouterDom.Route, { path: '/courses/:courseId', component: _course_page.Course })
+	            _react2.default.createElement(_reactRouterDom.Route, { path: '/courses/:courseId', component: _course_page.Course }),
+	            _react2.default.createElement(_reactRouterDom.Route, { component: _page_2.default })
 	          )
 	        )
 	      );
@@ -36230,6 +36235,7 @@
 	exports.changePlayStatus = changePlayStatus;
 	exports.openSignupbox = openSignupbox;
 	exports.openConfirmationbox = openConfirmationbox;
+	exports.setCurrentCourse = setCurrentCourse;
 	exports.openReviewbox = openReviewbox;
 	exports.addCourseToCart = addCourseToCart;
 	exports.deleteCourseFromCart = deleteCourseFromCart;
@@ -36334,6 +36340,13 @@
 	  }
 	}
 
+	function setCurrentCourse(course) {
+	  return {
+	    type: types.CURRENT_COURSE,
+	    payload: course
+	  };
+	}
+
 	function openReviewbox(open) {
 	  if (open) {
 	    return {
@@ -36394,6 +36407,7 @@
 	var USER_COURSES = exports.USER_COURSES = 'USER_COURSES';
 	var OPEN_REVIEWBOX = exports.OPEN_REVIEWBOX = 'OPEN_REVIEWBOX';
 	var CLOSE_REVIEWBOX = exports.CLOSE_REVIEWBOX = 'CLOSE_REVIEWBOX';
+	var CURRENT_COURSE = exports.CURRENT_COURSE = 'CURRENT_COURSE';
 
 /***/ },
 /* 563 */
@@ -56375,8 +56389,6 @@
 
 	var _course_body = __webpack_require__(993);
 
-	var _course_body2 = _interopRequireDefault(_course_body);
-
 	var _socialshare = __webpack_require__(991);
 
 	var _socialshare2 = _interopRequireDefault(_socialshare);
@@ -56403,6 +56415,7 @@
 
 	    _this.state = {
 	      course: {
+	        runtime: '',
 	        price: '',
 	        name: '',
 	        description: '',
@@ -56424,6 +56437,9 @@
 	        that.setState({
 	          course: snapshot.val()
 	        });
+
+	        that.props.setCurrentCourse(snapshot.val());
+
 	        var sections = [];
 	        that.state.course.modules.forEach(function (module) {
 	          // build a playlist of sections
@@ -56449,7 +56465,7 @@
 	        _react2.default.createElement(
 	          _MuiThemeProvider2.default,
 	          null,
-	          _react2.default.createElement(_course_body2.default, { course: course })
+	          _react2.default.createElement(_course_body.CourseBody, { course: this.props.currentCourse })
 	        )
 	      );
 	    }
@@ -56461,7 +56477,7 @@
 	// <SocialShare />
 
 	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ setCurrentPlaylist: _index.setCurrentPlaylist }, dispatch);
+	  return (0, _redux.bindActionCreators)({ setCurrentPlaylist: _index.setCurrentPlaylist, setCurrentCourse: _index.setCurrentCourse }, dispatch);
 	}
 
 	var mapStateToProps = function mapStateToProps(state) {
@@ -56470,10 +56486,11 @@
 	      isLoggedIn = _state$user.isLoggedIn;
 	  var _state$setCourses = state.setCourses,
 	      courses = _state$setCourses.courses,
-	      currentPlaylist = _state$setCourses.currentPlaylist;
+	      currentPlaylist = _state$setCourses.currentPlaylist,
+	      currentCourse = _state$setCourses.currentCourse;
 
 	  return {
-	    userInfo: userInfo, isLoggedIn: isLoggedIn, courses: courses, currentPlaylist: currentPlaylist
+	    userInfo: userInfo, isLoggedIn: isLoggedIn, courses: courses, currentPlaylist: currentPlaylist, currentCourse: currentCourse
 	  };
 	};
 
@@ -56558,6 +56575,22 @@
 	      var rt_sec = this.props.course.run_time % 60;
 	      var run_time = rt_hour > 0 ? rt_hour + 'h ' + rt_min + 'm' : rt_min + 'm ' + rt_sec + 's';
 
+	      var average_rating = 0,
+	          ratings = [];
+
+	      var reviews = [];
+	      for (var key in this.props.course.reviews) {
+	        reviews.push(this.props.course.reviews[key]);
+	      }
+
+	      ratings = reviews.map(function (review) {
+	        return review.rating;
+	      });
+	      var total = ratings.reduce(function (sum, cur) {
+	        return sum + cur;
+	      }, 0);
+	      average_rating = Math.floor(total / ratings.length * 10) / 10;
+
 	      return _react2.default.createElement(
 	        'section',
 	        { className: ' bg-white', id: 'content-section23', style: { paddingBottom: '15px' } },
@@ -56596,18 +56629,18 @@
 	                    ),
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: 'row', style: { margin: '0.5em', marginBottom: '2em' } },
+	                      { className: 'row', style: { margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' } },
 	                      _react2.default.createElement(_reactStars2.default, {
 	                        count: 5,
-	                        value: 4.5,
+	                        value: average_rating,
 	                        size: 28,
 	                        edit: false,
-	                        color2: '#ffd700',
-	                        style: { float: 'left', display: 'inline' } }),
+	                        color2: '#ffd700'
+	                      }),
 	                      _react2.default.createElement(
 	                        'span',
-	                        { style: { float: 'right', position: 'absolute' } },
-	                        '(2)'
+	                        { style: { marginLeft: '5px', fontSize: '18' } },
+	                        '(' + ratings.length + ')'
 	                      )
 	                    ),
 	                    _react2.default.createElement(
@@ -79827,12 +79860,15 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.CourseBody = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(299);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(522);
 
 	var _Tabs = __webpack_require__(994);
 
@@ -79882,13 +79918,13 @@
 	  }
 	};
 
-	var CourseBody = function (_React$Component) {
-	  _inherits(CourseBody, _React$Component);
+	var _CourseBody = function (_React$Component) {
+	  _inherits(_CourseBody, _React$Component);
 
-	  function CourseBody(props) {
-	    _classCallCheck(this, CourseBody);
+	  function _CourseBody(props) {
+	    _classCallCheck(this, _CourseBody);
 
-	    var _this = _possibleConstructorReturn(this, (CourseBody.__proto__ || Object.getPrototypeOf(CourseBody)).call(this, props));
+	    var _this = _possibleConstructorReturn(this, (_CourseBody.__proto__ || Object.getPrototypeOf(_CourseBody)).call(this, props));
 
 	    _this.handleChange = function (value) {
 	      _this.setState({
@@ -79902,10 +79938,11 @@
 	    return _this;
 	  }
 
-	  _createClass(CourseBody, [{
+	  _createClass(_CourseBody, [{
 	    key: 'render',
 	    value: function render() {
 
+	      // console.log('this.props.currentCourse: ', this.props.currentCourse)
 	      styles.tab = [];
 	      styles.tab[0] = styles.tabs;
 	      styles.tab[1] = styles.tabs;
@@ -79935,12 +79972,12 @@
 	            _react2.default.createElement(
 	              'div',
 	              null,
-	              _react2.default.createElement(_course_outline2.default, { course: this.props.course })
+	              _react2.default.createElement(_course_outline2.default, { course: this.props.currentCourse })
 	            ),
 	            _react2.default.createElement(
 	              'div',
 	              { style: styles.slide },
-	              _react2.default.createElement(_reviews.Reviews, { course: this.props.course })
+	              _react2.default.createElement(_reviews.Reviews, { course: this.props.currentCourse })
 	            )
 	          )
 	        ),
@@ -79949,15 +79986,22 @@
 	    }
 	  }]);
 
-	  return CourseBody;
+	  return _CourseBody;
 	}(_react2.default.Component);
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var currentCourse = state.setCourses.currentCourse;
+
+	  return {
+	    currentCourse: currentCourse
+	  };
+	};
+
+	var CourseBody = exports.CourseBody = (0, _reactRedux.connect)(mapStateToProps, null)(_CourseBody);
 
 	// <div style={styles.slide}>
 	//   <Curriculum course = {this.props.course} />
 	// </div>
-
-
-	exports.default = CourseBody;
 
 /***/ },
 /* 994 */
@@ -82003,6 +82047,8 @@
 	  value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _react = __webpack_require__(299);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -82011,11 +82057,19 @@
 
 	var _colors = __webpack_require__(755);
 
+	var _reactRedux = __webpack_require__(522);
+
 	var _instructor = __webpack_require__(1012);
 
 	var _instructor2 = _interopRequireDefault(_instructor);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var styles = {
 	  moduleTitle: {
@@ -82066,67 +82120,111 @@
 	  });
 	};
 
-	var CourseOutline = function CourseOutline(props) {
-	  return _react2.default.createElement(
-	    'div',
-	    null,
-	    _react2.default.createElement(
-	      'section',
-	      { className: 'padding-80px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
-	      _react2.default.createElement(
+	var CourseOutline = function (_Component) {
+	  _inherits(CourseOutline, _Component);
+
+	  function CourseOutline(props) {
+	    _classCallCheck(this, CourseOutline);
+
+	    var _this = _possibleConstructorReturn(this, (CourseOutline.__proto__ || Object.getPrototypeOf(CourseOutline)).call(this, props));
+
+	    _this.state = {
+	      course: {
+	        price: '',
+	        name: '',
+	        description: '',
+	        modules: [{
+	          sections: []
+	        }]
+	      },
+	      userCourses: {}
+	    };
+	    return _this;
+	  }
+
+	  _createClass(CourseOutline, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      console.log('currentCourse: ', this.props.course);
+	      this.setState({
+	        course: this.props.course
+	      });
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      this.setState({
+	        course: nextProps.course
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
 	        'div',
-	        { className: 'container' },
+	        null,
 	        _react2.default.createElement(
-	          'div',
-	          { className: '' },
+	          'section',
+	          { className: 'padding-80px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
 	          _react2.default.createElement(
 	            'div',
-	            { className: 'row padding-60px-tb' },
+	            { className: 'container' },
 	            _react2.default.createElement(
 	              'div',
-	              { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	              _react2.default.createElement(
-	                'h2',
-	                { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                'WHAT YOU WILL LEARN'
-	              ),
+	              { className: '' },
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
-	                props.course.description
+	                { className: 'row padding-60px-tb' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'WHAT YOU WILL LEARN'
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
+	                    this.state.course.description
+	                  )
+	                )
 	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { style: styles.curriculumContainer },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'CONTENT'
+	                  )
+	                )
+	              ),
+	              renderModules(this.state.course)
 	            )
 	          )
 	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { style: styles.curriculumContainer },
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'row' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	              _react2.default.createElement(
-	                'h2',
-	                { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                'CONTENT'
-	              )
-	            )
-	          ),
-	          renderModules(props.course)
-	        )
-	      )
-	    ),
-	    _react2.default.createElement(_instructor2.default, { course: props.course })
-	  );
-	};
+	        _react2.default.createElement(_instructor2.default, { course: this.state.course })
+	      );
+	    }
+	  }]);
 
-	exports.default = CourseOutline;
+	  return CourseOutline;
+	}(_react.Component);
 
 	// <div style={styles.curriculumContainer}>
 	//             {renderModules(props.course)}
 	//           </div>
+
+
+	exports.default = CourseOutline;
 
 /***/ },
 /* 1012 */
@@ -82563,24 +82661,24 @@
 	    var _this = _possibleConstructorReturn(this, (_Reviews.__proto__ || Object.getPrototypeOf(_Reviews)).call(this, props));
 
 	    _this.state = {
-	      reviews: [{
-	        reviewer: 'Tash C.',
-	        date: '10/12/2016',
-	        pic: '../images/smiley_face.jpg',
-	        rating: 5,
-	        content: 'This is a great program. Learned a lot.'
-	      }, {
-	        reviewer: 'Brian A.',
-	        date: '01/11/2017',
-	        pic: '../images/smiley_face.jpg',
-	        rating: 4,
-	        content: 'I like it.'
-	      }]
+	      reviews: [{}]
 	    };
 	    return _this;
 	  }
 
 	  _createClass(_Reviews, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      var reviews = [];
+	      for (var key in nextProps.course.reviews) {
+	        reviews.push(nextProps.course.reviews[key]);
+	      }
+
+	      this.setState({
+	        reviews: reviews
+	      });
+	    }
+	  }, {
 	    key: 'renderRow',
 	    value: function renderRow(review) {
 
@@ -82604,7 +82702,7 @@
 	          _react2.default.createElement(
 	            'div',
 	            null,
-	            review.content
+	            review.review
 	          )
 	        )
 	      );
@@ -82613,6 +82711,14 @@
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
+
+	      var ratings = this.state.reviews.map(function (review) {
+	        return review.rating;
+	      });
+	      var total = ratings.reduce(function (sum, cur) {
+	        return sum + cur;
+	      }, 0);
+	      var average_rating = Math.floor(total / ratings.length * 10) / 10;
 
 	      return _react2.default.createElement(
 	        'div',
@@ -82659,30 +82765,40 @@
 	                { className: 'col-md-6 center-col col-sm-12 text-center' },
 	                _react2.default.createElement(
 	                  'h3',
-	                  { className: 'title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text' },
-	                  'Reviews'
-	                ),
-	                _react2.default.createElement(
-	                  'h3',
 	                  { className: 'title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text' },
-	                  'Average Rating: 4.5'
+	                  'Average Rating: ' + average_rating
 	                ),
 	                _react2.default.createElement(
 	                  'div',
 	                  { style: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2em' } },
 	                  _react2.default.createElement(_reactStars2.default, {
 	                    count: 5,
-	                    value: 4.5,
+	                    value: average_rating,
 	                    size: 28,
 	                    color2: '#ffd700',
 	                    edit: false
-	                  })
+	                  }),
+	                  ' ',
+	                  _react2.default.createElement(
+	                    'span',
+	                    { style: { marginLeft: '10px', fontSize: '20' } },
+	                    '(' + ratings.length + ')'
+	                  )
 	                )
 	              )
 	            ),
 	            _react2.default.createElement(
 	              'div',
 	              { className: 'col-md-8 center-col col-sm-12' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-6 center-col col-sm-12 text-center' },
+	                _react2.default.createElement(
+	                  'h3',
+	                  { className: 'title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text' },
+	                  'Reviews'
+	                )
+	              ),
 	              this.state.reviews.map(function (review) {
 	                return _this2.renderRow(review);
 	              })
@@ -82991,6 +83107,7 @@
 
 	    _this.state = {
 	      course: {
+	        runtime: '',
 	        price: '',
 	        name: '',
 	        description: ''
@@ -89286,6 +89403,7 @@
 	function setCourses() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
 	    courses: {},
+	    currentCourse: {},
 	    userCourses: {},
 	    currentSection: {},
 	    playing: false,
@@ -89304,6 +89422,10 @@
 	    case types.USER_COURSES:
 	      return _extends({}, state, {
 	        userCourses: action.payload
+	      });
+	    case types.CURRENT_COURSE:
+	      return _extends({}, state, {
+	        currentCourse: action.payload
 	      });
 	    case types.CURRENT_SECTION:
 	      return _extends({}, state, {
@@ -89486,6 +89608,13 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var styles = {
+	  modal: {
+	    width: '100%',
+	    maxWidth: 'none'
+	  }
+	};
+
 	var _ReviewModal = function (_Component) {
 	  _inherits(_ReviewModal, _Component);
 
@@ -89531,11 +89660,10 @@
 
 	      var time = new Date();
 	      var date = time.toDateString();
+	      var pic = this.userInfo.profile_pic || '../images/smiley_face.jpg';
 	      var reviewer = this.props.userInfo.firstName + ' ' + this.props.userInfo.lastName.slice(0, 1) + '.';
 
-	      console.log('review: ', { date: date, reviewer: reviewer, rating: rating, review: review });
-
-	      firebase.database().ref('courses/' + this.props.course.id).child('reviews').push({ date: date, reviewer: reviewer, rating: rating, review: review });
+	      firebase.database().ref('courses/' + this.props.course.id).child('reviews').push({ date: date, reviewer: reviewer, rating: rating, review: review, pic: pic });
 
 	      this.props.openReviewbox(false);
 	    }
@@ -89613,6 +89741,7 @@
 	          ,
 	          { modal: false,
 	            open: this.props.reviewFormOpen,
+	            contentStyle: styles.modal,
 	            autoScrollBodyContent: true,
 	            onRequestClose: function onRequestClose() {
 	              return _this2.props.openReviewbox(false);
@@ -89643,6 +89772,98 @@
 	};
 
 	var ReviewModal = exports.ReviewModal = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_ReviewModal);
+
+/***/ },
+/* 1072 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouterDom = __webpack_require__(538);
+
+	var _soundwise_header = __webpack_require__(750);
+
+	var _footer = __webpack_require__(746);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NotFound = function NotFound() {
+	    return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	        _react2.default.createElement(
+	            'section',
+	            { id: 'content-section31', className: 'padding-110px-tb xs-padding-60px-tb builder-bg border-none' },
+	            _react2.default.createElement(
+	                'div',
+	                { className: 'container' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'row equalize xs-equalize-auto equalize-display-inherit' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col-md-6 col-sm-5 col-xs-12 display-table', style: { height: "447px" } },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'text-center xs-text-center display-table-cell-vertical-middle' },
+	                            _react2.default.createElement('img', { className: 'xs-width-50', src: '../images/oops.jpg', 'data-img-size': '(W)340px X (H)418px', alt: '' })
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col-md-6 col-sm-7 col-xs-12 xs-text-center display-table', style: { height: "447px" } },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'display-table-cell-vertical-middle xs-padding-nineteen-top' },
+	                            _react2.default.createElement(
+	                                'h2',
+	                                { className: 'title-extra-big sm-title-extra-large-4 text-orange-peel xs-title-extra-big font-weight-600 tz-text sm-margin-five-bottom' },
+	                                '404'
+	                            ),
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'title-extra-large alt-font sm-title-extra-large xs-title-extra-large-2 text-yellow padding-fifteen-bottom margin-fifteen-bottom sm-margin-nine-bottom xs-margin-fifteen-bottom border-bottom-medium-dark tz-text' },
+	                                'Ooopps...Page not found'
+	                            ),
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'text-medium sm-text-medium xs-text-extra-large text-black width-90 sm-width-100 margin-ten-bottom sm-margin-fifteen-bottom tz-text' },
+	                                _react2.default.createElement(
+	                                    'p',
+	                                    null,
+	                                    'We hate it when this happens!'
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                _reactRouterDom.Link,
+	                                { to: '/', className: 'btn btn-large propClone highlight-button-black-border text-black' },
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    { className: 'tz-text' },
+	                                    'BACK TO HOME'
+	                                )
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        ),
+	        _react2.default.createElement(_footer2.default, null)
+	    );
+	};
+
+	exports.default = NotFound;
 
 /***/ }
 /******/ ]);

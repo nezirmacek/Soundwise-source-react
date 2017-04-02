@@ -93,6 +93,13 @@ export function openConfirmationbox(open) {
   }
 }
 
+export function setCurrentCourse(course) {
+  return {
+    type: types.CURRENT_COURSE,
+    payload: course
+  }
+}
+
 export function openReviewbox(open) {
   if(open) {
     return {

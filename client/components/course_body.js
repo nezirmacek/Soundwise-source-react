@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import SwipeableViews from 'react-swipeable-views'
 import {cyanA200, lime50, orange50, deepOrange800, grey50} from 'material-ui/styles/colors'
@@ -31,7 +32,7 @@ const styles = {
   }
 }
 
-export default class CourseBody extends React.Component {
+class _CourseBody extends React.Component {
 
   constructor(props) {
     super(props)
@@ -49,6 +50,7 @@ export default class CourseBody extends React.Component {
 
   render() {
 
+    // console.log('this.props.currentCourse: ', this.props.currentCourse)
     styles.tab = []
     styles.tab[0] = styles.tabs
     styles.tab[1] = styles.tabs
@@ -69,10 +71,10 @@ export default class CourseBody extends React.Component {
           onChangeIndex={this.handleChange}
         >
           <div>
-            <CourseOutline course={this.props.course}/>
+            <CourseOutline course={this.props.currentCourse}/>
           </div>
           <div style={styles.slide}>
-            <Reviews course = {this.props.course}/>
+            <Reviews course = {this.props.currentCourse}/>
           </div>
         </SwipeableViews>
       </div>
@@ -81,6 +83,16 @@ export default class CourseBody extends React.Component {
     )
   }
 }
+
+const mapStateToProps = state => {
+  const { currentCourse } = state.setCourses
+  return {
+    currentCourse
+  }
+}
+
+export const CourseBody = connect(mapStateToProps, null)(_CourseBody)
+
 
           // <div style={styles.slide}>
           //   <Curriculum course = {this.props.course} />

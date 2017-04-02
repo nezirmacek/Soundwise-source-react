@@ -22,6 +22,7 @@ import {Course} from './containers/course_page'
 import {Course_Purchased} from './containers/course_page_purchased'
 import {Cart} from './containers/cart'
 import {Checkout} from './containers/checkout'
+import NotFound from './components/page_404'
 import { signinUser } from './actions/index'
 
 class _Routes extends Component {
@@ -65,11 +66,12 @@ class _Routes extends Component {
              <Route path='/signin' component={AppSignin} />
 
              <Route exact path="/myprograms" component={MyCourses}/>
-             <Route exact path="/myprograms/:courseId" component={Course_Purchased}/>
+             <Route path="/myprograms/:courseId" component={Course_Purchased}/>
              <Route path="/cart" component={Cart} />
              <Route path="/checkout" component={Checkout} />
              <Route path="/confirmation" component={OrderConfirmation} />
              <Route path="/courses/:courseId" component={Course} />
+             <Route component={NotFound} />
           </Switch>
         </div>
       </Router>
