@@ -12,6 +12,7 @@ var app = express()
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/client'))
 app.use('/scripts', express.static(__dirname + '/node_modules'))
+app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k'))
 
 //let front end handle all page routing except the initial page
 app.get('*', function (request, response){
