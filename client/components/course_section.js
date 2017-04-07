@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import firebase from 'firebase'
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card'
 import IconButton from 'material-ui/IconButton'
 import Snackbar from 'material-ui/Snackbar'
@@ -13,6 +14,7 @@ import {orange50, greenA200, blue500, grey500, orange500} from 'material-ui/styl
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Levels from 'react-activity/lib/Levels'
+import Spinner from 'react-activity/lib/Spinner'
 
 import {setCurrentPlaySection, changePlayStatus, launchPlayer} from '../actions/index'
 
@@ -69,6 +71,7 @@ class _CourseSection extends Component {
     this.state = {
       openPlayer: false,
       playing: false,
+      loading: false,
       currentTime: 0,
       duration: 1
     }
@@ -88,8 +91,10 @@ class _CourseSection extends Component {
     }
   }
 
-  handleTap(event, checked) {
+  handleTap() {
+    if(!this.props.playing || (this.props.playing && this.props.section !== this.props.currentSection)) {
       this.playFile()
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,53 +109,86 @@ class _CourseSection extends Component {
   }
 
   playFile() {
+
     if(!this.props.isLoggedIn) {
       alert('please sign up/ log in to listen to the course')
     } else {
       if(this.props.currentSection.section_id !== this.props.section.section_id) {
-        if(this.props.playing) {
+        if(this.props.playing) { //if switching to another section, store the progress data for the current section first
           player.pause()
+
+          this.setState({
+            loading: true
+          })
+
+          const userId = firebase.auth().currentUser.uid
+          const sectionId = this.props.currentSection.section_id
+          const playProgress = this.props.currentTime / this.props.currentDuration
+
+          let updates = {}
+          updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress
+
+          firebase.database().ref().update(updates)
+          console.log('progress updated')
         }
+
+        this.setState({
+          loading: true
+        })
         this.props.changePlayStatus(false)
         this.props.setCurrentPlaySection(this.props.section)
         // console.log(this.props.currentSection)
         source.src = this.props.section.section_url
         player.load()
-        if(this.state.currentTime > 0) {
-          player.currentTime = this.state.currentTime
-        }
-        player.play()
-        this.props.changePlayStatus(true)
-        this.setState({playing: true})
 
-        if(!this.props.playerLaunched) {
-          this.props.launchPlayer(true)
-        }
+        player.addEventListener('loadeddata', () => {
+          player.currentTime = this.props.course.sectionProgress[this.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+
+          player.play()
+
+          this.props.changePlayStatus(true)
+          this.setState({playing: true, loading: false})
+
+          if(!this.props.playerLaunched) {
+            this.props.launchPlayer(true)
+          }
+        })
+
+
       } else if(this.props.playing) {
         player.pause()
         this.props.changePlayStatus(false)
         this.setState({playing: false})
       } else if(!this.props.playing) {
+        this.setState({
+          loading: true
+        })
         this.props.setCurrentPlaySection(this.props.section)
-        player.play()
-        this.props.changePlayStatus(true)
-        this.setState({playing: true})
+
+        player.addEventListener('loadeddata', () => {
+          player.currentTime = this.props.course.sectionProgress[this.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+
+          player.play()
+
+          this.props.changePlayStatus(true)
+          this.setState({playing: true, loading: false})
+        })
       }
     }
   }
 
   renderPlayButton() {
-    if(this.props.playing && this.props.currentSection.section_id == this.props.section.section_id) {
+    if(this.state.loading) {
+      return (
+        <Spinner size={12} speed={1} />
+      )
+    } else if(this.props.playing && this.props.currentSection.section_id == this.props.section.section_id) {
       return (
         <Levels color="#F76B1C" size={12} speed={1} />
       )
     } else {
       return (
-        <FontIcon
-          className="material-icons"
-          color={grey500}
-          hoverColor={orange500}
-        >play_arrow</FontIcon>
+        <i className="fa fa-lg fa-play-circle-o" aria-hidden="true"></i>
       )
     }
   }
@@ -162,28 +200,52 @@ class _CourseSection extends Component {
   //       >pause</FontIcon>
 
   render() {
-    const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
+
+    // const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
+    const completed = this.props.course.sectionProgress[this.props.section.section_id].completed
+
+    let progress = ''
+    if(completed) {
+      progress = 'completed'
+    } else {
+      progress = `${Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100)}% completed`
+    }
 
     return (
       <div>
       <Card>
         <CardHeader
-          title={`Section ${sectionNumber}:`}
+          title={`Section ${this.props.section.section_number}:`}
           style={styles.sectionTitle}
           actAsExpander={true}
           showExpandableButton={true}
         />
         <CardText>
-          <Checkbox
-            uncheckedIcon={this.renderPlayButton()}
-            checkedIcon={this.renderPlayButton()}
-            label={this.props.section.title}
-            labelStyle={styles.label}
-            onCheck={this.handleTap}
-          />
+          <div className='row'>
+          <div className='col-md-1 col-sm-2 col-xs-2'>
+            <a onClick={this.handleTap}
+              style={{padding: '1em', paddingRight: '2em'}}>
+              {this.renderPlayButton()}
+            </a>
+          </div>
+          <div className='col-md-10 col-sm-9 col-xs-9'
+            style={{paddingLeft: '2em'}}>
+            <span style={{fontSize: '18px'}}>
+              {this.props.section.title}
+            </span>
+            <span style={{paddingLeft: '1em'}}>
+              {`(${progress})`}
+            </span>
+          </div>
+          </div>
         </CardText>
         <CardText expandable={true}>
-          {this.props.section.content}
+          <div style={{padding: '1em 2em'}}>
+            <a href={this.props.section.transcript_url} download>
+              <i style={{padding: '1em'}} className="fa fa-lg fa-file-text-o" aria-hidden="true"></i>
+              <span style={{fontSize: '18px'}}>Transcript</span>
+            </a>
+          </div>
         </CardText>
       </Card>
       </div>
@@ -191,6 +253,13 @@ class _CourseSection extends Component {
   }
 }
 
+          // <Checkbox
+          //   uncheckedIcon={this.renderPlayButton()}
+          //   checkedIcon={this.renderPlayButton()}
+          //   label={this.props.section.title}
+          //   labelStyle={styles.label}
+          //   onCheck={this.handleTap}
+          // />
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ setCurrentPlaySection, changePlayStatus, launchPlayer }, dispatch)
 }

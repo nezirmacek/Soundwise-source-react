@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import firebase from 'firebase'
 import {grey50, orange500} from 'material-ui/styles/colors'
 
 import {setCurrentPlaySection, changePlayStatus} from '../actions/index'
@@ -13,6 +14,8 @@ class _PlayerBar extends Component {
     this.handlePlayerClick = this.handlePlayerClick.bind(this)
     this.handleForward = this.handleForward.bind(this)
     this.handleRewind = this.handleRewind.bind(this)
+    this.handleSkipForward = this.handleSkipForward.bind(this)
+    this.handleSkipBackward = this.handleSkipBackward.bind(this)
   }
 
   componentDidMount() {
@@ -23,14 +26,14 @@ class _PlayerBar extends Component {
   togglePlayOrPause() {
     if(!this.props.playing) {
       return (
-        <div>
-          <a className="jp-play" onClick={() => this.handlePlayerClick()}><i className="icon-control-play i-2x"></i></a>
+        <div className=''>
+          <a className=""  onClick={() => this.handlePlayerClick()}><i className="material-icons" style={{fontSize: '42px'}}>play_arrow</i></a>
         </div>
       )
     } else {
         return (
-          <div>
-            <a className="jp-pause" onClick={() => this.handlePlayerClick()}><i className="icon-control-pause i-2x"></i></a>
+          <div className=''>
+            <a className=""  onClick={() => this.handlePlayerClick()}><i className="material-icons" style={{fontSize: '42px'}}>pause</i></a>
           </div>
       )
       }
@@ -42,6 +45,17 @@ class _PlayerBar extends Component {
     if(this.props.playing) {
       player.pause()
       this.props.changePlayStatus(false)
+
+      const userId = firebase.auth().currentUser.uid
+
+      const playProgress = this.props.currentTime / this.props.currentDuration
+      const sectionId = this.props.currentSection.section_id
+
+      let updates = {}
+      updates['/users/' + userId + '/courses/' + this.props.currentCourse.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress
+
+      firebase.database().ref().update(updates)
+
     } else {
       player.play()
       this.props.changePlayStatus(true)
@@ -70,6 +84,20 @@ class _PlayerBar extends Component {
     }
   }
 
+  handleSkipForward() {
+    if(this.props.currentTime < this.props.currentDuration - 10) {
+      const current = player.currentTime + 10
+      player.currentTime = current
+    }
+  }
+
+  handleSkipBackward() {
+    if(this.props.currentTime > 10) {
+      const current = player.currentTime - 10
+      player.currentTime = current
+    }
+  }
+
   render() {
     let currentMin = '__', currentSec = '__', totalMin = '__', totalSec = '__'
     if(this.props.currentTime > 0) {
@@ -86,32 +114,37 @@ class _PlayerBar extends Component {
     const displayed = this.props.playerLaunched ? '' : 'none'
 
     return (
-      <footer className="footer bg-info dker" style={{display: displayed}}>
-        <div id="jp_container_N" >
-              <div className="jp-type-playlist">
+      <footer className="footer bg-info dker" style={{display: displayed, height: '90px'}}>
+        <div id="" >
+              <div className="">
                 <div id="jplayer_N" className="jp-jplayer hide"></div>
-                <div className="jp-gui">
-                  <div className="jp-interface">
-                    <div className="jp-controls">
-                      <div><a className="jp-previous" onClick={() => this.handleRewind()}><i className="icon-control-rewind i-lg"></i></a></div>
+                <div className="">
+
+                    <div className="jp-controls ">
+                      <div className=''><a className="" onClick={() => this.handleSkipBackward()}><i className="material-icons" style={{fontSize: '32px'}}>replay_10</i></a></div>
                       {this.togglePlayOrPause()}
-                      <div><a className="jp-next" onClick={() => this.handleForward()}><i className="icon-control-forward i-lg"></i></a></div>
-                      <div className="hide"><a className="jp-stop"><i className="fa fa-stop"></i></a></div>
-                      <div className="jp-progress " >
-                        <div className="jp-seek-bar dk" style={{width: '100%', backgroundColor: grey50}}>
-                          <div className="jp-play-bar bg-info" style={{width: `${currentPercent}%`, backgroundColor: '#F76B1C'}}>
+                      <div className=''><a className="" onClick={() => this.handleSkipForward()}><i className="material-icons" style={{fontSize: '32px'}}>forward_10</i></a></div>
+                      <div className="jp-progress hidden-xs" style={{}}>
+                        <div className="jp-seek-bar dk hidden-xs" style={{width: '100%', backgroundColor: grey50}}>
+                          <div className="jp-play-bar bg-info hidden-xs" style={{width: `${currentPercent}%`, backgroundColor: '#F76B1C'}}>
                           </div>
                           <div className="jp-title text-lt">
                             <ul>
-                              <li>{this.props.currentSection.title}</li>
+                              <li>
+                                <div>
+                                {this.props.currentSection.title}
+                                </div>
+                                <div>
+                                {`${currentMin}:${currentSec} / ${totalMin}:${totalSec}`}
+                                </div>
+                              </li>
                             </ul>
                           </div>
                         </div>
                       </div>
-                      <div className=" jp-current-time text-xs text-muted">{`${currentMin}:${currentSec}`}</div>
-                      <div className=" jp-duration text-xs text-muted">{`${totalMin}:${totalSec}`}</div>
+                      <div className=" ">{`${currentMin}:${currentSec} / ${totalMin}:${totalSec}`}</div>
                     </div>
-                  </div>
+
                 </div>
                 <div className="jp-playlist dropup" id="playlist">
                   <ul className="dropdown-menu aside-xl dker">
@@ -137,9 +170,9 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user
-  const { currentSection, playing, playerLaunched, currentTime, currentDuration, currentPlaylist } = state.setCourses
+  const { currentSection, playing, playerLaunched, currentTime, currentDuration, currentPlaylist, currentCourse } = state.setCourses
   return {
-    isLoggedIn, currentSection, playing, playerLaunched, currentTime, currentDuration, currentPlaylist
+    isLoggedIn, currentSection, playing, playerLaunched, currentTime, currentDuration, currentPlaylist, currentCourse
   }
 }
 

@@ -116,7 +116,7 @@ class _Header extends Component {
             </nav>
         </header>
         <section className="no-padding position-relative cover-background tz-builder-bg-image border-none xs-padding-50px-tb hero-style9" id="hero-section18" data-img-size="(W)1920px X (H)800px"
-          style={ {  backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.401961), rgba(0, 0, 0, 0.501961)), url("images/header_img4.jpg")',  paddingTop: 0,  paddingBottom: 0} } data-selector=".tz-builder-bg-image">
+          style={ {  backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.401961), rgba(0, 0, 0, 0.501961)), url("images/header_img4_sm.jpg")',  paddingTop: 0,  paddingBottom: 0} } data-selector=".tz-builder-bg-image">
           <div className="container one-fourth-screen position-relative">
             <div className="row">
               <div className="slider-typography xs-position-static text-center">

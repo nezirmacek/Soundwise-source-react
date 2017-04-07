@@ -13,21 +13,16 @@ import Footer from '../components/footer'
 class _MyCourses extends Component {
   constructor(props) {
     super(props)
+
   }
 
   componentWillMount() {
-    // const userId = firebase.auth().currentUser.uid
-    // firebase.database().ref('users/' + userId + '/courses')
-    //         .once('value')
-    //         .then(snapshot => {
-    //           this.props.loadUserCourses(snapshot.val())
-    //         })
 
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         const userId = user.uid
-        console.log('user uid: ', userId)
+
         firebase.database().ref('users/' + userId + '/courses')
         .once('value')
         .then(snapshot => {
@@ -37,11 +32,25 @@ class _MyCourses extends Component {
     })
   }
 
+  // loadCourseInfo(courseId) {
+  //   const that = this
+
+  //   firebase.database().ref('courses/' + courseId)
+  //   .once('value')
+  //   .then(snapshot => {
+  //     const newState = that.state.courseArr.concat([snapshot.val()])
+  //     that.setState({
+  //       courseArr: newState
+  //     })
+  //   })
+  // }
+
   render() {
     const courses = this.props.userCourses
     const isLoggedIn = this.props.isLoggedIn
 
-    let courseArr = []
+    const courseArr = []
+
     for(var key in courses) {
       courseArr.push(courses[key])
     }

@@ -2427,6 +2427,8 @@
 }
 
 @media (max-width: 480px) {
+    /* audio player */
+    .jp-progress {display: none;}
     /* header */
     .navbar-collapse { top:53px;}
     .header-style4 .header-top .mail { width: 100%; margin-bottom: 5px; text-align: center;}
@@ -2508,6 +2510,10 @@
 }
 
 /*customization start*/
+@media only screen and (max-width: 480px) {
+    .jp-progress {display: none;}
+}
+
 @media (min-width: 768px) {
   body.container {
     -webkit-box-shadow: 0 3px 60px rgba(0,0,0,0.3);

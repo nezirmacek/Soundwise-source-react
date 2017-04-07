@@ -80,7 +80,7 @@ class _Checkout extends Component {
         statement_descriptor: 'Soundwise Audio Course'
       })
       .then(function (response) {
-        console.log('response from stripe: ', response.data)
+
         const paid = response.data.paid //boolean
         if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
           that.setState({
@@ -90,6 +90,20 @@ class _Checkout extends Component {
 
           const userId = firebase.auth().currentUser.uid
           that.props.shoppingCart.forEach(course => {
+
+            let sectionProgress = {}
+            course.modules.forEach(module => {
+              module.sections.forEach(section => {
+                sectionProgress[section.section_id] = {
+                  playProgress: 0,
+                  completed: false,
+                  timesRepeated: 0
+                }
+              })
+            })
+
+            course.sectionProgress = sectionProgress
+
             const updates = {}
             updates['/users/' + userId + '/courses/' + course.id] = course
             updates['/courses/' + course.id + '/users/' + userId] = userId

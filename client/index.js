@@ -89,6 +89,41 @@ const courseInfo = {
       ]
     }
 
+const update = {
+  7: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  8: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  9: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  10: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  11: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  12: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  13: {
+    timesStarted: 0,
+    timesCompleted: 0
+  },
+  14: {
+    timesStarted: 0,
+    timesCompleted: 0
+  }
+}
+
 firebase.initializeApp(config)
 
 // firebase.database().ref('courses/' + courseInfo.id)
@@ -98,6 +133,8 @@ firebase.initializeApp(config)
 //         .then(snapshot => {
 //           console.log(snapshot.val())
 //         })
+// firebase.database().ref('courses/112/metrics')
+//   .set(update)
 
 export const App = ({match}) => (
   <Provider store = { store }>

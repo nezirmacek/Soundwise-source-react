@@ -40,6 +40,7 @@
     "react-activity": "^1.0.16",
     "react-dom": "^15.4.2",
     "react-gemini-scrollbar": "^2.3.0",
+    "react-helmet": "^5.0.2",
     "react-redux": "^4.0.0",
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",

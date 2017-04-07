@@ -3,9 +3,10 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card'
 import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors'
+import firebase from "firebase"
 
 import {CourseSection} from './course_section'
-import {getCurrentProgress, changePlayStatus, setCurrentPlaySection} from '../actions/index'
+import {getCurrentProgress, changePlayStatus, setCurrentPlaySection, loadUserCourses, setCurrentCourse} from '../actions/index'
 
 let interval, player, source
 
@@ -27,6 +28,7 @@ class _Curriculum extends Component {
     super(props)
     this.renderModules = this.renderModules.bind(this)
     this.handleEnd = this.handleEnd.bind(this)
+    this.updateSectionProgress = this.updateSectionProgress.bind(this)
   }
 
   componentDidMount() {
@@ -36,9 +38,40 @@ class _Curriculum extends Component {
     player.addEventListener('ended', this.handleEnd)
   }
 
+  updateSectionProgress(sectionId) {
+
+    const userId = firebase.auth().currentUser.uid
+
+    let update = this.props.course.sectionProgress[sectionId]
+    update.completed = true
+    update.playProgress = 0
+    update.timesRepeated = update.timesRepeated + 1
+
+    let updates = {}
+    updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId] = update
+    firebase.database().ref().update(updates)
+
+    const sectionProgress = Object.assign({}, this.props.course.sectionProgress, {sectionId: update})
+    const course = Object.assign({}, this.props.course, {sectionProgress})
+    this.props.setCurrentCourse(course)
+
+    // record section completion in course data:
+    firebase.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId)
+    .once('value')
+    .then(snapshot => {
+      const completed = snapshot.val().timesCompleted + 1
+      let update = {}
+      update['/courses/' + this.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed
+      firebase.database().ref().update(update)
+    })
+  }
+
   handleEnd() {
-    const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
-    if(next <= this.props.currentPlaylist.length - 1) {
+    this.updateSectionProgress(this.props.currentSection.section_id)
+
+    // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
+    const next = this.props.currentSection.section_number
+    if(next < this.props.currentPlaylist.length ) {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[next])
       source.src = this.props.currentPlaylist[next].section_url
       player.load()
@@ -111,15 +144,15 @@ class _Curriculum extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ getCurrentProgress, changePlayStatus, setCurrentPlaySection }, dispatch)
+  return bindActionCreators({ getCurrentProgress, changePlayStatus, setCurrentPlaySection, setCurrentCourse }, dispatch)
 }
 
 
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user
-  const { currentSection, playing, currentPlaylist } = state.setCourses
+  const { currentSection, playing, currentPlaylist, userCourses } = state.setCourses
   return {
-    isLoggedIn, currentSection, playing, currentPlaylist
+    isLoggedIn, currentSection, playing, currentPlaylist, userCourses
   }
 }
 

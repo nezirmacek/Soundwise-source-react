@@ -12,7 +12,7 @@ import CourseBodyPurchased from '../components/course_body_purchased'
 import CourseBody from '../components/course_body'
 import SocialShare from '../components/socialshare'
 import { SoundwiseHeader } from '../components/soundwise_header'
-import {setCurrentPlaylist} from '../actions/index'
+import {setCurrentPlaylist, setCurrentCourse} from '../actions/index'
 
 class _Course_Purchased extends Component {
   constructor(props) {
@@ -31,22 +31,32 @@ class _Course_Purchased extends Component {
   componentDidMount() {
 
     const that = this
-    firebase.database().ref('courses/' + this.props.match.params.courseId)
-      .once('value')
-      .then(snapshot => {
-        // console.log('course fetched from firebase: ', snapshot.val())
-        that.setState({
-          course: snapshot.val(),
-        })
-        let sections = []
-        that.state.course.modules.forEach(module => { // build a playlist of sections
-          module.sections.forEach(section => {
-            sections.push(section)
-          })
-        })
-        that.props.setCurrentPlaylist(sections)
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const userId = user.uid
 
-      })
+        firebase.database().ref('users/' + userId + '/courses/' + that.props.match.params.courseId)
+          .on('value', snapshot => {
+            // console.log('course fetched from firebase: ', snapshot.val())
+            that.setState({
+              course: snapshot.val(),
+            })
+
+            that.props.setCurrentCourse(snapshot.val())
+
+            let sections = []
+            that.state.course.modules.forEach(module => { // build a playlist of sections
+              module.sections.forEach(section => {
+                sections.push(section)
+              })
+            })
+            that.props.setCurrentPlaylist(sections)
+
+        })
+      }
+    })
+
+
   }
 
 
@@ -70,7 +80,7 @@ class _Course_Purchased extends Component {
         // <SocialShare />
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setCurrentPlaylist }, dispatch)
+  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse }, dispatch)
 }
 
 const mapStateToProps = state => {
