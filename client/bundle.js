@@ -36733,11 +36733,6 @@
 	                    _react2.default.createElement('span', { className: 'icon-bar' }),
 	                    _react2.default.createElement('span', { className: 'icon-bar' }),
 	                    _react2.default.createElement('span', { className: 'icon-bar' })
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { id: 'bs-example-navbar-collapse-1', className: 'collapse navbar-collapse pull-right' },
-	                    this.renderLogin()
 	                  )
 	                )
 	              )
@@ -36794,8 +36789,8 @@
 
 	var Header = exports.Header = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Header);
 
-	// <div className="col-md-3 col-sm-4 col-xs-9">
-	//     <a href="#home" className="inner-link"><img alt="" src="images/soundwiselogo_white.png"/></a>
+	// <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
+	//    {this.renderLogin()}
 	// </div>
 
 /***/ },

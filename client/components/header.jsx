@@ -107,9 +107,7 @@ class _Header extends Component {
                                 <span className="icon-bar"></span>
                                 <span className="icon-bar"></span>
                             </button>
-                            <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
-                               {this.renderLogin()}
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -150,6 +148,6 @@ const mapStateToProps = state => {
 
 export const Header = connect(mapStateToProps, mapDispatchToProps)(_Header)
 
-                  // <div className="col-md-3 col-sm-4 col-xs-9">
-                  //     <a href="#home" className="inner-link"><img alt="" src="images/soundwiselogo_white.png"/></a>
-                  // </div>
+                            // <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
+                            //    {this.renderLogin()}
+                            // </div>
