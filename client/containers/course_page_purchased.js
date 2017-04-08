@@ -29,7 +29,7 @@ class _Course_Purchased extends Component {
   }
 
   componentDidMount() {
-    console.log('url match params: ', this.props.match)
+
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -37,7 +37,7 @@ class _Course_Purchased extends Component {
 
         firebase.database().ref('users/' + userId + '/courses/' + that.props.match.params.courseId)
           .on('value', snapshot => {
-            // console.log('course fetched from firebase: ', snapshot.val())
+
             that.setState({
               course: snapshot.val(),
             })

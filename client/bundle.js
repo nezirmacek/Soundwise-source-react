@@ -83463,14 +83463,14 @@
 	  _createClass(_Course_Purchased, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      console.log('url match params: ', this.props.match);
+
 	      var that = this;
 	      _firebase2.default.auth().onAuthStateChanged(function (user) {
 	        if (user) {
 	          var userId = user.uid;
 
 	          _firebase2.default.database().ref('users/' + userId + '/courses/' + that.props.match.params.courseId).on('value', function (snapshot) {
-	            // console.log('course fetched from firebase: ', snapshot.val())
+
 	            that.setState({
 	              course: snapshot.val()
 	            });
