@@ -14,7 +14,7 @@ const Banner = () => (
               data-selector=".tz-text" id="ui-id-20" style={ {  backgroundColor: 'rgba(0, 0, 0, 0)',  fontSize: 60,  fontWeight: 500,  fontFamily: 'Montserrat, sans-serif',  textTransform: 'none',  borderRadius: 0,  color: 'black'} }>15 minutes a day. Learning on the go.</h2>
             <Bannerright></Bannerright>
             <div className="btn-dual">
-              <a className="btn btn-large propClone bg-golden-yellow text-black xs-margin-ten-bottom xs-width-100" href="http://eepurl.com/cyNzD5" data-selector="a.btn, button.btn"
+              <a className="btn btn-large propClone bg-golden-yellow text-black xs-margin-ten-bottom xs-width-100" href="https://eepurl.com/cyNzD5" data-selector="a.btn, button.btn"
                 style={ {} }><span className="tz-text" data-selector=".tz-text" style={ {} }>GET ADVANCE ACCESS</span></a>
             </div>
           </div>

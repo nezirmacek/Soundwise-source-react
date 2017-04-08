@@ -47269,7 +47269,7 @@
 	var Headerform = function Headerform() {
 	  return _react2.default.createElement(
 	    "form",
-	    { action: "http://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303", method: "post", id: "mc-embedded-subscribe-form", name: "mc-embedded-subscribe-form",
+	    { action: "https://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303", method: "post", id: "mc-embedded-subscribe-form", name: "mc-embedded-subscribe-form",
 	      className: "validate", target: "_blank", noValidate: true },
 	    _react2.default.createElement(
 	      "div",
@@ -47377,7 +47377,7 @@
 	              { className: 'btn-dual' },
 	              _react2.default.createElement(
 	                'a',
-	                { className: 'btn btn-large propClone bg-golden-yellow text-black xs-margin-ten-bottom xs-width-100', href: 'http://eepurl.com/cyNzD5', 'data-selector': 'a.btn, button.btn',
+	                { className: 'btn btn-large propClone bg-golden-yellow text-black xs-margin-ten-bottom xs-width-100', href: 'https://eepurl.com/cyNzD5', 'data-selector': 'a.btn, button.btn',
 	                  style: {} },
 	                _react2.default.createElement(
 	                  'span',
@@ -47896,7 +47896,7 @@
 	          { className: "col-md-12 col-sm-12 col-xs-12 text-center" },
 	          _react2.default.createElement(
 	            "a",
-	            { className: "btn-large btn-circle btn text-dark-blue bg-light-green btn-3d", href: "http://eepurl.com/cyNzD5" },
+	            { className: "btn-large btn-circle btn text-dark-blue bg-light-green btn-3d", href: "https://eepurl.com/cyNzD5" },
 	            _react2.default.createElement(
 	              "span",
 	              { className: "tz-text" },
@@ -48049,7 +48049,7 @@
 	var Popup_form = function Popup_form() {
 	  return _react2.default.createElement(
 	    "form",
-	    { action: "http://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303", method: "post", id: "mc-embedded-subscribe-form", name: "mc-embedded-subscribe-form",
+	    { action: "https://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303", method: "post", id: "mc-embedded-subscribe-form", name: "mc-embedded-subscribe-form",
 	      className: "validate", target: "_blank", noValidate: true },
 	    _react2.default.createElement(
 	      "div",

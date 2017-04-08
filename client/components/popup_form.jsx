@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Popup_form = () => (
-  <form action="http://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form"
+  <form action="https://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form"
     className="validate" target="_blank" noValidate>
     <div className="ao-field-group ao-offs-sm" data-ao-animaze-on-popup="delay:0.1s;fadein:- 0.0s;move:- 0.1s relative 0 0 50px easeOut">
       <div className="ao-field-wrap">

@@ -14,7 +14,7 @@ const Callto_action = () => (
         { /* end section title */ }
         { /* button */ }
         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-          <a className="btn-large btn-circle btn text-dark-blue bg-light-green btn-3d" href="http://eepurl.com/cyNzD5"><span className="tz-text">GET ADVANCE ACCESS</span><i className="fa fa-long-arrow-right icon-extra-small tz-icon-color" /></a>
+          <a className="btn-large btn-circle btn text-dark-blue bg-light-green btn-3d" href="https://eepurl.com/cyNzD5"><span className="tz-text">GET ADVANCE ACCESS</span><i className="fa fa-long-arrow-right icon-extra-small tz-icon-color" /></a>
         </div>
         { /* end button */ }
       </div>
