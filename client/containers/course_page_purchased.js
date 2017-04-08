@@ -29,7 +29,7 @@ class _Course_Purchased extends Component {
   }
 
   componentDidMount() {
-
+    console.log('url match params: ', this.props.match)
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
