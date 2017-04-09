@@ -82,6 +82,8 @@ class _Checkout extends Component {
       .then(function (response) {
 
         const paid = response.data.paid //boolean
+        const stripeId = response.data.stripeId
+
         if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
           that.setState({
             paid,
@@ -106,6 +108,8 @@ class _Checkout extends Component {
 
             const updates = {}
             updates['/users/' + userId + '/courses/' + course.id] = course
+            // store stripe customer ID info: (only works with real credit cards)
+            // updates['/users/' + userId + '/stripeId'] = stripeId
             updates['/courses/' + course.id + '/users/' + userId] = userId
             firebase.database().ref().update(updates)
           })
