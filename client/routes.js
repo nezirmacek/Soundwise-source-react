@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
 import firebase from 'firebase'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import {Helmet} from "react-helmet"
 import { browserHistory } from 'react-router'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 // Needed for onTouchTap
@@ -59,6 +60,16 @@ class _Routes extends Component {
     return (
       <Router history = { browserHistory }>
         <div>
+          <Helmet>
+            <meta property="og:type" content="website"/>
+            <meta property="og:url" content="https://mysoundwise.com/" />
+            <meta property="og:title" content="Soundwise"/>
+            <meta property="og:description" content="Soundwise is a mobile learning platform that helps you improve your life and career through short audio lessons from top experts in personal development, science, and business."/>
+            <meta property="og:image" content="https://mysoundwise.com/images/thumnail_FB.png" />
+            <title>Soundwise</title>
+            <meta name="description" content="Audio courses to help you improve your life and career from top experts in personal development, science, and business." />
+            <meta name="keywords" content="soundwise, soundwise inc, audio, mobile application, learning, online learning, online course, podcast, audio book, audible, marketing, entrepreneurship, fitness, how to, personal development, personal growth, learning on the go, online course, audio course, business, career, life, wellness, relationship, empowerment, spirituality, self help" />
+          </Helmet>
           <Switch>
              <Route exact path="/" component={Page}/>
              <Route path="/about" component={About}/>
