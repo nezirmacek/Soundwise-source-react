@@ -65,7 +65,7 @@ class _Course extends Component {
     return (
       <div>
         <Helmet>
-          <title>{`Soundwise | ${course.name}`}</title>
+          <title>{`${course.name} | Soundwise`}</title>
           <meta property="og:url" content={`https://mysoundwise.com/courses/${course.id}`} />
           <meta property="og:title" content={course.name}/>
           <meta property="og:description" content={course.description}/>

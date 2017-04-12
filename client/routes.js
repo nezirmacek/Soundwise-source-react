@@ -66,7 +66,7 @@ class _Routes extends Component {
             <meta property="og:title" content="Soundwise"/>
             <meta property="og:description" content="Soundwise is a mobile learning platform that helps you improve your life and career through short audio lessons from top experts in personal development, science, and business."/>
             <meta property="og:image" content="https://mysoundwise.com/images/thumnail_FB.png" />
-            <title>Soundwise</title>
+            <title>Soundwise: audio courses in business and personal development from leading experts</title>
             <meta name="description" content="Audio courses to help you improve your life and career from top experts in personal development, science, and business." />
             <meta name="keywords" content="soundwise, soundwise inc, audio, mobile application, learning, online learning, online course, podcast, audio book, audible, marketing, entrepreneurship, fitness, how to, personal development, personal growth, learning on the go, online course, audio course, business, career, life, wellness, relationship, empowerment, spirituality, self help" />
           </Helmet>
