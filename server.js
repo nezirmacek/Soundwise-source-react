@@ -9,10 +9,18 @@ var path = require('path')
 //------------Express server-------------------
 var app = express()
 app.use(bodyParser.json())
-app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k'))
+
+// app.use(function(req, res, next) {
+//   console.log('before prerender-node');
+//   next();
+// })
+
+// app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k'))
+
+app.use(require('prerendercloud')).set('prerenderToken', 'dXMtd2VzdC0yOjE2MDE0OTIyLTk5MTgtNGY1Yi1hOTQwLTY1MDI2MzYyYTRlNQ.dE2HiZLJmqwNG0aJsAcWqmZHt_iAsV2tcIQQbvs2zPI')
 
 app.use(express.static(__dirname + '/client'))
-app.use('/scripts', express.static(__dirname + '/node_modules'))
+// app.use('/scripts', express.static(__dirname + '/node_modules'))
 
 
 //let front end handle all page routing except the initial page
