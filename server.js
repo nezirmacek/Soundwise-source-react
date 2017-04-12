@@ -20,10 +20,11 @@ app.get('*', function (request, response){
   response.sendFile(path.resolve(__dirname+'/client/index.html'))
 })
 
+app.post('/api/charge', handlePayment)
+
 app.listen((process.env.PORT || 8080), function() {
   console.log('listening on port: ', process.env.PORT || 8080)
 })
 
-app.post('/api/charge', handlePayment)
 
 // some random comment to see if git updates
