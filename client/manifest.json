@@ -11,7 +11,7 @@
         },
         {
             "src": "img/apple-touch-icon.png",
-            "sizes": "152x152",
+            "sizes": "180x180",
             "type": "image/png"
         },
         {
@@ -23,9 +23,6 @@
     "theme_color": "#ffffff",
     "background_color": "#F76B1C",
     "display": "standalone",
-    "related_applications": [{
-        "platform": "web"
-    }],
     "//": "Some browsers will use this to enable push notifications.",
     "//": "It is the same for all projects, this is not your project's sender ID",
     "gcm_sender_id": "103953800507"
