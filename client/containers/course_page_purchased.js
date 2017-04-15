@@ -12,7 +12,7 @@ import CourseBodyPurchased from '../components/course_body_purchased'
 import CourseBody from '../components/course_body'
 import SocialShare from '../components/socialshare'
 import { SoundwiseHeader } from '../components/soundwise_header'
-import {setCurrentPlaylist, setCurrentCourse} from '../actions/index'
+import {setCurrentPlaylist, setCurrentCourse, loadUserCourses} from '../actions/index'
 
 class _Course_Purchased extends Component {
   constructor(props) {
@@ -28,21 +28,24 @@ class _Course_Purchased extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
 
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         const userId = user.uid
 
-        firebase.database().ref('users/' + userId + '/courses/' + that.props.match.params.courseId)
+        firebase.database().ref('users/' + userId + '/courses')
           .on('value', snapshot => {
 
+            that.props.loadUserCourses(snapshot.val())
+
             that.setState({
-              course: snapshot.val(),
+              userCourses: snapshot.val(),
+              course: snapshot.val()[that.props.match.params.courseId]
             })
 
-            that.props.setCurrentCourse(snapshot.val())
+            that.props.setCurrentCourse(that.state.userCourses[that.props.match.params.courseId])
 
             let sections = []
             that.state.course.modules.forEach(module => { // build a playlist of sections
@@ -62,7 +65,7 @@ class _Course_Purchased extends Component {
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    const {course} = this.state
+    const course = this.props.userCourses[this.props.match.params.courseId] || this.state.course
 
     return (
       <div>
@@ -80,14 +83,14 @@ class _Course_Purchased extends Component {
         // <SocialShare />
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse }, dispatch)
+  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse, loadUserCourses }, dispatch)
 }
 
 const mapStateToProps = state => {
   const { userInfo, isLoggedIn } = state.user
-  const { courses, currentPlaylist } = state.setCourses
+  const { courses, currentPlaylist, userCourses } = state.setCourses
   return {
-    userInfo, isLoggedIn, courses, currentPlaylist
+    userInfo, isLoggedIn, courses, currentPlaylist, userCourses
   }
 }
 

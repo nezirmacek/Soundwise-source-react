@@ -4,7 +4,11 @@ import { browserHistory } from 'react-router'
 
 import { syncHistoryWithStore } from 'react-router-redux'
 import thunkMiddleware from 'redux-thunk'  //check out https://github.com/gaearon/redux-thunk for how to use this
-import { createStore, applyMiddleware } from 'redux'
+import { applyMiddleware, createStore, compose } from 'redux';
+import {persistStore, autoRehydrate} from 'redux-persist'
+import localForage from 'localForage'
+// import { offline } from 'redux-offline';
+// import offlineConfig from 'redux-offline/lib/defaults';
 import { Provider } from 'react-redux'
 import firebase from 'firebase'
 
@@ -13,8 +17,19 @@ import {Routes} from './routes'
 import rootReducer from './reducers'
 
 
-let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
-let store = createStoreWithMiddleware(rootReducer)
+// let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
+// let store = createStoreWithMiddleware(rootReducer)
+const store = createStore(
+  rootReducer,
+  undefined,
+  compose(
+    applyMiddleware(thunkMiddleware),
+    // offline(offlineConfig)
+    autoRehydrate()
+  )
+)
+
+persistStore(store, {storage: localForage})
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {

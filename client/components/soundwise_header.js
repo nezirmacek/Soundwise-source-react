@@ -53,6 +53,7 @@ class _SoundwiseHeader extends Component {
     }
 
     renderLogin() {
+
         if(this.props.isLoggedIn) {
             return (
             <ul className="nav navbar-nav">

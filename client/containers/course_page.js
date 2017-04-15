@@ -13,7 +13,7 @@ import { CourseHeaderPurchased } from '../components/course_header_purchased'
 import { CourseBody } from '../components/course_body'
 import SocialShare from '../components/socialshare'
 import { SoundwiseHeader } from '../components/soundwise_header'
-import {setCurrentPlaylist, setCurrentCourse} from '../actions/index'
+import {setCurrentPlaylist, setCurrentCourse, loadCourses} from '../actions/index'
 
 class _Course extends Component {
   constructor(props) {
@@ -36,31 +36,54 @@ class _Course extends Component {
 
   componentWillMount() {
     const that = this
-    firebase.database().ref('courses/' + this.props.match.params.courseId)
-      .once('value')
-      .then(snapshot => {
-        // console.log('course fetched from firebase: ', snapshot.val())
-        that.setState({
-          course: snapshot.val(),
+
+      firebase.database().ref('courses')
+        .once('value')
+        .then(snapshot => {
+          // console.log('course fetched from firebase: ', snapshot.val())
+          that.props.loadCourses(snapshot.val())
         })
-
-        that.props.setCurrentCourse(snapshot.val())
-
-        let sections = []
-        that.state.course.modules.forEach(module => { // build a playlist of sections
-          module.sections.forEach(section => {
-            sections.push(section)
+        .then(() => {
+          that.setState({
+            course: that.props.courses[that.props.match.params.courseId],
           })
-        })
-        that.props.setCurrentPlaylist(sections)
 
-      })
+          that.props.setCurrentCourse(that.state.course)
+
+          let sections = []
+          that.state.course.modules.forEach(module => { // build a playlist of sections
+            module.sections.forEach(section => {
+              sections.push(section)
+            })
+          })
+          that.props.setCurrentPlaylist(sections)
+        })
+
   }
+
+  // componentWillReceiveProps(nextProps) {
+  //   const that = this
+  //   if(nextProps.courses[that.props.match.params.courseId]) {
+  //     that.setState({
+  //       course: nextProps.courses[that.props.match.params.courseId],
+  //     })
+
+  //     that.props.setCurrentCourse(that.state.course)
+
+  //     let sections = []
+  //     that.state.course.modules.forEach(module => { // build a playlist of sections
+  //       module.sections.forEach(section => {
+  //         sections.push(section)
+  //       })
+  //     })
+  //     that.props.setCurrentPlaylist(sections)
+  //   }
+  // }
 
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    const {course} = this.state
+    const course = this.props.courses[this.props.match.params.courseId] || this.state.course
 
     return (
       <div>
@@ -87,7 +110,7 @@ class _Course extends Component {
         // <SocialShare />
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse }, dispatch)
+  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse, loadCourses }, dispatch)
 }
 
 const mapStateToProps = state => {
