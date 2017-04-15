@@ -2,6 +2,7 @@ var path = require('path');
 var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 
 module.exports = {
+  context:
   entry: [
     'babel-polyfill',
     './client/index.js'
@@ -40,7 +41,7 @@ module.exports = {
         minify: true,
         runtimeCaching: [{
           handler: 'cacheFirst',
-          urlPattern: /[.]mp3$/,
+          urlPattern: '/',
           options: {
             cache: {
               name: 'audio-cache'
