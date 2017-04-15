@@ -3,17 +3,108 @@ import { Link, Redirect } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import ReactStars from 'react-stars'
-import StarRating from 'react-star-rating'
+import Levels from 'react-activity/lib/Levels'
 
 import { CourseSignup } from '../containers/course_signup'
 import SocialShare from './socialshare'
 import { openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index'
 
+const styles = {
+  iconWrap: {
+    // width: '100%',
+    // height: '100%',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    transform: `translate(${0}, -${50}%)`,
+    top: '50%',
+    // zIndex: 10,
+    textAlign: 'center',
+    // verticalAlign: 'bottom'
+    // background: hsla(0, 100%, 50%, 0.4)
+  },
+  icon: {
+    // position: 'relative',
+    // top: 0,
+    // right: '-10px',
+    // bottom: '-10px',
+    fontSize: '150px',
+    opacity: 0.7
+  }
+}
+
+let player, source, interval
+
 class _CourseHeader extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      playing: false,
+      displayTimer: 'none',
+      currentTime: 0,
+      duration: 0
+    }
 
     this.addToCart = this.addToCart.bind(this)
+    this.handlePlayOrPause = this.handlePlayOrPause.bind(this)
+    this.handleEnd = this.handleEnd.bind(this)
+  }
+
+  componentDidMount() {
+    player = document.getElementById('audio')
+    source = document.getElementById('audioSource')
+
+    player.addEventListener('ended', this.handleEnd)
+  }
+
+  handleEnd() {
+    this.setState({
+      playing: false,
+      displayTimer: 'none'
+    })
+  }
+
+  handlePlayOrPause() {
+    const that = this
+    if(this.state.playing) {
+      player.pause()
+
+      this.setState({
+        playing: false,
+        displayTimer: 'none',
+      })
+
+      clearInterval(interval)
+
+    } else {
+      source.src = this.props.course.trailer_url
+      player.load()
+      player.play()
+
+      this.setState({
+        playing: true,
+        displayTimer: '',
+        duration: player.duration
+      })
+
+      interval = setInterval(() => {
+        that.setState({
+          currentTime: player.currentTime,
+          duration: player.duration})
+      }, 1000)
+    }
+  }
+
+  renderPlayOrPause() {
+    if(this.state.playing) {
+      return (
+        <i style={styles.icon} className="fa  fa-pause-circle-o" aria-hidden="true"></i>
+      )
+    } else {
+      return (
+        <i style={styles.icon} className="fa  fa-play-circle-o" aria-hidden="true"></i>
+      )
+    }
   }
 
   handleClick() {
@@ -25,6 +116,22 @@ class _CourseHeader extends Component {
   }
 
   render() {
+    const timerStyle = {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      textAlign: 'right',
+      top: '90%',
+      paddingRight: '1em',
+      paddingBottom: '1em',
+      fontSize: '20px',
+      display: this.state.displayTimer
+    }
+
+    let remainingTime = this.state.duration - this.state.currentTime
+    let remainingMin = remainingTime > 0 ? Math.floor(remainingTime / 60) : '00'
+    let remaingingSec = remainingTime > 0 ? Math.floor(remainingTime % 60) : '00'
+
     let run_time = ''
     if(this.props.course.run_time) {
       const rt_hour = Math.floor(this.props.course.run_time/3600)
@@ -82,9 +189,18 @@ class _CourseHeader extends Component {
                       </div>
                   </div>
                   <div className="col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom" style={{height: '378px'}}>
-                      <div className="pull-right">
+                      <div className="pull-right" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
                           <img src={this.props.course.img_url_mobile} data-img-size="(W)450px X (H)450px" alt=""
-                            style={{width: '350px', height: '350px'}}/>
+                            style={{width: '350px', height: '350px', display: 'block'}}/>
+                          <div style={styles.iconWrap}>
+                            <a onClick={this.handlePlayOrPause}>
+                              {this.renderPlayOrPause()}
+                            </a>
+                          </div>
+                          <div style={timerStyle}>
+                            <Levels color="#F76B1C" size={12} speed={1} />
+                            <span style={{paddingLeft: '0.5em'}}>{`${remainingMin}:${remaingingSec}`}</span>
+                          </div>
                       </div>
                   </div>
               </div>

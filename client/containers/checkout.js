@@ -16,6 +16,8 @@ class _Checkout extends Component {
   constructor(props) {
     super(props)
     this.state={
+      coupon: '',
+      couponError: '',
       paymentError: '',
       submitDisabled: false,
       number: '',
@@ -28,8 +30,10 @@ class _Checkout extends Component {
     }
     this.onSubmit = this.onSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleCoupon = this.handleCoupon.bind(this)
     this.stripeTokenHandler = this.stripeTokenHandler.bind(this)
     this.renderProgressBar = this.renderProgressBar.bind(this)
+    this.addCourseToUser = this.addCourseToUser.bind(this)
   }
 
   componentWillMount() {
@@ -44,6 +48,49 @@ class _Checkout extends Component {
   handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value
+    })
+  }
+
+  handleCoupon() {
+    const that = this
+
+    firebase.database().ref('/coupons').once('value')
+    .then(snapshot => {
+      const coupons = snapshot.val()
+      const today = Date.now()
+      const expiration = Date.parse(coupons[that.state.coupon].expiration) || today
+      if(coupons[that.state.coupon] && today <= expiration) {
+        const coupon = coupons[that.state.coupon]
+        that.setState({
+          totalPay: that.props.shoppingCart.reduce((cumm, course) => {
+
+            if(course.id === coupon.course_id) {
+              console.log('course id: ', course.id, coupon.course_id)
+              return cumm + course.price - coupon.discount / 100 * course.price
+            } else {
+              return cumm + course.price
+            }
+          }, 0) * 100 //in cents
+        })
+
+        var updates = {}
+        updates['/coupons/' + that.state.coupon + '/count'] = coupon.count + 1
+        firebase.database().ref().update(updates)
+
+        if(that.state.totalPay === 0) { //if it's free course, then no need for credit card info. Push course to user and then redirect
+          that.addCourseToUser()
+        }
+
+
+      } else if(coupons[that.state.coupon] && today > Date.parse(coupons[that.state.coupon].expiration)) {
+        that.setState({
+          couponError: 'This coupon has expired'
+        })
+      } else {
+        that.setState({
+          couponError: 'This coupon does not exist'
+        })
+      }
     })
   }
 
@@ -90,31 +137,7 @@ class _Checkout extends Component {
             startPaymentSubmission: false
           })
 
-          const userId = firebase.auth().currentUser.uid
-          that.props.shoppingCart.forEach(course => {
-
-            let sectionProgress = {}
-            course.modules.forEach(module => {
-              module.sections.forEach(section => {
-                sectionProgress[section.section_id] = {
-                  playProgress: 0,
-                  completed: false,
-                  timesRepeated: 0
-                }
-              })
-            })
-
-            course.sectionProgress = sectionProgress
-
-            const updates = {}
-            updates['/users/' + userId + '/courses/' + course.id] = course
-            // store stripe customer ID info: (only works with real credit cards)
-            // updates['/users/' + userId + '/stripeId'] = stripeId
-            updates['/courses/' + course.id + '/users/' + userId] = userId
-            firebase.database().ref().update(updates)
-          })
-          that.props.deleteCart()
-          that.props.history.push('/confirmation')
+          that.addCourseToUser() //push course to user profile and redirect
         }
       })
       .catch(function (error) {
@@ -124,6 +147,35 @@ class _Checkout extends Component {
         })
       })
     }
+  }
+
+  addCourseToUser() {
+    const that = this
+    const userId = firebase.auth().currentUser.uid
+    that.props.shoppingCart.forEach(course => {
+
+      let sectionProgress = {}
+      course.modules.forEach(module => {
+        module.sections.forEach(section => {
+          sectionProgress[section.section_id] = {
+            playProgress: 0,
+            completed: false,
+            timesRepeated: 0
+          }
+        })
+      })
+
+      course.sectionProgress = sectionProgress
+
+      const updates = {}
+      updates['/users/' + userId + '/courses/' + course.id] = course
+      // store stripe customer ID info: (only works with real credit cards)
+      // updates['/users/' + userId + '/stripeId'] = stripeId
+      updates['/courses/' + course.id + '/users/' + userId] = userId
+      firebase.database().ref().update(updates)
+    })
+    that.props.deleteCart()
+    that.props.history.push('/confirmation')
   }
 
   renderProgressBar() {
@@ -138,9 +190,10 @@ class _Checkout extends Component {
 
   render() {
     const items_num = this.props.shoppingCart.length
-    const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
-      return cumm + course.price
-    }, 0)
+    // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
+    //   return cumm + course.price
+    // }, 0)
+    const subtotal = this.state.totalPay / 100
 
     return (
       <div>
@@ -167,12 +220,18 @@ class _Checkout extends Component {
                   <div className="row equalize ">
                       <div className="col-md-5 display-table col-sm-12" style={{height: '62px'}}>
                           <div className=" pull-left">
-                            <input type='submit' value='Apply'
+                            <button type='submit'
+                              onClick = {this.handleCoupon}
                               className='text-white btn builder-bg propClone btn-3d tz-text border-radius-4'
-                              style={{float: 'right', backgroundColor: '#F76B1C', height: '3em'}}/>
+                              style={{float: 'right', backgroundColor: '#F76B1C', height: '3em'}}>Apply</button>
                             <div className="" style={{overflow: 'hidden'}}>
-                              <input className=" bg-light-gray alt-font border-radius-4" placeholder='coupon code' style={{width: '100%', paddingRight: '1em', height: '3.6em'}}/>
+                              <input
+                                onChange={this.handleChange}
+                                className=" bg-light-gray alt-font border-radius-4"
+                                name = 'coupon'
+                                placeholder='coupon code' style={{width: '100%', paddingRight: '1em', height: '3.6em'}}/>
                             </div>
+                            <div style={{color: 'red'}}>{this.state.couponError}</div>
                           </div>
                       </div>
                       <div className="col-md-6 col-sm-12 display-table xs-text-center pull-right" style={{height: '62px'}}>

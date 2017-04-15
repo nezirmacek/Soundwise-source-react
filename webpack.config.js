@@ -1,3 +1,6 @@
+var path = require('path');
+var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+
 module.exports = {
   entry: [
     'babel-polyfill',
@@ -27,5 +30,19 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     contentBase: './client'
-  }
+  },
+  plugins: [
+    new SWPrecacheWebpackPlugin(
+      {
+        cacheId: 'Soundwise',
+        filename: 'service-worker.js',
+        maximumFileSizeToCacheInBytes: 4194304,
+        minify: true,
+        runtimeCaching: [{
+          handler: 'cacheFirst',
+          urlPattern: /[.]mp3$/,
+        }],
+      }
+    ),
+  ]
 };

@@ -3,7 +3,7 @@ import Bannerright from './bannerright';
 import Smallimg from './smallimg';
 
 const Banner = () => (
-  <section className="position-relative hero-section23 cover-background tz-builder-bg-image border-none xs-padding-top-30px hero-style23" data-img-size="(W)1920px X (H)1000px"
+  <section id='intro' className="position-relative hero-section23 cover-background tz-builder-bg-image border-none xs-padding-top-30px hero-style23" data-img-size="(W)1920px X (H)1000px"
     style={ {  background: 'linear-gradient(rgba(0, 0, 0, 0.00784314), rgba(0, 0, 0, 0.00784314)), url("images/section2_background.png")'} } data-selector=".tz-builder-bg-image">
     <div className="container position-relative">
       <div className="row equalize xs-equalize-auto equalize-display-inherit two-column">

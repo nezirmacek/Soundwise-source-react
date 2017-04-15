@@ -124,6 +124,14 @@ const update = {
   }
 }
 
+// const expiration = new Date(2017, 7, 31)
+// const coupon = {
+//   course_id: 112,
+//   discount: 100, //100% discount
+//   count: 0,
+//   expiration: expiration.toString()
+// }
+
 firebase.initializeApp(config)
 
 // firebase.database().ref('courses/' + courseInfo.id)
@@ -135,6 +143,8 @@ firebase.initializeApp(config)
 //         })
 // firebase.database().ref('courses/112/metrics')
 //   .set(update)
+// firebase.database().ref('coupons/DL100')
+//   .set(coupon)
 
 export const App = ({match}) => (
   <Provider store = { store }>
