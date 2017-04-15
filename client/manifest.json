@@ -1,7 +1,7 @@
 {
     "name": "Soundwise",
     "short_name": "Soundwise",
-    "start_url": "/",
+    "start_url": "./index.html",
     "description": "Soundwise is a mobile learning platform that helps you improve your life and career through short audio lessons from top experts in personal development, science, and business.",
     "icons": [
         {

@@ -36,11 +36,16 @@ module.exports = {
       {
         cacheId: 'Soundwise',
         filename: 'service-worker.js',
-        maximumFileSizeToCacheInBytes: 4194304,
+        maximumFileSizeToCacheInBytes: 10485760, //10mb
         minify: true,
         runtimeCaching: [{
           handler: 'cacheFirst',
           urlPattern: /[.]mp3$/,
+          options: {
+            cache: {
+              name: 'audio-cache'
+            }
+          }
         }],
       }
     ),
