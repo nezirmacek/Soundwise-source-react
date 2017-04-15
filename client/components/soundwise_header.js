@@ -31,7 +31,7 @@ class _SoundwiseHeader extends Component {
     signoutUser() {
       let that = this
       firebase.auth().signOut().then(function() {
-          console.log('Signed Out')
+
           that.props.signoutUser()
         }, function(error) {
           console.error('Sign Out Error', error);
