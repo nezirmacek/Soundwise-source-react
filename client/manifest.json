@@ -1,16 +1,21 @@
 {
     "name": "Soundwise",
     "short_name": "Soundwise",
-    "start_url": "/index.html",
+    "start_url": "index.html",
     "description": "Soundwise is a mobile learning platform that helps you improve your life and career through short audio lessons from top experts in personal development, science, and business.",
     "icons": [
         {
-            "src": "/android-chrome-192x192.png",
+            "src": "images/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/android-chrome-512x512.png",
+            "src": "img/apple-touch-icon.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "images/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
