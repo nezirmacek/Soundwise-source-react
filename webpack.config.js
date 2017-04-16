@@ -40,7 +40,7 @@ module.exports = {
         maximumFileSizeToCacheInBytes: 10485760, //10mb
         minify: false,
         stripPrefix: 'client/',
-        navigateFallback: '/',
+        navigateFallback: 'index.html',
         staticFileGlobs: [
           'client/index.html',
           'client/css/**.css',
