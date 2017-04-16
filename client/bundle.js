@@ -53585,7 +53585,11 @@
 	    _react2.default.createElement(
 	      'div',
 	      null,
-	      'About'
+	      _react2.default.createElement(
+	        'h1',
+	        null,
+	        'About'
+	      )
 	    )
 	  );
 	};

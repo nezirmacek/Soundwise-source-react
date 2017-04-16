@@ -16,7 +16,6 @@ import { config } from '../config'
 import {Routes} from './routes'
 import rootReducer from './reducers'
 
-
 // let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
 // let store = createStoreWithMiddleware(rootReducer)
 const store = createStore(
