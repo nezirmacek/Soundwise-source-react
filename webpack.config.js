@@ -2,13 +2,13 @@ var path = require('path');
 var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 
 module.exports = {
-  context:
+  context: __dirname,
   entry: [
     'babel-polyfill',
     './client/index.js'
   ],
   output: {
-    path: './client/',
+    path: path.resolve(__dirname, 'client/'),
     publicPath: '/',
     filename: 'bundle.js'
   },
@@ -38,20 +38,22 @@ module.exports = {
         cacheId: 'Soundwise',
         filename: 'service-worker.js',
         maximumFileSizeToCacheInBytes: 10485760, //10mb
-        minify: true,
+        minify: false,
         staticFileGlobs: [
           'client/index.html',
+          'client/css/**.css',
+          'client/bundle.js'
         ],
-        mergeStaticsConfig: true,
-        runtimeCaching: [{
-          handler: 'cacheFirst',
-          urlPattern: '/',
-          options: {
-            cache: {
-              name: 'audio-cache'
-            }
-          }
-        }],
+        // mergeStaticsConfig: true,
+        // runtimeCaching: [{
+        //   handler: 'cacheFirst',
+        //   urlPattern: '/',
+        //   options: {
+        //     cache: {
+        //       name: 'audio-cache'
+        //     }
+        //   }
+        // }],
       }
     ),
   ]
