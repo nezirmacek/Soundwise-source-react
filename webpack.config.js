@@ -39,6 +39,10 @@ module.exports = {
         filename: 'service-worker.js',
         maximumFileSizeToCacheInBytes: 10485760, //10mb
         minify: true,
+        staticFileGlobs: [
+          'client/index.html',
+        ],
+        mergeStaticsConfig: true,
         runtimeCaching: [{
           handler: 'cacheFirst',
           urlPattern: '/',
