@@ -29,6 +29,9 @@ const store = createStore(
 )
 
 persistStore(store, {storage: localForage})
+
+persistStore(store).purge()
+
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {

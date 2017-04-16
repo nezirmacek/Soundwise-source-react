@@ -8288,6 +8288,9 @@
 
 
 	(0, _reduxPersist.persistStore)(store, { storage: _localForage2.default });
+
+	(0, _reduxPersist.persistStore)(store).purge();
+
 	// const history = syncHistoryWithStore(browserHistory, store)
 
 	var courseInfo = {
