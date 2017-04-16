@@ -8280,16 +8280,16 @@
 	// let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
 	// let store = createStoreWithMiddleware(rootReducer)
 	//check out https://github.com/gaearon/redux-thunk for how to use this
-	var store = (0, _redux.createStore)(_reducers2.default, undefined, (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2.default),
+	var store = (0, _redux.createStore)(_reducers2.default, {}, (0, _redux.compose)((0, _redux.applyMiddleware)(_reduxThunk2.default),
 	// offline(offlineConfig)
 	(0, _reduxPersist.autoRehydrate)()));
 	// import { offline } from 'redux-offline';
 	// import offlineConfig from 'redux-offline/lib/defaults';
 
 
-	(0, _reduxPersist.persistStore)(store, { storage: _localForage2.default });
+	var persistor = (0, _reduxPersist.persistStore)(store, { storage: _localForage2.default });
 
-	(0, _reduxPersist.persistStore)(store).purge();
+	persistor.purge();
 
 	// const history = syncHistoryWithStore(browserHistory, store)
 

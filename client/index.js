@@ -20,7 +20,7 @@ import rootReducer from './reducers'
 // let store = createStoreWithMiddleware(rootReducer)
 const store = createStore(
   rootReducer,
-  undefined,
+  {},
   compose(
     applyMiddleware(thunkMiddleware),
     // offline(offlineConfig)
@@ -28,9 +28,9 @@ const store = createStore(
   )
 )
 
-persistStore(store, {storage: localForage})
+const persistor = persistStore(store, {storage: localForage})
 
-persistStore(store).purge()
+persistor.purge()
 
 // const history = syncHistoryWithStore(browserHistory, store)
 
