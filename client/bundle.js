@@ -89291,7 +89291,8 @@
 	    key: 'render',
 	    value: function render() {
 	      // const course = this.props.courses[this.props.match.params.courseId]
-	      var course = this.props.userCourses[this.props.match.params.courseId] || this.state.course;
+	      console.log('user: ', this.props.userInfo);
+	      var course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course;
 
 	      return _react2.default.createElement(
 	        'div',
