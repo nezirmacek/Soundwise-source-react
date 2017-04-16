@@ -39,6 +39,7 @@ module.exports = {
         filename: 'service-worker.js',
         maximumFileSizeToCacheInBytes: 10485760, //10mb
         minify: false,
+        stripPrefix: 'client/',
         staticFileGlobs: [
           'client/index.html',
           'client/css/**.css',
