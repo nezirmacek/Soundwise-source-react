@@ -73,20 +73,38 @@ class _CourseSection extends Component {
       playing: false,
       loading: false,
       currentTime: 0,
-      duration: 1
+      duration: 1,
+      cached: false
     }
     this.playFile = this.playFile.bind(this)
     this.handleTap = this.handleTap.bind(this)
     this.renderPlayButton = this.renderPlayButton.bind(this)
+    this.handleCacheAudio = this.handleCacheAudio.bind(this)
+    this.renderCacheButton = this.renderCacheButton.bind(this)
   }
 
   componentDidMount() {
+    const that = this
     player = document.getElementById('audio')
     source = document.getElementById('audioSource')
     if(this.props.currentSection.section_id == this.props.section.section_id) {
       this.setState({
         currentTime: this.props.currentTime,
         duration: this.props.currentDuration
+      })
+    }
+
+    if('caches' in window) {
+      caches.open('audio-cache')
+      .then(cache => {
+        cache.keys()
+        .then(keys => {
+          if(keys.indexOf(that.props.section.section_url) > -1) {
+            that.setState({
+              cached: true
+            })
+          }
+        })
       })
     }
   }
@@ -193,6 +211,46 @@ class _CourseSection extends Component {
     }
   }
 
+  renderCacheButton() {
+    if(this.state.cached) {
+      return (
+        <span>delete</span>
+      )
+    } else {
+      return (
+        <span>enable offline</span>
+      )
+    }
+  }
+
+  handleCacheAudio() {
+    const that = this
+    let headers = new Headers()
+    headers.append('access-control-allow-origin', '*')
+    headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    headers.append('access-control-allow-headers', 'content-type, accept')
+    headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
+
+    let request = new Request(this.props.section.section_url, {headers})
+
+    fetch(request)
+    .then(response => {
+      if(!response.ok) {
+        throw new TypeError('bad response status')
+      }
+
+      return caches.open('audio-cache')
+        .then(cache => {
+          cache.put(that.props.section.section_url, response)
+        })
+    })
+    .then(() => {
+      that.setState({
+        cached: true
+      })
+    })
+  }
+
   // <FontIcon
   //         className="material-icons"
   //         color={grey500}
@@ -211,6 +269,8 @@ class _CourseSection extends Component {
       progress = `${Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100)}% completed`
     }
 
+    const displayDownload = 'caches' in window ? '' : 'none'
+
     return (
       <div>
       <Card>
@@ -228,7 +288,7 @@ class _CourseSection extends Component {
               {this.renderPlayButton()}
             </a>
           </div>
-          <div className='col-md-10 col-sm-9 col-xs-9'
+          <div className='col-md-9 col-sm-8 col-xs-8'
             style={{paddingLeft: '2em'}}>
             <span style={{fontSize: '18px'}}>
               {this.props.section.title}
@@ -236,6 +296,13 @@ class _CourseSection extends Component {
             <span style={{paddingLeft: '1em'}}>
               {`(${progress})`}
             </span>
+          </div>
+          <div
+            style={{display: displayDownload}}
+            className='col-md-1 col-sm-2 col-xs-2'>
+            <a onClick={this.handleCacheAudio}>
+              {this.renderCacheButton()}
+            </a>
           </div>
           </div>
         </CardText>

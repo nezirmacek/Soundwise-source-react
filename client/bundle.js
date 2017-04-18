@@ -89850,23 +89850,39 @@
 	      playing: false,
 	      loading: false,
 	      currentTime: 0,
-	      duration: 1
+	      duration: 1,
+	      cached: false
 	    };
 	    _this.playFile = _this.playFile.bind(_this);
 	    _this.handleTap = _this.handleTap.bind(_this);
 	    _this.renderPlayButton = _this.renderPlayButton.bind(_this);
+	    _this.handleCacheAudio = _this.handleCacheAudio.bind(_this);
+	    _this.renderCacheButton = _this.renderCacheButton.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(_CourseSection, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var that = this;
 	      player = document.getElementById('audio');
 	      source = document.getElementById('audioSource');
 	      if (this.props.currentSection.section_id == this.props.section.section_id) {
 	        this.setState({
 	          currentTime: this.props.currentTime,
 	          duration: this.props.currentDuration
+	        });
+	      }
+
+	      if ('caches' in window) {
+	        caches.open('audio-cache').then(function (cache) {
+	          cache.keys().then(function (keys) {
+	            if (keys.indexOf(that.props.section.section_url) > -1) {
+	              that.setState({
+	                cached: true
+	              });
+	            }
+	          });
 	        });
 	      }
 	    }
@@ -89970,6 +89986,49 @@
 	        return _react2.default.createElement('i', { className: 'fa fa-lg fa-play-circle-o', 'aria-hidden': 'true' });
 	      }
 	    }
+	  }, {
+	    key: 'renderCacheButton',
+	    value: function renderCacheButton() {
+	      if (this.state.cached) {
+	        return _react2.default.createElement(
+	          'span',
+	          null,
+	          'delete'
+	        );
+	      } else {
+	        return _react2.default.createElement(
+	          'span',
+	          null,
+	          'enable offline'
+	        );
+	      }
+	    }
+	  }, {
+	    key: 'handleCacheAudio',
+	    value: function handleCacheAudio() {
+	      var that = this;
+	      var headers = new Headers();
+	      headers.append('access-control-allow-origin', '*');
+	      headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
+	      headers.append('access-control-allow-headers', 'content-type, accept');
+	      headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml");
+
+	      var request = new Request(this.props.section.section_url, { headers: headers });
+
+	      fetch(request).then(function (response) {
+	        if (!response.ok) {
+	          throw new TypeError('bad response status');
+	        }
+
+	        return caches.open('audio-cache').then(function (cache) {
+	          cache.put(that.props.section.section_url, response);
+	        });
+	      }).then(function () {
+	        that.setState({
+	          cached: true
+	        });
+	      });
+	    }
 
 	    // <FontIcon
 	    //         className="material-icons"
@@ -89990,6 +90049,8 @@
 	      } else {
 	        progress = Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100) + '% completed';
 	      }
+
+	      var displayDownload = 'caches' in window ? '' : 'none';
 
 	      return _react2.default.createElement(
 	        'div',
@@ -90021,7 +90082,7 @@
 	              ),
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-10 col-sm-9 col-xs-9',
+	                { className: 'col-md-9 col-sm-8 col-xs-8',
 	                  style: { paddingLeft: '2em' } },
 	                _react2.default.createElement(
 	                  'span',
@@ -90032,6 +90093,17 @@
 	                  'span',
 	                  { style: { paddingLeft: '1em' } },
 	                  '(' + progress + ')'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                {
+	                  style: { display: displayDownload },
+	                  className: 'col-md-1 col-sm-2 col-xs-2' },
+	                _react2.default.createElement(
+	                  'a',
+	                  { onClick: this.handleCacheAudio },
+	                  this.renderCacheButton()
 	                )
 	              )
 	            )
