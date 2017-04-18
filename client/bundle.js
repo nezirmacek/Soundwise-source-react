@@ -8289,7 +8289,7 @@
 
 	var persistor = (0, _reduxPersist.persistStore)(store, { storage: _localForage2.default, blacklist: ['setPlayer'] });
 
-	persistor.purge();
+	// persistor.purge()
 
 	// const history = syncHistoryWithStore(browserHistory, store)
 
