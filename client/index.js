@@ -30,7 +30,7 @@ const store = createStore(
 
 const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer']})
 
-// persistor.purge()
+persistor.purge()
 
 // const history = syncHistoryWithStore(browserHistory, store)
 
