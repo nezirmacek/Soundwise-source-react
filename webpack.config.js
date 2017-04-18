@@ -44,7 +44,16 @@ module.exports = {
         staticFileGlobs: [
           'client/index.html',
           'client/css/**.css',
-          'client/bundle.js'
+          'client/bundle.js',
+          // 'client/js/jquery.min.js',
+          // 'client/images/header_img4.jpg',
+          'client/images/soundwiselogo_white.png',
+          // 'client/images/soundwiselogo.png',
+          // 'client/images/section2_background.png',
+          'client/images/smiley_face.jpg',
+          // 'client/images/entrepreneur-logo.png',
+          // 'client/images/huffington-post-logo.png',
+          // 'client/images/section2_sm_img.png'
         ],
         // mergeStaticsConfig: true,
         // runtimeCaching: [{

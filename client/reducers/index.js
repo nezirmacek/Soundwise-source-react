@@ -29,6 +29,20 @@ function user(state= {
   }
 }
 
+function setPlayer(state={
+  playerLaunched: false
+}, action) {
+  switch (action.type) {
+    case types.PLAYER:
+      return  {
+        ...state,
+        playerLaunched: action.payload
+      }
+    default:
+      return state
+  }
+}
+
 function setCourses(state={
   courses: {},
   currentCourse: {},
@@ -36,7 +50,6 @@ function setCourses(state={
   currentSection: {},
   playing: false,
   currentPlaylist: [],
-  playerLaunched: false,
   currentTime: 0,
   currentDuration: 1
 }, action) {
@@ -65,11 +78,6 @@ function setCourses(state={
       return {
         ...state,
         currentPlaylist: action.payload
-      }
-    case types.PLAYER:
-      return  {
-        ...state,
-        playerLaunched: action.payload
       }
     case types.CHANGE_PLAYSTATUS:
       const newStatus = !state.playing
@@ -166,6 +174,7 @@ function checkoutProcess(state={
 
 const rootReducer = combineReducers({
   setCourses,
+  setPlayer,
   routing,
   signupBox,
   reviewBox,

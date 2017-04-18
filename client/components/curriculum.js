@@ -71,6 +71,8 @@ class _Curriculum extends Component {
 
     // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
     const next = this.props.currentSection.section_number
+
+    console.log('next: ', next)
     if(next < this.props.currentPlaylist.length ) {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[next])
       source.src = this.props.currentPlaylist[next].section_url

@@ -65,9 +65,9 @@ class _Course_Purchased extends Component {
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    console.log('user: ', this.props.userInfo)
     const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
 
+    console.log('playlist: ', this.props.currentPlaylist)
     return (
       <div>
         <SoundwiseHeader />

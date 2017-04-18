@@ -8287,7 +8287,7 @@
 	// import offlineConfig from 'redux-offline/lib/defaults';
 
 
-	var persistor = (0, _reduxPersist.persistStore)(store, { storage: _localForage2.default });
+	var persistor = (0, _reduxPersist.persistStore)(store, { storage: _localForage2.default, blacklist: ['setPlayer'] });
 
 	// persistor.purge()
 
@@ -88702,10 +88702,10 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	  var isLoggedIn = state.user.isLoggedIn;
+	  var playerLaunched = state.setPlayer.playerLaunched;
 	  var _state$setCourses = state.setCourses,
 	      currentSection = _state$setCourses.currentSection,
 	      playing = _state$setCourses.playing,
-	      playerLaunched = _state$setCourses.playerLaunched,
 	      currentTime = _state$setCourses.currentTime,
 	      currentDuration = _state$setCourses.currentDuration,
 	      currentPlaylist = _state$setCourses.currentPlaylist,
@@ -89291,9 +89291,9 @@
 	    key: 'render',
 	    value: function render() {
 	      // const course = this.props.courses[this.props.match.params.courseId]
-	      console.log('user: ', this.props.userInfo);
 	      var course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course;
 
+	      console.log('playlist: ', this.props.currentPlaylist);
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -89588,6 +89588,8 @@
 
 	      // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
 	      var next = this.props.currentSection.section_number;
+
+	      console.log('next: ', next);
 	      if (next < this.props.currentPlaylist.length) {
 	        this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
 	        source.src = this.props.currentPlaylist[next].section_url;
@@ -95772,6 +95774,22 @@
 	  }
 	}
 
+	function setPlayer() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+	    playerLaunched: false
+	  };
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case types.PLAYER:
+	      return _extends({}, state, {
+	        playerLaunched: action.payload
+	      });
+	    default:
+	      return state;
+	  }
+	}
+
 	function setCourses() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
 	    courses: {},
@@ -95780,7 +95798,6 @@
 	    currentSection: {},
 	    playing: false,
 	    currentPlaylist: [],
-	    playerLaunched: false,
 	    currentTime: 0,
 	    currentDuration: 1
 	  };
@@ -95806,10 +95823,6 @@
 	    case types.PLAYLIST:
 	      return _extends({}, state, {
 	        currentPlaylist: action.payload
-	      });
-	    case types.PLAYER:
-	      return _extends({}, state, {
-	        playerLaunched: action.payload
 	      });
 	    case types.CHANGE_PLAYSTATUS:
 	      var newStatus = !state.playing;
@@ -95904,6 +95917,7 @@
 
 	var rootReducer = (0, _redux.combineReducers)({
 	  setCourses: setCourses,
+	  setPlayer: setPlayer,
 	  routing: _reactRouterRedux.routerReducer,
 	  signupBox: signupBox,
 	  reviewBox: reviewBox,
