@@ -37,8 +37,7 @@ class _Routes extends Component {
       if (user) {
         const userId = user.uid
         firebase.database().ref('users/' + userId)
-        .once('value')
-        .then(snapshot => {
+        .on('value', snapshot => {
             const firstName = snapshot.val().firstName
             const lastName = snapshot.val().lastName
             const email = snapshot.val().email

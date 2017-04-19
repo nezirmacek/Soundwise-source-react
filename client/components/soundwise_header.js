@@ -80,7 +80,7 @@ class _SoundwiseHeader extends Component {
                   </ul>
               </li>
               <li>
-                <Link to='/cart'><i className="fa fa-shopping-cart fa-2x" aria-hidden="true"></i></Link>
+                <Link to='/cart'><i className="material-icons" style={{fontSize: '26px'}}>shopping_cart</i></Link>
               </li>
               </ul>
             )

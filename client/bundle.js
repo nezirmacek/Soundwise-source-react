@@ -37978,7 +37978,7 @@
 	      _firebase2.default.auth().onAuthStateChanged(function (user) {
 	        if (user) {
 	          var userId = user.uid;
-	          _firebase2.default.database().ref('users/' + userId).once('value').then(function (snapshot) {
+	          _firebase2.default.database().ref('users/' + userId).on('value', function (snapshot) {
 	            var firstName = snapshot.val().firstName;
 	            var lastName = snapshot.val().lastName;
 	            var email = snapshot.val().email;
@@ -52807,12 +52807,18 @@
 	    _react2.default.createElement(
 	      "a",
 	      { className: "border-2-white border-radius-50 display-inline-block", href: "#intro" },
-	      _react2.default.createElement("i", { className: "fa fa-angle-down text-white tz-icon-color title-large", "aria-hidden": "true", "data-selector": ".tz-icon-color", style: {} })
+	      _react2.default.createElement(
+	        "i",
+	        { className: "material-icons text-white tz-icon-color title-large" },
+	        "arrow_downward"
+	      )
 	    )
 	  );
 	};
 
 	exports.default = Headerscroll;
+
+	// <i className="fa fa-angle-down text-white tz-icon-color title-large" aria-hidden="true" data-selector=".tz-icon-color" style={ {} } />
 
 /***/ },
 /* 766 */
@@ -53777,7 +53783,11 @@
 	            _react2.default.createElement(
 	              _reactRouterDom.Link,
 	              { to: '/cart' },
-	              _react2.default.createElement('i', { className: 'fa fa-shopping-cart fa-2x', 'aria-hidden': 'true' })
+	              _react2.default.createElement(
+	                'i',
+	                { className: 'material-icons', style: { fontSize: '26px' } },
+	                'shopping_cart'
+	              )
 	            )
 	          )
 	        );
@@ -65996,6 +66006,36 @@
 	  }
 
 	  _createClass(_CourseHeaderPurchased, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextprops) {
+	      if ('caches' in window && nextprops.course.img_url_mobile) {
+	        var headers = new Headers();
+	        headers.append('access-control-allow-origin', '*');
+	        headers.append('access-control-allow-methods', 'GET');
+	        headers.append('access-control-allow-headers', 'content-type, accept');
+	        headers.append('Content-Type', "image/jpeg;image/png;text/xml");
+
+	        var request = new Request(nextprops.course.img_url_mobile, { headers: headers });
+
+	        fetch(request).then(function (response) {
+	          if (!response.ok) {
+	            throw new TypeError('bad response status');
+	          }
+
+	          return caches.keys().then(function (keys) {
+	            keys.forEach(function (key) {
+	              if (key.includes('sw-precache')) {
+	                caches.open(key).then(function (cache) {
+	                  cache.put(nextprops.course.img_url_mobile, response);
+	                  console.log('image cached');
+	                });
+	              }
+	            });
+	          });
+	        });
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
@@ -88509,6 +88549,8 @@
 	        var updates = {};
 	        updates['/users/' + userId + '/courses/' + this.props.currentCourse.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress;
 
+	        console.log('playProgress: ', playProgress);
+
 	        _firebase2.default.database().ref().update(updates);
 	      } else {
 	        player.play();
@@ -89259,6 +89301,16 @@
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
 
+	      // caches.keys().then(function(cacheKeys) {
+	      //   console.log(cacheKeys); // ex: ["test-cache"]
+	      // });
+
+	      navigator.webkitTemporaryStorage.queryUsageAndQuota(function (usedBytes, grantedBytes) {
+	        console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes');
+	      }, function (e) {
+	        console.log('Error', e);
+	      });
+
 	      var that = this;
 	      _firebase2.default.auth().onAuthStateChanged(function (user) {
 	        if (user) {
@@ -89293,7 +89345,6 @@
 	      // const course = this.props.courses[this.props.match.params.courseId]
 	      var course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course;
 
-	      console.log('playlist: ', this.props.currentPlaylist);
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -89877,11 +89928,14 @@
 	      if ('caches' in window) {
 	        caches.open('audio-cache').then(function (cache) {
 	          cache.keys().then(function (keys) {
-	            if (keys.indexOf(that.props.section.section_url) > -1) {
-	              that.setState({
-	                cached: true
-	              });
-	            }
+	            keys.forEach(function (key) {
+	              // console.log('key: ', key)
+	              if (key.url === that.props.section.section_url) {
+	                that.setState({
+	                  cached: true
+	                });
+	              }
+	            });
 	          });
 	        });
 	      }
@@ -89983,51 +90037,79 @@
 	      } else if (this.props.playing && this.props.currentSection.section_id == this.props.section.section_id) {
 	        return _react2.default.createElement(_Levels2.default, { color: '#F76B1C', size: 12, speed: 1 });
 	      } else {
-	        return _react2.default.createElement('i', { className: 'fa fa-lg fa-play-circle-o', 'aria-hidden': 'true' });
+	        return _react2.default.createElement(
+	          'i',
+	          { className: 'material-icons' },
+	          'play_circle_outline'
+	        );
 	      }
 	    }
 	  }, {
 	    key: 'renderCacheButton',
 	    value: function renderCacheButton() {
-	      if (this.state.cached) {
+	      if (this.state.cached === true) {
 	        return _react2.default.createElement(
 	          'span',
-	          null,
-	          'delete'
+	          { style: { color: '#F76B1C' } },
+	          'remove download'
 	        );
-	      } else {
+	      } else if (this.state.cached === false) {
 	        return _react2.default.createElement(
 	          'span',
-	          null,
+	          { style: { color: '#F76B1C' } },
 	          'enable offline'
 	        );
+	      } else if (this.state.cached === 'processing') {
+	        return _react2.default.createElement(_Spinner2.default, { size: 12, speed: 1 });
 	      }
 	    }
 	  }, {
 	    key: 'handleCacheAudio',
 	    value: function handleCacheAudio() {
 	      var that = this;
-	      var headers = new Headers();
-	      headers.append('access-control-allow-origin', '*');
-	      headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
-	      headers.append('access-control-allow-headers', 'content-type, accept');
-	      headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml");
 
-	      var request = new Request(this.props.section.section_url, { headers: headers });
-
-	      fetch(request).then(function (response) {
-	        if (!response.ok) {
-	          throw new TypeError('bad response status');
-	        }
-
-	        return caches.open('audio-cache').then(function (cache) {
-	          cache.put(that.props.section.section_url, response);
+	      if (this.state.cached === false) {
+	        this.setState({
+	          cached: 'processing'
 	        });
-	      }).then(function () {
-	        that.setState({
-	          cached: true
+
+	        var headers = new Headers();
+	        headers.append('access-control-allow-origin', '*');
+	        headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
+	        headers.append('access-control-allow-headers', 'content-type, accept');
+	        headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml");
+
+	        var request = new Request(this.props.section.section_url, { headers: headers });
+
+	        fetch(request).then(function (response) {
+	          if (!response.ok) {
+	            throw new TypeError('bad response status');
+	          }
+
+	          return caches.open('audio-cache').then(function (cache) {
+	            cache.put(that.props.section.section_url, response);
+	          });
+	        }).then(function () {
+	          that.setState({
+	            cached: true
+	          });
 	        });
-	      });
+	      } else if (this.state.cached === true) {
+	        caches.open('audio-cache').then(function (cache) {
+	          cache.keys().then(function (keys) {
+	            keys.forEach(function (key) {
+	              // console.log('key: ', key)
+	              if (key.url === that.props.section.section_url) {
+	                cache.delete(key);
+	              }
+	            });
+	          }).then(function () {
+	            that.setState({
+	              cached: false
+	            });
+	          });
+	        });
+	      }
 	    }
 
 	    // <FontIcon
@@ -90082,7 +90164,7 @@
 	              ),
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-9 col-sm-8 col-xs-8',
+	                { className: 'col-md-8 col-sm-8 col-xs-8',
 	                  style: { paddingLeft: '2em' } },
 	                _react2.default.createElement(
 	                  'span',
@@ -90099,7 +90181,7 @@
 	                'div',
 	                {
 	                  style: { display: displayDownload },
-	                  className: 'col-md-1 col-sm-2 col-xs-2' },
+	                  className: 'col-md-2 col-sm-2 col-xs-2' },
 	                _react2.default.createElement(
 	                  'a',
 	                  { onClick: this.handleCacheAudio },

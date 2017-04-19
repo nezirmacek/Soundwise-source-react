@@ -30,6 +30,17 @@ class _Course_Purchased extends Component {
 
   componentWillMount() {
 
+    // caches.keys().then(function(cacheKeys) {
+    //   console.log(cacheKeys); // ex: ["test-cache"]
+    // });
+
+    navigator.webkitTemporaryStorage.queryUsageAndQuota (
+        function(usedBytes, grantedBytes) {
+            console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes');
+        },
+        function(e) { console.log('Error', e);  }
+    );
+
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -67,7 +78,7 @@ class _Course_Purchased extends Component {
     // const course = this.props.courses[this.props.match.params.courseId]
     const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
 
-    console.log('playlist: ', this.props.currentPlaylist)
+
     return (
       <div>
         <SoundwiseHeader />

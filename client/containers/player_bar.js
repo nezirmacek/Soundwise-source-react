@@ -54,6 +54,8 @@ class _PlayerBar extends Component {
       let updates = {}
       updates['/users/' + userId + '/courses/' + this.props.currentCourse.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress
 
+      console.log('playProgress: ', playProgress)
+
       firebase.database().ref().update(updates)
 
     } else {

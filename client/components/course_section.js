@@ -99,11 +99,14 @@ class _CourseSection extends Component {
       .then(cache => {
         cache.keys()
         .then(keys => {
-          if(keys.indexOf(that.props.section.section_url) > -1) {
-            that.setState({
-              cached: true
-            })
-          }
+          keys.forEach(key => {
+            // console.log('key: ', key)
+            if(key.url === that.props.section.section_url) {
+              that.setState({
+                cached: true
+              })
+            }
+          })
         })
       })
     }
@@ -206,49 +209,78 @@ class _CourseSection extends Component {
       )
     } else {
       return (
-        <i className="fa fa-lg fa-play-circle-o" aria-hidden="true"></i>
+        <i className="material-icons">play_circle_outline</i>
       )
     }
   }
 
   renderCacheButton() {
-    if(this.state.cached) {
+    if(this.state.cached === true) {
       return (
-        <span>delete</span>
+        <span style={{color: '#F76B1C'}}>remove download</span>
       )
-    } else {
+    } else if(this.state.cached === false) {
       return (
-        <span>enable offline</span>
+          <span style={{color: '#F76B1C'}}>enable offline</span>
+      )
+    } else if(this.state.cached === 'processing') {
+      return (
+        <Spinner size={12} speed={1} />
       )
     }
   }
 
   handleCacheAudio() {
     const that = this
-    let headers = new Headers()
-    headers.append('access-control-allow-origin', '*')
-    headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    headers.append('access-control-allow-headers', 'content-type, accept')
-    headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
 
-    let request = new Request(this.props.section.section_url, {headers})
-
-    fetch(request)
-    .then(response => {
-      if(!response.ok) {
-        throw new TypeError('bad response status')
-      }
-
-      return caches.open('audio-cache')
-        .then(cache => {
-          cache.put(that.props.section.section_url, response)
+    if(this.state.cached === false) {
+        this.setState({
+          cached: 'processing'
         })
-    })
-    .then(() => {
-      that.setState({
-        cached: true
-      })
-    })
+
+        let headers = new Headers()
+        headers.append('access-control-allow-origin', '*')
+        headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        headers.append('access-control-allow-headers', 'content-type, accept')
+        headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
+
+        let request = new Request(this.props.section.section_url, {headers})
+
+        fetch(request)
+        .then(response => {
+          if(!response.ok) {
+            throw new TypeError('bad response status')
+          }
+
+          return caches.open('audio-cache')
+            .then(cache => {
+              cache.put(that.props.section.section_url, response)
+            })
+        })
+        .then(() => {
+          that.setState({
+            cached: true
+          })
+        })
+    } else if(this.state.cached === true) {
+        caches.open('audio-cache')
+        .then(cache => {
+          cache.keys()
+          .then(keys => {
+            keys.forEach(key => {
+              // console.log('key: ', key)
+              if(key.url === that.props.section.section_url) {
+                cache.delete(key)
+              }
+            })
+          })
+          .then(() => {
+            that.setState({
+              cached: false
+            })
+          })
+        })
+    }
   }
 
   // <FontIcon
@@ -288,7 +320,7 @@ class _CourseSection extends Component {
               {this.renderPlayButton()}
             </a>
           </div>
-          <div className='col-md-9 col-sm-8 col-xs-8'
+          <div className='col-md-8 col-sm-8 col-xs-8'
             style={{paddingLeft: '2em'}}>
             <span style={{fontSize: '18px'}}>
               {this.props.section.title}
@@ -299,8 +331,8 @@ class _CourseSection extends Component {
           </div>
           <div
             style={{display: displayDownload}}
-            className='col-md-1 col-sm-2 col-xs-2'>
-            <a onClick={this.handleCacheAudio}>
+            className='col-md-2 col-sm-2 col-xs-2'>
+            <a  onClick={this.handleCacheAudio}>
               {this.renderCacheButton()}
             </a>
           </div>

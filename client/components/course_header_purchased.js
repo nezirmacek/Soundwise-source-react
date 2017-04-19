@@ -15,6 +15,38 @@ class _CourseHeaderPurchased extends Component {
     super(props)
   }
 
+  componentWillReceiveProps(nextprops) {
+    if('caches' in window && nextprops.course.img_url_mobile) {
+        let headers = new Headers()
+        headers.append('access-control-allow-origin', '*')
+        headers.append('access-control-allow-methods', 'GET')
+        headers.append('access-control-allow-headers', 'content-type, accept')
+        headers.append('Content-Type', "image/jpeg;image/png;text/xml")
+
+        let request = new Request(nextprops.course.img_url_mobile, {headers})
+
+        fetch(request)
+        .then(response => {
+          if(!response.ok) {
+            throw new TypeError('bad response status')
+          }
+
+          return caches.keys()
+            .then(keys => {
+              keys.forEach(key => {
+                if(key.includes('sw-precache')) {
+                  caches.open(key)
+                  .then(cache => {
+                    cache.put(nextprops.course.img_url_mobile, response)
+                    console.log('image cached')
+                  })
+                }
+              })
+            })
+        })
+    }
+  }
+
   render() {
     let run_time = ''
     if(this.props.course.run_time) {
