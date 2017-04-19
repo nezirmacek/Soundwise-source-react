@@ -62218,9 +62218,13 @@
 	    key: 'renderPlayOrPause',
 	    value: function renderPlayOrPause() {
 	      if (this.state.playing) {
-	        return _react2.default.createElement('i', { style: styles.icon, className: 'fa  fa-pause-circle-o', 'aria-hidden': 'true' });
+	        return _react2.default.createElement('i', { style: styles.icon, className: 'pause_circle_outline', 'aria-hidden': 'true' });
 	      } else {
-	        return _react2.default.createElement('i', { style: styles.icon, className: 'fa  fa-play-circle-o', 'aria-hidden': 'true' });
+	        return _react2.default.createElement(
+	          'i',
+	          { style: styles.icon, className: 'material-icons' },
+	          'play_circle_outline'
+	        );
 	      }
 	    }
 	  }, {

@@ -98,11 +98,11 @@ class _CourseHeader extends Component {
   renderPlayOrPause() {
     if(this.state.playing) {
       return (
-        <i style={styles.icon} className="fa  fa-pause-circle-o" aria-hidden="true"></i>
+        <i style={styles.icon} className="pause_circle_outline" aria-hidden="true"></i>
       )
     } else {
       return (
-        <i style={styles.icon} className="fa  fa-play-circle-o" aria-hidden="true"></i>
+        <i style={styles.icon} className="material-icons">play_circle_outline</i>
       )
     }
   }
