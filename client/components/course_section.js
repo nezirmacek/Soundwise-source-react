@@ -265,6 +265,7 @@ class _CourseSection extends Component {
           if(!response.ok) {
             throw new TypeError('bad response status')
           }
+          console.log('response header (size): ', response)
 
           return caches.open('audio-cache')
             .then(cache => {
@@ -275,6 +276,10 @@ class _CourseSection extends Component {
           that.setState({
             cached: true
           })
+        })
+        .catch((err) => {
+          console.log('error in caching: ', err)
+          alert('Oops! Looks like your storage is full. To store this section, clear the cached images and files in your browser history to free up some space.')
         })
     } else if(this.state.cached === true) {
         caches.open('audio-cache')

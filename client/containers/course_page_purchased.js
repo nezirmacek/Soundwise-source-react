@@ -6,6 +6,7 @@ import firebase from 'firebase'
 import { withRouter } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Snackbar from 'material-ui/Snackbar'
 
 import { CourseHeaderPurchased } from '../components/course_header_purchased'
 import CourseBodyPurchased from '../components/course_body_purchased'
@@ -22,10 +23,12 @@ class _Course_Purchased extends Component {
         runtime: '',
         price: '',
         name: '',
-        description: ''
+        description: '',
       },
-      userCourses: {}
+      userCourses: {},
+      open: false
     }
+    this.handleSnackbarClose = this.handleSnackbarClose.bind(this)
   }
 
   componentWillMount() {
@@ -69,10 +72,37 @@ class _Course_Purchased extends Component {
         })
       }
     })
-
-
   }
 
+  componentDidMount() {
+    const that = this
+    setTimeout(() => {
+      that.setState({
+        open: true
+      })
+    }, 3000)
+  }
+
+  handleSnackbarClose() {
+    this.setState({
+      open: false
+    })
+  }
+
+  renderSnackbar() {
+    if('caches' in window) {
+      return (
+        <MuiThemeProvider >
+          <Snackbar
+            open = {this.state.open}
+            message = 'Click on "enable offline" to listen to a section later with no Internet.'
+            autoHideDuration={4000}
+            onRequestClose={this.handleSnackbarClose}
+          />
+        </MuiThemeProvider>
+      )
+    }
+  }
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
@@ -83,10 +113,12 @@ class _Course_Purchased extends Component {
       <div>
         <SoundwiseHeader />
          <CourseHeaderPurchased course={course}/>
-
         <MuiThemeProvider >
           <CourseBodyPurchased course={course} />
         </MuiThemeProvider>
+
+        {this.renderSnackbar()}
+
       </div>
     )
   }

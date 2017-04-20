@@ -89263,6 +89263,10 @@
 
 	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
 
+	var _Snackbar = __webpack_require__(1051);
+
+	var _Snackbar2 = _interopRequireDefault(_Snackbar);
+
 	var _course_header_purchased = __webpack_require__(863);
 
 	var _course_body_purchased = __webpack_require__(1048);
@@ -89304,8 +89308,10 @@
 	        name: '',
 	        description: ''
 	      },
-	      userCourses: {}
+	      userCourses: {},
+	      open: false
 	    };
+	    _this.handleSnackbarClose = _this.handleSnackbarClose.bind(_this);
 	    return _this;
 	  }
 
@@ -89352,6 +89358,39 @@
 	      });
 	    }
 	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var that = this;
+	      setTimeout(function () {
+	        that.setState({
+	          open: true
+	        });
+	      }, 3000);
+	    }
+	  }, {
+	    key: 'handleSnackbarClose',
+	    value: function handleSnackbarClose() {
+	      this.setState({
+	        open: false
+	      });
+	    }
+	  }, {
+	    key: 'renderSnackbar',
+	    value: function renderSnackbar() {
+	      if ('caches' in window) {
+	        return _react2.default.createElement(
+	          _MuiThemeProvider2.default,
+	          null,
+	          _react2.default.createElement(_Snackbar2.default, {
+	            open: this.state.open,
+	            message: 'Click on "enable offline" to listen to a section later with no Internet.',
+	            autoHideDuration: 4000,
+	            onRequestClose: this.handleSnackbarClose
+	          })
+	        );
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      // const course = this.props.courses[this.props.match.params.courseId]
@@ -89366,7 +89405,8 @@
 	          _MuiThemeProvider2.default,
 	          null,
 	          _react2.default.createElement(_course_body_purchased2.default, { course: course })
-	        )
+	        ),
+	        this.renderSnackbar()
 	      );
 	    }
 	  }]);
@@ -90111,6 +90151,7 @@
 	          if (!response.ok) {
 	            throw new TypeError('bad response status');
 	          }
+	          console.log('response header (size): ', response);
 
 	          return caches.open('audio-cache').then(function (cache) {
 	            cache.put(that.props.section.section_url, response);
@@ -90119,6 +90160,9 @@
 	          that.setState({
 	            cached: true
 	          });
+	        }).catch(function (err) {
+	          console.log('error in caching: ', err);
+	          alert('Oops! Looks like your storage is full. To store this section, clear the cached images and files in your browser history to free up some space.');
 	        });
 	      } else if (this.state.cached === true) {
 	        caches.open('audio-cache').then(function (cache) {
