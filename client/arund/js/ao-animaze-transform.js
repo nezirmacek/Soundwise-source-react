@@ -1,747 +1,760 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD */
 
-(function(aRD){
-    var _transformCSS                               = [
+(function (fn) {
+    if (typeof jQuery === 'undefined') {
+        throw 'aRunD Animaze Transform requires jQuery to be loaded first';
+    }
+    if (typeof aRunD === 'undefined') {
+        throw 'aRunD Animaze Transform requires aRunD to be loaded first';
+    }
+    fn(jQuery, aRunD);
+}(function ($, aRD) {
+    var transformCSS                                        = [
             'rotate', 'sizeScale', 'scale', 'perspective',
             'rotateX', 'rotateY', 'rotateZ',
             'scaleX', 'scaleY', 'scaleZ',
             'skewX', 'skewY',
             'translateX', 'translateY', 'translateZ'],
-        _transformExt                               = {
-            'rotate'                                : 'deg',
-            'rotateX'                               : 'deg',
-            'rotateY'                               : 'deg',
-            'rotateZ'                               : 'deg',
-            'scaleX'                                : '',
-            'scaleY'                                : '',
-            'scaleZ'                                : '',
-            'skewX'                                 : 'deg',
-            'skewY'                                 : 'deg',
-            'translateX'                            : '',
-            'translateY'                            : '',
-            'translateZ'                            : '',
-            'perspective'                           : 'px'
+        transformExt                                        = {
+            'rotate'                                        : 'deg',
+            'rotateX'                                       : 'deg',
+            'rotateY'                                       : 'deg',
+            'rotateZ'                                       : 'deg',
+            'scaleX'                                        : '',
+            'scaleY'                                        : '',
+            'scaleZ'                                        : '',
+            'skewX'                                         : 'deg',
+            'skewY'                                         : 'deg',
+            'translateX'                                    : '',
+            'translateY'                                    : '',
+            'translateZ'                                    : '',
+            'perspective'                                   : 'px'
         },
-        _transformOriginCSS                         = ['transformOrigin', 'transformOriginX', 'transformOriginY', 'transformOriginZ'],
-        _getElementTransform                        = function($el){
+        transformOriginCSS                                  = ['transformOrigin', 'transformOriginX', 'transformOriginY', 'transformOriginZ'],
+        getElementTransform                                 = function ($el){
             return aRD.getData($el, 'aocss__transform', {});
         },
-        _getElementTransformOrigin                  = function($el){
+        getElementTransformOrigin                           = function ($el){
             return aRD.getData($el, 'aocss___transformOrigin', {});
-        }
+        },
+        skewAxis                                            = ['X', 'Y']
     ;
 
-    aRD.getElementTransform                         = _getElementTransform;
+    aRD.getElementTransform                                 = getElementTransform;
 
-    aRD.aniAdd('perspective', {
-            init                                    : function($el, params){
-                this.to                             = params.range && params.range.from ? params.range.from : false;
-                this.from                           = params.range && params.range.to ? params.range.to : false;
-            },
-            start                                   : function($el){
-                if( !this.duration ){
-                    return;
-                }
-                if( this.from === false ){
-                    var transform                   = _getElementTransform($el);
-                    this.from                       = {
-                        value   : transform.perspective || transform.perspective === 0 ? transform.perspective : 0
-                    };
-                }
-                this.perc                           = this.to.value - this.from.value;
-                if( !this.perc ){
-                    this.duration                   = 0;
-                    return;
-                }
-
-                return {
-                    perspective                     : this.from.value
-                };
-            },
-            step                                    : function(){
-                return this.perc ? {
-                    perspective                         : this.from.value + (this.perc * this.delta)
-                } : null;
-            },
-            finish                                  : function(){
-                return this.to ? {
-                    perspective                         : this.to.value
-                } : null;
+    aRD.animation.type('perspective', {
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val);
+            data.to                                         = val.range && val.range.from ? val.range.from.value : false;
+            data.from                                       = val.range && val.range.to ? val.range.to.value : false;
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            if( !data.duration ){
+                return;
             }
-        }, {
-            list                                    : [
-                { byCheck                               : aRD.createTypeCheck('range', 'sizeRange') },
-            ]
-        });
-    aRD.aniAdd('rotate',
-        {
-            setAxis                                 : function(params){
-                var i , axis, range;
-                this.axis                           = ['X'];
-                switch(params.type){
-                    case 'rotateX':
-                    case 'X':
-                        this._css                   = {
-                            rangeX                      : 'rotateX'
-                        };
-                        break;
-                    case 'rotateY':
-                    case 'Y':
-                        this._css                   = {
-                            rangeX                      : 'rotateY'
-                        };
-                        break;
-                    case 'rotateZ':
-                    case 'Z':
-                        this._css                   = {
-                            rangeX                      : 'rotateZ'
-                        };
-                        break;
-                    case 'rotateXY':
-                    case 'XY':
-                        this._css                   = {
-                            rangeX                      : 'rotateX',
-                            rangeY                      : 'rotateY'
-                        };
-                        this.axis                   = ['X', 'Y'];
-                        break;
-                    case 'rotate3D':
-                    case '3D':
-                        this._css                   = {
-                            rangeX                      : 'rotateX',
-                            rangeY                      : 'rotateY',
-                            rangeZ                      : 'rotateZ',
-                        };
-                        this.axis                   = ['X', 'Y', 'Z'];
-                        break;
-                    default:
-                        this._css                   = {
-                            rangeX                      : 'rotate'
-                        };
-                        break;
-                }
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    range                           = params['range' + axis] || {from: 0};
-                    this['toVal' + axis]            = aRD.toNumber(range.from, 0);
-                    this['fromVal' + axis]          = typeof(range.to) === 'number' ? range.to : null;
-                }
-            },
-            init                                    : function($el, params){
-                this.times                          = aRD.toNumber(params.times, 2);
-                this.multiply                       = params.direction === 'left' ? 1 : -1;
-                this.setAxis(params);
-            },
-            start                                   : function($el){
-                if( !this.duration ){
-                    return;
-                }
-                var css                             = {},
-                    transform                       = _getElementTransform($el),
-                    cssName, axis, i;
-                this.dynamic                        = [];
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    if(this['fromVal' + axis] === null){
-                        cssName                         = this._css['range' + this.axis[i]];
-                        this['fromVal' + axis]          = transform[cssName] || transform[cssName] === 0 ? transform[cssName] : 0;
-                    }
-                    this['fixFrom' + axis]          = this['fromVal' + axis] + this.multiply * 360 * this.times;
-
-                    this['perc' + axis]             = this['toVal' + axis] - this['fixFrom' + axis];
-                    if( this['perc' + axis] ){
-                        this.dynamic.push(axis);
-                        css['range' + axis]         = this['fixFrom' + axis];
-                    }else{
-                        css['range' + axis]         = this['toVal' + axis];
-                    }
-                }
-                if( !this.dynamic.length ){
-                    this.duration                   = 0;
-                    return;
-                }
-                return aRD.createByObject(css, this._css );
-            },
-            step                                    : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.dynamic.length; i++) {
-                    css['range' + this.dynamic[i]]  = this['fixFrom' + this.dynamic[i]] + (this['perc' + this.dynamic[i]] * this.delta);
-                }
-                return aRD.createByObject(css, this._css );
-            },
-            finish                                  : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.axis.length; i++) {
-                    css['range' + this.axis[i]]     = this['toVal' + this.axis[i]];
-                }
-                return aRD.createByObject(css, this._css );
-            }
-        }, {
-            list                                    : [
-                { byCheck                               : aRD.createTypeCheck('times', 'number') },
-                { byCheck                               : {
-                    name                                    : 'direction',
-                    allowed                                 : ['left', 'right']
-                } },
-                { byCheck                               : {
-                    name                                    : 'type',
-                    allowed                                 : ['rotateX', 'rotateY', 'rotateZ', 'rotateXY', 'rotate3D', 'X', 'Y', 'Z', 'XY', '3D']
-                } },
-                { byCheck                               : aRD.createTypeCheck('rangeX', 'degreeRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeY', 'degreeRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeZ', 'degreeRange') }
-            ]
-        }
-    );
-    aRD.aniAdd('scale',
-        {
-            init                                    : function($el, params){
-                var i , axis, range;
-                this.axis                           = ['X'];
-                switch(params.type){
-                    case 'scaleX':
-                    case 'X':
-                        this._css                   = {
-                            rangeX                      : 'scaleX'
-                        };
-                        break;
-                    case 'scaleY':
-                    case 'Y':
-                        this._css                   = {
-                            rangeX                      : 'scaleY'
-                        };
-                        break;
-                    case 'scaleZ':
-                    case 'Z':
-                        this._css                   = {
-                            rangeX                      : 'scaleZ'
-                        };
-                        break;
-                    case 'scaleXY':
-                    case 'XY':
-                        this._css                   = {
-                            rangeX                      : 'scaleX',
-                            rangeY                      : 'scaleY'
-                        };
-                        this.axis                   = ['X', 'Y'];
-                        break;
-                    case 'scale3D':
-                    case '3D':
-                        this._css                   = {
-                            rangeX                      : 'scaleX',
-                            rangeY                      : 'scaleY',
-                            rangeZ                      : 'scaleZ',
-                        };
-                        this.axis                   = ['X', 'Y', 'Z'];
-                        break;
-                    default:
-                        this._css                   = {
-                            rangeX                      : 'scaleX',
-                            rangeY                      : 'scaleY'
-                        };
-                        params.rangeY               = params.rangeX;
-                        this.axis                   = ['X', 'Y'];
-                        break;
-                }
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    range                           = params['range' + axis] || {from: 100};
-                    
-                    this['toVal' + axis]            = aRD.toNumber(range.from, 100) / 100;
-                    this['fromVal' + axis]          = typeof(range.to) === 'number' ? aRD.toNumber(range.to, 0) / 100 : null;
-                }
-            },
-            start                                   : function($el){
-                if( !this.duration ){
-                    return;
-                }
-                var css                             = {},
-                    transform                       = _getElementTransform($el),
-                    cssName, axis, i;
-                this.dynamic                        = [];
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    if(this['fromVal' + axis] === null){
-                        cssName                         = this._css['range' + this.axis[i]];
-                        this['fromVal' + axis]          = transform[cssName] || transform[cssName] === 0 ? transform[cssName] : (this['toVal' + axis] ? 0 : 1);
-                    }
-                    this['perc' + axis]             = this['toVal' + axis] - this['fromVal' + axis];
-                    if( this['perc' + axis] ){
-                        this.dynamic.push(axis);
-                        css['range' + axis]         = this['fromVal' + axis];
-                    }else{
-                        css['range' + axis]         = this['toVal' + axis];
-                    }
-                }
-                if( !this.dynamic.length ){
-                    this.duration                   = 0;
-                    return;
-                }
-                return aRD.createByObject(css, this._css );
-            },
-            step                                    : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.dynamic.length; i++) {
-                    css['range' + this.dynamic[i]]  = this['fromVal' + this.dynamic[i]] + (this['perc' + this.dynamic[i]] * this.delta);
-                }
-                return aRD.createByObject(css, this._css );
-            },
-            finish                                  : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.axis.length; i++) {
-                    css['range' + this.axis[i]]     = this['toVal' + this.axis[i]];
-                }
-                return aRD.createByObject(css, this._css );
-            }
-        }, {
-            list                                    : [
-                { byCheck                               : {
-                    name                                    : 'type',
-                    allowed                                 : ['scaleX', 'scaleY', 'scaleZ', 'scaleXY', 'scale3D', 'X', 'Y', 'Z', 'XY', '3D']
-                } },
-                { byCheck                               : aRD.createTypeCheck('rangeX', 'percentRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeY', 'percentRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeZ', 'percentRange') }
-            ]
-        });
-    aRD.aniAdd('translate',
-        {
-            init                                    : function($el, params){
-                var i , axis, range;
-                this.axis                           = ['X'];
-                switch(params.type){
-                    case 'translateX':
-                    case 'X':
-                        this._css                   = {
-                            rangeX                      : 'translateX'
-                        };
-                        break;
-                    case 'translateY':
-                    case 'Y':
-                        this._css                   = {
-                            rangeX                      : 'translateY'
-                        };
-                        break;
-                    case 'translateZ':
-                    case 'Z':
-                        this._css                   = {
-                            rangeX                      : 'translateZ'
-                        };
-                        break;
-                    case 'translateXY':
-                    case 'XY':
-                        this._css                   = {
-                            rangeX                      : 'translateX',
-                            rangeY                      : 'translateY'
-                        };
-                        this.axis                   = ['X', 'Y'];
-                        break;
-                    case 'translate3D':
-                    case '3D':
-                        this._css                   = {
-                            rangeX                      : 'translateX',
-                            rangeY                      : 'translateY',
-                            rangeZ                      : 'translateZ',
-                        };
-                        this.axis                   = ['X', 'Y', 'Z'];
-                        break;
-                    default:
-                        this._css                   = {
-                            rangeX                      : 'translateX',
-                            rangeY                      : 'translateY'
-                        };
-                        params.rangeY               = params.rangeX;
-                        this.axis                   = ['X', 'Y'];
-                        break;
-                }
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    range                           = params['range' + axis] || {
-                        from                        : {
-                            value                           : 0,
-                            type                            : 'px'
-                        }
-                    };
-                    
-                    this['toVal' + axis]            = range.from;
-                    this['fromVal' + axis]          = typeof(range.to) !== 'undefined' ? range.to : null;
-                }
-            },
-            start                                   : function($el){
-                if( !this.duration ){
-                    return;
-                }
-                var css                             = {},
-                    transform                       = _getElementTransform($el),
-                    cssName, axis, i;
-                this.dynamic                        = [];
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    if(this['fromVal' + axis] === null){
-                        cssName                     = this._css['range' + this.axis[i]];
-                        this['fromVal' + axis]      = transform[cssName] || transform[cssName] === 0 ? aRD.types.size.parse(transform[cssName]) : this['toVal' + axis];
-                    }
-                    if( this['toVal' + axis].value === 0 ){
-                        this['toVal' + axis].type   = this['fromVal' + axis].type;
-                    }
-                    if( this._css['range' + axis] === 'translateY' ){
-                        aRD.parentHeightToType($el, this['fromVal' + axis], this['toVal' + axis].type);
-                    }else if( this._css['range' + axis] === 'translateX' ){
-                        aRD.parentWidthToType($el, this['fromVal' + axis], this['toVal' + axis].type);
-                    }else{
-                        this['fromVal' + axis].type = 'px';
-                        this['toVal' + axis].type   = 'px';
-                    }
-                    this['perc' + axis]             = this['toVal' + axis].value - this['fromVal' + axis].value;
-                    if( this['perc' + axis] ){
-                        this.dynamic.push(axis);
-                        css['range' + axis]         = this['fromVal' + axis].value + this['fromVal' + axis].type;
-                    }else{
-                        css['range' + axis]         = this['toVal' + axis].value + this['fromVal' + axis].type;
-                    }
-                }
-                if( !this.dynamic.length ){
-                    this.duration                   = 0;
-                    return;
-                }
-                return aRD.createByObject(css, this._css );
-            },
-            step                                    : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.dynamic.length; i++) {
-                    css['range' + this.dynamic[i]]  = (this['fromVal' + this.dynamic[i]].value + (this['perc' + this.dynamic[i]] * this.delta)) + this['fromVal' + this.dynamic[i]].type;
-                }
-                return aRD.createByObject(css, this._css );
-            },
-            finish                                  : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.axis.length; i++) {
-                    css['range' + this.axis[i]]     = this['toVal' + this.axis[i]].value + this['toVal' + this.axis[i]].type;
-                }
-                return aRD.createByObject(css, this._css );
-            }
-        }, {
-            list                                    : [
-                { byCheck                               : {
-                    name                                    : 'type',
-                    allowed                                 : ['translateX', 'translateY', 'translateZ', 'translateXY', 'translate3D', 'X', 'Y', 'Z', 'XY', '3D']
-                } },
-                { byCheck                               : aRD.createTypeCheck('rangeX', 'sizeRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeY', 'sizeRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeZ', 'sizeRange') }
-            ]
-        });
-    aRD.aniAdd('skew', {
-            axis                                    : ['X', 'Y'],
-            init                                    : function($el, params){
-                var transform                       = _getElementTransform($el),
-                    from, i , axis;
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    if( params['range' + axis] ){
-                        from                        = transform['skew' + axis] || transform['skew' + axis] === 0 ? transform['skew' + axis] : 10;
-                        this['has' + axis]          = true;
-                        this['toDegree' + axis]     = aRD.toNumber(params['range' + axis].from, 0);
-                        this['fromDegree' + axis]   = aRD.toNumber(params['range' + axis].to, from);
-                    }
-                }
-            },
-            start                                   : function(){
-                var css                             = {},
-                    axis, i;
-                this.skews                          = [];
-                for (i = 0; i < this.axis.length; i++) {
-                    axis                            = this.axis[i];
-                    if( this['has' + axis] ){
-                        this['perc' + axis]         = this['toDegree' + axis] - this['fromDegree' + axis];
-                        if( this['perc' + axis] ){
-                            this.skews.push(axis);
-                            css['skew' + axis]      = this['fromDegree' + axis];
-                        }
-                    }
-                }
-                if( !this.skews.length ){
-                    this.duration                   = 0;
-                    return;
-                }
-                return css;
-            },
-            step                                    : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.skews.length; i++) {
-                    css['skew' + this.skews[i]]     = this['fromDegree' + this.skews[i]] + (this['perc' + this.skews[i]] * this.delta);
-                }
-                return css;
-            },
-            finish                                  : function(){
-                var css                             = {},
-                    i;
-                for (i = 0; i < this.axis.length; i++) {
-                    if( this['has' + this.axis[i]] ){
-                        css['skew' + this.axis[i]]      = this['toDegree' + this.axis[i]];
-                    }
-                }
-                return css;
-            }
-        }, {
-            list                                    : [
-                { byCheck                               : aRD.createTypeCheck('rangeX', 'degreeRange') },
-                { byCheck                               : aRD.createTypeCheck('rangeY', 'degreeRange') }
-            ]
-        });
-    aRD.aniAdd('fitscale', {
-            init                                    : function($el, params){
-                if( params.height || params.width ){
-                   if( params.height ){
-                        if( params.height.from ){
-                            this.fromHeight             = params.height.from;
-                        }
-                        if( params.height.to ){
-                            this.toHeight               = params.height.to;
-                        }
-                    }
-                    if( params.width ){
-                        if( params.width.from ){
-                            this.fromWidth             = params.width.from;
-                        }
-                        if( params.width.to ){
-                            this.toWidth                = params.width.to;
-                        }
-                    }
-                }
-            },
-            start                                   : function($el){
-                var
-                    size                            = aRD.getWindowSize(),
-                    scales                          = [],
-                    tmp
-                ;
-                if( !(this.fromHeight || this.fromWidth) ){
-                    tmp                             = $el.outerHeight();
-                    this.fromHeight                 = tmp + aRD.inRange( Math.floor(tmp * 0.1), 50, 100 );
-                    tmp                             = $el.outerWidth();
-                    this.fromWidth                  = tmp + aRD.inRange( Math.floor(tmp * 0.1), 50, 100 );
-                }
-                if( this.fromHeight && size.height < this.fromHeight ){
-                    scales.push( size.height / this.fromHeight );
-                }
-                if( this.fromWidth && size.width < this.fromWidth ){
-                    scales.push( size.width / this.fromWidth );
-                }
-
-                if( !scales.length ){
-                    if( this.toHeight && size.height > this.toHeight ){
-                        scales.push( size.height / this.toHeight );
-                    }
-                    if( this.toWidth && size.width > this.toWidth ){
-                        scales.push( size.width / this.toWidth );
-                    }
-                }
-
-                return {
-                    sizeScale                       : scales.length ? Math.min.apply(Math, scales) : 1
+            if( data.from === false ){
+                var transform                               = getElementTransform($el);
+                data.from                                   = {
+                    value           : transform.perspective || transform.perspective === 0 ? transform.perspective : 0
                 };
             }
-        }, {
-            list                                    : [
-                { byCheck                               : aRD.createTypeCheck('width', 'range') },
-                { byCheck                               : aRD.createTypeCheck('height', 'range') }
-            ]
-        }, true, true, true);
-    aRD.aniAdd('transformOrigin', {
-            check                                   : function($el, params){
-                return !!(params.height || params.width);
-            },
-            init                                    : function($el, params){
-                this._css                           = {};
-                if( params.height ){
-                    if( params.height.from ){
-                        this.toHeight               = params.height.from;
-                    }
-                    if( params.height.to ){
-                        this.fromHeight             = params.height.to;
-                    }
-                    this._css.height                = 'transformOriginY';
-                }
-                if( params.width ){
-                    if( params.width.from ){
-                        this.toWidth                = params.width.from;
-                    }
-                    if( params.width.to ){
-                        this.fromWidth              = params.width.to;
-                    }
-                    this._css.width                 = 'transformOriginX';
-                }
-                if( params.distance ){
-                    if( params.distance.from ){
-                        this.toDistance             = params.distance.from;
-                    }
-                    if( params.distance.to ){
-                        this.fromDistance           = params.distance.to;
-                    }
-                    this._css.distance              = 'transformOriginZ';
-                }
-            },
-            start                                   : function($el){
-                if( !this.duration ){
-                    return;
-                }
-                var obj                             = _getElementTransformOrigin($el);
-                this._parts                         = [];
-                this._uparts                        = [];
-                this._current                       = {};
-                if( this.toHeight ){
-                    if( !this.fromHeight ){
-                        this.fromHeight             = obj.transformOriginY || {
-                            value                   : 50,
-                            type                    : '%'
-                        };
-                    }
-                    aRD.parentHeightToType($el, this.fromHeight, this.toHeight.type);
-                    this._current.height            = jQuery.extend({}, this.fromHeight);
-                    if( this.fromHeight.value !== this.toHeight.value ){
-                        this._parts.push('height');
-                        this._uparts.push('Height');
-                    }
-                }
-                if( this.toWidth ){
-                    if( !this.fromWidth ){
-                        this.fromWidth              = obj.transformOriginX || {
-                            value                   : 50,
-                            type                    : '%'
-                        };
-                    }
-                    aRD.parentWidthToType($el, this.fromWidth, this.toWidth.type);
-                    this._current.width             = jQuery.extend({}, this.fromWidth);
-                    if( this.fromWidth.value !== this.toWidth.value ){
-                        this._parts.push('width');
-                        this._uparts.push('Width');
-                    }
-                }
-                if( this.toDistance ){
-                    if( !this.fromDistance ){
-                        this.fromDistance              = obj.transformOriginX || {
-                            value                   : 0,
-                            type                    : 'px'
-                        };
-                    }
-                    this._current.distance             = jQuery.extend({}, this.fromDistance);
-                    if( this.fromDistance.value !== this.toDistance.value ){
-                        this._parts.push('distance');
-                        this._uparts.push('Distance');
-                    }
-                }
-                if( !this._parts.length ){
-                    this.duration                   = 0;
-                }
-                return aRD.createByObject(this._current, this._css);
-            },
-            step                                    : function(){
-                var tmp;
-                for (var i = 0; i < this._parts.length; i++) {
-                    tmp                             = aRD.ucfirst(this._parts[i]);
-                    this._current[this._parts[i]].value = aRD.getValuesDelta(
-                        this['from' + this._uparts[i]].value,
-                        this['to' + this._uparts[i]].value,
-                        this.delta
-                    );
-                }
-                return aRD.createByObject(this._current, this._css);
-            },
-            finish                                  : function(){
-                return aRD.createByObject({
-                    'height'                        : this.toHeight,
-                    'width'                         : this.toWidth,
-                    'distance'                      : this.toDistance
-                }, this._css );
+            data.perc                                       = data.to - data.from;
+            if( !data.perc ){
+                data.duration                               = 0;
+                return;
             }
-        }, {
-            list                                    : [
-                { byCheck : aRD.createTypeCheck('width', 'sizeRange')},
-                { byCheck : aRD.createTypeCheck('height', 'sizeRange')},
-                { byCheck : aRD.createTypeCheck('distance', 'sizeRange')}
-            ]
-        }, false, false, false, 'transitionOrigin'
-    );
-    aRD.addStyling(_transformCSS, function($el, css, styles){
-        var obj                                     = _getElementTransform($el),
+
+            return {
+                perspective                                 : data.from
+            };
+        },
+        stepFn                                              : function ($el, data){
+            return data.perc ? {
+                perspective                                 : data.from + (data.perc * data.delta)
+            } : null;
+        },
+        finishFn                                            : function ($el, data){
+            return data.to ? {
+                perspective                                 : data.to
+            } : null;
+        },
+        properties                                          : [
+            { checks                                            : aRD.parser.newCheck('range', 'sizeRange') },
+        ]
+    });
+    aRD.animation.type('rotate',{
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val),
+                i , axis, range
+            ;
+            data.times                                      = aRD.toNumber(val.times, 2);
+            data.multiply                                   = val.direction === 'left' ? 1 : -1;
+            data.axis                                       = ['X'];
+            switch(val.type){
+                case 'rotateX':
+                case 'X':
+                    data._css                               = {
+                        rangeX                              : 'rotateX'
+                    };
+                    break;
+                case 'rotateY':
+                case 'Y':
+                    data._css                               = {
+                        rangeX                              : 'rotateY'
+                    };
+                    break;
+                case 'rotateZ':
+                case 'Z':
+                    data._css                               = {
+                        rangeX                              : 'rotateZ'
+                    };
+                    break;
+                case 'rotateXY':
+                case 'XY':
+                    data._css                               = {
+                        rangeX                              : 'rotateX',
+                        rangeY                              : 'rotateY'
+                    };
+                    data.axis                               = ['X', 'Y'];
+                    break;
+                case 'rotate3D':
+                case '3D':
+                    data._css                               = {
+                        rangeX                              : 'rotateX',
+                        rangeY                              : 'rotateY',
+                        rangeZ                              : 'rotateZ',
+                    };
+                    data.axis                               = ['X', 'Y', 'Z'];
+                    break;
+                default:
+                    data._css                               = {
+                        rangeX                              : 'rotate'
+                    };
+                    break;
+            }
+            for (i = 0; i < data.axis.length; i++) {
+                axis                                        = data.axis[i];
+                range                                       = val['range' + axis] || {from: 0};
+                data['toVal' + axis]                        = aRD.toNumber(range.from, 0);
+                data['fromVal' + axis]                      = typeof(range.to) === 'number' ? range.to : null;
+            }
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            if( !data.duration ){
+                return;
+            }
+            var css                                         = {},
+                transform                                   = getElementTransform($el),
+                cssName, axis, i;
+            data.dynamic                                    = [];
+            for (i = 0; i < data.axis.length; i++) {
+                axis                                        = data.axis[i];
+                if(data['fromVal' + axis] === null){
+                    cssName                                 = data._css['range' + data.axis[i]];
+                    data['fromVal' + axis]                  = transform[cssName] || transform[cssName] === 0 ? transform[cssName] : 0;
+                }
+                data['fixFrom' + axis]                      = data['fromVal' + axis] + data.multiply * 360 * data.times;
+
+                data['perc' + axis]                         = data['toVal' + axis] - data['fixFrom' + axis];
+                if( data['perc' + axis] ){
+                    data.dynamic.push(axis);
+                    css['range' + axis]                     = data['fixFrom' + axis];
+                }else{
+                    css['range' + axis]                     = data['toVal' + axis];
+                }
+            }
+            if( !data.dynamic.length ){
+                data.duration                               = 0;
+                return;
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        stepFn                                              : function ($el, data){
+            var css                                         = {};
+            for (var i = 0; i < data.dynamic.length; i++) {
+                css['range' + data.dynamic[i]]              = data['fixFrom' + data.dynamic[i]] + (data['perc' + data.dynamic[i]] * data.delta);
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        finishFn                                            : function ($el, data){
+            var css                                         = {};
+            for (var i = 0; i < data.axis.length; i++) {
+                css['range' + data.axis[i]]                 = data['toVal' + data.axis[i]];
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        properties                                          : [
+            { checks                                        : aRD.parser.newCheck('times', 'number') },
+            { checks                                        : {
+                name                                            : 'direction',
+                allowed                                         : ['left', 'right']
+            } },
+            { checks                                        : {
+                name                                            : 'type',
+                allowed                                         : ['rotateX', 'rotateY', 'rotateZ', 'rotateXY', 'rotate3D', 'X', 'Y', 'Z', 'XY', '3D']
+            } },
+            { checks                                        : aRD.parser.newCheck('rangeX', 'degreeRange') },
+            { checks                                        : aRD.parser.newCheck('rangeY', 'degreeRange') },
+            { checks                                        : aRD.parser.newCheck('rangeZ', 'degreeRange') }
+        ]
+    });
+    aRD.animation.type('scale', {
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val),
+                i , axis, range;
+            data.axis                                       = ['X'];
+            switch(val.type){
+                case 'scaleX':
+                case 'X':
+                    data._css                               = {
+                        rangeX                              : 'scaleX'
+                    };
+                    break;
+                case 'scaleY':
+                case 'Y':
+                    data._css                               = {
+                        rangeX                              : 'scaleY'
+                    };
+                    break;
+                case 'scaleZ':
+                case 'Z':
+                    data._css                               = {
+                        rangeX                              : 'scaleZ'
+                    };
+                    break;
+                case 'scaleXY':
+                case 'XY':
+                    data._css                               = {
+                        rangeX                              : 'scaleX',
+                        rangeY                              : 'scaleY'
+                    };
+                    data.axis                               = ['X', 'Y'];
+                    break;
+                case 'scale3D':
+                case '3D':
+                    data._css                               = {
+                        rangeX                              : 'scaleX',
+                        rangeY                              : 'scaleY',
+                        rangeZ                              : 'scaleZ',
+                    };
+                    data.axis                               = ['X', 'Y', 'Z'];
+                    break;
+                default:
+                    data._css                               = {
+                        rangeX                              : 'scaleX',
+                        rangeY                              : 'scaleY'
+                    };
+                    val.rangeY                              = val.rangeX;
+                    data.axis                               = ['X', 'Y'];
+                    break;
+            }
+            for (i = 0; i < data.axis.length; i++) {
+                axis                                        = data.axis[i];
+                range                                       = val['range' + axis] || {from: 100};
+                
+                data['toVal' + axis]                        = aRD.toNumber(range.from, 100) / 100;
+                data['fromVal' + axis]                      = typeof(range.to) === 'number' ? aRD.toNumber(range.to, 0) / 100 : null;
+            }
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            if( !data.duration ){
+                return;
+            }
+            var css                                         = {},
+                transform                                   = getElementTransform($el),
+                cssName, axis, i;
+            data.dynamic                                    = [];
+            for (i = 0; i < data.axis.length; i++) {
+                axis                                        = data.axis[i];
+                if(data['fromVal' + axis] === null){
+                    cssName                                 = data._css['range' + data.axis[i]];
+                    data['fromVal' + axis]                  = transform[cssName] || transform[cssName] === 0 ? transform[cssName] : (data['toVal' + axis] ? 0 : 1);
+                }
+                data['perc' + axis]                         = data['toVal' + axis] - data['fromVal' + axis];
+                if( data['perc' + axis] ){
+                    data.dynamic.push(axis);
+                    css['range' + axis]                     = data['fromVal' + axis];
+                }else{
+                    css['range' + axis]                     = data['toVal' + axis];
+                }
+            }
+            if( !data.dynamic.length ){
+                data.duration                               = 0;
+                return;
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        stepFn                                              : function ($el, data){
+            var css                                         = {},
+                i;
+            for (i = 0; i < data.dynamic.length; i++) {
+                css['range' + data.dynamic[i]]              = data['fromVal' + data.dynamic[i]] + (data['perc' + data.dynamic[i]] * data.delta);
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        finishFn                                            : function ($el, data){
+            var css                                         = {},
+                i;
+            for (i = 0; i < data.axis.length; i++) {
+                css['range' + data.axis[i]]                 = data['toVal' + data.axis[i]];
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        properties                                          : [
+            { checks                                            : {
+                name                                                : 'type',
+                allowed                                             : ['scaleX', 'scaleY', 'scaleZ', 'scaleXY', 'scale3D', 'X', 'Y', 'Z', 'XY', '3D']
+            } },
+            { checks                                            : aRD.parser.newCheck('rangeX', 'percentRange') },
+            { checks                                            : aRD.parser.newCheck('rangeY', 'percentRange') },
+            { checks                                            : aRD.parser.newCheck('rangeZ', 'percentRange') }
+        ]
+    });
+    aRD.animation.type('translate', {
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val),
+                i , axis, range
+            ;
+            data.axis                                       = ['X'];
+            switch(val.type){
+                case 'translateX':
+                case 'X':
+                    data._css                               = {
+                        rangeX                              : 'translateX'
+                    };
+                    break;
+                case 'translateY':
+                case 'Y':
+                    data._css                               = {
+                        rangeX                              : 'translateY'
+                    };
+                    break;
+                case 'translateZ':
+                case 'Z':
+                    data._css                               = {
+                        rangeX                              : 'translateZ'
+                    };
+                    break;
+                case 'translateXY':
+                case 'XY':
+                    data._css                               = {
+                        rangeX                              : 'translateX',
+                        rangeY                              : 'translateY'
+                    };
+                    data.axis                               = ['X', 'Y'];
+                    break;
+                case 'translate3D':
+                case '3D':
+                    data._css                               = {
+                        rangeX                              : 'translateX',
+                        rangeY                              : 'translateY',
+                        rangeZ                              : 'translateZ',
+                    };
+                    data.axis                               = ['X', 'Y', 'Z'];
+                    break;
+                default:
+                    data._css                               = {
+                        rangeX                              : 'translateX',
+                        rangeY                              : 'translateY'
+                    };
+                    val.rangeY                              = val.rangeX;
+                    data.axis                               = ['X', 'Y'];
+                    break;
+            }
+            for (i = 0; i < data.axis.length; i++) {
+                axis                                        = data.axis[i];
+                range                                       = val['range' + axis] || {
+                    from                                    : {
+                        value                                   : 0,
+                        type                                    : 'px'
+                    }
+                };
+                
+                data['toVal' + axis]                        = range.from;
+                data['fromVal' + axis]                      = typeof(range.to) !== 'undefined' ? range.to : null;
+            }
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            if( !data.duration ){
+                return;
+            }
+            var css                                         = {},
+                transform                                   = getElementTransform($el),
+                cssName, axis, i;
+            data.dynamic                                    = [];
+            for (i = 0; i < data.axis.length; i++) {
+                axis                                        = data.axis[i];
+                if(data['fromVal' + axis] === null){
+                    cssName                                 = data._css['range' + data.axis[i]];
+                    data['fromVal' + axis]                  = transform[cssName] || transform[cssName] === 0 ? aRD.type('size').parse(transform[cssName]) : data['toVal' + axis];
+                }
+                if( data['toVal' + axis].value === 0 ){
+                    data['toVal' + axis].type               = data['fromVal' + axis].type;
+                }
+                if( data._css['range' + axis] === 'translateY' ){
+                    aRD.parentHeightToType($el, data['fromVal' + axis], data['toVal' + axis].type);
+                }else if( data._css['range' + axis] === 'translateX' ){
+                    aRD.parentWidthToType($el, data['fromVal' + axis], data['toVal' + axis].type);
+                }else{
+                    data['fromVal' + axis].type = 'px';
+                    data['toVal' + axis].type               = 'px';
+                }
+                data['perc' + axis]                         = data['toVal' + axis].value - data['fromVal' + axis].value;
+                if( data['perc' + axis] ){
+                    data.dynamic.push(axis);
+                    css['range' + axis]                     = data['fromVal' + axis].value + data['fromVal' + axis].type;
+                }else{
+                    css['range' + axis]                     = data['toVal' + axis].value + data['fromVal' + axis].type;
+                }
+            }
+            if( !data.dynamic.length ){
+                data.duration                               = 0;
+                return;
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        stepFn                                              : function ($el, data){
+            var css                                         = {},
+                i;
+            for (i = 0; i < data.dynamic.length; i++) {
+                css['range' + data.dynamic[i]]              = (data['fromVal' + data.dynamic[i]].value + (data['perc' + data.dynamic[i]] * data.delta)) + data['fromVal' + data.dynamic[i]].type;
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        finishFn                                            : function ($el, data){
+            var css                                         = {},
+                i;
+            for (i = 0; i < data.axis.length; i++) {
+                css['range' + data.axis[i]]                 = data['toVal' + data.axis[i]].value + data['toVal' + data.axis[i]].type;
+            }
+            return aRD.createByObject(css, data._css );
+        },
+        properties                                          : [
+            { checks                                            : {
+                name                                                : 'type',
+                allowed                                             : ['translateX', 'translateY', 'translateZ', 'translateXY', 'translate3D', 'X', 'Y', 'Z', 'XY', '3D']
+            } },
+            { checks                                            : aRD.parser.newCheck('rangeX', 'sizeRange') },
+            { checks                                            : aRD.parser.newCheck('rangeY', 'sizeRange') },
+            { checks                                            : aRD.parser.newCheck('rangeZ', 'sizeRange') }
+        ]
+    });
+    aRD.animation.type('skew', {
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val),
+                i , axis
+            ;
+            for (i = 0; i < skewAxis.length; i++) {
+                axis                                        = skewAxis[i];
+                if( val['range' + axis] ){
+                    data['has' + axis]                      = true;
+                    data['toDegree' + axis]                 = aRD.toNumber(val['range' + axis].from, 0);
+                    data['fromDegree' + axis]               = aRD.toNumber(val['range' + axis].to);
+                }
+            }
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            var css                                         = {},
+                transform                                   = getElementTransform($el),
+                axis, i
+            ;
+            data.skews                                      = [];
+            for (i = 0; i < skewAxis.length; i++) {
+                axis                                        = skewAxis[i];
+                if( data['fromDegree' + axis] === null ){
+                    data['fromDegree' + axis]               = transform['skew' + axis] || transform['skew' + axis] === 0 ? transform['skew' + axis] : 10;
+                }
+                if( data['has' + axis] ){
+                    data['perc' + axis]                     = data['toDegree' + axis] - data['fromDegree' + axis];
+                    if( data['perc' + axis] ){
+                        data.skews.push(axis);
+                        css['skew' + axis]                  = data['fromDegree' + axis];
+                    }
+                }
+            }
+            if( !data.skews.length ){
+                data.duration                               = 0;
+                return;
+            }
+            return css;
+        },
+        stepFn                                              : function ($el, data){
+            var css                                         = {},
+                i;
+            for (i = 0; i < data.skews.length; i++) {
+                css['skew' + data.skews[i]]                 = data['fromDegree' + data.skews[i]] + (data['perc' + data.skews[i]] * data.delta);
+            }
+            return css;
+        },
+        finishFn                                            : function ($el, data){
+            var css                                         = {},
+                i;
+            for (i = 0; i < skewAxis.length; i++) {
+                if( data['has' + skewAxis[i]] ){
+                    css['skew' + skewAxis[i]]               = data['toDegree' + skewAxis[i]];
+                }
+            }
+            return css;
+        },
+        properties                                          : [
+            { checks                                            : aRD.parser.newCheck('rangeX', 'degreeRange') },
+            { checks                                            : aRD.parser.newCheck('rangeY', 'degreeRange') }
+        ]
+    });
+    aRD.animation.type('fitscale', {
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val);
+            if( val.height || val.width ){
+               if( val.height ){
+                    if( val.height.from ){
+                        data.fromHeight                     = val.height.from;
+                    }
+                    if( val.height.to ){
+                        data.toHeight                       = val.height.to;
+                    }
+                }
+                if( val.width ){
+                    if( val.width.from ){
+                        data.fromWidth                      = val.width.from;
+                    }
+                    if( val.width.to ){
+                        data.toWidth                        = val.width.to;
+                    }
+                }
+            }
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            var
+                size                                        = aRD.getWindowSize(),
+                scales                                      = [],
+                tmp
+            ;
+            if( !(data.fromHeight || data.fromWidth) ){
+                tmp                                         = $el.outerHeight();
+                data.fromHeight                             = tmp + aRD.inRange( Math.floor(tmp * 0.1), 50, 100 );
+                tmp                                         = $el.outerWidth();
+                data.fromWidth                              = tmp + aRD.inRange( Math.floor(tmp * 0.1), 50, 100 );
+            }
+            if( data.fromHeight && size.height < data.fromHeight ){
+                scales.push( size.height / data.fromHeight );
+            }
+            if( data.fromWidth && size.width < data.fromWidth ){
+                scales.push( size.width / data.fromWidth );
+            }
+
+            if( !scales.length ){
+                if( data.toHeight && size.height > data.toHeight ){
+                    scales.push( size.height / data.toHeight );
+                }
+                if( data.toWidth && size.width > data.toWidth ){
+                    scales.push( size.width / data.toWidth );
+                }
+            }
+
+            return {
+                sizeScale                                   : scales.length ? Math.min.apply(Math, scales) : 1
+            };
+        },
+        properties                                          : [
+            { checks                                            : aRD.parser.newCheck('width', 'range') },
+            { checks                                            : aRD.parser.newCheck('height', 'range') }
+        ]
+    }, false, false, false);
+    aRD.animation.type('transformOrigin', {
+        checkFn                                             : function (data){
+            return !!(data.height || data.width);
+        },
+        dataFn                                              : function (val){
+            var data                                        = aRD.animation.data(val);
+            data._css                                       = {};
+            if( val.height ){
+                if( val.height.from ){
+                    data.toHeight                           = val.height.from;
+                }
+                if( val.height.to ){
+                    data.fromHeight                         = val.height.to;
+                }
+                data._css.height                            = 'transformOriginY';
+            }
+            if( val.width ){
+                if( val.width.from ){
+                    data.toWidth                            = val.width.from;
+                }
+                if( val.width.to ){
+                    data.fromWidth                          = val.width.to;
+                }
+                data._css.width                             = 'transformOriginX';
+            }
+            if( val.distance ){
+                if( val.distance.from ){
+                    data.toDistance                         = val.distance.from;
+                }
+                if( val.distance.to ){
+                    data.fromDistance                       = val.distance.to;
+                }
+                data._css.distance                          = 'transformOriginZ';
+            }
+            return data;
+        },
+        startFn                                             : function ($el, data){
+            if( !data.duration ){
+                return;
+            }
+            var obj                                         = getElementTransformOrigin($el);
+            data._parts                                     = [];
+            data._uparts                                    = [];
+            data._current                                   = {};
+            if( data.toHeight ){
+                if( !data.fromHeight ){
+                    data.fromHeight                         = obj.transformOriginY || {
+                        value                               : 50,
+                        type                                : '%'
+                    };
+                }
+                aRD.parentHeightToType($el, data.fromHeight, data.toHeight.type);
+                data._current.height                        = jQuery.extend({}, data.fromHeight);
+                if( data.fromHeight.value !== data.toHeight.value ){
+                    data._parts.push('height');
+                    data._uparts.push('Height');
+                }
+            }
+            if( data.toWidth ){
+                if( !data.fromWidth ){
+                    data.fromWidth                          = obj.transformOriginX || {
+                        value                               : 50,
+                        type                                : '%'
+                    };
+                }
+                aRD.parentWidthToType($el, data.fromWidth, data.toWidth.type);
+                data._current.width                         = jQuery.extend({}, data.fromWidth);
+                if( data.fromWidth.value !== data.toWidth.value ){
+                    data._parts.push('width');
+                    data._uparts.push('Width');
+                }
+            }
+            if( data.toDistance ){
+                if( !data.fromDistance ){
+                    data.fromDistance                       = obj.transformOriginX || {
+                        value                               : 0,
+                        type                                : 'px'
+                    };
+                }
+                data._current.distance                      = jQuery.extend({}, data.fromDistance);
+                if( data.fromDistance.value !== data.toDistance.value ){
+                    data._parts.push('distance');
+                    data._uparts.push('Distance');
+                }
+            }
+            if( !data._parts.length ){
+                data.duration                               = 0;
+            }
+            return aRD.createByObject(data._current, data._css);
+        },
+        stepFn                                              : function ($el, data){
+            var tmp;
+            for (var i = 0; i < data._parts.length; i++) {
+                tmp                                         = aRD.ucfirst(data._parts[i]);
+                data._current[data._parts[i]].value = aRD.delta(
+                    data['from' + data._uparts[i]].value,
+                    data['to' + data._uparts[i]].value,
+                    data.delta,
+                    true
+                );
+            }
+            return aRD.createByObject(data._current, data._css);
+        },
+        finishFn                                            : function ($el, data){
+            return aRD.createByObject({
+                'height'                                    : data.toHeight,
+                'width'                                     : data.toWidth,
+                'distance'                                  : data.toDistance
+            }, data._css );
+        },
+        aliases                                             : 'transitionOrigin',
+        properties                                          : [
+            { checks                                            : aRD.parser.newCheck('width', 'sizeRange')},
+            { checks                                            : aRD.parser.newCheck('height', 'sizeRange')},
+            { checks                                            : aRD.parser.newCheck('distance', 'sizeRange')}
+        ]
+    });
+    aRD.addStyling(transformCSS, function ($el, css, styles){
+        var obj                                             = getElementTransform($el),
             i
         ;
-        for (i = 0; i < _transformCSS.length; i++) {
-            if( typeof( styles[ _transformCSS[i] ] ) !== 'undefined' ){
-                obj[ _transformCSS[i] ]             = styles[ _transformCSS[i] ];
-                delete styles[ _transformCSS[i] ];
+        for (i = 0; i < transformCSS.length; i++) {
+            if( typeof( styles[ transformCSS[i] ] ) !== 'undefined' ){
+                obj[ transformCSS[i] ]                      = styles[ transformCSS[i] ];
+                delete styles[ transformCSS[i] ];
             }
         }
 
         if( obj.transform ){
-            css.transform                           = css.transform;
+            css.transform                                   = css.transform;
             $el.data('aocss__transform', {});
         }else{
-            var cssObj                              = [],
-                has                                 = {},
-                valObj                              = jQuery.extend({}, obj)
+            var cssObj                                      = [],
+                has                                         = {},
+                valObj                                      = jQuery.extend({}, obj)
             ;
             for(i in obj){
                 if( obj.hasOwnProperty(i) && typeof(obj[i]) !== 'undefined' ){
-                    has[i]                          = true;
+                    has[i]                                  = true;
                 }
             }
             if( has.rotate && (has.rotateX || has.rotateY || has.rotateZ) ){
-                has.rotateZ                         = has.rotate;
-                valObj.rotateZ                      = obj.rotate;
+                has.rotateZ                                 = has.rotate;
+                valObj.rotateZ                              = obj.rotate;
             }
             if( has.scale ){
                 if( !has.scaleX ){
-                    has.scaleX                      = true;
-                    valObj.scaleX                   = obj.scale;
+                    has.scaleX                              = true;
+                    valObj.scaleX                           = obj.scale;
                 }
                 if( !has.scaleY ){
-                    has.scaleY                      = true;
-                    valObj.scaleY                   = obj.scale;
+                    has.scaleY                              = true;
+                    valObj.scaleY                           = obj.scale;
                 }
                 delete has.scale;
             }
             if( has.sizeScale ){
-                valObj.scaleX                       = (has.scaleX ? obj.scaleX : 1) * (obj.sizeScale || 1);
-                valObj.scaleY                       = (has.scaleY ? obj.scaleY : 1) * (obj.sizeScale || 1);
-                has.scaleX = has.scaleY             = true;
+                valObj.scaleX                               = (has.scaleX ? obj.scaleX : 1) * (obj.sizeScale || 1);
+                valObj.scaleY                               = (has.scaleY ? obj.scaleY : 1) * (obj.sizeScale || 1);
+                has.scaleX = has.scaleY                     = true;
                 delete has.sizeScale;
             }
-            jQuery.each(has, function(key){
-                cssObj.push(key + '(' + valObj[key] + _transformExt[key] + ')');
+            jQuery.each(has, function (key){
+                cssObj.push(key + '(' + valObj[key] + transformExt[key] + ')');
             });
-            css.transform                           = cssObj.join(' ');
+            css.transform                                   = cssObj.join(' ');
         }
     });
     
-    aRD.addStyling(_transformOriginCSS, function($el, css, styles){
-        var obj                                     = _getElementTransformOrigin($el),
+    aRD.addStyling(transformOriginCSS, function ($el, css, styles){
+        var obj                                             = getElementTransformOrigin($el),
             i
         ;
-        for (i = 0; i < _transformOriginCSS.length; i++) {
-            if( typeof( styles[ _transformOriginCSS[i] ] ) !== 'undefined' ){
-                obj[ _transformOriginCSS[i] ]             = styles[ _transformOriginCSS[i] ];
-                delete styles[ _transformOriginCSS[i] ];
+        for (i = 0; i < transformOriginCSS.length; i++) {
+            if( typeof( styles[ transformOriginCSS[i] ] ) !== 'undefined' ){
+                obj[ transformOriginCSS[i] ]                = styles[ transformOriginCSS[i] ];
+                delete styles[ transformOriginCSS[i] ];
             }
         }
 
         if( obj.transformOrigin ){
-            css.transformOrigin                     = css.transformOrigin;
+            css.transformOrigin                             = css.transformOrigin;
             $el.data('aocss___transformOrigin', {});
         }else{
-            css.transformOrigin                     = (obj.transformOriginX ? obj.transformOriginX.value + obj.transformOriginX.type : '50%') + ' ' +
+            css.transformOrigin                             = (obj.transformOriginX ? obj.transformOriginX.value + obj.transformOriginX.type : '50%') + ' ' +
                 (obj.transformOriginY ? obj.transformOriginY.value + obj.transformOriginY.type : '50%') + ' ' + (obj.transformOriginZ ? obj.transformOriginZ.value + 'px' : 0)
             ;
         }
     });
-})(aRunD);
+}));

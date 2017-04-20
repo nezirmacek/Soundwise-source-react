@@ -1,11 +1,11 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD */
 
-(function(aRD){
+(function (aRD){
     var
         __styling                                   = {},
-        _css                                        = function($el, styles){
+        _css                                        = function ($el, styles){
             if( typeof(styles) !== 'object' ){
                 return $el;
             }
@@ -29,7 +29,7 @@
             if( aRD.setContentSize ){ aRD.setContentSize(); }
             return $el;
         },
-        _getStyle                                   = function($el, name, dataName){
+        _getStyle                                   = function ($el, name, dataName){
             var value, data;
             data                                    = $el.data('aocss__' + (dataName || 'base'));
             if( data && data[name] ){
@@ -40,7 +40,7 @@
             }
             return value;
         },
-        _storeStyle                                 = function($el, name, value, dataName){
+        _storeStyle                                 = function ($el, name, value, dataName){
             var data                                = aRD.getData($el, 'aocss__' + (dataName || 'base'), {});
             if( value === 'ao__current' ){
                 value                               = $el.css(name);
@@ -48,24 +48,24 @@
             data[name]                              = value;
             return value;
         },
-        _addStyling                                 = function(keys, func){
+        _addStyling                                 = function (keys, func){
             var _keys                               = typeof(keys) === 'string' ? [keys] : keys;
             for (var i = 0; i < _keys.length; i++) {
                 __styling[ _keys[i] ]               = func;
             }
         },
         __indexList                                 = [],
-        _getMaxIndex                                = function(){
+        _getMaxIndex                                = function (){
             return __indexList.length ? __indexList[0] : 1000;
         },
-        _provideMaxIndex                            = function(noTrack){
+        _provideMaxIndex                            = function (noTrack){
             var val                                 = _getMaxIndex() + 3;
             if( !noTrack ){
                 __indexList.unshift(val);
             }
             return val;
         },
-        _removeMaxIndex                             = function(index){
+        _removeMaxIndex                             = function (index){
             for (var i = __indexList.length - 1; i >= 0; i--) {
                 if( __indexList[i] === index ){
                     __indexList.splice(i, 1);
@@ -74,7 +74,7 @@
             }
             return;
         },
-        _getOriginalCss                             = function($el, name){
+        _getOriginalCss                             = function ($el, name){
             var ret                                 = false;
             switch(name){
                 case 'display':
@@ -88,7 +88,7 @@
             }
             return ret;
         },
-        _getClasses                                 = function(val){
+        _getClasses                                 = function (val){
             var list                                = [],
                 tmp                                 = '',
                 type                                = typeof(val)
@@ -124,12 +124,12 @@
             }
             return list ? list.join(' ') : '';
         },
-        _setClasses                                 = function($el, val){
+        _setClasses                                 = function ($el, val){
             $el.attr('class', _getClasses(val));
         }
     ;
 
-    _addStyling('zIndex', function($el, css, styles){
+    _addStyling('zIndex', function ($el, css, styles){
         var ret                                     = false;
         var i                                       = $el.data('ao__maxIndex');
         if( i ){
@@ -153,16 +153,16 @@
         }
         return ret;
     });
-    _addStyling(['width', 'minWidth', 'maxWidth', 'height', 'minHeight', 'maxHeight'], function($el, css, styles, name){
+    _addStyling(['width', 'minWidth', 'maxWidth', 'height', 'minHeight', 'maxHeight'], function ($el, css, styles, name){
         if( typeof(styles[name]) !== 'object'){
-            styles[name]                            = aRD.types.size.parse(styles[name]);
+            styles[name]                            = aRD.type('size').parse(styles[name]);
         }
         if( styles[name] !== null ){
             css[name]                               = styles[name].value + styles[name].type;
         }
         return false;
     });
-    _addStyling(['heightRange', 'widthRange'], function($el, css, styles){
+    _addStyling(['heightRange', 'widthRange'], function ($el, css, styles){
         var from                                    = {},
             to                                      = {},
             has                                     = {},
@@ -170,10 +170,10 @@
             fromRelative                            = {},
             fit                                     = {},
             isRelative,
-            _isRelative                             = function(obj, name){
+            _isRelative                             = function (obj, name){
                 return obj[name] && obj[name].type === '%';
             },
-            _set                                    = function(range, name){
+            _set                                    = function (range, name){
                 if( range ){
                     has[name]                       = true;
                     if( range === 'fit' ){
@@ -196,12 +196,12 @@
             _set(styles.widthRange, 'width');
             delete styles.widthRange;
         }
-        styles.onComplete.unshift(function(){
+        styles.onComplete.unshift(function (){
             var size                                = {},
                 max                                 = 10,
                 cur                                 = 0,
                 minSize                             = {},
-                _check                              = function(name, revname, css, needCheck){
+                _check                              = function (name, revname, css, needCheck){
                     if( has[name] ){
                         if( fit[name] ){
                             if( css[name] < minSize[name] ){
@@ -259,7 +259,7 @@
         });
         return false;
     });
-    _addStyling('display', function($el, css, styles){
+    _addStyling('display', function ($el, css, styles){
         if( styles.display === 'none'){
             var display                             = $el.css('display');
             if( display !== 'none' ){
@@ -269,15 +269,15 @@
         return true;
     });
 
-    jQuery.extend(aRD.checks, {
-        fitWidth                                    : {
-            name                                        : 'widthRange',
-            allowed                                     : ['fit']
-        },
-        fitHeight                                   : {
-            name                                        : 'heightRange',
-            allowed                                     : ['fit']
-        }
+    aRD.parser.check('widthRange', 'sizeRange');
+    aRD.parser.check('heightRange', 'sizeRange');
+    aRD.parser.check('fitWidth', {
+        name                                        : 'widthRange',
+        allowed                                     : ['fit']
+    });
+    aRD.parser.check('fitHeight', {
+        name                                        : 'heightRange',
+        allowed                                     : ['fit']
     });
 
     aRD.setCss                                      = _css;
@@ -287,8 +287,8 @@
     aRD.removeMaxIndex                              = _removeMaxIndex;
     aRD.getStyle                                    = _getStyle;
     aRD.storeStyle                                  = _storeStyle;
-    jQuery.fn.aoSetClass                            = function(name, val){
-        jQuery(this).each(function(i, el){
+    jQuery.fn.aoSetClass                            = function (name, val){
+        jQuery(this).each(function (i, el){
             var $el                                 = jQuery(el),
                 classes
             ;
@@ -308,8 +308,8 @@
         });
         return this;
     };
-    jQuery.fn.aoCss                                 = function(css){
-        jQuery(this).each(function(i, el){
+    jQuery.fn.aoCss                                 = function (css){
+        jQuery(this).each(function (i, el){
             _css(jQuery(el), css);
         });
         return this;

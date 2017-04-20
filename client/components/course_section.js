@@ -94,6 +94,20 @@ class _CourseSection extends Component {
       })
     }
 
+    // let headers = new Headers()
+    // headers.append('access-control-allow-origin', '*')
+    // headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    // headers.append('access-control-allow-headers', 'content-type, accept')
+    // headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
+
+    // let request = new Request(this.props.section.section_url, {headers})
+
+    // fetch(request)
+    // .then(response => {
+    //   console.log(response.status)
+    // })
+
+
     if('caches' in window) {
       caches.open('audio-cache')
       .then(cache => {

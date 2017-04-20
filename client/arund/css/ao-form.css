@@ -1,4 +1,4 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 .ao-field-group {
   position: relative;
@@ -27,7 +27,7 @@
 }
 .ao-field-wrap .ao-field-control {
   display: table-cell;
-  float: left;
+  vertical-align: middle;
   width: 100%;
 }
 .ao-field-fake {

@@ -1,6 +1,93 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD: true, console */
+
+var createSubProps                                  = function (obj, props){
+        if(props.length > 1){
+            for (var i = 0; i < props.length - 1; i++) {
+                if( typeof( obj[ props[i] ] ) !== 'object' ){
+                    obj[props[i]]                   = {};
+                }
+                obj                                 = obj[props[i]];
+            }
+        }
+        return obj;
+    },
+    getPropertyPathPart                             = function (name, startReg, endReg, testReg){
+        if( !testReg.test(name) ){
+            return null;
+        }
+        var path                                    = [],
+            prop                                    = name,
+            matches
+        ;
+        matches                                     = startReg.exec(prop);
+        if( !(matches && matches.length) ){
+            return [];
+        }
+        path.push(matches[1]);
+        while(matches){
+            matches                                     = endReg.exec(prop);
+            if( matches && matches.length ){
+                path.push(matches[1]);
+            }
+        }
+
+        return path;
+    },
+    getPropertyPath                                 = function (name, opts){
+        if(!name || typeof name !== 'string'){
+            return [];
+        }
+        var type                                    = typeof opts,
+            options                                 = jQuery.extend(true, {
+                pref                                : type === 'string' ? opts : null,
+                start                               : '.',
+                end                                 : ''
+            }, opts && type === 'object' ? opts : {}),
+            path                                    = [],
+            start                                   = options.start ? aRunD.escapeRegExp(options.start) : '',
+            end                                     = options.end ? aRunD.escapeRegExp(options.end) : '',
+            keyReg                                  = '([^'+ start + end +']+)',
+            testReg                                 = new RegExp('^' + keyReg + '{1}(?:' + start + keyReg + end + ')*$'),
+            startReg                                = new RegExp('^' + keyReg + '(?:' + start + '|$)'),
+            endReg                                  = new RegExp( start + keyReg + end, 'g'),
+            matches,
+            i
+        ;
+        path                                        = getPropertyPathPart(name, startReg, endReg, testReg);
+        if( path.length && options.pref ){
+            matches                                 = getPropertyPathPart(options.pref, startReg, endReg, testReg);
+            if( matches.length ){
+                switch(options.prefAction){
+                    case 'check':
+                        for (i = 0; i < matches.length; i++) {
+                            if(matches[i] !== path[i]){
+                                return [];
+                            }
+                        }
+                        break;
+                    case 'add':
+                        path.push.apply(path, matches);
+                        break;
+                    //Default remove pref
+                    default :
+                        for (i = 0; i < matches.length; i++) {
+                            if(matches[i] !== path[i]){
+                                return [];
+                            }
+                        }
+                        path                        = path.slice(matches.length);
+                        break;
+                }
+            }else{
+                return [];
+            }
+        }
+        return path;
+    }
+;
+
 aRunD                                               = {
     $w                                              : jQuery(window),
     $doc                                            : jQuery(document),
@@ -10,10 +97,10 @@ aRunD                                               = {
     css                                             : {}, // list of css classes
     dateFormat                                      : 'DD.MM.YYYY hh:mm a', // default date format
     selectors                                       : {}, // list of selectors,
-    checkCookie                                     : function(){
+    checkCookie                                     : function (){
         return true;
     },
-    pushFlist                                       : function(name){
+    pushFlist                                       : function (name){
         if( typeof(name) !== 'string' || !name ){
             return false;
         }
@@ -26,27 +113,32 @@ aRunD                                               = {
         ;
         if(length){
             for (i = 0; i < length; i++) {
-                args[i]                             = arguments[i + from];
+                if( typeof(arguments[i + from]) === 'function' ){
+                    args[i]                         = arguments[i + from];
+                }
             }
             aRunD.flist[name]                       = aRunD.flist[name].concat(args);
         }
         return true;
     },
-    returnFirst                                     : function(val){
+    getFlist                                        : function (name){
+        return aRunD.flist[name] || [];
+    },
+    returnFirst                                     : function (val){
         return val;
     },
-    clearFlist                                      : function(name){
+    clearFlist                                      : function (name){
         if( typeof(name) !== 'string' || !name ){
             return false;
         }
         delete aRunD.flist[name];
         return true;
     },
-    padLeft                                         : function(val, length, padStr){
+    padLeft                                         : function (val, length, padStr){
         var str                                     = typeof(val) !== 'object' ? val + '' : '';
         return str.length < length ? new Array(length - str.length + 1).join(padStr || '0') + str : str;
     },
-    runFlist                                        : function(name){
+    runFlist                                        : function (name){
         if( !aRunD.flist[name] ){
             return false;
         }
@@ -66,7 +158,7 @@ aRunD                                               = {
         }
         return true;
     },
-    run                                             : function(funcs){
+    run                                             : function (funcs){
         var
             from                                    = 1,
             length                                  = arguments.length - from,
@@ -81,7 +173,7 @@ aRunD                                               = {
         if( type === 'function' ){
             ret                                     = funcs.apply(aRunD, args) !== false;
         }else if( type === 'object' ){
-            jQuery.each(funcs, function(i, fn){
+            jQuery.each(funcs, function (i, fn){
                 if( (ret = aRunD.run.apply(aRunD, [fn].concat(args))) === false){
                     return false;
                 }
@@ -89,19 +181,19 @@ aRunD                                               = {
         }
         return ret;
     },
-    apply                                           : function(func, _this, _args){
+    apply                                           : function (func, _this, _args){
         return typeof(func) === 'function' ? func.apply(_this, _args) : null;
     },
-    escapeRegExp                                    : function(str) {
+    escapeRegExp                                    : function (str) {
         return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     },
-    log                                             : function(msg){
+    log                                             : function (msg){
         if( aRunD.debug && window.console ){
             console.log( msg );
         }
         return aRunD;
     },
-    hasElements                                     : function(elements, $err){
+    hasElements                                     : function (elements, $err){
         if ( !elements.length ) {
             if ( $err ) {
                 aRunD.log( $err );
@@ -110,10 +202,10 @@ aRunD                                               = {
         }
         return true;
     },
-    hasDataString                                   : function($el, name){
+    hasDataString                                   : function ($el, name){
         return $el.data(name) && typeof($el.data(name)) === 'string';
     },
-    unique                                          : function(arr){
+    unique                                          : function (arr){
         var ret                                     = [];
         for (var i = 0; i < arr.length; i++) {
             if( i === jQuery.inArray(arr[i], arr) ){
@@ -122,13 +214,13 @@ aRunD                                               = {
         }
         return ret;
     },
-    isInt                                           : function(value){
+    isInt                                           : function (value){
         return Number(value) === value && value % 1 === 0;
     },
-    isFloat                                         : function(value){
+    isFloat                                         : function (value){
         return value === Number(value) && value % 1 !== 0;
     },
-    toNumber                                        : function(value, noSet){
+    toNumber                                        : function (value, noSet){
         var type                                    = typeof(value);
         if( type !== 'string' && type !== 'number' ){
             return typeof(noSet) !== 'undefined' ? noSet : null;
@@ -136,14 +228,14 @@ aRunD                                               = {
         value                                       = Number( value );
         return isNaN(value) ? (typeof(noSet) !== 'undefined' ? noSet : null) : value;
     },
-    getFloatLength                                  : function(value){
+    getFloatLength                                  : function (value){
         if( !aRunD.isFloat(value) ){
             return 0;
         }
         value                                       = (value + "").split('.');
         return value.length > 1 ? value[1].length : 0;
     },
-    inRange                                         : function(value, min, max){
+    inRange                                         : function (value, min, max){
         if( typeof(min) !== 'number' && typeof(max) !== 'number' ){
             return value;
         }
@@ -156,10 +248,10 @@ aRunD                                               = {
         }
         return value;
     },
-    ucfirst                                         : function(str){
+    ucfirst                                         : function (str){
         return str.charAt(0).toUpperCase() + str.slice(1);
     },
-    getAttribute                                    : function($el, name, pref){
+    getAttribute                                    : function ($el, name, pref){
         if( typeof( $el.attr(name) ) !== 'undefined' ){
             return $el.attr(name);
         }
@@ -172,16 +264,16 @@ aRunD                                               = {
         }
         return;
     },
-    getRangeObject                                  : function(objs, value){
+    getRangeObject                                  : function (objs, value){
         var ret                                     = false;
-        jQuery.each(objs, function(i, obj){
+        jQuery.each(objs, function (i, obj){
             if( value >= obj.from && (!ret || ret.from < obj.from) ){
                 ret                                 = obj;
             }
         });
         return ret;
     },
-    find                                            : function($el, defaultSel, defaultType){
+    find                                            : function ($el, defaultSel, defaultType){
         var
             type                                    = $el.data('jsSelectorType') || defaultType || 'find',
             selector                                = $el.data('jsSelector') || defaultSel
@@ -194,12 +286,12 @@ aRunD                                               = {
         }
         return $el[type](selector);
     },
-    findByData                                      : function(data, dataNames){
+    findByData                                      : function (data, dataNames){
         var selectors                               = [];
         if( !data ){
             return jQuery([]);
         }
-        jQuery.each(jQuery.isArray(dataNames) ? dataNames : [dataNames], function(i, dataName){
+        jQuery.each(jQuery.isArray(dataNames) ? dataNames : [dataNames], function (i, dataName){
             if( data && data !== '' ){
                 selectors.push('[' + dataName + '="' + data + '"]', '[' + dataName + '^="' + data + '"]');
             }else{
@@ -208,7 +300,7 @@ aRunD                                               = {
         });
         return jQuery(selectors.join(','));
     },
-    toJsValue                                       : function(value){
+    toJsValue                                       : function (value){
         var ret                                     = null;
         try{
             ret                                     = jQuery.parseJSON(value);
@@ -217,7 +309,7 @@ aRunD                                               = {
         }
         return ret;
     },
-    getDataOptions                                  : function($el, pref, allowed){
+    getDataOptions                                  : function ($el, pref, allowed){
         var
             ret                                     = {},
             data                                    = $el.data()
@@ -225,7 +317,7 @@ aRunD                                               = {
         if( !pref && !allowed ){
             return data;
         }
-        jQuery.each(data, function(name, value){
+        jQuery.each(data, function (name, value){
             if( pref ){
                 if( !name.match("^" + pref) ){
                     return;
@@ -241,7 +333,7 @@ aRunD                                               = {
         });
         return ret;
     },
-    randomId                                        : function(obj) {
+    randomId                                        : function (obj) {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -251,7 +343,7 @@ aRunD                                               = {
         var ret                                     = s4() + s4();
         return obj && typeof(obj[ret]) !== 'undefined' ? aRunD.randomId(obj) : ret;
     },
-    createKeys                                      : function(){
+    createKeys                                      : function (){
         var keys                                    = [],
             obj                                     = {},
             i, j, list
@@ -259,7 +351,7 @@ aRunD                                               = {
         for (i = 0; i < arguments.length; i++) {
             list                                    = arguments[i];
             if( typeof(list) === 'string' ){
-                if( obj[list] ){
+                if( !obj[list] ){
                     keys.push(list);
                     obj[list]                       = true;
                 }
@@ -275,12 +367,12 @@ aRunD                                               = {
         list                                        = null;
         return keys;
     },
-    createByObject                                  : function(obj, byObj){
+    createByObject                                  : function (obj, byObj){
         var ret                                     = {};
         for(var i in byObj){
             if(byObj.hasOwnProperty(i) && obj.hasOwnProperty(i)){
                 if( typeof(byObj[i]) === 'object' ){
-                    ret[byObj[i].to || i] = obj[byObj[i].from || i];
+                    ret[byObj[i].to || i]           = obj[byObj[i].from || i];
                 }else{
                     ret[byObj[i]]                   = obj[i];
                 }
@@ -318,12 +410,12 @@ aRunD                                               = {
             aRunD.getObjProp(obj, false, 'name', 'login,email', 'title')    - ['nickname', 'nickname', 'my title']
             aRunD.getObjProp(obj, false, 'name', 'phone,email', 'address')  - ['nickname', 'mail@mail.com', null]
     */
-    getObjProp                                      : function(obj, returnObj){
-        if( typeof(obj) !== 'object' || arguments.length < 3 ){
+    getObjProp                                      : function (obj, returnObj){
+        if( !(obj && typeof(obj) === 'object') || arguments.length < 3 ){
             return returnObj ? obj : null;
         }
         var
-            check                                   = function(obj, prop){
+            check                                   = function (obj, prop){
                 prop                                = prop.split(',');
                 var value                           = null;
                 for (var j = 0; j < prop.length; j++) {
@@ -351,21 +443,21 @@ aRunD                                               = {
             return ret;
         }
     },
-    dfdGroup                                        : function(dfds, dfd){
+    dfdGroup                                        : function (dfds, dfd){
         return jQuery.when.apply( jQuery, dfds )
-            .done(function(){
+            .done(function (){
                 if( dfd.state() === "pending" ){
                     dfd.resolve();
                 }
             })
-            .fail(function(){
+            .fail(function (){
                 if( dfd.state() === "pending" ){
                     dfd.reject(arguments);
                 }
             })
         ;
     },
-    hasAttrContent                                  : function(el, value, attrCheck){
+    hasAttrContent                                  : function (el, value, attrCheck){
         var
             $el                                     = jQuery(el),
             ret                                     = false
@@ -374,7 +466,7 @@ aRunD                                               = {
             return ret;
         }
         var patt                                    = new RegExp("([;]|^){1}" + value.replace(/['"]+/g, '') + "([:;]|$){1}");
-        jQuery.each(attrCheck, function(i, name){
+        jQuery.each(attrCheck, function (i, name){
             var testStr                             = $el.attr(name);
             if( typeof(testStr) === 'string' && patt.test(testStr)){
                 ret                                 = true;
@@ -383,17 +475,17 @@ aRunD                                               = {
         });
         return ret;
     },
-    loadImage                                       : function(src){
+    loadImage                                       : function (src){
         var dfd                                     = jQuery.Deferred(),
             imageSrc                                = src
         ;
         jQuery('<img>')
             .on({
-                'load'                              : function(){
+                'load'                              : function (){
                     dfd.resolve(imageSrc);
                     jQuery(this).remove();
                 },
-                'error'                             : function(){
+                'error'                             : function (){
                     dfd.reject();
                     jQuery(this).remove();
                 }
@@ -401,11 +493,70 @@ aRunD                                               = {
             .attr('src', imageSrc)
         ;
         return dfd;
+    },
+    getPropertyPath                                 : getPropertyPath,
+    getPropertyByName                               : function (obj, name, defaultValue, strict, opts){
+        var notFound                                = typeof(defaultValue) === 'undefined' ? null : defaultValue;
+        if( !(obj && typeof obj === 'object') ){
+            return notFound;
+        }
+        var props                                   = getPropertyPath(name, opts),
+            value                                   = obj
+        ;
+        if( !props.length && strict ){
+            return notFound;
+        }
+        for (var i = 0; i < props.length; i++) {
+            if( typeof( value[ props[i] ] ) === 'undefined' || value[ props[i] ] === null ){
+                return notFound;
+            }
+            value                                   = value[ props[i] ];
+        }
+        if( value instanceof Array ){
+            value                                   = value.slice();
+        }else if( value && typeof(value) === 'object' ){
+            value                                   = jQuery.extend(true, {}, value);
+        }
+        return value;
+    },
+    setPropertyByName                               : function (obj, name, value, opts){
+        var props                                   = getPropertyPath(name, opts),
+            val                                     = value
+        ;
+        if( value instanceof Array ){
+            value                                   = value.slice();
+        }else if( value && typeof(value) === 'object' ){
+            value                                   = jQuery.extend(true, {}, value);
+        }
+        if( props.length ){
+            var prop                                = createSubProps(obj, props);
+            prop[ props[props.length - 1] ]         = val;
+        }
+        return aRunD;
+    },
+    addPropertyByName                               : function (obj, name, value){
+        var props                                   = typeof(name) === 'string' ? name.split('.') : [],
+            val                                     = value && typeof(value) === 'object' ? jQuery.extend(true, {}, value) : value
+        ;
+        if( props.length ){
+            var prop                                = createSubProps(obj, props),
+                tName                               = props[props.length - 1]
+            ;
+            if( prop[tName] === undefined ){
+                prop[tName]                         = val;
+            }else{
+                if( !(prop[tName] instanceof Array) ){
+                    prop[tName]                     = [prop[tName]];
+                }
+                prop[tName].push(val);
+            }
+        }
+        return aRunD;
     }
 };
 
 if (!Object.keys) {
-    Object.keys = function(obj) {
+    Object.keys = function (obj) {
         var keys = [];
 
         for(var i in obj){
@@ -419,7 +570,7 @@ if (!Object.keys) {
 }
 
 if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); };
+    Date.now                                        = function () { return new Date().getTime(); };
 }
 
 //only for filtration, heavy usage if checks a lot of elements
@@ -431,7 +582,7 @@ jQuery.expr[':']['ao-has-attr-content']             = function (a,i,m) {
     return aRunD.hasAttrContent(a, value, attrCheck.slice(1));
 };
 
-jQuery.fn.aoInit                                    = function(findFn, silent){
+jQuery.fn.aoInit                                    = function (findFn, silent){
     if( !aRunD.hasElements(this, "aRunD: init - Nothing selected.") ){
         return this;
     }
@@ -457,6 +608,6 @@ jQuery.fn.aoInit                                    = function(findFn, silent){
     return this;
 };
 
-aRunD.$w.on('load', function(){
+aRunD.$w.on('load', function (){
     aRunD.loaded                                    = true;
 });

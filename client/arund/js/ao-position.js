@@ -1,14 +1,14 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD */
 
-(function(aRD){
+(function (aRD){
     var
         _globalPositions                            = ['window', 'document'],
-        _isGlobalPosition                           = function(pos){
+        _isGlobalPosition                           = function (pos){
             return jQuery.inArray(pos, _globalPositions) > -1;
         },
-        __getElPos                                  = function($el, pos, eSize, pSize, align, alignFn, eOffs, pFix){
+        __getElPos                                  = function ($el, pos, eSize, pSize, align, alignFn, eOffs, pFix){
             var _pos                                = pos ? pos : {
                     value                           : eOffs,
                     type                            : 'px',
@@ -22,28 +22,28 @@
             ;
             return val;
         },
-        __invPosFn                                  = function(pos, eSize, pSize){
+        __invPosFn                                  = function (pos, eSize, pSize){
             return pSize - eSize - __getEPO(pos, eSize, pSize);
         },
-        __midPosFn                                  = function(pos, eSize, pSize){
+        __midPosFn                                  = function (pos, eSize, pSize){
             return (pSize - eSize) / 2 + __getEPO(pos, eSize, pSize);
         },
-        __getEPO                                    = function(pos, eSize, pSize){
+        __getEPO                                    = function (pos, eSize, pSize){
             return (pos.offset ? pos.offset / 100 * eSize : 0) + aRD.fixSizeValue(pos, pSize);
         },
-        __getElXPos                                 = function($el, pos, pSize, eOffs, pFix, eSize){
+        __getElXPos                                 = function ($el, pos, pSize, eOffs, pFix, eSize){
             return __getElPos($el, pos, eSize || $el.outerWidth(true), pSize, 'left', {
                 'right'                             : __invPosFn,
                 'center'                            : __midPosFn
             }, eOffs, pFix);
         },
-        __getElYPos                                 = function($el, pos, pSize, eOffs, pFix, eSize){
+        __getElYPos                                 = function ($el, pos, pSize, eOffs, pFix, eSize){
             return __getElPos($el, pos, eSize || $el.outerHeight(true), pSize, 'top', {
                 'bottom'                            : __invPosFn,
                 'middle'                            : __midPosFn,
             }, eOffs, pFix);
         },
-        __getElPosWindowCss                         = function($el, posX, posY, pos, size){
+        __getElPosWindowCss                         = function ($el, posX, posY, pos, size){
             var ret                                 = {
                     position                        : 'absolute'
                 },
@@ -73,7 +73,7 @@
             }
             return ret;
         },
-        __getElPosDocumentCss                       = function($el, posX, posY, pos, size){
+        __getElPosDocumentCss                       = function ($el, posX, posY, pos, size){
             var ret                                 = {
                     position                        : 'absolute'
                 },
@@ -85,7 +85,7 @@
             ret.top                                 = __getElYPos($el, posY, pSize.height, offs.top, 0, eSize.height);
             return ret;
         },
-        __getElPosFixedCss                          = function($el, posX, posY, pos, size){
+        __getElPosFixedCss                          = function ($el, posX, posY, pos, size){
             var ret                                 = {
                     position                        : 'fixed'
                 },
@@ -111,7 +111,7 @@
             }
             return ret;
         },
-        __getElPosAbsoluteCss                       = function($el, posX, posY, pos, size){
+        __getElPosAbsoluteCss                       = function ($el, posX, posY, pos, size){
             var ret                                 = {
                     position                        : 'absolute'
                 },
@@ -150,7 +150,7 @@
             }
             return ret;
         },
-        __getElPosRelativeCss                       = function($el, posX, posY, pos, size){
+        __getElPosRelativeCss                       = function ($el, posX, posY, pos, size){
             var ret                                 = {
                     position                        : 'relative'
                 },
@@ -172,7 +172,7 @@
             }
             return ret;
         },
-        __invFixFn                                  = function(pos, pSize){
+        __invFixFn                                  = function (pos, pSize){
             if( pos.type === '%' ){
                 pos.value                           = 100 - (pos.value || 0);
             }else{
@@ -180,7 +180,7 @@
             }
             pos.offset                              = -(pos.offset || 0) - 100;
         },
-        __midFixFn                                  = function(pos, pSize){
+        __midFixFn                                  = function (pos, pSize){
             if( pos.type === '%' ){
                 pos.value                           += 50;
             }else{
@@ -188,7 +188,7 @@
             }
             pos.offset                              = (pos.offset || 0) - 50;
         },
-        __fixToPos                                  = function(to, pSize, pos, fn, align){
+        __fixToPos                                  = function (to, pSize, pos, fn, align){
             if( to.align !== align ){
                 if( fn[to.align] ){
                     fn[to.align](to, pSize);
@@ -205,19 +205,19 @@
             }
             return to;
         },
-        __fixToXPos                                 = function(to, pSize, pos){
+        __fixToXPos                                 = function (to, pSize, pos){
             return __fixToPos(jQuery.extend({}, to), pSize, pos, {
                 'right'                             : __invFixFn,
                 'center'                            : __midFixFn,
             }, 'left');
         },
-        __fixToYPos                                 = function(to, pSize, pos){
+        __fixToYPos                                 = function (to, pSize, pos){
             return __fixToPos(jQuery.extend({}, to), pSize, pos, {
                 'bottom'                            : __invFixFn,
                 'middle'                            : __midFixFn,
             }, 'top');
         },
-        _getFixedPosition                           = function($el, noX, noY){
+        _getFixedPosition                           = function ($el, noX, noY){
             var offs                                = $el.offset();
             if( !noX ){
                 offs.left                           = offs.left - aRD.$w.scrollLeft();
@@ -227,14 +227,14 @@
             }
             return offs;
         },
-        _createFakeEl                               = function($el, css){
+        _createFakeEl                               = function ($el, css){
             return jQuery('<span/>').css(jQuery.extend({
                 width                               : 0,
                 height                              : 0,
                 display                             : 'inline-block'
             }, css || {})).insertBefore($el);
         },
-        _getRelativePosition                        = function($el, noX, noY){
+        _getRelativePosition                        = function ($el, noX, noY){
             var offs                                = {};
             if( !noX ){
                 offs.left                           = parseInt($el.css('left')) || 0;
@@ -244,7 +244,7 @@
             }
             return offs;
         },
-        _getOffsetParrent                           = function($el){
+        _getOffsetParrent                           = function ($el){
             if( $el.css('display') !== 'none' && $el.css('position') === 'absolute' ){
                 return jQuery($el[0].offsetParent);
             }else{
@@ -255,7 +255,7 @@
                 return $p;
             }
         },
-        _getParrentSize                             = function($el, _position, $_p){
+        _getParrentSize                             = function ($el, _position, $_p){
             var size, $p;
             switch(_position || $el.css('position')){
                 case 'window':
@@ -282,7 +282,7 @@
             }
             return size;
         },
-        __fixPos                                    = function($el, posX, posY, _position, _pos, toX, toY){
+        __fixPos                                    = function ($el, posX, posY, _position, _pos, toX, toY){
             var ret                                 = {},
                 position                            = _position,
                 offs, pSize
@@ -366,7 +366,7 @@
             }
             return ret;
         },
-        _normalizePosition                          = function(pos){
+        _normalizePosition                          = function (pos){
             if( !pos ){
                 return;
             }
@@ -377,7 +377,7 @@
                 pos.offset                          = 0;
             }
         },
-        __convertPosition                           = function($el, posX, posY, position, toX, toY){
+        __convertPosition                           = function ($el, posX, posY, position, toX, toY){
             var _pos                                = $el.css('position'),
                 _position                           = position || _pos,
                 ret                                 = {}
@@ -389,7 +389,7 @@
             _normalizePosition(ret.toY);
             return ret;
         },
-        _getPositionCss                             = function($el, posX, posY, position, size){
+        _getPositionCss                             = function ($el, posX, posY, position, size){
             var pos                                 = $el.data('ao__position') || $el.css('position'),
                 _position                           = position || pos,
                 ret
@@ -418,7 +418,7 @@
             
             return ret;
         },
-        _getPositionStyle                           = function($el, posX, posY, position){
+        _getPositionStyle                           = function ($el, posX, posY, position){
             var pos                                 = $el.data('ao__position') || $el.css('position'),
                 _position                           = position || pos,
                 ret
@@ -449,7 +449,7 @@
             
             return ret;
         },
-        _getWindowSizePartCss                      = function(pWidth, pHeight, names){
+        _getWindowSizePartCss                      = function (pWidth, pHeight, names){
             var size                                = aRD.getWindowSize(),
                 css                                 = {},
                 _names                              = names || {}
@@ -462,7 +462,7 @@
             }
             return css;
         },
-        _getContentSizePartCss                     = function(pWidth, pHeight){
+        _getContentSizePartCss                     = function (pWidth, pHeight){
             var size                                = aRD.getContentSize(),
                 css                                 = {}
             ;
@@ -475,68 +475,19 @@
             return css;
         },
         __regNOE                                    = "(?=$|(?:\\+|\\-)[0-9])",
-        __getAtPositionReg                           = function(allowed){
+        __getAtPositionReg                          = function (allowed){
             var escReg                              = [];
             if( allowed && allowed.length ){
                 for (var i = 0; i < allowed.length; i++) {
                     escReg.push("(?:" + aRD.escapeRegExp(allowed[i]) + ")");
                 }
             }
-            return new RegExp(
-                "^(?:(" + escReg.join('|') + ")" + __regNOE + "){0,1}" +
-                "(?:" + aRD.types.size.regStr + __regNOE + "){0,1}" +
-                "(?:(" + aRD.types.number.regStr + ")(?:[\\#])){0,1}$"
-            );
-        },
-        __TPositionParse                             = function(value, reg){
-            var type                                = typeof(value),
-                ret                                 = {
-                    value                           : 0,
-                    type                            : 'px'
-                }
+            return "(?:(" + escReg.join('|') + ")" + __regNOE + "){0,1}" +
+                "(?:" + aRD.type('size').regular() + __regNOE + "){0,1}" +
+                "(?:" + aRD.type('number').regular() + "(?:[\\#])){0,1}"
             ;
-            if( type === 'number' ){
-                ret.value                           = value;
-            }else if( type === 'string' ){
-                var matches                         = reg.exec(value);
-                if( matches ){
-                    if( matches[2] ){
-                        ret.value                   = aRD.toNumber(matches[2], ret);
-                    }
-                    if( matches[4] ){
-                        ret.type                    = matches[4];
-                    }
-                    if( matches[1] ){
-                        ret.align                   = matches[1];
-                    }
-                    if( matches[5] ){
-                        ret.offset                  = aRD.toNumber(matches[5], 0);
-                    }
-                }
-            }
-            return ret;
         },
-        __TPositionX                                 = {
-            _allowed                                : ['left', 'center', 'right'],
-            check                                   : function(value){
-                var type                            = typeof(value);
-                return type === 'number' || ( type === 'string' && type && __TPositionX._reg.test(value) );
-            },
-            parse                                   : function(value){
-                return __TPositionParse(value, __TPositionX._reg);
-            }
-        },
-        __TPositionY                                 = {
-            _allowed                                : ['top', 'middle', 'bottom'],
-            check                                   : function(value){
-                var type                            = typeof(value);
-                return type === 'number' || ( type === 'string' && type && __TPositionY._reg.test(value) );
-            },
-            parse                                   : function(value){
-                return __TPositionParse(value, __TPositionY._reg);
-            }                                
-        },
-        __setWindowSize                             = function(){
+        __setWindowSize                             = function (){
             var width                               = aRD.$w.width(),
                 height                              = aRD.$w.height(),
                 t                                   = aRD.$w.data('ao_windowresize_timeout')
@@ -549,7 +500,7 @@
                     width                           : width,
                     height                          : height
                 };
-                var fn                              = function(){
+                var fn                              = function (){
                         _setContentSize();
                         _runResize();
                         var _f                      = aRD.$w.data('aoWindowResizeFunc');
@@ -566,13 +517,13 @@
             }
             return _windowSize;
         },
-        _getWindowSize                             = function(){
+        _getWindowSize                             = function (){
             if( !_windowSize ){
                 __setWindowSize();
             }
             return _windowSize;
         },
-        _setContentSize                             = function(){
+        _setContentSize                             = function (){
             var body                                = jQuery('body')[0],
                 wSize                               = _getWindowSize(),
                 width                               = Math.max(wSize.width, body.scrollWidth),
@@ -592,23 +543,23 @@
                 }
             }
         },
-        _getContentSize                             = function(){
+        _getContentSize                             = function (){
             if( !_contentSize ){
                 _setContentSize();
             }
             return _contentSize;
         },
-        _runPositionWatch                           = function($el){
-            jQuery.each(_positionWatch, function(i, fn){
+        _runPositionWatch                           = function ($el){
+            jQuery.each(_positionWatch, function (i, fn){
                 fn($el);
             });
         },
-        _runResize                                  = function(){
+        _runResize                                  = function (){
             var t                                   = aRD.$w.data('ao_runresize_timeout');
             if( t ){
                 clearTimeout(t);
             }
-            aRD.$w.data('ao_runresize_timeout', setTimeout(function(){
+            aRD.$w.data('ao_runresize_timeout', setTimeout(function (){
                 jQuery('[data-ao-animaze-resize]').aoAnimaze('resize');
                 var _f                              = aRD.$w.data('aoResizeFunc');
                 if( _f ){
@@ -621,10 +572,140 @@
         },
         _windowParrent                              = 'body',
         _positionWatch                              = {},
-        _windowSize, _contentSize
+        _windowSize, _contentSize,
+        horizontalPos                               = ['left', 'center', 'right'],
+        verticalPos                                 = ['top', 'middle', 'bottom']
     ;
-    __TPositionX._reg                               = __getAtPositionReg(__TPositionX._allowed);
-    __TPositionY._reg                               = __getAtPositionReg(__TPositionY._allowed);
+
+    var parsePosition                               = function (context, value, defaultAlign){
+            var type                                = typeof(value),
+                ret                                 = {
+                    value                           : 0,
+                    type                            : 'px',
+                    align                           : defaultAlign
+                }
+            ;
+            switch(type){
+                case 'number' :
+                    ret.value                       = value;
+                    break;
+                case 'string' :
+                    var matches                     = context._reg.exec(value);
+                    if( matches ){
+                        if( matches[1] ){
+                            ret.align               = matches[1];
+                        }
+                        if( matches[2] ){
+                            ret.value               = aRD.toNumber(matches[2], ret);
+                        }
+                        if( matches[4] ){
+                            ret.type                = matches[4];
+                        }
+                        if( matches[5] ){
+                            ret.offset              = aRD.toNumber(matches[5], 0);
+                        }
+                    }
+                    break;
+                case 'object' :
+                    if( context.checkStructure(value) ){
+                        if( value.hasOwnProperty('value') ){
+                            ret.value               = aRD.toNumber(value.value, 0);
+                        }
+                        if( value.hasOwnProperty('type') ){
+                            ret.type                = value.type;
+                        }
+                        if( value.hasOwnProperty('align') ){
+                            ret.align               = value.align;
+                        }
+                        if( value.hasOwnProperty('offset') ){
+                            ret.offset              = aRD.toNumber(value.offset, 0);
+                        }
+                    }
+                    break;
+            }
+            return ret;
+        },
+        stringifyPosition                           = function(obj, defaultAlign){
+            var parts                               = [];
+            if( obj.align && obj.align !== defaultAlign ){
+                parts.push(obj.align);
+            }
+            if( obj.value ){
+                parts.push((parts.length && obj.value > 0 ? '+' : '') + obj.value);
+                if( obj.type ){
+                    parts.push(obj.type);
+                }
+            }
+            if( obj.offset ){
+                parts.push((parts.length && obj.offset > 0 ? '+' : '') + obj.offset + '#');
+            }
+            return parts.length ? parts.join('') : defaultAlign;
+        }
+    ;
+    aRD.type('positionX')
+        .type('number')
+        .structure({
+            required                                    : [['align', 'value', 'offset']],
+            properties                                  : {
+                align                                       : {
+                    allowed                                     : horizontalPos,
+                    required                                    : false
+                },
+                value                                       : {
+                    type                                        : 'number',
+                    required                                    : false
+                },
+                offset                                      : {
+                    type                                        : 'number',
+                    required                                    : false
+                },
+                type                                        : {
+                    allowed                                     : ['%', 'px'],
+                    required                                    : false
+                }
+            }
+        })
+        .allowed(horizontalPos)
+        .regular(__getAtPositionReg(horizontalPos))
+        .parser(function (value){
+            return parsePosition(this, value, 'left');
+        })
+        .stringifier(function (value) {
+            return stringifyPosition(value, 'left');
+        })
+    ;
+    aRD.type('positionY')
+        .type('number')
+        .structure({
+            required                                    : [['align', 'value', 'offset']],
+            properties                                  : {
+                align                                       : {
+                    allowed                                     : verticalPos,
+                    required                                    : false
+                },
+                value                                       : {
+                    type                                        : 'number',
+                    required                                    : false
+                },
+                offset                                      : {
+                    type                                        : 'number',
+                    required                                    : false
+                },
+                type                                        : {
+                    allowed                                     : ['%', 'px'],
+                    required                                    : false
+                }
+            }
+        })
+        .allowed(verticalPos)
+        .regular(__getAtPositionReg(verticalPos))
+        .parser(function (value){
+            return parsePosition(this, value, 'top');
+        })
+        .stringifier(function (value) {
+            return stringifyPosition(value, 'top');
+        })
+    ;
 
     aRD.getWindowSize                               = _getWindowSize;
     aRD.getWindowSizePartCss                        = _getWindowSizePartCss;
@@ -639,7 +720,7 @@
     aRD.getParrentSize                              = _getParrentSize;
     aRD.runResize                                   = _runResize;
 
-    aRD.addStyling(['position', 'x', 'y'], function($el, css, styles){
+    aRD.addStyling(['position', 'x', 'y'], function ($el, css, styles){
         var x, y, pos, setPos;
         if( typeof(styles.x) !== 'undefined' ){
             x                                       = styles.x;
@@ -677,7 +758,7 @@
                                 .addClass('oa-window-fake-wrap')
                                 .appendTo(_windowParrent)
                                 .append($el)
-                                .on('aoresize', function(){
+                                .on('aoresize', function (){
                                     var $this       = jQuery(this),
                                         offs        = $this.offset(),
                                         width       = parseInt($this.css('width')),
@@ -727,7 +808,7 @@
             var style                                   = _getPositionStyle($el, x, y, pos);
             if( style ){
                 jQuery.extend(css, style);
-                styles.onComplete.push(function(){
+                styles.onComplete.push(function (){
                     $el.css( _getPositionCss($el, x, y, pos) );
                 });
             }
@@ -736,14 +817,14 @@
         }
     });
 
-    jQuery(function(){
+    jQuery(function (){
         aRD.$w.off('.aoSetSizes')
-            .on('resize.aoSetSizes aoSetSizes.aoSetSizes', function(){
+            .on('resize.aoSetSizes aoSetSizes.aoSetSizes', function (){
                 var t                                   = aRD.$w.data('ao_windowresize_timeout');
                 if( t ){
                     clearTimeout(t);
                 }
-                aRD.$w.data('ao_windowresize_timeout', setTimeout(function(){
+                aRD.$w.data('ao_windowresize_timeout', setTimeout(function (){
                     __setWindowSize();
                 }, 50));
             })
@@ -753,25 +834,16 @@
         }
     });
 
-    jQuery.extend(aRD.types, {
-        positionX                                   : __TPositionX,
-        positionY                                   : __TPositionY
+    aRD.parser.check('position', {
+        allowed                                         : ['absolute', 'fixed', 'relative']
     });
-    jQuery.extend(aRD.checks, {
-        position                                    : {
-            name                                        : 'position',
-            type                                        : 'string',
-            allowed                                     : ['absolute', 'fixed', 'relative']
-        },
-        absposition                                 : {
-            name                                        : 'position',
-            type                                        : 'string',
-            allowed                                     : ['absolute', 'fixed', 'window', 'document', 'relative']
-        }
+    aRD.parser.check('absposition', {
+        name                                            : 'position',
+        allowed                                         : ['absolute', 'fixed', 'window', 'document', 'relative']
     });
     
     jQuery.event.special.windowresize                   = {
-        add                                             : function(o){
+        add                                             : function (o){
             if (o.handler) {
                 var
                     $w                                  = aRD.$w,
@@ -794,7 +866,7 @@
                 }
             }
         },
-        remove                                          : function(o) {
+        remove                                          : function (o) {
             if (o.handler) {
                 var funcs                               = aRD.$w.data('aoWindowResizeFunc');
                 if( funcs ){
@@ -814,7 +886,7 @@
         }
     };
     jQuery.event.special.contentresize                  = {
-        add                                             : function(o){
+        add                                             : function (o){
             if (o.handler) {
                 var
                     $w                                  = aRD.$w,
@@ -837,7 +909,7 @@
                 }
             }
         },
-        remove                                          : function(o) {
+        remove                                          : function (o) {
             if (o.handler) {
                 var funcs                               = aRD.$w.data('aoContentResizeFunc');
                 if( funcs ){
@@ -857,7 +929,7 @@
         }
     };
     jQuery.event.special.aoresize                       = {
-        add                                             : function(o){
+        add                                             : function (o){
             if (o.handler) {
                 var
                     $w                                  = aRD.$w,
@@ -880,7 +952,7 @@
                 }
             }
         },
-        remove                                          : function(o) {
+        remove                                          : function (o) {
             if (o.handler) {
                 var funcs                               = aRD.$w.data('aoResizeFunc');
                 if( funcs ){

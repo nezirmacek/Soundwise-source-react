@@ -1,16 +1,19 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD, moment */
 
-(function(aRD){
-    var Countdown                                   = function(el){
+(function (aRD){
+    var dataParser                                  = aRD.parser.newData({
+            properties                                  : {
+                nextTiming                                  : 'time'
+            }
+        }),
+        Countdown                                   = function (el){
             var context                             = this,
                 tmp
             ;
             this.$el                                = jQuery(el);
-            this.options                            = aRD.fromDataString( this.$el, 'aoCountdown', {
-                'nextTiming'                        : 'time'
-            } ) || {};
+            this.options                            = aRD.parser.fromAttr( this.$el, 'aoCountdown', dataParser ) || {};
             
             tmp                                     = this.$el.find('[data-ao-counter]');
             this.$counter                           = tmp.length ? tmp : this.$el;
@@ -28,7 +31,7 @@
             
             context.$el
                 .data('aoCountdown__obj', context)
-                .on('destroyed.aoCountdown aoTimeMarkRemove.aoCountdown', function(){
+                .on('destroyed.aoCountdown aoTimeMarkRemove.aoCountdown', function (){
                     context.destroy();
                 })
             ;
@@ -36,17 +39,17 @@
                 this.start();
             }
         },
-        _templateInsert                             = function(){
+        _templateInsert                             = function (){
             var $prev                               = this.$val,
                 context                             = this;
-            aRD.createFromTemplate(this.$el, this.template, this, this.$counter)
-                .done(function($block){
+            aRD.block.fromTemplate(this.$el, this.template, this, this.$counter)
+                .done(function ($block){
                     context.$val                    = $block;
                     if( $prev ){
                         $prev.aoAnimaze(null, 'counterhide', {
                             hide                    : true,
                             stopKeys                : 'countershow',
-                            onComplete              : function($el) {
+                            onComplete              : function ($el) {
                                 $el.remove();
                             }
                         });
@@ -59,23 +62,23 @@
             ;
             return this;
         },
-        _simpleInsert                               = function(){
+        _simpleInsert                               = function (){
             this.$counter.html( this.str );
             return this;
         }
     ;
     Countdown.prototype                             = {
-        setNextTiming                               : function(val){
+        setNextTiming                               : function (val){
             this.nextTiming                         = aRD.isInt(val) ? val : 0;
             return this;
         },
-        setTemplate                                 : function(val){
+        setTemplate                                 : function (val){
             var $template                           = jQuery('[data-ao-template="' + val + '"]');
             if( this.$val ){
                 this.$val.aoAnimaze(null, 'counterhide', {
                     hide        : true,
                     stopKeys    : 'countershow',
-                    onComplete  : function($el) {
+                    onComplete  : function ($el) {
                         $el.remove();
                     }
                 });
@@ -89,7 +92,7 @@
             }
             return this;
         },
-        setRoundType                                : function(val){
+        setRoundType                                : function (val){
             switch( val ){
                 case 'round':
                     this.round               = Math.round;
@@ -106,12 +109,12 @@
             }
             return this;
         },
-        setMinLength                                : function(val){
+        setMinLength                                : function (val){
             this.minLength                          = val;
             this.padLeft                            = val > 0 ? aRD.padLeft : aRD.returnFirst;
             return this;
         },
-        setType                                     : function(type){
+        setType                                     : function (type){
             switch(type){
                 case 'timepass':
                 case 'pass':
@@ -126,7 +129,7 @@
             }
             return this;
         },
-        setFormat                                   : function(format){
+        setFormat                                   : function (format){
             this.format                             = format;
             switch(format){
                 case 'years' :
@@ -148,7 +151,7 @@
             }
             return this;
         },
-        setTimeMark                                 : function(val){
+        setTimeMark                                 : function (val){
             var timeMark                            = null;
             if( val ){
                 timeMark                            = aRD.getTimeMark(val);
@@ -165,10 +168,10 @@
             }
             return this;
         },
-        getValue                                    : function(){
+        getValue                                    : function (){
             return this.round(this.duration[this.format]());
         },
-        checkEnded                                  : function(){
+        checkEnded                                  : function (){
             var val                                 = this.round(this.duration[this.fullFormat]());
             if( val > (val + this.nextOp) && !val){
                 this.ended                          = true;
@@ -176,7 +179,7 @@
                 if( this.options.hideEnded ){
                     this.$el.aoAnimaze(null, 'counterended', {
                         hide        : true,
-                        onComplete  : function($el) {
+                        onComplete  : function ($el) {
                             $el.addClass('ao-countdown-ended');
                         }
                     });
@@ -184,7 +187,7 @@
             }
             return this;
         },
-        trigger                                     : function(){
+        trigger                                     : function (){
             var val                                 = this.timeMark[this.prop].asMilliseconds() + this.nextOp * this.nextTiming;
             this.duration                           = moment.duration(val > 0 ? val : 0);
             val                                     = this.getValue();
@@ -198,64 +201,58 @@
             }
             return this;
         },
-        stop                                        : function(){
+        stop                                        : function (){
             if( this.isRunning ){
                 this.isRunning                      = false;
                 this.$el.off('.aoCountdownRun');
             }
             return this;
         },
-        start                                       : function(){
+        start                                       : function (){
             if( !this.isRunning && !this.ended ){
                 var context                         = this;
                 this.isRunning                      = true;
-                this.$el.on('aoTimeMarkTick.aoCountdownRun aoTimeMarkChange.aoCountdownRun', function(){
+                this.$el.on('aoTimeMarkTick.aoCountdownRun aoTimeMarkChange.aoCountdownRun', function (){
                     context.trigger();
                 });
             }
             return this;
         },
-        destroy                                     : function(){
+        destroy                                     : function (){
             this.timeMark.removeElement(this.$el);
             this.$el.off('.aoCountdown').off('.aoCountdownRun');
             this.$el                                = null;
         }
     };
-    aRD.countdown                                   = function($el){
+    aRD.countdown                                   = function ($el){
         return $el.data('aoCountdown__obj') || (new Countdown($el));
     };
 
-    jQuery.fn.aoAddCountdownStartOn                 = function(opts){
+    jQuery.fn.aoAddCountdownStartOn                 = function (opts){
         if( !aRD.hasElements(this, "aRunD - FireOn: add CountdownStartOn - Nothing selected.") ){
             return this;
         }
-        jQuery(this).aoAddFireOn('CountdownStart', opts, false, function(el){
+        jQuery(this).aoAddFireOn('CountdownStart', opts, function (el){
             aRD.countdown(jQuery(el)).start();
         });
         return this;
     };
 
-    jQuery.fn.aoAddCountdownStopOn                 = function(opts){
+    jQuery.fn.aoAddCountdownStopOn                 = function (opts){
         if( !aRD.hasElements(this, "aRunD - FireOn: add CountdownStopOn - Nothing selected.") ){
             return this;
         }
-        jQuery(this).aoAddFireOn('CountdownStop', opts, false, function(el){
+        jQuery(this).aoAddFireOn('CountdownStop', opts, function (el){
             aRD.countdown(jQuery(el)).stop();
         });
         return this;
     };
 
-    aRD.pushFlist('init', function($container, findFn){
-        $container[findFn]('[data-ao-countdown]').each(function(i, el){
+    aRD.pushFlist('init', function ($container, findFn){
+        $container[findFn]('[data-ao-countdown]').each(function (i, el){
             aRD.countdown(jQuery(el));
         });
-        $container[findFn]('[data-ao-countdown-start-on]').each(function(i, el){
-            var $el                                     = jQuery(el);
-            $el.aoAddCountdownStartOn( aRD.fromDataString( $el, 'aoCountdownStartOn' ) );
-        });
-        $container[findFn]('[data-ao-countdown-stop-on]').each(function(i, el){
-            var $el                                     = jQuery(el);
-            $el.aoAddCountdownStopOn( aRD.fromDataString( $el, 'aoCountdownStopOn' ) );
-        });
+        $container[findFn]('[data-ao-countdown-start-on]').aoAddCountdownStartOn();
+        $container[findFn]('[data-ao-countdown-stop-on]').aoAddCountdownStopOn();
     });
 })(aRunD);

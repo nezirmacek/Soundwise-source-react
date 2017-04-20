@@ -17,13 +17,14 @@ const Page = () => (
     <Media_mention></Media_mention>
     <Callto_action></Callto_action>
     <Footer></Footer>
-    { /* Popup block start <subscribe8> */ }
-    <Popup></Popup>
-    { /* Window fake: takes content full size; used for animation, elements with 'window', 'document' position is moved to it */ }
-    <div className="ao-window-fake" data-ao-animaze-resize="windowSize:min 100%" />
-    <div id="fb-root" />
-    { /* Popup block end */ }
   </div>
 );
 
 export default Page;
+
+    // { /* Popup block start <subscribe8> */ }
+    // <Popup></Popup>
+    // {  Window fake: takes content full size; used for animation, elements with 'window', 'document' position is moved to it  }
+    // <div className="ao-window-fake" data-ao-animaze-resize="windowSize:min 100%" />
+    // <div id="fb-root" />
+    // { /* Popup block end */ }

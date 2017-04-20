@@ -1,86 +1,113 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD, Cookies */
 
-(function(aRD){
-    var
-        _cookies                                        = {},
-        _cookieSub                                      = {},
-        _pageviewsCC                                    = {},
-        _setCookie                                      = function(cookie, val){
-            var opts                                    = {};
+(function (fn) {
+    if (typeof jQuery === 'undefined') {
+        throw 'aRunD Cookies requires jQuery to be loaded first';
+    }
+    if (typeof aRunD === 'undefined') {
+        throw 'aRunD Cookies requires aRunD to be loaded first';
+    }
+    if (typeof Cookies === 'undefined') {
+        throw 'aRunD Cookies requires Cookies library to be loaded first';
+    }
+    fn(jQuery, aRunD, Cookies);
+}(function ($, aRD, Cookies) {
+    var cookies                                             = {},
+        cookieSub                                           = {},
+        pageviewsCC                                         = {},
+        setCookie                                           = function (cookie, val){
+            var opts                                        = {};
             if(cookie.expires){
-                opts.expires                            = cookie.expires;
+                opts.expires                                = cookie.expires;
             }
-            aRD.Cookies.set(cookie.name, val, opts);
+            Cookies.set(cookie.name, val, opts);
             return aRD;
         },
-        _addCookie                                      = function(name, opts){
+        addCookie                                           = function (name, opts){
             if( name && typeof(name) === 'string' ){
-                var params                              = typeof(opts) === 'object' ? opts : {},
-                    cookie                              = {
-                        name                            : params.name || name,
-                        value                           : params.value,
-                        check                           : !!params.check,
-                        expires                         : typeof(params.expires) === 'undefined' ? false : aRD.toNumber(params.expires),
-                        apply                           : typeof(params.apply) === 'undefined' ? true : params.apply,
-                        anyValue                        : typeof(params.value) === 'undefined'
+                var params                                  = typeof(opts) === 'object' ? opts : {},
+                    cookie                                  = {
+                        name                                : params.name || name,
+                        value                               : params.value,
+                        check                               : !!params.check,
+                        expires                             : typeof(params.expires) === 'undefined' ? false : aRD.toNumber(params.expires),
+                        apply                               : typeof(params.apply) === 'undefined' ? true : params.apply,
+                        anyValue                            : typeof(params.value) === 'undefined'
                     },
-                    val                                 = aRD.toJsValue(aRD.Cookies.get(cookie.name))
+                    val                                     = aRD.toJsValue(Cookies.get(cookie.name))
                 ;
-                _cookies[name]                          = cookie;
+                cookies[name]                               = cookie;
                 switch(cookie.apply){
                     case 'everyview':
                     case 'pageview':
-                        if( !_pageviewsCC[cookie.name] ){
-                            _setCookie(cookie, aRD.isInt(val) ? ++val : 1);
-                            _pageviewsCC[cookie.name]          = true;
+                        if( !pageviewsCC[cookie.name] ){
+                            setCookie(cookie, aRD.isInt(val) ? ++val : 1);
+                            pageviewsCC[cookie.name]        = true;
                         }
-                        cookie.value                    = aRD.isInt(cookie.value) ? cookie.value : 1;
-                        cookie.anyValue                 = false;
+                        cookie.value                        = aRD.isInt(cookie.value) ? cookie.value : 1;
+                        cookie.anyValue                     = false;
                         break;
                     default:
-                        cookie.apply                    = !!cookie.apply;
+                        cookie.apply                        = !!cookie.apply;
                         break;
                 }
                 if( typeof(params.parent) === 'string' ){
-                    if( !_cookieSub[params.parent] ){
-                        _cookieSub[params.parent]         = [];
+                    if( !cookieSub[params.parent] ){
+                        cookieSub[params.parent]            = [];
                     }
-                    _cookieSub[params.parent].push(name);
+                    cookieSub[params.parent].push(name);
                 }
             }
             return this;
         },
-        _checkCookie                                    = function(name){
-            if( aRD.Cookies ){
+        doCheck                                             = function (name){
+            if( !(name && cookies[name]) ){
+                return false;
+            }
+            var cookie                                      = cookies[name],
+                value                                       = aRD.toJsValue(Cookies.get(cookie.name)),
+                check                                       = false
+            ;
+            switch(cookie.apply){
+                case 'everyview':
+                    check                                   = aRD.isInt(value) && (value % (aRD.isInt(cookie.value) ? cookie.value : 1) === 0 );
+                    break;
+                default:
+                    check                                   = !!(typeof(value) !== 'undefined' && (cookie.anyValue || value === cookie.value) );
+            }
+            return cookie.check === check;
+        },
+        checkCookie                                         = function (name){
+            if( Cookies ){
                 var
-                    pass                                = _doCheck(name),
-                    needApply                           = [],
+                    pass                                    = doCheck(name),
+                    needApply                               = [],
                     i, cookie
                 ;
-                if( pass && _cookieSub[name] ){
-                    for (i = 0; i < _cookieSub[name]; i++) {
-                        if( _doCheck(_cookieSub[name][i]) ){
-                            if( _cookies[ _cookieSub[name][i] ].apply === true ){
-                                needApply.push(_cookieSub[name][i]);
+                if( pass && cookieSub[name] ){
+                    for (i = 0; i < cookieSub[name]; i++) {
+                        if( doCheck(cookieSub[name][i]) ){
+                            if( cookies[ cookieSub[name][i] ].apply === true ){
+                                needApply.push(cookieSub[name][i]);
                             }
                         }else{
-                            pass                        = false;
+                            pass                            = false;
                         }
                     }
                 }
                 if( pass ){
-                    if( _cookies[name].apply === true ){
+                    if( cookies[name].apply === true ){
                         needApply.unshift(name);
                     }
 
                     for (i = 0; i < needApply.length; i++) {
-                        cookie                          = _cookies[ needApply[i] ];
+                        cookie                              = cookies[ needApply[i] ];
                         if( cookie.check ){
-                            aRD.Cookies.remove(cookie.name);
+                            Cookies.remove(cookie.name);
                         }else{
-                            _setCookie(cookie, cookie.anyValue || cookie.value);
+                            setCookie(cookie, cookie.anyValue || cookie.value);
                         }
                     }
 
@@ -89,83 +116,72 @@
             }
             return false;
         },
-        _doCheck                                        = function(name){
-            if( !(name && _cookies[name]) ){
-                return false;
+        viewsCookieName                                     = 'aoViewsCookie',
+        dataParser                                          = aRD.parser.newData({
+            default                                         : {
+                type                                            : {
+                    list                                            : [
+                        { checks : {
+                            name                                        : 'apply',
+                            allowed                                     : [true, false, 'pageview', 'everyview']
+                        } },
+                        { checks : {
+                            name                                        : 'check',
+                            type                                        : 'boolean'
+                        } },
+                        { checks : aRD.parser.newCheck('expires', 'number') },
+                        { checks : {
+                            name                                        : 'value'
+                        } },
+                        { checks : {
+                            type                                        : 'string',
+                            name                                        : 'name'
+                        } },
+                        { checks : {
+                            type                                        : 'string',
+                            name                                        : 'parent'
+                        } }
+                    ]
+                }
             }
-            var cookie                                  = _cookies[name],
-                value                                   = aRD.toJsValue(aRD.Cookies.get(cookie.name)),
-                check                                   = false
-            ;
-            switch(cookie.apply){
-                case 'everyview':
-                    check                               = aRD.isInt(value) && (value % (aRD.isInt(cookie.value) ? cookie.value : 1) === 0 );
-                    break;
-                default:
-                    check                               = !!(typeof(value) !== 'undefined' && (cookie.anyValue || value === cookie.value) );
-            }
-            return cookie.check === check;
-        },
-        _viewsCookieName                                = 'aoViewsCookie'
+        })
     ;
-    aRD.Cookies                                         = typeof(Cookies) !== 'undefined' ? Cookies.noConflict() : false;
-    aRD.addCookie                                       = _addCookie;
-    aRD.checkCookie                                     = _checkCookie;
 
-    if( aRD.Cookies ){
-        var _views                                      = aRD.Cookies.get(_viewsCookieName);
-        if( !aRD.isInt(_views) ){
-            _views                                      = 0;
+    aRD.cookie                                              = {
+        browser                                             : Cookies,
+        add                                                 : addCookie,
+        check                                               : checkCookie,
+        parse                                               : function (value){
+            return dataParser.parse(value);
+        },
+        stringify                                           : function (value){
+            return dataParser.stringify(value);
         }
-        aRD.Cookies.set(_viewsCookieName, ++_views);
+    };
+
+    if( Cookies ){
+        var views                                           = Cookies.get(viewsCookieName);
+        if( !aRD.isInt(views) ){
+            views                                           = 0;
+        }
+        Cookies.set(viewsCookieName, ++views);
     }
 
-    jQuery.extend(aRD.checks, {
-        cookie                                          : {
-            name                                            : 'cookie',
-            type                                            : 'string',
-            keyObj                                          : _cookies
-        }
+    aRD.parser.check('cookie', {
+        name                                                : 'cookie',
+        keyObj                                              : cookies
     });
 
-    aRD.pushFlist('init', function($container, findFn){
-        $container[findFn]('[data-ao-cookies]').each(function(i, el){
-            var opts                                    = aRD.fromDataString( jQuery(el), 'aoCookies', {
-                '_default'                              :{
-                    type                                    : 'datastring',
-                    params                                  : {
-                        list                                    : [
-                            { byCheck : {
-                                name                        : 'apply',
-                                allowed                     : [true, false, 'pageview', 'everyview']
-                            } },
-                            { byCheck : {
-                                name                        : 'check',
-                                type                        : 'boolean'
-                            } },
-                            { byCheck : aRD.createTypeCheck('expires', 'number') },
-                            { byCheck : {
-                                name                        : 'value'
-                            } },
-                            { byCheck : {
-                                type                        : 'string',
-                                name                        : 'name'
-                            } },
-                            { byCheck : {
-                                type                        : 'string',
-                                name                        : 'parent'
-                            } }
-                        ]
-                    }
-                }
-            });
-            jQuery.each(opts, function(name, opt){
-                _addCookie(name, opt);
+    aRD.pushFlist('init', function ($container, findFn){
+        $container[findFn]('[data-ao-cookies]').each(function (i, el){
+            var opts                                        = dataParser.parse(jQuery(el).data('aoCookies'));
+            jQuery.each(opts, function (name, opt){
+                addCookie(name, opt);
             });
         });
 
-        $container[findFn]('[data-ao-check-cookie]').off('.aoCheckCookie').on('click.aoCheckCookie', function(){
-            _checkCookie(jQuery(this).data('aoCheckCookie'));
+        $container[findFn]('[data-ao-check-cookie]').off('.aoCheckCookie').on('click.aoCheckCookie', function (){
+            checkCookie(jQuery(this).data('aoCheckCookie'));
         });
     });
-})(aRunD);
+}));

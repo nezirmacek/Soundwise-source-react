@@ -1,73 +1,55 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 /* global aRunD, moment */
 
-(function(aRD){
+(function (aRD){
     var _timersList                                 = {},
         _timersCount                                = 0,
         _timeout                                    = false,
         _timeMarks                                  = {},
-        _toTime                                     = function(value, type){
-            if( typeof(value) === 'number' ){
-                switch(type){
-                    case 's'    :
-                        value                       = value * 1000;
-                        break;
-                    case 'm'    :
-                        value                       = value * 60000;
-                        break;
-                    case 'h'    :
-                        value                       = value * 3600000;
-                        break;
-                    case 'd'    :
-                        value                       = value * 86400000;
-                        break;
-                    case 'w'    :
-                        value                       = value * 604800000;
-                        break;
+        timeTypes                                   = {
+            s                                       : {
+                div                                     : 1000
+            },
+            m                                       : {
+                div                                     : 60000
+            },
+            h                                       : {
+                div                                     : 3600000
+            },
+            d                                       : {
+                div                                     : 86400000
+            },
+            w                                       : {
+                div                                     : 604800000
+            }
+        },
+        stringify                                   = function (val){
+            var str                                 = '' + val,
+                str1
+            ;
+            for(var symbol in timeTypes){
+                str1                                = val / timeTypes[symbol].div + symbol;
+                if( str.length > str1.length ){
+                    str                             = str1;
+                }else{
+                    if( (str1.length - str.length) < 2 ){
+                        str                         = str1;
+                    }
+                    break;
                 }
             }
-            
+            return str;
+        },
+        _toTime                                     = function (value, type){
+            if( typeof(value) === 'number' ){
+                if( timeTypes[type] ){
+                    value                           = value * timeTypes[type].div;
+                }
+            }
             return value;
         },
-        _TTime                                      = {
-            regStr                                  : "(" + aRD.types.number.regStr + ")([smh]?)",
-            check                                   : function(value){
-                var type                            = typeof(value);
-                return type === 'number' || ( type === 'string' && _TTime._reg.test(value) );
-            },
-            parse                                   : function(value){
-                var type                            = typeof(value),
-                    ret                             = 0
-                ;
-                if( type === 'number' ){
-                    return value;
-                }
-                if( type === 'string' ){
-                    var matches                     = _TTime._reg.exec(value);
-                    if( matches && matches.length > 1 ){
-                        ret                         = aRD.toNumber(matches[1], ret);
-                        if( matches.length > 3 ){
-                            ret                     = _toTime(ret, matches[3]);
-                        }
-                    }
-                }
-                return ret;
-            }
-        },
-        _TTimeRange                             = {
-            _reg                                    : new RegExp( aRD.makeRangeRegStr(_TTime.regStr) ),
-            check                                   : function(value){
-                var type                            = typeof(value);
-                return type === 'number' || ( value && type === 'string' && _TTimeRange._reg.test(value) );
-            },
-            parse                                   : function(value){
-                return aRD.parseRange(_TTimeRange._reg, value, 5, function(all, number, rest, type){
-                    return _toTime(aRD.toNumber(arguments.length > 1 ? number : all, null), type);
-                });
-            }
-        },
-        _getMoment                                  = function(value, format, useStrict){
+        _getMoment                                  = function (value, format, useStrict){
             if( typeof(moment) === 'undefined' ){
                 aRunD.log('Please include moment.js!');
                 return null;
@@ -80,7 +62,7 @@
                 return null;
             }
         },
-        _toDate                                     = function(str, parseFormats, useStrict, date){
+        _toDate                                     = function (str, parseFormats, useStrict, date){
             if( typeof(moment) === 'undefined' ){
                 aRunD.log('Please include moment.js!');
                 return null;
@@ -100,10 +82,8 @@
                     date                            = date || moment(new Date()).startOf('day');
                     switch( str.charAt(0) ){
                         case '+'                    :
-                            str                     = date.add( parseInt(str), str.split(' ').pop() );
-                            break;
                         case '-'                    :
-                            str                     = date.subtract( parseInt(str), str.split(' ').pop() );
+                            str                     = date.add( parseInt(str), str.split(' ').pop() );
                             break;
                     }
                 }else{
@@ -117,7 +97,7 @@
             }
             return str;
         },
-        _checkTimeMarks                             = function(){
+        _checkTimeMarks                             = function (){
             if( _timersCount ){
                 if( !_timeout ){
                     _runTime();
@@ -127,8 +107,8 @@
                 _timeout                            = false;
             }
         },
-        _runTime                                    = function(){
-            _timeout                                = setTimeout(function(){
+        _runTime                                    = function (){
+            _timeout                                = setTimeout(function (){
                 var now                             = moment();
                 for(var name in _timersList){
                     if(_timersList.hasOwnProperty(name)){
@@ -139,7 +119,7 @@
                 _checkTimeMarks();
             }, 20);
         },
-        TimeMark                                    = function(name){
+        TimeMark                                    = function (name){
             this.name                               = name;
             this.$els                               = jQuery([]);
             this.time                               = null;
@@ -147,12 +127,12 @@
             this.timePass                           = null;
             this.now                                = null;
             _timeMarks[name]                        = this;
-        }
+        },
+        timeReg                                     = aRD.type('number').regular() + "([smh]?)"
     ;
-    _TTime._reg                                     = new RegExp("^" + _TTime.regStr + "$");
 
     TimeMark.prototype                              = {
-        setTime                                     : function(str){
+        setTime                                     : function (str){
             this.time                               = _toDate(str);
             if( !(this.time && this.time.isValid()) ){
                 if( this.timerName ){
@@ -164,19 +144,19 @@
             }
             return this.trigger()._elsTrigger('aoTimeMarkChange');
         },
-        clearDate                                   : function(){
+        clearDate                                   : function (){
             this.time                               = null;
             return this.trigger()._elsTrigger('aoTimeMarkChange');
         },
-        addElement                                  : function($el){
+        addElement                                  : function ($el){
             this.$els                               = this.$els.add($el);
             return this.trigger();
         },
-        removeElement                               : function($el){
+        removeElement                               : function ($el){
             this.$els                               = this.$els.not($el);
             return this;
         },
-        trigger                                     : function(_now){
+        trigger                                     : function (_now){
             this.now                                = _now || moment();
             this.timeLeft                           = null;
             this.timePass                           = null;
@@ -192,19 +172,19 @@
             }
             return this._elsTrigger('aoTimeMarkTick');
         },
-        _elsTrigger                                : function(eName){
+        _elsTrigger                                : function (eName){
             var context                             = this;
             if( !this.timerName ){
                 return this;
             }
             if( context.$els.length ){
-                context.$els.each(function(i, el){
+                context.$els.each(function (i, el){
                     jQuery(el).triggerHandler(eName, [context]);
                 });
             }
             return this;
         },
-        remove                                      : function(){
+        remove                                      : function (){
             this._elsTrigger('aoTimeMarkRemove');
             aRD.removeTimer(this.timerName);
             this.$els                               = null;
@@ -213,17 +193,17 @@
     };
     aRD.getMoment                                   = _getMoment;
     aRD.toDate                                      = _toDate;
-    aRD.getTimeMark                                 = function(name){
+    aRD.getTimeMark                                 = function (name){
         return _timeMarks[name] || null;
     };
-    aRD.createTimeMark                              = function(name, time){
+    aRD.createTimeMark                              = function (name, time){
         var timeMark                                = _timeMarks[name] || new TimeMark(name);
         if( time ){
             timeMark.setTime(time);
         }
         return timeMark;
     };
-    aRD.addTimer                                    = function(value){
+    aRD.addTimer                                    = function (value){
         var type                                    = typeof(value),
             name                                    = aRD.randomId(_timersList),
             fn
@@ -234,13 +214,13 @@
                 break;
             case 'object':
                 if(value.trigger){
-                    fn                              = function(now){
+                    fn                              = function (now){
                         value.trigger(now);
                     };
                 }
                 break;
             case 'string':
-                fn                                  = function(now){
+                fn                                  = function (now){
                     aRD.$doc.trigger(value, [now]);
                 };
         }
@@ -252,7 +232,7 @@
         _checkTimeMarks();
         return name;
     };
-    aRD.removeTimer                                 = function(name){
+    aRD.removeTimer                                 = function (name){
         if( _timersList[name] ){
             delete _timersList[name];
             --_timersCount;
@@ -261,14 +241,34 @@
         }
         return false;
     };
-    aRD.types.time                                  = _TTime;
-    aRD.types.timeRange                             = _TTimeRange;
-    aRD.checks.delay                                = aRD.createTypeCheck('delay', 'time');
-    aRD.checks.duration                             = aRD.createTypeCheck('duration', 'time');
+    aRD.type('time')
+        .type('number')
+        .regular(timeReg)
+        .parser(function (value, type){
+            var ret                                 = 0;
+            if( type === 'number' ){
+                ret                                 = value;
+            }
+            if( type === 'string' ){
+                var matches                         = this._reg.exec(value);
+                if( matches && matches.length > 1 ){
+                    ret                             = aRD.toNumber(matches[1], ret);
+                    if( matches.length > 3 ){
+                        ret                         = _toTime(ret, matches[3]);
+                    }
+                }
+            }
+            return ret;
+        })
+        .stringifier(stringify)
+    ;
+    aRD.rangeType('timeRange', 'time');
+    aRD.parser.check('delay', 'time');
+    aRD.parser.check('duration', 'time');
 
-    aRD.pushFlist('init', function($container, findFn){
-        $container[findFn]('[data-ao-timemark]').each(function(i, el){
-            var marks                               = aRD.fromDataString( jQuery(el), 'aoTimemark' );
+    aRD.pushFlist('init', function ($container, findFn){
+        $container[findFn]('[data-ao-timemark]').each(function (i, el){
+            var marks                               = aRD.parser.fromAttr( jQuery(el), 'aoTimemark' );
             if(marks){
                 for(var name in marks) {
                     if(marks.hasOwnProperty(name)){

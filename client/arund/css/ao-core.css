@@ -1,4 +1,4 @@
-/*! aRund v.1.7.3 - 2017-01-20 */
+/*! aRund v.1.7.5 - 2017-04-02 */
 
 .ao-inline-block {
   display: inline-block;
@@ -850,7 +850,6 @@ body.ao-body .ao-pos-fixed {
 }
 .ao-auto-table {
   table-layout: auto;
-  width: auto;
 }
 .ao-separator,
 .ao-dashed {
@@ -1140,6 +1139,7 @@ body.ao-body .ao-normal-text {
   margin-bottom: 8px;
 }
 .ao-cols-xs {
+  width: auto;
   margin-left: -8px;
   margin-right: -8px;
 }
@@ -1193,6 +1193,7 @@ body.ao-body .ao-normal-text {
   margin-bottom: 15px;
 }
 .ao-cols-sm {
+  width: auto;
   margin-left: -15px;
   margin-right: -15px;
 }
@@ -1246,6 +1247,7 @@ body.ao-body .ao-normal-text {
   margin-bottom: 25px;
 }
 .ao-cols-md {
+  width: auto;
   margin-left: -25px;
   margin-right: -25px;
 }
@@ -1299,6 +1301,7 @@ body.ao-body .ao-normal-text {
   margin-bottom: 40px;
 }
 .ao-cols-lg {
+  width: auto;
   margin-left: -40px;
   margin-right: -40px;
 }
@@ -1352,6 +1355,7 @@ body.ao-body .ao-normal-text {
   margin-bottom: 80px;
 }
 .ao-cols-xl {
+  width: auto;
   margin-left: -80px;
   margin-right: -80px;
 }

@@ -41991,14 +41991,18 @@
 	    _react2.default.createElement(_testimonial2.default, null),
 	    _react2.default.createElement(_media_mention2.default, null),
 	    _react2.default.createElement(_callto_action2.default, null),
-	    _react2.default.createElement(_footer2.default, null),
-	    _react2.default.createElement(_popup2.default, null),
-	    _react2.default.createElement('div', { className: 'ao-window-fake', 'data-ao-animaze-resize': 'windowSize:min 100%' }),
-	    _react2.default.createElement('div', { id: 'fb-root' })
+	    _react2.default.createElement(_footer2.default, null)
 	  );
 	};
 
 	exports.default = Page;
+
+	// { /* Popup block start <subscribe8> */ }
+	// <Popup></Popup>
+	// {  Window fake: takes content full size; used for animation, elements with 'window', 'document' position is moved to it  }
+	// <div className="ao-window-fake" data-ao-animaze-resize="windowSize:min 100%" />
+	// <div id="fb-root" />
+	// { /* Popup block end */ }
 
 /***/ },
 /* 591 */
@@ -89932,6 +89936,20 @@
 	          duration: this.props.currentDuration
 	        });
 	      }
+
+	      // let headers = new Headers()
+	      // headers.append('access-control-allow-origin', '*')
+	      // headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+	      // headers.append('access-control-allow-headers', 'content-type, accept')
+	      // headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
+
+	      // let request = new Request(this.props.section.section_url, {headers})
+
+	      // fetch(request)
+	      // .then(response => {
+	      //   console.log(response.status)
+	      // })
+
 
 	      if ('caches' in window) {
 	        caches.open('audio-cache').then(function (cache) {
