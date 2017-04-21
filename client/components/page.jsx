@@ -17,6 +17,7 @@ const Page = () => (
     <Media_mention></Media_mention>
     <Callto_action></Callto_action>
     <Footer></Footer>
+    <Popup></Popup>
   </div>
 );
 
