@@ -41,6 +41,7 @@ module.exports = {
         minify: false,
         stripPrefix: 'client/',
         navigateFallback: 'index.html',
+        importScripts: ['custom-handler.js'],
         staticFileGlobs: [
           'client/index.html',
           'client/css/**.css',

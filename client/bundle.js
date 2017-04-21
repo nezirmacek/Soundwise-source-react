@@ -62229,9 +62229,22 @@
 	        );
 	      } else {
 	        return _react2.default.createElement(
-	          'i',
-	          { style: styles.icon, className: 'material-icons' },
-	          'play_circle_outline'
+	          'div',
+	          null,
+	          _react2.default.createElement(
+	            'i',
+	            { style: styles.icon, className: 'material-icons' },
+	            'play_circle_outline'
+	          ),
+	          _react2.default.createElement(
+	            'p',
+	            { style: { fontSize: '30px' } },
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              'PLAY INTRO'
+	            )
+	          )
 	        );
 	      }
 	    }
@@ -62941,7 +62954,8 @@
 	      email: '',
 	      password: '',
 	      response: '',
-	      renderSignup: true
+	      renderSignup: true,
+	      message: ''
 	    };
 	    _this.signUp = _this.signUp.bind(_this);
 	    _this.signIn = _this.signIn.bind(_this);
@@ -63076,7 +63090,7 @@
 	                _context2.t0 = _context2['catch'](1);
 
 	                this.setState({
-	                  message: _context2.t0.toString()
+	                  response: _context2.t0.toString()
 	                });
 	                console.log(_context2.t0.toString());
 
@@ -63135,6 +63149,22 @@
 	                        return _this3.switchForm();
 	                      }, className: 'text-decoration-underline' },
 	                    'Log in here.'
+	                  )
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1.5em', margin: '2em' } },
+	                _react2.default.createElement(
+	                  'button',
+	                  { onClick: function onClick() {
+	                      return _this3.handleFBAuth();
+	                    }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color' },
+	                  _react2.default.createElement('i', { className: 'fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub' }),
+	                  _react2.default.createElement(
+	                    'span',
+	                    { className: 'tz-text' },
+	                    'Sign up with Facebook'
 	                  )
 	                )
 	              ),
@@ -63216,6 +63246,22 @@
 	            ),
 	            _react2.default.createElement(
 	              'div',
+	              { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1.5em', margin: '2em' } },
+	              _react2.default.createElement(
+	                'button',
+	                { onClick: function onClick() {
+	                    return _this4.handleFBAuth();
+	                  }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color' },
+	                _react2.default.createElement('i', { className: 'fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub' }),
+	                _react2.default.createElement(
+	                  'span',
+	                  { className: 'tz-text' },
+	                  'Log in with Facebook'
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
 	              { className: 'col-md-6 center-col col-sm-12 text-center' },
 	              _react2.default.createElement('input', {
 	                onChange: this.handleChange,
@@ -63232,6 +63278,90 @@
 	          )
 	        )
 	      );
+	    }
+	  }, {
+	    key: 'handleFBAuth',
+	    value: function handleFBAuth() {
+	      var that = this;
+	      // firebase.auth().signInWithRedirect(provider)
+
+	      firebase.auth().signInWithPopup(provider).then(function (result) {
+	        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+	        // The signed-in user info.
+	        var userId = firebase.auth().currentUser.uid;
+	        firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
+	          if (snapshot.val().firstName !== undefined) {
+	            // if user already exists
+	            var _firstName = snapshot.val().firstName;
+	            var _lastName = snapshot.val().lastName;
+	            var email = snapshot.val().email;
+	            var _courses = snapshot.val().courses || {};
+	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: email, courses: _courses });
+	            that.props.history.push('/checkout');
+	          } else {
+	            //if it's a new user
+	            var user = result.user;
+	            var _email = user.email;
+	            var name = user.displayName.split(' ');
+	            var _firstName2 = name[0];
+	            var _lastName2 = name[1];
+	            var _courses2 = {};
+
+	            firebase.database().ref('users/' + userId).set({
+	              firstName: _firstName2,
+	              lastName: _lastName2,
+	              email: _email,
+	              courses: _courses2
+	            });
+
+	            that.props.signinUser({ firstName: _firstName2, lastName: _lastName2, email: _email, courses: _courses2 });
+	            that.props.history.push('/checkout');
+	          }
+	        });
+	      }).catch(function (error) {
+	        // Handle Errors here.
+	        if (error.code === 'auth/account-exists-with-different-credential') {
+	          // Step 2.
+	          // User's email already exists.
+	          // The pending Facebook credential.
+	          console.log('facebook error');
+	          var pendingCred = error.credential;
+	          // The provider account's email address.
+	          var email = error.email;
+	          // Get registered providers for this email.
+	          firebase.auth().fetchProvidersForEmail(email).then(function (providers) {
+	            // Step 3.
+	            // If the user has several providers,
+	            // the first provider in the list will be the "recommended" provider to use.
+	            if (providers[0] === 'password') {
+	              // Asks the user his password.
+	              // In real scenario, you should handle this asynchronously.
+	              var password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
+	              firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
+	                // Step 4a.
+	                return user.link(pendingCred);
+	              }).then(function () {
+	                // Facebook account successfully linked to the existing Firebase user.
+	                var userId = firebase.auth().currentUser.uid;
+	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
+	                  firstName = snapshot.val().firstName;
+	                  lastName = snapshot.val().lastName;
+	                  email = snapshot.val().email;
+	                  courses = snapshot.val().courses;
+	                  if (!courses) {
+	                    firebase.database().ref('users/' + userId).set({
+	                      courses: {}
+	                    });
+	                  }
+	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, courses: courses });
+
+	                  that.props.history.push('/checkout');
+	                });
+	              });
+	            }
+	          });
+	        }
+	      });
 	    }
 	  }, {
 	    key: 'handleClose',
@@ -66027,22 +66157,21 @@
 	        headers.append('access-control-allow-headers', 'content-type, accept');
 	        headers.append('Content-Type', "image/jpeg;image/png;text/xml");
 
-	        var request = new Request(nextprops.course.img_url_mobile, { headers: headers });
+	        var myInit = { method: 'GET',
+	          headers: headers,
+	          mode: 'no-cors',
+	          cache: 'default' };
+
+	        var request = new Request(nextprops.course.img_url_mobile, myInit);
 
 	        fetch(request).then(function (response) {
-	          if (!response.ok) {
-	            throw new TypeError('bad response status');
-	          }
+	          // if(!response.ok) {
+	          //   throw new TypeError('bad response status')
+	          // }
 
-	          return caches.keys().then(function (keys) {
-	            keys.forEach(function (key) {
-	              if (key.includes('sw-precache')) {
-	                caches.open(key).then(function (cache) {
-	                  cache.put(nextprops.course.img_url_mobile, response);
-	                  console.log('image cached');
-	                });
-	              }
-	            });
+	          return caches.open('audio-cache').then(function (cache) {
+	            cache.put(nextprops.course.img_url_mobile, response);
+	            console.log('image cached');
 	          });
 	        });
 	      }
@@ -89263,13 +89392,13 @@
 
 	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
 
-	var _Snackbar = __webpack_require__(1051);
+	var _Snackbar = __webpack_require__(1048);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
 	var _course_header_purchased = __webpack_require__(863);
 
-	var _course_body_purchased = __webpack_require__(1048);
+	var _course_body_purchased = __webpack_require__(1052);
 
 	var _course_body_purchased2 = _interopRequireDefault(_course_body_purchased);
 
@@ -89447,918 +89576,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Tabs = __webpack_require__(1025);
-
-	var _reactSwipeableViews = __webpack_require__(1030);
-
-	var _reactSwipeableViews2 = _interopRequireDefault(_reactSwipeableViews);
-
-	var _colors = __webpack_require__(782);
-
-	var _instructor = __webpack_require__(1043);
-
-	var _instructor2 = _interopRequireDefault(_instructor);
-
-	var _curriculum = __webpack_require__(1049);
-
-	var _player_bar = __webpack_require__(1044);
-
-	var _reviews = __webpack_require__(1045);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var styles = {
-	  headline: {
-	    fontSize: 24,
-	    paddingTop: 16,
-	    marginBottom: 12,
-	    fontWeight: 400
-	  },
-	  slide: {
-	    padding: 10
-	  },
-	  tabs: {
-	    color: _colors.deepOrange800,
-	    backgroundColor: 'white',
-	    // fontSize: 20,
-	    fontFamily: 'lato'
-	  },
-	  active_tab: {
-	    color: _colors.deepOrange800,
-	    backgroundColor: _colors.orange50,
-	    // fontSize: 24,
-	    fontFamily: 'lato'
-	  }
-	};
-
-	var CourseBodyPurchased = function (_React$Component) {
-	  _inherits(CourseBodyPurchased, _React$Component);
-
-	  function CourseBodyPurchased(props) {
-	    _classCallCheck(this, CourseBodyPurchased);
-
-	    var _this = _possibleConstructorReturn(this, (CourseBodyPurchased.__proto__ || Object.getPrototypeOf(CourseBodyPurchased)).call(this, props));
-
-	    _this.handleChange = function (value) {
-	      _this.setState({
-	        slideIndex: value
-	      });
-	    };
-
-	    _this.state = {
-	      slideIndex: 1
-	    };
-	    return _this;
-	  }
-
-	  _createClass(CourseBodyPurchased, [{
-	    key: 'render',
-	    value: function render() {
-	      styles.tab = [];
-	      styles.tab[0] = styles.tabs;
-	      styles.tab[1] = styles.tabs;
-	      // styles.tab[2] = styles.tabs
-	      styles.tab[this.state.slideIndex] = Object.assign({}, styles.tab[this.state.slideIndex], styles.active_tab);
-
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'vbox' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: '' },
-	          _react2.default.createElement(
-	            _Tabs.Tabs,
-	            {
-	              onChange: this.handleChange,
-	              value: this.state.slideIndex
-	            },
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 0 }),
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 1 })
-	          ),
-	          _react2.default.createElement(
-	            _reactSwipeableViews2.default,
-	            {
-	              index: this.state.slideIndex,
-	              onChangeIndex: this.handleChange
-	            },
-	            _react2.default.createElement(
-	              'div',
-	              null,
-	              'Lots of great resources...'
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { style: styles.slide },
-	              _react2.default.createElement(_curriculum.Curriculum, { course: this.props.course })
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(_player_bar.PlayerBar, null)
-	      );
-	    }
-	  }]);
-
-	  return CourseBodyPurchased;
-	}(_react2.default.Component);
-
-	exports.default = CourseBodyPurchased;
-
-/***/ },
-/* 1049 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Curriculum = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _redux = __webpack_require__(501);
-
-	var _reactRedux = __webpack_require__(536);
-
-	var _Card = __webpack_require__(830);
-
-	var _colors = __webpack_require__(782);
-
-	var _firebase = __webpack_require__(544);
-
-	var _firebase2 = _interopRequireDefault(_firebase);
-
-	var _course_section = __webpack_require__(1050);
-
-	var _index = __webpack_require__(588);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var interval = void 0,
-	    player = void 0,
-	    source = void 0;
-
-	var styles = {
-	  moduleTitle: {
-	    fontSize: 24,
-	    backgroundColor: '#F76B1C'
-	  },
-	  sectionTitle: {
-	    backgroundColor: _colors.orange50
-	  },
-	  curriculumContainer: {
-	    marginTop: '3em'
-	  }
-	};
-
-	var _Curriculum = function (_Component) {
-	  _inherits(_Curriculum, _Component);
-
-	  function _Curriculum(props) {
-	    _classCallCheck(this, _Curriculum);
-
-	    var _this = _possibleConstructorReturn(this, (_Curriculum.__proto__ || Object.getPrototypeOf(_Curriculum)).call(this, props));
-
-	    _this.renderModules = _this.renderModules.bind(_this);
-	    _this.handleEnd = _this.handleEnd.bind(_this);
-	    _this.updateSectionProgress = _this.updateSectionProgress.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(_Curriculum, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      player = document.getElementById('audio');
-	      source = document.getElementById('audioSource');
-
-	      player.addEventListener('ended', this.handleEnd);
-	    }
-	  }, {
-	    key: 'updateSectionProgress',
-	    value: function updateSectionProgress(sectionId) {
-	      var _this2 = this;
-
-	      var userId = _firebase2.default.auth().currentUser.uid;
-
-	      var update = this.props.course.sectionProgress[sectionId];
-	      update.completed = true;
-	      update.playProgress = 0;
-	      update.timesRepeated = update.timesRepeated + 1;
-
-	      var updates = {};
-	      updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId] = update;
-	      _firebase2.default.database().ref().update(updates);
-
-	      var sectionProgress = Object.assign({}, this.props.course.sectionProgress, { sectionId: update });
-	      var course = Object.assign({}, this.props.course, { sectionProgress: sectionProgress });
-	      this.props.setCurrentCourse(course);
-
-	      // record section completion in course data:
-	      _firebase2.default.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId).once('value').then(function (snapshot) {
-	        var completed = snapshot.val().timesCompleted + 1;
-	        var update = {};
-	        update['/courses/' + _this2.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed;
-	        _firebase2.default.database().ref().update(update);
-	      });
-	    }
-	  }, {
-	    key: 'handleEnd',
-	    value: function handleEnd() {
-	      this.updateSectionProgress(this.props.currentSection.section_id);
-
-	      // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
-	      var next = this.props.currentSection.section_number;
-
-	      console.log('next: ', next);
-	      if (next < this.props.currentPlaylist.length) {
-	        this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
-	        source.src = this.props.currentPlaylist[next].section_url;
-	        player.load();
-	        player.play();
-	        this.props.changePlayStatus(true);
-	      } else {
-	        player.pause();
-	        this.props.changePlayStatus(false);
-	      }
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      var _this3 = this;
-
-	      player = document.getElementById('audio');
-	      if (nextProps.playing) {
-	        interval = setInterval(function () {
-	          _this3.props.getCurrentProgress({
-	            currentTime: player.currentTime,
-	            duration: player.duration });
-	        }, 1000);
-	      } else {
-	        if (interval) {
-	          clearInterval(interval);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'updateTime',
-	    value: function updateTime() {
-	      interval = setInterval(function () {
-	        currentTime = player.currentTime, duration = player.duration;
-	      }, 1000);
-	    }
-	  }, {
-	    key: 'renderModules',
-	    value: function renderModules() {
-	      var _this4 = this;
-
-	      return this.props.course.modules.map(function (module) {
-	        return _react2.default.createElement(
-	          _Card.Card,
-	          { key: module.module_id },
-	          _react2.default.createElement(_Card.CardHeader, {
-	            title: module.module_title,
-	            style: styles.moduleTitle
-	          }),
-	          _react2.default.createElement(
-	            'div',
-	            { className: '' },
-	            module.sections.map(function (section) {
-	              return _react2.default.createElement(_course_section.CourseSection, { key: section.section_id, section: section, course: _this4.props.course });
-	            })
-	          )
-	        );
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'section',
-	        { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'container' },
-	          _react2.default.createElement(
-	            'div',
-	            { className: '' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'row' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
-	                  this.props.course.description
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { style: styles.curriculumContainer },
-	            this.renderModules()
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return _Curriculum;
-	}(_react.Component);
-
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ getCurrentProgress: _index.getCurrentProgress, changePlayStatus: _index.changePlayStatus, setCurrentPlaySection: _index.setCurrentPlaySection, setCurrentCourse: _index.setCurrentCourse }, dispatch);
-	}
-
-	var mapStateToProps = function mapStateToProps(state) {
-	  var isLoggedIn = state.user.isLoggedIn;
-	  var _state$setCourses = state.setCourses,
-	      currentSection = _state$setCourses.currentSection,
-	      playing = _state$setCourses.playing,
-	      currentPlaylist = _state$setCourses.currentPlaylist,
-	      userCourses = _state$setCourses.userCourses;
-
-	  return {
-	    isLoggedIn: isLoggedIn, currentSection: currentSection, playing: playing, currentPlaylist: currentPlaylist, userCourses: userCourses
-	  };
-	};
-
-	var Curriculum = exports.Curriculum = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Curriculum);
-
-/***/ },
-/* 1050 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.CourseSection = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _redux = __webpack_require__(501);
-
-	var _reactRedux = __webpack_require__(536);
-
-	var _firebase = __webpack_require__(544);
-
-	var _firebase2 = _interopRequireDefault(_firebase);
-
-	var _Card = __webpack_require__(830);
-
-	var _IconButton = __webpack_require__(754);
-
-	var _IconButton2 = _interopRequireDefault(_IconButton);
-
-	var _Snackbar = __webpack_require__(1051);
-
-	var _Snackbar2 = _interopRequireDefault(_Snackbar);
-
-	var _Dialog = __webpack_require__(855);
-
-	var _Dialog2 = _interopRequireDefault(_Dialog);
-
-	var _FontIcon = __webpack_require__(756);
-
-	var _FontIcon2 = _interopRequireDefault(_FontIcon);
-
-	var _Checkbox = __webpack_require__(1055);
-
-	var _Checkbox2 = _interopRequireDefault(_Checkbox);
-
-	var _Slider = __webpack_require__(1060);
-
-	var _Slider2 = _interopRequireDefault(_Slider);
-
-	var _Toolbar = __webpack_require__(1064);
-
-	var _colors = __webpack_require__(782);
-
-	var _MuiThemeProvider = __webpack_require__(778);
-
-	var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
-
-	var _getMuiTheme = __webpack_require__(779);
-
-	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
-
-	var _Levels = __webpack_require__(845);
-
-	var _Levels2 = _interopRequireDefault(_Levels);
-
-	var _Spinner = __webpack_require__(1069);
-
-	var _Spinner2 = _interopRequireDefault(_Spinner);
-
-	var _index = __webpack_require__(588);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var player = {
-	  currentTime: 0,
-	  duration: 1
-	};
-
-	var source = void 0,
-	    currentTime = 0,
-	    duration = 1;
-
-	var muiTheme = (0, _getMuiTheme2.default)({
-	  slider: {
-	    selectionColor: _colors.orange500,
-	    rippleColor: _colors.orange50
-	  }
-	});
-
-	var paddingTop = window.innerHeight * 0.8;
-	var totalWidth = window.innerWidth;
-	var styles = {
-	  player: {
-	    width: '75%',
-	    maxWidth: 'none',
-	    bottom: '0%',
-	    paddingTop: '30%'
-	  },
-	  sectionTitle: {
-	    backgroundColor: _colors.orange50
-	  },
-	  playerContainer: {
-	    bottom: '0%',
-	    top: '20%'
-	  },
-	  playerBackground: {
-	    backgroundColor: 'transparent',
-	    color: 'transparent'
-	  },
-	  slider: {
-	    width: totalWidth * 0.5,
-	    paddingTop: 25,
-	    selectionColor: _colors.orange500
-	  },
-	  sliderBar: {
-	    selectionColor: _colors.orange500
-	  },
-	  label: {
-	    fontSize: 18
-	  }
-	};
-
-	var _CourseSection = function (_Component) {
-	  _inherits(_CourseSection, _Component);
-
-	  function _CourseSection(props) {
-	    _classCallCheck(this, _CourseSection);
-
-	    var _this = _possibleConstructorReturn(this, (_CourseSection.__proto__ || Object.getPrototypeOf(_CourseSection)).call(this, props));
-
-	    _this.state = {
-	      openPlayer: false,
-	      playing: false,
-	      loading: false,
-	      currentTime: 0,
-	      duration: 1,
-	      cached: false
-	    };
-	    _this.playFile = _this.playFile.bind(_this);
-	    _this.handleTap = _this.handleTap.bind(_this);
-	    _this.renderPlayButton = _this.renderPlayButton.bind(_this);
-	    _this.handleCacheAudio = _this.handleCacheAudio.bind(_this);
-	    _this.renderCacheButton = _this.renderCacheButton.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(_CourseSection, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var that = this;
-	      player = document.getElementById('audio');
-	      source = document.getElementById('audioSource');
-	      if (this.props.currentSection.section_id == this.props.section.section_id) {
-	        this.setState({
-	          currentTime: this.props.currentTime,
-	          duration: this.props.currentDuration
-	        });
-	      }
-
-	      // let headers = new Headers()
-	      // headers.append('access-control-allow-origin', '*')
-	      // headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
-	      // headers.append('access-control-allow-headers', 'content-type, accept')
-	      // headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
-
-	      // let request = new Request(this.props.section.section_url, {headers})
-
-	      // fetch(request)
-	      // .then(response => {
-	      //   console.log(response.status)
-	      // })
-
-
-	      if ('caches' in window) {
-	        caches.open('audio-cache').then(function (cache) {
-	          cache.keys().then(function (keys) {
-	            keys.forEach(function (key) {
-	              // console.log('key: ', key)
-	              if (key.url === that.props.section.section_url) {
-	                that.setState({
-	                  cached: true
-	                });
-	              }
-	            });
-	          });
-	        });
-	      }
-	    }
-	  }, {
-	    key: 'handleTap',
-	    value: function handleTap() {
-	      if (!this.props.playing || this.props.playing && this.props.section !== this.props.currentSection) {
-	        this.playFile();
-	      }
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      if (nextProps.currentSection.section_id == this.props.section.section_id) {
-	        // setTimeout(() => {
-	        this.setState({
-	          currentTime: nextProps.currentTime,
-	          duration: nextProps.currentDuration
-	        });
-	        // }, 1000)
-	      }
-	    }
-	  }, {
-	    key: 'playFile',
-	    value: function playFile() {
-	      var _this2 = this;
-
-	      if (!this.props.isLoggedIn) {
-	        alert('please sign up/ log in to listen to the course');
-	      } else {
-	        if (this.props.currentSection.section_id !== this.props.section.section_id) {
-	          if (this.props.playing) {
-	            //if switching to another section, store the progress data for the current section first
-	            player.pause();
-
-	            this.setState({
-	              loading: true
-	            });
-
-	            var userId = _firebase2.default.auth().currentUser.uid;
-	            var sectionId = this.props.currentSection.section_id;
-	            var playProgress = this.props.currentTime / this.props.currentDuration;
-
-	            var updates = {};
-	            updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress;
-
-	            _firebase2.default.database().ref().update(updates);
-	            console.log('progress updated');
-	          }
-
-	          this.setState({
-	            loading: true
-	          });
-	          this.props.changePlayStatus(false);
-	          this.props.setCurrentPlaySection(this.props.section);
-	          // console.log(this.props.currentSection)
-	          source.src = this.props.section.section_url;
-	          player.load();
-
-	          player.addEventListener('loadeddata', function () {
-	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
-
-	            player.play();
-
-	            _this2.props.changePlayStatus(true);
-	            _this2.setState({ playing: true, loading: false });
-
-	            if (!_this2.props.playerLaunched) {
-	              _this2.props.launchPlayer(true);
-	            }
-	          });
-	        } else if (this.props.playing) {
-	          player.pause();
-	          this.props.changePlayStatus(false);
-	          this.setState({ playing: false });
-	        } else if (!this.props.playing) {
-	          this.setState({
-	            loading: true
-	          });
-	          this.props.setCurrentPlaySection(this.props.section);
-
-	          player.addEventListener('loadeddata', function () {
-	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
-
-	            player.play();
-
-	            _this2.props.changePlayStatus(true);
-	            _this2.setState({ playing: true, loading: false });
-	          });
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'renderPlayButton',
-	    value: function renderPlayButton() {
-	      if (this.state.loading) {
-	        return _react2.default.createElement(_Spinner2.default, { size: 12, speed: 1 });
-	      } else if (this.props.playing && this.props.currentSection.section_id == this.props.section.section_id) {
-	        return _react2.default.createElement(_Levels2.default, { color: '#F76B1C', size: 12, speed: 1 });
-	      } else {
-	        return _react2.default.createElement(
-	          'i',
-	          { className: 'material-icons' },
-	          'play_circle_outline'
-	        );
-	      }
-	    }
-	  }, {
-	    key: 'renderCacheButton',
-	    value: function renderCacheButton() {
-	      if (this.state.cached === true) {
-	        return _react2.default.createElement(
-	          'span',
-	          { style: { color: '#F76B1C' } },
-	          'remove download'
-	        );
-	      } else if (this.state.cached === false) {
-	        return _react2.default.createElement(
-	          'span',
-	          { style: { color: '#F76B1C' } },
-	          'enable offline'
-	        );
-	      } else if (this.state.cached === 'processing') {
-	        return _react2.default.createElement(_Spinner2.default, { size: 12, speed: 1 });
-	      }
-	    }
-	  }, {
-	    key: 'handleCacheAudio',
-	    value: function handleCacheAudio() {
-	      var that = this;
-
-	      if (this.state.cached === false) {
-	        this.setState({
-	          cached: 'processing'
-	        });
-
-	        var headers = new Headers();
-	        headers.append('access-control-allow-origin', '*');
-	        headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
-	        headers.append('access-control-allow-headers', 'content-type, accept');
-	        headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml");
-
-	        var request = new Request(this.props.section.section_url, { headers: headers });
-
-	        fetch(request).then(function (response) {
-	          if (!response.ok) {
-	            throw new TypeError('bad response status');
-	          }
-	          console.log('response header (size): ', response);
-
-	          return caches.open('audio-cache').then(function (cache) {
-	            cache.put(that.props.section.section_url, response);
-	          });
-	        }).then(function () {
-	          that.setState({
-	            cached: true
-	          });
-	        }).catch(function (err) {
-	          console.log('error in caching: ', err);
-	          alert('Oops! Looks like your storage is full. To store this section, clear the cached images and files in your browser history to free up some space.');
-	        });
-	      } else if (this.state.cached === true) {
-	        caches.open('audio-cache').then(function (cache) {
-	          cache.keys().then(function (keys) {
-	            keys.forEach(function (key) {
-	              // console.log('key: ', key)
-	              if (key.url === that.props.section.section_url) {
-	                cache.delete(key);
-	              }
-	            });
-	          }).then(function () {
-	            that.setState({
-	              cached: false
-	            });
-	          });
-	        });
-	      }
-	    }
-
-	    // <FontIcon
-	    //         className="material-icons"
-	    //         color={grey500}
-	    //         hoverColor={orange500}
-	    //       >pause</FontIcon>
-
-	  }, {
-	    key: 'render',
-	    value: function render() {
-
-	      // const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
-	      var completed = this.props.course.sectionProgress[this.props.section.section_id].completed;
-
-	      var progress = '';
-	      if (completed) {
-	        progress = 'completed';
-	      } else {
-	        progress = Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100) + '% completed';
-	      }
-
-	      var displayDownload = 'caches' in window ? '' : 'none';
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          _Card.Card,
-	          null,
-	          _react2.default.createElement(_Card.CardHeader, {
-	            title: 'Section ' + this.props.section.section_number + ':',
-	            style: styles.sectionTitle,
-	            actAsExpander: true,
-	            showExpandableButton: true
-	          }),
-	          _react2.default.createElement(
-	            _Card.CardText,
-	            null,
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'row' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'col-md-1 col-sm-2 col-xs-2' },
-	                _react2.default.createElement(
-	                  'a',
-	                  { onClick: this.handleTap,
-	                    style: { padding: '1em', paddingRight: '2em' } },
-	                  this.renderPlayButton()
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'col-md-8 col-sm-8 col-xs-8',
-	                  style: { paddingLeft: '2em' } },
-	                _react2.default.createElement(
-	                  'span',
-	                  { style: { fontSize: '18px' } },
-	                  this.props.section.title
-	                ),
-	                _react2.default.createElement(
-	                  'span',
-	                  { style: { paddingLeft: '1em' } },
-	                  '(' + progress + ')'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'div',
-	                {
-	                  style: { display: displayDownload },
-	                  className: 'col-md-2 col-sm-2 col-xs-2' },
-	                _react2.default.createElement(
-	                  'a',
-	                  { onClick: this.handleCacheAudio },
-	                  this.renderCacheButton()
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            _Card.CardText,
-	            { expandable: true },
-	            _react2.default.createElement(
-	              'div',
-	              { style: { padding: '1em 2em' } },
-	              _react2.default.createElement(
-	                'a',
-	                { href: this.props.section.transcript_url, download: true },
-	                _react2.default.createElement('i', { style: { padding: '1em' }, className: 'fa fa-lg fa-file-text-o', 'aria-hidden': 'true' }),
-	                _react2.default.createElement(
-	                  'span',
-	                  { style: { fontSize: '18px' } },
-	                  'Transcript'
-	                )
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return _CourseSection;
-	}(_react.Component);
-
-	// <Checkbox
-	//   uncheckedIcon={this.renderPlayButton()}
-	//   checkedIcon={this.renderPlayButton()}
-	//   label={this.props.section.title}
-	//   labelStyle={styles.label}
-	//   onCheck={this.handleTap}
-	// />
-
-
-	function mapDispatchToProps(dispatch) {
-	  return (0, _redux.bindActionCreators)({ setCurrentPlaySection: _index.setCurrentPlaySection, changePlayStatus: _index.changePlayStatus, launchPlayer: _index.launchPlayer }, dispatch);
-	}
-
-	var mapStateToProps = function mapStateToProps(state) {
-	  var isLoggedIn = state.user.isLoggedIn;
-	  var _state$setCourses = state.setCourses,
-	      currentSection = _state$setCourses.currentSection,
-	      playing = _state$setCourses.playing,
-	      playerLaunched = _state$setCourses.playerLaunched,
-	      currentPlaylist = _state$setCourses.currentPlaylist,
-	      currentTime = _state$setCourses.currentTime,
-	      currentDuration = _state$setCourses.currentDuration;
-
-	  return {
-	    isLoggedIn: isLoggedIn, currentSection: currentSection, playing: playing, playerLaunched: playerLaunched, currentPlaylist: currentPlaylist, currentTime: currentTime, currentDuration: currentDuration
-	  };
-	};
-
-	var CourseSection = exports.CourseSection = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_CourseSection);
-
-	// <Toolbar>
-	// <ToolbarGroup>
-	// <IconButton style={{display: 'inline-block'}}
-	// onTouchTap = { this.playFile }>
-	// { this.renderPlayButton() }
-	// </IconButton>
-	// <MuiThemeProvider muiTheme = {muiTheme}>
-	// <Slider style={{display: 'inline-block'}}
-	// style = {styles.slider}
-	// sliderStyle = {styles.sliderBar}
-	// min={0}
-	// max={1}
-	// defaultValue={0}
-	// value={this.state.currentTime / this.state.duration}
-	// onChange={this.handleSecondSlider}
-	// />
-	// </MuiThemeProvider>
-	// </ToolbarGroup>
-	// </Toolbar>
-
-	// <Dialog
-	//       open = { this.state.openPlayer }
-	//       title = {this.props.section.title}
-	//       modal = {false}
-	//       contentStyle = {styles.player}
-	//       overlayStyle = {styles.playerBackground}
-	//       style = {styles.playerContainer}
-	//     >
-	//       {player}
-	//     </Dialog>
-
-/***/ },
-/* 1051 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 	exports.default = undefined;
 
-	var _Snackbar = __webpack_require__(1052);
+	var _Snackbar = __webpack_require__(1049);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
@@ -90367,7 +89587,7 @@
 	exports.default = _Snackbar2.default;
 
 /***/ },
-/* 1052 */
+/* 1049 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -90420,7 +89640,7 @@
 
 	var _ClickAwayListener2 = _interopRequireDefault(_ClickAwayListener);
 
-	var _SnackbarBody = __webpack_require__(1053);
+	var _SnackbarBody = __webpack_require__(1050);
 
 	var _SnackbarBody2 = _interopRequireDefault(_SnackbarBody);
 
@@ -90682,7 +89902,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1053 */
+/* 1050 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -90712,7 +89932,7 @@
 
 	var _transitions2 = _interopRequireDefault(_transitions);
 
-	var _withWidth = __webpack_require__(1054);
+	var _withWidth = __webpack_require__(1051);
 
 	var _withWidth2 = _interopRequireDefault(_withWidth);
 
@@ -90854,7 +90074,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1054 */
+/* 1051 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -91002,6 +90222,919 @@
 	    }(_react.Component);
 	  };
 	}
+
+/***/ },
+/* 1052 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Tabs = __webpack_require__(1025);
+
+	var _reactSwipeableViews = __webpack_require__(1030);
+
+	var _reactSwipeableViews2 = _interopRequireDefault(_reactSwipeableViews);
+
+	var _colors = __webpack_require__(782);
+
+	var _instructor = __webpack_require__(1043);
+
+	var _instructor2 = _interopRequireDefault(_instructor);
+
+	var _curriculum = __webpack_require__(1053);
+
+	var _player_bar = __webpack_require__(1044);
+
+	var _reviews = __webpack_require__(1045);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+	  headline: {
+	    fontSize: 24,
+	    paddingTop: 16,
+	    marginBottom: 12,
+	    fontWeight: 400
+	  },
+	  slide: {
+	    padding: 10
+	  },
+	  tabs: {
+	    color: _colors.deepOrange800,
+	    backgroundColor: 'white',
+	    // fontSize: 20,
+	    fontFamily: 'lato'
+	  },
+	  active_tab: {
+	    color: _colors.deepOrange800,
+	    backgroundColor: _colors.orange50,
+	    // fontSize: 24,
+	    fontFamily: 'lato'
+	  }
+	};
+
+	var CourseBodyPurchased = function (_React$Component) {
+	  _inherits(CourseBodyPurchased, _React$Component);
+
+	  function CourseBodyPurchased(props) {
+	    _classCallCheck(this, CourseBodyPurchased);
+
+	    var _this = _possibleConstructorReturn(this, (CourseBodyPurchased.__proto__ || Object.getPrototypeOf(CourseBodyPurchased)).call(this, props));
+
+	    _this.handleChange = function (value) {
+	      _this.setState({
+	        slideIndex: value
+	      });
+	    };
+
+	    _this.state = {
+	      slideIndex: 1
+	    };
+	    return _this;
+	  }
+
+	  _createClass(CourseBodyPurchased, [{
+	    key: 'render',
+	    value: function render() {
+	      styles.tab = [];
+	      styles.tab[0] = styles.tabs;
+	      styles.tab[1] = styles.tabs;
+	      // styles.tab[2] = styles.tabs
+	      styles.tab[this.state.slideIndex] = Object.assign({}, styles.tab[this.state.slideIndex], styles.active_tab);
+
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'vbox' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: '' },
+	          _react2.default.createElement(
+	            _Tabs.Tabs,
+	            {
+	              onChange: this.handleChange,
+	              value: this.state.slideIndex
+	            },
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 0 }),
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 1 })
+	          ),
+	          _react2.default.createElement(
+	            _reactSwipeableViews2.default,
+	            {
+	              index: this.state.slideIndex,
+	              onChangeIndex: this.handleChange
+	            },
+	            _react2.default.createElement(
+	              'div',
+	              null,
+	              'Lots of great resources...'
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { style: styles.slide },
+	              _react2.default.createElement(_curriculum.Curriculum, { course: this.props.course })
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(_player_bar.PlayerBar, null)
+	      );
+	    }
+	  }]);
+
+	  return CourseBodyPurchased;
+	}(_react2.default.Component);
+
+	exports.default = CourseBodyPurchased;
+
+/***/ },
+/* 1053 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Curriculum = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(536);
+
+	var _Card = __webpack_require__(830);
+
+	var _colors = __webpack_require__(782);
+
+	var _firebase = __webpack_require__(544);
+
+	var _firebase2 = _interopRequireDefault(_firebase);
+
+	var _course_section = __webpack_require__(1054);
+
+	var _index = __webpack_require__(588);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var interval = void 0,
+	    player = void 0,
+	    source = void 0;
+
+	var styles = {
+	  moduleTitle: {
+	    fontSize: 24,
+	    backgroundColor: '#F76B1C'
+	  },
+	  sectionTitle: {
+	    backgroundColor: _colors.orange50
+	  },
+	  curriculumContainer: {
+	    marginTop: '3em'
+	  }
+	};
+
+	var _Curriculum = function (_Component) {
+	  _inherits(_Curriculum, _Component);
+
+	  function _Curriculum(props) {
+	    _classCallCheck(this, _Curriculum);
+
+	    var _this = _possibleConstructorReturn(this, (_Curriculum.__proto__ || Object.getPrototypeOf(_Curriculum)).call(this, props));
+
+	    _this.renderModules = _this.renderModules.bind(_this);
+	    _this.handleEnd = _this.handleEnd.bind(_this);
+	    _this.updateSectionProgress = _this.updateSectionProgress.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(_Curriculum, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      player = document.getElementById('audio');
+	      source = document.getElementById('audioSource');
+
+	      player.addEventListener('ended', this.handleEnd);
+	    }
+	  }, {
+	    key: 'updateSectionProgress',
+	    value: function updateSectionProgress(sectionId) {
+	      var _this2 = this;
+
+	      var userId = _firebase2.default.auth().currentUser.uid;
+
+	      var update = this.props.course.sectionProgress[sectionId];
+	      update.completed = true;
+	      update.playProgress = 0;
+	      update.timesRepeated = update.timesRepeated + 1;
+
+	      var updates = {};
+	      updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId] = update;
+	      _firebase2.default.database().ref().update(updates);
+
+	      var sectionProgress = Object.assign({}, this.props.course.sectionProgress, { sectionId: update });
+	      var course = Object.assign({}, this.props.course, { sectionProgress: sectionProgress });
+	      this.props.setCurrentCourse(course);
+
+	      // record section completion in course data:
+	      _firebase2.default.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId).once('value').then(function (snapshot) {
+	        var completed = snapshot.val().timesCompleted + 1;
+	        var update = {};
+	        update['/courses/' + _this2.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed;
+	        _firebase2.default.database().ref().update(update);
+	      });
+	    }
+	  }, {
+	    key: 'handleEnd',
+	    value: function handleEnd() {
+	      this.updateSectionProgress(this.props.currentSection.section_id);
+
+	      // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
+	      var next = this.props.currentSection.section_number;
+
+	      console.log('next: ', next);
+	      if (next < this.props.currentPlaylist.length) {
+	        this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
+	        source.src = this.props.currentPlaylist[next].section_url;
+	        player.load();
+	        player.play();
+	        this.props.changePlayStatus(true);
+	      } else {
+	        player.pause();
+	        this.props.changePlayStatus(false);
+	      }
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      var _this3 = this;
+
+	      player = document.getElementById('audio');
+	      if (nextProps.playing) {
+	        interval = setInterval(function () {
+	          _this3.props.getCurrentProgress({
+	            currentTime: player.currentTime,
+	            duration: player.duration });
+	        }, 1000);
+	      } else {
+	        if (interval) {
+	          clearInterval(interval);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'updateTime',
+	    value: function updateTime() {
+	      interval = setInterval(function () {
+	        currentTime = player.currentTime, duration = player.duration;
+	      }, 1000);
+	    }
+	  }, {
+	    key: 'renderModules',
+	    value: function renderModules() {
+	      var _this4 = this;
+
+	      return this.props.course.modules.map(function (module) {
+	        return _react2.default.createElement(
+	          _Card.Card,
+	          { key: module.module_id },
+	          _react2.default.createElement(_Card.CardHeader, {
+	            title: module.module_title,
+	            style: styles.moduleTitle
+	          }),
+	          _react2.default.createElement(
+	            'div',
+	            { className: '' },
+	            module.sections.map(function (section) {
+	              return _react2.default.createElement(_course_section.CourseSection, { key: section.section_id, section: section, course: _this4.props.course });
+	            })
+	          )
+	        );
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'section',
+	        { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'container' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: '' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
+	                  this.props.course.description
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'div',
+	            { style: styles.curriculumContainer },
+	            this.renderModules()
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return _Curriculum;
+	}(_react.Component);
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ getCurrentProgress: _index.getCurrentProgress, changePlayStatus: _index.changePlayStatus, setCurrentPlaySection: _index.setCurrentPlaySection, setCurrentCourse: _index.setCurrentCourse }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var isLoggedIn = state.user.isLoggedIn;
+	  var _state$setCourses = state.setCourses,
+	      currentSection = _state$setCourses.currentSection,
+	      playing = _state$setCourses.playing,
+	      currentPlaylist = _state$setCourses.currentPlaylist,
+	      userCourses = _state$setCourses.userCourses;
+
+	  return {
+	    isLoggedIn: isLoggedIn, currentSection: currentSection, playing: playing, currentPlaylist: currentPlaylist, userCourses: userCourses
+	  };
+	};
+
+	var Curriculum = exports.Curriculum = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Curriculum);
+
+/***/ },
+/* 1054 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.CourseSection = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(536);
+
+	var _firebase = __webpack_require__(544);
+
+	var _firebase2 = _interopRequireDefault(_firebase);
+
+	var _Card = __webpack_require__(830);
+
+	var _IconButton = __webpack_require__(754);
+
+	var _IconButton2 = _interopRequireDefault(_IconButton);
+
+	var _Snackbar = __webpack_require__(1048);
+
+	var _Snackbar2 = _interopRequireDefault(_Snackbar);
+
+	var _Dialog = __webpack_require__(855);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _FontIcon = __webpack_require__(756);
+
+	var _FontIcon2 = _interopRequireDefault(_FontIcon);
+
+	var _Checkbox = __webpack_require__(1055);
+
+	var _Checkbox2 = _interopRequireDefault(_Checkbox);
+
+	var _Slider = __webpack_require__(1060);
+
+	var _Slider2 = _interopRequireDefault(_Slider);
+
+	var _Toolbar = __webpack_require__(1064);
+
+	var _colors = __webpack_require__(782);
+
+	var _MuiThemeProvider = __webpack_require__(778);
+
+	var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
+
+	var _getMuiTheme = __webpack_require__(779);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _Levels = __webpack_require__(845);
+
+	var _Levels2 = _interopRequireDefault(_Levels);
+
+	var _Spinner = __webpack_require__(1069);
+
+	var _Spinner2 = _interopRequireDefault(_Spinner);
+
+	var _index = __webpack_require__(588);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var player = {
+	  currentTime: 0,
+	  duration: 1
+	};
+
+	var source = void 0,
+	    currentTime = 0,
+	    duration = 1;
+
+	var muiTheme = (0, _getMuiTheme2.default)({
+	  slider: {
+	    selectionColor: _colors.orange500,
+	    rippleColor: _colors.orange50
+	  }
+	});
+
+	var paddingTop = window.innerHeight * 0.8;
+	var totalWidth = window.innerWidth;
+	var styles = {
+	  player: {
+	    width: '75%',
+	    maxWidth: 'none',
+	    bottom: '0%',
+	    paddingTop: '30%'
+	  },
+	  sectionTitle: {
+	    backgroundColor: _colors.orange50
+	  },
+	  playerContainer: {
+	    bottom: '0%',
+	    top: '20%'
+	  },
+	  playerBackground: {
+	    backgroundColor: 'transparent',
+	    color: 'transparent'
+	  },
+	  slider: {
+	    width: totalWidth * 0.5,
+	    paddingTop: 25,
+	    selectionColor: _colors.orange500
+	  },
+	  sliderBar: {
+	    selectionColor: _colors.orange500
+	  },
+	  label: {
+	    fontSize: 18
+	  }
+	};
+
+	var _CourseSection = function (_Component) {
+	  _inherits(_CourseSection, _Component);
+
+	  function _CourseSection(props) {
+	    _classCallCheck(this, _CourseSection);
+
+	    var _this = _possibleConstructorReturn(this, (_CourseSection.__proto__ || Object.getPrototypeOf(_CourseSection)).call(this, props));
+
+	    _this.state = {
+	      openPlayer: false,
+	      playing: false,
+	      loading: false,
+	      currentTime: 0,
+	      duration: 1,
+	      cached: false
+	    };
+	    _this.playFile = _this.playFile.bind(_this);
+	    _this.handleTap = _this.handleTap.bind(_this);
+	    _this.renderPlayButton = _this.renderPlayButton.bind(_this);
+	    _this.handleCacheAudio = _this.handleCacheAudio.bind(_this);
+	    _this.renderCacheButton = _this.renderCacheButton.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(_CourseSection, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var that = this;
+	      player = document.getElementById('audio');
+	      source = document.getElementById('audioSource');
+	      if (this.props.currentSection.section_id == this.props.section.section_id) {
+	        this.setState({
+	          currentTime: this.props.currentTime,
+	          duration: this.props.currentDuration
+	        });
+	      }
+
+	      // let headers = new Headers()
+	      // headers.append('access-control-allow-origin', '*')
+	      // headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+	      // headers.append('access-control-allow-headers', 'content-type, accept')
+	      // headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
+
+	      // let request = new Request(this.props.section.section_url, {headers})
+
+	      // fetch(request)
+	      // .then(response => {
+	      //   console.log(response.status)
+	      // })
+
+	      if ('caches' in window) {
+	        caches.open('audio-cache').then(function (cache) {
+	          cache.keys().then(function (keys) {
+	            keys.forEach(function (key) {
+	              // console.log('key: ', key)
+	              if (key.url === that.props.section.section_url) {
+	                that.setState({
+	                  cached: true
+	                });
+	              }
+	            });
+	          });
+	        });
+	      }
+	    }
+	  }, {
+	    key: 'handleTap',
+	    value: function handleTap() {
+	      if (!this.props.playing || this.props.playing && this.props.section !== this.props.currentSection) {
+	        this.playFile();
+	      }
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps.currentSection.section_id == this.props.section.section_id) {
+	        // setTimeout(() => {
+	        this.setState({
+	          currentTime: nextProps.currentTime,
+	          duration: nextProps.currentDuration
+	        });
+	        // }, 1000)
+	      }
+	    }
+	  }, {
+	    key: 'playFile',
+	    value: function playFile() {
+	      var _this2 = this;
+
+	      if (!this.props.isLoggedIn) {
+	        alert('please sign up/ log in to listen to the course');
+	      } else {
+	        if (this.props.currentSection.section_id !== this.props.section.section_id) {
+	          if (this.props.playing) {
+	            //if switching to another section, store the progress data for the current section first
+	            player.pause();
+
+	            this.setState({
+	              loading: true
+	            });
+
+	            var userId = _firebase2.default.auth().currentUser.uid;
+	            var sectionId = this.props.currentSection.section_id;
+	            var playProgress = this.props.currentTime / this.props.currentDuration;
+
+	            var updates = {};
+	            updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress;
+
+	            _firebase2.default.database().ref().update(updates);
+	            console.log('progress updated');
+	          }
+
+	          this.setState({
+	            loading: true
+	          });
+	          this.props.changePlayStatus(false);
+	          this.props.setCurrentPlaySection(this.props.section);
+	          // console.log(this.props.currentSection)
+	          source.src = this.props.section.section_url;
+	          player.load();
+
+	          player.addEventListener('loadeddata', function () {
+	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+
+	            player.play();
+
+	            _this2.props.changePlayStatus(true);
+	            _this2.setState({ playing: true, loading: false });
+
+	            if (!_this2.props.playerLaunched) {
+	              _this2.props.launchPlayer(true);
+	            }
+	          });
+	        } else if (this.props.playing) {
+	          player.pause();
+	          this.props.changePlayStatus(false);
+	          this.setState({ playing: false });
+	        } else if (!this.props.playing) {
+	          this.setState({
+	            loading: true
+	          });
+	          this.props.setCurrentPlaySection(this.props.section);
+
+	          player.addEventListener('loadeddata', function () {
+	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+
+	            player.play();
+
+	            _this2.props.changePlayStatus(true);
+	            _this2.setState({ playing: true, loading: false });
+	          });
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'renderPlayButton',
+	    value: function renderPlayButton() {
+	      if (this.state.loading) {
+	        return _react2.default.createElement(_Spinner2.default, { size: 12, speed: 1 });
+	      } else if (this.props.playing && this.props.currentSection.section_id == this.props.section.section_id) {
+	        return _react2.default.createElement(_Levels2.default, { color: '#F76B1C', size: 12, speed: 1 });
+	      } else {
+	        return _react2.default.createElement(
+	          'i',
+	          { className: 'material-icons' },
+	          'play_circle_outline'
+	        );
+	      }
+	    }
+	  }, {
+	    key: 'renderCacheButton',
+	    value: function renderCacheButton() {
+	      if (this.state.cached === true) {
+	        return _react2.default.createElement(
+	          'span',
+	          { style: { color: '#F76B1C' } },
+	          'remove download'
+	        );
+	      } else if (this.state.cached === false) {
+	        return _react2.default.createElement(
+	          'span',
+	          { style: { color: '#F76B1C' } },
+	          'enable offline'
+	        );
+	      } else if (this.state.cached === 'processing') {
+	        return _react2.default.createElement(_Spinner2.default, { size: 12, speed: 1 });
+	      }
+	    }
+	  }, {
+	    key: 'handleCacheAudio',
+	    value: function handleCacheAudio() {
+	      var that = this;
+
+	      if (this.state.cached === false) {
+	        this.setState({
+	          cached: 'processing'
+	        });
+
+	        var headers = new Headers();
+	        // headers.append('access-control-allow-origin', '*')
+	        headers.append('access-control-allow-methods', 'GET');
+	        headers.append('access-control-allow-headers', 'content-type, accept');
+	        headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml");
+
+	        var myInit = { method: 'GET',
+	          headers: headers,
+	          mode: 'no-cors',
+	          cache: 'default' };
+
+	        var request = new Request(this.props.section.section_url, myInit);
+
+	        fetch(request).then(function (response) {
+	          // if(!response.ok) {
+	          //   throw new TypeError('bad response status')
+	          // }
+	          // console.log('response header (size): ', response)
+
+	          return caches.open('audio-cache').then(function (cache) {
+	            cache.put(that.props.section.section_url, response);
+	          });
+	        }).then(function () {
+	          that.setState({
+	            cached: true
+	          });
+	        }).catch(function (err) {
+	          console.log('error in caching: ', err);
+	          alert('Oops! Looks like your storage is full. To store this section, clear the cached images and files in your browser history to free up some space.');
+	        });
+	      } else if (this.state.cached === true) {
+	        caches.open('audio-cache').then(function (cache) {
+	          cache.keys().then(function (keys) {
+	            keys.forEach(function (key) {
+	              // console.log('key: ', key)
+	              if (key.url === that.props.section.section_url) {
+	                cache.delete(key);
+	              }
+	            });
+	          }).then(function () {
+	            that.setState({
+	              cached: false
+	            });
+	          });
+	        });
+	      }
+	    }
+
+	    // <FontIcon
+	    //         className="material-icons"
+	    //         color={grey500}
+	    //         hoverColor={orange500}
+	    //       >pause</FontIcon>
+
+	  }, {
+	    key: 'render',
+	    value: function render() {
+
+	      // const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
+	      var completed = this.props.course.sectionProgress[this.props.section.section_id].completed;
+
+	      var progress = '';
+	      if (completed) {
+	        progress = 'completed';
+	      } else {
+	        progress = Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100) + '% completed';
+	      }
+
+	      var displayDownload = 'caches' in window ? '' : 'none';
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          _Card.Card,
+	          null,
+	          _react2.default.createElement(_Card.CardHeader, {
+	            title: 'Section ' + this.props.section.section_number + ':',
+	            style: styles.sectionTitle,
+	            actAsExpander: true,
+	            showExpandableButton: true
+	          }),
+	          _react2.default.createElement(
+	            _Card.CardText,
+	            null,
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-1 col-sm-2 col-xs-2' },
+	                _react2.default.createElement(
+	                  'a',
+	                  { onClick: this.handleTap,
+	                    style: { padding: '1em', paddingRight: '2em' } },
+	                  this.renderPlayButton()
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-8 col-sm-8 col-xs-8',
+	                  style: { paddingLeft: '2em' } },
+	                _react2.default.createElement(
+	                  'span',
+	                  { style: { fontSize: '18px' } },
+	                  this.props.section.title
+	                ),
+	                _react2.default.createElement(
+	                  'span',
+	                  { style: { paddingLeft: '1em' } },
+	                  '(' + progress + ')'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                {
+	                  style: { display: displayDownload },
+	                  className: 'col-md-2 col-sm-2 col-xs-2' },
+	                _react2.default.createElement(
+	                  'a',
+	                  { onClick: this.handleCacheAudio },
+	                  this.renderCacheButton()
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(
+	            _Card.CardText,
+	            { expandable: true },
+	            _react2.default.createElement(
+	              'div',
+	              { style: { padding: '1em 2em' } },
+	              _react2.default.createElement(
+	                'a',
+	                { href: this.props.section.transcript_url, download: true },
+	                _react2.default.createElement('i', { style: { padding: '1em' }, className: 'fa fa-lg fa-file-text-o', 'aria-hidden': 'true' }),
+	                _react2.default.createElement(
+	                  'span',
+	                  { style: { fontSize: '18px' } },
+	                  'Transcript'
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return _CourseSection;
+	}(_react.Component);
+
+	// <Checkbox
+	//   uncheckedIcon={this.renderPlayButton()}
+	//   checkedIcon={this.renderPlayButton()}
+	//   label={this.props.section.title}
+	//   labelStyle={styles.label}
+	//   onCheck={this.handleTap}
+	// />
+
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ setCurrentPlaySection: _index.setCurrentPlaySection, changePlayStatus: _index.changePlayStatus, launchPlayer: _index.launchPlayer }, dispatch);
+	}
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var isLoggedIn = state.user.isLoggedIn;
+	  var _state$setCourses = state.setCourses,
+	      currentSection = _state$setCourses.currentSection,
+	      playing = _state$setCourses.playing,
+	      playerLaunched = _state$setCourses.playerLaunched,
+	      currentPlaylist = _state$setCourses.currentPlaylist,
+	      currentTime = _state$setCourses.currentTime,
+	      currentDuration = _state$setCourses.currentDuration;
+
+	  return {
+	    isLoggedIn: isLoggedIn, currentSection: currentSection, playing: playing, playerLaunched: playerLaunched, currentPlaylist: currentPlaylist, currentTime: currentTime, currentDuration: currentDuration
+	  };
+	};
+
+	var CourseSection = exports.CourseSection = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_CourseSection);
+
+	// <Toolbar>
+	// <ToolbarGroup>
+	// <IconButton style={{display: 'inline-block'}}
+	// onTouchTap = { this.playFile }>
+	// { this.renderPlayButton() }
+	// </IconButton>
+	// <MuiThemeProvider muiTheme = {muiTheme}>
+	// <Slider style={{display: 'inline-block'}}
+	// style = {styles.slider}
+	// sliderStyle = {styles.sliderBar}
+	// min={0}
+	// max={1}
+	// defaultValue={0}
+	// value={this.state.currentTime / this.state.duration}
+	// onChange={this.handleSecondSlider}
+	// />
+	// </MuiThemeProvider>
+	// </ToolbarGroup>
+	// </Toolbar>
+
+	// <Dialog
+	//       open = { this.state.openPlayer }
+	//       title = {this.props.section.title}
+	//       modal = {false}
+	//       contentStyle = {styles.player}
+	//       overlayStyle = {styles.playerBackground}
+	//       style = {styles.playerContainer}
+	//     >
+	//       {player}
+	//     </Dialog>
 
 /***/ },
 /* 1055 */

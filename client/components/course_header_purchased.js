@@ -23,25 +23,23 @@ class _CourseHeaderPurchased extends Component {
         headers.append('access-control-allow-headers', 'content-type, accept')
         headers.append('Content-Type', "image/jpeg;image/png;text/xml")
 
-        let request = new Request(nextprops.course.img_url_mobile, {headers})
+        var myInit = { method: 'GET',
+               headers: headers,
+               mode: 'no-cors',
+               cache: 'default' }
+
+        let request = new Request(nextprops.course.img_url_mobile, myInit)
 
         fetch(request)
         .then(response => {
-          if(!response.ok) {
-            throw new TypeError('bad response status')
-          }
+          // if(!response.ok) {
+          //   throw new TypeError('bad response status')
+          // }
 
-          return caches.keys()
-            .then(keys => {
-              keys.forEach(key => {
-                if(key.includes('sw-precache')) {
-                  caches.open(key)
-                  .then(cache => {
-                    cache.put(nextprops.course.img_url_mobile, response)
-                    console.log('image cached')
-                  })
-                }
-              })
+          return caches.open('audio-cache')
+            .then(cache => {
+              cache.put(nextprops.course.img_url_mobile, response)
+              console.log('image cached')
             })
         })
     }

@@ -102,7 +102,10 @@ class _CourseHeader extends Component {
       )
     } else {
       return (
+        <div>
         <i style={styles.icon} className="material-icons">play_circle_outline</i>
+        <p style={{fontSize: '30px'}}><strong>PLAY INTRO</strong></p>
+        </div>
       )
     }
   }

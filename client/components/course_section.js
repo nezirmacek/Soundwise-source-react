@@ -107,7 +107,6 @@ class _CourseSection extends Component {
     //   console.log(response.status)
     // })
 
-
     if('caches' in window) {
       caches.open('audio-cache')
       .then(cache => {
@@ -253,19 +252,24 @@ class _CourseSection extends Component {
         })
 
         let headers = new Headers()
-        headers.append('access-control-allow-origin', '*')
-        headers.append('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        // headers.append('access-control-allow-origin', '*')
+        headers.append('access-control-allow-methods', 'GET')
         headers.append('access-control-allow-headers', 'content-type, accept')
         headers.append('Content-Type', "audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml")
 
-        let request = new Request(this.props.section.section_url, {headers})
+        var myInit = { method: 'GET',
+               headers: headers,
+               mode: 'no-cors',
+               cache: 'default' }
+
+        let request = new Request(this.props.section.section_url, myInit)
 
         fetch(request)
         .then(response => {
-          if(!response.ok) {
-            throw new TypeError('bad response status')
-          }
-          console.log('response header (size): ', response)
+          // if(!response.ok) {
+          //   throw new TypeError('bad response status')
+          // }
+          // console.log('response header (size): ', response)
 
           return caches.open('audio-cache')
             .then(cache => {
