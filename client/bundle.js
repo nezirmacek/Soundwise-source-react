@@ -89451,12 +89451,13 @@
 	      // caches.keys().then(function(cacheKeys) {
 	      //   console.log(cacheKeys); // ex: ["test-cache"]
 	      // });
-
-	      navigator.webkitTemporaryStorage.queryUsageAndQuota(function (usedBytes, grantedBytes) {
-	        console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes');
-	      }, function (e) {
-	        console.log('Error', e);
-	      });
+	      if (navigator.webkitTemporaryStorage.queryUsageAndQuota) {
+	        navigator.webkitTemporaryStorage.queryUsageAndQuota(function (usedBytes, grantedBytes) {
+	          console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes');
+	        }, function (e) {
+	          console.log('Error', e);
+	        });
+	      }
 
 	      var that = this;
 	      _firebase2.default.auth().onAuthStateChanged(function (user) {
