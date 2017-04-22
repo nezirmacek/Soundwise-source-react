@@ -40,6 +40,10 @@ const styles = {
   },
   error: {
     color: 'red'
+  },
+  dialog: {
+    width: '100%',
+    maxWidth: 'none'
   }
 }
 
@@ -344,6 +348,7 @@ class _CourseSignup extends Component {
         actions={actions}
         modal={false}
         open={this.props.signupFormOpen}
+        contentStyle={styles.dialog}
         autoScrollBodyContent={true}
         onRequestClose={() => this.handleClose()}
       >

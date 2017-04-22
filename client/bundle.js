@@ -62988,6 +62988,10 @@
 	  },
 	  error: {
 	    color: 'red'
+	  },
+	  dialog: {
+	    width: '100%',
+	    maxWidth: 'none'
 	  }
 	};
 
@@ -63462,6 +63466,7 @@
 	          { actions: actions,
 	            modal: false,
 	            open: this.props.signupFormOpen,
+	            contentStyle: styles.dialog,
 	            autoScrollBodyContent: true,
 	            onRequestClose: function onRequestClose() {
 	              return _this5.handleClose();
