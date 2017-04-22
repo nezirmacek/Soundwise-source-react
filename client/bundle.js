@@ -41942,12 +41942,26 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(299);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _MuiThemeProvider = __webpack_require__(778);
+
+	var _MuiThemeProvider2 = _interopRequireDefault(_MuiThemeProvider);
+
+	var _getMuiTheme = __webpack_require__(779);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _Dialog = __webpack_require__(855);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
 
 	var _header = __webpack_require__(591);
 
@@ -41975,26 +41989,161 @@
 
 	var _footer2 = _interopRequireDefault(_footer);
 
-	var _popup = __webpack_require__(774);
-
-	var _popup2 = _interopRequireDefault(_popup);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Page = function Page() {
-	  return _react2.default.createElement(
-	    'div',
-	    { id: 'page', className: 'page ao-font-lato' },
-	    _react2.default.createElement(_header.Header, null),
-	    _react2.default.createElement(_banner2.default, null),
-	    _react2.default.createElement(_feature_section2.default, null),
-	    _react2.default.createElement(_testimonial2.default, null),
-	    _react2.default.createElement(_media_mention2.default, null),
-	    _react2.default.createElement(_callto_action2.default, null),
-	    _react2.default.createElement(_footer2.default, null),
-	    _react2.default.createElement(_popup2.default, null)
-	  );
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var customContentStyle = {
+	    width: '100%',
+	    maxWidth: 'none'
 	};
+
+	var Page = function (_Component) {
+	    _inherits(Page, _Component);
+
+	    function Page() {
+	        _classCallCheck(this, Page);
+
+	        var _this = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this));
+
+	        _this.state = {
+	            open: false
+	        };
+
+	        _this.handleClose = _this.handleClose.bind(_this);
+	        _this.popUp = _this.popUp.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(Page, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var that = this;
+
+	            setTimeout(function () {
+	                that.setState({
+	                    open: true
+	                });
+	            }, 10000);
+	        }
+	    }, {
+	        key: 'handleClose',
+	        value: function handleClose() {
+	            this.setState({
+	                open: false
+	            });
+	        }
+	    }, {
+	        key: 'popUp',
+	        value: function popUp() {
+	            return _react2.default.createElement(
+	                'section',
+	                { id: 'hero-section13', className: 'no-padding  bg-orange border-none' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'md-pull-right',
+	                        style: { float: 'right' } },
+	                    _react2.default.createElement(
+	                        'a',
+	                        { onClick: this.handleClose },
+	                        _react2.default.createElement(
+	                            'i',
+	                            { className: 'material-icons text-white',
+	                                style: { fontSize: '42px' }
+	                            },
+	                            'close'
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'container' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'row equalize xs-equalize-auto equalize-display-inherit' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'col-md-12 col-sm-12 col-xs-12 display-table text-left xs-margin-nineteen-bottom xs-text-center', style: { height: '500px' } },
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'display-table-cell-vertical-middle xs-padding-nineteen-top text-center' },
+	                                _react2.default.createElement(
+	                                    'h1',
+	                                    { className: 'sm-title-extra-large alt-font xs-title-extra-large letter-spacing-minus-1 title-extra-large-7 line-height-85 text-white tz-text margin-eight-bottom' },
+	                                    'HEY! CAN WE SEND YOU FREE STUFF?'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'text-white title-medium xs-title-small margin-twelve-bottom sm-margin-nine-bottom tz-text text-center width-80 sm-width-100', style: { display: 'flex', alignItem: 'center', justifyContent: 'center' } },
+	                                    _react2.default.createElement(
+	                                        'p',
+	                                        null,
+	                                        'Be the first to know when Soundwise is released and get one audio course for FREE.'
+	                                    )
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'col-md-12 col-sm-12 contact-form-style2 no-padding text-center' },
+	                                    _react2.default.createElement(
+	                                        'div',
+	                                        { className: 'slider-button' },
+	                                        _react2.default.createElement(
+	                                            'a',
+	                                            { href: 'https://eepurl.com/cyObp9', type: 'submit', className: 'contact-submit tz-text btn btn-large border-radius-4 propClone bg-dark-gray text-white xs-width-100 xs-margin-thirteen-bottom' },
+	                                            'YES, OF COURSE!'
+	                                        )
+	                                    )
+	                                )
+	                            )
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'renderPopup',
+	        value: function renderPopup() {
+	            var _React$createElement;
+
+	            return _react2.default.createElement(
+	                _MuiThemeProvider2.default,
+	                null,
+	                _react2.default.createElement(
+	                    _Dialog2.default,
+	                    (_React$createElement = {
+	                        open: true,
+	                        contentStyle: customContentStyle
+	                    }, _defineProperty(_React$createElement, 'open', this.state.open), _defineProperty(_React$createElement, 'onRequestClose', this.handleClose), _React$createElement),
+	                    this.popUp()
+	                )
+	            );
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { id: 'page', className: 'page ao-font-lato' },
+	                _react2.default.createElement(_header.Header, null),
+	                _react2.default.createElement(_banner2.default, null),
+	                _react2.default.createElement(_feature_section2.default, null),
+	                _react2.default.createElement(_testimonial2.default, null),
+	                _react2.default.createElement(_media_mention2.default, null),
+	                _react2.default.createElement(_callto_action2.default, null),
+	                _react2.default.createElement(_footer2.default, null),
+	                this.renderPopup()
+	            );
+	        }
+	    }]);
+
+	    return Page;
+	}(_react.Component);
 
 	exports.default = Page;
 
@@ -53473,107 +53622,8 @@
 	exports.default = Footer;
 
 /***/ },
-/* 774 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _popup_form = __webpack_require__(775);
-
-	var _popup_form2 = _interopRequireDefault(_popup_form);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Popup = function Popup() {
-	  return _react2.default.createElement(
-	    'div',
-	    { id: 'bio_ep', 'data-ao-template': 'subscribe8', type: 'text/x-tmpl', 'data-ao-popup-on': 'leave:once window' },
-	    _react2.default.createElement(
-	      'div',
-	      { className: 'ao-collapse ao-size-5 ao-block ao-font-lato ao-text-white', 'data-ao-animaze-show': 'fadein:0 0.3s easeIn;blackout;resize:100% 100%;move:fixed 0 0', 'data-ao-animaze-hide': 'fadeout:0 0.3s;blackout: false',
-	        'data-ao-blackout-animaze-show': 'fadein:0 0.5s 95 easeOut;bgColor:#FF8300', 'data-ao-blackout-animaze-hide': 'fadeout:0 0.5s', 'data-ao-blackout-hide-main': 'true' },
-	      _react2.default.createElement(
-	        'a',
-	        { href: '#', className: 'ao-close', 'data-ao-animaze-on-popup': 'delay:0.1s;fadein:- 0.5s', 'data-ao-hide-popup': 'true' },
-	        _react2.default.createElement('i', { className: 'fa fa-times' })
-	      ),
-	      _react2.default.createElement(
-	        'div',
-	        { className: 'ao-text-center', 'data-ao-animaze-on-popup': 'fitscale;move:absolute center middle', 'data-ao-animaze-on-popupresize': 'fitscale;move:absolute center middle' },
-	        _react2.default.createElement(
-	          'h1',
-	          { className: ' sm-title-extra-large-2 alt-font xs-title-extra-large-2 title-extra-large-4 font-weight-700 text-white letter-spacing-minus-2 tz-text margin-five-bottom sm-margin-six-bottom margin-lr-auto',
-	            'data-selector': '.tz-text', 'data-ao-animaze-on-popup': 'delay:0.1s;fadein:- 0.0s' },
-	          'Hey! Can we send you free stuff?'
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'ao-text-light ao-offs-md ao-text-bold', 'data-ao-animaze-on-popup': 'delay:0.1s;fadein:- 0.0s' },
-	          'Be the first to know when Soundwise is released and get one audio course for FREE'
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { className: 'ao-block-center ao-size-5 col-lg-9 col-md-8 col-sm-8 center-col text-center' },
-	          _react2.default.createElement(_popup_form2.default, null)
-	        )
-	      )
-	    )
-	  );
-	};
-
-	exports.default = Popup;
-
-/***/ },
-/* 775 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Popup_form = function Popup_form() {
-	  return (
-	    // <form action="https://mysoundwise.us7.list-manage.com/subscribe/post?u=80814b5f6fa548123fc5acaeb&id=19d5068303" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form"
-	    //   className="validate" target="_blank" noValidate>
-
-	    _react2.default.createElement(
-	      'a',
-	      { href: 'https://eepurl.com/cyObp9', className: 'ao-btn ao-text-upper ao-text-bold ao-btn-purple ao-btn-b2 ao-btn-wbb ao-col-12' },
-	      'yes of course'
-	    )
-	    // </form>
-
-	  );
-	};
-
-	exports.default = Popup_form;
-
-	// <div className="ao-field-group ao-offs-sm" data-ao-animaze-on-popup="delay:0.1s;fadein:- 0.0s;move:- 0.1s relative 0 0 50px easeOut">
-	//   <div className="ao-field-wrap">
-	//     <input className="ao-field-control ao-text-center" type="email" name="FNAME" placeholder="* Your first name" />
-	//     <br />
-	//     <input className="ao-field-control ao-text-center" type="email" name="EMAIL" placeholder="* Your email address" />
-	//     <span className="ao-field-fake ao-bg-white" />
-	//   </div>
-	// </div>
-
-/***/ },
+/* 774 */,
+/* 775 */,
 /* 776 */
 /***/ function(module, exports, __webpack_require__) {
 

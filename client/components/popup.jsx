@@ -2,22 +2,30 @@ import React from 'react';
 import Popup_form from './popup_form';
 
 const Popup = () => (
-  <div id="bio_ep" data-ao-template="subscribe8" type="text/x-tmpl" data-ao-popup-on="leave:once window">
-    <div className="ao-collapse ao-size-5 ao-block ao-font-lato ao-text-white" data-ao-animaze-show="fadein:0 0.3s easeIn;blackout;resize:100% 100%;move:fixed 0 0" data-ao-animaze-hide="fadeout:0 0.3s;blackout: false"
-      data-ao-blackout-animaze-show="fadein:0 0.5s 95 easeOut;bgColor:#FF8300" data-ao-blackout-animaze-hide="fadeout:0 0.5s" data-ao-blackout-hide-main="true">
-      <a href="#" className="ao-close" data-ao-animaze-on-popup="delay:0.1s;fadein:- 0.5s" data-ao-hide-popup="true">
-        <i className="fa fa-times" />
-      </a>
-      <div className="ao-text-center" data-ao-animaze-on-popup="fitscale;move:absolute center middle" data-ao-animaze-on-popupresize="fitscale;move:absolute center middle">
-        <h1 className=" sm-title-extra-large-2 alt-font xs-title-extra-large-2 title-extra-large-4 font-weight-700 text-white letter-spacing-minus-2 tz-text margin-five-bottom sm-margin-six-bottom margin-lr-auto"
-          data-selector=".tz-text" data-ao-animaze-on-popup="delay:0.1s;fadein:- 0.0s">Hey! Can we send you free stuff?</h1>
-        <div className="ao-text-light ao-offs-md ao-text-bold" data-ao-animaze-on-popup="delay:0.1s;fadein:- 0.0s">Be the first to know when Soundwise is released and get one audio course for FREE</div>
-        <div className="ao-block-center ao-size-5 col-lg-9 col-md-8 col-sm-8 center-col text-center">
-          <Popup_form></Popup_form>
-        </div>
-      </div>
-    </div>
-  </div>
+            <section id="hero-section13" className="no-padding  bg-orange border-none">
+                <div className='md-pull-right'
+                    style={{float: 'right'}}>
+                  <i className="material-icons text-white"
+                     style={{fontSize: '42px'}}
+                    >close</i>
+                </div>
+                <div className="container">
+                    <div className="row equalize xs-equalize-auto equalize-display-inherit">
+                        <div className="col-md-12 col-sm-12 col-xs-12 display-table text-left xs-margin-nineteen-bottom xs-text-center" style={{height: '500px'}}>
+                            <div className="display-table-cell-vertical-middle xs-padding-nineteen-top text-center">
+                                <h1 className="sm-title-extra-large alt-font xs-title-extra-large letter-spacing-minus-1 title-extra-large-7 line-height-85 text-white tz-text margin-eight-bottom">HEY! CAN WE SEND YOU FREE STUFF?</h1>
+                                <div className="text-white title-medium xs-title-small margin-twelve-bottom sm-margin-nine-bottom tz-text text-center width-80 sm-width-100" style={{display: 'flexbox', alignItem: 'center'}}><p>Be the first to know when Soundwise is released and get one audio course for FREE.</p></div>
+                                <div className="col-md-12 col-sm-12 contact-form-style2 no-padding text-center">
+                                        <div className="slider-button">
+                                            <button type="submit" className="contact-submit tz-text btn btn-large border-radius-4 propClone bg-dark-gray text-white xs-width-100 xs-margin-thirteen-bottom">YES, OF COURSE!</button>
+                                        </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 );
 
 export default Popup;
