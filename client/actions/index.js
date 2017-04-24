@@ -70,11 +70,11 @@ export function changePlayStatus(status) {
 }
 
 export function openSignupbox(open) {
-  if(open) {
+  if(open === true) {
     return {
       type: types.OPEN_SIGNUPBOX,
     }
-  } else {
+  } else if(open === false) {
     return {
       type: types.CLOSE_SIGNUPBOX,
     }

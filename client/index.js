@@ -35,71 +35,62 @@ const persistor = persistStore(store, {storage: localForage, blacklist: ['setPla
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {
-      "name": "The Fight for Your Joy Course",
-      "img_url_mobile": "https://www.dropbox.com/s/8rq1rotvavnax0y/fight_for_your_joy_cover.png?dl=1",
-      "img_url_web": "https://www.dropbox.com/s/5rssyn3vx3kuxgs/joy.jpg?dl=1",
-      "id": 112,
-      "run_time": "25:13",
-      "url": "",
-      "category": "Personal Development",
-      "description": "The right words, just when you need them, right where you are: introducing Sonic Collections. Fight for Your Joy is an audio love-gram from me to you. These are eight of my most Soulful pieces — for helping you to get to where the joy lives — inside of you.",
-      "teacher": "Danielle Laporte",
-      "teacher_profession": "Personal Growth Teacher",
-      "teacher_img": "https://www.dropbox.com/s/13lc5lekrnlej3q/danielle_laporte_bg.jpg?dl=1",
-      "teacher_thumbnail": "https://www.dropbox.com/s/9jra90vkbxvnymt/danielle_laporte.png?dl=1",
-      "teacher_bio": 'Danielle LaPorte is an invited member of Oprah’s Super Soul 100, a group who, in Oprah Winfrey’s words, “is uniquely connecting the world together with a spiritual energy that matters.” She is author of White Hot Truth: Clarity for keeping it real on your spiritual path—from one seeker to another. The Fire Starter Sessions, and The Desire Map: A Guide To Creating Goals With Soul—the book that has been translated into 8 languages, evolved into a yearly day planner system, a top 10 iTunes app, and an international workshop program with licensed facilitators in 15 countries.',
+      "name": "How to Conquer Public Speaking Anxiety in 5 Minutes",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/with+Geoff+Woliner.png",
+      "id": 115,
+      "run_time": 950,
+      "price": 5,
+      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/01+intro.mp3",
+      "category": "Communication",
+      "keywords": "public speaking, public speaking fear, fear of public speaking, public speaking anxiety, toastmaster, effective public speaking, public speaking tips, public speaking techniques, public speaking courses, audiobooks, communication skills, audio courses, online courses",
+      "description": ["Does the idea of public speaking make you want to vomit? Don’t worry. Geoff Woliner got you covered. In this audio program, the award-winning comedian will teach you a tried-and-true technique that can make your public speaking experience more relaxing than a lazy Sunday afternoon."],
+      "description_long":["Public speaking opens doors.", "Not only is it a manifestation of power and charisma, being a great public speaker also helps you establish credibility, win friends and connections, persuade your audience, and get you more success in your professional and personal life.", "In contrast, a public speaking flop can hugely affect one’s self confidence. It makes you question your own ability and courage. It adds to that feeling of shame that most of us feel on a primal level.", "If the idea of standing in front of an audience makes your stomach tied in knots, you’ve come to the right place.", "In this audio program, award-winning comedian and speech writer Geoff Woliner will teach you a technique that he has used to help numerous clients overcome their public speaking anxiety. The best part: it can be done in five minutes!", "You’ve tried the rest. Now try the best."],
+      "features": ["An effective technique that helps conquer your public speaking fear--fast", "A simple exercise to get yourself in the right public speaking mindset in 5 minutes", "4 audio sections", "Transcripts for all sections", "Option to play audios offline (on computer and android phone with Chrome browser", "Additional resources"],
+      "teacher": "Geoff Woliner",
+      "teacher_profession": "Comedian",
+      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/Geoff-Woliner-Headshot.jpg",
+      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/Geoff-Woliner-Headshot.jpg",
+      "teacher_bio": ["Geoff Woliner, winner of Stand-Up NY’s “Funniest Person From Queens” is a seasoned comedian, emcee, association development professional and pet psychologist. Correction: Aspiring pet psychologist. Seeing how the power of humor has helped deliver knockout presentations in all walks of life, he created Winning Wit, a speech writing company, in 2011. Together with a team of award-winning comedians throughout North America, Winning Wit helps people write and deliver great content that has audiences raving.", "Winning Wit is a unique, cutting edge service that has been featured on WTOP radio, Kentucky Bride Magazine, Brides and Weddings of Northern Virginia and many other publications."],
       "modules": [
         {
           "module_id": 1,
-          "module_title": "Fight for Your Joy",
+          "module_title": "How to Conquer Public Speaking Anxiety in 5 Minutes",
           "sections": [
             {
-              "section_id": 7,
-              "title": "This could be good. This could be bad. Fact is: you are free to choose",
-              "content": "Based on what you’ve done in the past, and what you’re doing now, you are likely to head in the direction you’re going. This could be good. This could be bad. Fact is: You are free to choose. Three psychics with great track records will predict the same outcomes. You could have your Jupiter conjunct with Pluto, blue blood, and a very big trust fund. Or the odds could be ferociously against you — could be lookin’ grim and slim. But nothing is certain. You could change your mind and change your behaviour, a miracle could happen, forces could intervene, the other people involved could shift. This could be good. This could be bad. Fact is: You are free to choose.",
-              "section_url": "https://www.dropbox.com/s/cowbxot0c97xo2n/1%20This%20Could%20Be%20Good%2C%20Could%20Be%20Bad.mp3?dl=1"
+              "section_id": 15,
+              "section_number": 1,
+              "run_time": "2:58",
+              "title": "Introduction: why are we afraid of public speaking",
+              "content": "Most people are terrified of pubic speaking. The fear may seem irrational, but there're actually three very good reasons for it. If the idea of going on a stage makes you want to throw up and call in sick, it's ok! You're not alone.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/01+intro.mp3",
+              "transcript_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/section+1.pdf"
             },
             {
-              "section_id": 8,
-              "title": "Fighting for your joy",
-              "content": "I’ve had to fight for my joy. I’ve also loved and laughed and created my way to it. But it’s fair to say that removing all of the obstacles, illusions, attacks, grief, and heavy trippin’ from my truth has been strenuous work. I know growth is cyclical, I know that you never really arrive. I know grief can catch you off guard. I know nothing is certain. Now that I’m at the most joyful I’ve ever been, (there’s a difference between happiness and joy), I’m asking: Will I have to fight for my joy again?",
-              "section_url": "https://www.dropbox.com/s/uf4imd7bgpea2pi/2%20Fighting%20for%20Your%20Joy.mp3?dl=1"
+              "section_id": 16,
+              "section_number": 2,
+              "run_time": "3:13",
+              "title": "Why the usual approaches to reduce public speaking anxiety get you nowhere",
+              "content": "Chances are, you’ve tried something along the way to conquer your public speaking fear, and more than likely, it involves one or more of the approaches I talk about in this section. What? They haven't worked? I'm not surpised. And in this section, I explain why the common methods you hear about may not be effective as you want them to be.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/02+ineffective+approaches.mp3",
+              "transcript_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/section+2.pdf"
             },
             {
-              "section_id": 9,
-              "title": "8 sure ways to block positivity",
-              "content": "1. Overzealous competitiveness. Sure, play to win, but when the focus is on decimating the competition, you’re wasting invaluable creative energy that you could pour into your staying power. 2. Ambivalence and indifference. When you’re in touch with your truth, you can make a clear choice. (Personally, I’m always leery of collaborating with someone who doesn’t know what they want. Hell, I’m leery of having lunch with someone who doesn’t know what they want.) 3. Scarcity mentality. Because… If you think there’s not enough to go around, then you won’t bother to look for the abundance. 4. Comparing yourself to others. Totally toxic.",
-              "section_url": "https://www.dropbox.com/s/jmx4i4d69zfldd7/3%20Positivity%20Blocks.mp3?dl=1"
+              "section_id": 17,
+              "section_number": 3,
+              "run_time": "5:28",
+              "title": "The one technique that will conquer your public speaking fear for good",
+              "content": "In this section, I talk about the state of mind you need that will be the perfect antidote to any public speaking fear. More importantly, I walk you through a simple, but tried-and-true technique that will get you into the right state of mind quickly.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/03+the+solution.mp3",
+              "transcript_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/section+3.pdf"
             },
             {
-              "section_id": 10,
-              "title": "Been burned? Betrayal, denial, and the bloody beauty of it all",
-              "content": "I’ve been betrayed — severely. Thank God. Betrayal is such a defining experience — it lays your heart bare, and that’s a bloody, good thing. Bloody good. Betrayal shows precisely where you are weak and where you are mighty — in one fell swoop. Betrayal shows your loyalty. Betrayal reveals the lies you’ve been telling yourself. Being betrayed by another person is often (not always,) a reflection of how you were betraying yourself. It’s a lie looking back at you.",
-              "section_url": "https://www.dropbox.com/s/b3npbudkuxt17br/4%20Betrayal.mp3?dl=1"
-            },
-            {
-              "section_id": 11,
-              "title": "The Principles of Active Waiting vs. feeling-like-a-loser, losing-your-mind kind of waiting",
-              "content": "I’ve learned a lot about waiting in the last while. I can’t say I’m a fan of waiting for what I want but I’ve finally learned to harness the waiting periods in a new way. Some might call it the virtue of patience, but I’ll never admit to becoming patient. I have a reputation to protect. Inactive waiting is total hell. It’s a sure way to get stuck, slip into complaining, and let your creativity get all flabby. You put things on hold. You start paying rent in One Day Some Day Town. You see everything around you as “not quite what I’m waiting for.” And then you get into all the nasty new-age sponsored self-down talk, “Why aren’t I manifesting what I want? What am I doing wrong?”",
-              "section_url": "https://www.dropbox.com/s/9av6hnczfgbsas1/5%20Principles%20of%20Waiting.mp3?dl=1"
-            },
-            {
-              "section_id": 12,
-              "title": "The inevitable panic that sets in when you let go of expectations. (And why it’s good.)",
-              "content": "Expectations. Hot subject. Letting go of expectations. Raising your expectations. Meeting expectations. … failing to meet expectations. Not so great, expectations. PARADOX OF DESIRE & EXPECTATION. The A SIDE: You have to want what you want with all your heart. REALLY want it! Squeeze it. Don’t apologize for the ferocity of it. Declare it. Ask for it. Pray for it. The energy of your desire increases it’s potentiality and magnetism.",
-              "section_url": "https://www.dropbox.com/s/w5c30sl6b32qssu/6%20Pain%20and%20Expectations.mp3?dl=1"
-            },
-            {
-              "section_id": 13,
-              "title": "Instant gratification has gotten a bad rap",
-              "content": "Why would you want to delay gratification? Within the constraints of morality and maturity, you should do whatever you need to do to feel gratified in the moment. It may be as subtle as choosing a more positive thought or reminding yourself to smile. Maybe it’s taking two minutes in your car or at your desk to do nothing but fantasize. Maybe instant gratification is fifty sit-ups for an adrenaline rush, ordering dessert first, giving an unexpected hug, signing the lease, or telling your boss to shove it.",
-              "section_url": "https://www.dropbox.com/s/iv808z9fsvoz5zh/7%20Instant%20Gratification.mp3?dl=1"
-            },
-            {
-              "section_id": 14,
-              "title": "Please don’t punish yourself",
-              "content": "It’s hard enough to make your way in a world where you will be judged, daily. To overcome the intentional punishments inflicted by dark mongers; to find the right concoction for emotional wounds; and to rise from the simply deep heartache of not getting what you want — it’s anything but easy. It’s gruelling enough to be betrayed when you have been over-loyal; to feel like an imposter at the pretty party; to be seemingly alone in your looping fixations (you’re never alone); to feel like the star ship flew off and orphaned you in a cabbage patch of zygotes to be adopted by humans who can’t understand you. This stuff of earth, you know, it’s a lot of things, but it’s anything but easy.",
-              "section_url": "https://www.dropbox.com/s/1tljcoxzbf2es48/8%20Please%20Don%27t%20Punish%20Yourself.mp3?dl=1"
+              "section_id": 18,
+              "section_number": 4,
+              "run_time": "4:11",
+              "title": "An exercise to help you become your best speaker self in 5 minutes",
+              "content": "In this section I guide you through an exercise that implements the technique I explained in the previous section. So make sure you actually do the exercise with me, while listening to this section. And don't forget to revisit this exercise every time before you go in front of a group of people to deliver your killer speech.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/04+exercise.mp3",
+              "transcript_url": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/section+4.pdf"
             }
           ]
         }
@@ -153,6 +144,7 @@ firebase.initializeApp(config)
 
 // firebase.database().ref('courses/' + courseInfo.id)
 //   .set(courseInfo)
+
 // firebase.database().ref('courses')
 //         .once('value')
 //         .then(snapshot => {

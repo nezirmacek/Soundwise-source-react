@@ -36,6 +36,7 @@ class _AppSignin extends Component {
       email: '',
       password: '',
       message: '',
+      pic_url: '',
       redirectToReferrer: false
     }
     this.signIn = this.signIn.bind(this)
@@ -44,7 +45,7 @@ class _AppSignin extends Component {
   }
 
   async signIn() {
-    let {firstName, lastName, email, password} = this.state
+    let {firstName, lastName, email, password, pic_url} = this.state
 
     try {
         await firebase.auth().signInWithEmailAndPassword(email, password)
@@ -56,8 +57,9 @@ class _AppSignin extends Component {
             firstName = snapshot.val().firstName
             lastName = snapshot.val().lastName
             email = snapshot.val().email
+            pic_url = snapshot.val().pic_url
             courses = snapshot.val().courses || {}
-            this.props.signinUser({firstName, lastName, email, courses})
+            this.props.signinUser({firstName, lastName, email, pic_url, courses})
 
             this.props.history.push('/myprograms')
         })
@@ -127,15 +129,24 @@ class _AppSignin extends Component {
       .once('value')
       .then(snapshot => {
         if(snapshot.val().firstName !== undefined) { // if user already exists
+
           const firstName = snapshot.val().firstName
           const lastName = snapshot.val().lastName
           const email = snapshot.val().email
           const courses = snapshot.val().courses || {}
-          that.props.signinUser({firstName, lastName, email, courses})
+          const pic_url = result.user.photoURL
+
+          let updates = {}
+          updates['/users/' + userId + '/pic_url/'] = pic_url
+          firebase.database().ref().update(updates)
+
+          that.props.signinUser({firstName, lastName, email, pic_url, courses})
           that.props.history.push('/myprograms')
         } else {  //if it's a new user
+
           const user = result.user
           const email = user.email
+          const pic_url = result.user.photoURL
           const name = user.displayName.split(' ')
           const firstName = name[0]
           const lastName = name[1]
@@ -145,6 +156,7 @@ class _AppSignin extends Component {
             firstName,
             lastName,
             email,
+            pic_url,
             courses
           })
 

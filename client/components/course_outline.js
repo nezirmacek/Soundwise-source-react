@@ -31,7 +31,7 @@ const renderModules = (course) => {
               <div>
               <Card>
                 <CardHeader
-                  title={section.title}
+                  title={`Section ${section.section_number}: ${section.title} (${section.run_time})`}
                   style = {styles.sectionTitle}
                 />
                 <CardText >
@@ -55,6 +55,8 @@ export default class CourseOutline extends Component {
         price: '',
         name: '',
         description: '',
+        description_long: [''],
+        features: [''],
         modules: [
           {
             sections: []
@@ -63,6 +65,8 @@ export default class CourseOutline extends Component {
       },
       userCourses: {}
     }
+    this.renderDescription = this.renderDescription.bind(this)
+    this.renderFeatures = this.renderFeatures.bind(this)
   }
 
   componentDidMount() {
@@ -78,17 +82,50 @@ export default class CourseOutline extends Component {
     })
   }
 
+  renderDescription() {
+    return (
+      <div>
+      {this.state.course.description_long.map(paragraph => {
+        return (
+          <p className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
+            {paragraph}
+          </p>
+        )
+      })}
+      </div>
+    )
+  }
+
+  renderFeatures() {
+    return (
+      <ul>
+       {this.state.course.features.map(feature => {
+          return (
+            <li className="text-dark-gray text-extra-large  margin-lr-auto col-md-6 tz-text" style={{paddingLeft: '1em', paddingRight: '2em', paddingTop: '1em', listStyleType: 'none'}}>
+              <i className="material-icons" style={{paddingRight: '1em'}}>check</i>{feature}
+            </li>
+          )
+       })}
+      </ul>
+    )
+  }
+
   render() {
     return (
       <div>
-        <section className="padding-80px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
+        <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
           <div className="container">
-            <div className="">
-                <div className="row padding-60px-tb">
-                    <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                      <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">WHAT YOU WILL LEARN</h2>
-                      <div className="text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text">{this.state.course.description}</div>
-                    </div>
+            <div className="row padding-40px-tb">
+                <div className="col-md-12 col-sm-12 col-xs-12">
+                  {this.renderDescription()}
+                </div>
+            </div>
+            <div className="row padding-40px-tb" style={{backgroundColor: '#FFF3E0'}}>
+                <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                  <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">WHAT YOU WILL GET</h2>
+                </div>
+                <div className="col-md-12 col-sm-12 col-xs-12">
+                  {this.renderFeatures()}
                 </div>
             </div>
             <div style={styles.curriculumContainer}>

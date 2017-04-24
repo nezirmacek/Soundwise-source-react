@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import firebase from 'firebase'
+import { Redirect } from 'react-router-dom'
 import { withRouter } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -107,6 +108,9 @@ class _Course_Purchased extends Component {
     // const course = this.props.courses[this.props.match.params.courseId]
     const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
 
+    if(this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId]) {
+      return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
+    }
 
     return (
       <div>

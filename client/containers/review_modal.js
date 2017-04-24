@@ -29,6 +29,7 @@ class _ReviewModal extends Component {
       rating: 5,
       review: ''
     }
+    console.log('course id: ', this.props.course.id)
 
     this.ratingChanged = this.ratingChanged.bind(this)
     this.handleReviewChange = this.handleReviewChange.bind(this)
@@ -54,7 +55,7 @@ class _ReviewModal extends Component {
     const {rating, review} = this.state
     const time = new Date()
     const date = time.toDateString()
-    const pic = this.userInfo.profile_pic || '../images/smiley_face.jpg'
+    const pic = (this.props.userInfo.pic_url!==undefined && this.props.userInfo.pic_url.length > 0) ? this.props.userInfo.pic_url : '../images/smiley_face.jpg'
     const reviewer = `${this.props.userInfo.firstName} ${this.props.userInfo.lastName.slice(0,1)}.`
 
     firebase.database().ref('courses/' + this.props.course.id)

@@ -78,9 +78,9 @@ class _Routes extends Component {
              <Route exact path="/myprograms" component={MyCourses}/>
              <Route path="/myprograms/:courseId" component={Course_Purchased}/>
              <Route path="/cart" component={Cart} />
-             <Route path="/checkout" component={Checkout} />
              <Route path="/confirmation" component={OrderConfirmation} />
              <Route path="/courses/:courseId" component={Course} />
+             <Route path ="/notfound" component={NotFound} />
              <Route component={NotFound} />
           </Switch>
         </div>

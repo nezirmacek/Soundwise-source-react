@@ -317,6 +317,8 @@ class _CourseSection extends Component {
     // const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
     const completed = this.props.course.sectionProgress[this.props.section.section_id].completed
 
+    const run_time = this.props.section.run_time.split(':')
+
     let progress = ''
     if(completed) {
       progress = 'completed'
@@ -330,7 +332,7 @@ class _CourseSection extends Component {
       <div>
       <Card>
         <CardHeader
-          title={`Section ${this.props.section.section_number}:`}
+          title={`Section ${this.props.section.section_number} (${run_time[0]}m ${run_time[1]}s):`}
           style={styles.sectionTitle}
           actAsExpander={true}
           showExpandableButton={true}

@@ -11,7 +11,9 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import { Link, Redirect } from 'react-router-dom'
 import { withRouter } from 'react-router'
 
-import { signupUser, signinUser, openSignupbox, openConfirmationbox } from '../actions/index'
+import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index'
+
+var provider = new firebase.auth.FacebookAuthProvider()
 
 const styles = {
   errorStyle: {
@@ -83,6 +85,7 @@ class _CourseSignup extends Component {
 
   async signUp() {
     const {firstName, lastName, email, password} = this.state
+    const that = this
 
     if(firstName.length < 1 || lastName.length < 1) {
       alert('Please enter your name!')
@@ -103,12 +106,14 @@ class _CourseSignup extends Component {
         firebase.database().ref('users/' + userId).set({
           firstName,
           lastName,
-          email
+          email,
+          pic_url: ''
         })
 
-        this.props.signupUser({firstName, lastName, email, password})
+        this.props.signupUser({firstName, lastName, email,pic_url, password})
+        this.props.addCourseToCart(this.props.course)
         this.props.openSignupbox(false)
-        this.props.history.push('/checkout')
+        this.props.history.push('/cart')
 
     } catch (error) {
         this.setState({
@@ -124,6 +129,7 @@ class _CourseSignup extends Component {
 
   async signIn() {
     let {firstName, lastName, email, password} = this.state
+    const that = this
 
     try {
         await firebase.auth().signInWithEmailAndPassword(email, password)
@@ -135,14 +141,17 @@ class _CourseSignup extends Component {
             firstName = snapshot.val().firstName,
             lastName = snapshot.val().lastName,
             email = snapshot.val().email
-            this.props.signinUser({firstName, lastName, email})
-            this.props.openSignupbox(false)
-            this.setState({
+            pic_url = snapshot.val().pic_url
+            that.props.signinUser({firstName, lastName, email, pic_url})
+            that.props.addCourseToCart(that.props.course)
+            that.props.openSignupbox(false)
+            that.setState({
               firstName,
               lastName,
-              email
+              email,
+              pic_url
             })
-            this.props.history.push('/checkout')
+            that.props.history.push('/cart')
         })
 
     } catch (error) {
@@ -238,12 +247,21 @@ class _CourseSignup extends Component {
           const firstName = snapshot.val().firstName
           const lastName = snapshot.val().lastName
           const email = snapshot.val().email
+          const pic_url = result.user.photoURL
           const courses = snapshot.val().courses || {}
-          that.props.signinUser({firstName, lastName, email, courses})
-          that.props.history.push('/checkout')
+
+          let updates = {}
+          updates['/users/' + userId + '/pic_url/'] = pic_url
+          firebase.database().ref().update(updates)
+
+          that.props.signinUser({firstName, lastName, email, pic_url, courses})
+          that.props.addCourseToCart(that.props.course)
+          that.props.openSignupbox(false)
+          that.props.history.push('/cart')
         } else {  //if it's a new user
           const user = result.user
           const email = user.email
+          const pic_url = result.user.photoURL
           const name = user.displayName.split(' ')
           const firstName = name[0]
           const lastName = name[1]
@@ -253,11 +271,14 @@ class _CourseSignup extends Component {
             firstName,
             lastName,
             email,
+            pic_url,
             courses
           })
 
-          that.props.signinUser({firstName, lastName, email, courses})
-          that.props.history.push('/checkout')
+          that.props.signinUser({firstName, lastName, email, pic_url, courses})
+          that.props.addCourseToCart(that.props.course)
+          that.props.openSignupbox(false)
+          that.props.history.push('/cart')
         }
 
       })
@@ -293,14 +314,16 @@ class _CourseSignup extends Component {
                 lastName = snapshot.val().lastName
                 email = snapshot.val().email
                 courses = snapshot.val().courses
+                pic_url = snapshot.val().pic_url
                 if(!courses) {
                   firebase.database().ref('users/' + userId).set({
                     courses: {}
                   })
                 }
-                that.props.signinUser({firstName, lastName, email, courses})
-
-                that.props.history.push('/checkout')
+                that.props.signinUser({firstName, lastName, email, pic_url, courses})
+                that.props.addCourseToCart(that.props.course)
+                that.props.openSignupbox(false)
+                that.props.history.push('/cart')
             })
           })
         }
@@ -374,7 +397,7 @@ class _CourseSignup extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ signupUser, signinUser, openConfirmationbox, openSignupbox }, dispatch)
+  return bindActionCreators({ signupUser, signinUser, openConfirmationbox, openSignupbox, addCourseToCart }, dispatch)
 }
 
 const mapStateToProps = state => {

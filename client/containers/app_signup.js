@@ -66,10 +66,11 @@ class _AppSignup extends Component {
         firebase.database().ref('users/' + userId).set({
           firstName,
           lastName,
-          email
+          email,
+          pic_url: ''
         })
 
-        that.props.signupUser({firstName, lastName, email})
+        that.props.signupUser({firstName, lastName, email, pic_url})
         that.props.history.push('/myprograms')
     } catch (error) {
         this.setState({
@@ -93,6 +94,7 @@ class _AppSignup extends Component {
       // The signed-in user info.
       const user = result.user
       const email = user.email
+      const pic_url = result.user.photoURL
       const name = user.displayName.split(' ')
       const firstName = name[0]
       const lastName = name[1]
@@ -101,10 +103,11 @@ class _AppSignup extends Component {
       firebase.database().ref('users/' + userId).set({
         firstName,
         lastName,
-        email
+        email,
+        pic_url
       })
 
-      that.props.signupUser({firstName, lastName, email})
+      that.props.signupUser({firstName, lastName, email, pic_url})
       that.props.history.push('/myprograms')
 
     }).catch(function(error) {

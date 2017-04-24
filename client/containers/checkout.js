@@ -36,12 +36,20 @@ class _Checkout extends Component {
     this.addCourseToUser = this.addCourseToUser.bind(this)
   }
 
-  componentWillMount() {
+  componentDidMount() {
     stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt')
     this.setState({
-      totalPay: this.props.shoppingCart.reduce((cumm, course) => {
-      return cumm + course.price
-    }, 0) * 100 // in cents
+      totalPay: this.props.shoppingCart.reduce((cum, course) => {
+        return cum + course.price
+      }, 0) * 100 // in cents
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      totalPay: nextProps.shoppingCart.reduce((cum, course) => {
+        return cum + course.price
+      }, 0) * 100 // in cents
     })
   }
 
@@ -65,7 +73,7 @@ class _Checkout extends Component {
           totalPay: that.props.shoppingCart.reduce((cumm, course) => {
 
             if(course.id === coupon.course_id) {
-              console.log('course id: ', course.id, coupon.course_id)
+
               return cumm + course.price - coupon.discount / 100 * course.price
             } else {
               return cumm + course.price
@@ -193,50 +201,35 @@ class _Checkout extends Component {
     // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
     //   return cumm + course.price
     // }, 0)
+    console.log('shoppingCart: ', this.props.shoppingCart)
     const subtotal = this.state.totalPay / 100
 
     return (
       <div>
-      <SoundwiseHeader />
-        <section className='padding-110px-tb xs-padding-60px-tb bg-white builder-bg" id="subscribe-section6'>
+        <section className='padding-30px-tb xs-padding-30px-tb bg-white builder-bg" id="subscribe-section6'>
           <div className='container'>
-            <div className='row '>
-              <div className="col-md-8 center-col col-sm-12">
-                  <h2 className="title-extra-large-2 alt-font xs-title-large text-sky-blue-dark margin-four-bottom tz-text">CHECKOUT</h2>
+            <div className='row equalize sm-equalize-auto equalize-display-inherit'>
+              <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin">
                   <div className="row equalize ">
-                      <div className="col-md-5  display-table col-sm-12" style={{height: '62px'}}>
-                          <div className="display-table-cell-vertical-middle">
-                            <div className="">
-                              <Link to="/cart" className="btn  propClone btn-3d text-white width-100 builder-bg tz-text" style={{backgroundColor: '#F76B1C'}}>EDIT ORDER</Link>
-                            </div>
-                          </div>
-                      </div>
-                      <div className="col-md-6 col-sm-12 display-table pull-right" style={{height: '62px'}}>
-                          <div className="display-table-cell-vertical-middle pull-right">
-                              <h3 className="title-large alt-font  font-weight-400 margin-three-top margin-three-bottom sm-margin-six-bottom xs-no-margin xs-padding-bottom-20px xs-title-large display-block tz-text">{`Item(s): ${items_num} / Sub-total: $${subtotal}`}</h3>
-                          </div>
-                      </div>
-                  </div>
-                  <div className="row equalize ">
-                      <div className="col-md-5 display-table col-sm-12" style={{height: '62px'}}>
+                      <div className="col-md-6 display-table col-sm-12 col-xs-12" style={{height: '62px'}}>
                           <div className=" pull-left">
                             <button type='submit'
                               onClick = {this.handleCoupon}
-                              className='text-white btn builder-bg propClone btn-3d tz-text border-radius-4'
+                              className='btn btn-extra-large2 propClone btn-3d text-white builder-bg tz-text'
                               style={{float: 'right', backgroundColor: '#F76B1C', height: '3em'}}>Apply</button>
                             <div className="" style={{overflow: 'hidden'}}>
                               <input
                                 onChange={this.handleChange}
-                                className=" bg-light-gray alt-font border-radius-4"
+                                className=" bg-light-gray alt-font big-input border-radius-4"
                                 name = 'coupon'
                                 placeholder='coupon code' style={{width: '100%', paddingRight: '1em', height: '3.6em'}}/>
                             </div>
                             <div style={{color: 'red'}}>{this.state.couponError}</div>
                           </div>
                       </div>
-                      <div className="col-md-6 col-sm-12 display-table xs-text-center pull-right" style={{height: '62px'}}>
-                          <div className="display-table-cell-vertical-middle pull-right">
-                              <h3 className="title-large alt-font  font-weight-400 margin-three-top margin-three-bottom sm-margin-six-bottom xs-no-margin xs-padding-bottom-20px xs-title-large display-block tz-text">{`Total: $${subtotal}`}</h3>
+                      <div className="col-md-5 col-sm-12 col-xs-12 display-table xs-text-center  " style={{height: '62px'}}>
+                          <div className=" margin-six-right display-table-cell-vertical-middle text-center">
+                              <h3 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{`Total: $${subtotal}`}</h3>
                           </div>
                       </div>
                   </div>
@@ -250,7 +243,7 @@ class _Checkout extends Component {
                         required  className='big-input bg-light-gray alt-font border-radius-4' size='20' type='text' name='number'/>
                     </div>
                     <div className=' '>
-                      <label className='title-large alt-font  font-weight-400 margin-three-top margin-three-bottom sm-margin-six-bottom xs-no-margin xs-padding-bottom-20px xs-title-large display-block tz-text'>CVC</label>
+                      <label className='title-large alt-font  font-weight-400 margin-three-top margin-three-bottom sm-margin-six-bottom xs-no-margin xs-padding-bottom-20px xs-title-large display-block tz-text'>3-Digit Verification Number (on back of card)</label>
                       <input
                         onChange={this.handleChange}
                         required  className='big-input bg-light-gray alt-font border-radius-4' placeholder='ex. 311' size='4' type='text' name='cvc'/>

@@ -71,10 +71,10 @@ class _CourseBody extends React.Component {
           onChangeIndex={this.handleChange}
         >
           <div>
-            <CourseOutline course={this.props.currentCourse}/>
+            <CourseOutline course={this.props.course}/>
           </div>
           <div style={styles.slide}>
-            <Reviews course = {this.props.currentCourse}/>
+            <Reviews course = {this.props.course}/>
           </div>
         </SwipeableViews>
       </div>

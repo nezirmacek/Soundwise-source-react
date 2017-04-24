@@ -7,6 +7,7 @@ import { withRouter } from 'react-router'
 import { SoundwiseHeader } from '../components/soundwise_header'
 import {deleteCourseFromCart, openSignupbox} from '../actions/index'
 import {CourseSignup} from './course_signup'
+import {Checkout} from './checkout'
 
 const styles = {
   button: {
@@ -21,15 +22,7 @@ class _Cart extends Component {
       redirectToCheckout: false
     }
     this.renderItem = this.renderItem.bind(this)
-    this.checkOut = this.checkOut.bind(this)
-  }
-
-  checkOut() {
-    if(this.props.isLoggedIn) {
-      this.props.history.push('/checkout')
-    } else {
-      this.props.openSignupbox(true)
-    }
+    // this.checkOut = this.checkOut.bind(this)
   }
 
   renderItem(course) {
@@ -91,28 +84,17 @@ class _Cart extends Component {
     return (
       <div>
         <SoundwiseHeader />
-        <section className="padding-50px-tb xs-padding-60px-tb bg-white border-none" style={{}}>
+        <section className="padding-30px-tb xs-padding-30px-tb bg-white border-none" style={{}}>
           <div className="container">
             <div className="row">
-                <div className="padding-50px-tb xs-padding-60px-tb col-md-8 col-sm-6 col-xs-12 text-left">
-                    <h2 className="section-title-medium sm-section-title-medium alt-font font-weight-600 text-dark-gray tz-text">{`Order Summary: $${subtotal}`}</h2>
-                </div>
                 {this.props.shoppingCart.map(course => {
                   return this.renderItem(course)
                 })}
-                <div className="col-md-4 col-sm-12 col-xs-12 text-center pull-right"
-                  style={{paddingTop: '10px'}}>
-                  <button
-                    onClick={this.checkOut}
-                    to='/checkout'
-                    type="submit" className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text" style={styles.button}>CHECK OUT
-                  </button>
-                </div>
+
             </div>
           </div>
         </section>
-
-        <CourseSignup />
+        <Checkout subtotal={subtotal}/>
       </div>
     )
     }
