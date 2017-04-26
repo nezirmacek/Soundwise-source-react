@@ -43,11 +43,24 @@ function setPlayer(state={
   }
 }
 
+function setCurrentSection(state={
+  currentSection: {}
+}, action) {
+  switch (action.type) {
+    case types.CURRENT_SECTION:
+      return {
+        ...state,
+        currentSection: action.payload
+      }
+    default:
+      return state
+  }
+}
+
 function setCourses(state={
   courses: {},
   currentCourse: {},
   userCourses: {},
-  currentSection: {},
   playing: false,
   currentPlaylist: [],
   currentTime: 0,
@@ -69,11 +82,6 @@ function setCourses(state={
        ...state,
        currentCourse: action.payload
      }
-    case types.CURRENT_SECTION:
-      return {
-        ...state,
-        currentSection: action.payload
-      }
     case types.PLAYLIST:
       return {
         ...state,
@@ -175,6 +183,7 @@ function checkoutProcess(state={
 const rootReducer = combineReducers({
   setCourses,
   setPlayer,
+  setCurrentSection,
   routing,
   signupBox,
   reviewBox,

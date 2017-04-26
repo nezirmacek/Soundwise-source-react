@@ -173,7 +173,8 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user
   const {playerLaunched} = state.setPlayer
-  const { currentSection, playing, currentTime, currentDuration, currentPlaylist, currentCourse } = state.setCourses
+  const { currentSection } = state.setCurrentSection
+  const { playing, currentTime, currentDuration, currentPlaylist, currentCourse } = state.setCourses
   return {
     isLoggedIn, currentSection, playing, playerLaunched, currentTime, currentDuration, currentPlaylist, currentCourse
   }

@@ -28,7 +28,7 @@ const store = createStore(
   )
 )
 
-const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer']})
+const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']})
 
 // persistor.purge()
 

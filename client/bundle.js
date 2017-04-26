@@ -8287,7 +8287,7 @@
 	// import offlineConfig from 'redux-offline/lib/defaults';
 
 
-	var persistor = (0, _reduxPersist.persistStore)(store, { storage: _localForage2.default, blacklist: ['setPlayer'] });
+	var persistor = (0, _reduxPersist.persistStore)(store, { storage: _localForage2.default, blacklist: ['setPlayer', 'setCurrentSection'] });
 
 	// persistor.purge()
 
@@ -89051,8 +89051,8 @@
 	var mapStateToProps = function mapStateToProps(state) {
 	  var isLoggedIn = state.user.isLoggedIn;
 	  var playerLaunched = state.setPlayer.playerLaunched;
+	  var currentSection = state.setCurrentSection.currentSection;
 	  var _state$setCourses = state.setCourses,
-	      currentSection = _state$setCourses.currentSection,
 	      playing = _state$setCourses.playing,
 	      currentTime = _state$setCourses.currentTime,
 	      currentDuration = _state$setCourses.currentDuration,
@@ -91459,8 +91459,8 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	  var isLoggedIn = state.user.isLoggedIn;
+	  var currentSection = state.setCurrentSection.currentSection;
 	  var _state$setCourses = state.setCourses,
-	      currentSection = _state$setCourses.currentSection,
 	      playing = _state$setCourses.playing,
 	      playerLaunched = _state$setCourses.playerLaunched,
 	      currentPlaylist = _state$setCourses.currentPlaylist,
@@ -96457,12 +96457,27 @@
 	  }
 	}
 
+	function setCurrentSection() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+	    currentSection: {}
+	  };
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case types.CURRENT_SECTION:
+	      return _extends({}, state, {
+	        currentSection: action.payload
+	      });
+	    default:
+	      return state;
+	  }
+	}
+
 	function setCourses() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
 	    courses: {},
 	    currentCourse: {},
 	    userCourses: {},
-	    currentSection: {},
 	    playing: false,
 	    currentPlaylist: [],
 	    currentTime: 0,
@@ -96482,10 +96497,6 @@
 	    case types.CURRENT_COURSE:
 	      return _extends({}, state, {
 	        currentCourse: action.payload
-	      });
-	    case types.CURRENT_SECTION:
-	      return _extends({}, state, {
-	        currentSection: action.payload
 	      });
 	    case types.PLAYLIST:
 	      return _extends({}, state, {
@@ -96585,6 +96596,7 @@
 	var rootReducer = (0, _redux.combineReducers)({
 	  setCourses: setCourses,
 	  setPlayer: setPlayer,
+	  setCurrentSection: setCurrentSection,
 	  routing: _reactRouterRedux.routerReducer,
 	  signupBox: signupBox,
 	  reviewBox: reviewBox,
