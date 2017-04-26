@@ -46,11 +46,51 @@ const courseInfo = {
       "description": ["Does the idea of public speaking make you want to vomit? Don’t worry. Geoff Woliner got you covered. In this audio program, the award-winning comedian will teach you a tried-and-true technique that can make your public speaking experience more relaxing than a lazy Sunday afternoon."],
       "description_long":["Public speaking opens doors.", "Not only is it a manifestation of power and charisma, being a great public speaker also helps you establish credibility, win friends and connections, persuade your audience, and get you more success in your professional and personal life.", "In contrast, a public speaking flop can hugely affect one’s self confidence. It makes you question your own ability and courage. It adds to that feeling of shame that most of us feel on a primal level.", "If the idea of standing in front of an audience makes your stomach tied in knots, you’ve come to the right place.", "In this audio program, award-winning comedian and speech writer Geoff Woliner will teach you a technique that he has used to help numerous clients overcome their public speaking anxiety. The best part: it can be done in five minutes!", "You’ve tried the rest. Now try the best."],
       "features": ["An effective technique that helps conquer your public speaking fear--fast", "A simple exercise to get yourself in the right public speaking mindset in 5 minutes", "4 audio sections", "Transcripts for all sections", "Option to play audios offline (on computer and android phone with Chrome browser", "Additional resources"],
+      "metrics": {
+          15: {
+            timesCompleted: 0
+          },
+          16: {
+            timesCompleted: 0
+          },
+          17: {
+            timesCompleted: 0
+          },
+          18: {
+            timesCompleted: 0
+          }
+        },
       "teacher": "Geoff Woliner",
       "teacher_profession": "Comedian",
       "teacher_img": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/Geoff-Woliner-Headshot.jpg",
       "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/Geoff-Woliner-Headshot.jpg",
       "teacher_bio": ["Geoff Woliner, winner of Stand-Up NY’s “Funniest Person From Queens” is a seasoned comedian, emcee, association development professional and pet psychologist. Correction: Aspiring pet psychologist. Seeing how the power of humor has helped deliver knockout presentations in all walks of life, he created Winning Wit, a speech writing company, in 2011. Together with a team of award-winning comedians throughout North America, Winning Wit helps people write and deliver great content that has audiences raving.", "Winning Wit is a unique, cutting edge service that has been featured on WTOP radio, Kentucky Bride Magazine, Brides and Weddings of Northern Virginia and many other publications."],
+      "resources": [
+        {
+          "description": "Link between pre-frontal cortex and anxiety",
+          "link": "http://www.dana.org/News/Details.aspx?id=43024"
+        },
+        {
+          "description": "Mayo Clinic piece on stress relief from laughter",
+          "link": "http://www.mayoclinic.org/healthy-lifestyle/stress-management/in-depth/stress-relief/art-20044456"
+        },
+        {
+          "description": "Collection of America's Funniest Home Videos",
+          "link": "https://www.youtube.com/user/AFVofficial"
+        },
+        {
+          "description": 'Compilation of "Fail" videos demonstrating irreverence',
+          "link": "https://www.youtube.com/watch?v=ITHKAu4xmNg"
+        },
+        {
+          "description": "Wedding Blooper Reel",
+          "link": "https://www.youtube.com/watch?v=kMLkMonDckY "
+        },
+        {
+          "description": 'For professional help with speech writing, visit Winning Wit and mention "Audio Program" for a 10% discount!',
+          "link": "www.WinningWit.com "
+        }
+      ],
       "modules": [
         {
           "module_id": 1,
@@ -98,61 +138,37 @@ const courseInfo = {
     }
 
 const update = {
-  7: {
-    timesStarted: 0,
+  15: {
     timesCompleted: 0
   },
-  8: {
-    timesStarted: 0,
+  16: {
     timesCompleted: 0
   },
-  9: {
-    timesStarted: 0,
+  17: {
     timesCompleted: 0
   },
-  10: {
-    timesStarted: 0,
-    timesCompleted: 0
-  },
-  11: {
-    timesStarted: 0,
-    timesCompleted: 0
-  },
-  12: {
-    timesStarted: 0,
-    timesCompleted: 0
-  },
-  13: {
-    timesStarted: 0,
-    timesCompleted: 0
-  },
-  14: {
-    timesStarted: 0,
+  18: {
     timesCompleted: 0
   }
 }
 
-// const expiration = new Date(2017, 7, 31)
-// const coupon = {
-//   course_id: 112,
-//   discount: 100, //100% discount
-//   count: 0,
-//   expiration: expiration.toString()
-// }
+const expiration = new Date(2099, 7, 31)
+const coupon = {
+  course_id: 115,
+  discount: 50, //50% discount
+  count: 0,
+  expiration: expiration.toString()
+}
 
 firebase.initializeApp(config)
 
 // firebase.database().ref('courses/' + courseInfo.id)
 //   .set(courseInfo)
 
-// firebase.database().ref('courses')
-//         .once('value')
-//         .then(snapshot => {
-//           console.log(snapshot.val())
-//         })
-// firebase.database().ref('courses/112/metrics')
+// firebase.database().ref('courses/115/metrics')
 //   .set(update)
-// firebase.database().ref('coupons/DL100')
+
+// firebase.database().ref('coupons/test50')
 //   .set(coupon)
 
 export const App = ({match}) => (

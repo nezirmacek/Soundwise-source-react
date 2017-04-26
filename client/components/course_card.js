@@ -27,7 +27,7 @@ const CourseCard = (props) => (
           </div>
           <div className="feature-box-details float-left width-100">
               <div className="text-medium line-height-24 float-left width-100 tz-text"><p>{props.course.description} </p></div>
-              <Link to={`/myprograms/${props.course.id}`} className="highlight-button-black border-radius-2 btn btn-small" ><span className="tz-text">Check It Out</span></Link>
+              <Link to={`/myprograms/${props.course.id}`} className="highlight-button-black border-radius-2 btn btn-small" ><span className="tz-text">Go to Program</span></Link>
           </div>
       </div>
     </Card>

@@ -9,6 +9,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Snackbar from 'material-ui/Snackbar'
 
+import Footer from '../components/footer'
 import { CourseHeaderPurchased } from '../components/course_header_purchased'
 import CourseBodyPurchased from '../components/course_body_purchased'
 import CourseBody from '../components/course_body'
@@ -89,6 +90,12 @@ class _Course_Purchased extends Component {
     })
   }
 
+  // componentWillReceiveProps(nextProps) {
+  //   if(!nextProps.userInfo.courses || (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId])) {
+  //     return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
+  //   }
+  // }
+
   renderSnackbar() {
     if('caches' in window) {
       return (
@@ -108,8 +115,26 @@ class _Course_Purchased extends Component {
     // const course = this.props.courses[this.props.match.params.courseId]
     const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
 
-    if(this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId]) {
+    if((this.props.userInfo.firstName && !this.props.userInfo.courses) || (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId])) {
       return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
+    }
+
+    if(!this.props.isLoggedIn) {
+      return (
+        <div>
+        <SoundwiseHeader />
+        <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                        <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">PLEASE LOG IN FIRST</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <Footer />
+        </div>
+      )
     }
 
     return (
@@ -121,7 +146,7 @@ class _Course_Purchased extends Component {
         </MuiThemeProvider>
 
         {this.renderSnackbar()}
-
+        <Footer />
       </div>
     )
   }

@@ -4,11 +4,12 @@ import { connect } from 'react-redux'
 import { Route, Link, Switch } from 'react-router-dom'
 import firebase from "firebase"
 
+import Footer from '../components/footer'
 import {SoundwiseHeader} from '../components/soundwise_header'
 import CourseCard from '../components/course_card'
 import {loadUserCourses} from '../actions/index'
 import {Course} from './course_page'
-import Footer from '../components/footer'
+
 
 class _MyCourses extends Component {
   constructor(props) {

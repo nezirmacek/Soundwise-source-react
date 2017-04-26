@@ -7,6 +7,7 @@ import Instructor from './instructor'
 import {Curriculum} from './curriculum'
 import {PlayerBar} from '../containers/player_bar'
 import {Reviews} from '../containers/reviews'
+import Resources from './resources'
 
 const styles = {
   headline: {
@@ -71,7 +72,7 @@ export default class CourseBodyPurchased extends React.Component {
           onChangeIndex={this.handleChange}
         >
           <div>
-            Lots of great resources...
+            <Resources course = {this.props.course} />
           </div>
           <div style={styles.slide}>
             <Curriculum course = {this.props.course} />

@@ -8305,11 +8305,44 @@
 	  "description": ["Does the idea of public speaking make you want to vomit? Don’t worry. Geoff Woliner got you covered. In this audio program, the award-winning comedian will teach you a tried-and-true technique that can make your public speaking experience more relaxing than a lazy Sunday afternoon."],
 	  "description_long": ["Public speaking opens doors.", "Not only is it a manifestation of power and charisma, being a great public speaker also helps you establish credibility, win friends and connections, persuade your audience, and get you more success in your professional and personal life.", "In contrast, a public speaking flop can hugely affect one’s self confidence. It makes you question your own ability and courage. It adds to that feeling of shame that most of us feel on a primal level.", "If the idea of standing in front of an audience makes your stomach tied in knots, you’ve come to the right place.", "In this audio program, award-winning comedian and speech writer Geoff Woliner will teach you a technique that he has used to help numerous clients overcome their public speaking anxiety. The best part: it can be done in five minutes!", "You’ve tried the rest. Now try the best."],
 	  "features": ["An effective technique that helps conquer your public speaking fear--fast", "A simple exercise to get yourself in the right public speaking mindset in 5 minutes", "4 audio sections", "Transcripts for all sections", "Option to play audios offline (on computer and android phone with Chrome browser", "Additional resources"],
+	  "metrics": {
+	    15: {
+	      timesCompleted: 0
+	    },
+	    16: {
+	      timesCompleted: 0
+	    },
+	    17: {
+	      timesCompleted: 0
+	    },
+	    18: {
+	      timesCompleted: 0
+	    }
+	  },
 	  "teacher": "Geoff Woliner",
 	  "teacher_profession": "Comedian",
 	  "teacher_img": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/Geoff-Woliner-Headshot.jpg",
 	  "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/geoff_woliner/Geoff-Woliner-Headshot.jpg",
 	  "teacher_bio": ["Geoff Woliner, winner of Stand-Up NY’s “Funniest Person From Queens” is a seasoned comedian, emcee, association development professional and pet psychologist. Correction: Aspiring pet psychologist. Seeing how the power of humor has helped deliver knockout presentations in all walks of life, he created Winning Wit, a speech writing company, in 2011. Together with a team of award-winning comedians throughout North America, Winning Wit helps people write and deliver great content that has audiences raving.", "Winning Wit is a unique, cutting edge service that has been featured on WTOP radio, Kentucky Bride Magazine, Brides and Weddings of Northern Virginia and many other publications."],
+	  "resources": [{
+	    "description": "Link between pre-frontal cortex and anxiety",
+	    "link": "http://www.dana.org/News/Details.aspx?id=43024"
+	  }, {
+	    "description": "Mayo Clinic piece on stress relief from laughter",
+	    "link": "http://www.mayoclinic.org/healthy-lifestyle/stress-management/in-depth/stress-relief/art-20044456"
+	  }, {
+	    "description": "Collection of America's Funniest Home Videos",
+	    "link": "https://www.youtube.com/user/AFVofficial"
+	  }, {
+	    "description": 'Compilation of "Fail" videos demonstrating irreverence',
+	    "link": "https://www.youtube.com/watch?v=ITHKAu4xmNg"
+	  }, {
+	    "description": "Wedding Blooper Reel",
+	    "link": "https://www.youtube.com/watch?v=kMLkMonDckY "
+	  }, {
+	    "description": 'For professional help with speech writing, visit Winning Wit and mention "Audio Program" for a 10% discount!',
+	    "link": "www.WinningWit.com "
+	  }],
 	  "modules": [{
 	    "module_id": 1,
 	    "module_title": "How to Conquer Public Speaking Anxiety in 5 Minutes",
@@ -8350,61 +8383,37 @@
 	};
 
 	var update = {
-	  7: {
-	    timesStarted: 0,
+	  15: {
 	    timesCompleted: 0
 	  },
-	  8: {
-	    timesStarted: 0,
+	  16: {
 	    timesCompleted: 0
 	  },
-	  9: {
-	    timesStarted: 0,
+	  17: {
 	    timesCompleted: 0
 	  },
-	  10: {
-	    timesStarted: 0,
-	    timesCompleted: 0
-	  },
-	  11: {
-	    timesStarted: 0,
-	    timesCompleted: 0
-	  },
-	  12: {
-	    timesStarted: 0,
-	    timesCompleted: 0
-	  },
-	  13: {
-	    timesStarted: 0,
-	    timesCompleted: 0
-	  },
-	  14: {
-	    timesStarted: 0,
+	  18: {
 	    timesCompleted: 0
 	  }
 	};
 
-	// const expiration = new Date(2017, 7, 31)
-	// const coupon = {
-	//   course_id: 112,
-	//   discount: 100, //100% discount
-	//   count: 0,
-	//   expiration: expiration.toString()
-	// }
+	var expiration = new Date(2099, 7, 31);
+	var coupon = {
+	  course_id: 115,
+	  discount: 50, //50% discount
+	  count: 0,
+	  expiration: expiration.toString()
+	};
 
 	_firebase2.default.initializeApp(_config.config);
 
 	// firebase.database().ref('courses/' + courseInfo.id)
 	//   .set(courseInfo)
 
-	// firebase.database().ref('courses')
-	//         .once('value')
-	//         .then(snapshot => {
-	//           console.log(snapshot.val())
-	//         })
-	// firebase.database().ref('courses/112/metrics')
+	// firebase.database().ref('courses/115/metrics')
 	//   .set(update)
-	// firebase.database().ref('coupons/DL100')
+
+	// firebase.database().ref('coupons/test50')
 	//   .set(coupon)
 
 	var App = exports.App = function App(_ref) {
@@ -37922,19 +37931,17 @@
 
 	var _order_confirmation = __webpack_require__(827);
 
-	var _order_confirmation2 = _interopRequireDefault(_order_confirmation);
-
 	var _app_signup = __webpack_require__(828);
 
 	var _app_signin = __webpack_require__(829);
 
 	var _courses = __webpack_require__(830);
 
-	var _mycourses = __webpack_require__(1044);
+	var _mycourses = __webpack_require__(1045);
 
 	var _course_page = __webpack_require__(844);
 
-	var _course_page_purchased = __webpack_require__(1045);
+	var _course_page_purchased = __webpack_require__(1046);
 
 	var _cart = __webpack_require__(1070);
 
@@ -38024,7 +38031,7 @@
 	            _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/myprograms', component: _mycourses.MyCourses }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/myprograms/:courseId', component: _course_page_purchased.Course_Purchased }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/cart', component: _cart.Cart }),
-	            _react2.default.createElement(_reactRouterDom.Route, { path: '/confirmation', component: _order_confirmation2.default }),
+	            _react2.default.createElement(_reactRouterDom.Route, { path: '/confirmation', component: _order_confirmation.OrderConfirmation }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/courses/:courseId', component: _course_page.Course }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/notfound', component: _page_2.default }),
 	            _react2.default.createElement(_reactRouterDom.Route, { component: _page_2.default })
@@ -60250,12 +60257,17 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.OrderConfirmation = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(299);
 
 	var _react2 = _interopRequireDefault(_react);
 
 	var _reactRouterDom = __webpack_require__(552);
+
+	var _reactRouter = __webpack_require__(475);
 
 	var _soundwise_header = __webpack_require__(826);
 
@@ -60265,60 +60277,89 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var OrderConfirmation = function OrderConfirmation() {
-	    return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	        _react2.default.createElement(
-	            'section',
-	            { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
-	            _react2.default.createElement(
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _OrderConfirmation = function (_Component) {
+	    _inherits(_OrderConfirmation, _Component);
+
+	    function _OrderConfirmation(props) {
+	        _classCallCheck(this, _OrderConfirmation);
+
+	        return _possibleConstructorReturn(this, (_OrderConfirmation.__proto__ || Object.getPrototypeOf(_OrderConfirmation)).call(this, props));
+	    }
+
+	    _createClass(_OrderConfirmation, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var that = this;
+	            setTimeout(function () {
+	                that.props.history.push('/myprograms');
+	            }, 500);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
 	                'div',
-	                { className: 'container' },
+	                null,
+	                _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
 	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'row' },
+	                    'section',
+	                    { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none', id: 'title-section1' },
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                        _react2.default.createElement(
-	                            'h2',
-	                            { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                            'THANKS FOR YOUR ORDER!'
-	                        ),
+	                        { className: 'container' },
 	                        _react2.default.createElement(
 	                            'div',
-	                            { className: 'text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
-	                            'Now start listening to your course'
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'btn-dual' },
+	                            { className: 'row' },
 	                            _react2.default.createElement(
-	                                _reactRouterDom.Link,
-	                                { to: '/myprograms' },
+	                                'div',
+	                                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
 	                                _react2.default.createElement(
-	                                    'button',
-	                                    { type: 'submit', className: 'tz-text bg-golden-yellow tz-text btn btn-large text-dark-gray propClone contact-submit btn-circle xs-width-100', 'data-selector': '.tz-text',
-	                                        style: { marginTop: '5em' } },
-	                                    'GO TO MY PROGRAMS'
+	                                    'h2',
+	                                    { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                                    'THANKS FOR YOUR ORDER!'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
+	                                    'Now start listening to your course'
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'btn-dual' },
+	                                    _react2.default.createElement(
+	                                        _reactRouterDom.Link,
+	                                        { to: '/myprograms' },
+	                                        _react2.default.createElement(
+	                                            'button',
+	                                            { type: 'submit', className: 'tz-text bg-golden-yellow tz-text btn btn-large text-dark-gray propClone contact-submit btn-circle xs-width-100', 'data-selector': '.tz-text',
+	                                                style: { marginTop: '5em' } },
+	                                            'GO TO MY PROGRAMS'
+	                                        )
+	                                    )
 	                                )
 	                            )
 	                        )
 	                    )
-	                )
-	            )
-	        ),
-	        _react2.default.createElement(_footer2.default, null)
-	    );
-	};
+	                ),
+	                _react2.default.createElement(_footer2.default, null)
+	            );
+	        }
+	    }]);
 
-	exports.default = OrderConfirmation;
+	    return _OrderConfirmation;
+	}(_react.Component);
+
+	var OrderConfirmation = exports.OrderConfirmation = (0, _reactRouter.withRouter)(_OrderConfirmation);
 
 /***/ },
 /* 828 */
@@ -61312,7 +61353,7 @@
 	              _react2.default.createElement(
 	                'span',
 	                { className: 'tz-text' },
-	                'Check It Out'
+	                'Go to Program'
 	              )
 	            )
 	          )
@@ -62878,7 +62919,7 @@
 
 	var _course_body = __webpack_require__(1022);
 
-	var _course_footer = __webpack_require__(1043);
+	var _course_footer = __webpack_require__(1044);
 
 	var _socialshare = __webpack_require__(860);
 
@@ -86273,9 +86314,9 @@
 
 	var _course_outline2 = _interopRequireDefault(_course_outline);
 
-	var _player_bar = __webpack_require__(1041);
+	var _player_bar = __webpack_require__(1042);
 
-	var _reviews = __webpack_require__(1042);
+	var _reviews = __webpack_require__(1043);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -88450,7 +88491,7 @@
 
 	var _reactRedux = __webpack_require__(536);
 
-	var _instructor = __webpack_require__(1051);
+	var _instructor = __webpack_require__(1041);
 
 	var _instructor2 = _interopRequireDefault(_instructor);
 
@@ -88739,6 +88780,90 @@
 
 /***/ },
 /* 1041 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// import ScrollArea from 'react-scrollbar'
+	// import GeminiScrollbar from 'react-gemini-scrollbar'
+	// import ReactScrollbar from 'react-scrollbar-js'
+
+	var Instructor = function Instructor(props) {
+	    return _react2.default.createElement(
+	        "section",
+	        { className: "about-style3 padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" },
+	        _react2.default.createElement(
+	            "div",
+	            { className: "container" },
+	            _react2.default.createElement(
+	                "div",
+	                { className: "row padding-40px-tb" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "col-md-12 col-sm-12 col-xs-12 text-center" },
+	                    _react2.default.createElement(
+	                        "h2",
+	                        { className: "section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text", id: "tz-slider-text125" },
+	                        "YOUR INSTRUCTOR"
+	                    )
+	                )
+	            ),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "row" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "item" },
+	                    _react2.default.createElement("div", { className: "col-md-6 col-sm-6 about-img cover-background tz-builder-bg-image", id: "tz-bg-45", "data-img-size": "(W)800px X (H)800px", style: { height: '600px', background: "linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url(" + props.course.teacher_img + ")" } }),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "col-md-6 col-sm-6 about-text bg-cream text-left tz-background-color", id: "tz-bg-color-7", style: { overflowY: 'auto', height: '600px' } },
+	                        _react2.default.createElement(
+	                            "div",
+	                            { className: "should-have-a-children scroll-me" },
+	                            _react2.default.createElement(
+	                                "span",
+	                                { className: "title-medium text-dark-gray alt-font display-block tz-text font-weight-500", id: "tz-slider-text127" },
+	                                props.course.teacher
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "text-dark-gray text-medium margin-twelve no-margin-lr tz-text", id: "tz-slider-text130" },
+	                                _react2.default.createElement("p", null)
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "text-dark-gray text-large tz-text", id: "tz-slider-text129" },
+	                                _react2.default.createElement(
+	                                    "p",
+	                                    null,
+	                                    props.course.teacher_bio
+	                                )
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        )
+	    );
+	};
+
+	exports.default = Instructor;
+
+	// <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" id="tz-slider-text126">{props.course.teacher}</div>
+
+/***/ },
+/* 1042 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89051,9 +89176,10 @@
 	var mapStateToProps = function mapStateToProps(state) {
 	  var isLoggedIn = state.user.isLoggedIn;
 	  var playerLaunched = state.setPlayer.playerLaunched;
-	  var currentSection = state.setCurrentSection.currentSection;
+	  var _state$setCurrentSect = state.setCurrentSection,
+	      playing = _state$setCurrentSect.playing,
+	      currentSection = _state$setCurrentSect.currentSection;
 	  var _state$setCourses = state.setCourses,
-	      playing = _state$setCourses.playing,
 	      currentTime = _state$setCourses.currentTime,
 	      currentDuration = _state$setCourses.currentDuration,
 	      currentPlaylist = _state$setCourses.currentPlaylist,
@@ -89077,7 +89203,7 @@
 	// </div>
 
 /***/ },
-/* 1042 */
+/* 1043 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89307,7 +89433,7 @@
 	var Reviews = exports.Reviews = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Reviews);
 
 /***/ },
-/* 1043 */
+/* 1044 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89421,7 +89547,7 @@
 	var CourseFooter = exports.CourseFooter = (0, _reactRouter.withRouter)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_CourseFooter));
 
 /***/ },
-/* 1044 */
+/* 1045 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89447,6 +89573,10 @@
 
 	var _firebase2 = _interopRequireDefault(_firebase);
 
+	var _footer = __webpack_require__(824);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
 	var _soundwise_header = __webpack_require__(826);
 
 	var _course_card = __webpack_require__(831);
@@ -89456,10 +89586,6 @@
 	var _index = __webpack_require__(588);
 
 	var _course_page = __webpack_require__(844);
-
-	var _footer = __webpack_require__(824);
-
-	var _footer2 = _interopRequireDefault(_footer);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -89635,7 +89761,7 @@
 	var MyCourses = exports.MyCourses = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_MyCourses);
 
 /***/ },
-/* 1045 */
+/* 1046 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89671,13 +89797,17 @@
 
 	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
 
-	var _Snackbar = __webpack_require__(1046);
+	var _Snackbar = __webpack_require__(1047);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
+	var _footer = __webpack_require__(824);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
 	var _course_header_purchased = __webpack_require__(861);
 
-	var _course_body_purchased = __webpack_require__(1050);
+	var _course_body_purchased = __webpack_require__(1051);
 
 	var _course_body_purchased2 = _interopRequireDefault(_course_body_purchased);
 
@@ -89782,6 +89912,13 @@
 	        open: false
 	      });
 	    }
+
+	    // componentWillReceiveProps(nextProps) {
+	    //   if(!nextProps.userInfo.courses || (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId])) {
+	    //     return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
+	    //   }
+	    // }
+
 	  }, {
 	    key: 'renderSnackbar',
 	    value: function renderSnackbar() {
@@ -89804,8 +89941,38 @@
 	      // const course = this.props.courses[this.props.match.params.courseId]
 	      var course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course;
 
-	      if (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId]) {
+	      if (this.props.userInfo.firstName && !this.props.userInfo.courses || this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId]) {
 	        return _react2.default.createElement(_reactRouterDom.Redirect, { to: '/courses/' + this.props.match.params.courseId });
+	      }
+
+	      if (!this.props.isLoggedIn) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'PLEASE LOG IN FIRST'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
 	      }
 
 	      return _react2.default.createElement(
@@ -89818,7 +89985,8 @@
 	          null,
 	          _react2.default.createElement(_course_body_purchased2.default, { course: course })
 	        ),
-	        this.renderSnackbar()
+	        this.renderSnackbar(),
+	        _react2.default.createElement(_footer2.default, null)
 	      );
 	    }
 	  }]);
@@ -89851,7 +90019,7 @@
 	var Course_Purchased = exports.Course_Purchased = (0, _reactRouter.withRouter)(Course_Purchases_worouter);
 
 /***/ },
-/* 1046 */
+/* 1047 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89861,7 +90029,7 @@
 	});
 	exports.default = undefined;
 
-	var _Snackbar = __webpack_require__(1047);
+	var _Snackbar = __webpack_require__(1048);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
@@ -89870,7 +90038,7 @@
 	exports.default = _Snackbar2.default;
 
 /***/ },
-/* 1047 */
+/* 1048 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -89923,7 +90091,7 @@
 
 	var _ClickAwayListener2 = _interopRequireDefault(_ClickAwayListener);
 
-	var _SnackbarBody = __webpack_require__(1048);
+	var _SnackbarBody = __webpack_require__(1049);
 
 	var _SnackbarBody2 = _interopRequireDefault(_SnackbarBody);
 
@@ -90185,7 +90353,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1048 */
+/* 1049 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -90215,7 +90383,7 @@
 
 	var _transitions2 = _interopRequireDefault(_transitions);
 
-	var _withWidth = __webpack_require__(1049);
+	var _withWidth = __webpack_require__(1050);
 
 	var _withWidth2 = _interopRequireDefault(_withWidth);
 
@@ -90357,7 +90525,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1049 */
+/* 1050 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -90507,7 +90675,7 @@
 	}
 
 /***/ },
-/* 1050 */
+/* 1051 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -90530,15 +90698,19 @@
 
 	var _colors = __webpack_require__(692);
 
-	var _instructor = __webpack_require__(1051);
+	var _instructor = __webpack_require__(1041);
 
 	var _instructor2 = _interopRequireDefault(_instructor);
 
 	var _curriculum = __webpack_require__(1052);
 
-	var _player_bar = __webpack_require__(1041);
+	var _player_bar = __webpack_require__(1042);
 
-	var _reviews = __webpack_require__(1042);
+	var _reviews = __webpack_require__(1043);
+
+	var _resources = __webpack_require__(1101);
+
+	var _resources2 = _interopRequireDefault(_resources);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90625,7 +90797,7 @@
 	            _react2.default.createElement(
 	              'div',
 	              null,
-	              'Lots of great resources...'
+	              _react2.default.createElement(_resources2.default, { course: this.props.course })
 	            ),
 	            _react2.default.createElement(
 	              'div',
@@ -90643,90 +90815,6 @@
 	}(_react2.default.Component);
 
 	exports.default = CourseBodyPurchased;
-
-/***/ },
-/* 1051 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// import ScrollArea from 'react-scrollbar'
-	// import GeminiScrollbar from 'react-gemini-scrollbar'
-	// import ReactScrollbar from 'react-scrollbar-js'
-
-	var Instructor = function Instructor(props) {
-	    return _react2.default.createElement(
-	        "section",
-	        { className: "about-style3 padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" },
-	        _react2.default.createElement(
-	            "div",
-	            { className: "container" },
-	            _react2.default.createElement(
-	                "div",
-	                { className: "row padding-40px-tb" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "col-md-12 col-sm-12 col-xs-12 text-center" },
-	                    _react2.default.createElement(
-	                        "h2",
-	                        { className: "section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text", id: "tz-slider-text125" },
-	                        "YOUR INSTRUCTOR"
-	                    )
-	                )
-	            ),
-	            _react2.default.createElement(
-	                "div",
-	                { className: "row" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "item" },
-	                    _react2.default.createElement("div", { className: "col-md-6 col-sm-6 about-img cover-background tz-builder-bg-image", id: "tz-bg-45", "data-img-size": "(W)800px X (H)800px", style: { height: '600px', background: "linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url(" + props.course.teacher_img + ")" } }),
-	                    _react2.default.createElement(
-	                        "div",
-	                        { className: "col-md-6 col-sm-6 about-text bg-cream text-left tz-background-color", id: "tz-bg-color-7", style: { overflowY: 'auto', height: '600px' } },
-	                        _react2.default.createElement(
-	                            "div",
-	                            { className: "should-have-a-children scroll-me" },
-	                            _react2.default.createElement(
-	                                "span",
-	                                { className: "title-medium text-dark-gray alt-font display-block tz-text font-weight-500", id: "tz-slider-text127" },
-	                                props.course.teacher
-	                            ),
-	                            _react2.default.createElement(
-	                                "div",
-	                                { className: "text-dark-gray text-medium margin-twelve no-margin-lr tz-text", id: "tz-slider-text130" },
-	                                _react2.default.createElement("p", null)
-	                            ),
-	                            _react2.default.createElement(
-	                                "div",
-	                                { className: "text-dark-gray text-large tz-text", id: "tz-slider-text129" },
-	                                _react2.default.createElement(
-	                                    "p",
-	                                    null,
-	                                    props.course.teacher_bio
-	                                )
-	                            )
-	                        )
-	                    )
-	                )
-	            )
-	        )
-	    );
-	};
-
-	exports.default = Instructor;
-
-	// <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" id="tz-slider-text126">{props.course.teacher}</div>
 
 /***/ },
 /* 1052 */
@@ -90949,9 +91037,10 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	  var isLoggedIn = state.user.isLoggedIn;
+	  var _state$setCurrentSect = state.setCurrentSection,
+	      currentSection = _state$setCurrentSect.currentSection,
+	      playing = _state$setCurrentSect.playing;
 	  var _state$setCourses = state.setCourses,
-	      currentSection = _state$setCourses.currentSection,
-	      playing = _state$setCourses.playing,
 	      currentPlaylist = _state$setCourses.currentPlaylist,
 	      userCourses = _state$setCourses.userCourses;
 
@@ -90993,7 +91082,7 @@
 
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 
-	var _Snackbar = __webpack_require__(1046);
+	var _Snackbar = __webpack_require__(1047);
 
 	var _Snackbar2 = _interopRequireDefault(_Snackbar);
 
@@ -91184,7 +91273,29 @@
 	      if (!this.props.isLoggedIn) {
 	        alert('please sign up/ log in to listen to the course');
 	      } else {
-	        if (this.props.currentSection.section_id !== this.props.section.section_id) {
+	        if (!this.props.currentSection.section_id) {
+	          this.setState({
+	            loading: true
+	          });
+	          this.props.changePlayStatus(false);
+	          this.props.setCurrentPlaySection(this.props.section);
+	          // console.log(this.props.currentSection)
+	          source.src = this.props.section.section_url;
+	          player.load();
+
+	          player.addEventListener('loadeddata', function () {
+	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+
+	            player.play();
+
+	            _this2.props.changePlayStatus(true);
+	            _this2.setState({ playing: true, loading: false });
+
+	            if (!_this2.props.playerLaunched) {
+	              _this2.props.launchPlayer(true);
+	            }
+	          });
+	        } else if (this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) {
 	          if (this.props.playing) {
 	            //if switching to another section, store the progress data for the current section first
 	            player.pause();
@@ -91459,9 +91570,10 @@
 
 	var mapStateToProps = function mapStateToProps(state) {
 	  var isLoggedIn = state.user.isLoggedIn;
-	  var currentSection = state.setCurrentSection.currentSection;
+	  var _state$setCurrentSect = state.setCurrentSection,
+	      playing = _state$setCurrentSect.playing,
+	      currentSection = _state$setCurrentSect.currentSection;
 	  var _state$setCourses = state.setCourses,
-	      playing = _state$setCourses.playing,
 	      playerLaunched = _state$setCourses.playerLaunched,
 	      currentPlaylist = _state$setCourses.currentPlaylist,
 	      currentTime = _state$setCourses.currentTime,
@@ -94290,18 +94402,21 @@
 	        var coupons = snapshot.val();
 	        var today = Date.now();
 	        var expiration = Date.parse(coupons[that.state.coupon].expiration) || today;
+
 	        if (coupons[that.state.coupon] && today <= expiration) {
 	          var coupon = coupons[that.state.coupon];
+	          var discountedPrice = that.props.shoppingCart.reduce(function (cumm, course) {
+
+	            if (course.id === coupon.course_id) {
+
+	              return cumm + course.price - coupon.discount / 100 * course.price;
+	            } else {
+	              return cumm + course.price;
+	            }
+	          }, 0);
+
 	          that.setState({
-	            totalPay: that.props.shoppingCart.reduce(function (cumm, course) {
-
-	              if (course.id === coupon.course_id) {
-
-	                return cumm + course.price - coupon.discount / 100 * course.price;
-	              } else {
-	                return cumm + course.price;
-	              }
-	            }, 0) * 100 //in cents
+	            totalPay: Math.floor(discountedPrice * 100) //in cents
 	          });
 
 	          var updates = {};
@@ -94449,7 +94564,6 @@
 	      // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
 	      //   return cumm + course.price
 	      // }, 0)
-	      console.log('shoppingCart: ', this.props.shoppingCart);
 	      var subtotal = this.state.totalPay / 100;
 
 	      return _react2.default.createElement(
@@ -96459,7 +96573,8 @@
 
 	function setCurrentSection() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-	    currentSection: {}
+	    currentSection: {},
+	    playing: false
 	  };
 	  var action = arguments[1];
 
@@ -96467,6 +96582,11 @@
 	    case types.CURRENT_SECTION:
 	      return _extends({}, state, {
 	        currentSection: action.payload
+	      });
+	    case types.CHANGE_PLAYSTATUS:
+	      var newStatus = !state.playing;
+	      return _extends({}, state, {
+	        playing: action.payload
 	      });
 	    default:
 	      return state;
@@ -96478,7 +96598,6 @@
 	    courses: {},
 	    currentCourse: {},
 	    userCourses: {},
-	    playing: false,
 	    currentPlaylist: [],
 	    currentTime: 0,
 	    currentDuration: 1
@@ -96501,11 +96620,6 @@
 	    case types.PLAYLIST:
 	      return _extends({}, state, {
 	        currentPlaylist: action.payload
-	      });
-	    case types.CHANGE_PLAYSTATUS:
-	      var newStatus = !state.playing;
-	      return _extends({}, state, {
-	        playing: action.payload
 	      });
 	    case types.CURRENT_PROGRESS:
 	      return _extends({}, state, {
@@ -96605,6 +96719,128 @@
 	});
 
 	exports.default = rootReducer;
+
+/***/ },
+/* 1101 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Resources = function (_Component) {
+	  _inherits(Resources, _Component);
+
+	  function Resources(props) {
+	    _classCallCheck(this, Resources);
+
+	    var _this = _possibleConstructorReturn(this, (Resources.__proto__ || Object.getPrototypeOf(Resources)).call(this, props));
+
+	    _this.state = {
+	      course: {
+	        resources: [{
+	          description: '',
+	          link: ''
+	        }]
+	      }
+	    };
+
+	    _this.renderResources = _this.renderResources.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(Resources, [{
+	    key: 'renderResources',
+	    value: function renderResources(course) {
+	      return course.resources.map(function (resource) {
+	        return _react2.default.createElement(
+	          'div',
+	          { className: ' ' },
+	          _react2.default.createElement(
+	            'h2',
+	            { className: 'text-left width-70 margin-lr-auto font-weight-300  section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text', style: { display: 'inline-block', paddingLeft: '1em' } },
+	            resource.description
+	          ),
+	          _react2.default.createElement(
+	            'span',
+	            { className: 'margin-lr-auto font-weight-300 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text', style: { color: '#F76B1C' } },
+	            ' (',
+	            _react2.default.createElement(
+	              'a',
+	              { style: { textDecoration: 'underline', color: '#F76B1C' }, href: resource.link },
+	              ' Link '
+	            ),
+	            ')'
+	          )
+	        );
+	      });
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps.course.name.length > 0) {
+	        this.setState({
+	          course: nextProps.course
+	        });
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+
+	      return _react2.default.createElement(
+	        'section',
+	        { className: 'padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none', id: 'title-section1' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'container' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'row padding-70px-tb' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	              _react2.default.createElement(
+	                'h2',
+	                { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                'RESOURCES'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row padding-40px-tb' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-12 col-sm-12 col-xs-12 container' },
+	                this.renderResources(this.state.course)
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return Resources;
+	}(_react.Component);
+
+	exports.default = Resources;
 
 /***/ }
 /******/ ]);

@@ -44,13 +44,20 @@ function setPlayer(state={
 }
 
 function setCurrentSection(state={
-  currentSection: {}
+  currentSection: {},
+  playing: false
 }, action) {
   switch (action.type) {
     case types.CURRENT_SECTION:
       return {
         ...state,
         currentSection: action.payload
+      }
+    case types.CHANGE_PLAYSTATUS:
+      const newStatus = !state.playing
+      return {
+        ...state,
+        playing: action.payload
       }
     default:
       return state
@@ -61,7 +68,6 @@ function setCourses(state={
   courses: {},
   currentCourse: {},
   userCourses: {},
-  playing: false,
   currentPlaylist: [],
   currentTime: 0,
   currentDuration: 1
@@ -86,12 +92,6 @@ function setCourses(state={
       return {
         ...state,
         currentPlaylist: action.payload
-      }
-    case types.CHANGE_PLAYSTATUS:
-      const newStatus = !state.playing
-      return {
-        ...state,
-        playing: action.payload
       }
     case types.CURRENT_PROGRESS:
       return {

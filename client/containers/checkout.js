@@ -67,10 +67,10 @@ class _Checkout extends Component {
       const coupons = snapshot.val()
       const today = Date.now()
       const expiration = Date.parse(coupons[that.state.coupon].expiration) || today
+
       if(coupons[that.state.coupon] && today <= expiration) {
         const coupon = coupons[that.state.coupon]
-        that.setState({
-          totalPay: that.props.shoppingCart.reduce((cumm, course) => {
+        const discountedPrice = that.props.shoppingCart.reduce((cumm, course) => {
 
             if(course.id === coupon.course_id) {
 
@@ -78,7 +78,10 @@ class _Checkout extends Component {
             } else {
               return cumm + course.price
             }
-          }, 0) * 100 //in cents
+          }, 0)
+
+        that.setState({
+          totalPay:  Math.floor(discountedPrice * 100) //in cents
         })
 
         var updates = {}
@@ -201,7 +204,6 @@ class _Checkout extends Component {
     // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
     //   return cumm + course.price
     // }, 0)
-    console.log('shoppingCart: ', this.props.shoppingCart)
     const subtotal = this.state.totalPay / 100
 
     return (

@@ -147,7 +147,30 @@ class _CourseSection extends Component {
     if(!this.props.isLoggedIn) {
       alert('please sign up/ log in to listen to the course')
     } else {
-      if(this.props.currentSection.section_id !== this.props.section.section_id) {
+      if(!this.props.currentSection.section_id) {
+          this.setState({
+            loading: true
+          })
+        this.props.changePlayStatus(false)
+        this.props.setCurrentPlaySection(this.props.section)
+        // console.log(this.props.currentSection)
+        source.src = this.props.section.section_url
+        player.load()
+
+        player.addEventListener('loadeddata', () => {
+          player.currentTime = this.props.course.sectionProgress[this.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+
+          player.play()
+
+          this.props.changePlayStatus(true)
+          this.setState({playing: true, loading: false})
+
+          if(!this.props.playerLaunched) {
+            this.props.launchPlayer(true)
+          }
+        })
+
+      } else if(this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) {
         if(this.props.playing) { //if switching to another section, store the progress data for the current section first
           player.pause()
 
@@ -391,8 +414,8 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user
-  const { currentSection } = state.setCurrentSection
-  const { playing, playerLaunched, currentPlaylist , currentTime, currentDuration } = state.setCourses
+  const { playing, currentSection } = state.setCurrentSection
+  const { playerLaunched, currentPlaylist , currentTime, currentDuration } = state.setCourses
   return {
     isLoggedIn, currentSection, playing, playerLaunched, currentPlaylist, currentTime, currentDuration
   }
