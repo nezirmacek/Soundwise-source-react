@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import ReactStars from 'react-stars'
 import Levels from 'react-activity/lib/Levels'
+import {orange50} from 'material-ui/styles/colors'
 
 import { CourseSignup } from '../containers/course_signup'
 import SocialShare from './socialshare'
@@ -191,7 +192,7 @@ class _CourseHeader extends Component {
                                   <span className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{`$${this.props.course.price}`}</span>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-6">
-                                  <a className="btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing" onClick={this.checkOut}
+                                  <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
                                   >
                                     <span className="text-extra-large sm-text-extra-large tz-text">Add to Cart</span>
                                   </a>

@@ -7,7 +7,7 @@ const Footer = () => (
         { /* caption */ }
         <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12 xs-text-center xs-margin-four-bottom display-table">
           <div className="display-table-cell-vertical-middle">
-            <a href="#home" className="inner-link"><img src="images/soundwiselogo_white.png" data-img-size="(W)163px X (H)40px" alt /></a>
+            <a href="#home" className="inner-link"><img src="/images/soundwiselogo_white.png" data-img-size="(W)163px X (H)40px" alt="Soundwise Logo" /></a>
           </div>
         </div>
         { /* end caption */ }

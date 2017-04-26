@@ -8271,7 +8271,7 @@
 
 	var _routes = __webpack_require__(551);
 
-	var _reducers = __webpack_require__(1099);
+	var _reducers = __webpack_require__(1100);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -37936,11 +37936,11 @@
 
 	var _course_page_purchased = __webpack_require__(1045);
 
-	var _cart = __webpack_require__(1069);
+	var _cart = __webpack_require__(1070);
 
-	var _checkout = __webpack_require__(1070);
+	var _checkout = __webpack_require__(1071);
 
-	var _page_ = __webpack_require__(1098);
+	var _page_ = __webpack_require__(1099);
 
 	var _page_2 = _interopRequireDefault(_page_);
 
@@ -59889,7 +59889,7 @@
 	            _react2.default.createElement(
 	              "a",
 	              { href: "#home", className: "inner-link" },
-	              _react2.default.createElement("img", { src: "images/soundwiselogo_white.png", "data-img-size": "(W)163px X (H)40px", alt: true })
+	              _react2.default.createElement("img", { src: "/images/soundwiselogo_white.png", "data-img-size": "(W)163px X (H)40px", alt: "Soundwise Logo" })
 	            )
 	          )
 	        ),
@@ -60191,7 +60191,7 @@
 	                _react2.default.createElement(
 	                  _reactRouterDom.Link,
 	                  { to: '/', className: 'inner-link' },
-	                  _react2.default.createElement('img', { alt: 'Image Block', src: '/images/soundwiselogo.png', 'data-img-size': '(W)163px X (H)39px' })
+	                  _react2.default.createElement('img', { alt: 'Soundwise Logo', src: '/images/soundwiselogo.png', 'data-img-size': '(W)163px X (H)39px' })
 	                )
 	              ),
 	              _react2.default.createElement(
@@ -62872,7 +62872,13 @@
 
 	var _course_header_purchased = __webpack_require__(861);
 
+	var _footer = __webpack_require__(824);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
 	var _course_body = __webpack_require__(1022);
+
+	var _course_footer = __webpack_require__(1043);
 
 	var _socialshare = __webpack_require__(860);
 
@@ -62994,7 +63000,9 @@
 	          _MuiThemeProvider2.default,
 	          null,
 	          _react2.default.createElement(_course_body.CourseBody, { course: course })
-	        )
+	        ),
+	        _react2.default.createElement(_course_footer.CourseFooter, { course: course }),
+	        _react2.default.createElement(_footer2.default, null)
 	      );
 	    }
 	  }]);
@@ -63058,6 +63066,8 @@
 	var _Levels = __webpack_require__(847);
 
 	var _Levels2 = _interopRequireDefault(_Levels);
+
+	var _colors = __webpack_require__(692);
 
 	var _course_signup = __webpack_require__(850);
 
@@ -63333,7 +63343,7 @@
 	                      { className: 'col-md-6 col-sm-6 col-xs-6' },
 	                      _react2.default.createElement(
 	                        'a',
-	                        { className: 'btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing', onClick: this.checkOut
+	                        { className: 'btn-medium btn btn-circle text-white no-letter-spacing', onClick: this.checkOut, style: { backgroundColor: '#F76B1C' }
 	                        },
 	                        _react2.default.createElement(
 	                          'span',
@@ -86263,9 +86273,9 @@
 
 	var _course_outline2 = _interopRequireDefault(_course_outline);
 
-	var _player_bar = __webpack_require__(1042);
+	var _player_bar = __webpack_require__(1041);
 
-	var _reviews = __webpack_require__(1043);
+	var _reviews = __webpack_require__(1042);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -88440,7 +88450,7 @@
 
 	var _reactRedux = __webpack_require__(536);
 
-	var _instructor = __webpack_require__(1041);
+	var _instructor = __webpack_require__(1051);
 
 	var _instructor2 = _interopRequireDefault(_instructor);
 
@@ -88568,9 +88578,13 @@
 	            'li',
 	            { className: 'text-dark-gray text-extra-large  margin-lr-auto col-md-6 tz-text', style: { paddingLeft: '1em', paddingRight: '2em', paddingTop: '1em', listStyleType: 'none' } },
 	            _react2.default.createElement(
-	              'i',
-	              { className: 'material-icons', style: { paddingRight: '1em' } },
-	              'check'
+	              'strong',
+	              null,
+	              _react2.default.createElement(
+	                'i',
+	                { className: 'material-icons', style: { paddingRight: '1em', color: 'green' } },
+	                'check'
+	              )
 	            ),
 	            feature
 	          );
@@ -88600,7 +88614,7 @@
 	            ),
 	            _react2.default.createElement(
 	              'div',
-	              { className: 'row padding-40px-tb', style: { backgroundColor: '#FFF3E0' } },
+	              { className: 'row padding-70px-tb', style: { backgroundColor: '#FFF3E0' } },
 	              _react2.default.createElement(
 	                'div',
 	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
@@ -88621,7 +88635,7 @@
 	              { style: styles.curriculumContainer },
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'row' },
+	                { className: 'row padding-70px-tb' },
 	                _react2.default.createElement(
 	                  'div',
 	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
@@ -88636,7 +88650,84 @@
 	            )
 	          )
 	        ),
-	        _react2.default.createElement(_instructor2.default, { course: this.state.course })
+	        _react2.default.createElement(_instructor2.default, { course: this.state.course }),
+	        _react2.default.createElement(
+	          'section',
+	          { className: 'padding-80px-tb xs-padding-60px-tb bg-white  border-none', id: 'title-section1', style: { backgroundColor: '#FFF3E0' } },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'container' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: ' padding-40px-tb' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: ' row col-md-12 col-sm-12 col-xs-12 text-center' },
+	                _react2.default.createElement(
+	                  'h2',
+	                  { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                  'FREQUENTLY ASKED QUESTIONS'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-12 col-sm-12 col-xs-12 container', style: {} },
+	                _react2.default.createElement(
+	                  'h2',
+	                  { className: 'margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text' },
+	                  'How long do I have access to the content?'
+	                ),
+	                _react2.default.createElement(
+	                  'h5',
+	                  { className: ' text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text', style: { lineHeight: '30px' } },
+	                  'As long as the Internet is still a thing.'
+	                ),
+	                _react2.default.createElement(
+	                  'h2',
+	                  { className: 'margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text' },
+	                  'How do I access the audio files offline?'
+	                ),
+	                _react2.default.createElement(
+	                  'h5',
+	                  { className: ' text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left', style: { lineHeight: '30px' } },
+	                  'Once you sign up for the program, you\'ll see an "enable offline" button on the right hand side of every audio section. Click on that, and voila! Now you can play the section even when you don\'t have internet or you don\'t want to use your cellphone data plan for streaming. The offline function works best on computer and android phone in a Chrome browser. Sadly, if you have an iPhone you\'re stuck with streaming. But we\'re working on an iOS app. Stay tuned...or get an android next time ;)'
+	                ),
+	                _react2.default.createElement(
+	                  'h2',
+	                  { className: 'margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text' },
+	                  'What should I do if I have technical issues?'
+	                ),
+	                _react2.default.createElement(
+	                  'h5',
+	                  { className: ' text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text', style: { lineHeight: '30px' } },
+	                  'Shoot us an email at ',
+	                  _react2.default.createElement(
+	                    'a',
+	                    { href: 'mailto:natasha@mysoundwise.com' },
+	                    'natasha@mysoundwise.com'
+	                  ),
+	                  '.'
+	                ),
+	                _react2.default.createElement(
+	                  'h2',
+	                  { className: 'margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text' },
+	                  'What if I\'m not happy with the content?'
+	                ),
+	                _react2.default.createElement(
+	                  'h5',
+	                  { className: ' text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text', style: { lineHeight: '30px' } },
+	                  'We would never want you to be unhappy! If you are unsatisfied with the content, let us know at ',
+	                  _react2.default.createElement(
+	                    'a',
+	                    { href: 'mailto:natasha@mysoundwise.com' },
+	                    'natasha@mysoundwise.com'
+	                  ),
+	                  ' within 14 days of your purchase and we will give you a full refund minus the credit card processing fee.'
+	                )
+	              )
+	            )
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -88644,99 +88735,10 @@
 	  return CourseOutline;
 	}(_react.Component);
 
-	// <div style={styles.curriculumContainer}>
-	//             {renderModules(props.course)}
-	//           </div>
-
-
 	exports.default = CourseOutline;
 
 /***/ },
 /* 1041 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// import ScrollArea from 'react-scrollbar'
-	// import GeminiScrollbar from 'react-gemini-scrollbar'
-	// import ReactScrollbar from 'react-scrollbar-js'
-
-	var Instructor = function Instructor(props) {
-	    return _react2.default.createElement(
-	        "section",
-	        { className: "about-style3 padding-60px-tb xs-padding-60px-tb bg-white builder-bg", id: "team-section4" },
-	        _react2.default.createElement(
-	            "div",
-	            { className: "container" },
-	            _react2.default.createElement(
-	                "div",
-	                { className: "row" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "col-md-12 col-sm-12 col-xs-12 text-center" },
-	                    _react2.default.createElement(
-	                        "h2",
-	                        { className: "section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text", id: "tz-slider-text125" },
-	                        "YOUR INSTRUCTOR"
-	                    )
-	                )
-	            ),
-	            _react2.default.createElement(
-	                "div",
-	                { className: "row" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "item" },
-	                    _react2.default.createElement("div", { className: "col-md-6 col-sm-6 about-img cover-background tz-builder-bg-image", id: "tz-bg-45", "data-img-size": "(W)800px X (H)800px", style: { height: '600px', background: "linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url(" + props.course.teacher_img + ")" } }),
-	                    _react2.default.createElement(
-	                        "div",
-	                        { className: "col-md-6 col-sm-6 about-text bg-cream text-left tz-background-color", id: "tz-bg-color-7", style: { overflowY: 'auto', height: '600px' } },
-	                        _react2.default.createElement(
-	                            "div",
-	                            { className: "should-have-a-children scroll-me" },
-	                            _react2.default.createElement(
-	                                "span",
-	                                { className: "title-medium text-dark-gray alt-font display-block tz-text font-weight-500", id: "tz-slider-text127" },
-	                                props.course.teacher
-	                            ),
-	                            _react2.default.createElement(
-	                                "div",
-	                                { className: "text-dark-gray text-medium margin-twelve no-margin-lr tz-text", id: "tz-slider-text130" },
-	                                _react2.default.createElement("p", null)
-	                            ),
-	                            _react2.default.createElement(
-	                                "div",
-	                                { className: "text-dark-gray text-large tz-text", id: "tz-slider-text129" },
-	                                _react2.default.createElement(
-	                                    "p",
-	                                    null,
-	                                    props.course.teacher_bio
-	                                )
-	                            )
-	                        )
-	                    )
-	                )
-	            )
-	        )
-	    );
-	};
-
-	exports.default = Instructor;
-
-	// <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" id="tz-slider-text126">{props.course.teacher}</div>
-
-/***/ },
-/* 1042 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89075,7 +89077,7 @@
 	// </div>
 
 /***/ },
-/* 1043 */
+/* 1042 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -89303,6 +89305,120 @@
 	};
 
 	var Reviews = exports.Reviews = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Reviews);
+
+/***/ },
+/* 1043 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.CourseFooter = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _redux = __webpack_require__(501);
+
+	var _reactRedux = __webpack_require__(536);
+
+	var _index = __webpack_require__(588);
+
+	var _reactRouter = __webpack_require__(475);
+
+	var _colors = __webpack_require__(692);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _CourseFooter = function (_Component) {
+	  _inherits(_CourseFooter, _Component);
+
+	  function _CourseFooter(props) {
+	    _classCallCheck(this, _CourseFooter);
+
+	    var _this = _possibleConstructorReturn(this, (_CourseFooter.__proto__ || Object.getPrototypeOf(_CourseFooter)).call(this, props));
+
+	    _this.checkOut = _this.checkOut.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(_CourseFooter, [{
+	    key: 'checkOut',
+	    value: function checkOut() {
+	      if (this.props.isLoggedIn) {
+	        this.props.addCourseToCart(this.props.course);
+	        this.props.history.push('/cart');
+	      } else {
+	        this.props.openSignupbox(true);
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'section',
+	        { className: 'padding-60px-tb builder-bg border-none', id: 'callto-action2', style: { backgroundColor: '#F76B1C' } },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'container' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'row equalize' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-12 col-sm-12 col-xs-12 text-center', style: { height: "46px" } },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large' },
+	                'Sign up to this program for $' + this.props.course.price
+	              ),
+	              _react2.default.createElement(
+	                'a',
+	                { onClick: this.checkOut, className: 'btn-large btn text-white highlight-button-white-border btn-circle' },
+	                _react2.default.createElement(
+	                  'span',
+	                  { className: 'tz-text' },
+	                  'ADD TO CART'
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return _CourseFooter;
+	}(_react.Component);
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  var _state$user = state.user,
+	      userInfo = _state$user.userInfo,
+	      isLoggedIn = _state$user.isLoggedIn;
+	  var signupFormOpen = state.signupBox.signupFormOpen;
+
+	  return {
+	    isLoggedIn: isLoggedIn,
+	    signupFormOpen: signupFormOpen
+	  };
+	};
+
+	function mapDispatchToProps(dispatch) {
+	  return (0, _redux.bindActionCreators)({ openSignupbox: _index.openSignupbox, addCourseToCart: _index.addCourseToCart }, dispatch);
+	}
+
+	var CourseFooter = exports.CourseFooter = (0, _reactRouter.withRouter)((0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_CourseFooter));
 
 /***/ },
 /* 1044 */
@@ -90414,15 +90530,15 @@
 
 	var _colors = __webpack_require__(692);
 
-	var _instructor = __webpack_require__(1041);
+	var _instructor = __webpack_require__(1051);
 
 	var _instructor2 = _interopRequireDefault(_instructor);
 
-	var _curriculum = __webpack_require__(1051);
+	var _curriculum = __webpack_require__(1052);
 
-	var _player_bar = __webpack_require__(1042);
+	var _player_bar = __webpack_require__(1041);
 
-	var _reviews = __webpack_require__(1043);
+	var _reviews = __webpack_require__(1042);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90532,6 +90648,90 @@
 /* 1051 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// import ScrollArea from 'react-scrollbar'
+	// import GeminiScrollbar from 'react-gemini-scrollbar'
+	// import ReactScrollbar from 'react-scrollbar-js'
+
+	var Instructor = function Instructor(props) {
+	    return _react2.default.createElement(
+	        "section",
+	        { className: "about-style3 padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" },
+	        _react2.default.createElement(
+	            "div",
+	            { className: "container" },
+	            _react2.default.createElement(
+	                "div",
+	                { className: "row padding-40px-tb" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "col-md-12 col-sm-12 col-xs-12 text-center" },
+	                    _react2.default.createElement(
+	                        "h2",
+	                        { className: "section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text", id: "tz-slider-text125" },
+	                        "YOUR INSTRUCTOR"
+	                    )
+	                )
+	            ),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "row" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "item" },
+	                    _react2.default.createElement("div", { className: "col-md-6 col-sm-6 about-img cover-background tz-builder-bg-image", id: "tz-bg-45", "data-img-size": "(W)800px X (H)800px", style: { height: '600px', background: "linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url(" + props.course.teacher_img + ")" } }),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "col-md-6 col-sm-6 about-text bg-cream text-left tz-background-color", id: "tz-bg-color-7", style: { overflowY: 'auto', height: '600px' } },
+	                        _react2.default.createElement(
+	                            "div",
+	                            { className: "should-have-a-children scroll-me" },
+	                            _react2.default.createElement(
+	                                "span",
+	                                { className: "title-medium text-dark-gray alt-font display-block tz-text font-weight-500", id: "tz-slider-text127" },
+	                                props.course.teacher
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "text-dark-gray text-medium margin-twelve no-margin-lr tz-text", id: "tz-slider-text130" },
+	                                _react2.default.createElement("p", null)
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "text-dark-gray text-large tz-text", id: "tz-slider-text129" },
+	                                _react2.default.createElement(
+	                                    "p",
+	                                    null,
+	                                    props.course.teacher_bio
+	                                )
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        )
+	    );
+	};
+
+	exports.default = Instructor;
+
+	// <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" id="tz-slider-text126">{props.course.teacher}</div>
+
+/***/ },
+/* 1052 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -90557,7 +90757,7 @@
 
 	var _firebase2 = _interopRequireDefault(_firebase);
 
-	var _course_section = __webpack_require__(1052);
+	var _course_section = __webpack_require__(1053);
 
 	var _index = __webpack_require__(588);
 
@@ -90763,7 +90963,7 @@
 	var Curriculum = exports.Curriculum = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Curriculum);
 
 /***/ },
-/* 1052 */
+/* 1053 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -90805,15 +91005,15 @@
 
 	var _FontIcon2 = _interopRequireDefault(_FontIcon);
 
-	var _Checkbox = __webpack_require__(1053);
+	var _Checkbox = __webpack_require__(1054);
 
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
-	var _Slider = __webpack_require__(1058);
+	var _Slider = __webpack_require__(1059);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Toolbar = __webpack_require__(1062);
+	var _Toolbar = __webpack_require__(1063);
 
 	var _colors = __webpack_require__(692);
 
@@ -90829,7 +91029,7 @@
 
 	var _Levels2 = _interopRequireDefault(_Levels);
 
-	var _Spinner = __webpack_require__(1067);
+	var _Spinner = __webpack_require__(1068);
 
 	var _Spinner2 = _interopRequireDefault(_Spinner);
 
@@ -91306,7 +91506,7 @@
 	//     </Dialog>
 
 /***/ },
-/* 1053 */
+/* 1054 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -91316,7 +91516,7 @@
 	});
 	exports.default = undefined;
 
-	var _Checkbox = __webpack_require__(1054);
+	var _Checkbox = __webpack_require__(1055);
 
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
@@ -91325,7 +91525,7 @@
 	exports.default = _Checkbox2.default;
 
 /***/ },
-/* 1054 */
+/* 1055 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -91370,7 +91570,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _EnhancedSwitch = __webpack_require__(1055);
+	var _EnhancedSwitch = __webpack_require__(1056);
 
 	var _EnhancedSwitch2 = _interopRequireDefault(_EnhancedSwitch);
 
@@ -91378,11 +91578,11 @@
 
 	var _transitions2 = _interopRequireDefault(_transitions);
 
-	var _checkBoxOutlineBlank = __webpack_require__(1056);
+	var _checkBoxOutlineBlank = __webpack_require__(1057);
 
 	var _checkBoxOutlineBlank2 = _interopRequireDefault(_checkBoxOutlineBlank);
 
-	var _checkBox = __webpack_require__(1057);
+	var _checkBox = __webpack_require__(1058);
 
 	var _checkBox2 = _interopRequireDefault(_checkBox);
 
@@ -91621,7 +91821,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1055 */
+/* 1056 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -92077,7 +92277,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1056 */
+/* 1057 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92114,7 +92314,7 @@
 	exports.default = ToggleCheckBoxOutlineBlank;
 
 /***/ },
-/* 1057 */
+/* 1058 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92151,7 +92351,7 @@
 	exports.default = ToggleCheckBox;
 
 /***/ },
-/* 1058 */
+/* 1059 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92161,7 +92361,7 @@
 	});
 	exports.default = undefined;
 
-	var _Slider = __webpack_require__(1059);
+	var _Slider = __webpack_require__(1060);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
@@ -92170,7 +92370,7 @@
 	exports.default = _Slider2.default;
 
 /***/ },
-/* 1059 */
+/* 1060 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -92207,7 +92407,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _defineProperty2 = __webpack_require__(1060);
+	var _defineProperty2 = __webpack_require__(1061);
 
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
@@ -92235,7 +92435,7 @@
 
 	var _FocusRipple2 = _interopRequireDefault(_FocusRipple);
 
-	var _deprecatedPropType = __webpack_require__(1061);
+	var _deprecatedPropType = __webpack_require__(1062);
 
 	var _deprecatedPropType2 = _interopRequireDefault(_deprecatedPropType);
 
@@ -93024,7 +93224,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1060 */
+/* 1061 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -93053,7 +93253,7 @@
 	};
 
 /***/ },
-/* 1061 */
+/* 1062 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -93097,7 +93297,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1062 */
+/* 1063 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93107,19 +93307,19 @@
 	});
 	exports.default = exports.ToolbarTitle = exports.ToolbarSeparator = exports.ToolbarGroup = exports.Toolbar = undefined;
 
-	var _Toolbar2 = __webpack_require__(1063);
+	var _Toolbar2 = __webpack_require__(1064);
 
 	var _Toolbar3 = _interopRequireDefault(_Toolbar2);
 
-	var _ToolbarGroup2 = __webpack_require__(1064);
+	var _ToolbarGroup2 = __webpack_require__(1065);
 
 	var _ToolbarGroup3 = _interopRequireDefault(_ToolbarGroup2);
 
-	var _ToolbarSeparator2 = __webpack_require__(1065);
+	var _ToolbarSeparator2 = __webpack_require__(1066);
 
 	var _ToolbarSeparator3 = _interopRequireDefault(_ToolbarSeparator2);
 
-	var _ToolbarTitle2 = __webpack_require__(1066);
+	var _ToolbarTitle2 = __webpack_require__(1067);
 
 	var _ToolbarTitle3 = _interopRequireDefault(_ToolbarTitle2);
 
@@ -93132,7 +93332,7 @@
 	exports.default = _Toolbar3.default;
 
 /***/ },
-/* 1063 */
+/* 1064 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -93258,7 +93458,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1064 */
+/* 1065 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -93472,7 +93672,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1065 */
+/* 1066 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -93579,7 +93779,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1066 */
+/* 1067 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -93699,7 +93899,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1067 */
+/* 1068 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93708,7 +93908,7 @@
 	  value: true
 	});
 
-	var _Spinner = __webpack_require__(1068);
+	var _Spinner = __webpack_require__(1069);
 
 	var _Spinner2 = _interopRequireDefault(_Spinner);
 
@@ -93717,7 +93917,7 @@
 	exports.default = _Spinner2.default;
 
 /***/ },
-/* 1068 */
+/* 1069 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93751,7 +93951,7 @@
 	exports.default = (0, _activityIndicator2.default)(Spinner, 0.6);
 
 /***/ },
-/* 1069 */
+/* 1070 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93781,7 +93981,7 @@
 
 	var _course_signup = __webpack_require__(850);
 
-	var _checkout = __webpack_require__(1070);
+	var _checkout = __webpack_require__(1071);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -93970,7 +94170,7 @@
 	var Cart = exports.Cart = (0, _reactRouter.withRouter)(Cart_woroute);
 
 /***/ },
-/* 1070 */
+/* 1071 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93986,7 +94186,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _axios = __webpack_require__(1071);
+	var _axios = __webpack_require__(1072);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
@@ -93996,7 +94196,7 @@
 
 	var _reactRouterDom = __webpack_require__(552);
 
-	var _Dots = __webpack_require__(1096);
+	var _Dots = __webpack_require__(1097);
 
 	var _Dots2 = _interopRequireDefault(_Dots);
 
@@ -94550,21 +94750,21 @@
 	var Checkout = exports.Checkout = (0, _reactRouter.withRouter)(Checkout_worouter);
 
 /***/ },
-/* 1071 */
+/* 1072 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1072);
+	module.exports = __webpack_require__(1073);
 
 /***/ },
-/* 1072 */
+/* 1073 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
-	var bind = __webpack_require__(1074);
-	var Axios = __webpack_require__(1075);
-	var defaults = __webpack_require__(1076);
+	var utils = __webpack_require__(1074);
+	var bind = __webpack_require__(1075);
+	var Axios = __webpack_require__(1076);
+	var defaults = __webpack_require__(1077);
 
 	/**
 	 * Create an instance of Axios
@@ -94597,15 +94797,15 @@
 	};
 
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(1093);
-	axios.CancelToken = __webpack_require__(1094);
-	axios.isCancel = __webpack_require__(1090);
+	axios.Cancel = __webpack_require__(1094);
+	axios.CancelToken = __webpack_require__(1095);
+	axios.isCancel = __webpack_require__(1091);
 
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(1095);
+	axios.spread = __webpack_require__(1096);
 
 	module.exports = axios;
 
@@ -94614,12 +94814,12 @@
 
 
 /***/ },
-/* 1073 */
+/* 1074 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(1074);
+	var bind = __webpack_require__(1075);
 
 	/*global toString:true*/
 
@@ -94919,7 +95119,7 @@
 
 
 /***/ },
-/* 1074 */
+/* 1075 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -94936,17 +95136,17 @@
 
 
 /***/ },
-/* 1075 */
+/* 1076 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(1076);
-	var utils = __webpack_require__(1073);
-	var InterceptorManager = __webpack_require__(1087);
-	var dispatchRequest = __webpack_require__(1088);
-	var isAbsoluteURL = __webpack_require__(1091);
-	var combineURLs = __webpack_require__(1092);
+	var defaults = __webpack_require__(1077);
+	var utils = __webpack_require__(1074);
+	var InterceptorManager = __webpack_require__(1088);
+	var dispatchRequest = __webpack_require__(1089);
+	var isAbsoluteURL = __webpack_require__(1092);
+	var combineURLs = __webpack_require__(1093);
 
 	/**
 	 * Create a new instance of Axios
@@ -95027,13 +95227,13 @@
 
 
 /***/ },
-/* 1076 */
+/* 1077 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(1073);
-	var normalizeHeaderName = __webpack_require__(1077);
+	var utils = __webpack_require__(1074);
+	var normalizeHeaderName = __webpack_require__(1078);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -95050,10 +95250,10 @@
 	  var adapter;
 	  if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(1078);
+	    adapter = __webpack_require__(1079);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(1078);
+	    adapter = __webpack_require__(1079);
 	  }
 	  return adapter;
 	}
@@ -95127,12 +95327,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1077 */
+/* 1078 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -95145,18 +95345,18 @@
 
 
 /***/ },
-/* 1078 */
+/* 1079 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(1073);
-	var settle = __webpack_require__(1079);
-	var buildURL = __webpack_require__(1082);
-	var parseHeaders = __webpack_require__(1083);
-	var isURLSameOrigin = __webpack_require__(1084);
-	var createError = __webpack_require__(1080);
-	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(1085);
+	var utils = __webpack_require__(1074);
+	var settle = __webpack_require__(1080);
+	var buildURL = __webpack_require__(1083);
+	var parseHeaders = __webpack_require__(1084);
+	var isURLSameOrigin = __webpack_require__(1085);
+	var createError = __webpack_require__(1081);
+	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(1086);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -95252,7 +95452,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(1086);
+	      var cookies = __webpack_require__(1087);
 
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -95329,12 +95529,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 1079 */
+/* 1080 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(1080);
+	var createError = __webpack_require__(1081);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -95360,12 +95560,12 @@
 
 
 /***/ },
-/* 1080 */
+/* 1081 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(1081);
+	var enhanceError = __webpack_require__(1082);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -95383,7 +95583,7 @@
 
 
 /***/ },
-/* 1081 */
+/* 1082 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -95408,12 +95608,12 @@
 
 
 /***/ },
-/* 1082 */
+/* 1083 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -95482,12 +95682,12 @@
 
 
 /***/ },
-/* 1083 */
+/* 1084 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	/**
 	 * Parse headers into an object
@@ -95525,12 +95725,12 @@
 
 
 /***/ },
-/* 1084 */
+/* 1085 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -95599,7 +95799,7 @@
 
 
 /***/ },
-/* 1085 */
+/* 1086 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -95641,12 +95841,12 @@
 
 
 /***/ },
-/* 1086 */
+/* 1087 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -95700,12 +95900,12 @@
 
 
 /***/ },
-/* 1087 */
+/* 1088 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -95758,15 +95958,15 @@
 
 
 /***/ },
-/* 1088 */
+/* 1089 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
-	var transformData = __webpack_require__(1089);
-	var isCancel = __webpack_require__(1090);
-	var defaults = __webpack_require__(1076);
+	var utils = __webpack_require__(1074);
+	var transformData = __webpack_require__(1090);
+	var isCancel = __webpack_require__(1091);
+	var defaults = __webpack_require__(1077);
 
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -95843,12 +96043,12 @@
 
 
 /***/ },
-/* 1089 */
+/* 1090 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(1073);
+	var utils = __webpack_require__(1074);
 
 	/**
 	 * Transform the data for a request or a response
@@ -95869,7 +96069,7 @@
 
 
 /***/ },
-/* 1090 */
+/* 1091 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -95880,7 +96080,7 @@
 
 
 /***/ },
-/* 1091 */
+/* 1092 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -95900,7 +96100,7 @@
 
 
 /***/ },
-/* 1092 */
+/* 1093 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -95918,7 +96118,7 @@
 
 
 /***/ },
-/* 1093 */
+/* 1094 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -95943,12 +96143,12 @@
 
 
 /***/ },
-/* 1094 */
+/* 1095 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Cancel = __webpack_require__(1093);
+	var Cancel = __webpack_require__(1094);
 
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -96006,7 +96206,7 @@
 
 
 /***/ },
-/* 1095 */
+/* 1096 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -96039,7 +96239,7 @@
 
 
 /***/ },
-/* 1096 */
+/* 1097 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96048,7 +96248,7 @@
 	  value: true
 	});
 
-	var _Dots = __webpack_require__(1097);
+	var _Dots = __webpack_require__(1098);
 
 	var _Dots2 = _interopRequireDefault(_Dots);
 
@@ -96057,7 +96257,7 @@
 	exports.default = _Dots2.default;
 
 /***/ },
-/* 1097 */
+/* 1098 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96101,7 +96301,7 @@
 	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
 
 /***/ },
-/* 1098 */
+/* 1099 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96193,7 +96393,7 @@
 	exports.default = NotFound;
 
 /***/ },
-/* 1099 */
+/* 1100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
