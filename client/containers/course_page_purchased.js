@@ -44,7 +44,6 @@ class _Course_Purchased extends Component {
     //   )
     // }
 
-
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -52,24 +51,28 @@ class _Course_Purchased extends Component {
 
         firebase.database().ref('users/' + userId + '/courses')
           .on('value', snapshot => {
+            // that.props.loadUserCourses(snapshot.val())
 
-            that.props.loadUserCourses(snapshot.val())
+            if(snapshot.val()[that.props.match.params.courseId]) {
 
-            that.setState({
-              userCourses: snapshot.val(),
-              course: snapshot.val()[that.props.match.params.courseId]
-            })
+              firebase.database().ref('courses/' + that.props.match.params.courseId)
+                .on('value', snapshot => {
 
-            that.props.setCurrentCourse(that.state.userCourses[that.props.match.params.courseId])
+                    that.setState({
+                      course: snapshot.val()
+                    })
 
-            let sections = []
-            that.state.course.modules.forEach(module => { // build a playlist of sections
-              module.sections.forEach(section => {
-                sections.push(section)
-              })
-            })
-            that.props.setCurrentPlaylist(sections)
+                    that.props.setCurrentCourse(snapshot.val())
 
+                    let sections = []
+                    that.state.course.modules.forEach(module => { // build a playlist of sections
+                      module.sections.forEach(section => {
+                        sections.push(section)
+                      })
+                    })
+                    that.props.setCurrentPlaylist(sections)
+                })
+              }
         })
       }
     })
@@ -113,13 +116,15 @@ class _Course_Purchased extends Component {
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
+    // const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
+
+    const course = this.state.course
 
     if((this.props.userInfo.firstName && !this.props.userInfo.courses) || (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId])) {
       return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
     }
 
-    if(!this.props.isLoggedIn) {
+    if(!this.props.isLoggedIn ) {
       return (
         <div>
         <SoundwiseHeader />

@@ -19,9 +19,9 @@ class Resources extends Component {
   }
 
   renderResources(course) {
-    return course.resources.map(resource => {
+    return course.resources.map((resource, i) => {
       return (
-        <div className=" ">
+        <div className=" " key={i}>
         <h2 className="text-left width-70 margin-lr-auto font-weight-300  section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text" style={{display: 'inline-block', paddingLeft: '1em'}}>
           {resource.description}
         </h2>

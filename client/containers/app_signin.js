@@ -160,7 +160,7 @@ class _AppSignin extends Component {
             courses
           })
 
-          that.props.signinUser({firstName, lastName, email, courses})
+          that.props.signinUser({firstName, lastName, email, courses, pic_url})
           that.props.history.push('/myprograms')
         }
 
@@ -197,12 +197,13 @@ class _AppSignin extends Component {
                 lastName = snapshot.val().lastName
                 email = snapshot.val().email
                 courses = snapshot.val().courses
+                pic_url = snapshot.val().pic_url
                 if(!courses) {
                   firebase.database().ref('users/' + userId).set({
                     courses: {}
                   })
                 }
-                that.props.signinUser({firstName, lastName, email, courses})
+                that.props.signinUser({firstName, lastName, email, pic_url, courses})
 
                 that.props.history.push('/myprograms')
             })

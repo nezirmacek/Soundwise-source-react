@@ -37,6 +37,7 @@ class _AppSignup extends Component {
       email: '',
       password: '',
       message: '',
+      pic_url: '',
       redirectToReferrer: false
     }
     this.signUp = this.signUp.bind(this)
@@ -45,7 +46,7 @@ class _AppSignup extends Component {
 
   async signUp() {
     const that = this
-    const {firstName, lastName, email, password} = this.state
+    const {firstName, lastName, email, password, pic_url} = this.state
 
     if(firstName.length < 1 || lastName.length < 1) {
       alert('Please enter your name!')
@@ -140,7 +141,8 @@ class _AppSignup extends Component {
                   firstName = snapshot.val().firstName,
                   lastName = snapshot.val().lastName,
                   email = snapshot.val().email
-                  that.props.signupUser({firstName, lastName, email})
+                  pic_url = snapshot.val().pic_url
+                  that.props.signupUser({firstName, lastName, email, pic_url})
                   that.props.history.push('/myprograms')
               })
             })

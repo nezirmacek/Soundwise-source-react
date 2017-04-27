@@ -40,10 +40,25 @@ export default class CourseBodyPurchased extends React.Component {
 
     this.state = {
       slideIndex: 1,
+      course: {
+        runtime: '',
+        price: '',
+        name: '',
+        description: '',
+        modules: [],
+        resources: []
+      }
     }
+    this.handleChange = this.handleChange.bind(this)
   }
 
-  handleChange = (value) => {
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      course: nextProps.course
+    })
+  }
+
+  handleChange(value) {
     this.setState({
       slideIndex: value,
     })
@@ -72,10 +87,10 @@ export default class CourseBodyPurchased extends React.Component {
           onChangeIndex={this.handleChange}
         >
           <div>
-            <Resources course = {this.props.course} />
+            <Resources course = {this.state.course} />
           </div>
           <div style={styles.slide}>
-            <Curriculum course = {this.props.course} />
+            <Curriculum course = {this.state.course} />
           </div>
 
         </SwipeableViews>

@@ -78,12 +78,12 @@ class _CourseHeaderPurchased extends Component {
                                     <div className='row' style={{margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                                       <ReactStars
                                         count={5}
-                                        value = {4.5}
+                                        value = {average_rating}
                                         size={28}
                                         edit={false}
                                         color2={'#ffd700'}
                                       />
-                                      <span style={{marginLeft: '5px', fontSize: '18'}}>{`(${ratings.length})`}</span>
+                                      <span style={{marginLeft: '5px', fontSize: '18px'}}>{`(${ratings.length})`}</span>
                                     </div>
                                     <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} `}</span>
                                     <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`Run Time: ${run_time}`}</span>

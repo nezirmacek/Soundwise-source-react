@@ -126,7 +126,7 @@ class _CourseSection extends Component {
   }
 
   handleTap() {
-    if(!this.props.playing || (this.props.playing && this.props.section !== this.props.currentSection)) {
+    if(!this.props.playing || (this.props.playing && this.props.currentSection.section_id !== this.props.section.section_id)) {
       this.playFile()
     }
   }
@@ -143,95 +143,108 @@ class _CourseSection extends Component {
   }
 
   playFile() {
+    const that = this
 
-    if(!this.props.isLoggedIn) {
-      alert('please sign up/ log in to listen to the course')
-    } else {
-      if(!this.props.currentSection.section_id) {
-          this.setState({
-            loading: true
-          })
-        this.props.changePlayStatus(false)
-        this.props.setCurrentPlaySection(this.props.section)
-        // console.log(this.props.currentSection)
-        source.src = this.props.section.section_url
-        player.load()
-
-        player.addEventListener('loadeddata', () => {
-          player.currentTime = this.props.course.sectionProgress[this.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
-
-          player.play()
-
-          this.props.changePlayStatus(true)
-          this.setState({playing: true, loading: false})
-
-          if(!this.props.playerLaunched) {
-            this.props.launchPlayer(true)
-          }
+    if(!this.props.currentSection.section_id) { //if this is the first file being played, i.e. there's no "current section"
+      console.log('no current section')
+        this.setState({
+          loading: true
         })
+      this.props.changePlayStatus(false)
+      // console.log(this.props.currentSection)
+      source.src = this.props.section.section_url
+      player.load()
 
-      } else if(this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) {
-        if(this.props.playing) { //if switching to another section, store the progress data for the current section first
-          player.pause()
+      this.props.setCurrentPlaySection(this.props.section)
 
-          this.setState({
-            loading: true
-          })
+      player.addEventListener('loadeddata', () => {
+        player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+        console.log('can play')
 
-          const userId = firebase.auth().currentUser.uid
-          const sectionId = this.props.currentSection.section_id
-          const playProgress = this.props.currentTime / this.props.currentDuration
+        player.play()
 
-          let updates = {}
-          updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress
+        that.props.changePlayStatus(true)
+        that.setState({loading: false})
 
-          firebase.database().ref().update(updates)
-          console.log('progress updated')
+        if(!that.props.playerLaunched) {
+          that.props.launchPlayer(true)
         }
+      })
 
-        this.setState({
-          loading: true
-        })
-        this.props.changePlayStatus(false)
-        this.props.setCurrentPlaySection(this.props.section)
-        // console.log(this.props.currentSection)
-        source.src = this.props.section.section_url
-        player.load()
+    } else if(this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) { //if another section is the "current section"
 
-        player.addEventListener('loadeddata', () => {
-          player.currentTime = this.props.course.sectionProgress[this.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+      this.setState({
+        loading: true
+      })
 
-          player.play()
-
-          this.props.changePlayStatus(true)
-          this.setState({playing: true, loading: false})
-
-          if(!this.props.playerLaunched) {
-            this.props.launchPlayer(true)
-          }
-        })
-
-
-      } else if(this.props.playing) {
+      if(this.props.playing) { //if switching to another section, store the progress data for the current section first
         player.pause()
-        this.props.changePlayStatus(false)
-        this.setState({playing: false})
-      } else if(!this.props.playing) {
-        this.setState({
-          loading: true
-        })
-        this.props.setCurrentPlaySection(this.props.section)
 
-        player.addEventListener('loadeddata', () => {
-          player.currentTime = this.props.course.sectionProgress[this.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+        const sectionId = this.props.currentSection.section_id
+        const playProgress = this.props.currentTime / this.props.currentDuration
 
-          player.play()
+        let updates = {}
 
-          this.props.changePlayStatus(true)
-          this.setState({playing: true, loading: false})
+        firebase.auth().onAuthStateChanged(user => {
+          if(user) {
+            const userId = user.uid
+            updates['/users/' + userId + '/courses/' + that.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress
+
+            firebase.database().ref().update(updates)
+          }
         })
       }
+
+      this.props.changePlayStatus(false)
+
+      // console.log(this.props.currentSection)
+      source.src = this.props.section.section_url
+      player.load()
+
+      this.props.setCurrentPlaySection(that.props.section)
+
+      player.addEventListener('loadeddata', () => {
+        player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+
+        setTimeout(() => {
+          player.play()
+        }, 150)
+
+        that.props.changePlayStatus(true)
+        that.setState({loading: false})
+
+        if(!that.props.playerLaunched) {
+          that.props.launchPlayer(true)
+        }
+      })
+
+
+    } else if(this.props.currentSection.section_id === this.props.section.section_id && !this.props.playing) {  //if this section is the "current section" and it's not playing
+      console.log('current section is this section')
+      this.setState({
+        loading: true
+      })
+      // this.props.setCurrentPlaySection(this.props.section)
+
+      // source.src = this.props.section.section_url
+      // player.load()
+
+      // player.addEventListener('loadeddata', () => {
+      //   player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+      //   setTimeout(() => {
+      //     player.play()
+      //   }, 150)
+
+
+      //   this.props.changePlayStatus(true)
+      //   this.setState({loading: false})
+      // })
+      player.play()
+      this.props.changePlayStatus(true)
+      this.setState({loading: false})
+
     }
+
   }
 
   renderPlayButton() {

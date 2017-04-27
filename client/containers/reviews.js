@@ -67,6 +67,7 @@ class _Reviews extends Component {
     const total = ratings.reduce((sum, cur) => (sum + cur), 0)
     const average_rating = Math.floor(total / ratings.length * 10) / 10
 
+    console.log('userInfo: ', this.props.userInfo)
     return (
       <div>
         <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">

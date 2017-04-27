@@ -56,7 +56,7 @@ class _MyCourses extends Component {
       courseArr.push(courses[key])
     }
 
-    if(!isLoggedIn) {
+    if(isLoggedIn === false) {
       return (
         <div>
         <SoundwiseHeader />

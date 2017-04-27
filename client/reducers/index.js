@@ -4,7 +4,7 @@ import * as types from '../actions/types'
 
 function user(state= {
   userInfo: {},
-  isLoggedIn: false
+  isLoggedIn: ''
 }, action) {
   switch (action.type) {
     case types.SIGNUP:

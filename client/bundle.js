@@ -37986,7 +37986,8 @@
 	            var lastName = snapshot.val().lastName;
 	            var email = snapshot.val().email;
 	            var courses = snapshot.val().courses;
-	            that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, courses: courses });
+	            var pic_url = snapshot.val().pic_url;
+	            that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, courses: courses, pic_url: pic_url });
 	          });
 	        }
 	      });
@@ -60438,6 +60439,7 @@
 	      email: '',
 	      password: '',
 	      message: '',
+	      pic_url: '',
 	      redirectToReferrer: false
 	    };
 	    _this.signUp = _this.signUp.bind(_this);
@@ -60449,14 +60451,14 @@
 	    key: 'signUp',
 	    value: function () {
 	      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	        var that, _state, firstName, lastName, email, password, userId;
+	        var that, _state, firstName, lastName, email, password, pic_url, userId;
 
 	        return regeneratorRuntime.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
 	                that = this;
-	                _state = this.state, firstName = _state.firstName, lastName = _state.lastName, email = _state.email, password = _state.password;
+	                _state = this.state, firstName = _state.firstName, lastName = _state.lastName, email = _state.email, password = _state.password, pic_url = _state.pic_url;
 
 
 	                if (firstName.length < 1 || lastName.length < 1) {
@@ -60570,7 +60572,8 @@
 	                var userId = firebase.auth().currentUser.uid;
 	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
 	                  firstName = snapshot.val().firstName, lastName = snapshot.val().lastName, email = snapshot.val().email;
-	                  that.props.signupUser({ firstName: firstName, lastName: lastName, email: email });
+	                  pic_url = snapshot.val().pic_url;
+	                  that.props.signupUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
 	                  that.props.history.push('/myprograms');
 	                });
 	              });
@@ -60932,20 +60935,20 @@
 	            var _lastName = snapshot.val().lastName;
 	            var email = snapshot.val().email;
 	            var _courses = snapshot.val().courses || {};
-	            var pic_url = result.user.photoURL;
+	            var _pic_url = result.user.photoURL;
 
 	            var updates = {};
-	            updates['/users/' + userId + '/pic_url/'] = pic_url;
+	            updates['/users/' + userId + '/pic_url/'] = _pic_url;
 	            firebase.database().ref().update(updates);
 
-	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: email, pic_url: pic_url, courses: _courses });
+	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: email, pic_url: _pic_url, courses: _courses });
 	            that.props.history.push('/myprograms');
 	          } else {
 	            //if it's a new user
 
 	            var user = result.user;
 	            var _email = user.email;
-	            var _pic_url = result.user.photoURL;
+	            var _pic_url2 = result.user.photoURL;
 	            var name = user.displayName.split(' ');
 	            var _firstName2 = name[0];
 	            var _lastName2 = name[1];
@@ -60955,11 +60958,11 @@
 	              firstName: _firstName2,
 	              lastName: _lastName2,
 	              email: _email,
-	              pic_url: _pic_url,
+	              pic_url: _pic_url2,
 	              courses: _courses2
 	            });
 
-	            that.props.signinUser({ firstName: _firstName2, lastName: _lastName2, email: _email, courses: _courses2 });
+	            that.props.signinUser({ firstName: _firstName2, lastName: _lastName2, email: _email, courses: _courses2, pic_url: _pic_url2 });
 	            that.props.history.push('/myprograms');
 	          }
 	        });
@@ -60993,12 +60996,13 @@
 	                  lastName = snapshot.val().lastName;
 	                  email = snapshot.val().email;
 	                  courses = snapshot.val().courses;
+	                  pic_url = snapshot.val().pic_url;
 	                  if (!courses) {
 	                    firebase.database().ref('users/' + userId).set({
 	                      courses: {}
 	                    });
 	                  }
-	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, courses: courses });
+	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, courses: courses });
 
 	                  that.props.history.push('/myprograms');
 	                });
@@ -66408,14 +66412,14 @@
 	                        { className: 'row', style: { margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' } },
 	                        _react2.default.createElement(_reactStars2.default, {
 	                          count: 5,
-	                          value: 4.5,
+	                          value: average_rating,
 	                          size: 28,
 	                          edit: false,
 	                          color2: '#ffd700'
 	                        }),
 	                        _react2.default.createElement(
 	                          'span',
-	                          { style: { marginLeft: '5px', fontSize: '18' } },
+	                          { style: { marginLeft: '5px', fontSize: '18px' } },
 	                          '(' + ratings.length + ')'
 	                        )
 	                      ),
@@ -89325,6 +89329,7 @@
 	      }, 0);
 	      var average_rating = Math.floor(total / ratings.length * 10) / 10;
 
+	      console.log('userInfo: ', this.props.userInfo);
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -89647,7 +89652,7 @@
 	        courseArr.push(courses[key]);
 	      }
 
-	      if (!isLoggedIn) {
+	      if (isLoggedIn === false) {
 	        return _react2.default.createElement(
 	          'div',
 	          null,
@@ -89866,31 +89871,34 @@
 	      //   )
 	      // }
 
-
 	      var that = this;
 	      _firebase2.default.auth().onAuthStateChanged(function (user) {
 	        if (user) {
 	          var userId = user.uid;
 
 	          _firebase2.default.database().ref('users/' + userId + '/courses').on('value', function (snapshot) {
+	            // that.props.loadUserCourses(snapshot.val())
 
-	            that.props.loadUserCourses(snapshot.val());
+	            if (snapshot.val()[that.props.match.params.courseId]) {
 
-	            that.setState({
-	              userCourses: snapshot.val(),
-	              course: snapshot.val()[that.props.match.params.courseId]
-	            });
+	              _firebase2.default.database().ref('courses/' + that.props.match.params.courseId).on('value', function (snapshot) {
 
-	            that.props.setCurrentCourse(that.state.userCourses[that.props.match.params.courseId]);
+	                that.setState({
+	                  course: snapshot.val()
+	                });
 
-	            var sections = [];
-	            that.state.course.modules.forEach(function (module) {
-	              // build a playlist of sections
-	              module.sections.forEach(function (section) {
-	                sections.push(section);
+	                that.props.setCurrentCourse(snapshot.val());
+
+	                var sections = [];
+	                that.state.course.modules.forEach(function (module) {
+	                  // build a playlist of sections
+	                  module.sections.forEach(function (section) {
+	                    sections.push(section);
+	                  });
+	                });
+	                that.props.setCurrentPlaylist(sections);
 	              });
-	            });
-	            that.props.setCurrentPlaylist(sections);
+	            }
 	          });
 	        }
 	      });
@@ -89939,7 +89947,9 @@
 	    key: 'render',
 	    value: function render() {
 	      // const course = this.props.courses[this.props.match.params.courseId]
-	      var course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course;
+	      // const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
+
+	      var course = this.state.course;
 
 	      if (this.props.userInfo.firstName && !this.props.userInfo.courses || this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId]) {
 	        return _react2.default.createElement(_reactRouterDom.Redirect, { to: '/courses/' + this.props.match.params.courseId });
@@ -90752,19 +90762,36 @@
 
 	    var _this = _possibleConstructorReturn(this, (CourseBodyPurchased.__proto__ || Object.getPrototypeOf(CourseBodyPurchased)).call(this, props));
 
-	    _this.handleChange = function (value) {
-	      _this.setState({
-	        slideIndex: value
-	      });
-	    };
-
 	    _this.state = {
-	      slideIndex: 1
+	      slideIndex: 1,
+	      course: {
+	        runtime: '',
+	        price: '',
+	        name: '',
+	        description: '',
+	        modules: [],
+	        resources: []
+	      }
 	    };
+	    _this.handleChange = _this.handleChange.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(CourseBodyPurchased, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      this.setState({
+	        course: nextProps.course
+	      });
+	    }
+	  }, {
+	    key: 'handleChange',
+	    value: function handleChange(value) {
+	      this.setState({
+	        slideIndex: value
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      styles.tab = [];
@@ -90797,12 +90824,12 @@
 	            _react2.default.createElement(
 	              'div',
 	              null,
-	              _react2.default.createElement(_resources2.default, { course: this.props.course })
+	              _react2.default.createElement(_resources2.default, { course: this.state.course })
 	            ),
 	            _react2.default.createElement(
 	              'div',
 	              { style: styles.slide },
-	              _react2.default.createElement(_curriculum.Curriculum, { course: this.props.course })
+	              _react2.default.createElement(_curriculum.Curriculum, { course: this.state.course })
 	            )
 	          )
 	        ),
@@ -90882,6 +90909,9 @@
 
 	    var _this = _possibleConstructorReturn(this, (_Curriculum.__proto__ || Object.getPrototypeOf(_Curriculum)).call(this, props));
 
+	    _this.state = {
+	      course: {}
+	    };
 	    _this.renderModules = _this.renderModules.bind(_this);
 	    _this.handleEnd = _this.handleEnd.bind(_this);
 	    _this.updateSectionProgress = _this.updateSectionProgress.bind(_this);
@@ -90891,6 +90921,8 @@
 	  _createClass(_Curriculum, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var that = this;
+
 	      player = document.getElementById('audio');
 	      source = document.getElementById('audioSource');
 
@@ -90903,24 +90935,24 @@
 
 	      var userId = _firebase2.default.auth().currentUser.uid;
 
-	      var update = this.props.course.sectionProgress[sectionId];
+	      var update = this.state.course.sectionProgress[sectionId];
 	      update.completed = true;
 	      update.playProgress = 0;
 	      update.timesRepeated = update.timesRepeated + 1;
 
 	      var updates = {};
-	      updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId] = update;
+	      updates['/users/' + userId + '/courses/' + this.state.course.id + '/sectionProgress/' + sectionId] = update;
 	      _firebase2.default.database().ref().update(updates);
 
-	      var sectionProgress = Object.assign({}, this.props.course.sectionProgress, { sectionId: update });
-	      var course = Object.assign({}, this.props.course, { sectionProgress: sectionProgress });
+	      var sectionProgress = Object.assign({}, this.state.course.sectionProgress, { sectionId: update });
+	      var course = Object.assign({}, this.state.course, { sectionProgress: sectionProgress });
 	      this.props.setCurrentCourse(course);
 
 	      // record section completion in course data:
-	      _firebase2.default.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId).once('value').then(function (snapshot) {
+	      _firebase2.default.database().ref('/courses/' + this.state.course.id + '/metrics/' + sectionId).once('value').then(function (snapshot) {
 	        var completed = snapshot.val().timesCompleted + 1;
 	        var update = {};
-	        update['/courses/' + _this2.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed;
+	        update['/courses/' + _this2.state.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed;
 	        _firebase2.default.database().ref().update(update);
 	      });
 	    }
@@ -90935,6 +90967,7 @@
 	      console.log('next: ', next);
 	      if (next < this.props.currentPlaylist.length) {
 	        this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
+
 	        source.src = this.props.currentPlaylist[next].section_url;
 	        player.load();
 	        player.play();
@@ -90950,6 +90983,22 @@
 	      var _this3 = this;
 
 	      player = document.getElementById('audio');
+	      var that = this;
+
+	      if (nextProps.course.id !== this.props.course.id) {
+	        _firebase2.default.auth().onAuthStateChanged(function (user) {
+	          if (user) {
+	            var userId = user.uid;
+	            _firebase2.default.database().ref('users/' + userId + '/courses/' + nextProps.course.id).on('value', function (snapshot) {
+
+	              that.setState({
+	                course: snapshot.val()
+	              });
+	            });
+	          }
+	        });
+	      }
+
 	      if (nextProps.playing) {
 	        interval = setInterval(function () {
 	          _this3.props.getCurrentProgress({
@@ -90986,7 +91035,7 @@
 	            'div',
 	            { className: '' },
 	            module.sections.map(function (section) {
-	              return _react2.default.createElement(_course_section.CourseSection, { key: section.section_id, section: section, course: _this4.props.course });
+	              return _react2.default.createElement(_course_section.CourseSection, { key: section.section_id, section: section, course: _this4.state.course });
 	            })
 	          )
 	        );
@@ -91249,7 +91298,7 @@
 	  }, {
 	    key: 'handleTap',
 	    value: function handleTap() {
-	      if (!this.props.playing || this.props.playing && this.props.section !== this.props.currentSection) {
+	      if (!this.props.playing || this.props.playing && this.props.currentSection.section_id !== this.props.section.section_id) {
 	        this.playFile();
 	      }
 	    }
@@ -91268,93 +91317,106 @@
 	  }, {
 	    key: 'playFile',
 	    value: function playFile() {
-	      var _this2 = this;
+	      var that = this;
 
-	      if (!this.props.isLoggedIn) {
-	        alert('please sign up/ log in to listen to the course');
-	      } else {
-	        if (!this.props.currentSection.section_id) {
-	          this.setState({
-	            loading: true
-	          });
-	          this.props.changePlayStatus(false);
-	          this.props.setCurrentPlaySection(this.props.section);
-	          // console.log(this.props.currentSection)
-	          source.src = this.props.section.section_url;
-	          player.load();
+	      if (!this.props.currentSection.section_id) {
+	        //if this is the first file being played, i.e. there's no "current section"
+	        console.log('no current section');
+	        this.setState({
+	          loading: true
+	        });
+	        this.props.changePlayStatus(false);
+	        // console.log(this.props.currentSection)
+	        source.src = this.props.section.section_url;
+	        player.load();
 
-	          player.addEventListener('loadeddata', function () {
-	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+	        this.props.setCurrentPlaySection(this.props.section);
 
-	            player.play();
+	        player.addEventListener('loadeddata', function () {
+	          player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+	          console.log('can play');
 
-	            _this2.props.changePlayStatus(true);
-	            _this2.setState({ playing: true, loading: false });
+	          player.play();
 
-	            if (!_this2.props.playerLaunched) {
-	              _this2.props.launchPlayer(true);
-	            }
-	          });
-	        } else if (this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) {
-	          if (this.props.playing) {
-	            //if switching to another section, store the progress data for the current section first
-	            player.pause();
+	          that.props.changePlayStatus(true);
+	          that.setState({ loading: false });
 
-	            this.setState({
-	              loading: true
-	            });
-
-	            var userId = _firebase2.default.auth().currentUser.uid;
-	            var sectionId = this.props.currentSection.section_id;
-	            var playProgress = this.props.currentTime / this.props.currentDuration;
-
-	            var updates = {};
-	            updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress;
-
-	            _firebase2.default.database().ref().update(updates);
-	            console.log('progress updated');
+	          if (!that.props.playerLaunched) {
+	            that.props.launchPlayer(true);
 	          }
+	        });
+	      } else if (this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) {
+	        //if another section is the "current section"
 
-	          this.setState({
-	            loading: true
-	          });
-	          this.props.changePlayStatus(false);
-	          this.props.setCurrentPlaySection(this.props.section);
-	          // console.log(this.props.currentSection)
-	          source.src = this.props.section.section_url;
-	          player.load();
+	        this.setState({
+	          loading: true
+	        });
 
-	          player.addEventListener('loadeddata', function () {
-	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
-
-	            player.play();
-
-	            _this2.props.changePlayStatus(true);
-	            _this2.setState({ playing: true, loading: false });
-
-	            if (!_this2.props.playerLaunched) {
-	              _this2.props.launchPlayer(true);
-	            }
-	          });
-	        } else if (this.props.playing) {
+	        if (this.props.playing) {
+	          //if switching to another section, store the progress data for the current section first
 	          player.pause();
-	          this.props.changePlayStatus(false);
-	          this.setState({ playing: false });
-	        } else if (!this.props.playing) {
-	          this.setState({
-	            loading: true
-	          });
-	          this.props.setCurrentPlaySection(this.props.section);
 
-	          player.addEventListener('loadeddata', function () {
-	            player.currentTime = _this2.props.course.sectionProgress[_this2.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+	          var sectionId = this.props.currentSection.section_id;
+	          var playProgress = this.props.currentTime / this.props.currentDuration;
 
-	            player.play();
+	          var updates = {};
 
-	            _this2.props.changePlayStatus(true);
-	            _this2.setState({ playing: true, loading: false });
+	          _firebase2.default.auth().onAuthStateChanged(function (user) {
+	            if (user) {
+	              var userId = user.uid;
+	              updates['/users/' + userId + '/courses/' + that.props.course.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress;
+
+	              _firebase2.default.database().ref().update(updates);
+	            }
 	          });
 	        }
+
+	        this.props.changePlayStatus(false);
+
+	        // console.log(this.props.currentSection)
+	        source.src = this.props.section.section_url;
+	        player.load();
+
+	        this.props.setCurrentPlaySection(that.props.section);
+
+	        player.addEventListener('loadeddata', function () {
+	          player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+
+	          setTimeout(function () {
+	            player.play();
+	          }, 150);
+
+	          that.props.changePlayStatus(true);
+	          that.setState({ loading: false });
+
+	          if (!that.props.playerLaunched) {
+	            that.props.launchPlayer(true);
+	          }
+	        });
+	      } else if (this.props.currentSection.section_id === this.props.section.section_id && !this.props.playing) {
+	        //if this section is the "current section" and it's not playing
+	        console.log('current section is this section');
+	        this.setState({
+	          loading: true
+	        });
+	        // this.props.setCurrentPlaySection(this.props.section)
+
+	        // source.src = this.props.section.section_url
+	        // player.load()
+
+	        // player.addEventListener('loadeddata', () => {
+	        //   player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+	        //   setTimeout(() => {
+	        //     player.play()
+	        //   }, 150)
+
+
+	        //   this.props.changePlayStatus(true)
+	        //   this.setState({loading: false})
+	        // })
+	        player.play();
+	        this.props.changePlayStatus(true);
+	        this.setState({ loading: false });
 	      }
 	    }
 	  }, {
@@ -96531,7 +96593,7 @@
 	function user() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
 	    userInfo: {},
-	    isLoggedIn: false
+	    isLoggedIn: ''
 	  };
 	  var action = arguments[1];
 
@@ -96768,10 +96830,10 @@
 	  _createClass(Resources, [{
 	    key: 'renderResources',
 	    value: function renderResources(course) {
-	      return course.resources.map(function (resource) {
+	      return course.resources.map(function (resource, i) {
 	        return _react2.default.createElement(
 	          'div',
-	          { className: ' ' },
+	          { className: ' ', key: i },
 	          _react2.default.createElement(
 	            'h2',
 	            { className: 'text-left width-70 margin-lr-auto font-weight-300  section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text', style: { display: 'inline-block', paddingLeft: '1em' } },

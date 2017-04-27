@@ -42,7 +42,8 @@ class _Routes extends Component {
             const lastName = snapshot.val().lastName
             const email = snapshot.val().email
             const courses = snapshot.val().courses
-            that.props.signinUser({firstName, lastName, email, courses})
+            const pic_url = snapshot.val().pic_url
+            that.props.signinUser({firstName, lastName, email, courses, pic_url})
         })
       }
     })

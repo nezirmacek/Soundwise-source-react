@@ -26,42 +26,48 @@ const styles = {
 class _Curriculum extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      course: {}
+    }
     this.renderModules = this.renderModules.bind(this)
     this.handleEnd = this.handleEnd.bind(this)
     this.updateSectionProgress = this.updateSectionProgress.bind(this)
   }
 
   componentDidMount() {
+    const that = this
+
     player = document.getElementById('audio')
     source = document.getElementById('audioSource')
 
     player.addEventListener('ended', this.handleEnd)
+
   }
 
   updateSectionProgress(sectionId) {
 
     const userId = firebase.auth().currentUser.uid
 
-    let update = this.props.course.sectionProgress[sectionId]
+    let update = this.state.course.sectionProgress[sectionId]
     update.completed = true
     update.playProgress = 0
     update.timesRepeated = update.timesRepeated + 1
 
     let updates = {}
-    updates['/users/' + userId + '/courses/' + this.props.course.id + '/sectionProgress/' + sectionId] = update
+    updates['/users/' + userId + '/courses/' + this.state.course.id + '/sectionProgress/' + sectionId] = update
     firebase.database().ref().update(updates)
 
-    const sectionProgress = Object.assign({}, this.props.course.sectionProgress, {sectionId: update})
-    const course = Object.assign({}, this.props.course, {sectionProgress})
+    const sectionProgress = Object.assign({}, this.state.course.sectionProgress, {sectionId: update})
+    const course = Object.assign({}, this.state.course, {sectionProgress})
     this.props.setCurrentCourse(course)
 
     // record section completion in course data:
-    firebase.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId)
+    firebase.database().ref('/courses/' + this.state.course.id + '/metrics/' + sectionId)
     .once('value')
     .then(snapshot => {
       const completed = snapshot.val().timesCompleted + 1
       let update = {}
-      update['/courses/' + this.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed
+      update['/courses/' + this.state.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed
       firebase.database().ref().update(update)
     })
   }
@@ -75,10 +81,12 @@ class _Curriculum extends Component {
     console.log('next: ', next)
     if(next < this.props.currentPlaylist.length ) {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[next])
+
       source.src = this.props.currentPlaylist[next].section_url
       player.load()
       player.play()
       this.props.changePlayStatus(true)
+
     } else {
       player.pause()
       this.props.changePlayStatus(false)
@@ -87,6 +95,23 @@ class _Curriculum extends Component {
 
   componentWillReceiveProps(nextProps) {
     player = document.getElementById('audio')
+    const that = this
+
+    if(nextProps.course.id !== this.props.course.id) {
+      firebase.auth().onAuthStateChanged(user => {
+        if(user) {
+            const userId = user.uid
+            firebase.database().ref('users/' + userId + '/courses/' + nextProps.course.id)
+            .on('value', snapshot => {
+
+              that.setState({
+                course: snapshot.val()
+              })
+            })
+        }
+      })
+    }
+
     if(nextProps.playing) {
       interval = setInterval(() => {
         this.props.getCurrentProgress({
@@ -108,6 +133,7 @@ class _Curriculum extends Component {
   }
 
   renderModules() {
+
     return (
       this.props.course.modules.map(module => (
         <Card key={module.module_id}>
@@ -117,7 +143,7 @@ class _Curriculum extends Component {
           />
           <div className=''>
           {module.sections.map(section => (
-            <CourseSection key={section.section_id} section={section} course={this.props.course} />
+            <CourseSection key={section.section_id} section={section} course={this.state.course} />
           ))}
           </div>
         </Card>
