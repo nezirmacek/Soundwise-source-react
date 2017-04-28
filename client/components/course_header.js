@@ -124,13 +124,13 @@ class _CourseHeader extends Component {
   checkOut() {
     if(this.props.isLoggedIn) {
 
-      if(this.props.userInfo.stripe_id && this.props.userInfo.stripe_id.length > 0) {
-        this.submitPayment()
-      } else {
+      // if(this.props.userInfo.stripe_id && this.props.userInfo.stripe_id.length > 0) {
+      //   this.submitPayment()
+      // } else {
 
         this.props.addCourseToCart(this.props.course)
         this.props.history.push('/cart')
-      }
+      // }
     } else {
       this.props.openSignupbox(true)
     }
