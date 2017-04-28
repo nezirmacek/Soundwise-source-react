@@ -85,10 +85,6 @@ class _Course extends Component {
     // const course = this.props.courses[this.props.match.params.courseId]
     const course = this.props.courses[this.props.match.params.courseId] || this.state.course
 
-    if(Object.keys(this.props.courses).length > 0 && !this.props.courses[this.props.match.params.courseId]) {
-      return <Redirect to={'/notfound'}/>
-    }
-
     return (
       <div>
         <Helmet>

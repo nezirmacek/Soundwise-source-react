@@ -63019,10 +63019,6 @@
 	      // const course = this.props.courses[this.props.match.params.courseId]
 	      var course = this.props.courses[this.props.match.params.courseId] || this.state.course;
 
-	      if (Object.keys(this.props.courses).length > 0 && !this.props.courses[this.props.match.params.courseId]) {
-	        return _react2.default.createElement(_reactRouterDom.Redirect, { to: '/notfound' });
-	      }
-
 	      return _react2.default.createElement(
 	        'div',
 	        null,

@@ -16,7 +16,7 @@ var prerendercloud = require('prerendercloud')
 
 prerendercloud.set('prerenderToken', 'dXMtd2VzdC0yOjE2MDE0OTIyLTk5MTgtNGY1Yi1hOTQwLTY1MDI2MzYyYTRlNQ.dE2HiZLJmqwNG0aJsAcWqmZHt_iAsV2tcIQQbvs2zPI')
 
-prerendercloud.set('enableMiddlewareCache', true)
+// prerendercloud.set('enableMiddlewareCache', true)
 
 prerendercloud.set('middlewareCacheMaxAge', 1000 * 60 * 3) // 3 minutes
 
