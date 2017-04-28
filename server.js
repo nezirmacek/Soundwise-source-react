@@ -18,9 +18,9 @@ prerendercloud.set('prerenderToken', 'dXMtd2VzdC0yOjE2MDE0OTIyLTk5MTgtNGY1Yi1hOT
 
 // prerendercloud.set('enableMiddlewareCache', true)
 
-prerendercloud.set('middlewareCacheMaxAge', 1000 * 60 * 3) // 3 minutes
+// prerendercloud.set('middlewareCacheMaxAge', 1000 * 60 * 3) // 3 minutes
 
-app.use(prerendercloud)
+// app.use(prerendercloud)
 
 app.use(express.static(__dirname + '/client'))
 // app.use('/scripts', express.static(__dirname + '/node_modules'))
