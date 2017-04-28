@@ -94715,7 +94715,7 @@
 
 	          if (that.state.totalPay === 0) {
 	            //if it's free course, then no need for credit card info. Push course to user and then redirect
-	            that.addCourseToUser();
+	            that.addCourseToUser(that.props.userInfo.stripe_id);
 	          }
 	        } else if (coupons[that.state.coupon] && today > Date.parse(coupons[that.state.coupon].expiration)) {
 	          that.setState({
@@ -94832,7 +94832,9 @@
 	      var updates = {};
 	      updates['/users/' + userId + '/courses/' + course.id] = course;
 	      // store stripe customer ID info: (only works with real credit cards)
-	      updates['/users/' + userId + '/stripe_id'] = customer;
+	      if (!customer && customer.length > 0) {
+	        updates['/users/' + userId + '/stripe_id'] = customer;
+	      }
 	      updates['/courses/' + course.id + '/users/' + userId] = userId;
 	      firebase.database().ref().update(updates);
 
