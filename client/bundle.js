@@ -38014,6 +38014,7 @@
 	            _react2.default.createElement('meta', { property: 'og:type', content: 'website' }),
 	            _react2.default.createElement('meta', { property: 'og:url', content: 'https://mysoundwise.com/' }),
 	            _react2.default.createElement('meta', { property: 'og:title', content: 'Soundwise' }),
+	            _react2.default.createElement('meta', { property: 'fb: app_id', content: '1726664310980105' }),
 	            _react2.default.createElement('meta', { property: 'og:description', content: 'Soundwise is a mobile learning platform that helps you improve your life and career through short audio lessons from top experts in personal development, science, and business.' }),
 	            _react2.default.createElement('meta', { property: 'og:image', content: 'https://mysoundwise.com/images/thumnail_FB.png' }),
 	            _react2.default.createElement(
@@ -63031,6 +63032,7 @@
 	            course.name + ' | Soundwise'
 	          ),
 	          _react2.default.createElement('meta', { property: 'og:url', content: 'https://mysoundwise.com/courses/' + course.id }),
+	          _react2.default.createElement('meta', { property: 'fb: app_id', content: '1726664310980105' }),
 	          _react2.default.createElement('meta', { property: 'og:title', content: course.name }),
 	          _react2.default.createElement('meta', { property: 'og:description', content: course.description }),
 	          _react2.default.createElement('meta', { property: 'og:image', content: course.img_url_mobile }),
