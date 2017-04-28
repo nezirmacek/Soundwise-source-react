@@ -37,7 +37,7 @@ class _Checkout extends Component {
   }
 
   componentDidMount() {
-    stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt')
+    stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP')
     this.setState({
       totalPay: this.props.shoppingCart.reduce((cum, course) => {
         return cum + course.price
@@ -107,6 +107,7 @@ class _Checkout extends Component {
 
   async onSubmit(event) {
     event.preventDefault()
+
     this.setState({
       startPaymentSubmission: true
     })
@@ -126,7 +127,8 @@ class _Checkout extends Component {
     if(response.error) {
       this.setState({
         paymentError: response.error.message,
-        submitDisabled: false
+        submitDisabled: false,
+        startPaymentSubmission: false
       })
     } else {
       Axios.post('/api/charge', {
@@ -140,7 +142,7 @@ class _Checkout extends Component {
       .then(function (response) {
 
         const paid = response.data.paid //boolean
-        const stripeId = response.data.stripeId
+        const customer = response.data.customer
 
         if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
           that.setState({
@@ -148,43 +150,44 @@ class _Checkout extends Component {
             startPaymentSubmission: false
           })
 
-          that.addCourseToUser() //push course to user profile and redirect
+          that.addCourseToUser(customer) //push course to user profile and redirect
         }
       })
       .catch(function (error) {
         console.log('error from stripe: ', error)
         that.setState({
-          paymentError: 'Your payment is declined :( Please check your credit card information.'
+          paymentError: 'Your payment is declined :( Please check your credit card information.',
+          startPaymentSubmission: false
         })
       })
     }
   }
 
-  addCourseToUser() {
+  addCourseToUser(customer) {
     const that = this
     const userId = firebase.auth().currentUser.uid
-    that.props.shoppingCart.forEach(course => {
+    const course = this.props.shoppingCart[0]
 
-      let sectionProgress = {}
-      course.modules.forEach(module => {
-        module.sections.forEach(section => {
-          sectionProgress[section.section_id] = {
-            playProgress: 0,
-            completed: false,
-            timesRepeated: 0
-          }
-        })
+    let sectionProgress = {}
+    course.modules.forEach(module => {
+      module.sections.forEach(section => {
+        sectionProgress[section.section_id] = {
+          playProgress: 0,
+          completed: false,
+          timesRepeated: 0
+        }
       })
-
-      course.sectionProgress = sectionProgress
-
-      const updates = {}
-      updates['/users/' + userId + '/courses/' + course.id] = course
-      // store stripe customer ID info: (only works with real credit cards)
-      // updates['/users/' + userId + '/stripeId'] = stripeId
-      updates['/courses/' + course.id + '/users/' + userId] = userId
-      firebase.database().ref().update(updates)
     })
+
+    course.sectionProgress = sectionProgress
+
+    const updates = {}
+    updates['/users/' + userId + '/courses/' + course.id] = course
+    // store stripe customer ID info: (only works with real credit cards)
+    updates['/users/' + userId + '/stripe_id'] = customer
+    updates['/courses/' + course.id + '/users/' + userId] = userId
+    firebase.database().ref().update(updates)
+
     that.props.deleteCart()
     that.props.history.push('/confirmation')
   }

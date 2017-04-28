@@ -6,6 +6,9 @@ import { connect } from 'react-redux'
 import ReactStars from 'react-stars'
 import Levels from 'react-activity/lib/Levels'
 import {orange50} from 'material-ui/styles/colors'
+import Spinner from 'react-activity/lib/Spinner'
+import Axios from 'axios'
+import * as firebase from "firebase"
 
 import { CourseSignup } from '../containers/course_signup'
 import SocialShare from './socialshare'
@@ -44,12 +47,18 @@ class _CourseHeader extends Component {
       playing: false,
       displayTimer: 'none',
       currentTime: 0,
-      duration: 0
+      duration: 0,
+      paid: false,
+      startPaymentSubmission: false,
+      paymentError: ''
     }
 
     this.checkOut = this.checkOut.bind(this)
     this.handlePlayOrPause = this.handlePlayOrPause.bind(this)
     this.handleEnd = this.handleEnd.bind(this)
+    this.addCourseToUser = this.addCourseToUser.bind(this)
+    this.submitPayment = this.submitPayment.bind(this)
+    this.renderProgressBar = this.renderProgressBar.bind(this)
   }
 
   componentDidMount() {
@@ -114,10 +123,92 @@ class _CourseHeader extends Component {
 
   checkOut() {
     if(this.props.isLoggedIn) {
-      this.props.addCourseToCart(this.props.course)
-      this.props.history.push('/cart')
+
+      if(this.props.userInfo.stripe_id && this.props.userInfo.stripe_id.length > 0) {
+        this.submitPayment()
+      } else {
+
+        this.props.addCourseToCart(this.props.course)
+        this.props.history.push('/cart')
+      }
     } else {
       this.props.openSignupbox(true)
+    }
+  }
+
+  submitPayment() {
+    this.setState({
+      startPaymentSubmission: true
+    })
+
+    const amount = this.props.course.price *100 //in cents
+    const email = this.props.userInfo.email
+    const that = this
+    const customer = this.props.userInfo.stripe_id
+
+    Axios.post('/api/charge', {
+      amount,
+      customer: that.props.userInfo.stripe_id,
+      currency: 'usd',
+      receipt_email: email,
+      description: that.props.course.name,
+      statement_descriptor: 'Soundwise Audio Course'
+    })
+    .then(function (response) {
+
+      const paid = response.data.paid //boolean
+
+      if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
+        that.setState({
+          paid: true,
+          startPaymentSubmission: false
+        })
+
+        that.addCourseToUser() //push course to user profile and redirect
+      }
+    })
+    .catch(function (error) {
+      console.log('error from stripe: ', error)
+      that.setState({
+        paymentError: 'Your payment is declined :( Please check your credit card information.',
+        startPaymentSubmission: false
+      })
+    })
+  }
+
+  addCourseToUser() {
+    const that = this
+    const userId = firebase.auth().currentUser.uid
+    const course = this.props.course
+
+    let sectionProgress = {}
+    course.modules.forEach(module => {
+      module.sections.forEach(section => {
+        sectionProgress[section.section_id] = {
+          playProgress: 0,
+          completed: false,
+          timesRepeated: 0
+        }
+      })
+    })
+
+    course.sectionProgress = sectionProgress
+
+    const updates = {}
+    updates['/users/' + userId + '/courses/' + course.id] = course
+    // store stripe customer ID info: (only works with real credit cards)
+    // updates['/users/' + userId + '/stripeId'] = stripeId
+    updates['/courses/' + course.id + '/users/' + userId] = userId
+    firebase.database().ref().update(updates)
+
+    that.props.history.push('/confirmation')
+  }
+
+  renderProgressBar() {
+    if(this.state.startPaymentSubmission) {
+      return (
+        <Spinner style={{display: 'flex', paddingLeft: '0.5em'}} color="#727981" size={16} speed={1}/>
+      )
     }
   }
 
@@ -194,8 +285,10 @@ class _CourseHeader extends Component {
                                 <div className="col-md-6 col-sm-6 col-xs-6">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
                                   >
-                                    <span className="text-extra-large sm-text-extra-large tz-text">Add to Cart</span>
+                                    <span className="text-extra-large sm-text-extra-large tz-text">SIGN UP</span>
+                                    {this.renderProgressBar()}
                                   </a>
+                                  <div style={{color: 'red'}}>{this.state.paymentError}</div>
                                 </div>
                             </div>
                         </div>
@@ -230,6 +323,7 @@ const mapStateToProps = state => {
   const { signupFormOpen } = state.signupBox
   return {
     isLoggedIn,
+    userInfo,
     signupFormOpen
   }
 }
