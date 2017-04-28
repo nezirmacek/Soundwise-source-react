@@ -63162,7 +63162,8 @@
 	    // right: '-10px',
 	    // bottom: '-10px',
 	    fontSize: '150px',
-	    opacity: 0.7
+	    opacity: 0.7,
+	    color: 'white'
 	  }
 	};
 
@@ -63264,7 +63265,7 @@
 	          ),
 	          _react2.default.createElement(
 	            'p',
-	            { style: { fontSize: '30px' } },
+	            { style: { fontSize: '30px', color: 'white', opacity: 0.7 } },
 	            _react2.default.createElement(
 	              'strong',
 	              null,
