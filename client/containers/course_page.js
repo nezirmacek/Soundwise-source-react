@@ -90,7 +90,7 @@ class _Course extends Component {
         <Helmet>
           <title>{`${course.name} | Soundwise`}</title>
           <meta property="og:url" content={`https://mysoundwise.com/courses/${course.id}`} />
-          <meta property="fb: app_id" content='1726664310980105' />
+          <meta property="fb: app_id" content='1726664310980105'
           <meta property="og:title" content={course.name}/>
           <meta property="og:description" content={course.description}/>
           <meta property="og:image" content={course.img_url_mobile} />
