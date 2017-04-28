@@ -86026,7 +86026,6 @@
 	      rating: 5,
 	      review: ''
 	    };
-	    console.log('course id: ', _this.props.course.id);
 
 	    _this.ratingChanged = _this.ratingChanged.bind(_this);
 	    _this.handleReviewChange = _this.handleReviewChange.bind(_this);
@@ -86037,7 +86036,6 @@
 	  _createClass(_ReviewModal, [{
 	    key: 'ratingChanged',
 	    value: function ratingChanged(newRating) {
-	      console.log('new rating: ', newRating);
 	      this.setState({
 	        rating: newRating
 	      });
@@ -89304,7 +89302,6 @@
 	      }, 0);
 	      var average_rating = Math.floor(total / ratings.length * 10) / 10;
 
-	      console.log('userInfo: ', this.props.userInfo);
 	      return _react2.default.createElement(
 	        'div',
 	        null,

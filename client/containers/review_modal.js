@@ -29,7 +29,6 @@ class _ReviewModal extends Component {
       rating: 5,
       review: ''
     }
-    console.log('course id: ', this.props.course.id)
 
     this.ratingChanged = this.ratingChanged.bind(this)
     this.handleReviewChange = this.handleReviewChange.bind(this)
@@ -37,7 +36,6 @@ class _ReviewModal extends Component {
   }
 
   ratingChanged(newRating) {
-    console.log('new rating: ', newRating)
     this.setState({
       rating: newRating
     })
