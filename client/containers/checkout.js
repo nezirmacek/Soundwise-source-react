@@ -184,7 +184,7 @@ class _Checkout extends Component {
     const updates = {}
     updates['/users/' + userId + '/courses/' + course.id] = course
     // store stripe customer ID info: (only works with real credit cards)
-    if(!customer && customer.length > 0) {
+    if(customer !== undefined && customer.length > 0) {
       updates['/users/' + userId + '/stripe_id'] = customer
     }
     updates['/courses/' + course.id + '/users/' + userId] = userId
