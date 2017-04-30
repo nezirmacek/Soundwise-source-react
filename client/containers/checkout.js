@@ -214,7 +214,7 @@ class _Checkout extends Component {
     return (
       <div>
         <section className='padding-30px-tb xs-padding-30px-tb bg-white builder-bg" id="subscribe-section6'>
-          <div className='container'>
+          <div className='container' style={{paddingBottom: '70px'}}>
             <div className='row equalize sm-equalize-auto equalize-display-inherit'>
               <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin">
                   <div className="row equalize ">

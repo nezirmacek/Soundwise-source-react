@@ -8,6 +8,7 @@ import { SoundwiseHeader } from '../components/soundwise_header'
 import {deleteCourseFromCart, openSignupbox} from '../actions/index'
 import {CourseSignup} from './course_signup'
 import {Checkout} from './checkout'
+import Footer from '../components/footer'
 
 const styles = {
   button: {
@@ -78,6 +79,7 @@ class _Cart extends Component {
                   </div>
               </div>
           </section>
+          <Footer />
         </div>
       )
     } else {
@@ -95,6 +97,7 @@ class _Cart extends Component {
           </div>
         </section>
         <Checkout subtotal={subtotal}/>
+        <Footer />
       </div>
     )
     }

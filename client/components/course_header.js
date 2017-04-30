@@ -35,7 +35,7 @@ const styles = {
     // bottom: '-10px',
     fontSize: '150px',
     opacity: 0.7,
-    color: 'white'
+    // color: 'white'
   }
 }
 
@@ -116,7 +116,7 @@ class _CourseHeader extends Component {
       return (
         <div>
         <i style={styles.icon} className="material-icons">play_circle_outline</i>
-        <p style={{fontSize: '30px', color: 'white', opacity: 0.7}}><strong>PLAY INTRO</strong></p>
+        <p style={{fontSize: '30px', opacity: 0.7}}><strong>PLAY INTRO</strong></p>
         </div>
       )
     }
