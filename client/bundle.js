@@ -91206,7 +91206,7 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'section',
-	        { className: 'padding-60px-tb builder-bg border-none', id: 'callto-action2', style: { backgroundColor: '#F76B1C' } },
+	        { className: ' builder-bg border-none', id: 'callto-action2', style: { backgroundColor: '#F76B1C', paddingBottom: '90px', paddingTop: '90px' } },
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'container' },

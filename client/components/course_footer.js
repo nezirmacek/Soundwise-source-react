@@ -23,7 +23,7 @@ class _CourseFooter extends Component {
 
   render() {
     return (
-            <section className="padding-60px-tb builder-bg border-none" id="callto-action2" style={{backgroundColor: '#F76B1C'}}>
+            <section className=" builder-bg border-none" id="callto-action2" style={{backgroundColor: '#F76B1C', paddingBottom: '90px', paddingTop: '90px'}}>
                 <div className="container">
                     <div className="row equalize">
                         <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{height: "46px"}}>
