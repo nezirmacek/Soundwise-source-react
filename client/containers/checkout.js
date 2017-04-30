@@ -190,8 +190,21 @@ class _Checkout extends Component {
     updates['/courses/' + course.id + '/users/' + userId] = userId
     firebase.database().ref().update(updates)
 
-    that.props.deleteCart()
-    that.props.history.push('/confirmation')
+    Axios.post('/api/email_signup', { //handle mailchimp api call
+      firstName: that.props.userInfo.firstName,
+      lastName: that.props.userInfo.lastName,
+      email: that.props.userInfo.email,
+      courseID: course.id
+    })
+    .then(() => {
+      that.props.deleteCart()
+      that.props.history.push('/confirmation')
+    })
+    .catch((err) => {
+      that.props.deleteCart()
+      that.props.history.push('/confirmation')
+    })
+
   }
 
   renderProgressBar() {

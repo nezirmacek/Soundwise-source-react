@@ -96393,8 +96393,18 @@
 	      updates['/courses/' + course.id + '/users/' + userId] = userId;
 	      firebase.database().ref().update(updates);
 
-	      that.props.deleteCart();
-	      that.props.history.push('/confirmation');
+	      _axios2.default.post('/api/email_signup', { //handle mailchimp api call
+	        firstName: that.props.userInfo.firstName,
+	        lastName: that.props.userInfo.lastName,
+	        email: that.props.userInfo.email,
+	        courseID: course.id
+	      }).then(function () {
+	        that.props.deleteCart();
+	        that.props.history.push('/confirmation');
+	      }).catch(function (err) {
+	        that.props.deleteCart();
+	        that.props.history.push('/confirmation');
+	      });
 	    }
 	  }, {
 	    key: 'renderProgressBar',
