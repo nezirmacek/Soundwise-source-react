@@ -12,7 +12,9 @@ var path = require('path')
 var app = express()
 app.use(bodyParser.json())
 
-var prerendercloud = require('prerendercloud')
+// var prerendercloud = require('prerendercloud')
+
+app.use(function(req, res, next) { console.log('before prerender-node'); next(); })
 
 app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k'))
 
