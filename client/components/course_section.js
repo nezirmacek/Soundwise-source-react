@@ -401,8 +401,8 @@ class _CourseSection extends Component {
         </CardText>
         <CardText expandable={true}>
           <div style={{padding: '1em 2em'}}>
-            <a href={this.props.section.transcript_url} download>
-              <i style={{padding: '1em'}} className="fa fa-lg fa-file-text-o" aria-hidden="true"></i>
+            <a href={this.props.section.transcript_url} target="_blank" >
+              <i className="material-icons" style={{paddingRight: '1em'}}>description</i>
               <span style={{fontSize: '18px'}}>Transcript</span>
             </a>
           </div>

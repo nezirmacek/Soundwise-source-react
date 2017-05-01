@@ -93344,8 +93344,12 @@
 	              { style: { padding: '1em 2em' } },
 	              _react2.default.createElement(
 	                'a',
-	                { href: this.props.section.transcript_url, download: true },
-	                _react2.default.createElement('i', { style: { padding: '1em' }, className: 'fa fa-lg fa-file-text-o', 'aria-hidden': 'true' }),
+	                { href: this.props.section.transcript_url, target: '_blank' },
+	                _react2.default.createElement(
+	                  'i',
+	                  { className: 'material-icons', style: { paddingRight: '1em' } },
+	                  'description'
+	                ),
 	                _react2.default.createElement(
 	                  'span',
 	                  { style: { fontSize: '18px' } },
