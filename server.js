@@ -14,9 +14,7 @@ app.use(bodyParser.json())
 
 // var prerendercloud = require('prerendercloud')
 
-// app.use(function(req, res, next) { console.log('before prerender-node'); next(); })
-
-app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k'))
+app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'))
 
 //************* prerender.cloud *****************
 // prerendercloud.set('prerenderToken', 'dXMtd2VzdC0yOjE2MDE0OTIyLTk5MTgtNGY1Yi1hOTQwLTY1MDI2MzYyYTRlNQ.dE2HiZLJmqwNG0aJsAcWqmZHt_iAsV2tcIQQbvs2zPI')
