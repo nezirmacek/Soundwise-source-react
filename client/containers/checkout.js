@@ -228,8 +228,8 @@ class _Checkout extends Component {
       <div>
         <section className='padding-30px-tb xs-padding-30px-tb bg-white builder-bg" id="subscribe-section6'>
           <div className='container' style={{paddingBottom: '70px'}}>
-            <div className='row equalize sm-equalize-auto equalize-display-inherit'>
-              <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin">
+            <div className='row equalize sm-equalize-auto equalize-display-inherit' style={{paddingBottom: '30px'}}>
+              <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{paddingBottom: '50px'}}>
                   <div className="row equalize ">
                       <div className="col-md-7 display-table col-sm-12 col-xs-12" style={{overflow: 'hidden'}}>
 
@@ -238,13 +238,13 @@ class _Checkout extends Component {
                                 onChange={this.handleChange}
                                 className=" bg-light-gray alt-font big-input border-radius-4"
                                 name = 'coupon'
-                                placeholder='coupon code' style={{width: '100%', height: '3.6em'}}/>
+                                placeholder='coupon code' style={{width: '100%', height: '3.5em'}}/>
                             </div>
-                            <div className="pull-left" style={{display: 'inline-block'}}>
+                            <div className="pull-left">
                             <a
                               onClick = {this.handleCoupon}
-                              className='btn btn-extra-large2 btn-3d text-white tz-text'
-                              style={{float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden'}}>Apply</a>
+                              className='btn btn-extra-large btn-3d text-white tz-text'
+                              style={{float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden', display: 'block', height: '3.5em'}}>Apply</a>
                             </div>
                             <div style={{color: 'red'}}>{this.state.couponError}</div>
                       </div>
@@ -255,6 +255,8 @@ class _Checkout extends Component {
                       </div>
                   </div>
               </div>
+          </div>
+          <div className="row equalize ">
               <div className="col-md-6 center-col col-sm-12 ">
                 <form onSubmit={this.onSubmit}>
                     <div className=''>
@@ -315,7 +317,6 @@ class _Checkout extends Component {
                       </button>
                       {this.renderProgressBar()}
                     </div>
-
                   </div>
                 </form>
               </div>

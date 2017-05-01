@@ -8271,7 +8271,7 @@
 
 	var _routes = __webpack_require__(551);
 
-	var _reducers = __webpack_require__(1101);
+	var _reducers = __webpack_require__(1099);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -38008,7 +38008,7 @@
 
 	var _checkout = __webpack_require__(1097);
 
-	var _page_ = __webpack_require__(1100);
+	var _page_ = __webpack_require__(1098);
 
 	var _page_2 = _interopRequireDefault(_page_);
 
@@ -96137,7 +96137,7 @@
 
 	var _reactRouterDom = __webpack_require__(552);
 
-	var _Dots = __webpack_require__(1098);
+	var _Dots = __webpack_require__(1100);
 
 	var _Dots2 = _interopRequireDefault(_Dots);
 
@@ -96421,10 +96421,10 @@
 	            { className: 'container', style: { paddingBottom: '70px' } },
 	            _react2.default.createElement(
 	              'div',
-	              { className: 'row equalize sm-equalize-auto equalize-display-inherit' },
+	              { className: 'row equalize sm-equalize-auto equalize-display-inherit', style: { paddingBottom: '30px' } },
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin' },
+	                { className: 'col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin', style: { paddingBottom: '50px' } },
 	                _react2.default.createElement(
 	                  'div',
 	                  { className: 'row equalize ' },
@@ -96438,17 +96438,17 @@
 	                        onChange: this.handleChange,
 	                        className: ' bg-light-gray alt-font big-input border-radius-4',
 	                        name: 'coupon',
-	                        placeholder: 'coupon code', style: { width: '100%', height: '3.6em' } })
+	                        placeholder: 'coupon code', style: { width: '100%', height: '3.5em' } })
 	                    ),
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: 'pull-left', style: { display: 'inline-block' } },
+	                      { className: 'pull-left' },
 	                      _react2.default.createElement(
 	                        'a',
 	                        {
 	                          onClick: this.handleCoupon,
-	                          className: 'btn btn-extra-large2 btn-3d text-white tz-text',
-	                          style: { float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden' } },
+	                          className: 'btn btn-extra-large btn-3d text-white tz-text',
+	                          style: { float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden', display: 'block', height: '3.5em' } },
 	                        'Apply'
 	                      )
 	                    ),
@@ -96472,7 +96472,11 @@
 	                    )
 	                  )
 	                )
-	              ),
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'row equalize ' },
 	              _react2.default.createElement(
 	                'div',
 	                { className: 'col-md-6 center-col col-sm-12 ' },
@@ -96714,68 +96718,6 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Dots = __webpack_require__(1099);
-
-	var _Dots2 = _interopRequireDefault(_Dots);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = _Dots2.default;
-
-/***/ },
-/* 1099 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _activityIndicator = __webpack_require__(849);
-
-	var _activityIndicator2 = _interopRequireDefault(_activityIndicator);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Dots = _react2.default.createClass({
-	  displayName: 'Dots',
-	  render: function render() {
-	    return _react2.default.createElement(
-	      'div',
-	      { style: this.props.style, className: 'rai-dots' },
-	      _react2.default.createElement('div', {
-	        className: 'rai-circle',
-	        style: this.props.getFillStyle(0.3)
-	      }),
-	      _react2.default.createElement('div', {
-	        className: 'rai-circle',
-	        style: this.props.getFillStyle(0.2)
-	      }),
-	      _react2.default.createElement('div', {
-	        className: 'rai-circle',
-	        style: this.props.getFillStyle(0.1)
-	      })
-	    );
-	  }
-	});
-
-	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
-
-/***/ },
-/* 1100 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
@@ -96862,7 +96804,7 @@
 	exports.default = NotFound;
 
 /***/ },
-/* 1101 */
+/* 1099 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97074,6 +97016,68 @@
 	});
 
 	exports.default = rootReducer;
+
+/***/ },
+/* 1100 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Dots = __webpack_require__(1101);
+
+	var _Dots2 = _interopRequireDefault(_Dots);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _Dots2.default;
+
+/***/ },
+/* 1101 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _activityIndicator = __webpack_require__(849);
+
+	var _activityIndicator2 = _interopRequireDefault(_activityIndicator);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Dots = _react2.default.createClass({
+	  displayName: 'Dots',
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'div',
+	      { style: this.props.style, className: 'rai-dots' },
+	      _react2.default.createElement('div', {
+	        className: 'rai-circle',
+	        style: this.props.getFillStyle(0.3)
+	      }),
+	      _react2.default.createElement('div', {
+	        className: 'rai-circle',
+	        style: this.props.getFillStyle(0.2)
+	      }),
+	      _react2.default.createElement('div', {
+	        className: 'rai-circle',
+	        style: this.props.getFillStyle(0.1)
+	      })
+	    );
+	  }
+	});
+
+	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
 
 /***/ }
 /******/ ]);
