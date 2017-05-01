@@ -45,7 +45,8 @@ const styles = {
   },
   dialog: {
     width: '100%',
-    maxWidth: 'none'
+    maxWidth: 'none',
+    height: '100%'
   }
 }
 
@@ -174,10 +175,14 @@ class _CourseSignup extends Component {
                 <div className="row">
                     <div className="col-md-8 center-col col-sm-12 text-center">
                         <h3 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Get started</h3>
-                        <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Sign up to Soundwise and take a step towards your highest potential. Already have a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Log in here.</a></div>
+                        <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom  tz-text">Already have a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Log in here.</a></div>
                     </div>
-                    <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1.5em', margin: '2em'}}>
+                    <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1em', margin: '1em'}}>
                         <button onClick={() => this.handleFBAuth()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Sign up with Facebook</span></button>
+                    </div>
+                    <div className="col-md-6 center-col col-sm-12 text-center">
+                        <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text">Or</div>
+                        <h4 className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Sign up with email</h4>
                     </div>
                     <div className="col-md-6 center-col col-sm-12 text-center">
                             <input
@@ -213,10 +218,14 @@ class _CourseSignup extends Component {
               <div className="row">
                   <div className="col-md-8 center-col col-sm-12 text-center">
                       <h2 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Log In</h2>
-                      <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Need a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Get started here.</a></div>
+                      <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom tz-text">Need a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Get started here.</a></div>
                   </div>
                   <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1.5em', margin: '2em'}}>
                       <button onClick={() => this.handleFBAuth()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Log in with Facebook</span></button>
+                  </div>
+                  <div className="col-md-6 center-col col-sm-12 text-center">
+                      <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text">Or</div>
+                      <h4 className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Sign up with email</h4>
                   </div>
                   <div className="col-md-6 center-col col-sm-12 text-center">
                           <input

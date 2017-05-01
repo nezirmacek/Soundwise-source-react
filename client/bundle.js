@@ -65684,7 +65684,8 @@
 	  },
 	  dialog: {
 	    width: '100%',
-	    maxWidth: 'none'
+	    maxWidth: 'none',
+	    height: '100%'
 	  }
 	};
 
@@ -65877,8 +65878,8 @@
 	                ),
 	                _react2.default.createElement(
 	                  'div',
-	                  { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
-	                  'Sign up to Soundwise and take a step towards your highest potential. Already have a Soundwise account? ',
+	                  { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom  tz-text' },
+	                  'Already have a Soundwise account? ',
 	                  _react2.default.createElement(
 	                    'a',
 	                    { onClick: function onClick() {
@@ -65890,7 +65891,7 @@
 	              ),
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1.5em', margin: '2em' } },
+	                { className: 'col-md-6 col-sm-11 col-xs-11 center-col text-center', style: { padding: '1em', margin: '1em' } },
 	                _react2.default.createElement(
 	                  'button',
 	                  { onClick: function onClick() {
@@ -65902,6 +65903,20 @@
 	                    { className: 'tz-text' },
 	                    'Sign up with Facebook'
 	                  )
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'col-md-6 center-col col-sm-12 text-center' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text' },
+	                  'Or'
+	                ),
+	                _react2.default.createElement(
+	                  'h4',
+	                  { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
+	                  'Sign up with email'
 	                )
 	              ),
 	              _react2.default.createElement(
@@ -65969,7 +65984,7 @@
 	              ),
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
+	                { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom tz-text' },
 	                'Need a Soundwise account? ',
 	                _react2.default.createElement(
 	                  'a',
@@ -65994,6 +66009,20 @@
 	                  { className: 'tz-text' },
 	                  'Log in with Facebook'
 	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'col-md-6 center-col col-sm-12 text-center' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text' },
+	                'Or'
+	              ),
+	              _react2.default.createElement(
+	                'h4',
+	                { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
+	                'Sign up with email'
 	              )
 	            ),
 	            _react2.default.createElement(
