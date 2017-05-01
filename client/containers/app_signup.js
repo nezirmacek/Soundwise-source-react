@@ -37,7 +37,7 @@ class _AppSignup extends Component {
       email: '',
       password: '',
       message: '',
-      pic_url: '',
+      pic_url: '../images/smiley_face.jpg',
       redirectToReferrer: false
     }
     this.signUp = this.signUp.bind(this)
@@ -68,7 +68,7 @@ class _AppSignup extends Component {
           firstName,
           lastName,
           email,
-          pic_url: ''
+          pic_url
         })
 
         that.props.signupUser({firstName, lastName, email, pic_url})

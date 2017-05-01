@@ -222,7 +222,7 @@ class _Checkout extends Component {
     // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
     //   return cumm + course.price
     // }, 0)
-    const subtotal = this.state.totalPay / 100
+    const subtotal = Math.floor(this.state.totalPay) / 100
 
     return (
       <div>
@@ -231,23 +231,24 @@ class _Checkout extends Component {
             <div className='row equalize sm-equalize-auto equalize-display-inherit'>
               <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin">
                   <div className="row equalize ">
-                      <div className="col-md-6 display-table col-sm-12 col-xs-12" style={{height: '62px'}}>
-                          <div className=" pull-left">
-                            <button type='submit'
-                              onClick = {this.handleCoupon}
-                              className='btn btn-extra-large2 propClone btn-3d text-white builder-bg tz-text'
-                              style={{float: 'right', backgroundColor: '#F76B1C', height: '3em'}}>Apply</button>
-                            <div className="" style={{overflow: 'hidden'}}>
+                      <div className="col-md-7 display-table col-sm-12 col-xs-12" style={{overflow: 'hidden'}}>
+
+                            <div className="pull-left" style={{display: 'inline-block'}}>
                               <input
                                 onChange={this.handleChange}
                                 className=" bg-light-gray alt-font big-input border-radius-4"
                                 name = 'coupon'
-                                placeholder='coupon code' style={{width: '100%', paddingRight: '1em', height: '3.6em'}}/>
+                                placeholder='coupon code' style={{width: '100%', height: '3.6em'}}/>
+                            </div>
+                            <div className="pull-left" style={{display: 'inline-block'}}>
+                            <a
+                              onClick = {this.handleCoupon}
+                              className='btn btn-extra-large2 btn-3d text-white tz-text'
+                              style={{float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden'}}>Apply</a>
                             </div>
                             <div style={{color: 'red'}}>{this.state.couponError}</div>
-                          </div>
                       </div>
-                      <div className="col-md-5 col-sm-12 col-xs-12 display-table xs-text-center  " style={{height: '62px'}}>
+                      <div className="col-md-4 col-sm-12 col-xs-12 display-table xs-text-center  " style={{height: '62px'}}>
                           <div className=" margin-six-right display-table-cell-vertical-middle text-center">
                               <h3 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{`Total: $${subtotal}`}</h3>
                           </div>

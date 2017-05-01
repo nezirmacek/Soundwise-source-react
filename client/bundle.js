@@ -38047,7 +38047,7 @@
 	            var lastName = snapshot.val().lastName;
 	            var email = snapshot.val().email;
 	            var courses = snapshot.val().courses;
-	            var pic_url = snapshot.val().pic_url;
+	            var pic_url = snapshot.val().pic_url || "";
 	            var stripe_id = snapshot.val().stripe_id;
 	            that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, courses: courses, pic_url: pic_url, stripe_id: stripe_id });
 	          });
@@ -60502,7 +60502,7 @@
 	      email: '',
 	      password: '',
 	      message: '',
-	      pic_url: '',
+	      pic_url: '../images/smiley_face.jpg',
 	      redirectToReferrer: false
 	    };
 	    _this.signUp = _this.signUp.bind(_this);
@@ -60548,7 +60548,7 @@
 	                  firstName: firstName,
 	                  lastName: lastName,
 	                  email: email,
-	                  pic_url: ''
+	                  pic_url: pic_url
 	                });
 
 	                that.props.signupUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
@@ -60870,6 +60870,7 @@
 	      password: '',
 	      message: '',
 	      pic_url: '',
+	      courses: '',
 	      redirectToReferrer: false
 	    };
 	    _this.signIn = _this.signIn.bind(_this);
@@ -60884,13 +60885,13 @@
 	      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
 	        var _this2 = this;
 
-	        var _state, firstName, lastName, email, password, pic_url, userId;
+	        var _state, firstName, lastName, email, password, pic_url, courses, userId;
 
 	        return regeneratorRuntime.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
-	                _state = this.state, firstName = _state.firstName, lastName = _state.lastName, email = _state.email, password = _state.password, pic_url = _state.pic_url;
+	                _state = this.state, firstName = _state.firstName, lastName = _state.lastName, email = _state.email, password = _state.password, pic_url = _state.pic_url, courses = _state.courses;
 	                _context.prev = 1;
 	                _context.next = 4;
 	                return firebase.auth().signInWithEmailAndPassword(email, password);
@@ -63555,7 +63556,7 @@
 	                        _react2.default.createElement(
 	                          'span',
 	                          { className: 'text-extra-large sm-text-extra-large tz-text' },
-	                          'SIGN UP'
+	                          'TAKE THE PROGRAM'
 	                        ),
 	                        this.renderProgressBar()
 	                      ),
@@ -65700,6 +65701,7 @@
 	      lastName: '',
 	      email: '',
 	      password: '',
+	      pic_url: '../images/smiley_face.jpg',
 	      response: '',
 	      renderSignup: true,
 	      message: ''
@@ -65731,13 +65733,13 @@
 	    key: 'signUp',
 	    value: function () {
 	      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	        var _state, firstName, lastName, email, password, that, userId;
+	        var _state, firstName, lastName, email, password, pic_url, that, userId;
 
 	        return regeneratorRuntime.wrap(function _callee$(_context) {
 	          while (1) {
 	            switch (_context.prev = _context.next) {
 	              case 0:
-	                _state = this.state, firstName = _state.firstName, lastName = _state.lastName, email = _state.email, password = _state.password;
+	                _state = this.state, firstName = _state.firstName, lastName = _state.lastName, email = _state.email, password = _state.password, pic_url = _state.pic_url;
 	                that = this;
 
 
@@ -65765,7 +65767,7 @@
 	                  firstName: firstName,
 	                  lastName: lastName,
 	                  email: email,
-	                  pic_url: ''
+	                  pic_url: pic_url
 	                });
 
 	                this.props.signupUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, password: password });
@@ -65773,7 +65775,7 @@
 	                this.props.openSignupbox(false);
 	                this.props.history.push('/cart');
 
-	                _context.next = 20;
+	                _context.next = 19;
 	                break;
 
 	              case 15:
@@ -65783,10 +65785,9 @@
 	                this.setState({
 	                  response: _context.t0.toString()
 	                });
-	                alert('Error', this.state.response);
 	                console.log(_context.t0.toString());
 
-	              case 20:
+	              case 19:
 	              case 'end':
 	                return _context.stop();
 	            }
@@ -65802,68 +65803,51 @@
 	    }()
 	  }, {
 	    key: 'signIn',
-	    value: function () {
-	      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-	        var _state2, firstName, lastName, email, password, that, userId;
+	    value: function signIn() {
+	      var _this2 = this;
 
-	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	          while (1) {
-	            switch (_context2.prev = _context2.next) {
-	              case 0:
-	                _state2 = this.state, firstName = _state2.firstName, lastName = _state2.lastName, email = _state2.email, password = _state2.password;
-	                that = this;
-	                _context2.prev = 2;
-	                _context2.next = 5;
-	                return firebase.auth().signInWithEmailAndPassword(email, password);
+	      var _state2 = this.state,
+	          firstName = _state2.firstName,
+	          lastName = _state2.lastName,
+	          email = _state2.email,
+	          password = _state2.password,
+	          pic_url = _state2.pic_url;
 
-	              case 5:
-	                userId = firebase.auth().currentUser.uid;
+	      var that = this;
 
-	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-	                  firstName = snapshot.val().firstName, lastName = snapshot.val().lastName, email = snapshot.val().email;
-	                  pic_url = snapshot.val().pic_url;
-	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
-	                  that.props.addCourseToCart(that.props.course);
-	                  that.props.openSignupbox(false);
-	                  that.setState({
-	                    firstName: firstName,
-	                    lastName: lastName,
-	                    email: email,
-	                    pic_url: pic_url
-	                  });
-	                  that.props.history.push('/cart');
-	                });
+	      firebase.auth().signInWithEmailAndPassword(email, password).then(function () {
 
-	                _context2.next = 13;
-	                break;
+	        firebase.auth().onAuthStateChanged(function (user) {
+	          var userId = user.uid;
 
-	              case 9:
-	                _context2.prev = 9;
-	                _context2.t0 = _context2['catch'](2);
-
-	                this.setState({
-	                  response: _context2.t0.toString()
-	                });
-	                console.log(_context2.t0.toString());
-
-	              case 13:
-	              case 'end':
-	                return _context2.stop();
+	          firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
+	            firstName = snapshot.val().firstName, lastName = snapshot.val().lastName, email = snapshot.val().email;
+	            if (snapshot.val().pic_url) {
+	              pic_url = snapshot.val().pic_url;
 	            }
-	          }
-	        }, _callee2, this, [[2, 9]]);
-	      }));
-
-	      function signIn() {
-	        return _ref2.apply(this, arguments);
-	      }
-
-	      return signIn;
-	    }()
+	            that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
+	            that.props.addCourseToCart(that.props.course);
+	            that.props.openSignupbox(false);
+	            that.setState({
+	              firstName: firstName,
+	              lastName: lastName,
+	              email: email,
+	              pic_url: pic_url
+	            });
+	            that.props.history.push('/cart');
+	          });
+	        });
+	      }).catch(function (error) {
+	        _this2.setState({
+	          response: error.toString()
+	        });
+	        console.log(error.toString());
+	      });
+	    }
 	  }, {
 	    key: 'signupForm',
 	    value: function signupForm() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var _state3 = this.state,
 	          firstName = _state3.firstName,
@@ -65898,7 +65882,7 @@
 	                  _react2.default.createElement(
 	                    'a',
 	                    { onClick: function onClick() {
-	                        return _this2.switchForm();
+	                        return _this3.switchForm();
 	                      }, className: 'text-decoration-underline' },
 	                    'Log in here.'
 	                  )
@@ -65910,7 +65894,7 @@
 	                _react2.default.createElement(
 	                  'button',
 	                  { onClick: function onClick() {
-	                      return _this2.handleFBAuth();
+	                      return _this3.handleFBAuth();
 	                    }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color' },
 	                  _react2.default.createElement('i', { className: 'fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub' }),
 	                  _react2.default.createElement(
@@ -65960,7 +65944,7 @@
 	  }, {
 	    key: 'loginForm',
 	    value: function loginForm() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var _state4 = this.state,
 	          email = _state4.email,
@@ -65990,7 +65974,7 @@
 	                _react2.default.createElement(
 	                  'a',
 	                  { onClick: function onClick() {
-	                      return _this3.switchForm();
+	                      return _this4.switchForm();
 	                    }, className: 'text-decoration-underline' },
 	                  'Get started here.'
 	                )
@@ -66002,7 +65986,7 @@
 	              _react2.default.createElement(
 	                'button',
 	                { onClick: function onClick() {
-	                    return _this3.handleFBAuth();
+	                    return _this4.handleFBAuth();
 	                  }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color' },
 	                _react2.default.createElement('i', { className: 'fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub' }),
 	                _react2.default.createElement(
@@ -66150,21 +66134,21 @@
 	  }, {
 	    key: 'signupDialog',
 	    value: function signupDialog() {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var actions = [_react2.default.createElement(_FlatButton2.default, {
 	        label: 'SUBMIT',
 	        primary: true,
 	        keyboardFocused: true,
 	        onTouchTap: function onTouchTap() {
-	          return _this4.handleSignupOrLogin();
+	          return _this5.handleSignupOrLogin();
 	        }
 	      }), _react2.default.createElement(_FlatButton2.default, {
 	        label: 'CANCEL',
 	        primary: false,
 	        keyboardFocused: true,
 	        onTouchTap: function onTouchTap() {
-	          return _this4.handleClose();
+	          return _this5.handleClose();
 	        }
 	      })];
 	      return _react2.default.createElement(
@@ -66180,7 +66164,7 @@
 	            contentStyle: styles.dialog,
 	            autoScrollBodyContent: true,
 	            onRequestClose: function onRequestClose() {
-	              return _this4.handleClose();
+	              return _this5.handleClose();
 	            }
 	          },
 	          this.state.renderSignup ? this.signupForm() : this.loginForm()
@@ -91227,7 +91211,7 @@
 	                _react2.default.createElement(
 	                  'span',
 	                  { className: 'tz-text' },
-	                  'ADD TO CART'
+	                  'TAKE THE PROGRAM'
 	                )
 	              )
 	            )
@@ -96424,7 +96408,7 @@
 	      // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
 	      //   return cumm + course.price
 	      // }, 0)
-	      var subtotal = this.state.totalPay / 100;
+	      var subtotal = Math.floor(this.state.totalPay) / 100;
 
 	      return _react2.default.createElement(
 	        'div',
@@ -96446,37 +96430,37 @@
 	                  { className: 'row equalize ' },
 	                  _react2.default.createElement(
 	                    'div',
-	                    { className: 'col-md-6 display-table col-sm-12 col-xs-12', style: { height: '62px' } },
+	                    { className: 'col-md-7 display-table col-sm-12 col-xs-12', style: { overflow: 'hidden' } },
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: ' pull-left' },
+	                      { className: 'pull-left', style: { display: 'inline-block' } },
+	                      _react2.default.createElement('input', {
+	                        onChange: this.handleChange,
+	                        className: ' bg-light-gray alt-font big-input border-radius-4',
+	                        name: 'coupon',
+	                        placeholder: 'coupon code', style: { width: '100%', height: '3.6em' } })
+	                    ),
+	                    _react2.default.createElement(
+	                      'div',
+	                      { className: 'pull-left', style: { display: 'inline-block' } },
 	                      _react2.default.createElement(
-	                        'button',
-	                        { type: 'submit',
+	                        'a',
+	                        {
 	                          onClick: this.handleCoupon,
-	                          className: 'btn btn-extra-large2 propClone btn-3d text-white builder-bg tz-text',
-	                          style: { float: 'right', backgroundColor: '#F76B1C', height: '3em' } },
+	                          className: 'btn btn-extra-large2 btn-3d text-white tz-text',
+	                          style: { float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden' } },
 	                        'Apply'
-	                      ),
-	                      _react2.default.createElement(
-	                        'div',
-	                        { className: '', style: { overflow: 'hidden' } },
-	                        _react2.default.createElement('input', {
-	                          onChange: this.handleChange,
-	                          className: ' bg-light-gray alt-font big-input border-radius-4',
-	                          name: 'coupon',
-	                          placeholder: 'coupon code', style: { width: '100%', paddingRight: '1em', height: '3.6em' } })
-	                      ),
-	                      _react2.default.createElement(
-	                        'div',
-	                        { style: { color: 'red' } },
-	                        this.state.couponError
 	                      )
+	                    ),
+	                    _react2.default.createElement(
+	                      'div',
+	                      { style: { color: 'red' } },
+	                      this.state.couponError
 	                    )
 	                  ),
 	                  _react2.default.createElement(
 	                    'div',
-	                    { className: 'col-md-5 col-sm-12 col-xs-12 display-table xs-text-center  ', style: { height: '62px' } },
+	                    { className: 'col-md-4 col-sm-12 col-xs-12 display-table xs-text-center  ', style: { height: '62px' } },
 	                    _react2.default.createElement(
 	                      'div',
 	                      { className: ' margin-six-right display-table-cell-vertical-middle text-center' },

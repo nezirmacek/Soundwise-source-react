@@ -37,6 +37,7 @@ class _AppSignin extends Component {
       password: '',
       message: '',
       pic_url: '',
+      courses: '',
       redirectToReferrer: false
     }
     this.signIn = this.signIn.bind(this)
@@ -45,7 +46,7 @@ class _AppSignin extends Component {
   }
 
   async signIn() {
-    let {firstName, lastName, email, password, pic_url} = this.state
+    let {firstName, lastName, email, password, pic_url, courses} = this.state
 
     try {
         await firebase.auth().signInWithEmailAndPassword(email, password)

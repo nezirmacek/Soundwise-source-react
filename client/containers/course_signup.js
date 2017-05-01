@@ -57,6 +57,7 @@ class _CourseSignup extends Component {
       lastName: '',
       email: '',
       password: '',
+      pic_url: '../images/smiley_face.jpg',
       response: '',
       renderSignup: true,
       message: ''
@@ -84,7 +85,7 @@ class _CourseSignup extends Component {
   }
 
   async signUp() {
-    const {firstName, lastName, email, password} = this.state
+    const {firstName, lastName, email, password, pic_url} = this.state
     const that = this
 
     if(firstName.length < 1 || lastName.length < 1) {
@@ -107,10 +108,10 @@ class _CourseSignup extends Component {
           firstName,
           lastName,
           email,
-          pic_url: ''
+          pic_url
         })
 
-        this.props.signupUser({firstName, lastName, email,pic_url, password})
+        this.props.signupUser({firstName, lastName, email, pic_url, password})
         this.props.addCourseToCart(this.props.course)
         this.props.openSignupbox(false)
         this.props.history.push('/cart')
@@ -119,47 +120,49 @@ class _CourseSignup extends Component {
         this.setState({
             response: error.toString()
         })
-      alert(
-        'Error',
-        this.state.response
-      )
         console.log(error.toString())
     }
   }
 
-  async signIn() {
-    let {firstName, lastName, email, password} = this.state
+  signIn() {
+    let {firstName, lastName, email, password, pic_url} = this.state
     const that = this
 
-    try {
-        await firebase.auth().signInWithEmailAndPassword(email, password)
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(() => {
 
-        const userId = firebase.auth().currentUser.uid
-        firebase.database().ref('users/' + userId)
-        .once('value')
-        .then(snapshot => {
-            firstName = snapshot.val().firstName,
-            lastName = snapshot.val().lastName,
-            email = snapshot.val().email
-            pic_url = snapshot.val().pic_url
-            that.props.signinUser({firstName, lastName, email, pic_url})
-            that.props.addCourseToCart(that.props.course)
-            that.props.openSignupbox(false)
-            that.setState({
-              firstName,
-              lastName,
-              email,
-              pic_url
+        firebase.auth().onAuthStateChanged((user) => {
+            const userId = user.uid
+
+            firebase.database().ref('users/' + userId)
+            .once('value')
+            .then(snapshot => {
+                firstName = snapshot.val().firstName,
+                lastName = snapshot.val().lastName,
+                email = snapshot.val().email
+                if(snapshot.val().pic_url) {
+                  pic_url = snapshot.val().pic_url
+                }
+                that.props.signinUser({firstName, lastName, email, pic_url})
+                that.props.addCourseToCart(that.props.course)
+                that.props.openSignupbox(false)
+                that.setState({
+                  firstName,
+                  lastName,
+                  email,
+                  pic_url
+                })
+                that.props.history.push('/cart')
             })
-            that.props.history.push('/cart')
         })
 
-    } catch (error) {
-        this.setState({
-            response: error.toString()
-        })
-        console.log(error.toString())
-    }
+      })
+      .catch((error) => {
+          this.setState({
+              response: error.toString()
+          })
+          console.log(error.toString())
+      })
   }
 
   signupForm() {

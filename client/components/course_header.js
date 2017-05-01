@@ -286,7 +286,7 @@ class _CourseHeader extends Component {
                                 <div className="col-md-6 col-sm-6 col-xs-6">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
                                   >
-                                    <span className="text-extra-large sm-text-extra-large tz-text">SIGN UP</span>
+                                    <span className="text-extra-large sm-text-extra-large tz-text">TAKE THE PROGRAM</span>
                                     {this.renderProgressBar()}
                                   </a>
                                   <div style={{color: 'red'}}>{this.state.paymentError}</div>
