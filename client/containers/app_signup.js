@@ -138,10 +138,10 @@ class _AppSignup extends Component {
               firebase.database().ref('users/' + userId)
               .once('value')
               .then(snapshot => {
-                  firstName = snapshot.val().firstName,
-                  lastName = snapshot.val().lastName,
-                  email = snapshot.val().email
-                  pic_url = snapshot.val().pic_url
+                  const firstName = snapshot.val().firstName
+                  const lastName = snapshot.val().lastName
+                  const email = snapshot.val().email
+                  const pic_url = snapshot.val().pic_url
                   that.props.signupUser({firstName, lastName, email, pic_url})
                   that.props.history.push('/myprograms')
               })

@@ -24,6 +24,7 @@ import {Course_Purchased} from './containers/course_page_purchased'
 import {Cart} from './containers/cart'
 import {Checkout} from './containers/checkout'
 import NotFound from './components/page_404'
+import PassRecovery from './components/pass_recovery'
 import { signinUser } from './actions/index'
 
 class _Routes extends Component {
@@ -83,6 +84,7 @@ class _Routes extends Component {
              <Route path="/cart" component={Cart} />
              <Route path="/confirmation" component={OrderConfirmation} />
              <Route path="/courses/:courseId" component={Course} />
+             <Route path="/password_reset" component={PassRecovery} />
              <Route path ="/notfound" component={NotFound} />
              <Route component={NotFound} />
           </Switch>

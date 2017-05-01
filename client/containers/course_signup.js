@@ -234,6 +234,9 @@ class _CourseSignup extends Component {
                           <input
                             onChange={this.handleChange}
                             value={password} type="password" name="password" id="password" data-email="required" placeholder="Password" className="big-input bg-light-gray alt-font border-radius-4"/>
+                          <div className="pull-right">
+                            <a href="https://mysoundwise.com/password_reset" target="_blank">Forgot your password?</a>
+                          </div>
                           <div style={styles.error}>
                             {this.state.response}
                           </div>
@@ -322,16 +325,16 @@ class _CourseSignup extends Component {
             firebase.database().ref('users/' + userId)
             .once('value')
             .then(snapshot => {
-                firstName = snapshot.val().firstName
-                lastName = snapshot.val().lastName
-                email = snapshot.val().email
-                courses = snapshot.val().courses
-                pic_url = snapshot.val().pic_url
-                if(!courses) {
-                  firebase.database().ref('users/' + userId).set({
-                    courses: {}
-                  })
-                }
+                const firstName = snapshot.val().firstName
+                const lastName = snapshot.val().lastName
+                const email = snapshot.val().email
+                const courses = snapshot.val().courses
+                const pic_url = snapshot.val().pic_url
+                // if(!courses) {
+                //   firebase.database().ref('users/' + userId).set({
+                //     courses: {}
+                //   })
+                // }
                 that.props.signinUser({firstName, lastName, email, pic_url, courses})
                 that.props.addCourseToCart(that.props.course)
                 that.props.openSignupbox(false)

@@ -38012,6 +38012,10 @@
 
 	var _page_2 = _interopRequireDefault(_page_);
 
+	var _pass_recovery = __webpack_require__(1102);
+
+	var _pass_recovery2 = _interopRequireDefault(_pass_recovery);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -38097,6 +38101,7 @@
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/cart', component: _cart.Cart }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/confirmation', component: _order_confirmation.OrderConfirmation }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/courses/:courseId', component: _course_page.Course }),
+	            _react2.default.createElement(_reactRouterDom.Route, { path: '/password_reset', component: _pass_recovery2.default }),
 	            _react2.default.createElement(_reactRouterDom.Route, { path: '/notfound', component: _page_2.default }),
 	            _react2.default.createElement(_reactRouterDom.Route, { component: _page_2.default })
 	          )
@@ -60634,8 +60639,10 @@
 	                // Facebook account successfully linked to the existing Firebase user.
 	                var userId = firebase.auth().currentUser.uid;
 	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-	                  firstName = snapshot.val().firstName, lastName = snapshot.val().lastName, email = snapshot.val().email;
-	                  pic_url = snapshot.val().pic_url;
+	                  var firstName = snapshot.val().firstName;
+	                  var lastName = snapshot.val().lastName;
+	                  var email = snapshot.val().email;
+	                  var pic_url = snapshot.val().pic_url;
 	                  that.props.signupUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
 	                  that.props.history.push('/myprograms');
 	                });
@@ -60995,38 +61002,38 @@
 	          if (snapshot.val().firstName !== undefined) {
 	            // if user already exists
 
-	            var _firstName = snapshot.val().firstName;
-	            var _lastName = snapshot.val().lastName;
+	            var firstName = snapshot.val().firstName;
+	            var lastName = snapshot.val().lastName;
 	            var email = snapshot.val().email;
-	            var _courses = snapshot.val().courses || {};
-	            var _pic_url = result.user.photoURL;
+	            var courses = snapshot.val().courses || {};
+	            var pic_url = result.user.photoURL;
 
 	            var updates = {};
-	            updates['/users/' + userId + '/pic_url/'] = _pic_url;
+	            updates['/users/' + userId + '/pic_url/'] = pic_url;
 	            firebase.database().ref().update(updates);
 
-	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: email, pic_url: _pic_url, courses: _courses });
+	            that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, courses: courses });
 	            that.props.history.push('/myprograms');
 	          } else {
 	            //if it's a new user
 
 	            var user = result.user;
 	            var _email = user.email;
-	            var _pic_url2 = result.user.photoURL;
+	            var _pic_url = result.user.photoURL;
 	            var name = user.displayName.split(' ');
-	            var _firstName2 = name[0];
-	            var _lastName2 = name[1];
-	            var _courses2 = {};
+	            var _firstName = name[0];
+	            var _lastName = name[1];
+	            var _courses = {};
 
 	            firebase.database().ref('users/' + userId).set({
-	              firstName: _firstName2,
-	              lastName: _lastName2,
+	              firstName: _firstName,
+	              lastName: _lastName,
 	              email: _email,
-	              pic_url: _pic_url2,
-	              courses: _courses2
+	              pic_url: _pic_url,
+	              courses: _courses
 	            });
 
-	            that.props.signinUser({ firstName: _firstName2, lastName: _lastName2, email: _email, courses: _courses2, pic_url: _pic_url2 });
+	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: _email, courses: _courses, pic_url: _pic_url });
 	            that.props.history.push('/myprograms');
 	          }
 	        });
@@ -61056,16 +61063,16 @@
 	                // Facebook account successfully linked to the existing Firebase user.
 	                var userId = firebase.auth().currentUser.uid;
 	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-	                  firstName = snapshot.val().firstName;
-	                  lastName = snapshot.val().lastName;
-	                  email = snapshot.val().email;
-	                  courses = snapshot.val().courses;
-	                  pic_url = snapshot.val().pic_url;
-	                  if (!courses) {
-	                    firebase.database().ref('users/' + userId).set({
-	                      courses: {}
-	                    });
-	                  }
+	                  var firstName = snapshot.val().firstName;
+	                  var lastName = snapshot.val().lastName;
+	                  var email = snapshot.val().email;
+	                  var courses = snapshot.val().courses;
+	                  var pic_url = snapshot.val().pic_url;
+	                  // if(courses == undefined) {
+	                  //   firebase.database().ref('users/' + userId).set({
+	                  //     courses: {}
+	                  //   })
+	                  // }
 	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, courses: courses });
 
 	                  that.props.history.push('/myprograms');
@@ -61171,6 +61178,15 @@
 	                    onClick: this.signIn,
 	                    type: 'submit', className: 'contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text', style: styles.button },
 	                  'Log In'
+	                ),
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'pull-right' },
+	                  _react2.default.createElement(
+	                    'a',
+	                    { href: 'https://mysoundwise.com/password_reset', target: '_blank' },
+	                    'Forgot your password?'
+	                  )
 	                ),
 	                _react2.default.createElement(
 	                  'div',
@@ -66036,6 +66052,15 @@
 	                value: password, type: 'password', name: 'password', id: 'password', 'data-email': 'required', placeholder: 'Password', className: 'big-input bg-light-gray alt-font border-radius-4' }),
 	              _react2.default.createElement(
 	                'div',
+	                { className: 'pull-right' },
+	                _react2.default.createElement(
+	                  'a',
+	                  { href: 'https://mysoundwise.com/password_reset', target: '_blank' },
+	                  'Forgot your password?'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
 	                { style: styles.error },
 	                this.state.response
 	              )
@@ -66057,17 +66082,17 @@
 	        firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
 	          if (snapshot.val().firstName !== undefined) {
 	            // if user already exists
-	            var _firstName = snapshot.val().firstName;
-	            var _lastName = snapshot.val().lastName;
+	            var firstName = snapshot.val().firstName;
+	            var lastName = snapshot.val().lastName;
 	            var email = snapshot.val().email;
-	            var _pic_url = result.user.photoURL;
-	            var _courses = snapshot.val().courses || {};
+	            var pic_url = result.user.photoURL;
+	            var courses = snapshot.val().courses || {};
 
 	            var updates = {};
-	            updates['/users/' + userId + '/pic_url/'] = _pic_url;
+	            updates['/users/' + userId + '/pic_url/'] = pic_url;
 	            firebase.database().ref().update(updates);
 
-	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: email, pic_url: _pic_url, courses: _courses });
+	            that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, courses: courses });
 	            that.props.addCourseToCart(that.props.course);
 	            that.props.openSignupbox(false);
 	            that.props.history.push('/cart');
@@ -66075,21 +66100,21 @@
 	            //if it's a new user
 	            var user = result.user;
 	            var _email = user.email;
-	            var _pic_url2 = result.user.photoURL;
+	            var _pic_url = result.user.photoURL;
 	            var name = user.displayName.split(' ');
-	            var _firstName2 = name[0];
-	            var _lastName2 = name[1];
-	            var _courses2 = {};
+	            var _firstName = name[0];
+	            var _lastName = name[1];
+	            var _courses = {};
 
 	            firebase.database().ref('users/' + userId).set({
-	              firstName: _firstName2,
-	              lastName: _lastName2,
+	              firstName: _firstName,
+	              lastName: _lastName,
 	              email: _email,
-	              pic_url: _pic_url2,
-	              courses: _courses2
+	              pic_url: _pic_url,
+	              courses: _courses
 	            });
 
-	            that.props.signinUser({ firstName: _firstName2, lastName: _lastName2, email: _email, pic_url: _pic_url2, courses: _courses2 });
+	            that.props.signinUser({ firstName: _firstName, lastName: _lastName, email: _email, pic_url: _pic_url, courses: _courses });
 	            that.props.addCourseToCart(that.props.course);
 	            that.props.openSignupbox(false);
 	            that.props.history.push('/cart');
@@ -66121,16 +66146,16 @@
 	                // Facebook account successfully linked to the existing Firebase user.
 	                var userId = firebase.auth().currentUser.uid;
 	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
-	                  firstName = snapshot.val().firstName;
-	                  lastName = snapshot.val().lastName;
-	                  email = snapshot.val().email;
-	                  courses = snapshot.val().courses;
-	                  pic_url = snapshot.val().pic_url;
-	                  if (!courses) {
-	                    firebase.database().ref('users/' + userId).set({
-	                      courses: {}
-	                    });
-	                  }
+	                  var firstName = snapshot.val().firstName;
+	                  var lastName = snapshot.val().lastName;
+	                  var email = snapshot.val().email;
+	                  var courses = snapshot.val().courses;
+	                  var pic_url = snapshot.val().pic_url;
+	                  // if(!courses) {
+	                  //   firebase.database().ref('users/' + userId).set({
+	                  //     courses: {}
+	                  //   })
+	                  // }
 	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, courses: courses });
 	                  that.props.addCourseToCart(that.props.course);
 	                  that.props.openSignupbox(false);
@@ -97107,6 +97132,190 @@
 	});
 
 	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
+
+/***/ },
+/* 1102 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _firebase = __webpack_require__(544);
+
+	var firebase = _interopRequireWildcard(_firebase);
+
+	var _soundwise_header = __webpack_require__(826);
+
+	var _footer = __webpack_require__(824);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+	  button: {
+	    backgroundColor: '#F76B1C'
+	  },
+	  headerText: {
+	    color: '#F76B1C'
+	  },
+	  error: {
+	    color: 'red'
+	  }
+	};
+
+	var PassRecovery = function (_Component) {
+	  _inherits(PassRecovery, _Component);
+
+	  function PassRecovery(props) {
+	    _classCallCheck(this, PassRecovery);
+
+	    var _this = _possibleConstructorReturn(this, (PassRecovery.__proto__ || Object.getPrototypeOf(PassRecovery)).call(this, props));
+
+	    _this.state = {
+	      email: '',
+	      submitted: false,
+	      error: ''
+	    };
+	    _this.handleChange = _this.handleChange.bind(_this);
+	    _this.handleSubmit = _this.handleSubmit.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(PassRecovery, [{
+	    key: 'handleChange',
+	    value: function handleChange(e) {
+	      this.setState(_defineProperty({}, e.target.name, e.target.value));
+	    }
+	  }, {
+	    key: 'handleSubmit',
+	    value: function handleSubmit() {
+	      var auth = firebase.auth();
+	      var email = this.state.email;
+
+	      var that = this;
+
+	      auth.sendPasswordResetEmail(email).then(function () {
+	        that.setState({
+	          submitted: true
+	        });
+	      }, function (error) {
+	        that.setState({
+	          error: error
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      if (this.state.submitted) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'PASSWORD RESET EMAIL SENT'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
+	      } else {
+
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg', id: 'subscribe-section6' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-8 center-col col-sm-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text', style: styles.headerText },
+	                    'Forgot your password?'
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
+	                    'If you forgot your password, please enter the email address associated with your account to reset your password.'
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-6 center-col col-sm-12 text-center' },
+	                  _react2.default.createElement('input', {
+	                    onChange: this.handleChange,
+	                    value: this.state.email, type: 'email', name: 'email', id: 'email', 'data-email': 'required', placeholder: 'Email', className: 'big-input bg-light-gray alt-font border-radius-4' }),
+	                  _react2.default.createElement(
+	                    'button',
+	                    {
+	                      onClick: this.handleSubmit,
+	                      type: 'submit', className: 'contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text', style: styles.button },
+	                    'Send reset email'
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { style: styles.error },
+	                    this.state.error
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
+	      }
+	    }
+	  }]);
+
+	  return PassRecovery;
+	}(_react.Component);
+
+	exports.default = PassRecovery;
 
 /***/ }
 /******/ ]);

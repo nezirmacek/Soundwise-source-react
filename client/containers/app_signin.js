@@ -194,16 +194,16 @@ class _AppSignin extends Component {
             firebase.database().ref('users/' + userId)
             .once('value')
             .then(snapshot => {
-                firstName = snapshot.val().firstName
-                lastName = snapshot.val().lastName
-                email = snapshot.val().email
-                courses = snapshot.val().courses
-                pic_url = snapshot.val().pic_url
-                if(!courses) {
-                  firebase.database().ref('users/' + userId).set({
-                    courses: {}
-                  })
-                }
+                const firstName = snapshot.val().firstName
+                const lastName = snapshot.val().lastName
+                const email = snapshot.val().email
+                const courses = snapshot.val().courses
+                const pic_url = snapshot.val().pic_url
+                // if(courses == undefined) {
+                //   firebase.database().ref('users/' + userId).set({
+                //     courses: {}
+                //   })
+                // }
                 that.props.signinUser({firstName, lastName, email, pic_url, courses})
 
                 that.props.history.push('/myprograms')
@@ -253,6 +253,9 @@ class _AppSignin extends Component {
                           <button
                             onClick={this.signIn}
                             type="submit" className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text" style={styles.button}>Log In</button>
+                          <div className="pull-right">
+                            <a href="https://mysoundwise.com/password_reset" target="_blank">Forgot your password?</a>
+                          </div>
                           <div style={styles.error}>
                             {this.state.message}
                           </div>
