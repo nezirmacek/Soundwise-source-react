@@ -8271,7 +8271,7 @@
 
 	var _routes = __webpack_require__(551);
 
-	var _reducers = __webpack_require__(1099);
+	var _reducers = __webpack_require__(1102);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -38008,11 +38008,11 @@
 
 	var _checkout = __webpack_require__(1097);
 
-	var _page_ = __webpack_require__(1098);
+	var _page_ = __webpack_require__(1100);
 
 	var _page_2 = _interopRequireDefault(_page_);
 
-	var _pass_recovery = __webpack_require__(1102);
+	var _pass_recovery = __webpack_require__(1101);
 
 	var _pass_recovery2 = _interopRequireDefault(_pass_recovery);
 
@@ -65730,6 +65730,8 @@
 	    _this.signupForm = _this.signupForm.bind(_this);
 	    _this.switchForm = _this.switchForm.bind(_this);
 	    _this.handleSignupOrLogin = _this.handleSignupOrLogin.bind(_this);
+	    _this.handleFBSignin = _this.handleFBSignin.bind(_this);
+	    _this.handleFBSignup = _this.handleFBSignup.bind(_this);
 	    return _this;
 	  }
 
@@ -65911,7 +65913,7 @@
 	                _react2.default.createElement(
 	                  'button',
 	                  { onClick: function onClick() {
-	                      return _this3.handleFBAuth();
+	                      return _this3.handleFBSignup();
 	                    }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color' },
 	                  _react2.default.createElement('i', { className: 'fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub' }),
 	                  _react2.default.createElement(
@@ -66017,7 +66019,7 @@
 	              _react2.default.createElement(
 	                'button',
 	                { onClick: function onClick() {
-	                    return _this4.handleFBAuth();
+	                    return _this4.handleFBSignin();
 	                  }, className: 'text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color' },
 	                _react2.default.createElement('i', { className: 'fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub' }),
 	                _react2.default.createElement(
@@ -66070,8 +66072,8 @@
 	      );
 	    }
 	  }, {
-	    key: 'handleFBAuth',
-	    value: function handleFBAuth() {
+	    key: 'handleFBSignin',
+	    value: function handleFBSignin() {
 	      var that = this;
 	      // firebase.auth().signInWithRedirect(provider)
 
@@ -66157,6 +66159,73 @@
 	                  //   })
 	                  // }
 	                  that.props.signinUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url, courses: courses });
+	                  that.props.addCourseToCart(that.props.course);
+	                  that.props.openSignupbox(false);
+	                  that.props.history.push('/cart');
+	                });
+	              });
+	            }
+	          });
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'handleFBSignup',
+	    value: function handleFBSignup() {
+	      var that = this;
+
+	      firebase.auth().signInWithPopup(provider).then(function (result) {
+	        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+	        // The signed-in user info.
+	        var user = result.user;
+	        var email = user.email;
+	        var pic_url = result.user.photoURL;
+	        var name = user.displayName.split(' ');
+	        var firstName = name[0];
+	        var lastName = name[1];
+
+	        var userId = firebase.auth().currentUser.uid;
+	        firebase.database().ref('users/' + userId).set({
+	          firstName: firstName,
+	          lastName: lastName,
+	          email: email,
+	          pic_url: pic_url
+	        });
+
+	        that.props.signupUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
+	        that.props.addCourseToCart(that.props.course);
+	        that.props.openSignupbox(false);
+	        that.props.history.push('/cart');
+	      }).catch(function (error) {
+	        // Handle Errors here.
+	        if (error.code === 'auth/account-exists-with-different-credential') {
+	          // Step 2.
+	          // User's email already exists.
+	          // The pending Facebook credential.
+	          var pendingCred = error.credential;
+	          // The provider account's email address.
+	          var email = error.email;
+	          // Get registered providers for this email.
+	          firebase.auth().fetchProvidersForEmail(email).then(function (providers) {
+	            // Step 3.
+	            // If the user has several providers,
+	            // the first provider in the list will be the "recommended" provider to use.
+	            if (providers[0] === 'password') {
+	              // Asks the user his password.
+	              // In real scenario, you should handle this asynchronously.
+	              var password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
+	              firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
+	                // Step 4a.
+	                return user.link(pendingCred);
+	              }).then(function () {
+	                // Facebook account successfully linked to the existing Firebase user.
+	                var userId = firebase.auth().currentUser.uid;
+	                firebase.database().ref('users/' + userId).once('value').then(function (snapshot) {
+	                  var firstName = snapshot.val().firstName;
+	                  var lastName = snapshot.val().lastName;
+	                  var email = snapshot.val().email;
+	                  var pic_url = snapshot.val().pic_url;
+	                  that.props.signupUser({ firstName: firstName, lastName: lastName, email: email, pic_url: pic_url });
 	                  that.props.addCourseToCart(that.props.course);
 	                  that.props.openSignupbox(false);
 	                  that.props.history.push('/cart');
@@ -96195,7 +96264,7 @@
 
 	var _reactRouterDom = __webpack_require__(552);
 
-	var _Dots = __webpack_require__(1100);
+	var _Dots = __webpack_require__(1098);
 
 	var _Dots2 = _interopRequireDefault(_Dots);
 
@@ -96776,6 +96845,68 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Dots = __webpack_require__(1099);
+
+	var _Dots2 = _interopRequireDefault(_Dots);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _Dots2.default;
+
+/***/ },
+/* 1099 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _activityIndicator = __webpack_require__(849);
+
+	var _activityIndicator2 = _interopRequireDefault(_activityIndicator);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Dots = _react2.default.createClass({
+	  displayName: 'Dots',
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'div',
+	      { style: this.props.style, className: 'rai-dots' },
+	      _react2.default.createElement('div', {
+	        className: 'rai-circle',
+	        style: this.props.getFillStyle(0.3)
+	      }),
+	      _react2.default.createElement('div', {
+	        className: 'rai-circle',
+	        style: this.props.getFillStyle(0.2)
+	      }),
+	      _react2.default.createElement('div', {
+	        className: 'rai-circle',
+	        style: this.props.getFillStyle(0.1)
+	      })
+	    );
+	  }
+	});
+
+	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
+
+/***/ },
+/* 1100 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
@@ -96862,7 +96993,191 @@
 	exports.default = NotFound;
 
 /***/ },
-/* 1099 */
+/* 1101 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _firebase = __webpack_require__(544);
+
+	var firebase = _interopRequireWildcard(_firebase);
+
+	var _soundwise_header = __webpack_require__(826);
+
+	var _footer = __webpack_require__(824);
+
+	var _footer2 = _interopRequireDefault(_footer);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+	  button: {
+	    backgroundColor: '#F76B1C'
+	  },
+	  headerText: {
+	    color: '#F76B1C'
+	  },
+	  error: {
+	    color: 'red'
+	  }
+	};
+
+	var PassRecovery = function (_Component) {
+	  _inherits(PassRecovery, _Component);
+
+	  function PassRecovery(props) {
+	    _classCallCheck(this, PassRecovery);
+
+	    var _this = _possibleConstructorReturn(this, (PassRecovery.__proto__ || Object.getPrototypeOf(PassRecovery)).call(this, props));
+
+	    _this.state = {
+	      email: '',
+	      submitted: false,
+	      error: ''
+	    };
+	    _this.handleChange = _this.handleChange.bind(_this);
+	    _this.handleSubmit = _this.handleSubmit.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(PassRecovery, [{
+	    key: 'handleChange',
+	    value: function handleChange(e) {
+	      this.setState(_defineProperty({}, e.target.name, e.target.value));
+	    }
+	  }, {
+	    key: 'handleSubmit',
+	    value: function handleSubmit() {
+	      var auth = firebase.auth();
+	      var email = this.state.email;
+
+	      var that = this;
+
+	      auth.sendPasswordResetEmail(email).then(function () {
+	        that.setState({
+	          submitted: true
+	        });
+	      }, function (error) {
+	        that.setState({
+	          error: error
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      if (this.state.submitted) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
+	                    'PASSWORD RESET EMAIL SENT'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
+	      } else {
+
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
+	          _react2.default.createElement(
+	            'section',
+	            { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg', id: 'subscribe-section6' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'container' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'row' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-8 center-col col-sm-12 text-center' },
+	                  _react2.default.createElement(
+	                    'h2',
+	                    { className: 'title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text', style: styles.headerText },
+	                    'Forgot your password?'
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
+	                    'If you forgot your password, please enter the email address associated with your account to reset your password.'
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'col-md-6 center-col col-sm-12 text-center' },
+	                  _react2.default.createElement('input', {
+	                    onChange: this.handleChange,
+	                    value: this.state.email, type: 'email', name: 'email', id: 'email', 'data-email': 'required', placeholder: 'Email', className: 'big-input bg-light-gray alt-font border-radius-4' }),
+	                  _react2.default.createElement(
+	                    'button',
+	                    {
+	                      onClick: this.handleSubmit,
+	                      type: 'submit', className: 'contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text', style: styles.button },
+	                    'Send reset email'
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { style: styles.error },
+	                    this.state.error
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_footer2.default, null)
+	        );
+	      }
+	    }
+	  }]);
+
+	  return PassRecovery;
+	}(_react.Component);
+
+	exports.default = PassRecovery;
+
+/***/ },
+/* 1102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97074,252 +97389,6 @@
 	});
 
 	exports.default = rootReducer;
-
-/***/ },
-/* 1100 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Dots = __webpack_require__(1101);
-
-	var _Dots2 = _interopRequireDefault(_Dots);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = _Dots2.default;
-
-/***/ },
-/* 1101 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _activityIndicator = __webpack_require__(849);
-
-	var _activityIndicator2 = _interopRequireDefault(_activityIndicator);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Dots = _react2.default.createClass({
-	  displayName: 'Dots',
-	  render: function render() {
-	    return _react2.default.createElement(
-	      'div',
-	      { style: this.props.style, className: 'rai-dots' },
-	      _react2.default.createElement('div', {
-	        className: 'rai-circle',
-	        style: this.props.getFillStyle(0.3)
-	      }),
-	      _react2.default.createElement('div', {
-	        className: 'rai-circle',
-	        style: this.props.getFillStyle(0.2)
-	      }),
-	      _react2.default.createElement('div', {
-	        className: 'rai-circle',
-	        style: this.props.getFillStyle(0.1)
-	      })
-	    );
-	  }
-	});
-
-	exports.default = (0, _activityIndicator2.default)(Dots, 0.8);
-
-/***/ },
-/* 1102 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(299);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _firebase = __webpack_require__(544);
-
-	var firebase = _interopRequireWildcard(_firebase);
-
-	var _soundwise_header = __webpack_require__(826);
-
-	var _footer = __webpack_require__(824);
-
-	var _footer2 = _interopRequireDefault(_footer);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var styles = {
-	  button: {
-	    backgroundColor: '#F76B1C'
-	  },
-	  headerText: {
-	    color: '#F76B1C'
-	  },
-	  error: {
-	    color: 'red'
-	  }
-	};
-
-	var PassRecovery = function (_Component) {
-	  _inherits(PassRecovery, _Component);
-
-	  function PassRecovery(props) {
-	    _classCallCheck(this, PassRecovery);
-
-	    var _this = _possibleConstructorReturn(this, (PassRecovery.__proto__ || Object.getPrototypeOf(PassRecovery)).call(this, props));
-
-	    _this.state = {
-	      email: '',
-	      submitted: false,
-	      error: ''
-	    };
-	    _this.handleChange = _this.handleChange.bind(_this);
-	    _this.handleSubmit = _this.handleSubmit.bind(_this);
-	    return _this;
-	  }
-
-	  _createClass(PassRecovery, [{
-	    key: 'handleChange',
-	    value: function handleChange(e) {
-	      this.setState(_defineProperty({}, e.target.name, e.target.value));
-	    }
-	  }, {
-	    key: 'handleSubmit',
-	    value: function handleSubmit() {
-	      var auth = firebase.auth();
-	      var email = this.state.email;
-
-	      var that = this;
-
-	      auth.sendPasswordResetEmail(email).then(function () {
-	        that.setState({
-	          submitted: true
-	        });
-	      }, function (error) {
-	        that.setState({
-	          error: error
-	        });
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      if (this.state.submitted) {
-	        return _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	          _react2.default.createElement(
-	            'section',
-	            { className: 'padding-110px-tb bg-white builder-bg xs-padding-60px-tb', id: 'feature-section14' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'container' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                  _react2.default.createElement(
-	                    'h2',
-	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                    'PASSWORD RESET EMAIL SENT'
-	                  )
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(_footer2.default, null)
-	        );
-	      } else {
-
-	        return _react2.default.createElement(
-	          'div',
-	          null,
-	          _react2.default.createElement(_soundwise_header.SoundwiseHeader, null),
-	          _react2.default.createElement(
-	            'section',
-	            { className: 'padding-110px-tb xs-padding-60px-tb bg-white builder-bg', id: 'subscribe-section6' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'container' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'row' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'col-md-8 center-col col-sm-12 text-center' },
-	                  _react2.default.createElement(
-	                    'h2',
-	                    { className: 'title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text', style: styles.headerText },
-	                    'Forgot your password?'
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { className: 'text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text' },
-	                    'If you forgot your password, please enter the email address associated with your account to reset your password.'
-	                  )
-	                ),
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'col-md-6 center-col col-sm-12 text-center' },
-	                  _react2.default.createElement('input', {
-	                    onChange: this.handleChange,
-	                    value: this.state.email, type: 'email', name: 'email', id: 'email', 'data-email': 'required', placeholder: 'Email', className: 'big-input bg-light-gray alt-font border-radius-4' }),
-	                  _react2.default.createElement(
-	                    'button',
-	                    {
-	                      onClick: this.handleSubmit,
-	                      type: 'submit', className: 'contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text', style: styles.button },
-	                    'Send reset email'
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { style: styles.error },
-	                    this.state.error
-	                  )
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(_footer2.default, null)
-	        );
-	      }
-	    }
-	  }]);
-
-	  return PassRecovery;
-	}(_react.Component);
-
-	exports.default = PassRecovery;
 
 /***/ }
 /******/ ]);

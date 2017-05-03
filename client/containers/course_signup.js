@@ -70,6 +70,8 @@ class _CourseSignup extends Component {
     this.signupForm = this.signupForm.bind(this)
     this.switchForm = this.switchForm.bind(this)
     this.handleSignupOrLogin = this.handleSignupOrLogin.bind(this)
+    this.handleFBSignin = this.handleFBSignin.bind(this)
+    this.handleFBSignup = this.handleFBSignup.bind(this)
   }
 
   handleChange(e) {
@@ -178,7 +180,7 @@ class _CourseSignup extends Component {
                         <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom  tz-text">Already have a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Log in here.</a></div>
                     </div>
                     <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1em', margin: '1em'}}>
-                        <button onClick={() => this.handleFBAuth()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Sign up with Facebook</span></button>
+                        <button onClick={() => this.handleFBSignup()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Sign up with Facebook</span></button>
                     </div>
                     <div className="col-md-6 center-col col-sm-12 text-center">
                         <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text">Or</div>
@@ -221,7 +223,7 @@ class _CourseSignup extends Component {
                       <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom tz-text">Need a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Get started here.</a></div>
                   </div>
                   <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1.5em', margin: '2em'}}>
-                      <button onClick={() => this.handleFBAuth()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Log in with Facebook</span></button>
+                      <button onClick={() => this.handleFBSignin()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Log in with Facebook</span></button>
                   </div>
                   <div className="col-md-6 center-col col-sm-12 text-center">
                       <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text">Or</div>
@@ -247,7 +249,7 @@ class _CourseSignup extends Component {
     )
   }
 
-  handleFBAuth() {
+  handleFBSignin() {
     const that = this
     // firebase.auth().signInWithRedirect(provider)
 
@@ -346,6 +348,76 @@ class _CourseSignup extends Component {
       })
     }
   })
+  }
+
+  handleFBSignup() {
+    const that = this
+
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      // The signed-in user info.
+      const user = result.user
+      const email = user.email
+      const pic_url = result.user.photoURL
+      const name = user.displayName.split(' ')
+      const firstName = name[0]
+      const lastName = name[1]
+
+      const userId = firebase.auth().currentUser.uid
+      firebase.database().ref('users/' + userId).set({
+        firstName,
+        lastName,
+        email,
+        pic_url
+      })
+
+      that.props.signupUser({firstName, lastName, email, pic_url})
+      that.props.addCourseToCart(that.props.course)
+      that.props.openSignupbox(false)
+      that.props.history.push('/cart')
+
+    }).catch(function(error) {
+      // Handle Errors here.
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        // Step 2.
+        // User's email already exists.
+        // The pending Facebook credential.
+        var pendingCred = error.credential
+        // The provider account's email address.
+        var email = error.email
+        // Get registered providers for this email.
+        firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
+          // Step 3.
+          // If the user has several providers,
+          // the first provider in the list will be the "recommended" provider to use.
+          if (providers[0] === 'password') {
+            // Asks the user his password.
+            // In real scenario, you should handle this asynchronously.
+            var password = prompt('Please enter your Soundwise password') // TODO: implement promptUserForPassword.
+            firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
+              // Step 4a.
+              return user.link(pendingCred)
+            }).then(function() {
+              // Facebook account successfully linked to the existing Firebase user.
+              const userId = firebase.auth().currentUser.uid
+              firebase.database().ref('users/' + userId)
+              .once('value')
+              .then(snapshot => {
+                  const firstName = snapshot.val().firstName
+                  const lastName = snapshot.val().lastName
+                  const email = snapshot.val().email
+                  const pic_url = snapshot.val().pic_url
+                  that.props.signupUser({firstName, lastName, email, pic_url})
+                  that.props.addCourseToCart(that.props.course)
+                  that.props.openSignupbox(false)
+                  that.props.history.push('/cart')
+              })
+            })
+          }
+
+        })
+      }
+    })
   }
 
   handleClose() {
