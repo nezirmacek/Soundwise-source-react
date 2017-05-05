@@ -154,11 +154,11 @@ export default class CourseOutline extends Component {
                   </h5>
                   <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What should I do if I have technical issues?</h2>
                   <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{lineHeight: '30px'}}>
-                    Shoot us an email at <a href="mailto:natasha@mysoundwise.com">natasha@mysoundwise.com</a>.
+                    Shoot us an email at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a>.
                   </h5>
                   <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What if I'm not happy with the content?</h2>
                   <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>
-                    We would never want you to be unhappy! If you are unsatisfied with the content, let us know at <a href="mailto:natasha@mysoundwise.com">natasha@mysoundwise.com</a> within 14 days of your purchase and we will give you a full refund minus the credit card processing fee.
+                    We would never want you to be unhappy! If you are unsatisfied with the content, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your purchase and we will give you a full refund minus the credit card processing fee.
                   </h5>
                 </div>
             </div>

@@ -20,7 +20,23 @@ const Instructor = (props) => (
                     <div className="text-dark-gray text-medium margin-twelve no-margin-lr tz-text" id="tz-slider-text130"><p></p></div>
                     <div className="text-dark-gray text-large tz-text" id="tz-slider-text129" >
                       <p>{props.course.teacher_bio}</p>
-
+                    </div>
+                    <div className="row">
+                        <div className="col-md-10 col-md-offset-1 col-sm-12 text-center">
+                            <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+                              <a target="_blank" href={props.course.teacher_website} className=" text-medium tz-text"><i className="fa fa-link icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" aria-hidden="true"></i>
+                                <br />Website</a>
+                            </div>
+                            <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+                              <a target="_blank" href={props.course.teacher_twitter} className=" text-medium tz-text"><i className="fa fa-twitter icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Twitter</a>
+                            </div>
+                            <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+                              <a target="_blank" href={props.course.teacher_facebook} className=" text-medium tz-text"><i className="fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Facebook</a>
+                            </div>
+                            <div className="col-md-3 col-sm-4">
+                              <a target="_blank" href={props.course.teacher_linkedin} className=" text-medium tz-text"><i className="fa fa-linkedin icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />LinkedIn</a>
+                            </div>
+                        </div>
                     </div>
                    </div>
                 </div>

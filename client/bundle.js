@@ -90563,8 +90563,8 @@
 	                  'Shoot us an email at ',
 	                  _react2.default.createElement(
 	                    'a',
-	                    { href: 'mailto:natasha@mysoundwise.com' },
-	                    'natasha@mysoundwise.com'
+	                    { href: 'mailto:support@mysoundwise.com' },
+	                    'support@mysoundwise.com'
 	                  ),
 	                  '.'
 	                ),
@@ -90579,8 +90579,8 @@
 	                  'We would never want you to be unhappy! If you are unsatisfied with the content, let us know at ',
 	                  _react2.default.createElement(
 	                    'a',
-	                    { href: 'mailto:natasha@mysoundwise.com' },
-	                    'natasha@mysoundwise.com'
+	                    { href: 'mailto:support@mysoundwise.com' },
+	                    'support@mysoundwise.com'
 	                  ),
 	                  ' within 14 days of your purchase and we will give you a full refund minus the credit card processing fee.'
 	                )
@@ -90667,6 +90667,58 @@
 	                                    "p",
 	                                    null,
 	                                    props.course.teacher_bio
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "row" },
+	                                _react2.default.createElement(
+	                                    "div",
+	                                    { className: "col-md-10 col-md-offset-1 col-sm-12 text-center" },
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "col-md-3 col-sm-4 xs-margin-nineteen-bottom" },
+	                                        _react2.default.createElement(
+	                                            "a",
+	                                            { target: "_blank", href: props.course.teacher_website, className: " text-medium tz-text" },
+	                                            _react2.default.createElement("i", { className: "fa fa-link icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color", "aria-hidden": "true" }),
+	                                            _react2.default.createElement("br", null),
+	                                            "Website"
+	                                        )
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "col-md-3 col-sm-4 xs-margin-nineteen-bottom" },
+	                                        _react2.default.createElement(
+	                                            "a",
+	                                            { target: "_blank", href: props.course.teacher_twitter, className: " text-medium tz-text" },
+	                                            _react2.default.createElement("i", { className: "fa fa-twitter icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" }),
+	                                            _react2.default.createElement("br", null),
+	                                            "Twitter"
+	                                        )
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "col-md-3 col-sm-4 xs-margin-nineteen-bottom" },
+	                                        _react2.default.createElement(
+	                                            "a",
+	                                            { target: "_blank", href: props.course.teacher_facebook, className: " text-medium tz-text" },
+	                                            _react2.default.createElement("i", { className: "fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" }),
+	                                            _react2.default.createElement("br", null),
+	                                            "Facebook"
+	                                        )
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "col-md-3 col-sm-4" },
+	                                        _react2.default.createElement(
+	                                            "a",
+	                                            { target: "_blank", href: props.course.teacher_linkedin, className: " text-medium tz-text" },
+	                                            _react2.default.createElement("i", { className: "fa fa-linkedin icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" }),
+	                                            _react2.default.createElement("br", null),
+	                                            "LinkedIn"
+	                                        )
+	                                    )
 	                                )
 	                            )
 	                        )
