@@ -22,14 +22,14 @@ const styles = {
   tabs: {
     color: deepOrange800,
     backgroundColor: 'white',
-    // fontSize: 20,
-    fontFamily: 'lato'
+    fontSize: 20,
+    // fontFamily: 'lato'
   },
   active_tab: {
     color: deepOrange800,
     backgroundColor: orange50,
-    // fontSize: 24,
-    fontFamily: 'lato'
+    fontSize: 20,
+    // fontFamily: 'lato'
   }
 }
 
@@ -39,7 +39,7 @@ export default class CourseBodyPurchased extends React.Component {
     super(props)
 
     this.state = {
-      slideIndex: 1,
+      slideIndex: 0,
       course: {
         runtime: '',
         price: '',
@@ -78,19 +78,19 @@ export default class CourseBodyPurchased extends React.Component {
           onChange={this.handleChange}
           value={this.state.slideIndex}
         >
-          <Tab style={styles.tab[0]} label="RESOURCES" value={0} />
-          <Tab style={styles.tab[1]} label="CONTENT" value={1} />
+          <Tab style={styles.tab[1]} label="CONTENT" value={0} />
+          <Tab style={styles.tab[0]} label="RESOURCES" value={1} />
 
         </Tabs>
         <SwipeableViews
           index={this.state.slideIndex}
           onChangeIndex={this.handleChange}
         >
-          <div>
-            <Resources course = {this.state.course} />
-          </div>
           <div style={styles.slide}>
             <Curriculum course = {this.state.course} />
+          </div>
+          <div>
+            <Resources course = {this.state.course} />
           </div>
 
         </SwipeableViews>

@@ -95,14 +95,14 @@ class _CourseHeaderPurchased extends Component {
                                   <a className="btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing" onClick={() => this.props.openReviewbox(true)}
 
                                   >
-                                    <span className="text-extra-large sm-text-extra-large tz-text">Write A Review</span>
+                                    <span className="text-extra-large sm-text-extra-large tz-text">Rate this course</span>
                                   </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom" style={{height: '378px'}}>
-                        <div className="pull-right">
+                        <div className="">
                             <img src={this.props.course.img_url_mobile} data-img-size="(W)450px X (H)450px" alt=""
                               style={{width: '350px', height: '350px'}}/>
                         </div>

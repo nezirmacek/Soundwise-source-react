@@ -21,14 +21,14 @@ const styles = {
   tabs: {
     color: deepOrange800,
     backgroundColor: 'white',
-    // fontSize: 20,
-    fontFamily: 'lato'
+    fontSize: 20,
+    // fontFamily: 'lato'
   },
   active_tab: {
     color: deepOrange800,
     backgroundColor: orange50,
-    // fontSize: 24,
-    fontFamily: 'lato'
+    fontSize: 20,
+    // fontFamily: 'lato'
   }
 }
 

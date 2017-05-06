@@ -68,7 +68,7 @@ class _ReviewModal extends Component {
           <div className="">
               <div className="row">
                   <div className="col-md-8 col-sm-12 col-xs-12 center-col text-center">
-                      <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-six-bottom xs-margin-fifteen-bottom tz-text">How would you rate this program?</h2>
+                      <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-six-bottom xs-margin-fifteen-bottom tz-text">How would you rate this course?</h2>
                       <div style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2em'}}>
                       <ReactStars
                         count={5}
@@ -78,7 +78,7 @@ class _ReviewModal extends Component {
                         color2={'#ffd700'}
                         style={{float: 'left', display: 'inline'}}/>
                       </div>
-                      <div className="text-medium width-90 sm-width-100 center-col tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">Tell us what you think of the program. Your review will help other people decide if this class is right for them. (Optional)</div>
+                      <div className="text-medium width-90 sm-width-100 center-col tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">Tell us what you think of the course. Your review will help other people decide if this class is right for them. (Optional)</div>
                   </div>
                   <div className="col-md-6 col-sm-12 col-xs-12 center-col text-center">
                       <div className="width-100">

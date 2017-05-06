@@ -63572,7 +63572,7 @@
 	                        _react2.default.createElement(
 	                          'span',
 	                          { className: 'text-extra-large sm-text-extra-large tz-text' },
-	                          'TAKE THE PROGRAM'
+	                          'TAKE THE COURSE'
 	                        ),
 	                        this.renderProgressBar()
 	                      ),
@@ -63590,7 +63590,7 @@
 	                { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
 	                _react2.default.createElement(
 	                  'div',
-	                  { className: 'pull-right', style: { display: 'inline-block', position: 'relative', width: '350px', height: '350px' } },
+	                  { className: '', style: { display: 'inline-block', position: 'relative', width: '350px', height: '350px' } },
 	                  _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
 	                    style: { width: '350px', height: '350px', display: 'block' } }),
 	                  _react2.default.createElement(
@@ -68269,7 +68269,7 @@
 	                        _react2.default.createElement(
 	                          'span',
 	                          { className: 'text-extra-large sm-text-extra-large tz-text' },
-	                          'Write A Review'
+	                          'Rate this course'
 	                        )
 	                      )
 	                    )
@@ -68281,7 +68281,7 @@
 	                { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
 	                _react2.default.createElement(
 	                  'div',
-	                  { className: 'pull-right' },
+	                  { className: '' },
 	                  _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
 	                    style: { width: '350px', height: '350px' } })
 	                )
@@ -88014,7 +88014,7 @@
 	              _react2.default.createElement(
 	                'h2',
 	                { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-six-bottom xs-margin-fifteen-bottom tz-text' },
-	                'How would you rate this program?'
+	                'How would you rate this course?'
 	              ),
 	              _react2.default.createElement(
 	                'div',
@@ -88030,7 +88030,7 @@
 	              _react2.default.createElement(
 	                'div',
 	                { className: 'text-medium width-90 sm-width-100 center-col tz-text margin-thirteen-bottom xs-margin-nineteen-bottom' },
-	                'Tell us what you think of the program. Your review will help other people decide if this class is right for them. (Optional)'
+	                'Tell us what you think of the course. Your review will help other people decide if this class is right for them. (Optional)'
 	              )
 	            ),
 	            _react2.default.createElement(
@@ -88158,14 +88158,12 @@
 	  tabs: {
 	    color: _colors.deepOrange800,
 	    backgroundColor: 'white',
-	    // fontSize: 20,
-	    fontFamily: 'lato'
+	    fontSize: 20
 	  },
 	  active_tab: {
 	    color: _colors.deepOrange800,
 	    backgroundColor: _colors.orange50,
-	    // fontSize: 24,
-	    fontFamily: 'lato'
+	    fontSize: 20
 	  }
 	};
 
@@ -91378,7 +91376,7 @@
 	              _react2.default.createElement(
 	                'div',
 	                { className: 'display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large' },
-	                'Sign up to this program for $' + this.props.course.price
+	                'Take this course for $' + this.props.course.price
 	              ),
 	              _react2.default.createElement(
 	                'a',
@@ -91386,7 +91384,7 @@
 	                _react2.default.createElement(
 	                  'span',
 	                  { className: 'tz-text' },
-	                  'TAKE THE PROGRAM'
+	                  'TAKE THE COURSE'
 	                )
 	              )
 	            )
@@ -92609,14 +92607,12 @@
 	  tabs: {
 	    color: _colors.deepOrange800,
 	    backgroundColor: 'white',
-	    // fontSize: 20,
-	    fontFamily: 'lato'
+	    fontSize: 20
 	  },
 	  active_tab: {
 	    color: _colors.deepOrange800,
 	    backgroundColor: _colors.orange50,
-	    // fontSize: 24,
-	    fontFamily: 'lato'
+	    fontSize: 20
 	  }
 	};
 
@@ -92629,7 +92625,7 @@
 	    var _this = _possibleConstructorReturn(this, (CourseBodyPurchased.__proto__ || Object.getPrototypeOf(CourseBodyPurchased)).call(this, props));
 
 	    _this.state = {
-	      slideIndex: 1,
+	      slideIndex: 0,
 	      course: {
 	        runtime: '',
 	        price: '',
@@ -92678,8 +92674,8 @@
 	              onChange: this.handleChange,
 	              value: this.state.slideIndex
 	            },
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 0 }),
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 1 })
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 0 }),
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 1 })
 	          ),
 	          _react2.default.createElement(
 	            _reactSwipeableViews2.default,
@@ -92689,13 +92685,13 @@
 	            },
 	            _react2.default.createElement(
 	              'div',
-	              null,
-	              _react2.default.createElement(_resources2.default, { course: this.state.course })
+	              { style: styles.slide },
+	              _react2.default.createElement(_curriculum.Curriculum, { course: this.state.course })
 	            ),
 	            _react2.default.createElement(
 	              'div',
-	              { style: styles.slide },
-	              _react2.default.createElement(_curriculum.Curriculum, { course: this.state.course })
+	              null,
+	              _react2.default.createElement(_resources2.default, { course: this.state.course })
 	            )
 	          )
 	        ),

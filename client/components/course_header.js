@@ -286,7 +286,7 @@ class _CourseHeader extends Component {
                                 <div className="col-md-6 col-sm-6 col-xs-6">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
                                   >
-                                    <span className="text-extra-large sm-text-extra-large tz-text">TAKE THE PROGRAM</span>
+                                    <span className="text-extra-large sm-text-extra-large tz-text">TAKE THE COURSE</span>
                                     {this.renderProgressBar()}
                                   </a>
                                   <div style={{color: 'red'}}>{this.state.paymentError}</div>
@@ -295,7 +295,7 @@ class _CourseHeader extends Component {
                         </div>
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom" style={{height: '378px'}}>
-                        <div className="pull-right" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
+                        <div className="" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
                             <img src={this.props.course.img_url_mobile} data-img-size="(W)450px X (H)450px" alt=""
                               style={{width: '350px', height: '350px', display: 'block'}}/>
                             <div style={styles.iconWrap}>
