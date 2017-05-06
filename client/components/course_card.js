@@ -5,16 +5,16 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import { Link } from 'react-router-dom'
 
 const CourseCard = (props) => (
-  <div className="col-md-6 col-sm-6 col-xs-12 xs-margin-twenty-three-bottom xs-text-center">
+  <div className="col-md-4 col-sm-4 col-xs-12 xs-margin-twenty-three-bottom xs-text-center">
     <MuiThemeProvider>
     <Card>
-      <div className="feature-box float-left width-100">
+      <div className=" float-left width-100">
           <div className="feature-box-image margin-eleven-bottom">
               <Link to={`/myprograms/${props.course.id}`}>
                 <CardMedia
                   overlay={<CardTitle title={props.course.name}/>}
                 >
-                  <img alt="" src={props.course.img_url_mobile} data-img-size="(W)800px X (H)533px" style={{height: '400px', objectFit: 'cover'}}/>
+                  <img alt="" src={props.course.img_url_mobile} data-img-size="(W)800px X (H)533px" style={{objectFit: 'cover'}}/>
                 </CardMedia>
               </Link>
           </div>
@@ -27,7 +27,7 @@ const CourseCard = (props) => (
           </div>
           <div className="feature-box-details float-left width-100">
               <div className="text-medium line-height-24 float-left width-100 tz-text"><p>{props.course.description} </p></div>
-              <Link to={`/myprograms/${props.course.id}`} className="highlight-button-black border-radius-2 btn btn-small" ><span className="tz-text">Go to Program</span></Link>
+              <Link to={`/myprograms/${props.course.id}`} className="highlight-button-black border-radius-2 btn btn-small" ><span className="tz-text">Go to Course</span></Link>
           </div>
       </div>
     </Card>

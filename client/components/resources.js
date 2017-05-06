@@ -22,10 +22,10 @@ class Resources extends Component {
     return course.resources.map((resource, i) => {
       return (
         <div className=" " key={i}>
-        <h2 className="text-left width-70 margin-lr-auto font-weight-300  section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text" style={{display: 'inline-block', paddingLeft: '1em'}}>
+        <h2 className="text-left width-70 margin-lr-auto font-weight-500  text-large text-dark-gray padding-30px-tb tz-text" style={{display: 'inline-block', paddingLeft: '1em'}}>
           {resource.description}
         </h2>
-        <span className="margin-lr-auto font-weight-300 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text" style={{color: '#F76B1C'}}> (<a style={{textDecoration: 'underline', color: '#F76B1C'}} href={resource.link}> Link </a>)</span>
+        <span className="margin-lr-auto font-weight-500 text-large text-dark-gray padding-30px-tb tz-text" style={{color: '#F76B1C'}}> (<a style={{textDecoration: 'underline', color: '#F76B1C'}} href={resource.link}> Link </a>)</span>
         </div>
       )
     })

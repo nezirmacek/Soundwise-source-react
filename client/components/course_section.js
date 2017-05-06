@@ -15,6 +15,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Levels from 'react-activity/lib/Levels'
 import Spinner from 'react-activity/lib/Spinner'
+// import CircularProgressbar from 'react-circular-progressbar'
+import ProgressLabel from 'react-progress-label'
 
 import {setCurrentPlaySection, changePlayStatus, launchPlayer} from '../actions/index'
 
@@ -258,7 +260,7 @@ class _CourseSection extends Component {
       )
     } else {
       return (
-        <i className="material-icons">play_circle_outline</i>
+        <i className="material-icons" style={{fontSize: '18px'}}>play_arrow</i>
       )
     }
   }
@@ -355,56 +357,60 @@ class _CourseSection extends Component {
 
     const run_time = this.props.section.run_time.split(':')
 
-    let progress = ''
+    let progress = 0
     if(completed) {
-      progress = 'completed'
+      progress = 100
     } else {
-      progress = `${Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100)}% completed`
+      progress = Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100)
     }
 
-    const displayDownload = 'caches' in window ? '' : 'none'
+    const displayDownload = 'caches' in window ? 'flex' : 'none'
 
     return (
       <div>
       <Card>
         <CardHeader
-          title={`Section ${this.props.section.section_number} (${run_time[0]}m ${run_time[1]}s):`}
+          title={`Lesson ${this.props.section.section_number} (${run_time[0]}m ${run_time[1]}s)`}
           style={styles.sectionTitle}
-          actAsExpander={true}
-          showExpandableButton={true}
+          showExpandableButton={false}
         />
         <CardText>
-          <div className='row'>
-          <div className='col-md-1 col-sm-2 col-xs-2'>
-            <a onClick={this.handleTap}
-              style={{padding: '1em', paddingRight: '2em'}}>
-              {this.renderPlayButton()}
-            </a>
-          </div>
-          <div className='col-md-8 col-sm-8 col-xs-8'
-            style={{paddingLeft: '2em'}}>
-            <span style={{fontSize: '18px'}}>
-              {this.props.section.title}
-            </span>
-            <span style={{paddingLeft: '1em'}}>
-              {`(${progress})`}
-            </span>
-          </div>
-          <div
-            style={{display: displayDownload}}
-            className='col-md-2 col-sm-2 col-xs-2'>
-            <a  onClick={this.handleCacheAudio}>
-              {this.renderCacheButton()}
-            </a>
-          </div>
-          </div>
-        </CardText>
-        <CardText expandable={true}>
-          <div style={{padding: '1em 2em'}}>
-            <a href={this.props.section.transcript_url} target="_blank" >
-              <i className="material-icons" style={{paddingRight: '1em'}}>description</i>
-              <span style={{fontSize: '18px'}}>Transcript</span>
-            </a>
+          <div className='row' style={{display: 'flex', alignItems: 'center'}}>
+            <div className=''
+              style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '8%', paddingLeft: '0.5em'}}>
+              <ProgressLabel
+                progress={progress}
+                startDegree={60}
+                progressWidth={4}
+                trackWidth={5}
+                cornersWidth={2}
+                size={23}
+                fillColor="white"
+                trackColor="#D3D3D3"
+                progressColor="#F76B1C">
+              </ProgressLabel>
+            </div>
+            <div className=''
+              style={{paddingLeft: '1em', display: 'flex', alignItems: 'center', width: '75%'}}>
+
+              <a onClick={this.handleTap}
+                style={{padding: '0em'}}>
+                {this.renderPlayButton()}
+                <span style={{fontSize: '18px', paddingLeft: '0.5em' }}>
+                  {this.props.section.title}
+                </span>
+              </a>
+              <a href={this.props.section.transcript_url} target="_blank" dataToggle='tooltip' title='transcript' style={{paddingLeft: '0.5em'}}>
+                <i className="material-icons" >description</i>
+              </a>
+            </div>
+            <div
+              style={{display: displayDownload, alignItems: 'center'}}
+              className=''>
+              <a  onClick={this.handleCacheAudio}>
+                {this.renderCacheButton()}
+              </a>
+            </div>
           </div>
         </CardText>
       </Card>

@@ -155,13 +155,6 @@ class _Curriculum extends Component {
     return (
       <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
         <div className="container">
-          <div className="">
-              <div className="row">
-                  <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                    <div className="text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text">{this.props.course.description}</div>
-                  </div>
-              </div>
-          </div>
           <div style={styles.curriculumContainer}>
             {this.renderModules()}
           </div>

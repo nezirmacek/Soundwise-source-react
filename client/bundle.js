@@ -60177,7 +60177,7 @@
 	                  _react2.default.createElement(
 	                    'font',
 	                    { style: { color: 'black' } },
-	                    'MY PROGRAMS'
+	                    'MY COURSES'
 	                  )
 	                )
 	              ),
@@ -61384,7 +61384,7 @@
 	var CourseCard = function CourseCard(props) {
 	  return _react2.default.createElement(
 	    'div',
-	    { className: 'col-md-6 col-sm-6 col-xs-12 xs-margin-twenty-three-bottom xs-text-center' },
+	    { className: 'col-md-4 col-sm-4 col-xs-12 xs-margin-twenty-three-bottom xs-text-center' },
 	    _react2.default.createElement(
 	      _MuiThemeProvider2.default,
 	      null,
@@ -61393,7 +61393,7 @@
 	        null,
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'feature-box float-left width-100' },
+	          { className: ' float-left width-100' },
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'feature-box-image margin-eleven-bottom' },
@@ -61405,7 +61405,7 @@
 	                {
 	                  overlay: _react2.default.createElement(_Card.CardTitle, { title: props.course.name })
 	                },
-	                _react2.default.createElement('img', { alt: '', src: props.course.img_url_mobile, 'data-img-size': '(W)800px X (H)533px', style: { height: '400px', objectFit: 'cover' } })
+	                _react2.default.createElement('img', { alt: '', src: props.course.img_url_mobile, 'data-img-size': '(W)800px X (H)533px', style: { objectFit: 'cover' } })
 	              )
 	            )
 	          ),
@@ -61437,7 +61437,7 @@
 	              _react2.default.createElement(
 	                'span',
 	                { className: 'tz-text' },
-	                'Go to Program'
+	                'Go to Course'
 	              )
 	            )
 	          )
@@ -63238,8 +63238,8 @@
 	    // top: 0,
 	    // right: '-10px',
 	    // bottom: '-10px',
-	    fontSize: '150px',
-	    opacity: 0.7
+	    fontSize: '40px'
+	    // color: 'white'
 	  }
 	};
 
@@ -63257,6 +63257,7 @@
 
 	    _this.state = {
 	      playing: false,
+	      initialized: false,
 	      displayTimer: 'none',
 	      currentTime: 0,
 	      duration: 0,
@@ -63304,9 +63305,16 @@
 
 	        clearInterval(interval);
 	      } else {
-	        source.src = this.props.course.trailer_url;
-	        player.load();
-	        player.play();
+	        if (this.state.initialized) {
+	          player.play();
+	        } else {
+	          source.src = this.props.course.trailer_url;
+	          player.load();
+	          player.play();
+	          this.setState({
+	            initialized: true
+	          });
+	        }
 
 	        this.setState({
 	          playing: true,
@@ -63326,22 +63334,35 @@
 	    value: function renderPlayOrPause() {
 	      if (this.state.playing) {
 	        return _react2.default.createElement(
-	          'i',
-	          { style: styles.icon, className: 'material-icons' },
-	          'pause_circle_outline'
+	          'div',
+	          { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em' } },
+	          _react2.default.createElement(
+	            'i',
+	            { style: styles.icon, className: 'material-icons' },
+	            'pause_circle_outline'
+	          ),
+	          _react2.default.createElement(
+	            'span',
+	            { style: { fontSize: '30px', paddingLeft: '1em' } },
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              'PAUSE'
+	            )
+	          )
 	        );
 	      } else {
 	        return _react2.default.createElement(
 	          'div',
-	          null,
+	          { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em' } },
 	          _react2.default.createElement(
 	            'i',
 	            { style: styles.icon, className: 'material-icons' },
 	            'play_circle_outline'
 	          ),
 	          _react2.default.createElement(
-	            'p',
-	            { style: { fontSize: '30px', opacity: 0.7 } },
+	            'span',
+	            { style: { fontSize: '30px', paddingLeft: '0.5em' } },
 	            _react2.default.createElement(
 	              'strong',
 	              null,
@@ -63595,21 +63616,21 @@
 	                    style: { width: '350px', height: '350px', display: 'block' } }),
 	                  _react2.default.createElement(
 	                    'div',
-	                    { style: styles.iconWrap },
-	                    _react2.default.createElement(
-	                      'a',
-	                      { onClick: this.handlePlayOrPause },
-	                      this.renderPlayOrPause()
-	                    )
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
 	                    { style: timerStyle },
 	                    _react2.default.createElement(_Levels2.default, { color: '#F76B1C', size: 12, speed: 1 }),
 	                    _react2.default.createElement(
 	                      'span',
 	                      { style: { paddingLeft: '0.5em' } },
 	                      remainingMin + ':' + remaingingSec
+	                    )
+	                  ),
+	                  _react2.default.createElement(
+	                    'div',
+	                    { style: { textAlign: 'center' } },
+	                    _react2.default.createElement(
+	                      'a',
+	                      { onClick: this.handlePlayOrPause },
+	                      this.renderPlayOrPause()
 	                    )
 	                  )
 	                )
@@ -68209,7 +68230,7 @@
 	              { className: 'row equalize sm-equalize-auto equalize-display-inherit' },
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin', style: { height: '378px' } },
+	                { className: 'col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin', style: { height: '378px' } },
 	                _react2.default.createElement(
 	                  'div',
 	                  { className: 'display-table-cell-vertical-middle' },
@@ -68218,7 +68239,7 @@
 	                    { className: 'row' },
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: 'col-md-12 col-sm-12 col-xs-12' },
+	                      { className: 'col-md-12 col-sm-12 col-xs-12', style: { textAlign: 'center' } },
 	                      _react2.default.createElement(
 	                        'h2',
 	                        { className: 'title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text' },
@@ -68226,7 +68247,7 @@
 	                      ),
 	                      _react2.default.createElement(
 	                        'div',
-	                        { className: 'row', style: { margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' } },
+	                        { className: 'row', style: { margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
 	                        _react2.default.createElement(_reactStars2.default, {
 	                          count: 5,
 	                          value: average_rating,
@@ -68241,49 +68262,29 @@
 	                        )
 	                      ),
 	                      _react2.default.createElement(
-	                        'span',
-	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                        this.props.course.description + ' '
+	                        'div',
+	                        { className: 'col-md-12 col-sm-12 col-xs-12', style: { margin: '0.5em', marginBottom: '1em', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+	                        _react2.default.createElement(
+	                          'a',
+	                          { className: 'btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing', onClick: function onClick() {
+	                              return _this2.props.openReviewbox(true);
+	                            },
+	                            style: {}
+	                          },
+	                          _react2.default.createElement(
+	                            'span',
+	                            { className: 'text-extra-large sm-text-extra-large tz-text' },
+	                            'Rate this course'
+	                          )
+	                        )
 	                      ),
 	                      _react2.default.createElement(
 	                        'span',
 	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                        'Run Time: ' + run_time
-	                      )
-	                    )
-	                  ),
-	                  _react2.default.createElement(
-	                    'div',
-	                    { className: 'row' },
-	                    _react2.default.createElement(
-	                      'div',
-	                      { className: 'col-md-6 col-sm-12 col-xs-12 ',
-	                        style: { paddingBottom: '30px' } },
-	                      _react2.default.createElement(
-	                        'a',
-	                        { className: 'btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing', onClick: function onClick() {
-	                            return _this2.props.openReviewbox(true);
-	                          }
-
-	                        },
-	                        _react2.default.createElement(
-	                          'span',
-	                          { className: 'text-extra-large sm-text-extra-large tz-text' },
-	                          'Rate this course'
-	                        )
+	                        this.props.course.description + ' '
 	                      )
 	                    )
 	                  )
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom', style: { height: '378px' } },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: '' },
-	                  _react2.default.createElement('img', { src: this.props.course.img_url_mobile, 'data-img-size': '(W)450px X (H)450px', alt: '',
-	                    style: { width: '350px', height: '350px' } })
 	                )
 	              )
 	            )
@@ -90353,7 +90354,7 @@
 	              _Card.Card,
 	              null,
 	              _react2.default.createElement(_Card.CardHeader, {
-	                title: 'Section ' + section.section_number + ': ' + section.title + ' (' + section.run_time + ')',
+	                title: 'Lesson ' + section.section_number + ': ' + section.title + ' (' + section.run_time + ')',
 	                style: styles.sectionTitle
 	              }),
 	              _react2.default.createElement(
@@ -90500,7 +90501,7 @@
 	                  _react2.default.createElement(
 	                    'h2',
 	                    { className: 'section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                    'CONTENT OUTLINE'
+	                    'COURSE OUTLINE'
 	                  )
 	                )
 	              ),
@@ -91566,7 +91567,7 @@
 	                  _react2.default.createElement(
 	                    'h2',
 	                    { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                    'YOU HAVEN\'T SIGNED UP FOR ANY PROGRAMS YET'
+	                    'YOU HAVEN\'T SIGNED UP FOR ANY COURSES YET'
 	                  )
 	                )
 	              )
@@ -91595,7 +91596,7 @@
 	                _react2.default.createElement(
 	                  'h2',
 	                  { className: 'section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text' },
-	                  'MY PROGRAMS'
+	                  'MY COURSES'
 	                )
 	              ),
 	              courseArr.map(function (course) {
@@ -92674,8 +92675,8 @@
 	              onChange: this.handleChange,
 	              value: this.state.slideIndex
 	            },
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'CONTENT', value: 0 }),
-	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'RESOURCES', value: 1 })
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[0], label: 'CONTENT', value: 0 }),
+	            _react2.default.createElement(_Tabs.Tab, { style: styles.tab[1], label: 'RESOURCES', value: 1 })
 	          ),
 	          _react2.default.createElement(
 	            _reactSwipeableViews2.default,
@@ -92914,23 +92915,6 @@
 	          { className: 'container' },
 	          _react2.default.createElement(
 	            'div',
-	            { className: '' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'row' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'col-md-12 col-sm-12 col-xs-12 text-center' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'text-dark-gray text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text' },
-	                  this.props.course.description
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
 	            { style: styles.curriculumContainer },
 	            this.renderModules()
 	          )
@@ -93033,6 +93017,10 @@
 
 	var _Spinner2 = _interopRequireDefault(_Spinner);
 
+	var _reactProgressLabel = __webpack_require__(1106);
+
+	var _reactProgressLabel2 = _interopRequireDefault(_reactProgressLabel);
+
 	var _index = __webpack_require__(588);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -93042,6 +93030,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	// import CircularProgressbar from 'react-circular-progressbar'
+
 
 	var player = {
 	  currentTime: 0,
@@ -93291,8 +93281,8 @@
 	      } else {
 	        return _react2.default.createElement(
 	          'i',
-	          { className: 'material-icons' },
-	          'play_circle_outline'
+	          { className: 'material-icons', style: { fontSize: '18px' } },
+	          'play_arrow'
 	        );
 	      }
 	    }
@@ -93388,14 +93378,14 @@
 
 	      var run_time = this.props.section.run_time.split(':');
 
-	      var progress = '';
+	      var progress = 0;
 	      if (completed) {
-	        progress = 'completed';
+	        progress = 100;
 	      } else {
-	        progress = Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100) + '% completed';
+	        progress = Math.floor(this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100);
 	      }
 
-	      var displayDownload = 'caches' in window ? '' : 'none';
+	      var displayDownload = 'caches' in window ? 'flex' : 'none';
 
 	      return _react2.default.createElement(
 	        'div',
@@ -93404,73 +93394,65 @@
 	          _Card.Card,
 	          null,
 	          _react2.default.createElement(_Card.CardHeader, {
-	            title: 'Section ' + this.props.section.section_number + ' (' + run_time[0] + 'm ' + run_time[1] + 's):',
+	            title: 'Lesson ' + this.props.section.section_number + ' (' + run_time[0] + 'm ' + run_time[1] + 's)',
 	            style: styles.sectionTitle,
-	            actAsExpander: true,
-	            showExpandableButton: true
+	            showExpandableButton: false
 	          }),
 	          _react2.default.createElement(
 	            _Card.CardText,
 	            null,
 	            _react2.default.createElement(
 	              'div',
-	              { className: 'row' },
+	              { className: 'row', style: { display: 'flex', alignItems: 'center' } },
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-1 col-sm-2 col-xs-2' },
-	                _react2.default.createElement(
-	                  'a',
-	                  { onClick: this.handleTap,
-	                    style: { padding: '1em', paddingRight: '2em' } },
-	                  this.renderPlayButton()
-	                )
+	                { className: '',
+	                  style: { display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '8%', paddingLeft: '0.5em' } },
+	                _react2.default.createElement(_reactProgressLabel2.default, {
+	                  progress: progress,
+	                  startDegree: 60,
+	                  progressWidth: 4,
+	                  trackWidth: 5,
+	                  cornersWidth: 2,
+	                  size: 23,
+	                  fillColor: 'white',
+	                  trackColor: '#D3D3D3',
+	                  progressColor: '#F76B1C' })
 	              ),
 	              _react2.default.createElement(
 	                'div',
-	                { className: 'col-md-8 col-sm-8 col-xs-8',
-	                  style: { paddingLeft: '2em' } },
+	                { className: '',
+	                  style: { paddingLeft: '1em', display: 'flex', alignItems: 'center', width: '75%' } },
 	                _react2.default.createElement(
-	                  'span',
-	                  { style: { fontSize: '18px' } },
-	                  this.props.section.title
+	                  'a',
+	                  { onClick: this.handleTap,
+	                    style: { padding: '0em' } },
+	                  this.renderPlayButton(),
+	                  _react2.default.createElement(
+	                    'span',
+	                    { style: { fontSize: '18px', paddingLeft: '0.5em' } },
+	                    this.props.section.title
+	                  )
 	                ),
 	                _react2.default.createElement(
-	                  'span',
-	                  { style: { paddingLeft: '1em' } },
-	                  '(' + progress + ')'
+	                  'a',
+	                  { href: this.props.section.transcript_url, target: '_blank', dataToggle: 'tooltip', title: 'transcript', style: { paddingLeft: '0.5em' } },
+	                  _react2.default.createElement(
+	                    'i',
+	                    { className: 'material-icons' },
+	                    'description'
+	                  )
 	                )
 	              ),
 	              _react2.default.createElement(
 	                'div',
 	                {
-	                  style: { display: displayDownload },
-	                  className: 'col-md-2 col-sm-2 col-xs-2' },
+	                  style: { display: displayDownload, alignItems: 'center' },
+	                  className: '' },
 	                _react2.default.createElement(
 	                  'a',
 	                  { onClick: this.handleCacheAudio },
 	                  this.renderCacheButton()
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            _Card.CardText,
-	            { expandable: true },
-	            _react2.default.createElement(
-	              'div',
-	              { style: { padding: '1em 2em' } },
-	              _react2.default.createElement(
-	                'a',
-	                { href: this.props.section.transcript_url, target: '_blank' },
-	                _react2.default.createElement(
-	                  'i',
-	                  { className: 'material-icons', style: { paddingRight: '1em' } },
-	                  'description'
-	                ),
-	                _react2.default.createElement(
-	                  'span',
-	                  { style: { fontSize: '18px' } },
-	                  'Transcript'
 	                )
 	              )
 	            )
@@ -95992,12 +95974,12 @@
 	          { className: ' ', key: i },
 	          _react2.default.createElement(
 	            'h2',
-	            { className: 'text-left width-70 margin-lr-auto font-weight-300  section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text', style: { display: 'inline-block', paddingLeft: '1em' } },
+	            { className: 'text-left width-70 margin-lr-auto font-weight-500  text-large text-dark-gray padding-30px-tb tz-text', style: { display: 'inline-block', paddingLeft: '1em' } },
 	            resource.description
 	          ),
 	          _react2.default.createElement(
 	            'span',
-	            { className: 'margin-lr-auto font-weight-300 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text', style: { color: '#F76B1C' } },
+	            { className: 'margin-lr-auto font-weight-500 text-large text-dark-gray padding-30px-tb tz-text', style: { color: '#F76B1C' } },
 	            ' (',
 	            _react2.default.createElement(
 	              'a',
@@ -97437,6 +97419,133 @@
 	});
 
 	exports.default = rootReducer;
+
+/***/ },
+/* 1103 */,
+/* 1104 */,
+/* 1105 */,
+/* 1106 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(1107);
+
+
+/***/ },
+/* 1107 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var React = __webpack_require__(299);
+
+	module.exports = React.createClass({
+	  displayName: 'ProgressLabel',
+
+	  propTypes: {
+	    size: React.PropTypes.number,
+	    startDegree: React.PropTypes.number,
+	    endDegree: React.PropTypes.number,
+	    progressWidth: React.PropTypes.number,
+	    trackWidth: React.PropTypes.number,
+	    cornersWidth: React.PropTypes.number,
+	    progress: React.PropTypes.number,
+	    fillColor: React.PropTypes.string,
+	    trackColor: React.PropTypes.string,
+	    progressColor: React.PropTypes.string
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      startDegree: 0,
+	      progress: 0,
+	      progressWidth: 5,
+	      trackWidth: 5,
+	      cornersWidth: 10,
+	      size: 200
+	    };
+	  },
+	  getPoint: function getPoint(r, degree) {
+	    var size = this.props.size;
+	    var d = degree / 180 * Math.PI;
+
+	    return {
+	      x: r * Math.sin(d) + size / 2,
+	      y: this.props.trackWidth / 2 + r * (1 - Math.cos(d))
+	    };
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var progress = _props.progress;
+	    var progressWidth = _props.progressWidth;
+	    var progressColor = _props.progressColor;
+	    var trackWidth = _props.trackWidth;
+	    var cornersWidth = _props.cornersWidth;
+	    var fillColor = _props.fillColor;
+	    var trackColor = _props.trackColor;
+	    var startDegree = _props.startDegree;
+	    var size = _props.size;
+	    var children = _props.children;
+
+	    var props = _objectWithoutProperties(_props, ['progress', 'progressWidth', 'progressColor', 'trackWidth', 'cornersWidth', 'fillColor', 'trackColor', 'startDegree', 'size', 'children']);
+
+	    var r = size / 2 - trackWidth / 2;
+	    var endDegree = startDegree + progress * 360 / 100;
+	    var s = this.getPoint(r, startDegree);
+	    var e = this.getPoint(r, endDegree);
+
+	    var progressPath = null;
+	    if (progress < 50) {
+	      progressPath = 'M ' + s.x + ' ' + s.y + ' A ' + r + ' ' + r + ', 0, 0, 1, ' + e.x + ',' + e.y;
+	    } else {
+	      var m = this.getPoint(r, startDegree + 180);
+	      progressPath = 'M ' + s.x + ' ' + s.y + ' A ' + r + ' ' + r + ', 0, 0, 1, ' + m.x + ',' + m.y + '\n        M ' + m.x + ' ' + m.y + ' A ' + r + ' ' + r + ', 0, 0, 1, ' + e.x + ',' + e.y;
+	    }
+
+	    var progressStyle = {
+	      strokeWidth: progressWidth,
+	      stroke: progressColor,
+	      fill: 'none'
+	    };
+
+	    var trackStyle = {
+	      fill: fillColor,
+	      stroke: trackColor,
+	      strokeWidth: trackWidth
+	    };
+
+	    return React.createElement(
+	      'svg',
+	      _extends({}, props, { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size }),
+	      React.createElement('circle', {
+	        cx: size / 2,
+	        cy: size / 2,
+	        r: r,
+	        style: trackStyle
+	      }),
+	      progress > 0 ? React.createElement('path', {
+	        d: progressPath,
+	        style: progressStyle
+	      }) : null,
+	      progress > 0 ? React.createElement('circle', {
+	        cx: s.x,
+	        cy: s.y,
+	        r: cornersWidth,
+	        fill: progressColor
+	      }) : null,
+	      progress > 0 ? React.createElement('circle', {
+	        cx: e.x,
+	        cy: e.y,
+	        r: cornersWidth,
+	        fill: progressColor
+	      }) : null,
+	      children
+	    );
+	  }
+	});
 
 /***/ }
 /******/ ]);

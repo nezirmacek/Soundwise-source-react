@@ -33,8 +33,7 @@ const styles = {
     // top: 0,
     // right: '-10px',
     // bottom: '-10px',
-    fontSize: '150px',
-    opacity: 0.7,
+    fontSize: '40px'
     // color: 'white'
   }
 }
@@ -46,6 +45,7 @@ class _CourseHeader extends Component {
     super(props)
     this.state = {
       playing: false,
+      initialized: false,
       displayTimer: 'none',
       currentTime: 0,
       duration: 0,
@@ -89,9 +89,16 @@ class _CourseHeader extends Component {
       clearInterval(interval)
 
     } else {
-      source.src = this.props.course.trailer_url
-      player.load()
-      player.play()
+      if(this.state.initialized) {
+        player.play()
+      } else {
+        source.src = this.props.course.trailer_url
+        player.load()
+        player.play()
+        this.setState({
+          initialized: true
+        })
+      }
 
       this.setState({
         playing: true,
@@ -110,13 +117,15 @@ class _CourseHeader extends Component {
   renderPlayOrPause() {
     if(this.state.playing) {
       return (
-        <i style={styles.icon} className="material-icons" >pause_circle_outline</i>
-      )
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em'}}>
+          <i style={styles.icon} className="material-icons" >pause_circle_outline</i>
+          <span style={{fontSize: '30px', paddingLeft: '1em'}}><strong>PAUSE</strong></span>
+        </div>      )
     } else {
       return (
-        <div>
-        <i style={styles.icon} className="material-icons">play_circle_outline</i>
-        <p style={{fontSize: '30px', opacity: 0.7}}><strong>PLAY INTRO</strong></p>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em'}}>
+          <i style={styles.icon} className="material-icons">play_circle_outline</i>
+          <span style={{fontSize: '30px', paddingLeft: '0.5em'}}><strong>PLAY INTRO</strong></span>
         </div>
       )
     }
@@ -298,14 +307,14 @@ class _CourseHeader extends Component {
                         <div className="" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
                             <img src={this.props.course.img_url_mobile} data-img-size="(W)450px X (H)450px" alt=""
                               style={{width: '350px', height: '350px', display: 'block'}}/>
-                            <div style={styles.iconWrap}>
-                              <a onClick={this.handlePlayOrPause}>
-                                {this.renderPlayOrPause()}
-                              </a>
-                            </div>
                             <div style={timerStyle}>
                               <Levels color="#F76B1C" size={12} speed={1} />
                               <span style={{paddingLeft: '0.5em'}}>{`${remainingMin}:${remaingingSec}`}</span>
+                            </div>
+                            <div style={{textAlign: 'center'}}>
+                              <a onClick={this.handlePlayOrPause}>
+                                {this.renderPlayOrPause()}
+                              </a>
                             </div>
                         </div>
                     </div>

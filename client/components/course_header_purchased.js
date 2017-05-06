@@ -70,41 +70,31 @@ class _CourseHeaderPurchased extends Component {
         <section className=" bg-white" id="content-section23" style={{paddingBottom: '15px'}}>
             <div className="container">
                 <div className="row equalize sm-equalize-auto equalize-display-inherit">
-                    <div className="col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
+                    <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
                         <div className="display-table-cell-vertical-middle">
                             <div className="row">
-                                <div className="col-md-12 col-sm-12 col-xs-12">
+                                <div className="col-md-12 col-sm-12 col-xs-12" style={{textAlign: 'center'}}>
                                     <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{this.props.course.name}</h2>
-                                    <div className='row' style={{margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                                      <ReactStars
-                                        count={5}
-                                        value = {average_rating}
-                                        size={28}
-                                        edit={false}
-                                        color2={'#ffd700'}
-                                      />
-                                      <span style={{marginLeft: '5px', fontSize: '18px'}}>{`(${ratings.length})`}</span>
+                                    <div className='row' style={{margin: '0.5em', marginBottom: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                        <ReactStars
+                                          count={5}
+                                          value = {average_rating}
+                                          size={28}
+                                          edit={false}
+                                          color2={'#ffd700'}
+                                        />
+                                        <span style={{marginLeft: '5px', fontSize: '18px'}}>{`(${ratings.length})`}</span>
+                                    </div>
+                                    <div className='col-md-12 col-sm-12 col-xs-12' style={{margin: '0.5em', marginBottom: '1em', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                      <a className="btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing" onClick={() => this.props.openReviewbox(true)}
+                                        style={{}}
+                                      >
+                                        <span className="text-extra-large sm-text-extra-large tz-text">Rate this course</span>
+                                      </a>
                                     </div>
                                     <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} `}</span>
-                                    <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`Run Time: ${run_time}`}</span>
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className="col-md-6 col-sm-12 col-xs-12 "
-                                  style={{paddingBottom: '30px'}}>
-                                  <a className="btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing" onClick={() => this.props.openReviewbox(true)}
-
-                                  >
-                                    <span className="text-extra-large sm-text-extra-large tz-text">Rate this course</span>
-                                  </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom" style={{height: '378px'}}>
-                        <div className="">
-                            <img src={this.props.course.img_url_mobile} data-img-size="(W)450px X (H)450px" alt=""
-                              style={{width: '350px', height: '350px'}}/>
                         </div>
                     </div>
                 </div>

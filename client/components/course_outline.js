@@ -31,7 +31,7 @@ const renderModules = (course) => {
               <div>
               <Card>
                 <CardHeader
-                  title={`Section ${section.section_number}: ${section.title} (${section.run_time})`}
+                  title={`Lesson ${section.section_number}: ${section.title} (${section.run_time})`}
                   style = {styles.sectionTitle}
                 />
                 <CardText >
@@ -131,7 +131,7 @@ export default class CourseOutline extends Component {
             <div style={styles.curriculumContainer}>
                 <div className="row padding-70px-tb">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                      <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">CONTENT OUTLINE</h2>
+                      <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">COURSE OUTLINE</h2>
                     </div>
                 </div>
                 {renderModules(this.state.course)}

@@ -29,6 +29,7 @@ Table of Contents
     18. Timer
     19. Testimonial
     20. Social Widget
+    21. Circular Progress Bar
 
 */
 
@@ -627,4 +628,37 @@ position: fixed;
     .equalize.equalize-display-inherit .display-table-cell-vertical-middle { display: inherit !important; top: 50%; -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -o-transform: translateY(-50%); -ms-transform: translateY(-50%); transform: translateY(-50%); position: relative;}
     .equalize.equalize-display-inherit .display-table-cell-vertical-bottom { display: inherit !important; top: inherit; bottom: 0; -webkit-transform: translateY(0%); -moz-transform: translateY(0%); -o-transform: translateY(0%); -ms-transform: translateY(0%); transform: translateY(0%); position: relative;}
     .client-logo-inner, .client-logo-outer { display: block;}
+}
+
+/* ===================================
+    Circular Progress Bar
+====================================== */
+
+.CircularProgressbar {
+  /*
+   * This fixes an issue where the CircularProgressbar svg has
+   * 0 width inside a "display: flex" container, and thus not visible.
+   *
+   * If you're not using "display: flex", you can remove this style.
+   */
+  width: 5%;
+}
+
+.CircularProgressbar .CircularProgressbar-path {
+  stroke: #3e98c7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease 0s;
+}
+
+.CircularProgressbar .CircularProgressbar-trail {
+  stroke: #d6d6d6;
+}
+
+.CircularProgressbar .CircularProgressbar-text {
+  fill: #3e98c7;
+  font-size: 20px;
+  dominant-baseline: middle;
+  text-anchor: middle;
+  display: none;
+
 }

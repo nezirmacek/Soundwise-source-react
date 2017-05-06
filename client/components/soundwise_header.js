@@ -69,7 +69,7 @@ class _SoundwiseHeader extends Component {
                   <ul className="dropdown-menu">
                     <li>
                       <Link to='/myprograms'>
-                        <font style={{color: 'black'}}>MY PROGRAMS</font>
+                        <font style={{color: 'black'}}>MY COURSES</font>
                       </Link>
                     </li>
                     <li>

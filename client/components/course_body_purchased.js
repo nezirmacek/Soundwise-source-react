@@ -78,8 +78,8 @@ export default class CourseBodyPurchased extends React.Component {
           onChange={this.handleChange}
           value={this.state.slideIndex}
         >
-          <Tab style={styles.tab[1]} label="CONTENT" value={0} />
-          <Tab style={styles.tab[0]} label="RESOURCES" value={1} />
+          <Tab style={styles.tab[0]} label="CONTENT" value={0} />
+          <Tab style={styles.tab[1]} label="RESOURCES" value={1} />
 
         </Tabs>
         <SwipeableViews

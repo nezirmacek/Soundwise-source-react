@@ -82,7 +82,7 @@ class _MyCourses extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                        <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">YOU HAVEN'T SIGNED UP FOR ANY PROGRAMS YET</h2>
+                        <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">YOU HAVEN'T SIGNED UP FOR ANY COURSES YET</h2>
                     </div>
                 </div>
             </div>
@@ -99,7 +99,7 @@ class _MyCourses extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                        <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">MY PROGRAMS</h2>
+                        <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">MY COURSES</h2>
                     </div>
                     {courseArr.map(course => (
                       <CourseCard course={course} key={course.id} match={this.props.match}/>
