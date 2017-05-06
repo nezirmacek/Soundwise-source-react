@@ -286,7 +286,7 @@ class _CourseHeader extends Component {
                                       />
                                       <span style={{marginLeft: '5px', fontSize: '18'}}>{`(${ratings.length})`}</span>
                                     </div>
-                                    <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} Run Time: ${run_time}`}</span>
+                                    <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} (Run Time: ${run_time})`}</span>
                                     <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text" style={{display: 'flex', alignItems: 'center'}}>
                                         <span className="margin-eight-right title-small sm-title-small">
                                           Share the course:

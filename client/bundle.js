@@ -63563,8 +63563,8 @@
 	                      ),
 	                      _react2.default.createElement(
 	                        'span',
-	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                        this.props.course.description + ' Run Time: ' + run_time
+	                        { className: 'text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
+	                        this.props.course.description + ' (Run Time: ' + run_time + ')'
 	                      ),
 	                      _react2.default.createElement(
 	                        'div',
@@ -90601,7 +90601,7 @@
 	                _react2.default.createElement(
 	                  'h5',
 	                  { className: ' text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left', style: { lineHeight: '30px' } },
-	                  'Once you sign up for the program, you\'ll see an "enable offline" button on the right hand side of every audio section. Click on that, and voila! Now you can play the section even when you don\'t have internet or you don\'t want to use your cellphone data plan for streaming. The offline function works best on computer and android phone in a Chrome browser. Sadly, if you have an iPhone you\'re stuck with streaming. But we\'re working on an iOS app. Stay tuned...or get an android next time ;)'
+	                  'Once you sign up for the program, you\'ll see an "enable offline" button on the right hand side of every audio section. Click on that, and voila! Now you can play the section even when you don\'t have internet or you don\'t want to use your cellphone data plan for streaming. The offline function works best on computer and android phone in a Chrome browser. Sadly, if you have an iPhone you can\'t use the offline function. But we\'re working on an iOS app. Stay tuned :)'
 	                ),
 	                _react2.default.createElement(
 	                  'h2',
@@ -90627,13 +90627,13 @@
 	                _react2.default.createElement(
 	                  'h5',
 	                  { className: ' text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text', style: { lineHeight: '30px' } },
-	                  'We would never want you to be unhappy! If you are unsatisfied with the content, let us know at ',
+	                  'We want you to be happy! If you are unsatisfied with the course, let us know at ',
 	                  _react2.default.createElement(
 	                    'a',
 	                    { href: 'mailto:support@mysoundwise.com' },
 	                    'support@mysoundwise.com'
 	                  ),
-	                  ' within 14 days of your purchase and we will give you a full refund minus the credit card processing fee.'
+	                  ' within 14 days of your purchase and we will give you a full refund.'
 	                )
 	              )
 	            )

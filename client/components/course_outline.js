@@ -150,7 +150,7 @@ export default class CourseOutline extends Component {
                   <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>As long as the Internet is still a thing.</h5>
                   <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">How do I access the audio files offline?</h2>
                   <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left" style={{ lineHeight: '30px'}}>
-                    Once you sign up for the program, you'll see an "enable offline" button on the right hand side of every audio section. Click on that, and voila! Now you can play the section even when you don't have internet or you don't want to use your cellphone data plan for streaming. The offline function works best on computer and android phone in a Chrome browser. Sadly, if you have an iPhone you're stuck with streaming. But we're working on an iOS app. Stay tuned...or get an android next time ;)
+                    Once you sign up for the program, you'll see an "enable offline" button on the right hand side of every audio section. Click on that, and voila! Now you can play the section even when you don't have internet or you don't want to use your cellphone data plan for streaming. The offline function works best on computer and android phone in a Chrome browser. Sadly, if you have an iPhone you can't use the offline function. But we're working on an iOS app. Stay tuned :)
                   </h5>
                   <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What should I do if I have technical issues?</h2>
                   <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{lineHeight: '30px'}}>
@@ -158,7 +158,7 @@ export default class CourseOutline extends Component {
                   </h5>
                   <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What if I'm not happy with the content?</h2>
                   <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>
-                    We would never want you to be unhappy! If you are unsatisfied with the content, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your purchase and we will give you a full refund minus the credit card processing fee.
+                    We want you to be happy! If you are unsatisfied with the course, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your purchase and we will give you a full refund.
                   </h5>
                 </div>
             </div>
