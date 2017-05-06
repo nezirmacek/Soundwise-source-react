@@ -63514,6 +63514,8 @@
 	      }, 0);
 	      average_rating = Math.floor(total / ratings.length * 10) / 10;
 
+	      var courseName = this.props.course.name.split(' ').join('%20');
+
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -63562,12 +63564,36 @@
 	                      _react2.default.createElement(
 	                        'span',
 	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                        this.props.course.description + ' '
+	                        this.props.course.description + ' Run Time: ' + run_time
 	                      ),
 	                      _react2.default.createElement(
-	                        'span',
-	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                        'Run Time: ' + run_time
+	                        'div',
+	                        { className: 'social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text', style: { display: 'flex', alignItems: 'center' } },
+	                        _react2.default.createElement(
+	                          'span',
+	                          { className: 'margin-eight-right title-small sm-title-small' },
+	                          'Share the course:'
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/courses/' + this.props.course.id, className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-facebook tz-icon-color' })
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'https://twitter.com/intent/tweet?text=' + courseName + '. https://mysoundwise.com/courses/' + this.props.course.id, className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-twitter tz-icon-color' })
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'https://plus.google.com/share?url=https://mysoundwise.com/courses/' + this.props.course.id, className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color' })
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/courses/' + this.props.course.id + '&amp;title=' + courseName + '&amp;source=', className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color' })
+	                        )
 	                      )
 	                    )
 	                  ),
@@ -63576,7 +63602,7 @@
 	                    { className: 'row', style: { paddingBottom: '30px' } },
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: 'col-md-6 col-sm-6 col-xs-6 feature-box-details-second' },
+	                      { className: 'col-md-4 col-sm-4 col-xs-4 feature-box-details-second' },
 	                      _react2.default.createElement(
 	                        'span',
 	                        { className: 'title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text' },
@@ -63585,7 +63611,7 @@
 	                    ),
 	                    _react2.default.createElement(
 	                      'div',
-	                      { className: 'col-md-6 col-sm-6 col-xs-6' },
+	                      { className: 'col-md-7 col-sm-8 col-xs-8' },
 	                      _react2.default.createElement(
 	                        'a',
 	                        { className: 'btn-medium btn btn-circle text-white no-letter-spacing', onClick: this.checkOut, style: { backgroundColor: '#F76B1C' }
@@ -68216,6 +68242,8 @@
 	      }, 0);
 	      average_rating = Math.floor(total / ratings.length * 10) / 10;
 
+	      var courseName = this.props.course.name.split(' ').join('%20');
+
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -68263,7 +68291,7 @@
 	                      ),
 	                      _react2.default.createElement(
 	                        'div',
-	                        { className: 'col-md-12 col-sm-12 col-xs-12', style: { margin: '0.5em', marginBottom: '1em', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+	                        { className: 'col-md-12 col-sm-12 col-xs-12', style: { margin: '0.5em', marginBottom: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
 	                        _react2.default.createElement(
 	                          'a',
 	                          { className: 'btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing', onClick: function onClick() {
@@ -68279,9 +68307,33 @@
 	                        )
 	                      ),
 	                      _react2.default.createElement(
-	                        'span',
-	                        { className: 'text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text' },
-	                        this.props.course.description + ' '
+	                        'div',
+	                        { className: 'social social-icon-color title-small' },
+	                        _react2.default.createElement(
+	                          'span',
+	                          { className: 'margin-eight-right text-extra-large sm-text-extra-large' },
+	                          'Share the course:'
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/courses/' + this.props.course.id, className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-facebook tz-icon-color' })
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'https://twitter.com/intent/tweet?text=' + courseName + '. https://mysoundwise.com/courses/' + this.props.course.id, className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-twitter tz-icon-color' })
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'https://plus.google.com/share?url=https://mysoundwise.com/courses/' + this.props.course.id, className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color' })
+	                        ),
+	                        _react2.default.createElement(
+	                          'a',
+	                          { target: '_blank', href: 'https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/courses/' + this.props.course.id + '&amp;title=' + courseName + '&amp;source=', className: 'margin-eight-right' },
+	                          _react2.default.createElement('i', { className: 'icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color' })
+	                        )
 	                      )
 	                    )
 	                  )

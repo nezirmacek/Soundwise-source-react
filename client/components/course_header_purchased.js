@@ -65,6 +65,8 @@ class _CourseHeaderPurchased extends Component {
     const total = ratings.reduce((sum, cur) => (sum + cur), 0)
     average_rating = Math.floor(total / ratings.length * 10) / 10
 
+    const courseName = this.props.course.name.split(' ').join('%20')
+
     return (
       <div>
         <section className=" bg-white" id="content-section23" style={{paddingBottom: '15px'}}>
@@ -85,14 +87,32 @@ class _CourseHeaderPurchased extends Component {
                                         />
                                         <span style={{marginLeft: '5px', fontSize: '18px'}}>{`(${ratings.length})`}</span>
                                     </div>
-                                    <div className='col-md-12 col-sm-12 col-xs-12' style={{margin: '0.5em', marginBottom: '1em', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                    <div className='col-md-12 col-sm-12 col-xs-12' style={{margin: '0.5em', marginBottom: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                       <a className="btn-medium btn btn-circle bg-bitter-sweet text-white no-letter-spacing" onClick={() => this.props.openReviewbox(true)}
                                         style={{}}
                                       >
                                         <span className="text-extra-large sm-text-extra-large tz-text">Rate this course</span>
                                       </a>
                                     </div>
-                                    <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} `}</span>
+
+                                      <div className="social social-icon-color title-small">
+                                          <span className="margin-eight-right text-extra-large sm-text-extra-large">
+                                            Share the course:
+                                          </span>
+                                          <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/courses/${this.props.course.id}`} className="margin-eight-right">
+                                              <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                                          </a>
+                                          <a target="_blank" href={`https://twitter.com/intent/tweet?text=${courseName}. https://mysoundwise.com/courses/${this.props.course.id}`} className="margin-eight-right">
+                                              <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                                          </a>
+                                          <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/courses/${this.props.course.id}`} className="margin-eight-right">
+                                              <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                                          </a>
+                                          <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/courses/${this.props.course.id}&amp;title=${courseName}&amp;source=`} className="margin-eight-right">
+                                              <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                                          </a>
+                                      </div>
+
                                 </div>
                             </div>
                         </div>

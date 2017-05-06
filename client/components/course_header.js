@@ -264,6 +264,8 @@ class _CourseHeader extends Component {
     const total = ratings.reduce((sum, cur) => (sum + cur), 0)
     average_rating = Math.floor(total / ratings.length * 10) / 10
 
+    const courseName = this.props.course.name.split(' ').join('%20')
+
     return (
       <div>
         <section className=" bg-white" id="content-section23" style={{paddingBottom: '15px'}}>
@@ -284,15 +286,31 @@ class _CourseHeader extends Component {
                                       />
                                       <span style={{marginLeft: '5px', fontSize: '18'}}>{`(${ratings.length})`}</span>
                                     </div>
-                                    <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} `}</span>
-                                    <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`Run Time: ${run_time}`}</span>
+                                    <span className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} Run Time: ${run_time}`}</span>
+                                    <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text" style={{display: 'flex', alignItems: 'center'}}>
+                                        <span className="margin-eight-right title-small sm-title-small">
+                                          Share the course:
+                                        </span>
+                                        <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/courses/${this.props.course.id}`} className="margin-eight-right">
+                                            <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                                        </a>
+                                        <a target="_blank" href={`https://twitter.com/intent/tweet?text=${courseName}. https://mysoundwise.com/courses/${this.props.course.id}`} className="margin-eight-right">
+                                            <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                                        </a>
+                                        <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/courses/${this.props.course.id}`} className="margin-eight-right">
+                                            <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                                        </a>
+                                        <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/courses/${this.props.course.id}&amp;title=${courseName}&amp;source=`} className="margin-eight-right">
+                                            <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
-                                <div className="col-md-6 col-sm-6 col-xs-6 feature-box-details-second">
+                                <div className="col-md-4 col-sm-4 col-xs-4 feature-box-details-second">
                                   <span className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{`$${this.props.course.price}`}</span>
                                 </div>
-                                <div className="col-md-6 col-sm-6 col-xs-6">
+                                <div className="col-md-7 col-sm-8 col-xs-8">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
                                   >
                                     <span className="text-extra-large sm-text-extra-large tz-text">TAKE THE COURSE</span>
