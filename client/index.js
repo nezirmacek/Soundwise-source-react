@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import { render } from 'react-dom'
 import { browserHistory } from 'react-router'
 
@@ -28,7 +28,7 @@ const store = createStore(
   )
 )
 
-const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']})
+// const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']})
 
 // persistor.purge()
 
@@ -238,11 +238,31 @@ firebase.initializeApp(config)
 // firebase.database().ref('coupons/parent100')
 //   .set(coupon)
 
-export const App = ({match}) => (
-  <Provider store = { store }>
-    <Routes />
-  </Provider>
-)
+export default class App extends Component {
+  constructor() {
+    super()
+    this.state = {
+      rehydrated: false
+    }
+  }
+
+  componentWillMount(){
+    const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']}, () => {
+      this.setState({ rehydrated: true })
+    })
+  }
+
+  render() {
+    if(!this.state.rehydrated) {
+      return <div>Loading...</div>
+    }
+    return (
+      <Provider store = { store }>
+        <Routes />
+      </Provider>
+    )
+  }
+}
 
 render(<App />, document.getElementById('root'))
 
