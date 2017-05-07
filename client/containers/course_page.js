@@ -60,11 +60,7 @@ class _Course extends Component {
           })
           that.props.setCurrentPlaylist(sections)
         })
-        .catch((err) => {
-          that.setState({
-            course: that.Props.courses[that.props.match.params.courseId]
-          })
-        })
+
   }
 
   componentWillReceiveProps(nextProps) {
