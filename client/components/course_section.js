@@ -400,7 +400,7 @@ class _CourseSection extends Component {
                   {this.props.section.title}
                 </span>
               </a>
-              <a href={this.props.section.transcript_url} target="_blank" dataToggle='tooltip' title='transcript' style={{paddingLeft: '0.5em'}}>
+              <a href={this.props.section.transcript_url} target="_blank" title='transcript' style={{paddingLeft: '0.5em'}}>
                 <i className="material-icons" >description</i>
               </a>
             </div>

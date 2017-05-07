@@ -3,19 +3,40 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import firebase from 'firebase'
 import {grey50, orange500} from 'material-ui/styles/colors'
+import DropDownMenu from 'material-ui/DropDownMenu'
+import MenuItem from 'material-ui/MenuItem'
+import Slider from 'material-ui/Slider'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
 import {setCurrentPlaySection, changePlayStatus} from '../actions/index'
 
 let player, source
 
+const styles = {
+  flex: {display: 'flex', alignItems: 'center', justifyContent: 'center'}
+}
+
+const muiTheme = getMuiTheme({
+  palette: {
+    selectionColor: '#F76B1C',
+    handleFillColor: '#F76B1C'
+  },
+})
+
 class _PlayerBar extends Component {
   constructor(props) {
     super(props)
+    this.state={
+      speed: 1
+    }
     this.handlePlayerClick = this.handlePlayerClick.bind(this)
     this.handleForward = this.handleForward.bind(this)
     this.handleRewind = this.handleRewind.bind(this)
     this.handleSkipForward = this.handleSkipForward.bind(this)
     this.handleSkipBackward = this.handleSkipBackward.bind(this)
+    this.handleSpeedChange = this.handleSpeedChange.bind(this)
+    this.handleSeek = this.handleSeek.bind(this)
   }
 
   componentDidMount() {
@@ -26,14 +47,14 @@ class _PlayerBar extends Component {
   togglePlayOrPause() {
     if(!this.props.playing) {
       return (
-        <div className=''>
-          <a className=""  onClick={() => this.handlePlayerClick()}><i className="material-icons" style={{fontSize: '42px'}}>play_arrow</i></a>
+        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}>
+          <a className=""  onClick={() => this.handlePlayerClick()}><i className="material-icons" style={{fontSize: '50px'}}>play_arrow</i></a>
         </div>
       )
     } else {
         return (
-          <div className=''>
-            <a className=""  onClick={() => this.handlePlayerClick()}><i className="material-icons" style={{fontSize: '42px'}}>pause</i></a>
+          <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}>
+            <a className=""  onClick={() => this.handlePlayerClick()}><i className="material-icons" style={{fontSize: '50px'}}>pause</i></a>
           </div>
       )
       }
@@ -100,6 +121,18 @@ class _PlayerBar extends Component {
     }
   }
 
+  handleSpeedChange(event, index, value) {
+    this.setState({
+      speed: value
+    })
+    player.playbackRate = value
+  }
+
+  handleSeek(event, value) {
+    const seekTo = this.props.currentDuration * value / 100
+    player.currentTime = seekTo
+  }
+
   render() {
     let currentMin = '__', currentSec = '__', totalMin = '__', totalSec = '__'
     if(this.props.currentTime > 0) {
@@ -117,48 +150,31 @@ class _PlayerBar extends Component {
 
     return (
       <footer className="footer bg-info dker" style={{display: displayed, height: '90px'}}>
-        <div id="" >
-              <div className="">
-                <div id="jplayer_N" className="jp-jplayer hide"></div>
-                <div className="">
-
-                    <div className="jp-controls ">
-                      <div className=''><a className="" onClick={() => this.handleSkipBackward()}><i className="material-icons" style={{fontSize: '32px'}}>replay_10</i></a></div>
-                      {this.togglePlayOrPause()}
-                      <div className=''><a className="" onClick={() => this.handleSkipForward()}><i className="material-icons" style={{fontSize: '32px'}}>forward_10</i></a></div>
-                      <div className="jp-progress hidden-xs" style={{}}>
-                        <div className="jp-seek-bar dk hidden-xs" style={{width: '100%', backgroundColor: grey50}}>
-                          <div className="jp-play-bar bg-info hidden-xs" style={{width: `${currentPercent}%`, backgroundColor: '#F76B1C'}}>
-                          </div>
-                          <div className="jp-title text-lt">
-                            <ul>
-                              <li>
-                                <div>
-                                {this.props.currentSection.title}
-                                </div>
-                                <div>
-                                {`${currentMin}:${currentSec} / ${totalMin}:${totalSec}`}
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
+                <div style={{width: '100%'}}>
+                  <MuiThemeProvider muiTheme={muiTheme}>
+                    <Slider value={currentPercent} min={0} max={100} onChange={this.handleSeek} sliderStyle={{margin:'0px', padding: '0px', width: '100%'}} style={{width: '100%'}}/>
+                  </MuiThemeProvider>
+                </div>
+                <div className="container" style={{}}>
+                    <div className="row " style={styles.flex}>
+                      <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}>
+                        <DropDownMenu value={this.state.speed} onChange={this.handleSpeedChange}>
+                          <MenuItem value={0.75} primaryText="0.75x" />
+                          <MenuItem value={1} primaryText="1x" />
+                          <MenuItem value={1.25} primaryText="1.25x" />
+                          <MenuItem value={1.5} primaryText="1.5x" />
+                          <MenuItem value={2} primaryText="2x" />
+                        </DropDownMenu>
                       </div>
-                      <div className=" ">{`${currentMin}:${currentSec} / ${totalMin}:${totalSec}`}</div>
+                        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}><a className="" onClick={() => this.handleSkipBackward()}><i className="material-icons" style={{fontSize: '42px'}}>replay_10</i></a>
+                        </div>
+                        {this.togglePlayOrPause()}
+                        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}><a className="" onClick={() => this.handleSkipForward()}><i className="material-icons" style={{fontSize: '42px'}}>forward_10</i></a>
+                        </div>
+                      <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>{`${currentMin}:${currentSec}`}
+                      </div>
                     </div>
-
                 </div>
-                <div className="jp-playlist dropup" id="playlist">
-                  <ul className="dropdown-menu aside-xl dker">
-                    <li className="list-group-item"></li>
-                  </ul>
-                </div>
-                <div className="jp-no-solution hide">
-                  <span>Update Required</span>
-                  To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
-                </div>
-              </div>
-            </div>
       </footer>
     )
   }
