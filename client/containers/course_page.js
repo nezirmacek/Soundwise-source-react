@@ -36,6 +36,8 @@ class _Course extends Component {
       },
       userCourses: {}
     }
+
+    console.log('is this called?')
   }
 
   componentDidMount() {
@@ -142,9 +144,9 @@ const mapStateToProps = state => {
   }
 }
 
-export const Course = connect(mapStateToProps, mapDispatchToProps)(_Course)
+// export const Course = connect(mapStateToProps, mapDispatchToProps)(_Course)
 
-// const Course_worouter = connect(mapStateToProps, mapDispatchToProps)(_Course)
+const Course_worouter = connect(mapStateToProps, mapDispatchToProps)(_Course)
 
-// export const Course = withRouter(Course_worouter)
+export const Course = withRouter(Course_worouter)
 

@@ -93,7 +93,7 @@ class _Routes extends Component {
   }
 }
 
-             // <Route path="/courses" component={Courses}/>
+
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ loadCourses, signinUser }, dispatch)
