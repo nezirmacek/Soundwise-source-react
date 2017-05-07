@@ -38,39 +38,42 @@ class _Course extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const that = this
 
-      firebase.database().ref('courses')
-        .on('value', snapshot => {
-           // console.log('course fetched from firebase: ', snapshot.val())
-          that.props.loadCourses(snapshot.val())
 
-          that.setState({
-            course: snapshot.val()[that.props.match.params.courseId],
-          })
+      // firebase.database().ref('courses')
+      //   .on('value', snapshot => {
+      //     that.props.loadCourses(snapshot.val())
 
-          that.props.setCurrentCourse(snapshot.val()[that.props.match.params.courseId])
+      //     that.props.setCurrentCourse(snapshot.val()[that.props.match.params.courseId])
 
-          let sections = []
-          that.state.course.modules.forEach(module => { // build a playlist of sections
-            module.sections.forEach(section => {
-              sections.push(section)
-            })
-          })
-          that.props.setCurrentPlaylist(sections)
-        })
+      //     let sections = []
+      //     snapshot.val()[that.props.match.params.courseId].modules.forEach(module => { // build a playlist of sections
+      //       module.sections.forEach(section => {
+      //         sections.push(section)
+      //       })
+      //     })
+      //     that.props.setCurrentPlaylist(sections)
+      //   })
 
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps != this.props) {
-      if(nextProps.courses[this.props.match.params.courseId]) {
-        this.setState({
-          course: nextProps.courses[this.props.match.params.courseId]
+      console.log('nextProps.courses: ', nextProps.courses)
+
+    if(nextProps.courses[nextProps.match.params.courseId] && this.props.courses[this.props.match.params.courseId] == undefined) {
+
+      this.props.setCurrentCourse(nextProps.courses[this.props.match.params.courseId])
+      let sections = []
+      nextProps.courses[this.props.match.params.courseId].modules.forEach(module => { // build a playlist of sections
+        module.sections.forEach(section => {
+          sections.push(section)
         })
-      }
+      })
+      this.props.setCurrentPlaylist(sections)
     }
+
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -94,10 +97,11 @@ class _Course extends Component {
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    // const course = this.props.courses[this.props.match.params.courseId] || this.state.course
-    const course = this.state.course
-    // console.log('this.props.courses: ', this.props.courses)
-    // console.log('this.props.userInfo: ', this.props.userInfo)
+    const course = this.props.courses[this.props.match.params.courseId] || this.state.course
+    // const course = this.props.courses[this.props.match.params.courseId] ? this.props.courses[this.props.match.params.courseId] : this.state.course
+
+    console.log('this.props.courses: ', this.props.courses)
+    console.log('this.props.userInfo: ', this.props.userInfo)
 
     return (
       <div>
@@ -138,7 +142,9 @@ const mapStateToProps = state => {
   }
 }
 
-const Course_worouter = connect(mapStateToProps, mapDispatchToProps)(_Course)
+export const Course = connect(mapStateToProps, mapDispatchToProps)(_Course)
 
-export const Course = withRouter(Course_worouter)
+// const Course_worouter = connect(mapStateToProps, mapDispatchToProps)(_Course)
+
+// export const Course = withRouter(Course_worouter)
 

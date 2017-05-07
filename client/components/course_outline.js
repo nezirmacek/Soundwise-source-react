@@ -70,7 +70,6 @@ export default class CourseOutline extends Component {
   }
 
   componentDidMount() {
-    console.log('currentCourse: ', this.props.course)
     this.setState({
       course: this.props.course
     })

@@ -17,7 +17,8 @@ class _MyCourses extends Component {
 
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    console.log('all courses: ', this.props.courses)
 
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {
@@ -31,6 +32,12 @@ class _MyCourses extends Component {
         })
       }
     })
+  }
+
+  componentWillReceiveProps(nextProps) {
+
+      console.log('all courses updated: ', nextProps.courses)
+
   }
 
   // loadCourseInfo(courseId) {
@@ -49,6 +56,8 @@ class _MyCourses extends Component {
   render() {
     const courses = this.props.userCourses
     const isLoggedIn = this.props.isLoggedIn
+
+    // console.log('userCourses: ', this.props.userCourses)
 
     const courseArr = []
 
@@ -120,9 +129,9 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = state => {
   const { userInfo, isLoggedIn } = state.user
-  const { userCourses } = state.setCourses
+  const { userCourses, courses } = state.setCourses
   return {
-    userInfo, isLoggedIn, userCourses
+    userInfo, isLoggedIn, userCourses, courses
   }
 }
 

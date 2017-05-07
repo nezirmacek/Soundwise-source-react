@@ -51,11 +51,10 @@ class _Routes extends Component {
     })
 
     firebase.database().ref('courses')
-            .once('value')
-            .then(snapshot => {
-              // console.log('courses fetched from firebase: ', snapshot.val())
+            .on('value', snapshot => {
               this.props.loadCourses(snapshot.val())
             })
+
   }
 
   render() {
