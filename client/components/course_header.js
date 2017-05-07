@@ -67,6 +67,35 @@ class _CourseHeader extends Component {
     source = document.getElementById('audioSource')
 
     player.addEventListener('ended', this.handleEnd)
+
+    // cache course image
+    // if('caches' in window && nextprops.course.img_url_mobile) {
+    //     let headers = new Headers()
+    //     headers.append('access-control-allow-origin', '*')
+    //     headers.append('access-control-allow-methods', 'GET')
+    //     headers.append('access-control-allow-headers', 'content-type, accept')
+    //     headers.append('Content-Type', "image/jpeg;image/png;text/xml")
+
+    //     var myInit = { method: 'GET',
+    //            headers: headers,
+    //            mode: 'no-cors',
+    //            cache: 'default' }
+
+    //     let request = new Request(nextprops.course.img_url_mobile, myInit)
+
+    //     fetch(request)
+    //     .then(response => {
+    //       // if(!response.ok) {
+    //       //   throw new TypeError('bad response status')
+    //       // }
+
+    //       return caches.open('audio-cache')
+    //         .then(cache => {
+    //           cache.put(nextprops.course.img_url_mobile, response)
+    //           console.log('image cached')
+    //         })
+    //     })
+    // }
   }
 
   handleEnd() {

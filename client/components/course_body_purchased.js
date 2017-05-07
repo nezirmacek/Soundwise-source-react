@@ -50,13 +50,22 @@ export default class CourseBodyPurchased extends React.Component {
       }
     }
     this.handleChange = this.handleChange.bind(this)
+
+    // console.log('this.props.course: ', this.props.course)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidMount() {
     this.setState({
-      course: nextProps.course
+      course: this.props.course
     })
   }
+
+  // componentWillReceiveProps(nextProps) {
+  //   console.log('nextprops.course: ', nextProps.course)
+  //   this.setState({
+  //     course: nextProps.course
+  //   })
+  // }
 
   handleChange(value) {
     this.setState({
@@ -70,6 +79,9 @@ export default class CourseBodyPurchased extends React.Component {
     styles.tab[1] = styles.tabs
     // styles.tab[2] = styles.tabs
     styles.tab[this.state.slideIndex] = Object.assign({},   styles.tab[this.state.slideIndex], styles.active_tab)
+
+    // const course = this.props.course.name.length > 0 ? this.props.course : this.state.course
+    const course = this.state.course
 
     return (
      <div className='vbox'>
@@ -87,10 +99,10 @@ export default class CourseBodyPurchased extends React.Component {
           onChangeIndex={this.handleChange}
         >
           <div style={styles.slide}>
-            <Curriculum course = {this.state.course} />
+            <Curriculum course = {course} userCourse={this.props.userCourse}/>
           </div>
           <div>
-            <Resources course = {this.state.course} />
+            <Resources course = {course} />
           </div>
 
         </SwipeableViews>

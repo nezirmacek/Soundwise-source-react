@@ -27,7 +27,14 @@ class _Curriculum extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      course: {}
+      course: {
+        runtime: '',
+        price: '',
+        name: '',
+        description: '',
+        modules: [],
+        resources: []
+      }
     }
     this.renderModules = this.renderModules.bind(this)
     this.handleEnd = this.handleEnd.bind(this)
@@ -35,7 +42,6 @@ class _Curriculum extends Component {
   }
 
   componentDidMount() {
-    const that = this
 
     player = document.getElementById('audio')
     source = document.getElementById('audioSource')
@@ -78,7 +84,6 @@ class _Curriculum extends Component {
     // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
     const next = this.props.currentSection.section_number
 
-    console.log('next: ', next)
     if(next < this.props.currentPlaylist.length ) {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[next])
 
@@ -97,20 +102,24 @@ class _Curriculum extends Component {
     player = document.getElementById('audio')
     const that = this
 
-    if(nextProps.course.id !== this.props.course.id) {
-      firebase.auth().onAuthStateChanged(user => {
-        if(user) {
-            const userId = user.uid
-            firebase.database().ref('users/' + userId + '/courses/' + nextProps.course.id)
-            .on('value', snapshot => {
+    this.setState({
+      course: nextProps.course
+    })
 
-              that.setState({
-                course: snapshot.val()
-              })
-            })
-        }
-      })
-    }
+    // if(nextProps.course.id !== this.props.course.id) {
+    //   firebase.auth().onAuthStateChanged(user => {
+    //     if(user) {
+    //         const userId = user.uid
+    //         firebase.database().ref('users/' + userId + '/courses/' + nextProps.course.id)
+    //         .on('value', snapshot => {
+
+    //           that.setState({
+    //             course: snapshot.val()
+    //           })
+    //         })
+    //     }
+    //   })
+    // }
 
     if(nextProps.playing) {
       interval = setInterval(() => {
@@ -133,22 +142,26 @@ class _Curriculum extends Component {
   }
 
   renderModules() {
+    const that = this
 
-    return (
-      this.props.course.modules.map(module => (
-        <Card key={module.module_id}>
-          <CardHeader
-            title={module.module_title}
-            style = {styles.moduleTitle}
-          />
-          <div className=''>
-          {module.sections.map(section => (
-            <CourseSection key={section.section_id} section={section} course={this.state.course} />
-          ))}
-          </div>
-        </Card>
-      ))
-    )
+    if(this.state.course.name.length > 0) {
+
+      return (
+        this.state.course.modules.map(module => (
+          <Card key={module.module_id}>
+            <CardHeader
+              title={module.module_title}
+              style = {styles.moduleTitle}
+            />
+            <div className=''>
+            {module.sections.map(section => (
+              <CourseSection key={section.section_id} section={section} course={that.props.userCourse} />
+            ))}
+            </div>
+          </Card>
+        ))
+      )
+    }
   }
 
   render() {

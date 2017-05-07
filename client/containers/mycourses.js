@@ -36,22 +36,8 @@ class _MyCourses extends Component {
 
   componentWillReceiveProps(nextProps) {
 
-      console.log('all courses updated: ', nextProps.courses)
 
   }
-
-  // loadCourseInfo(courseId) {
-  //   const that = this
-
-  //   firebase.database().ref('courses/' + courseId)
-  //   .once('value')
-  //   .then(snapshot => {
-  //     const newState = that.state.courseArr.concat([snapshot.val()])
-  //     that.setState({
-  //       courseArr: newState
-  //     })
-  //   })
-  // }
 
   render() {
     const courses = this.props.userCourses

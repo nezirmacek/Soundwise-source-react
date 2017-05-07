@@ -26,6 +26,8 @@ class _Course_Purchased extends Component {
         price: '',
         name: '',
         description: '',
+        modules: [],
+        resources: []
       },
       userCourses: {},
       open: false
@@ -51,16 +53,12 @@ class _Course_Purchased extends Component {
 
         firebase.database().ref('users/' + userId + '/courses')
           .on('value', snapshot => {
-            // that.props.loadUserCourses(snapshot.val())
+            that.props.loadUserCourses(snapshot.val())
 
             if(snapshot.val()[that.props.match.params.courseId]) {
 
               firebase.database().ref('courses/' + that.props.match.params.courseId)
                 .on('value', snapshot => {
-
-                    that.setState({
-                      course: snapshot.val()
-                    })
 
                     that.props.setCurrentCourse(snapshot.val())
 
@@ -93,11 +91,21 @@ class _Course_Purchased extends Component {
     })
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if(!nextProps.userInfo.courses || (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId])) {
-  //     return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+
+    if(nextProps.courses[nextProps.match.params.courseId] && this.props.courses[this.props.match.params.courseId] == undefined) {
+
+      this.props.setCurrentCourse(nextProps.courses[this.props.match.params.courseId])
+      let sections = []
+      nextProps.courses[this.props.match.params.courseId].modules.forEach(module => { // build a playlist of sections
+        module.sections.forEach(section => {
+          sections.push(section)
+        })
+      })
+      this.props.setCurrentPlaylist(sections)
+    }
+
+  }
 
   renderSnackbar() {
     if('caches' in window) {
@@ -118,7 +126,7 @@ class _Course_Purchased extends Component {
     // const course = this.props.courses[this.props.match.params.courseId]
     // const course = this.props.userInfo.courses ? this.props.userInfo.courses[this.props.match.params.courseId] : this.state.course
 
-    const course = this.state.course
+    const course = this.props.courses[this.props.match.params.courseId] || this.state.course
 
     if((this.props.userInfo.firstName && !this.props.userInfo.courses) || (this.props.userInfo.courses && !this.props.userInfo.courses[this.props.match.params.courseId])) {
       return <Redirect to={`/courses/${this.props.match.params.courseId}`}/>
@@ -147,7 +155,7 @@ class _Course_Purchased extends Component {
         <SoundwiseHeader />
          <CourseHeaderPurchased course={course}/>
         <MuiThemeProvider >
-          <CourseBodyPurchased course={course} />
+          <CourseBodyPurchased course={course} userCourse={this.props.userCourses[this.props.match.params.courseId]}/>
         </MuiThemeProvider>
 
         {this.renderSnackbar()}

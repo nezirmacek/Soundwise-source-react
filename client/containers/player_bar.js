@@ -18,7 +18,7 @@ const styles = {
 }
 
 const muiTheme = getMuiTheme({
-  palette: {
+  slider: {
     selectionColor: '#F76B1C',
     handleFillColor: '#F76B1C'
   },

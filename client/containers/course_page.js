@@ -36,8 +36,6 @@ class _Course extends Component {
       },
       userCourses: {}
     }
-
-    console.log('is this called?')
   }
 
   componentDidMount() {
@@ -61,22 +59,21 @@ class _Course extends Component {
 
   }
 
-  componentWillReceiveProps(nextProps) {
-      console.log('nextProps.courses: ', nextProps.courses)
+  // componentWillReceiveProps(nextProps) {
 
-    if(nextProps.courses[nextProps.match.params.courseId] && this.props.courses[this.props.match.params.courseId] == undefined) {
+  //   if(nextProps.courses[nextProps.match.params.courseId] && this.props.courses[this.props.match.params.courseId] == undefined) {
 
-      this.props.setCurrentCourse(nextProps.courses[this.props.match.params.courseId])
-      let sections = []
-      nextProps.courses[this.props.match.params.courseId].modules.forEach(module => { // build a playlist of sections
-        module.sections.forEach(section => {
-          sections.push(section)
-        })
-      })
-      this.props.setCurrentPlaylist(sections)
-    }
+  //     this.props.setCurrentCourse(nextProps.courses[this.props.match.params.courseId])
+  //     let sections = []
+  //     nextProps.courses[this.props.match.params.courseId].modules.forEach(module => { // build a playlist of sections
+  //       module.sections.forEach(section => {
+  //         sections.push(section)
+  //       })
+  //     })
+  //     this.props.setCurrentPlaylist(sections)
+  //   }
 
-  }
+  // }
 
   // componentWillReceiveProps(nextProps) {
   //   const that = this
@@ -102,8 +99,8 @@ class _Course extends Component {
     const course = this.props.courses[this.props.match.params.courseId] || this.state.course
     // const course = this.props.courses[this.props.match.params.courseId] ? this.props.courses[this.props.match.params.courseId] : this.state.course
 
-    console.log('this.props.courses: ', this.props.courses)
-    console.log('this.props.userInfo: ', this.props.userInfo)
+    // console.log('this.props.courses: ', this.props.courses)
+    // console.log('this.props.userInfo: ', this.props.userInfo)
 
     return (
       <div>

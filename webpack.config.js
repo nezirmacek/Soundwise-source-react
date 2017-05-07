@@ -43,6 +43,19 @@ module.exports = {
         stripPrefix: 'client/',
         navigateFallback: 'index.html',
         importScripts: ['custom-handler.js'],
+        runtimeCaching: [{
+            urlPattern: /^https:\/\/maxcdn\.bootstrapcdn\.com\//,
+            handler: 'cacheFirst'
+          },
+          // {
+          //   handler: 'cacheFirst',
+          //   urlPattern: /[.]jpg$/,
+          // },
+          // {
+          //   handler: 'cacheFirst',
+          //   urlPattern: /[.]png$/,
+          // }
+        ],
         staticFileGlobs: [
           'client/index.html',
           'client/css/**.css',
@@ -75,11 +88,11 @@ module.exports = {
         // }],
       }
     ),
-    // new webpack.optimize.UglifyJsPlugin(),
-    // new webpack.DefinePlugin({
-    //   'process.env': {
-    //     NODE_ENV: JSON.stringify('production')
-    //   }
-    // })
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    })
   ]
 };
