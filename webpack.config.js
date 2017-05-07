@@ -56,6 +56,7 @@ module.exports = {
           'client/fonts/**.svg',
           'client/fonts/**.eot',
           'client/fonts/**.otf',
+          'client/fonts/**.ttf',
           // 'client/images/section2_background.png',
           'client/images/smiley_face.jpg',
           // 'client/images/entrepreneur-logo.png',
