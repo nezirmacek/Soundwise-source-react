@@ -60,6 +60,21 @@ class _Course extends Component {
           })
           that.props.setCurrentPlaylist(sections)
         })
+        .catch((err) => {
+          that.setState({
+            course: that.Props.courses[that.props.match.params.courseId]
+          })
+        })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps != this.props) {
+      if(nextProps.courses[this.props.match.params.courseId]) {
+        this.setState({
+          course: nextProps.courses[this.props.match.params.courseId]
+        })
+      }
+    }
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -83,7 +98,10 @@ class _Course extends Component {
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    const course = this.props.courses[this.props.match.params.courseId] || this.state.course
+    // const course = this.props.courses[this.props.match.params.courseId] || this.state.course
+    const course = this.state.course
+    // console.log('this.props.courses: ', this.props.courses)
+    // console.log('this.props.userInfo: ', this.props.userInfo)
 
     return (
       <div>

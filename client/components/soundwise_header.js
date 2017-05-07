@@ -100,6 +100,7 @@ class _SoundwiseHeader extends Component {
     }
 
     render() {
+      // console.log('this.props.userInfo: ', this.props.userInfo)
         return (
             <header className="leadgen-agency-1" id="header-section1">
                 <nav className="navbar bg-white tz-header-bg no-margin alt-font shrink-header light-header">
