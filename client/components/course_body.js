@@ -8,6 +8,7 @@ import CourseOutline from './course_outline'
 import {PlayerBar} from '../containers/player_bar'
 import {Reviews} from '../containers/reviews'
 
+
 const styles = {
   headline: {
     fontSize: 24,

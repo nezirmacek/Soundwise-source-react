@@ -62,8 +62,8 @@ module.exports = {
           'client/bundle.js',
           // 'client/js/jquery.min.js',
           // 'client/images/header_img4.jpg',
-          'client/images/soundwiselogo_white.png',
-          'client/images/soundwiselogo.png',
+          'client/images/soundwiselogo_white.svg',
+          'client/images/soundwiselogo.svg',
           'client/fonts/**.woff',
           'client/fonts/**.woff2',
           'client/fonts/**.svg',
@@ -88,11 +88,11 @@ module.exports = {
         // }],
       }
     ),
-    // new webpack.optimize.UglifyJsPlugin(),
-    // new webpack.DefinePlugin({
-    //   'process.env': {
-    //     NODE_ENV: JSON.stringify('production')
-    //   }
-    // })
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    })
   ]
 };

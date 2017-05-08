@@ -107,7 +107,7 @@ class _SoundwiseHeader extends Component {
                     <div className="container navigation-menu">
                         <div className="row">
                             <div className="col-md-3 col-sm-0 col-xs-0">
-                                <Link to='/' className="inner-link"><img alt="Soundwise Logo" src="/images/soundwiselogo.png" data-img-size="(W)163px X (H)39px" /></Link>
+                                <Link to='/' className="inner-link"><img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" /></Link>
                             </div>
                             <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
                                 <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">

@@ -12,6 +12,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import { CourseHeader } from '../components/course_header'
 import { CourseHeaderPurchased } from '../components/course_header_purchased'
 import Footer from '../components/footer'
+
 import { CourseBody } from '../components/course_body'
 import { CourseFooter } from '../components/course_footer'
 import SocialShare from '../components/socialshare'

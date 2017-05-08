@@ -98,7 +98,7 @@ class _Header extends Component {
                 <div className="container navigation-menu">
                     <div className="row">
                         <div className="col-md-3 col-sm-0 col-xs-0">
-                            <Link to="/" className="inner-link"><img alt="" src="/images/soundwiselogo_white.png"/></Link>
+                            <Link to="/" className="inner-link"><img alt="" src="/images/soundwiselogo_white.svg"/></Link>
                         </div>
                         <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
                             <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
