@@ -15,6 +15,8 @@ import CourseBodyPurchased from '../components/course_body_purchased'
 import CourseBody from '../components/course_body'
 import SocialShare from '../components/socialshare'
 import { SoundwiseHeader } from '../components/soundwise_header'
+import {PlayerBar} from './player_bar'
+
 import {setCurrentPlaylist, setCurrentCourse, loadUserCourses} from '../actions/index'
 
 class _Course_Purchased extends Component {
@@ -63,7 +65,7 @@ class _Course_Purchased extends Component {
                     that.props.setCurrentCourse(snapshot.val())
 
                     let sections = []
-                    that.state.course.modules.forEach(module => { // build a playlist of sections
+                    snapshot.val().modules.forEach(module => { // build a playlist of sections
                       module.sections.forEach(section => {
                         sections.push(section)
                       })
@@ -151,7 +153,7 @@ class _Course_Purchased extends Component {
     }
 
     return (
-      <div>
+      <div className='vbox'>
         <SoundwiseHeader />
          <CourseHeaderPurchased course={course}/>
         <MuiThemeProvider >
@@ -160,6 +162,9 @@ class _Course_Purchased extends Component {
 
         {this.renderSnackbar()}
         <Footer />
+        <MuiThemeProvider >
+          <PlayerBar/>
+        </MuiThemeProvider>
       </div>
     )
   }

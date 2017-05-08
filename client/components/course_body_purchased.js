@@ -5,7 +5,6 @@ import {cyanA200, lime50, orange50, deepOrange800, grey50} from 'material-ui/sty
 
 import Instructor from './instructor'
 import {Curriculum} from './curriculum'
-import {PlayerBar} from '../containers/player_bar'
 import {Reviews} from '../containers/reviews'
 import Resources from './resources'
 
@@ -85,29 +84,29 @@ export default class CourseBodyPurchased extends React.Component {
 
     return (
      <div className='vbox'>
-      <div className=''>
-        <Tabs
-          onChange={this.handleChange}
-          value={this.state.slideIndex}
-        >
-          <Tab style={styles.tab[0]} label="CONTENT" value={0} />
-          <Tab style={styles.tab[1]} label="RESOURCES" value={1} />
+        <div className=''>
+          <Tabs
+            onChange={this.handleChange}
+            value={this.state.slideIndex}
+          >
+            <Tab style={styles.tab[0]} label="CONTENT" value={0} />
+            <Tab style={styles.tab[1]} label="RESOURCES" value={1} />
 
-        </Tabs>
-        <SwipeableViews
-          index={this.state.slideIndex}
-          onChangeIndex={this.handleChange}
-        >
-          <div style={styles.slide}>
-            <Curriculum course = {course} userCourse={this.props.userCourse}/>
-          </div>
-          <div>
-            <Resources course = {course} />
-          </div>
+          </Tabs>
+          <SwipeableViews
+            index={this.state.slideIndex}
+            onChangeIndex={this.handleChange}
+          >
+            <div style={styles.slide}>
+              <Curriculum course = {course} userCourse={this.props.userCourse}/>
+            </div>
+            <div>
+              <Resources course = {course} />
+            </div>
 
-        </SwipeableViews>
-      </div>
-        <PlayerBar/>
+          </SwipeableViews>
+        </div>
+
       </div>
     )
   }

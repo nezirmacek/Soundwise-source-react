@@ -54,26 +54,27 @@ class _Curriculum extends Component {
 
     const userId = firebase.auth().currentUser.uid
 
-    let update = this.state.course.sectionProgress[sectionId]
+    let update = this.props.userCourse.sectionProgress[sectionId]
     update.completed = true
     update.playProgress = 0
     update.timesRepeated = update.timesRepeated + 1
 
+    // record user listening progress data
     let updates = {}
-    updates['/users/' + userId + '/courses/' + this.state.course.id + '/sectionProgress/' + sectionId] = update
+    updates['/users/' + userId + '/courses/' + this.props.userCourse.id + '/sectionProgress/' + sectionId] = update
     firebase.database().ref().update(updates)
 
-    const sectionProgress = Object.assign({}, this.state.course.sectionProgress, {sectionId: update})
-    const course = Object.assign({}, this.state.course, {sectionProgress})
+    const sectionProgress = Object.assign({}, this.props.userCourse.sectionProgress, {sectionId: update})
+    const course = Object.assign({}, this.props.userCourse, {sectionProgress})
     this.props.setCurrentCourse(course)
 
     // record section completion in course data:
-    firebase.database().ref('/courses/' + this.state.course.id + '/metrics/' + sectionId)
+    firebase.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId)
     .once('value')
     .then(snapshot => {
       const completed = snapshot.val().timesCompleted + 1
       let update = {}
-      update['/courses/' + this.state.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed
+      update['/courses/' + this.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed
       firebase.database().ref().update(update)
     })
   }
@@ -82,12 +83,12 @@ class _Curriculum extends Component {
     this.updateSectionProgress(this.props.currentSection.section_id)
 
     // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
-    const next = this.props.currentSection.section_number
+    const sectionNumber = this.props.currentSection.section_number
 
-    if(next < this.props.currentPlaylist.length ) {
-      this.props.setCurrentPlaySection(this.props.currentPlaylist[next])
+    if(sectionNumber < this.props.currentPlaylist.length ) {
+      this.props.setCurrentPlaySection(this.props.currentPlaylist[sectionNumber])
 
-      source.src = this.props.currentPlaylist[next].section_url
+      source.src = this.props.currentPlaylist[sectionNumber].section_url
       player.load()
       player.play()
       this.props.changePlayStatus(true)

@@ -149,7 +149,7 @@ class _PlayerBar extends Component {
     const displayed = this.props.playerLaunched ? '' : 'none'
 
     return (
-      <footer className="footer bg-info dker" style={{display: displayed, height: '90px'}}>
+      <footer className="footer bg-info player-bar dker" style={{display: displayed, height: '90px'}}>
                 <div style={{width: '100%'}}>
                   <MuiThemeProvider muiTheme={muiTheme}>
                     <Slider value={currentPercent} min={0} max={100} onChange={this.handleSeek} sliderStyle={{margin:'0px', padding: '0px', width: '100%'}} style={{width: '100%'}}/>

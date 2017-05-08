@@ -525,7 +525,7 @@ footer .social-icon a:last-child{ margin-right:0;}
   position: relative;
   z-index: 1000;
 }
-.vbox > footer {
+.player-bar {
 /*top: 0;*/
 bottom: 0;
 width: 100%;

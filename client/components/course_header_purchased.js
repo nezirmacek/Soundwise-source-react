@@ -43,7 +43,7 @@ class _CourseHeaderPurchased extends Component {
         <section className=" bg-white" id="content-section23" style={{paddingBottom: '15px'}}>
             <div className="container">
                 <div className="row equalize sm-equalize-auto equalize-display-inherit">
-                    <div className="col-md-12 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
+                    <div className="col-md-12 col-sm-12 col-xs-12 display-table sm-no-margin" style={{height: '378px'}}>
                         <div className="display-table-cell-vertical-middle">
                             <div className="row">
                                 <div className="col-md-12 col-sm-12 col-xs-12" style={{textAlign: 'center'}}>
