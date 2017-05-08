@@ -68,11 +68,6 @@ class _SoundwiseHeader extends Component {
                 </a>
                   <ul className="dropdown-menu">
                     <li>
-                      <Link to='/myprograms'>
-                        <font style={{color: 'black'}}>MY COURSES</font>
-                      </Link>
-                    </li>
-                    <li>
                       <a onClick={() => this.signoutUser()}>
                         <font style={{color: 'black'}}>LOG OUT</font>
                       </a>
@@ -80,7 +75,7 @@ class _SoundwiseHeader extends Component {
                   </ul>
               </li>
               <li>
-                <Link to='/cart'><i className="material-icons" style={{fontSize: '26px'}}>shopping_cart</i></Link>
+                <Link to='/myprograms'>My Courses</Link>
               </li>
               </ul>
             )
