@@ -15,6 +15,7 @@ import {loadCourses} from './actions/index'
 import Page from './components/page'
 import About from './components/about'
 import Referral from './components/referral'
+import CreatorTerms from './components/creator_terms'
 import { OrderConfirmation } from './components/order_confirmation'
 import {AppSignup} from './containers/app_signup'
 import {AppSignin} from './containers/app_signin'
@@ -79,6 +80,7 @@ class _Routes extends Component {
              <Route path='/signup' component={AppSignup} />
              <Route path='/signin' component={AppSignin} />
              <Route path="/gift" component={Referral} />
+             <Route path="/creator_terms" component={CreatorTerms} />
              <Route exact path="/myprograms" component={MyCourses}/>
              <Route path="/myprograms/:courseId" component={Course_Purchased}/>
              <Route path="/cart" component={Cart} />
