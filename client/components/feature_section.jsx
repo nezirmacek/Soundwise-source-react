@@ -1,4 +1,44 @@
 import React from 'react';
+import Slider from 'react-slick'
+
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 4,
+  slidesToScroll: 3,
+  arrows: true,
+  autoplay: false,
+  // autoplaySpeed: 2000,
+  swipe: true,
+  responsive: [{
+    breakpoint: 1024,
+    settings: {
+      slidesToShow: 3,
+      slidesToScroll: 2,
+      infinite: true,
+      dots: true
+    }
+  }, {
+    breakpoint: 600,
+    settings: {
+      slidesToShow: 2,
+      slidesToScroll: 2,
+      infinite: true,
+      dots: true,
+      autoplay: false
+    }
+  }, {
+    breakpoint: 480,
+    settings: {
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      infinite: true,
+      dots: true,
+      autoplay: false
+    }
+  }]
+}
 
 const Feature_section = () => (
   <section className="bg-white builder-bg padding-110px-tb" id="portfolios-section4">
@@ -21,39 +61,38 @@ const Feature_section = () => (
         { /* end section title */ }
       </div>
     </div>
-    <div className="container">
-      <div className="row">
-        <div className="owl-carousel owl-theme owl-pagination-bottom owl-dark-pagination gallery-style4">
-          { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center lightbox-gallery">
-            <a href="images/discover.png" id="tz-bg-69" title><img src="images/discover.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-36" alt /></a>
+    <div className='container'>
+      <div className='row'>
+        <Slider {...settings}>
+          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
+            <img src="images/discover.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-36" alt />
           </div>
           { /* end portfolio */ }
           { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center lightbox-gallery">
-            <a href="images/discover_playlist.png" id="tz-bg-70" title><img src="images/discover_playlist.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-37" alt /></a>
+          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
+            <img src="images/discover_playlist.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-37" alt />
           </div>
           { /* end portfolio */ }
           { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center lightbox-gallery">
-            <a href="images/challenges.png" id="tz-bg-71" title><img src="images/challenges.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-38" alt /></a>
+          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
+            <img src="images/challenges.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-38" alt />
           </div>
           { /* end portfolio */ }
           { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center lightbox-gallery">
-            <a href="images/my_classes.png" id="tz-bg-72" title><img src="images/my_classes.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-39" alt /></a>
+          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
+            <img src="images/my_classes.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-39" alt />
           </div>
           { /* end portfolio */ }
           { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center lightbox-gallery">
-            <a href="images/class_details.png" id="tz-bg-73" title><img src="images/class_details.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-40" alt /></a>
+          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
+            <img src="images/class_details.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-40" alt />
           </div>
           { /* end portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center lightbox-gallery">
-            <a href="images/about_me.png" id="tz-bg-73" title><img src="images/about_me.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-40" alt /></a>
+          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
+            <img src="images/about_me.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-40" alt />
           </div>
           { /* end portfolio */ }
-        </div>
+        </Slider>
       </div>
     </div>
   </section>
