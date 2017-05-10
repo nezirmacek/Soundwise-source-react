@@ -10,8 +10,8 @@ const Banner = () => (
         { /* slider text */ }
         <div className="col-md-6 col-sm-6 col-xs-12 display-table pull-right xs-text-center" style={ {  height: 728} }>
           <div className="display-table-cell-vertical-middle" style={{color: 'black'}}>
-            <h2 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large alt-font xs-title-extra-large text-white margin-thirteen-bottom xs-margin-five-bottom tz-text"
-              data-selector=".tz-text" id="ui-id-20" style={ {  backgroundColor: 'rgba(0, 0, 0, 0)',  fontSize: 60,  fontWeight: 500,  fontFamily: 'Montserrat, sans-serif',  textTransform: 'none',  borderRadius: 0,  color: 'black'} }>Become a better you. 10 minutes at a time.</h2>
+            <h2 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large alt-font xs-title-extra-large text-dark-gray margin-thirteen-bottom xs-margin-five-bottom tz-text"
+              data-selector=".tz-text" id="ui-id-20" style={ {  backgroundColor: 'rgba(0, 0, 0, 0)',  fontSize: 60,  fontWeight: 500,  fontFamily: 'Montserrat, sans-serif',  textTransform: 'none',  borderRadius: 0} }>Build the skills for a life well lived...10 minutes at a time.</h2>
             <Bannerright></Bannerright>
             <div className="btn-dual">
               <a className="btn btn-large propClone bg-golden-yellow text-black xs-margin-ten-bottom xs-width-100" href="https://eepurl.com/cyNzD5" data-selector="a.btn, button.btn"
