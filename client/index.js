@@ -79,11 +79,31 @@ const courseInfo = {
           }
         },
       "teacher": "Llacey Simmons",
-      "teacher_profession": "Instructional Designer, Parenting Blogger, Mommy to A 4-Year-Old",
+      "teacher_profession": "Instructional Designer and Parenting Blogger",
       "teacher_img": "https://s3.amazonaws.com/soundwiseinc/llacey_simmons/Llacey+Simmons+2.jpg",
       "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/llacey_simmons/Llacey+Simmons.jpg",
       "teacher_bio": ["Llacey Simmons is an instructional designer and professional tutor living in Maryland. She is also the proud mom to Cavanaugh, a 4-year-old boy who is a trilingual genius. Llacey has a master’s degree in Instructional Systems Development and a MBA. She regularly writes about how to effectively raise multilingual children on her parenting blog, our21stcenturykids.com."],
       "resources": [
+        {
+          "description": "Research on the cognitive benefit of being bilingual",
+          "link": "http://www.psychologicalscience.org/journals/cd/19_1_inpress/Bialystok_final.pdf?lan=ayajzqechdlh"
+        },
+        {
+          "description": "Bilinguals have longer attention span",
+          "link": "http://www.lingref.com/isb/4/188ISB4.PDF"
+        },
+        {
+          "description": "Bilinguals have superior social skills",
+          "link": "https://www.nytimes.com/2016/03/13/opinion/sunday/the-superior-social-skills-of-bilinguals.html?_r=0"
+        },
+        {
+          "description": "Bilingual brains age slower",
+          "link": "http://dana.org/Cerebrum/2012/The_Cognitive_Benefits_of_Being_Bilingual/"
+        },
+        {
+          "description": "How to increase children's attention span",
+          "link": "https://www.edutopia.org/discussion/7-ways-increase-students-attention-span"
+        },
         {
           "description": "Llacey's blog is a great resource for fresh information on how to raise multilingual children",
           "link": "http://our21stcenturykids.com"
@@ -188,33 +208,6 @@ const courseInfo = {
         }
       ]
     }
-
-const resources = [
-    {
-      "description": "Research on the cognitive benefit of being bilingual",
-      "link": "http://www.psychologicalscience.org/journals/cd/19_1_inpress/Bialystok_final.pdf?lan=ayajzqechdlh"
-    },
-    {
-      "description": "Bilinguals have longer attention span",
-      "link": "http://www.lingref.com/isb/4/188ISB4.PDF"
-    },
-    {
-      "description": "Bilinguals have superior social skills",
-      "link": "https://www.nytimes.com/2016/03/13/opinion/sunday/the-superior-social-skills-of-bilinguals.html?_r=0"
-    },
-    {
-      "description": "Bilingual brains age slower",
-      "link": "http://dana.org/Cerebrum/2012/The_Cognitive_Benefits_of_Being_Bilingual/"
-    },
-    {
-      "description": "How to increase children's attention span",
-      "link": "https://www.edutopia.org/discussion/7-ways-increase-students-attention-span"
-    },
-    {
-      "description": "Llacey's blog is a great resource for fresh information on how to raise multilingual children",
-      "link": "http://our21stcenturykids.com"
-    }
-  ]
 
 
 const expiration = new Date(2099, 7, 31)
