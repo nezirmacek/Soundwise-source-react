@@ -956,7 +956,7 @@ h6 { font-size:18px; line-height:23px}
 /* section */
 .center-col { float: none !important; margin-left: auto !important; margin-right: auto !important;}
 .clear-both{ clear:both}
-section {border-bottom:1px solid #ececec}
+section {border-bottom:0  }
 
 /* separator */
 .separator-line { height: 1px; width: 68px;}
