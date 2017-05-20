@@ -8,7 +8,10 @@ import Snackbar from 'material-ui/Snackbar'
 import Dialog from 'material-ui/Dialog'
 import FontIcon from 'material-ui/FontIcon'
 import Checkbox from 'material-ui/Checkbox'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
 import Slider from 'material-ui/Slider'
+import Subheader from 'material-ui/Subheader'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
 import {orange50, greenA200, blue500, grey500, orange500} from 'material-ui/styles/colors'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
@@ -76,13 +79,17 @@ class _CourseSection extends Component {
       loading: false,
       currentTime: 0,
       duration: 1,
-      cached: false
+      cached: false,
+      expanded: false,
+      expandedItem: ''
     }
     this.playFile = this.playFile.bind(this)
     this.handleTap = this.handleTap.bind(this)
     this.renderPlayButton = this.renderPlayButton.bind(this)
     this.handleCacheAudio = this.handleCacheAudio.bind(this)
     this.renderCacheButton = this.renderCacheButton.bind(this)
+    this.handleExpand = this.handleExpand.bind(this)
+    this.renderCheatsheet = this.renderCheatsheet.bind(this)
   }
 
   componentDidMount() {
@@ -350,6 +357,108 @@ class _CourseSection extends Component {
   //         hoverColor={orange500}
   //       >pause</FontIcon>
 
+  handleExpand(item) {
+    console.log('expandedItem: ', item)
+    if(this.state.expanded && this.state.expandedItem == item) {
+      this.setState({
+        expanded: false
+      })
+    } else if(this.state.expanded && this.state.expandedItem != item) {
+      this.setState({
+        expanded: true,
+        expandedItem: item
+      })
+    } else if(!this.state.expanded ) {
+      this.setState({
+        expanded: true,
+        expandedItem: item
+      })
+    }
+  }
+
+  renderCheatsheet() {
+    const icon = this.state.expanded && this.state.expandedItem == 'notes' ? <i className="fa fa-angle-up" aria-hidden="true"></i> : <i className="fa fa-angle-down" aria-hidden="true"></i>
+
+    if(this.props.section.notes_url) {
+      return (
+        <RaisedButton label="Cheat Sheet" icon={icon}  onTouchTap={()=> this.handleExpand('notes')} />
+      )
+    }
+  }
+
+  renderTranscript() {
+
+    if(this.props.section.transcript_url) {
+      return (
+        <a href={this.props.section.transcript_url} target="_blank"><RaisedButton label="Transcript"  /></a>
+      )
+    }
+  }
+
+  renderActions() {
+    const icon = this.state.expanded && this.state.expandedItem == 'actions' ? <i className="fa fa-angle-up" aria-hidden="true"></i> : <i className="fa fa-angle-down" aria-hidden="true"></i>
+
+    if(this.props.section.actions) {
+      return (
+        <RaisedButton label="Action Step" icon={icon} onTouchTap={() => this.handleExpand('actions')} />
+      )
+    }
+  }
+
+  handleCheck() {
+
+  }
+
+  renderActionItems(actions) {
+    if(Array.isArray(actions)) {
+      return (
+        <div>
+          <Subheader>Completed</Subheader>
+          {actions.map(action => (
+            <MuiThemeProvider >
+              <Checkbox
+                label={action}
+                labelStyle={{fontSize: '18px', color: '#696969', fontWeight: 400}}
+                style={styles.checkbox}
+                onCheck={this.handleCheck}
+              />
+            </MuiThemeProvider>
+          ))}
+        </div>
+      )
+    } else {
+      return (
+        <div>
+          <Subheader>Completed</Subheader>
+          <MuiThemeProvider >
+              <Checkbox
+                label={actions}
+                labelStyle={{fontSize: '18px', color: '#696969', fontWeight: 400}}
+                style={styles.checkbox}
+                onCheck={this.handleCheck}
+              />
+          </MuiThemeProvider>
+        </div>
+      )
+    }
+  }
+
+  renderExpandedItem() {
+    if(this.state.expandedItem == 'actions') {
+      return (
+        <Paper className='' style={{padding: '1em'}}>
+          {this.renderActionItems(this.props.section.actions)}
+        </Paper>
+      )
+    } else if(this.state.expandedItem == 'notes') {
+      return (
+        <Paper style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <a href={this.props.section.notes_url} target="_blank"><img src={this.props.section.notes_url} /></a>
+        </Paper>
+      )
+    }
+  }
+
   render() {
 
     // const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
@@ -368,11 +477,12 @@ class _CourseSection extends Component {
 
     return (
       <div>
-      <Card>
+      <Card expanded={this.state.expanded} >
         <CardHeader
           title={`Lesson ${this.props.section.section_number} (${run_time[0]}m ${run_time[1]}s)`}
           style={styles.sectionTitle}
           showExpandableButton={false}
+          actAsExpander={true}
         />
         <CardText>
           <div className='row' style={{display: 'flex', alignItems: 'center'}}>
@@ -400,9 +510,6 @@ class _CourseSection extends Component {
                   {this.props.section.title}
                 </span>
               </a>
-              <a href={this.props.section.transcript_url} target="_blank" title='transcript' style={{paddingLeft: '0.5em'}}>
-                <i className="material-icons" >description</i>
-              </a>
             </div>
             <div
               style={{display: displayDownload, alignItems: 'center'}}
@@ -412,6 +519,16 @@ class _CourseSection extends Component {
               </a>
             </div>
           </div>
+        </CardText>
+        <div style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '1em'}}>
+          <CardActions>
+          {this.renderCheatsheet()}
+          {this.renderTranscript()}
+          {this.renderActions()}
+          </CardActions>
+        </div>
+        <CardText expandable={true}>
+          {this.renderExpandedItem()}
         </CardText>
       </Card>
       </div>

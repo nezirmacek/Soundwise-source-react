@@ -3,6 +3,58 @@ import React from 'react'
 // import GeminiScrollbar from 'react-gemini-scrollbar'
 // import ReactScrollbar from 'react-scrollbar-js'
 
+const renderBio = (bio) => {
+  return (
+    <div>
+      {bio.map(para => (
+        <p>{para}</p>
+      ))}
+    </div>
+  )
+}
+
+const renderWebsite = (website) => {
+  if(website) {
+    return (
+      <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+        <a target="_blank" href={website} className=" text-medium tz-text"><i className="fa fa-link icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" aria-hidden="true"></i>
+          <br />Website
+        </a>
+      </div>
+    )
+  }
+}
+
+const renderFacebook = (facebook) => {
+  if(facebook) {
+    return (
+      <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+        <a target="_blank" href={facebook} className=" text-medium tz-text"><i className="fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Facebook</a>
+      </div>
+    )
+  }
+}
+
+const renderTwitter = (twitter) => {
+  if(twitter) {
+    return (
+      <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+        <a target="_blank" href={twitter} className=" text-medium tz-text"><i className="fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Twitter</a>
+      </div>
+    )
+  }
+}
+
+const renderLinkedin = (linkedin) => {
+  if(linkedin) {
+    return (
+      <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
+        <a target="_blank" href={linkedin} className=" text-medium tz-text"><i className="fa fa-linkedin icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />LinkedIn</a>
+      </div>
+    )
+  }
+}
+
 const Instructor = (props) => (
   <section className="about-style3 padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" >
       <div className="container">
@@ -19,23 +71,14 @@ const Instructor = (props) => (
                     <span className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500" id="tz-slider-text127">{props.course.teacher}</span>
                     <div className="text-dark-gray text-medium margin-twelve no-margin-lr tz-text" id="tz-slider-text130"><p></p></div>
                     <div className="text-dark-gray text-large tz-text" id="tz-slider-text129" >
-                      <p>{props.course.teacher_bio}</p>
+                      {renderBio(props.course.teacher_bio)}
                     </div>
                     <div className="row">
                         <div className="col-md-10 col-md-offset-1 col-sm-12 text-center">
-                            <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
-                              <a target="_blank" href={props.course.teacher_website} className=" text-medium tz-text"><i className="fa fa-link icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" aria-hidden="true"></i>
-                                <br />Website</a>
-                            </div>
-                            <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
-                              <a target="_blank" href={props.course.teacher_twitter} className=" text-medium tz-text"><i className="fa fa-twitter icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Twitter</a>
-                            </div>
-                            <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
-                              <a target="_blank" href={props.course.teacher_facebook} className=" text-medium tz-text"><i className="fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Facebook</a>
-                            </div>
-                            <div className="col-md-3 col-sm-4">
-                              <a target="_blank" href={props.course.teacher_linkedin} className=" text-medium tz-text"><i className="fa fa-linkedin icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />LinkedIn</a>
-                            </div>
+                              {renderWebsite(props.course.teacher_website)}
+                              {renderTwitter(props.course.teacher_twitter)}
+                              {renderFacebook(props.course.teacher_facebook)}
+                              {renderLinkedin(props.course.teacher_linkedin)}
                         </div>
                     </div>
                    </div>

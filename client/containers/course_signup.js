@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as firebase from "firebase"
+import Axios from 'axios'
 import TextField from 'material-ui/TextField'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
@@ -72,6 +73,7 @@ class _CourseSignup extends Component {
     this.handleSignupOrLogin = this.handleSignupOrLogin.bind(this)
     this.handleFBSignin = this.handleFBSignin.bind(this)
     this.handleFBSignup = this.handleFBSignup.bind(this)
+    this.addCourseToUser = this.addCourseToUser.bind(this)
   }
 
   handleChange(e) {
@@ -115,9 +117,16 @@ class _CourseSignup extends Component {
         })
 
         this.props.signupUser({firstName, lastName, email, pic_url, password})
-        this.props.addCourseToCart(this.props.course)
         this.props.openSignupbox(false)
-        this.props.history.push('/cart')
+
+        if(that.props.course.price == 0) {
+          that.addCourseToUser()
+
+        } else {
+        that.props.addCourseToCart(that.props.course)
+        that.props.history.push('/cart')
+
+        }
 
     } catch (error) {
         this.setState({
@@ -147,7 +156,7 @@ class _CourseSignup extends Component {
                   pic_url = snapshot.val().pic_url
                 }
                 that.props.signinUser({firstName, lastName, email, pic_url})
-                that.props.addCourseToCart(that.props.course)
+
                 that.props.openSignupbox(false)
                 that.setState({
                   firstName,
@@ -155,7 +164,15 @@ class _CourseSignup extends Component {
                   email,
                   pic_url
                 })
-                that.props.history.push('/cart')
+
+                if(that.props.course.price == 0) {
+                  that.addCourseToUser()
+
+                } else {
+                  that.props.addCourseToCart(that.props.course)
+                  that.props.history.push('/cart')
+                }
+
             })
         })
 
@@ -166,6 +183,43 @@ class _CourseSignup extends Component {
           })
           console.log(error.toString())
       })
+  }
+
+  addCourseToUser() {
+    const that = this
+    const userId = firebase.auth().currentUser.uid
+    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course
+
+    let sectionProgress = {}
+    this.props.course.modules.forEach(module => {
+      module.sections.forEach(section => {
+        sectionProgress[section.section_id] = {
+          playProgress: 0,
+          completed: false,
+          timesRepeated: 0
+        }
+      })
+    })
+
+    const updates = {}
+    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
+
+    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
+    firebase.database().ref().update(updates)
+
+    Axios.post('/api/email_signup', { //handle mailchimp api call
+      firstName: that.props.userInfo.firstName,
+      lastName: that.props.userInfo.lastName,
+      email: that.props.userInfo.email,
+      courseID: this.props.course.id
+    })
+    .then(() => {
+      that.props.history.push('/confirmation')
+    })
+    .catch((err) => {
+      that.props.history.push('/confirmation')
+    })
+
   }
 
   signupForm() {
@@ -272,9 +326,17 @@ class _CourseSignup extends Component {
           firebase.database().ref().update(updates)
 
           that.props.signinUser({firstName, lastName, email, pic_url, courses})
-          that.props.addCourseToCart(that.props.course)
+
+          if(that.props.course.price == 0) {
+            that.addCourseToUser()
+
+          } else {
+            that.props.addCourseToCart(that.props.course)
+            that.props.history.push('/cart')
+          }
+
           that.props.openSignupbox(false)
-          that.props.history.push('/cart')
+
         } else {  //if it's a new user
           const user = result.user
           const email = user.email
@@ -293,9 +355,17 @@ class _CourseSignup extends Component {
           })
 
           that.props.signinUser({firstName, lastName, email, pic_url, courses})
-          that.props.addCourseToCart(that.props.course)
+
+          if(that.props.course.price == 0) {
+            that.addCourseToUser()
+
+          } else {
+            that.props.addCourseToCart(that.props.course)
+            that.props.history.push('/cart')
+          }
+
           that.props.openSignupbox(false)
-          that.props.history.push('/cart')
+
         }
 
       })
@@ -338,9 +408,16 @@ class _CourseSignup extends Component {
                 //   })
                 // }
                 that.props.signinUser({firstName, lastName, email, pic_url, courses})
+
+                if(that.props.course.price == 0) {
+                  that.addCourseToUser()
+
+                } else {
                 that.props.addCourseToCart(that.props.course)
-                that.props.openSignupbox(false)
                 that.props.history.push('/cart')
+                }
+
+                that.props.openSignupbox(false)
             })
           })
         }
@@ -372,9 +449,16 @@ class _CourseSignup extends Component {
       })
 
       that.props.signupUser({firstName, lastName, email, pic_url})
+
+      if(that.props.course.price == 0) {
+        that.addCourseToUser()
+
+      } else {
       that.props.addCourseToCart(that.props.course)
-      that.props.openSignupbox(false)
       that.props.history.push('/cart')
+      }
+
+      that.props.openSignupbox(false)
 
     }).catch(function(error) {
       // Handle Errors here.
@@ -407,10 +491,18 @@ class _CourseSignup extends Component {
                   const lastName = snapshot.val().lastName
                   const email = snapshot.val().email
                   const pic_url = snapshot.val().pic_url
+
                   that.props.signupUser({firstName, lastName, email, pic_url})
+
+                  if(that.props.course.price == 0) {
+                    that.addCourseToUser()
+
+                  } else {
                   that.props.addCourseToCart(that.props.course)
-                  that.props.openSignupbox(false)
                   that.props.history.push('/cart')
+                  }
+
+                  that.props.openSignupbox(false)
               })
             })
           }

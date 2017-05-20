@@ -60,6 +60,7 @@ class _CourseHeader extends Component {
     this.addCourseToUser = this.addCourseToUser.bind(this)
     this.submitPayment = this.submitPayment.bind(this)
     this.renderProgressBar = this.renderProgressBar.bind(this)
+    this.addCourseToUser = this.addCourseToUser.bind(this)
   }
 
   componentDidMount() {
@@ -154,10 +155,49 @@ class _CourseHeader extends Component {
       return (
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em'}}>
           <i style={styles.icon} className="material-icons">play_circle_outline</i>
-          <span style={{fontSize: '30px', paddingLeft: '0.5em'}}><strong>PLAY INTRO</strong></span>
+          <span style={{fontSize: '30px', paddingLeft: '0.5em'}}><strong>PLAY LESSON 1</strong></span>
         </div>
       )
     }
+  }
+
+  addCourseToUser() {
+    const that = this
+    const userId = firebase.auth().currentUser.uid
+    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_img, teacher_thumbnail} = this.props.course
+
+    let sectionProgress = {}
+    course.modules.forEach(module => {
+      module.sections.forEach(section => {
+        sectionProgress[section.section_id] = {
+          playProgress: 0,
+          completed: false,
+          timesRepeated: 0
+        }
+      })
+    })
+
+    course.sectionProgress = sectionProgress
+
+    const updates = {}
+    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_img, teacher_thumbnail}
+
+    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
+    firebase.database().ref().update(updates)
+
+    Axios.post('/api/email_signup', { //handle mailchimp api call
+      firstName: that.props.userInfo.firstName,
+      lastName: that.props.userInfo.lastName,
+      email: that.props.userInfo.email,
+      courseID: this.props.course.id
+    })
+    .then(() => {
+      that.props.history.push('/confirmation')
+    })
+    .catch((err) => {
+      that.props.history.push('/confirmation')
+    })
+
   }
 
   checkOut() {
@@ -166,9 +206,14 @@ class _CourseHeader extends Component {
       // if(this.props.userInfo.stripe_id && this.props.userInfo.stripe_id.length > 0) {
       //   this.submitPayment()
       // } else {
+        if(this.props.course.price == 0) {
+          this.addCourseToUser()
 
-        this.props.addCourseToCart(this.props.course)
-        this.props.history.push('/cart')
+        } else {
+
+          this.props.addCourseToCart(this.props.course)
+          this.props.history.push('/cart')
+        }
       // }
     } else {
       this.props.openSignupbox(true)
@@ -218,10 +263,10 @@ class _CourseHeader extends Component {
   addCourseToUser() {
     const that = this
     const userId = firebase.auth().currentUser.uid
-    const course = this.props.course
+    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course
 
     let sectionProgress = {}
-    course.modules.forEach(module => {
+    this.props.course.modules.forEach(module => {
       module.sections.forEach(section => {
         sectionProgress[section.section_id] = {
           playProgress: 0,
@@ -231,13 +276,11 @@ class _CourseHeader extends Component {
       })
     })
 
-    course.sectionProgress = sectionProgress
-
     const updates = {}
-    updates['/users/' + userId + '/courses/' + course.id] = course
+    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
     // store stripe customer ID info: (only works with real credit cards)
     // updates['/users/' + userId + '/stripeId'] = stripeId
-    updates['/courses/' + course.id + '/users/' + userId] = userId
+    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
     firebase.database().ref().update(updates)
 
     that.props.history.push('/confirmation')
@@ -294,6 +337,7 @@ class _CourseHeader extends Component {
     average_rating = Math.floor(total / ratings.length * 10) / 10
 
     const courseName = this.props.course.name.split(' ').join('%20')
+    const price = this.props.course.price == 0 ? 'Free course' : `$${this.props.course.price}`
 
     return (
       <div>
@@ -336,10 +380,10 @@ class _CourseHeader extends Component {
                                 </div>
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
-                                <div className="col-md-4 col-sm-4 col-xs-4 feature-box-details-second">
-                                  <span className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{`$${this.props.course.price}`}</span>
+                                <div className="col-md-5 col-sm-5 col-xs-5 feature-box-details-second">
+                                  <span className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{price}</span>
                                 </div>
-                                <div className="col-md-7 col-sm-8 col-xs-8">
+                                <div className="col-md-6 col-sm-7 col-xs-7">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
                                   >
                                     <span className="text-extra-large sm-text-extra-large tz-text">TAKE THE COURSE</span>

@@ -85,26 +85,9 @@ export default class CourseBodyPurchased extends React.Component {
     return (
      <div className='vbox'>
         <div className=''>
-          <Tabs
-            onChange={this.handleChange}
-            value={this.state.slideIndex}
-          >
-            <Tab style={styles.tab[0]} label="CONTENT" value={0} />
-            <Tab style={styles.tab[1]} label="RESOURCES" value={1} />
-
-          </Tabs>
-          <SwipeableViews
-            index={this.state.slideIndex}
-            onChangeIndex={this.handleChange}
-          >
-            <div style={styles.slide}>
+            <div style={{}}>
               <Curriculum course = {course} userCourse={this.props.userCourse}/>
             </div>
-            <div>
-              <Resources course = {course} />
-            </div>
-
-          </SwipeableViews>
         </div>
 
       </div>

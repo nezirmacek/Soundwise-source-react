@@ -59,6 +59,7 @@ export default class CourseOutline extends Component {
         description: '',
         description_long: [''],
         features: [''],
+        teacher_bio: [''],
         modules: [
           {
             sections: []

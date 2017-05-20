@@ -19,7 +19,7 @@ const styles = {
     backgroundColor: orange50
   },
   curriculumContainer: {
-    marginTop: '3em'
+    marginTop: '0em'
   }
 }
 
@@ -167,7 +167,7 @@ class _Curriculum extends Component {
 
   render() {
     return (
-      <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
+      <section className="padding-60px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1" >
         <div className="container">
           <div style={styles.curriculumContainer}>
             {this.renderModules()}

@@ -108,16 +108,20 @@ class _PlayerBar extends Component {
   }
 
   handleSkipForward() {
-    if(this.props.currentTime < this.props.currentDuration - 10) {
-      const current = player.currentTime + 10
+    if(this.props.currentTime < this.props.currentDuration - 30) {
+      const current = player.currentTime + 30
       player.currentTime = current
+    } else {
+      player.currentTime = this.props.currentDuration
     }
   }
 
   handleSkipBackward() {
-    if(this.props.currentTime > 10) {
-      const current = player.currentTime - 10
+    if(this.props.currentTime > 30) {
+      const current = player.currentTime - 30
       player.currentTime = current
+    } else {
+      player.currentTime = 0
     }
   }
 
@@ -166,10 +170,10 @@ class _PlayerBar extends Component {
                           <MenuItem value={2} primaryText="2x" />
                         </DropDownMenu>
                       </div>
-                        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}><a className="" onClick={() => this.handleSkipBackward()}><i className="material-icons" style={{fontSize: '42px'}}>replay_10</i></a>
+                        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}><a className="" onClick={() => this.handleSkipBackward()}><i className="material-icons" style={{fontSize: '42px'}}>replay_30</i></a>
                         </div>
                         {this.togglePlayOrPause()}
-                        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}><a className="" onClick={() => this.handleSkipForward()}><i className="material-icons" style={{fontSize: '42px'}}>forward_10</i></a>
+                        <div className='col-md-2 col-sm-2 col-xs-2' style={styles.flex}><a className="" onClick={() => this.handleSkipForward()}><i className="material-icons" style={{fontSize: '42px'}}>forward_30</i></a>
                         </div>
                       <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>{`${currentMin}:${currentSec}`}
                       </div>

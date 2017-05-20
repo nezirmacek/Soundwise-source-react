@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import * as firebase from 'firebase'
+import Axios from 'axios'
+
 import { openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index'
 import { withRouter } from 'react-router'
 import {orange50} from 'material-ui/styles/colors'
@@ -10,12 +13,57 @@ class _CourseFooter extends Component {
     super(props)
 
     this.checkOut = this.checkOut.bind(this)
+    this.addCourseToUser = this.addCourseToUser.bind(this)
+  }
+
+  addCourseToUser() {
+    const that = this
+    const userId = firebase.auth().currentUser.uid
+    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course
+
+    let sectionProgress = {}
+    this.props.course.modules.forEach(module => {
+      module.sections.forEach(section => {
+        sectionProgress[section.section_id] = {
+          playProgress: 0,
+          completed: false,
+          timesRepeated: 0
+        }
+      })
+    })
+
+    const updates = {}
+    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
+
+    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
+    firebase.database().ref().update(updates)
+
+    Axios.post('/api/email_signup', { //handle mailchimp api call
+      firstName: that.props.userInfo.firstName,
+      lastName: that.props.userInfo.lastName,
+      email: that.props.userInfo.email,
+      courseID: this.props.course.id
+    })
+    .then(() => {
+      that.props.history.push('/confirmation')
+    })
+    .catch((err) => {
+      that.props.history.push('/confirmation')
+    })
+
   }
 
   checkOut() {
     if(this.props.isLoggedIn) {
-      this.props.addCourseToCart(this.props.course)
-      this.props.history.push('/cart')
+      if(this.props.course.price == 0) {
+        this.addCourseToUser()
+
+      } else {
+        this.props.addCourseToCart(this.props.course)
+        this.props.history.push('/cart')
+
+      }
+
     } else {
       this.props.openSignupbox(true)
     }
@@ -42,7 +90,8 @@ const mapStateToProps = state => {
   const { signupFormOpen } = state.signupBox
   return {
     isLoggedIn,
-    signupFormOpen
+    signupFormOpen,
+    userInfo
   }
 }
 

@@ -527,9 +527,10 @@ footer .social-icon a:last-child{ margin-right:0;}
 }
 .player-bar {
 /*top: 0;*/
-bottom: 0;
-width: 100%;
-position: fixed;
+    bottom: 0;
+    width: 100%;
+    position: fixed;
+    z-index: 1000;
 }
 /*music player addon*/
 
