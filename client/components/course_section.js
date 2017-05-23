@@ -168,8 +168,8 @@ class _CourseSection extends Component {
 
       player.addEventListener('loadeddata', () => {
         player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
-        console.log('can play')
 
+        player.playbackRate = this.props.speed
         player.play()
 
         that.props.changePlayStatus(true)
@@ -215,6 +215,8 @@ class _CourseSection extends Component {
       player.addEventListener('loadeddata', () => {
         player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
 
+        player.playbackRate = this.props.speed
+
         setTimeout(() => {
           player.play()
         }, 150)
@@ -248,6 +250,7 @@ class _CourseSection extends Component {
       //   this.props.changePlayStatus(true)
       //   this.setState({loading: false})
       // })
+      player.playbackRate = this.props.speed
       player.play()
       this.props.changePlayStatus(true)
       this.setState({loading: false})
@@ -263,11 +266,11 @@ class _CourseSection extends Component {
       )
     } else if(this.props.playing && this.props.currentSection.section_id == this.props.section.section_id) {
       return (
-        <Levels color="#F76B1C" size={12} speed={1} />
+        <Levels color="#F76B1C" size={16} speed={1} />
       )
     } else {
       return (
-        <i className="material-icons" style={{fontSize: '18px'}}>play_arrow</i>
+        <i className="fa fa-play-circle" style={{fontSize: '38px', color: '#61E1FB'}} aria-hidden="true"></i>
       )
     }
   }
@@ -413,7 +416,9 @@ class _CourseSection extends Component {
     if(Array.isArray(actions)) {
       return (
         <div>
-          <Subheader>Completed</Subheader>
+          <div style={{fontSize: '14px', marginBottom: '1em', marginTop: '1.5em'}}>
+            <span >Mark as completed</span>
+          </div>
           {actions.map(action => (
             <MuiThemeProvider >
               <Checkbox
@@ -429,7 +434,9 @@ class _CourseSection extends Component {
     } else {
       return (
         <div>
-          <Subheader>Completed</Subheader>
+          <div style={{fontSize: '14px', marginBottom: '1em', marginTop: '1.5em'}}>
+            <span >Mark as completed</span>
+          </div>
           <MuiThemeProvider >
               <Checkbox
                 label={actions}
@@ -478,12 +485,7 @@ class _CourseSection extends Component {
     return (
       <div>
       <Card expanded={this.state.expanded} >
-        <CardHeader
-          title={`Lesson ${this.props.section.section_number} (${run_time[0]}m ${run_time[1]}s)`}
-          style={styles.sectionTitle}
-          showExpandableButton={false}
-          actAsExpander={true}
-        />
+
         <CardText>
           <div className='row' style={{display: 'flex', alignItems: 'center'}}>
             <div className=''
@@ -500,16 +502,24 @@ class _CourseSection extends Component {
                 progressColor="#F76B1C">
               </ProgressLabel>
             </div>
-            <div className=''
+            <div className='row'
               style={{paddingLeft: '1em', display: 'flex', alignItems: 'center', width: '75%'}}>
-
-              <a onClick={this.handleTap}
-                style={{padding: '0em'}}>
-                {this.renderPlayButton()}
-                <span style={{fontSize: '18px', paddingLeft: '0.5em' }}>
-                  {this.props.section.title}
-                </span>
-              </a>
+                <div className='col-md-1 col-sm-2 col-xs-3'  style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <a onClick={this.handleTap}>
+                    {this.renderPlayButton()}
+                  </a>
+                </div>
+                <div className='col-md-11, col-sm-10 col-xs-9'>
+                  <a onClick={this.handleTap}
+                    style={{padding: '0em'}}>
+                    <div style={{fontSize: '16px',  }}>
+                      {`Lesson ${this.props.section.section_number} (${run_time[0]}m ${run_time[1]}s)`}
+                    </div>
+                    <div style={{fontSize: '20px', }}>
+                      {this.props.section.title}
+                    </div>
+                  </a>
+                </div>
             </div>
             <div
               style={{display: displayDownload, alignItems: 'center'}}
@@ -551,9 +561,10 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user
   const { playing, currentSection } = state.setCurrentSection
-  const { playerLaunched, currentPlaylist , currentTime, currentDuration } = state.setCourses
+  const { playerLaunched, speed } = state.setPlayer
+  const { currentPlaylist , currentTime, currentDuration } = state.setCourses
   return {
-    isLoggedIn, currentSection, playing, playerLaunched, currentPlaylist, currentTime, currentDuration
+    isLoggedIn, currentSection, playing, playerLaunched, speed, currentPlaylist, currentTime, currentDuration
   }
 }
 

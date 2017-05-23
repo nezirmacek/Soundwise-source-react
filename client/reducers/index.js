@@ -30,13 +30,19 @@ function user(state= {
 }
 
 function setPlayer(state={
-  playerLaunched: false
+  playerLaunched: false,
+  speed: 1
 }, action) {
   switch (action.type) {
     case types.PLAYER:
       return  {
         ...state,
         playerLaunched: action.payload
+      }
+    case types.CHANGE_SPEED:
+      return {
+        ...state,
+        speed: action.payload
       }
     default:
       return state

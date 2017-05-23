@@ -9,7 +9,7 @@ import Slider from 'material-ui/Slider'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 
-import {setCurrentPlaySection, changePlayStatus} from '../actions/index'
+import {setCurrentPlaySection, changePlayStatus, changeSpeed} from '../actions/index'
 
 let player, source
 
@@ -80,6 +80,7 @@ class _PlayerBar extends Component {
       firebase.database().ref().update(updates)
 
     } else {
+      player.playbackRate = this.props.speed
       player.play()
       this.props.changePlayStatus(true)
     }
@@ -91,6 +92,7 @@ class _PlayerBar extends Component {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[previous])
       source.src = this.props.currentPlaylist[previous].section_url
       player.load()
+      player.playbackRate = this.props.speed
       player.play()
       this.props.changePlayStatus(true)
     }
@@ -102,6 +104,7 @@ class _PlayerBar extends Component {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[next])
       source.src = this.props.currentPlaylist[next].section_url
       player.load()
+      player.playbackRate = this.props.speed
       player.play()
       this.props.changePlayStatus(true)
     }
@@ -129,6 +132,7 @@ class _PlayerBar extends Component {
     this.setState({
       speed: value
     })
+    this.props.changeSpeed(value)
     player.playbackRate = value
   }
 
@@ -186,13 +190,13 @@ class _PlayerBar extends Component {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setCurrentPlaySection, changePlayStatus }, dispatch)
+  return bindActionCreators({ setCurrentPlaySection, changePlayStatus, changeSpeed }, dispatch)
 }
 
 
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user
-  const {playerLaunched} = state.setPlayer
+  const {playerLaunched, speed} = state.setPlayer
   const { playing, currentSection } = state.setCurrentSection
   const { currentTime, currentDuration, currentPlaylist, currentCourse } = state.setCourses
   return {

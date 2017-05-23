@@ -131,3 +131,10 @@ export function deleteCart() {
     type: types.DELETE_ALL
   }
 }
+
+export function changeSpeed(value) {
+  return {
+    type: types.CHANGE_SPEED,
+    payload: value
+  }
+}

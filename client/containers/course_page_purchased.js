@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import firebase from 'firebase'
 import { Redirect } from 'react-router-dom'
+import {Helmet} from "react-helmet"
 import { withRouter } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -137,6 +138,16 @@ class _Course_Purchased extends Component {
     if(!this.props.isLoggedIn ) {
       return (
         <div>
+        <Helmet>
+          <title>{`${course.name} | Soundwise`}</title>
+          <meta property="og:url" content={`https://mysoundwise.com/courses/${course.id}`} />
+          <meta property="fb:app_id" content='1726664310980105' />
+          <meta property="og:title" content={course.name}/>
+          <meta property="og:description" content={course.description}/>
+          <meta property="og:image" content={course.img_url_mobile} />
+          <meta name="description" content={course.description} />
+          <meta name="keywords" content={course.keywords} />
+        </Helmet>
         <SoundwiseHeader />
         <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
             <div className="container">
@@ -154,6 +165,16 @@ class _Course_Purchased extends Component {
 
     return (
       <div className='vbox'>
+        <Helmet>
+          <title>{`${course.name} | Soundwise`}</title>
+          <meta property="og:url" content={`https://mysoundwise.com/courses/${course.id}`} />
+          <meta property="fb:app_id" content='1726664310980105' />
+          <meta property="og:title" content={course.name}/>
+          <meta property="og:description" content={course.description}/>
+          <meta property="og:image" content={course.img_url_mobile} />
+          <meta name="description" content={course.description} />
+          <meta name="keywords" content={course.keywords} />
+        </Helmet>
         <SoundwiseHeader />
          <CourseHeaderPurchased course={course}/>
         <MuiThemeProvider >
