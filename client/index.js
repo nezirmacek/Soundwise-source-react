@@ -35,187 +35,213 @@ const store = createStore(
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {
-      "name": "The Startup Product Launch Crash Course",
-      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/bob_jones/The Startup Product Launche Crash Course.png",
-      "id": 120,
-      "run_time": 3443,
+      "name": "Raising Venture Capital: What You Need to Know",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/venture_capital.png",
+      "id": 121,
+      "run_time": 3386,
       "price": 0,
-      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/1+Intro_mixdown.mp3",
+      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/1+Intro+_mixdown.mp3",
       "category": "Entrepreneurship",
-      "keywords": "entrepreneurship, entrepreneur, Bob Jones, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
-      "description": ["Serial entrepreneur Bob Jones shares the mindset and techniques that are crucial for a successful product launch. Whether you’re a first-time founder or a startup veteran, this gem-packed mini course will help you win more customers and avoid costly launch mistakes."],
-      "description_long":["Nine out of ten startups fail. But it doesn’t have to be that way.", "In this course, Bob Jones, serial entrepreneur and CEO of Scientific Nutrition Products Inc, shows you that if you execute your product launch the right way, not only is it much easier to get initial customers, but you also maximize your startup’s chance of long-term success.", "Through his personal examples of leading two startup launches, one succeeded and one failed, Jones lays out a step-by-step product launch formula that is rooted in idea validation and deeply understanding your customers.", "No matter whether you’re launching a million-dollar medical device or working on a better way for pizza delivery from your garage, the insights Jones presents in this course will help you secure a seat in the startup winner’s camp."],
-      "features": ["Learn how to launch your startup product the right way", "Essential tools for finding, reaching and retaining customers", "Techniques for developing sales channels by understanding your customers", "11 audio lessons", "Infographic cheatsheets for individual lessons","Assignments/action steps for each lesson", "Option to play audios offline (on computer and android phone with Chrome browser"],
+      "keywords": "entrepreneurship, entrepreneur, Stephen Pearse, venture capital, raise money, financing, pitch, startup pitch, pitch deck, equity financing, venture funding, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
+      "description": ["Need to pitch your startup to venture capitalists? This course tells you how. Stephen Pearse, a serial entrepreneur and startup veteran, teaches you the nitty-gritties of pitching and presenting that will help you maximize your chance of success with potential investors."],
+      "description_long":["As an entrepreneur, you always need to be selling your ideas—to potential employees, customers, partners, and investors. How quickly your business can gain traction highly depends on how good you are in making others buy into your vision.", "But how do you position and present your idea in the best light?", "Drawing on 30 years of experience as an entrepreneur, senior executive and venture capitalist, in this course Stephen Pearse will help you get into the minds of your potential investors, and show you how to make your pitch stand out in a sea of noise.", "Although this course focuses on pitching venture capital investors, the insights and practical tips shared will help you become a better salesperson for your ideas, no matter whom you are pitching to."],
+      "features": ["Learn the right way to pitch your ideas that gets results", "Tips on how to approach venture investors", "Presentation techniques that capture your audience", "Invaluable advices from a seasoned entrepreneur", "12 audio lessons", "Infographic notes for individual lessons","Assignments/action steps for each lesson", "Option to play audios offline (on computer and android phone with Chrome browser"],
       "metrics": {
-          29: {
+          40: {
             timesCompleted: 0
           },
-          30: {
+          41: {
             timesCompleted: 0
           },
-          31: {
+          42: {
             timesCompleted: 0
           },
-          32: {
+          43: {
             timesCompleted: 0
           },
-          33: {
+          44: {
             timesCompleted: 0
           },
-          34: {
+          45: {
             timesCompleted: 0
           },
-          35: {
+          46: {
             timesCompleted: 0
           },
-          36: {
+          47: {
             timesCompleted: 0
           },
-          37: {
+          48: {
             timesCompleted: 0
           },
-          38: {
+          49: {
             timesCompleted: 0
           },
-          39: {
+          50: {
+            timesCompleted: 0
+          },
+          51: {
             timesCompleted: 0
           }
         },
-      "teacher": "Bob Jones",
-      "teacher_profession": "Serial Entrepreneur and Senior Executive",
-      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Bob_Jones.jpg",
-      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Bob_Jones.jpg",
-      "teacher_bio": ["Bob is CEO of Scientific Nutrition Products, Inc. Previously, Bob led the Nutrition and Wellness practice at Scientia Advisors, a strategy consulting firm.  Prior to Scientia, Bob was President and CEO of Vitasoy USA, Inc., the nation’s largest marketer and manufacturer of tofu and the pioneer of soymilk in America.  This was a management turn-around.", "Before Vitasoy, Bob launched three start-ups in the medical nutrition field.  Each company addressed chronic medical disorders such as diabetes via targeted nutrition products.  All three start-ups were with staff and faculty at Harvard Medical School.  Each company created consumer products that were sold through retail pharmacies.", "Bob also worked at Abbott Laboratories and Baxter International.  He has two awarded patents in the field of nutrition.  He is an active mentor with MIT’s Venture Mentoring Service and has served as a judge in MIT’s 100K Business Plan Competition.  He has an A.B. in biology from Princeton University, and an MSM (MBA + thesis) from MIT Sloan.  After hours, Bob plays in a blues band in the Boston area."],
-      "teacher_website": "http://www.foodforsleep.com",
-      "teacher_linkedin": "https://www.linkedin.com/in/bostonbobjones",
+      "teacher": "Stephen Pearse",
+      "teacher_profession": "Entrepreneur and Venture Capitalist",
+      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/StephenPearse.jpg",
+      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/StephenPearse.jpg",
+      "teacher_bio": ["Steven Pearse has been a technology leader and entrepreneur for 30 years. He is a Managing Director at Yucatan Rock Ventures. He has been the CEO of numerous startups in the telecommunications space, most notably Cyras Systems. Before starting his entrepreneurial career, He was Executive Vice President of Bay Networks' Internet/Telecom Business Group. Previously, he served as Senior Vice President at Time Warner Telecom and Vice President of Technology at Sprint. He is the Chairman of Innovation Pavilion, a Director of Sereniti, Inc., Voltree, Mobiwatch and C4RJ, and is a Techstars mentor and NASA advisory council appointee."],
+      "teacher_website": "https://en.wikipedia.org/wiki/Stephen_Pearse",
+      "teacher_linkedin": "https://www.linkedin.com/in/pearse/",
       "teacher_facebook": "",
-      "teacher_twitter": "",
+      "teacher_twitter": "https://twitter.com/sgpearse",
       "teacher_instagram": "",
       "modules": [
         {
           "module_id": 1,
-          "module_title": "The Startup Product Launch Crash Course",
+          "module_title": "Raising Venture Capital: What You Need to Know",
           "sections": [
             {
-              "section_id": 29,
+              "section_id": 40,
               "section_number": 1,
-              "run_time": "1:28",
+              "run_time": "1:50",
               "title": "Introduction",
               "content": "",
               "actions": "",
               "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/1+Intro_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": ""
+              "notes_url": "",
+              "resources": ""
             },
             {
-              "section_id": 30,
+              "section_id": 41,
               "section_number": 2,
-              "run_time": "4:11",
-              "title": "Three critical questions that determine the survival of any company",
+              "run_time": "3:49",
+              "title": "What your investors want",
               "content": "",
-              "actions": "Write down your answers to the following questions. What is my startup really selling? Who want what I sell? How do I find those people? Is my product unique and important?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/2+Three+crucial+questions+that+determine+a+survival+of+any+company_mixdown.mp3",
+              "actions": "Ask yourself the following questions. What is the long term vision for your company? What is your time horizon to achieve that vision? And how can your vision be consistent with the goals your potential investors may have?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/2+VC+biz+model_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+2-01.jpg"
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-2.jpg",
+              "resources": ""
             },
             {
-              "section_id": 31,
+              "section_id": 42,
               "section_number": 3,
-              "run_time": "5:05",
-              "title": "My disastrous product launch failure",
+              "run_time": "3:37",
+              "title": "Your advantage as a startup over big companies",
               "content": "",
-              "actions": "Write down your answer to the following question. If you were Bob, what would you have done differently to make Regain’s product launch more successful?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/3+My+disastrous+product+launch+failure+_mixdown.mp3",
+              "actions": "Think about the following questions. Which larger companies in your industry can potentially acquire your startup? What advantages does your startup have over other bigger companies in your industry? What can you do that they cannot?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/3+The+startup+advantage+over+big+companies+mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+3-01.jpg"
+              "notes_url": "",
+              "resources": ""
             },
             {
-              "section_id": 32,
+              "section_id": 43,
               "section_number": 4,
-              "run_time": "4:44",
-              "title": "Four lessons you should learn from my product launch failure",
+              "run_time": "4:41",
+              "title": "The fundamentals of a good pitch",
               "content": "",
-              "actions": "Write down your answers to the following questions. Why did Regain’s product launch failed? Could it have succeeded at all if the team had taken different actions?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/4+Four+lessons+you+should+learn+from+my+product+launc+failure_mixdown.mp3",
+              "actions": "Draft an elevator pitch for your startup that include the following elements: 1. the target customers; 2. the customer problem; 3. the current dissatisfactory solutions available; 4. the solution you provide; 5. what set you apart from competitive substitutes; 6. the key features of your solution. For example, your pitch can go like this: For so and so target customers, who have such and such problems and are not satisfied with such and such current solutions, our product is a…fill in new product category…that provides such and such a solution. Unlike such and such competitive substitutes, we have such and such key product features. Deliver this pitch to at least ten of your friends and families, and take feedback.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/4+The+basics+of+a+good+pitch_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-4.jpg",
+              "resources": ""
             },
             {
-              "section_id": 33,
+              "section_id": 44,
               "section_number": 5,
-              "run_time": "8:13",
-              "title": "My product launch success and what you can learn from it",
+              "run_time": "6:22",
+              "title": "Eight essential rules of a good pitch",
               "content": "",
-              "actions": "Write down your answer to the following question. What are the most important actions Bob and his team took that lead to NiteBite’s product launch success?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/5+My+product+launch+succses+and+what+you+can+learn+from+it_mixdown.mp3",
+              "actions": "Draft a pitch presentation for your startup following the 10-slides, 20-minutes, 30 pixel-font size rule. Think from your audience’s perspective. Is your presentation simple enough? Does it have an exciting hook? What questions may your audience have?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/5+Eight+rules+of+a+good+pitch+_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+5-01.jpg"
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-5.jpg",
+              "resources": [{"link": "https://guykawasaki.com/the_102030_rule/", "description": "Guy Kawasaki's blog", "link_text": "The 10/20/30 Rule of PowerPoint"},{"link": "https://www.youtube.com/watch?v=jJ2yepIaAtE", "description": "The Pecha Kucha presentation style", "link_text": "A Pecha Kucha about Pecha Kucha"}]
             },
             {
-              "section_id": 34,
+              "section_id": 45,
               "section_number": 6,
-              "run_time": "13:12",
-              "title": "How to reach your customers",
+              "run_time": "4:59",
+              "title": "The anatomy of a good pitch",
               "content": "",
-              "actions": "Write down your answers to the following questions. Who influences your customers’ buying decisions? What motivate these influencers? What can you do to help your customers’ influencers succeed?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/6+How+to+reach+your+costumer_mixdown.mp3",
+              "actions": "Review your pitch presentation. Does it include the following ten components? 1. The hook. 2. Your solution to the customer problem. 3. Your magic and/or your technology. 4. Your business model. 5. Your marketing and sales strategy. 6. Your competition. 7. Your management team. 8. How you’re going to spend the investment money. 9. Your current status and timeline. 10. What your request to the potential investors is.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/6+The+anatomy+of+a+good+pitch_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+6-01.jpg"
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-6.jpg",
+              "resources": ""
             },
             {
-              "section_id": 35,
+              "section_id": 46,
               "section_number": 7,
-              "run_time": "3:33",
-              "title": "Four truths of customer acquisition I learned the hard way",
+              "run_time": "4:09",
+              "title": "How to get investors excited about your pitch",
               "content": "",
-              "actions": "Write down your answer to the following question. What’s the customer segment that needs your product the most, that is, feeling the most pain from the problem you’re trying to solve?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/7+Four+thruts+about+customer+aquisition+_mixdown.mp3",
+              "actions": "Review your pitch presentation again. Does it have an exciting hook, for example, addressing a significant pain or implying a huge market opportunity? Is your presentation layman-friendly? Is your presentation sufficiently focused on the customer benefits of your product?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/7+How+to+get+investors+mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+7-01.jpg"
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-7.jpg",
+              "resources": ""
             },
             {
-              "section_id": 36,
+              "section_id": 47,
               "section_number": 8,
-              "run_time": "2:10",
-              "title": "What you are really selling no matter what you sell (ignore this and you won't have a business)",
+              "run_time": "3:03",
+              "title": "Six presentation tips for a winning pitch",
               "content": "",
-              "actions": "Write down your answer to the following question. What’s the ultimate motivator for your customers to buy your startup’s product? Pain, fear, greed, vanity, or virtue?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/8+What+you're+really+selling+no+matter+what+you+sell+(neglect+this+and+you+won't+have+a+buissnis+_mixdown.mp3",
+              "actions": "Practice your pitch presentation to at least five friends, families, or mentors, and ask for feedback.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/8+Six+presentation+tips+to+help+you+deliver+a+winning+pitch_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+8-01.jpg"
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-8.jpg",
+              "resources": [{"link": "https://www.inc.com/magazine/201310/leigh-buchanan/pechakucha-a-peppy-brief-presentation-style.html", "description": "How to Add More Pep to Your Presentations, by Leigh Buchanan", "link_text": "How to Add More Pep to Your Presentations"}]
             },
             {
-              "section_id": 37,
+              "section_id": 48,
               "section_number": 9,
-              "run_time": "3:35",
-              "title": "A winning customer acquisition formula for any new company",
+              "run_time": "7:50",
+              "title": "Good and bad examples of real pitches",
               "content": "",
-              "actions": ["Research and think about the following. What are the 1 to 3 well-defined customer niches that you can dominate. Write down your answer.", "Create a set of customer interview questions. And set a goal to talk to at least x number of potential customers per week from now on."],
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/9+A+winning+customer+aquisition+formula+for+any+new+company_mixdown.mp3",
+              "actions": "Google and find five pitch decks of other companies. Review them and think about: 1) What do you like and not like about them? 2) How can they be improved?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/9+Good+and+bad+examples+of+actual+pitches_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+9-01.jpg"
+              "notes_url": "",
+              "resources": ""
             },
             {
-              "section_id": 38,
+              "section_id": 49,
               "section_number": 10,
-              "run_time": "3:13",
-              "title": 'The "lean startup" customer acquisition in a nutshell',
+              "run_time": "5:37",
+              "title": "When and how to approach investors",
               "content": "",
-              "actions": ["Create a 30-second pitch for your product and tell it to five potential customers.", "If your company is at an early stage, think about the following. Do you have any evidence that a segment of customers will buy your product? If you don’t, go find some evidence."],
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/10+Learn+startup+customer+acquisition+in+a+nutshell_mixdown.mp3",
+              "actions": "Research the background and identify at least five venture capital firms that could be a good fit for your startup. Find out who’s who in these companies and look for common connections. Is there anyone in your personal or professional network who can introduce you to these VCs? Can you think of other creative ways to get an introduction?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/10+When+and+how+you+should+approach+investors_mixdown.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/Lesson+10-01.jpg"
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-10.jpg",
+              "resources": ""
             },
             {
-              "section_id": 39,
+              "section_id": 50,
               "section_number": 11,
-              "run_time": "7:59",
-              "title": 'Bonus: What to do when your business model is not working',
+              "run_time": "2:52",
+              "title": "Two crucial metrics to watch for in your startup",
               "content": "",
-              "actions": "Ask yourself the following questions. Is your product something people will cheerfully pay for and tell their friends about? If not, what can you do to figure out whether you have the right business model and are targeting the right customers? Write down your answers.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/bob_jones/11+Bonus_mixdown.mp3",
+              "actions": "Ask yourself, am I paying enough attention to my startup’s cashflow? Think of ways you can better monitor your company’s financials.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/11+Two+crucial+factors+to+watch+for+to+ensure+you+company's+successmixdown.mp3",
               "transcript_url": "",
-              "notes_url": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-10.jpg",
+              "resources": ""
+            },
+            {
+              "section_id": 51,
+              "section_number": 12,
+              "run_time": "7:37",
+              "title": "More advices on how to ensure your company's long-term success",
+              "content": "",
+              "actions": "Ask yourself the following questions. What are the unique competitive advantages of your company over your competitors? Why are you and your team the right people building this specific company? What can you do to make up for the skill and experience gap you may have? And what is your company’s larger mission besides making a profit?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/12+Even+more+tips+for+ensuring+your+company's+long+term+success_mixdown.mp3",
+              "transcript_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/stephen_pearse/lesson-12.jpg",
+              "resources": ""
             },
           ]
         }

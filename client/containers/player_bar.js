@@ -75,7 +75,7 @@ class _PlayerBar extends Component {
       let updates = {}
       updates['/users/' + userId + '/courses/' + this.props.currentCourse.id + '/sectionProgress/' + sectionId + '/playProgress'] = playProgress
 
-      console.log('playProgress: ', playProgress)
+      // console.log('playProgress: ', playProgress)
 
       firebase.database().ref().update(updates)
 
@@ -200,7 +200,7 @@ const mapStateToProps = state => {
   const { playing, currentSection } = state.setCurrentSection
   const { currentTime, currentDuration, currentPlaylist, currentCourse } = state.setCourses
   return {
-    isLoggedIn, currentSection, playing, playerLaunched, currentTime, currentDuration, currentPlaylist, currentCourse
+    isLoggedIn, currentSection, playing, playerLaunched, speed, currentTime, currentDuration, currentPlaylist, currentCourse
   }
 }
 

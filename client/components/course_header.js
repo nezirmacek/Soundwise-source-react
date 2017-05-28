@@ -357,7 +357,7 @@ class _CourseHeader extends Component {
                                         edit={false}
                                         color2={'#ffd700'}
                                       />
-                                      <span style={{marginLeft: '5px', fontSize: '18'}}>{`(${ratings.length})`}</span>
+                                      <span style={{marginLeft: '5px', fontSize: '18px'}}>{`(${ratings.length})`}</span>
                                     </div>
                                     <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.course.description} (Run Time: ${run_time})`}</span>
                                     <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text" style={{display: 'flex', alignItems: 'center'}}>

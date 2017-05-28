@@ -11,9 +11,7 @@ const CourseCard = (props) => (
       <div className=" float-left width-100">
           <div className="feature-box-image margin-eleven-bottom">
               <Link to={`/myprograms/${props.course.id}`}>
-                <CardMedia
-                  overlay={<CardTitle title={props.course.name}/>}
-                >
+                <CardMedia>
                   <img alt="" src={props.course.img_url_mobile} data-img-size="(W)800px X (H)533px" style={{objectFit: 'cover'}}/>
                 </CardMedia>
               </Link>

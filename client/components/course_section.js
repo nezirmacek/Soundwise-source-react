@@ -384,7 +384,7 @@ class _CourseSection extends Component {
 
     if(this.props.section.notes_url) {
       return (
-        <RaisedButton label="Cheat Sheet" icon={icon}  onTouchTap={()=> this.handleExpand('notes')} />
+        <RaisedButton label="Notes" icon={icon}  onTouchTap={()=> this.handleExpand('notes')} />
       )
     }
   }

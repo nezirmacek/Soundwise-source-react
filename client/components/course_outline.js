@@ -8,18 +8,30 @@ import Instructor from './instructor'
 
 const styles = {
   moduleTitle: {
-    fontSize: 24,
+    fontSize: '32px',
     backgroundColor: '#F76B1C'
   },
   sectionTitle: {
-    backgroundColor: orange50
+    // backgroundColor: orange50,
+    fontSize: '32px'
   },
   curriculumContainer: {
     marginTop: '0em'
   }
 }
 
+const renderContent = section => {
+  if(section.content) {
+    return (
+      <CardText >
+        {section.content}
+      </CardText>
+    )
+  }
+}
+
 const renderModules = (course) => {
+
     return (
       course.modules.map(module => (
         <Card key={module.module_id}>
@@ -29,16 +41,17 @@ const renderModules = (course) => {
           />
           <div className=''>
           {module.sections.map(section => {
+
             return (
               <div>
               <Card>
+                <div style={{display:'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <CardHeader
                   title={`Lesson ${section.section_number}: ${section.title} (${section.run_time})`}
                   style = {styles.sectionTitle}
                 />
-                <CardText >
-                  {section.content}
-                </CardText>
+                </div>
+                {renderContent(section)}
               </Card>
               </div>
             )

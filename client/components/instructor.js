@@ -39,7 +39,7 @@ const renderTwitter = (twitter) => {
   if(twitter) {
     return (
       <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
-        <a target="_blank" href={twitter} className=" text-medium tz-text"><i className="fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Twitter</a>
+        <a target="_blank" href={twitter} className=" text-medium tz-text"><i className="fa fa-twitter icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"></i><br />Twitter</a>
       </div>
     )
   }
