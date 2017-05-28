@@ -90,6 +90,7 @@ class _CourseSection extends Component {
     this.renderCacheButton = this.renderCacheButton.bind(this)
     this.handleExpand = this.handleExpand.bind(this)
     this.renderCheatsheet = this.renderCheatsheet.bind(this)
+    this.renderResources = this.renderResources.bind(this)
   }
 
   componentDidMount() {
@@ -361,7 +362,7 @@ class _CourseSection extends Component {
   //       >pause</FontIcon>
 
   handleExpand(item) {
-    console.log('expandedItem: ', item)
+    // console.log('expandedItem: ', item)
     if(this.state.expanded && this.state.expandedItem == item) {
       this.setState({
         expanded: false
@@ -384,7 +385,17 @@ class _CourseSection extends Component {
 
     if(this.props.section.notes_url) {
       return (
-        <RaisedButton label="Notes" icon={icon}  onTouchTap={()=> this.handleExpand('notes')} />
+        <RaisedButton style={{marginTop: '0.5em', marginBottom: '0.5em'}} label="Notes" icon={icon}  onTouchTap={()=> this.handleExpand('notes')} />
+      )
+    }
+  }
+
+  renderResources() {
+    const icon = this.state.expanded && this.state.expandedItem == 'resources' ? <i className="fa fa-angle-up" aria-hidden="true"></i> : <i className="fa fa-angle-down" aria-hidden="true"></i>
+
+    if(this.props.section.resources) {
+      return (
+        <RaisedButton style={{marginTop: '0.5em', marginBottom: '0.5em'}} label="Resources" icon={icon}  onTouchTap={()=> this.handleExpand('resources')} />
       )
     }
   }
@@ -393,7 +404,7 @@ class _CourseSection extends Component {
 
     if(this.props.section.transcript_url) {
       return (
-        <a href={this.props.section.transcript_url} target="_blank"><RaisedButton label="Transcript"  /></a>
+        <a href={this.props.section.transcript_url} target="_blank"><RaisedButton label="Transcript"   style={{marginTop: '0.5em', marginBottom: '0.5em'}}/></a>
       )
     }
   }
@@ -403,7 +414,7 @@ class _CourseSection extends Component {
 
     if(this.props.section.actions) {
       return (
-        <RaisedButton label="Action Step" icon={icon} onTouchTap={() => this.handleExpand('actions')} />
+        <RaisedButton style={{marginTop: '0.5em', marginBottom: '0.5em'}} label="Action Step" icon={icon} onTouchTap={() => this.handleExpand('actions')} />
       )
     }
   }
@@ -461,6 +472,20 @@ class _CourseSection extends Component {
       return (
         <Paper style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <a href={this.props.section.notes_url} target="_blank"><img src={this.props.section.notes_url} /></a>
+        </Paper>
+      )
+    } else if(this.state.expandedItem == 'resources') {
+      return (
+        <Paper style={{padding: '1em', paddingTop: '2em', paddingBottom: '2em'}}>
+          <ul>
+            {this.props.section.resources.map(resource => {
+              return (
+                <li style={{fontSize: '18px', padding: '1em'}}>
+                  {`${resource.description}: `}<a style={{color: '#61E1FB'}} href={resource.link} target="_blank">{resource.link_text}</a>
+                </li>
+              )
+            })}
+          </ul>
         </Paper>
       )
     }
@@ -535,6 +560,7 @@ class _CourseSection extends Component {
           {this.renderCheatsheet()}
           {this.renderTranscript()}
           {this.renderActions()}
+          {this.renderResources()}
           </CardActions>
         </div>
         <CardText expandable={true}>
