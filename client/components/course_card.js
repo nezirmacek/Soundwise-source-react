@@ -5,7 +5,7 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import { Link } from 'react-router-dom'
 
 const CourseCard = (props) => (
-  <div className="col-md-4 col-sm-4 col-xs-12 xs-margin-twenty-three-bottom xs-text-center">
+  <div className="col-md-4 col-sm-4 col-xs-12 margin-three-bottom xs-margin-twenty-three-bottom xs-text-center">
     <MuiThemeProvider>
     <Card>
       <div className=" float-left width-100">

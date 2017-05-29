@@ -36,121 +36,143 @@ const store = createStore(
 
 const courseInfo = {
       "name": "Financial Projections: What Every Startup Founder Needs to Know",
-      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/How+to+Find+the+Right+Business+Model.png",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/financial+projections-+what+every+startup+founder+needs+to+know.png",
       "id": 122,
-      "run_time": 2625,
+      "run_time": 3977,
       "price": 0,
-      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-1.mp3",
+      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-1.mp3",
       "category": "Entrepreneurship",
-      "keywords": "entrepreneurship, entrepreneur, Rich Kivel, business model, business plan, revenue model, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
-      "description": ["In this example-rich course, Richard Kivel will help you answer the million-dollar question: “How do your startup make money?” The course explores some of the common business models and discusses when they are mostly appropriately used."],
-      "description_long":["To build a successful startup, having a killer product is not enough. You need to figure out how you will get your product into the hands of your customers and effectively capture part of the value you create. And as technologies evolve, the way you distribute your project and make money may evolve as well.", "In this course, serial entrepreneur and investor Rich Kivel will teach you how to go from having a business idea to ideally positioning yourself in your industry and product category, by choosing the right business model."],
-      "features": ["Learn the characteristics of successful business models", "Tips on how to find your ideal market positioning", "Insights for identifying market opportunites in your industry", "Business advices from a seasoned entrepreneur", "6 audio lessons", "Action steps for every lesson", "Option to play audios offline (on computer and android phone with Chrome browser"],
+      "keywords": "financials, financial models, financial projections, revenue projections, income statement, entrepreneurship, entrepreneur, Charlie Tillet, business model, business plan, revenue model, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
+      "description": ["Knowing what resources it will take to run the business is crucial for every startup. In the course, senior financial executive Charlie Tillett teaches you the building blocks of financial planning and projections for you business."],
+      "description_long":["Running a startup involves a high degree of uncertainty. But that doesn’t mean as a founder, you don’t need to plan ahead. Just to the opposite, the more you understand the financial assumptions and business drivers of your company and plan your actions accordingly, the more you stand a chance to succeed. Besides, before you talk to potential investors, you want to make sure you understand what resources it takes to get your company off the ground, and what milestones you need to achieve by when.", "In this course, seasoned financial executive Charlie Tillett will show you how to go about making financial projections for your company that will deepen your understanding of your own business and increase your credibility with investors. The course also shows you how venture financing works, and teaches you, through concrete examples, how external financing changes the equity structure of your company over time. After taking this course and completing the exercises, you will be better equipped to negotiate with investors and assess potential investment offers.", "The course is mainly designed for entrepreneurs seeking external financing. But the principals and wisdom presented here are useful no matter how you plan to fund your company."],
+      "features": ["Learn how to determine the financial needs of your business", "Overview of the building blocks of startup financials", "Easy-to-understand financial accounting examples for entrepreneurs", "Time-tested financial planning tips", "8 audio lessons", "Notes and action steps for every lesson", "Financial projection template included", "Option to play audios offline (on computer and android phone with Chrome browser"],
       "metrics": {
-          52: {
+          58: {
             timesCompleted: 0
           },
-          53: {
+          59: {
             timesCompleted: 0
           },
-          54: {
+          60: {
             timesCompleted: 0
           },
-          55: {
+          61: {
             timesCompleted: 0
           },
-          56: {
+          62: {
             timesCompleted: 0
           },
-          57: {
+          63: {
+            timesCompleted: 0
+          },
+          64: {
+            timesCompleted: 0
+          },
+          65: {
             timesCompleted: 0
           }
         },
-      "teacher": "Richard Kivel",
-      "teacher_profession": "Entrepreneur and Investor",
-      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/Richard_Kivel.jpeg",
-      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/Richard_Kivel.jpeg",
-      "teacher_bio": ["Rich Kivel has over 20 years of experience in managing and building successful emerging technology companies, from founding and raising capital to positioning the companies for acquisition. He is the Executive Chairman of ViS Research Institute, Inc. and a Senior Manager at Bridgewater Associates. He is a frequent Guest Lecturer at MIT Sloan School of Management and has been a Judge for the MIT $100k Entrepreneurship Competition since 1998."],
+      "teacher": "Charlie Tillett",
+      "teacher_profession": "Financial Executive",
+      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Charlie+Tillet+2.png",
+      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Charlie+Tillet+2.png",
+      "teacher_bio": ["Charlie is a seasoned financial executive who has 20+ years of experience working with VC-backed, early-stage, technology companies. He raised over $125 million in more than a dozen equity/debt funding transactions, including a NASDAQ IPO, and has participated in multiple M&A engagements. Charlie has a BSBA from Boston University and an SM from the Sloan School of Management at MIT with a concentration in Entrepreneurial Finance."],
       "teacher_website": "",
-      "teacher_linkedin": "https://www.linkedin.com/in/kivel/",
+      "teacher_linkedin": "https://www.linkedin.com/in/charlietillett/",
       "teacher_facebook": "",
-      "teacher_twitter": "https://twitter.com/kivel1",
+      "teacher_twitter": "",
       "teacher_instagram": "",
       "modules": [
         {
           "module_id": 1,
-          "module_title": "How to Find the Right Business Model for Your Startup",
+          "module_title": "Financial Projections: What Every Startup Founder Needs to Know",
           "sections": [
             {
-              "section_id": 52,
+              "section_id": 58,
               "section_number": 1,
-              "run_time": "7:52",
-              "title": "Why the business model can make or break your business",
-              "content": "",
-              "actions": "Think about your answers to the following questions. As technologies progress, how has that changed the ways goods and services are delivered to consumers? How will the emerging technologies being developed today affect your company’s business model five years from now?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-1.mp3",
+              "run_time": "10:13",
+              "title": "Why are financials so important to the success of your company?",
+              "actions": "Gross margin is a company's total sales revenue minus the direct and indirect costs of producing the sold products, divided by total sales revenue, expressed as a percentage. Do you know the gross margin of your startup? If not, do some calculation and find out.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-1.mp3",
               "transcript_url": "",
-              "notes_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-2.jpg",
               "resources": ""
             },
             {
-              "section_id": 53,
+              "section_id": 59,
               "section_number": 2,
-              "run_time": "3:39",
-              "title": "The one crucial characteristic of any successful business model",
-              "content": "",
-              "actions": "Brainstorm and come up with at least five approaches of market distribution that can get your company’s product into the hands of your target customers.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-2.mp3",
+              "run_time": "11:10",
+              "title": "A primer on venture capital financing deals",
+              "actions": "Let’s do some simple math. Based on your current assumptions of market size and customer behavior, what’s your company’s projected revenue in 5 years? And let’s say your company’s valuation in 5 years will be 3 times the projected revenue. If a VC invests $1 million in your company today, how much ownership do they need to have to make a 3-time to 5-time return on investment? ",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-2.mp3",
               "transcript_url": "",
-              "notes_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-3.jpg",
               "resources": ""
             },
             {
-              "section_id": 54,
+              "section_id": 60,
               "section_number": 3,
-              "run_time": "13:41",
-              "title": "The seven elements of a winning business model",
-              "content": "",
-              "actions": "Write down your answers to the following questions. 1. What’s your company’s value proposition? 2. Who are your target customers? 3. Where are you in your industry’s value chain? 4. What are your cost structure and target profit margins? 5. How will you develop a sustainable competitive advantage?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-3.mp3",
+              "run_time": "7:57",
+              "title": "How to make income statement projections that increase your credibility with investors",
+              "actions": "Start a simple 4-year income statement projection in annual frequency for your startup, using the template provided under the resources section of this lesson. Don’t worry about doing it right. You will revise it later.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-3.mp3",
               "transcript_url": "",
-              "notes_url": "",
-              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/businessmodelgeneration_preview.pdf", "description": "Useful book on busines model generation", "link_text": "Business Model Generation by Alexander Osterwalder and Yves Pigneur"}, {"link": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/business_model_canvas_poster.pdf", "description": "Business model canvas", "link_text": "Canvas template"}]
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-4.jpg",
+              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Annual_income_statement_example.xlsx", "description": "Annual income statement example", "link_text": "download here"}]
             },
             {
-              "section_id": 55,
+              "section_id": 61,
               "section_number": 4,
-              "run_time": "6:08",
-              "title": "The evolution of business model in action-- Google",
-              "content": "",
-              "actions": "The cost of digital storage has dropped dramatically over the past twenty years. How has that changed the business models of existing and new companies? Think of at least three examples.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-4.mp3",
+              "run_time": "6:01",
+              "title": "Financial statement examples from the real world and what you can learn from them",
+              "actions": "Find the income statements of a few publicly traded companies in your industry from Yahoo Finance. How do your company’s gross margins, expense ratios, and operating profits that you projected in Lesson 4 compare to your industry peers?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-4.mp3",
               "transcript_url": "",
-              "notes_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-5.jpg",
               "resources": ""
             },
             {
-              "section_id": 56,
+              "section_id": 62,
               "section_number": 5,
-              "run_time": "11:41",
-              "title": "Examples of successful business models and what you can learn from them",
-              "content": "",
-              "actions": "Can you think of anything in common among the business model examples mentioned in this lesson? Hint: Think of how those companies take advantage of new technological progress to reinvent old industries.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-5.mp3",
+              "run_time": "8:52",
+              "title": "Do's and don'ts of financial projections",
+              "actions": "Revise your income statement projections by incorporating the tips given in this lesson. Think about your distribution strategies. How are you going to get your product into the hands of your customers and how do different strategies impact your financial projections?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-5.mp3",
               "transcript_url": "",
-              "notes_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-6.jpg",
               "resources": ""
             },
             {
-              "section_id": 57,
+              "section_id": 63,
               "section_number": 6,
-              "run_time": "0:44",
-              "title": "Summary",
-              "content": "",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-6.mp3",
+              "run_time": "5:12",
+              "title": "Rules of thumb for building financial models for a tech company",
+              "actions": "Review the income statement projections you made earlier. How do your projections of salaries, marketing and sales expenditures, and revenue per employee in Year 4 compare to the rules of thumb mentioned in this lesson?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-6.mp3",
+              "transcript_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-7.jpg",
+              "resources": ""
+            },
+            {
+              "section_id": 64,
+              "section_number": 7,
+              "run_time": "9:19",
+              "title": "A detailed walkthrough of the financial projection templates",
+              "actions": "Download the full financial projection templates under the resources section of this lesson. Spend sometime exploring the connections between different spreadsheets. You may want to replay the lesson at a slower speed while going through the templates.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-7.mp3",
               "transcript_url": "",
               "notes_url": "",
+              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/financial+projection+templates.xlsx", "description": "Financial projection template", "link_text": "download here"}, {"link": "https://www.amazon.com/exec/obidos/ASIN/1568848684/ref=nosim/mitopencourse-20", "description": "Check out Chapters 10 and 11", "link_text": "Business Plans For Dummies"}]
+            },
+            {
+              "section_id": 65,
+              "section_number": 8,
+              "run_time": "7:33",
+              "title": "How to divide your equity pie",
+              "actions": "If your startup has cofounders or early collaborators and you haven’t discussed equity shares, start the discussions now. Make sure you and your collaborators are on the same page about equity splits among yourselves, before you talk to outside investors. ",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-8.mp3",
+              "transcript_url": "",
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-9.jpg",
               "resources": ""
             },
           ]
