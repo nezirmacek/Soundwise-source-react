@@ -8303,9 +8303,9 @@
 	// const history = syncHistoryWithStore(browserHistory, store)
 
 	var courseInfo = {
-	  "name": "How to Find the Right Business Model for Your Startup",
+	  "name": "Financial Projections: What Every Startup Founder Needs to Know",
 	  "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/How+to+Find+the+Right+Business+Model.png",
-	  "id": 124,
+	  "id": 122,
 	  "run_time": 2625,
 	  "price": 0,
 	  "trailer_url": "https://s3.amazonaws.com/soundwiseinc/rich_kivel/lesson-1.mp3",
@@ -100853,19 +100853,25 @@
 
 	        this.props.setCurrentPlaySection(this.props.section);
 
-	        player.addEventListener('loadeddata', function () {
-	          player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+	        var waitingForDataLoad = setInterval(function () {
+	          //check if player is ready after update
+	          if (player.readyState === 4) {
+	            console.log('data loaded');
+	            player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
 
-	          player.playbackRate = _this2.props.speed;
-	          player.play();
+	            player.playbackRate = _this2.props.speed;
 
-	          that.props.changePlayStatus(true);
-	          that.setState({ loading: false });
+	            player.play();
 
-	          if (!that.props.playerLaunched) {
-	            that.props.launchPlayer(true);
+	            that.props.changePlayStatus(true);
+	            that.setState({ loading: false });
+
+	            if (!that.props.playerLaunched) {
+	              that.props.launchPlayer(true);
+	            }
+	            clearInterval(waitingForDataLoad);
 	          }
-	        });
+	        }, 100);
 	      } else if (this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) {
 	        //if another section is the "current section"
 
@@ -100900,22 +100906,25 @@
 
 	        this.props.setCurrentPlaySection(that.props.section);
 
-	        player.addEventListener('loadeddata', function () {
-	          player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
+	        var _waitingForDataLoad = setInterval(function () {
+	          //check if player is ready after update
+	          if (player.readyState === 4) {
+	            console.log('data loaded');
+	            player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration; //jump to the position previously left off
 
-	          player.playbackRate = _this2.props.speed;
+	            player.playbackRate = _this2.props.speed;
 
-	          setTimeout(function () {
 	            player.play();
-	          }, 150);
 
-	          that.props.changePlayStatus(true);
-	          that.setState({ loading: false });
+	            that.props.changePlayStatus(true);
+	            that.setState({ loading: false });
 
-	          if (!that.props.playerLaunched) {
-	            that.props.launchPlayer(true);
+	            if (!that.props.playerLaunched) {
+	              that.props.launchPlayer(true);
+	            }
+	            clearInterval(_waitingForDataLoad);
 	          }
-	        });
+	        }, 100);
 	      } else if (this.props.currentSection.section_id === this.props.section.section_id && !this.props.playing) {
 	        //if this section is the "current section" and it's not playing
 	        console.log('current section is this section');

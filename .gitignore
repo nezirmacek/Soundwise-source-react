@@ -6,6 +6,9 @@ bower_components/
 _.*
 _*
 
+client/bundle.js
+client/service-worker.js
+
 npm-debug.log
 .DS_Store
 .env
@@ -31,7 +34,3 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
-build/
-dist/
-
-data/
