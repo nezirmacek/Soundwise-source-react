@@ -167,19 +167,24 @@ class _CourseSection extends Component {
 
       this.props.setCurrentPlaySection(this.props.section)
 
-      player.addEventListener('loadeddata', () => {
-        player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+      const waitingForDataLoad = setInterval(() => { //check if player is ready after update
+        if(player.readyState === 4) {
+          console.log('data loaded')
+          player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
 
-        player.playbackRate = this.props.speed
-        player.play()
+          player.playbackRate = this.props.speed
 
-        that.props.changePlayStatus(true)
-        that.setState({loading: false})
+          player.play()
 
-        if(!that.props.playerLaunched) {
-          that.props.launchPlayer(true)
+          that.props.changePlayStatus(true)
+          that.setState({loading: false})
+
+          if(!that.props.playerLaunched) {
+            that.props.launchPlayer(true)
+          }
+          clearInterval(waitingForDataLoad);
         }
-      })
+      }, 100);
 
     } else if(this.props.currentSection.section_id && this.props.currentSection.section_id !== this.props.section.section_id) { //if another section is the "current section"
 
@@ -213,23 +218,24 @@ class _CourseSection extends Component {
 
       this.props.setCurrentPlaySection(that.props.section)
 
-      player.addEventListener('loadeddata', () => {
-        player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
+      const waitingForDataLoad = setInterval(() => { //check if player is ready after update
+        if(player.readyState === 4) {
+          console.log('data loaded')
+          player.currentTime = that.props.course.sectionProgress[that.props.section.section_id].playProgress * player.duration  //jump to the position previously left off
 
-        player.playbackRate = this.props.speed
+          player.playbackRate = this.props.speed
 
-        setTimeout(() => {
           player.play()
-        }, 150)
 
-        that.props.changePlayStatus(true)
-        that.setState({loading: false})
+          that.props.changePlayStatus(true)
+          that.setState({loading: false})
 
-        if(!that.props.playerLaunched) {
-          that.props.launchPlayer(true)
+          if(!that.props.playerLaunched) {
+            that.props.launchPlayer(true)
+          }
+          clearInterval(waitingForDataLoad);
         }
-      })
-
+      }, 100);
 
     } else if(this.props.currentSection.section_id === this.props.section.section_id && !this.props.playing) {  //if this section is the "current section" and it's not playing
       console.log('current section is this section')
