@@ -671,3 +671,11 @@ footer .social-icon a:last-child{ margin-right:0;}
 .stars-wrapper {
     padding-left: 15px;
 }
+.stars-wrapper span {
+    line-height: 1.42;
+}
+
+.slick-slide {
+    padding-left: 30px;
+    padding-right: 30px;
+}
