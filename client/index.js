@@ -6,7 +6,7 @@ import { syncHistoryWithStore } from 'react-router-redux'
 import thunkMiddleware from 'redux-thunk'  //check out https://github.com/gaearon/redux-thunk for how to use this
 import { applyMiddleware, createStore, compose } from 'redux';
 import {persistStore, autoRehydrate} from 'redux-persist'
-import localForage from 'localForage'
+import localForage from 'localforage'
 // import { offline } from 'redux-offline';
 // import offlineConfig from 'redux-offline/lib/defaults';
 import { Provider } from 'react-redux'
