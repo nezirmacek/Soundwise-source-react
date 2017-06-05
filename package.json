@@ -35,6 +35,7 @@
     "firebase": "^3.7.2",
     "jwt-decode": "^2.1.0",
     "localforage": "^1.5.0",
+    "lodash": "^4.17.4",
     "material-ui": "^0.17.1",
     "object-to-json": "0.0.5",
     "prerender-node": "^2.7.0",

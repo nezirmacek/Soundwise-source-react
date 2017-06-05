@@ -97,7 +97,16 @@ class _Course extends Component {
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
-    const course = this.props.courses[this.props.match.params.courseId] || this.state.course
+    const _course = this.props.courses[this.props.match.params.courseId] || this.state.course;
+    const _relatedCourses = [];
+    for (let key in this.props.courses) {
+      if (this.props.courses.hasOwnProperty(key)) {
+        const __course = this.props.courses[key];
+        if (__course.id !== _course.id && __course.category === _course.category) {
+          _relatedCourses.push(__course);
+        }
+      }
+    }
     // const course = this.props.courses[this.props.match.params.courseId] ? this.props.courses[this.props.match.params.courseId] : this.state.course
 
     // console.log('this.props.courses: ', this.props.courses)
@@ -106,22 +115,22 @@ class _Course extends Component {
     return (
       <div>
         <Helmet>
-          <title>{`${course.name} | Soundwise`}</title>
-          <meta property="og:url" content={`https://mysoundwise.com/courses/${course.id}`} />
+          <title>{`${_course.name} | Soundwise`}</title>
+          <meta property="og:url" content={`https://mysoundwise.com/courses/${_course.id}`} />
           <meta property="fb:app_id" content='1726664310980105' />
-          <meta property="og:title" content={course.name}/>
-          <meta property="og:description" content={course.description}/>
-          <meta property="og:image" content={course.img_url_mobile} />
-          <meta name="description" content={course.description} />
-          <meta name="keywords" content={course.keywords} />
+          <meta property="og:title" content={_course.name}/>
+          <meta property="og:description" content={_course.description}/>
+          <meta property="og:image" content={_course.img_url_mobile} />
+          <meta name="description" content={_course.description} />
+          <meta name="keywords" content={_course.keywords} />
         </Helmet>
         <SoundwiseHeader />
-         <CourseHeader course={course}/>
+        <CourseHeader course={_course}/>
 
         <MuiThemeProvider >
-          <CourseBody  course={course}/>
+          <CourseBody  course={_course} relatedCourses={_relatedCourses}/>
         </MuiThemeProvider>
-        <CourseFooter course={course} />
+        <CourseFooter course={_course} />
         <Footer />
       </div>
     )
@@ -135,6 +144,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
+  console.log('>>>>>>>>>>STORE', state);
   const { userInfo, isLoggedIn } = state.user
   const { courses, currentPlaylist, currentCourse } = state.setCourses
   return {

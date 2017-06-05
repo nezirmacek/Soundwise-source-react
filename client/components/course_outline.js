@@ -1,10 +1,11 @@
-import React, {Component} from 'react'
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card'
-import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors'
-import { connect } from 'react-redux'
+import React, {Component} from 'react';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors';
+import { connect } from 'react-redux';
 
-import HowItWorks from './how_it_works'
-import Instructor from './instructor'
+import HowItWorks from './how_it_works';
+import Instructor from './instructor';
+import RelatedCourses from './related_courses';
 
 const styles = {
   moduleTitle: {
@@ -126,6 +127,7 @@ export default class CourseOutline extends Component {
   }
 
   render() {
+      console.log('>>>>>>>>>>course_outline', this.props);
     return (
       <div>
         <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
@@ -155,6 +157,7 @@ export default class CourseOutline extends Component {
           </div>
         </section>
         <Instructor course={this.state.course}/>
+        <RelatedCourses courses={this.props.relatedCourses}/>
         <section className="padding-80px-tb xs-padding-60px-tb bg-white  border-none" id="title-section1" style={{backgroundColor: '#FFF3E0'}}>
           <div className="container">
             <div className=" padding-40px-tb" >

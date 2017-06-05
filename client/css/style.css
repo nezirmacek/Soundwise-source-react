@@ -663,3 +663,11 @@ footer .social-icon a:last-child{ margin-right:0;}
   display: none;
 
 }
+
+.slick-slide.slick-active .bottom-shadowed {
+    box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+    margin-bottom: 15px;
+}
+.stars-wrapper {
+    padding-left: 15px;
+}

@@ -72,7 +72,7 @@ class _CourseBody extends React.Component {
           onChangeIndex={this.handleChange}
         >
           <div>
-            <CourseOutline course={this.props.course}/>
+            <CourseOutline course={this.props.course} relatedCourses={this.props.relatedCourses}/>
           </div>
           <div style={styles.slide}>
             <Reviews course = {this.props.course}/>
