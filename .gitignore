@@ -6,8 +6,7 @@ bower_components/
 _.*
 _*
 
-client/bundle.js
-client/service-worker.js
+
 
 npm-debug.log
 .DS_Store
