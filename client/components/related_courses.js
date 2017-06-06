@@ -51,7 +51,7 @@ const RelatedCourses = (props) => {
     };
 
     return (
-        <div className="col-md-12 col-sm-12 col-xs-12 bg-white">
+        <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none">
             <div className="row padding-40px-tb">
                 <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                     <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text"
@@ -61,7 +61,7 @@ const RelatedCourses = (props) => {
                     </h2>
                 </div>
             </div>
-            <div style={style.sliderWrapper}>
+            <div style={style.sliderWrapper} className="row">
                 <Slider {...settings}>
                     {
                         props.courses.map((course, i) => {
@@ -74,7 +74,7 @@ const RelatedCourses = (props) => {
                     }
                 </Slider>
             </div>
-        </div>
+        </section>
     );
 };
 
