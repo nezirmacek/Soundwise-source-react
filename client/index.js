@@ -209,10 +209,10 @@ const coupon = {
 
 firebase.initializeApp(config)
 
-firebase.database().ref('courses/' + courseInfo.id)
-  .set(courseInfo)
-  .then(() => console.log('courseInfo set.'))
-  .catch((err) => console.log(err))
+// firebase.database().ref('courses/' + courseInfo.id)
+//   .set(courseInfo)
+//   .then(() => console.log('courseInfo set.'))
+//   .catch((err) => console.log(err))
 
 // firebase.database().ref('courses/115/metrics')
 //   .set(update)
