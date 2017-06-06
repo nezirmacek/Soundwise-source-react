@@ -3,65 +3,86 @@
  */
 import React, { Component } from 'react';
 import {Helmet} from "react-helmet";
+import { bindActionCreators } from 'redux'
+import { withRouter } from 'react-router';
+import { connect } from 'react-redux';
+import * as _ from 'lodash';
 import Footer from '../components/footer';
 import { SoundwiseHeader } from '../components/soundwise_header';
+import {loadCourses} from '../actions/index';
+import RelatedCourses from '../components/related_courses';
 
 class _CoursesCatalog extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            cardHeights: [],
+        };
     }
 
+    setMaxCardHeight (height, index) {
+        if (!this.state.cardHeights[index] || height > this.state.cardHeights[index]) {
+            const _newState = JSON.parse(JSON.stringify(this.state));
+            _newState.cardHeights[index] = height;
+            this.setState(_newState);
+        }
+    };
+
     render() {
-        const _categories = {};
+        // reparse courses to _categories = [{name:'xxx', courses:[...]},{...},...]; to use map inline
+        const _categories = [];
         for (let key in this.props.courses) {
             if (this.props.courses.hasOwnProperty(key)) {
                 const __course = this.props.courses[key];
-                // if (__course.id !== _course.id && __course.category === _course.category) {
-                //     _relatedCourses.push(__course);
-                // }
-                let _currentCategory = _categories[__course.category];
-                if (!_currentCategory) {
-                    _categories[__course.category] = [];
+                let _currentCategory = _.find(_categories, {name: __course.category});
+                if (!_currentCategory) { // check if category of course is already added
+                    _categories.push({ name: __course.category, courses: [__course] });
+                } else {
+                    _currentCategory.courses.push(__course); // use link to object
                 }
-
             }
         }
 
         return (
             <div>
-                {/*<Helmet>*/}
-                    {/*<title>{`Courses catalog | Soundwise`}</title>*/}
-                    {/*<meta property="og:url" content={`https://mysoundwise.com/courses`} />*/}
-                    {/*<meta property="fb:app_id" content='1726664310980105' />*/}
-                    {/*<meta property="og:title" content={'Courses catalog'}/>*/}
-                    {/*<meta property="og:description" content={''}/>*/}
-                    {/*<meta property="og:image" content={''} />*/}
-                    {/*<meta name="description" content={''} />*/}
-                    {/*<meta name="keywords" content={''} />*/}
-                {/*</Helmet>*/}
-                {/*<SoundwiseHeader />*/}
-
-                {/*<Footer />*/}
+                <Helmet>
+                    <title>{`Courses catalog | Soundwise`}</title>
+                    <meta property="og:url" content={`https://mysoundwise.com/courses`} />
+                    <meta property="fb:app_id" content='1726664310980105' />
+                    <meta property="og:title" content={'Courses catalog'}/>
+                    <meta property="og:description" content={''}/>
+                    <meta property="og:image" content={''} />
+                    <meta name="description" content={''} />
+                    <meta name="keywords" content={''} />
+                </Helmet>
+                <SoundwiseHeader />
+                {
+                    _categories.map((categoryObj, i) => (
+                        <RelatedCourses
+                            courses={categoryObj.courses}
+                            title={categoryObj.name}
+                            index={i}
+                            cardHeight={this.state.cardHeights[i]}
+                            cb={this.setMaxCardHeight.bind(this)}
+                        />
+                    ))
+                }
+                <Footer />
             </div>
         )
     }
 }
 
-// function mapDispatchToProps(dispatch) {
-//     return bindActionCreators({ setCurrentPlaylist, setCurrentCourse, loadCourses }, dispatch)
-// }
-//
-// const mapStateToProps = state => {
-//     const { userInfo, isLoggedIn } = state.user
-//     const { courses, currentPlaylist, currentCourse } = state.setCourses
-//     return {
-//         userInfo, isLoggedIn, courses, currentPlaylist, currentCourse
-//     }
-// }
-//
-// // export const Course = connect(mapStateToProps, mapDispatchToProps)(_Course)
-//
-// const Course_worouter = connect(mapStateToProps, mapDispatchToProps)(_Course)
-//
-// export const Course = withRouter(Course_worouter)
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ loadCourses }, dispatch)
+}
 
+const mapStateToProps = store => {
+    const { userInfo, isLoggedIn } = store.user;
+    const { courses } = store.setCourses;
+    return { userInfo, isLoggedIn, courses };
+};
+
+const CoursesCatalog_worouter = connect(mapStateToProps, mapDispatchToProps)(_CoursesCatalog);
+export const CoursesCatalog = withRouter(CoursesCatalog_worouter);

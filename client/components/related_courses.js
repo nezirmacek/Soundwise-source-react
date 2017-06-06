@@ -16,7 +16,7 @@ const RelatedCourses = (props) => {
     const length = props.courses.length;
     const settings = {
         dots: true,
-        infinite: true,
+        infinite: props.courses.length > 3,
         speed: 500,
         slidesToShow: 3,
         slidesToScroll: 1 ,
@@ -31,7 +31,7 @@ const RelatedCourses = (props) => {
                     slidesToShow: 2,
                     slidesToScroll: 1,
                     arrows: props.courses.length > 2,
-                    infinite: true,
+                    infinite: props.courses.length > 2,
                     dots: true,
                     autoplay: false,
                 }
@@ -42,7 +42,7 @@ const RelatedCourses = (props) => {
                     slidesToShow: 1,
                     slidesToScroll: 1,
                     arrows: props.courses.length > 1,
-                    infinite: true,
+                    infinite: props.courses.length > 1,
                     dots: true,
                     autoplay: false,
                 }
@@ -51,13 +51,13 @@ const RelatedCourses = (props) => {
     };
 
     return (
-        <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none">
+        <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none related-courses">
             <div className="row padding-40px-tb">
                 <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                     <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text"
                         id="tz-slider-text125"
                     >
-                        PEOPLE WHO TOOK THIS COURSE ALSO TOOK
+                        {props.title}
                     </h2>
                 </div>
             </div>
@@ -67,7 +67,12 @@ const RelatedCourses = (props) => {
                         props.courses.map((course, i) => {
                             return (
                                 <div key={i}>
-                                    <RelatedCourseCard course={course} cb={props.cb} />
+                                    <RelatedCourseCard
+                                        course={course}
+                                        cb={props.cb}
+                                        blockIndex={props.index}
+                                        cardHeight={props.cardHeight}
+                                    />
                                 </div>
                             );
                         })

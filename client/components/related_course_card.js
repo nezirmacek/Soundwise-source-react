@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 
 let style = {
     bottomShadowed: {
-        height: 'auto',
+        height: 0,
     },
     cardContent: {
         paddingBottom: 30,
@@ -19,24 +19,34 @@ let style = {
 };
 
 const RelatedCourseCard = (props) => {
+    // recalculate card height
     setTimeout(() => {
-        const elements = document.getElementsByClassName('bottom-shadowed'); // it's not an array
+        const _blockIndex = props.blockIndex || 0; // related-courses
+        const block = document.getElementsByClassName('related-courses')[_blockIndex];
+        const elements = block.getElementsByClassName('bottom-shadowed'); // it's not an array
         const elementHeightArr = [];
         for (let i = 0; i < elements.length; i++) {
-            elementHeightArr.push(
-                elements[i].getElementsByClassName("feature-box-image")[0].offsetHeight
-                + elements[i].getElementsByClassName("card-content")[0].offsetHeight
-            );
+            let _cardHeight = elements[i].getElementsByClassName("feature-box-image")[0].offsetHeight
+                + elements[i].getElementsByClassName("card-content")[0].offsetHeight;
+            if (props.course.reviews) {
+                _cardHeight += 50;
+            }
+            elementHeightArr.push(_cardHeight);
         }
-        style.bottomShadowed.height = Math.max.apply(null, elementHeightArr);
-        props.cb(style.bottomShadowed.height);
-    });
+
+        if (!props.cardHeight || props.cardHeight < style.bottomShadowed.height) {
+            props.cb(Math.max.apply(null, elementHeightArr), props.blockIndex);
+        }
+    }, 10);
+
+    const _style = JSON.parse(JSON.stringify(style));
+    _style.bottomShadowed.height = props.cardHeight;
 
     return (
         <div className="col-md-12 col-sm-12 col-xs-12">
             <MuiThemeProvider>
                 <Card>
-                    <div className="float-left width-100 bottom-shadowed" style={style.bottomShadowed}>
+                    <div className="float-left width-100 bottom-shadowed" style={_style.bottomShadowed}>
                         <div className="feature-box-image">
                             <Link to={`/courses/${props.course.id}`}>
                                 <CardMedia>
@@ -44,7 +54,7 @@ const RelatedCourseCard = (props) => {
                                 </CardMedia>
                             </Link>
                         </div>
-                        <div className="card-content" style={props.course.reviews && style.cardContent}>
+                        <div className="card-content" style={props.course.reviews && _style.cardContent}>
                             <CardTitle
                                 title={props.course.name}
                             />
