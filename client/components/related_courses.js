@@ -1,14 +1,16 @@
 /**
  * Created by developer on 05.06.17.
  */
-import React from 'react'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import { Link } from 'react-router-dom';
-import ReactStars from 'react-stars';
+import React from 'react';
 import RelatedCourseCard from './related_course_card';
 import Slider from 'react-slick';
+
+const style = {
+    sliderWrapper: {
+        width: 'calc(100% - 200px)',
+        margin: '0 auto',
+    }
+};
 
 const RelatedCourses = (props) => {
     const length = props.courses.length;
@@ -19,8 +21,8 @@ const RelatedCourses = (props) => {
         slidesToShow: 3,
         slidesToScroll: (length > 3) ? (length - 3) : 0 ,
         arrows: props.courses.length > 3,
-        autoplay: true,
-        autoplaySpeed: 3000,
+        autoplay: false,
+        // autoplaySpeed: 3000,
         swipe: true,
         responsive: [
             {
@@ -31,7 +33,7 @@ const RelatedCourses = (props) => {
                     arrows: props.courses.length > 2,
                     infinite: true,
                     dots: true,
-                    autoplay: true,
+                    autoplay: false,
                 }
             },
             {
@@ -42,7 +44,7 @@ const RelatedCourses = (props) => {
                     arrows: props.courses.length > 1,
                     infinite: true,
                     dots: true,
-                    autoplay: true,
+                    autoplay: false,
                 }
             },
         ]
@@ -59,17 +61,19 @@ const RelatedCourses = (props) => {
                     </h2>
                 </div>
             </div>
-            <Slider {...settings}>
-                {
-                    props.courses.map((course, i) => {
-                        return (
-                            <div key={i}>
-                                <RelatedCourseCard course={course} />
-                            </div>
-                        );
-                    })
-                }
-            </Slider>
+            <div style={style.sliderWrapper}>
+                <Slider {...settings}>
+                    {
+                        props.courses.map((course, i) => {
+                            return (
+                                <div key={i}>
+                                    <RelatedCourseCard course={course} />
+                                </div>
+                            );
+                        })
+                    }
+                </Slider>
+            </div>
         </div>
     );
 };

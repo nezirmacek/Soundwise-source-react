@@ -664,12 +664,14 @@ footer .social-icon a:last-child{ margin-right:0;}
 
 }
 
-.slick-slide.slick-active .bottom-shadowed {
+.slick-slide .bottom-shadowed {
     box-shadow: 0 5px 10px rgba(0,0,0,0.5);
     margin-bottom: 15px;
 }
 .stars-wrapper {
     padding-left: 15px;
+    position: absolute;
+    bottom: 24px;
 }
 .stars-wrapper span {
     line-height: 1.42;
@@ -678,4 +680,21 @@ footer .social-icon a:last-child{ margin-right:0;}
 .slick-slide {
     padding-left: 30px;
     padding-right: 30px;
+}
+.slick-arrow.slick-next, .slick-arrow.slick-prev {
+    height: 80px;
+    width: 60px;
+    border-radius: 10px;
+    background-color: #edebeb;
+    border: 2px solid #555;
+}
+.slick-arrow.slick-next {
+    right: -80px;
+}
+.slick-arrow.slick-prev {
+    left: -80px;
+}
+.slick-arrow.slick-next:before, .slick-arrow.slick-prev:before {
+    color: #555;
+    font-size: 50px;
 }
