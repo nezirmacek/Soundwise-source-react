@@ -67,7 +67,7 @@ const RelatedCourses = (props) => {
                         props.courses.map((course, i) => {
                             return (
                                 <div key={i}>
-                                    <RelatedCourseCard course={course} />
+                                    <RelatedCourseCard course={course} cb={props.cb} />
                                 </div>
                             );
                         })

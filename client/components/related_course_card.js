@@ -9,8 +9,9 @@ import { Link } from 'react-router-dom';
 import ReactStars from 'react-stars';
 import * as _ from 'lodash';
 
-const style = {
+let style = {
     bottomShadowed: {
+        height: 'auto',
     },
     cardContent: {
         paddingBottom: 30,
@@ -18,15 +19,18 @@ const style = {
 };
 
 const RelatedCourseCard = (props) => {
-    const elements = document.getElementsByClassName('bottom-shadowed'); // it's not an array
-    const elementHeightArr = [];
-    for (let i = 0; i < elements.length; i++) {
-        elementHeightArr.push(
-            elements[i].getElementsByClassName("feature-box-image")[0].offsetHeight
-            + elements[i].getElementsByClassName("card-content")[0].offsetHeight
-        );
-    }
-    style.bottomShadowed.height = Math.max.apply(null, elementHeightArr);
+    setTimeout(() => {
+        const elements = document.getElementsByClassName('bottom-shadowed'); // it's not an array
+        const elementHeightArr = [];
+        for (let i = 0; i < elements.length; i++) {
+            elementHeightArr.push(
+                elements[i].getElementsByClassName("feature-box-image")[0].offsetHeight
+                + elements[i].getElementsByClassName("card-content")[0].offsetHeight
+            );
+        }
+        style.bottomShadowed.height = Math.max.apply(null, elementHeightArr);
+        props.cb(style.bottomShadowed.height);
+    });
 
     return (
         <div className="col-md-12 col-sm-12 col-xs-12">
@@ -34,7 +38,7 @@ const RelatedCourseCard = (props) => {
                 <Card>
                     <div className="float-left width-100 bottom-shadowed" style={style.bottomShadowed}>
                         <div className="feature-box-image">
-                            <Link to={`/myprograms/${props.course.id}`}>
+                            <Link to={`/courses/${props.course.id}`}>
                                 <CardMedia>
                                     <img alt="" src={props.course.img_url_mobile} data-img-size="(W)800px X (H)533px" style={{objectFit: 'cover'}}/>
                                 </CardMedia>

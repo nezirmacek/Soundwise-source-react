@@ -35,7 +35,8 @@ class _Course extends Component {
           }
         ]
       },
-      userCourses: {}
+      userCourses: {},
+        cardHeight: 0,
     }
   }
 
@@ -95,6 +96,12 @@ class _Course extends Component {
   //   }
   // }
 
+    setMaxCardHeight (height) {
+      if (height > this.state.cardHeight) {
+        this.setState({ cardHeight: height });
+      }
+    };
+
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
     const _course = this.props.courses[this.props.match.params.courseId] || this.state.course;
@@ -128,7 +135,7 @@ class _Course extends Component {
         <CourseHeader course={_course}/>
 
         <MuiThemeProvider >
-          <CourseBody  course={_course} relatedCourses={_relatedCourses}/>
+          <CourseBody  course={_course} relatedCourses={_relatedCourses} cb={this.setMaxCardHeight.bind(this)}/>
         </MuiThemeProvider>
         <CourseFooter course={_course} />
         <Footer />
@@ -144,7 +151,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-  console.log('>>>>>>>>>>STORE', state);
   const { userInfo, isLoggedIn } = state.user
   const { courses, currentPlaylist, currentCourse } = state.setCourses
   return {

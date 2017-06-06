@@ -76,21 +76,22 @@ class _Routes extends Component {
             <meta name="keywords" content="soundwise, soundwise inc, audio, mobile application, learning, online learning, online course, podcast, audio book, audible, marketing, entrepreneurship, fitness, how to, personal development, personal growth, learning on the go, online course, audio course, business, career, life, wellness, relationship, empowerment, spirituality, self help" />
           </Helmet>
           <Switch>
-             <Route exact path="/" component={Page}/>
-             <Route path="/about" component={About}/>
-             <Route path='/signup' component={AppSignup} />
-             <Route path='/signin' component={AppSignin} />
-             <Route path="/gift" component={Referral} />
-             <Route path="/creator_terms" component={CreatorTerms} />
-             <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
-             <Route exact path="/myprograms" component={MyCourses}/>
-             <Route path="/myprograms/:courseId" component={Course_Purchased}/>
-             <Route path="/cart" component={Cart} />
-             <Route path="/confirmation" component={OrderConfirmation} />
-             <Route path="/courses/:courseId" component={Course} />
-             <Route path="/password_reset" component={PassRecovery} />
-             <Route path ="/notfound" component={NotFound} />
-             <Route component={NotFound} />
+              <Route exact path="/" component={Page}/>
+              <Route path="/about" component={About}/>
+              <Route path='/signup' component={AppSignup} />
+              <Route path='/signin' component={AppSignin} />
+              <Route path="/gift" component={Referral} />
+              <Route path="/creator_terms" component={CreatorTerms} />
+              <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
+              <Route exact path="/myprograms" component={MyCourses}/>
+              <Route path="/myprograms/:courseId" component={Course_Purchased}/>
+              <Route path="/cart" component={Cart} />
+              <Route path="/confirmation" component={OrderConfirmation} />
+              <Route path="/courses/:courseId" component={Course} />
+              <Route path="/password_reset" component={PassRecovery} />
+              {/*<Route exact path ="/courses" component={CourseCatalog} />*/}
+              <Route path ="/notfound" component={NotFound} />
+              <Route component={NotFound} />
           </Switch>
         </div>
       </Router>
