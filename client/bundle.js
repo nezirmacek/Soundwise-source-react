@@ -63513,7 +63513,7 @@
 	            _react2.default.createElement(
 	              _reactRouterDom.Link,
 	              { to: '/myprograms' },
-	              'My Courses'
+	              'My Library'
 	            )
 	          )
 	        );

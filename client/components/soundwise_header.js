@@ -75,7 +75,7 @@ class _SoundwiseHeader extends Component {
                   </ul>
               </li>
               <li>
-                <Link to='/myprograms'>My Courses</Link>
+                <Link to='/myprograms'>My Library</Link>
               </li>
               </ul>
             )
