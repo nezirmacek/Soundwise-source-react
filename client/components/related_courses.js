@@ -7,7 +7,7 @@ import Slider from 'react-slick';
 
 const style = {
     sliderWrapper: {
-        width: 'calc(100% - 200px)',
+        width: '90%',
         margin: '0 auto',
     }
 };
@@ -19,7 +19,7 @@ const RelatedCourses = (props) => {
         infinite: true,
         speed: 500,
         slidesToShow: 3,
-        slidesToScroll: (length > 3) ? (length - 3) : 0 ,
+        slidesToScroll: 1 ,
         arrows: props.courses.length > 3,
         autoplay: false,
         // autoplaySpeed: 3000,
@@ -29,7 +29,7 @@ const RelatedCourses = (props) => {
                 breakpoint: 1024,
                 settings: {
                     slidesToShow: 2,
-                    slidesToScroll: (length > 2) ? (length - 2) : 0,
+                    slidesToScroll: 1,
                     arrows: props.courses.length > 2,
                     infinite: true,
                     dots: true,
@@ -40,7 +40,7 @@ const RelatedCourses = (props) => {
                 breakpoint: 600,
                 settings: {
                     slidesToShow: 1,
-                    slidesToScroll: (length > 1) ? (length - 1) : 0,
+                    slidesToScroll: 1,
                     arrows: props.courses.length > 1,
                     infinite: true,
                     dots: true,

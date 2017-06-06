@@ -689,10 +689,10 @@ footer .social-icon a:last-child{ margin-right:0;}
     /*border: 2px solid #555;*/
 /*}*/
 .slick-arrow.slick-next {
-    right: -80px;
+    right: -3%;
 }
 .slick-arrow.slick-prev {
-    left: -80px;
+    left: -3%;
 }
 .slick-arrow.slick-next:before, .slick-arrow.slick-prev:before {
     color: #555;
