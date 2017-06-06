@@ -681,13 +681,13 @@ footer .social-icon a:last-child{ margin-right:0;}
     padding-left: 30px;
     padding-right: 30px;
 }
-.slick-arrow.slick-next, .slick-arrow.slick-prev {
-    height: 80px;
-    width: 60px;
-    border-radius: 10px;
-    background-color: #edebeb;
-    border: 2px solid #555;
-}
+/*.slick-arrow.slick-next, .slick-arrow.slick-prev {*/
+    /*height: 80px;*/
+    /*width: 60px;*/
+    /*border-radius: 10px;*/
+    /*background-color: #edebeb;*/
+    /*border: 2px solid #555;*/
+/*}*/
 .slick-arrow.slick-next {
     right: -80px;
 }
@@ -696,5 +696,5 @@ footer .social-icon a:last-child{ margin-right:0;}
 }
 .slick-arrow.slick-next:before, .slick-arrow.slick-prev:before {
     color: #555;
-    font-size: 50px;
+    /*font-size: 50px;*/
 }
