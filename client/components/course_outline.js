@@ -127,7 +127,6 @@ export default class CourseOutline extends Component {
   }
 
   render() {
-      console.log('>>>>>>>>>>course_outline', this.props);
     return (
       <div>
         <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
