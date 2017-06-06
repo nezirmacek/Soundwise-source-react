@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Footer = () => (
   <footer id="footer-section11" className="padding-30px-tb bg-dark-gray builder-bg">
