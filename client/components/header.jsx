@@ -101,13 +101,18 @@ class _Header extends Component {
                             <Link to="/" className="inner-link"><img alt="" src="/images/soundwiselogo_white.svg"/></Link>
                         </div>
                         <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
-                            <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
+                            <button data-target="#bs-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
                                 <span className="sr-only">Toggle navigation</span>
                                 <span className="icon-bar"></span>
                                 <span className="icon-bar"></span>
                                 <span className="icon-bar"></span>
                             </button>
-
+                            <div id="bs-navbar-collapse-1" className="collapse navbar-collapse pull-right font-weight-500">
+                                <ul className="nav navbar-nav">
+                                    <li className="propClone"><a className="inner-link" href="#">SAMPLE COURSES</a></li>
+                                    <li className="propClone"><a className="inner-link" href="#">LOG IN</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

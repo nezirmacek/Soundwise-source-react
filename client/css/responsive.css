@@ -2660,7 +2660,7 @@
   }
 }
 /*customization begins */
-@media only screen and (max-width: 991px){
+/*@media only screen and (max-width: 991px){
     .navbar-toggle { display: none;}
     .navbar-collapse.collapse { display: block !important; }
     .navbar-collapse { background: transparent; position: inherit;}
@@ -2671,7 +2671,7 @@
 
 @media only screen and (max-width: 767px){
     .navigation-menu .col-xs-3 { width: auto;}
-}
+}*/
 
 @media (max-width: 400px) {
     .slider-typography {margin-top: 25%}
