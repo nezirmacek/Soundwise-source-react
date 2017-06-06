@@ -18,7 +18,7 @@ class _MyCourses extends Component {
   }
 
   componentDidMount() {
-    console.log('all courses: ', this.props.courses)
+    // console.log('all courses: ', this.props.courses)
 
     const that = this
     firebase.auth().onAuthStateChanged(function(user) {

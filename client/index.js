@@ -35,146 +35,165 @@ const store = createStore(
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {
-      "name": "Financial Projections: What Every Startup Founder Needs to Know",
-      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/financial+projections-+what+every+startup+founder+needs+to+know.png",
-      "id": 122,
-      "run_time": 3977,
+      "name": "The Crash Course on Startup Legal Issues",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/the+crash+course+on+startup+legal+issues.png",
+      "id": 123,
+      "run_time": 2900,
       "price": 0,
-      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-1.mp3",
+      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+1.mp3",
       "category": "Entrepreneurship",
-      "keywords": "financials, financial models, financial projections, revenue projections, income statement, entrepreneurship, entrepreneur, Charlie Tillet, business model, business plan, revenue model, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
-      "description": ["Knowing what resources it will take to run the business is crucial for every startup. In the course, senior financial executive Charlie Tillett teaches you the building blocks of financial planning and projections for you business."],
-      "description_long":["Running a startup involves a high degree of uncertainty. But that doesn’t mean as a founder, you don’t need to plan ahead. Just to the opposite, the more you understand the financial assumptions and business drivers of your company and plan your actions accordingly, the more you stand a chance to succeed. Besides, before you talk to potential investors, you want to make sure you understand what resources it takes to get your company off the ground, and what milestones you need to achieve by when.", "In this course, seasoned financial executive Charlie Tillett will show you how to go about making financial projections for your company that will deepen your understanding of your own business and increase your credibility with investors. The course also shows you how venture financing works, and teaches you, through concrete examples, how external financing changes the equity structure of your company over time. After taking this course and completing the exercises, you will be better equipped to negotiate with investors and assess potential investment offers.", "The course is mainly designed for entrepreneurs seeking external financing. But the principals and wisdom presented here are useful no matter how you plan to fund your company."],
-      "features": ["Learn how to determine the financial needs of your business", "Overview of the building blocks of startup financials", "Easy-to-understand financial accounting examples for entrepreneurs", "Time-tested financial planning tips", "8 audio lessons", "Notes and action steps for every lesson", "Financial projection template included", "Option to play audios offline (on computer and android phone with Chrome browser"],
+      "keywords": "financials, law, cofounders, trademarks, copyrights, patents, intellectual property, legal, venture capital, startup financing, startup legal issues, equity splits, startup employment, entrepreneurship, entrepreneur, Charlie Tillet, business model, business plan, revenue model, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
+      "description": ["This course offers a comprehensive overview of startup legal issues, including how to protect your intellectual properties, how to avoid the major tax traps in starting a company, and the important legal concepts and terms involved in distributing equity and soliciting investments."],
+      "description_long":["Learning about the laws may not be your favorite part of running a startup. But if you are unaware of the legal ramifications of the actions you take, it may cost you and your company heavily down the road.", "In this course, seasoned entrepreneur and startup lawyer Joe Hadzima walks you through the legal issues you’ll likely encounter in the startup life cycle, from protecting your company’s intellectual assets through patents, copyrights and trademarks, to negotiating with investors on venture deal terms. At the end of the course, you will have a comprehensive understanding of the most important startup legal issues you need to look into or seek professional help on."],
+      "features": ["Learn how to protect the intellectual properties of your business", "Learn how to choose the right legal form for your business", "Overview of legal issues related to equity distribution among co-founders and early employees", "Legal concepts and terms in venture capital financing", "7 audio lessons", "Notes and action steps for every lesson", "Option to play audios offline (on computer and android phone with Chrome browser"],
       "metrics": {
-          58: {
+          66: {
             timesCompleted: 0
           },
-          59: {
+          67: {
             timesCompleted: 0
           },
-          60: {
+          68: {
             timesCompleted: 0
           },
-          61: {
+          69: {
             timesCompleted: 0
           },
-          62: {
+          70: {
             timesCompleted: 0
           },
-          63: {
+          71: {
             timesCompleted: 0
           },
-          64: {
-            timesCompleted: 0
-          },
-          65: {
+          72: {
             timesCompleted: 0
           }
         },
-      "teacher": "Charlie Tillett",
-      "teacher_profession": "Financial Executive",
-      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Charlie+Tillet+2.png",
-      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Charlie+Tillet+2.png",
-      "teacher_bio": ["Charlie is a seasoned financial executive who has 20+ years of experience working with VC-backed, early-stage, technology companies. He raised over $125 million in more than a dozen equity/debt funding transactions, including a NASDAQ IPO, and has participated in multiple M&A engagements. Charlie has a BSBA from Boston University and an SM from the Sloan School of Management at MIT with a concentration in Entrepreneurial Finance."],
-      "teacher_website": "",
-      "teacher_linkedin": "https://www.linkedin.com/in/charlietillett/",
+      "teacher": "Joseph Hadzima",
+      "teacher_profession": "entrepreneur and lawyer",
+      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Joe-Hadzima-400.jpg",
+      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Joe-Hadzima-400.jpg",
+      "teacher_bio": ["Joe has been involved in the founding of more than 100 companies as a founder, investor, director, legal counsel, or employee. He is the managing director of Main Street Partners LLC, as well as the president of its portfolio company, IPVision, Inc., an intellectual property management, systems, and services firm."],
+      "teacher_website": "http://www.ipvisioninc.com/",
+      "teacher_linkedin": "https://www.linkedin.com/in/joehadzima/",
       "teacher_facebook": "",
-      "teacher_twitter": "",
+      "teacher_twitter": "https://twitter.com/JoeHadzima",
       "teacher_instagram": "",
       "modules": [
         {
           "module_id": 1,
-          "module_title": "Financial Projections: What Every Startup Founder Needs to Know",
+          "module_title": "The Crash Course on Startup Legal Issues",
           "sections": [
             {
-              "section_id": 58,
+              "section_id": 66,
               "section_number": 1,
-              "run_time": "10:13",
-              "title": "Why are financials so important to the success of your company?",
-              "actions": "Gross margin is a company's total sales revenue minus the direct and indirect costs of producing the sold products, divided by total sales revenue, expressed as a percentage. Do you know the gross margin of your startup? If not, do some calculation and find out.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-1.mp3",
+              "run_time": "3:43",
+              "title": "How can intellectual properties help your business?",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+1.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-2.jpg",
-              "resources": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-01.jpg",
+              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5821", "link_text": "Questions of Copyright: Another Weapon in the Property Arsenal", "description": "Basic concepts of copyright protection"}, {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5823", "link_text": "Of Kleenex and Cheez Whiz: Trademarks are Nothing to Sneeze At", "description": "Practical tips on trademarks"}]
             },
             {
-              "section_id": 59,
+              "section_id": 67,
               "section_number": 2,
-              "run_time": "11:10",
-              "title": "A primer on venture capital financing deals",
-              "actions": "Let’s do some simple math. Based on your current assumptions of market size and customer behavior, what’s your company’s projected revenue in 5 years? And let’s say your company’s valuation in 5 years will be 3 times the projected revenue. If a VC invests $1 million in your company today, how much ownership do they need to have to make a 3-time to 5-time return on investment? ",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-2.mp3",
+              "run_time": "6:54",
+              "title": "Four types of IP protection and how each works",
+              "actions": "Think about the intellectual assets your company has. Do you have any assets you should potentially protect with trademark or copyright?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+2.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-3.jpg",
-              "resources": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-02.jpg",
+              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5821", "link_text": "Questions of Copyright: Another Weapon in the Property Arsenal", "description": "Basic concepts of copyright protection"}, {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5823", "link_text": "Of Kleenex and Cheez Whiz: Trademarks are Nothing to Sneeze At", "description": "Practical tips on trademarks"}]
             },
             {
-              "section_id": 60,
+              "section_id": 68,
               "section_number": 3,
-              "run_time": "7:57",
-              "title": "How to make income statement projections that increase your credibility with investors",
-              "actions": "Start a simple 4-year income statement projection in annual frequency for your startup, using the template provided under the resources section of this lesson. Don’t worry about doing it right. You will revise it later.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-3.mp3",
+              "run_time": "10:51",
+              "title": "Four steps to get a patent",
+              "actions": "Think about the intellectual assets your company has. Do you have any asset that is commercially valuable and may quality for a patent?",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+3.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-4.jpg",
-              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Annual_income_statement_example.xlsx", "description": "Annual income statement example", "link_text": "download here"}]
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-03.jpg",
+              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5822", "link_text": "The Importance of Patents: It Pays to Know Patent Regulations", "description": "What is a patent, how do you get one and what value are they?"}]
             },
             {
-              "section_id": 61,
+              "section_id": 69,
               "section_number": 4,
-              "run_time": "6:01",
-              "title": "Financial statement examples from the real world and what you can learn from them",
-              "actions": "Find the income statements of a few publicly traded companies in your industry from Yahoo Finance. How do your company’s gross margins, expense ratios, and operating profits that you projected in Lesson 4 compare to your industry peers?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-4.mp3",
+              "run_time": "8:16",
+              "title": "How to decide the legal form of your company and avoid Section 83 trap",
+              "actions": "If you have not incorporated your startup, do some research on the characteristics of LLC, C Corp and S Corp. Think about which legal form would be best for your company given your goals and long term vision.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+4.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-5.jpg",
-              "resources": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-04.jpg",
+              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5794", "link_text": "Subchapter S: Some Myths, Realities and Practical Considerations", "description": "What is a Subchapter S Corporation and why / when should you use it?"},
+                {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5795", "link_text": "Is An LLC For Me?", "description": "What is a Limited Liability Company and is it appropriate for a technology growth company?"}]
             },
             {
-              "section_id": 62,
+              "section_id": 70,
               "section_number": 5,
-              "run_time": "8:52",
-              "title": "Do's and don'ts of financial projections",
-              "actions": "Revise your income statement projections by incorporating the tips given in this lesson. Think about your distribution strategies. How are you going to get your product into the hands of your customers and how do different strategies impact your financial projections?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-5.mp3",
+              "run_time": "7:20",
+              "title": "How to slice the equity pie",
+              "actions": "If you have cofounders or collaborators for your startup, have you formally discussed the equity arrangement? If not, have the discussion soon and complete the paperwork. You can use the “Founders’ Memo” included in the Resources section of this lesson to guide your discussion.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+5.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-6.jpg",
-              "resources": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-05.jpg",
+              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/FoundersMemo.pdf", "link_text": "Founders' Memo", "description": 'Designed to educate the "team" of Founders as they work out the relationships among themselves. It should be considered by anyone who is thinking of starting a new venture.'},
+                {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5820", "link_text": "Ten Commandments of How To Work Effectively With Lawyers", "description": "Practical tips about how to use your lawyers effectively."},
+                ]
             },
             {
-              "section_id": 63,
+              "section_id": 71,
               "section_number": 6,
-              "run_time": "5:12",
-              "title": "Rules of thumb for building financial models for a tech company",
-              "actions": "Review the income statement projections you made earlier. How do your projections of salaries, marketing and sales expenditures, and revenue per employee in Year 4 compare to the rules of thumb mentioned in this lesson?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-6.mp3",
+              "run_time": "5:18",
+              "title": "Different types of equity compensation and related legal issues",
+              "actions": "Depending on the stage of your company, you may want to issue founders’ stocks, restricted stocks, or stock options to your stakeholders. Discuss with your lawyer about what would make the most sense for your company.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+6.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-7.jpg",
-              "resources": ""
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-06.jpg",
+              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5801", "link_text": "Steer Clear of the Tempest: A Startup Tragedy in Three Acts", "description": "The importance of securities laws and how one company's failure to comply with these laws may have caused the company to fail itself."},
+                {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5796", "link_text": "Thinking About Valuation", "description": "Pre-Money and Post-Money Valuation; Some techniques for valuing a venture."},
+                {
+                  "link_text": "Dilution: Here Is A Primer of Stock Vocabulary", "description": "A primer on stock vocabulary relating to dilution.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5797"
+                },
+                {
+                  "link_text": "Take Stock When Using Stock in Trade Part One: Stock Basics", "description": "Covers basic terminology and concepts about stock and about equity compensation of employees.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5798"
+                },
+                {
+                  "link_text": "Take Stock When Using Stock in Trade Part Two: Stock and Options", "description": "Some considerations in using stock and options.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5799"
+                },
+                {
+                  "link_text": "Employees' Stock Reward - How Much Stock Do They Deserve?", "description": "What is appropriate stock compensation for employees?", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5800"
+                }
+                ]
             },
             {
-              "section_id": 64,
+              "section_id": 72,
               "section_number": 7,
-              "run_time": "9:19",
-              "title": "A detailed walkthrough of the financial projection templates",
-              "actions": "Download the full financial projection templates under the resources section of this lesson. Spend sometime exploring the connections between different spreadsheets. You may want to replay the lesson at a slower speed while going through the templates.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-7.mp3",
+              "run_time": "7:58",
+              "title": "Capital structure and investor term variations you need to know",
+              "actions": "If your company is looking to raise your first round of funding, do some research on how convertible note financing works and discuss with your lawyer about whether that is a good option for you. You can start your research with the materials included in the Resources section of this lesson.",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+7.mp3",
               "transcript_url": "",
-              "notes_url": "",
-              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/financial+projection+templates.xlsx", "description": "Financial projection template", "link_text": "download here"}, {"link": "https://www.amazon.com/exec/obidos/ASIN/1568848684/ref=nosim/mitopencourse-20", "description": "Check out Chapters 10 and 11", "link_text": "Business Plans For Dummies"}]
-            },
-            {
-              "section_id": 65,
-              "section_number": 8,
-              "run_time": "7:33",
-              "title": "How to divide your equity pie",
-              "actions": "If your startup has cofounders or early collaborators and you haven’t discussed equity shares, start the discussions now. Make sure you and your collaborators are on the same page about equity splits among yourselves, before you talk to outside investors. ",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/lesson-8.mp3",
-              "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/Lesson-9.jpg",
-              "resources": ""
-            },
+              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-07.jpg",
+              "resources": [
+                {
+                  "link_text": "All Financing Sources Are Not Equal", "description": "There are differences among financing sources - pick the one that ís right for you.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5803"
+                },
+                {
+                  "link_text": "A Beginner's Guide to Venture Capital (PPT)", "description": "How is a Venture Capital Fund Structured? How Are VCs Compensated? What Do These Things Mean To You?", "link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Beginners+Guide+to+VC+(1).ppt"
+                },
+                {
+                  "link_text": "Venture Capital Deal Terms (PPT)", "description": "Presentation Slides from MIT Enterprise Forum Satellite Broadcast on Structuring Deals.", "link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Venture+Capital+Deal+Terms+(1).ppt"
+                },
+                {
+                  "link_text": "Sample First Round Venture Capital Termshee (PDF)", "description": "This is a sample termsheet from a venture capital firm for a first round (Series A Convertible Preferred) deal.", "link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/VCTermsheet.pdf"
+                },
+                {
+                  "link_text": "startupcompanylawyer.com", "description": "Good discussion on the pros and cons of convertible note", "link": "http://www.startupcompanylawyer.com/category/convertible-note-bridge-financing/"
+                }
+              ]
+            }
           ]
         }
       ]
@@ -190,10 +209,10 @@ const coupon = {
 
 firebase.initializeApp(config)
 
-// firebase.database().ref('courses/' + courseInfo.id)
-//   .set(courseInfo)
-//   .then(() => console.log('courseInfo set.'))
-//   .catch((err) => console.log(err))
+firebase.database().ref('courses/' + courseInfo.id)
+  .set(courseInfo)
+  .then(() => console.log('courseInfo set.'))
+  .catch((err) => console.log(err))
 
 // firebase.database().ref('courses/115/metrics')
 //   .set(update)
