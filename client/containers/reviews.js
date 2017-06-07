@@ -65,7 +65,7 @@ class _Reviews extends Component {
   render() {
     const ratings = this.state.reviews.map(review => review.rating)
     const total = ratings.reduce((sum, cur) => (sum + cur), 0)
-    const average_rating = Math.floor(total / ratings.length * 10) / 10
+    const average_rating = ratings.length == 0 ? '__' : Math.floor(total / ratings.length * 10) / 10
 
     return (
       <div>

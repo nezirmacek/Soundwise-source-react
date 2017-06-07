@@ -155,11 +155,11 @@ export default class CourseOutline extends Component {
             </div>
           </div>
         </section>
-        <Instructor course={this.state.course}/>
           {
               this.props.relatedCourses.length >= 5 &&
               <RelatedCourses courses={this.props.relatedCourses} cb={this.props.cb} title={'PEOPLE WHO TOOK THIS COURSE ALSO TOOK'}/>
           }
+        <Instructor course={this.state.course}/>
         <section className="padding-80px-tb xs-padding-60px-tb bg-white  border-none" id="title-section1" style={{backgroundColor: '#FFF3E0'}}>
           <div className="container">
             <div className=" padding-40px-tb" >

@@ -16,14 +16,14 @@ const Sample_Courses = () => (
                                     <li className="html jquery xs-no-padding">
                                         <figure>
                                             <div className="gallery-img lightbox-gallery">
-                                                <a href="" title=""><img src="https://s3.amazonaws.com/soundwiseinc/rich_kivel/How+to+Find+the+Right+Business+Model.png" id="tz-bg-143" data-img-size="(W)800px X (H)650px" alt=""/></a>
+                                                <a href="https://mysoundwise.com/courses/124" title=""><img src="https://s3.amazonaws.com/soundwiseinc/rich_kivel/How+to+Find+the+Right+Business+Model.png" id="tz-bg-143" data-img-size="(W)800px X (H)650px" alt=""/></a>
                                             </div>
                                         </figure>
                                     </li>
                                     <li className="magento wordpress xs-no-padding">
                                         <figure>
                                             <div className="gallery-img lightbox-gallery">
-                                                <a href="" title=""><img src="https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/financial+projections-+what+every+startup+founder+needs+to+know.png" id="tz-bg-144" data-img-size="(W)800px X (H)650px" alt=""/></a>
+                                                <a href="https://mysoundwise.com/courses/122" title=""><img src="https://s3.amazonaws.com/soundwiseinc/Charlie+Tillet/financial+projections-+what+every+startup+founder+needs+to+know.png" id="tz-bg-144" data-img-size="(W)800px X (H)650px" alt=""/></a>
                                             </div>
                                         </figure>
                                     </li>
@@ -44,14 +44,14 @@ const Sample_Courses = () => (
                                     <li className="html wordpress magento xs-no-padding">
                                         <figure>
                                             <div className="gallery-img lightbox-gallery">
-                                                <a href="" title=""><img src="https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/the+crash+course+on+startup+legal+issues.png" id="tz-bg-147" data-img-size="(W)800px X (H)650px" alt="" /></a>
+                                                <a href="https://mysoundwise.com/courses/123" title=""><img src="https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/the+crash+course+on+startup+legal+issues.png" id="tz-bg-147" data-img-size="(W)800px X (H)650px" alt="" /></a>
                                             </div>
                                         </figure>
                                     </li>
                                     <li className="wordpress html xs-no-padding">
                                         <figure>
                                             <div className="gallery-img lightbox-gallery">
-                                                <a href="" title=""><img src="https://s3.amazonaws.com/soundwiseinc/bob_jones/The+Startup+Product+Launche+Crash+Course.png" id="tz-bg-148" data-img-size="(W)800px X (H)650px" alt=""/></a>
+                                                <a href="https://mysoundwise.com/courses/120" title=""><img src="https://s3.amazonaws.com/soundwiseinc/bob_jones/The+Startup+Product+Launche+Crash+Course.png" id="tz-bg-148" data-img-size="(W)800px X (H)650px" alt=""/></a>
                                             </div>
                                         </figure>
                                     </li>

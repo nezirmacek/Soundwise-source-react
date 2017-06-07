@@ -76,7 +76,7 @@ class _SoundwiseHeader extends Component {
               <li>
                 <Link to='/myprograms'>My Library</Link>
               </li>
-              </ul>
+            </ul>
             )
         } else {
             return (

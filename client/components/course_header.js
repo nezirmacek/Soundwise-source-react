@@ -114,12 +114,13 @@ class _CourseHeader extends Component {
       this.setState({
         playing: false,
         displayTimer: 'none',
+        // initialized: false
       })
 
       clearInterval(interval)
 
     } else {
-      if(this.state.initialized) {
+      if(this.state.initialized && source.src == this.props.course.trailer_url) {
         player.play()
       } else {
         source.src = this.props.course.trailer_url
