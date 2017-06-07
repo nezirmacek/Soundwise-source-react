@@ -21,14 +21,6 @@ class _CoursesCatalog extends Component {
         };
     }
 
-    setMaxCardHeight (height, index) {
-        if (!this.state.cardHeights[index] || height > this.state.cardHeights[index]) {
-            const _newState = JSON.parse(JSON.stringify(this.state));
-            _newState.cardHeights[index] = height;
-            this.setState(_newState);
-        }
-    };
-
     render() {
         // reparse courses to _categories = [{name:'xxx', courses:[...]},{...},...]; to use map inline
         const _categories = [];
@@ -63,8 +55,7 @@ class _CoursesCatalog extends Component {
                             courses={categoryObj.courses}
                             title={categoryObj.name}
                             index={i}
-                            cardHeight={this.state.cardHeights[i]}
-                            cb={this.setMaxCardHeight.bind(this)}
+                            key={i}
                         />
                     ))
                 }
