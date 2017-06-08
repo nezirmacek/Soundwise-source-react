@@ -31,7 +31,7 @@ export default class RelatedCourseCard extends Component {
             if (!cardHeight || cardHeight < _cardHeight) {
                 cb(_cardHeight);
             }
-        }, 100);
+        });
     }
 
     render () {
