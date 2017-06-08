@@ -4,13 +4,7 @@
 import React, { Component } from 'react';
 import RelatedCourseCard from './related_course_card';
 import Slider from 'react-slick';
-
-const style = {
-    sliderWrapper: {
-        width: '90%',
-        margin: '0 auto',
-    }
-};
+import PropTypes from 'prop-types';
 
 export default class RelatedCourses extends Component {
     constructor(props) {
@@ -96,5 +90,18 @@ export default class RelatedCourses extends Component {
                 </div>
             </section>
         );
+    }
+};
+
+RelatedCourses.propTypes = {
+    courses: PropTypes.array,
+    title: PropTypes.string,
+    index: PropTypes.number,
+};
+
+const style = {
+    sliderWrapper: {
+        width: '90%',
+        margin: '0 auto',
     }
 };
