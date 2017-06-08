@@ -27,7 +27,7 @@ class _ReviewModal extends Component {
 
     this.state = {
       rating: 5,
-      review: ''
+      review: 'Excellent course!'
     }
 
     this.ratingChanged = this.ratingChanged.bind(this)
