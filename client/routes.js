@@ -26,6 +26,7 @@ import {Course} from './containers/course_page'
 import {Course_Purchased} from './containers/course_page_purchased'
 import {Cart} from './containers/cart'
 import {Checkout} from './containers/checkout'
+import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import NotFound from './components/page_404'
 import PassRecovery from './components/pass_recovery'
 import ScrollToTop from './components/scroll_to_top'
@@ -91,7 +92,7 @@ class _Routes extends Component {
                 <Route path="/confirmation" component={OrderConfirmation} />
                 <Route path="/courses/:courseId" component={Course} />
                 <Route path="/password_reset" component={PassRecovery} />
-                {/*<Route exact path ="/courses" component={CourseCatalog} />*/}
+                <Route exact path ="/courses" component={CoursesCatalog} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>
