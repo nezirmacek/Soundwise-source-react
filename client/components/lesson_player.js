@@ -52,10 +52,10 @@ export default class LessonPlayer extends Component {
             clearInterval(this.interval);
 
         } else {
+            this.props.playingCb(this.props.section.section_id); // call this method for all lesson_players who is playing
             if(this.state.isInitialized && audioSource.src) {
                 audio.play();
             } else {
-                // audioSource.src = this.props.course.trailer_url;
                 audio.load();
                 audio.play();
                 this.setState({
@@ -99,6 +99,7 @@ export default class LessonPlayer extends Component {
         return (
             <div
                 onClick={section.preview && this.handlePlayOrPause.bind(this) || showDialogCb}
+                style={styles.wrapper}
             >
                 <audio
                     preload = 'auto'
@@ -119,16 +120,25 @@ export default class LessonPlayer extends Component {
                         >
                         </i>
                         <CardHeader
-                            title={`Lesson ${section.section_number}: ${section.title} (${section.run_time})`}
+                            title={`Lesson ${section.section_number}: ${section.title}`}
                             style = {styles.sectionTitle}
                         />
                         {
-                            isPlaying &&
+                            isPlaying
+                            &&
                             (
                                 <div style={styles.timerStyle}>
                                     <Levels color="#F76B1C" size={12} speed={1} />
                                     <span style={{paddingLeft: '0.5em'}}>
                                         {`${remainingMin}:${remaingingSec}`}
+                                    </span>
+                                </div>
+                            )
+                            ||
+                            (
+                                <div style={styles.timerStyle}>
+                                    <span style={{paddingLeft: '0.5em'}}>
+                                        {section.run_time}
                                     </span>
                                 </div>
                             )
@@ -152,6 +162,8 @@ LessonPlayer.propTypes = {
     index: PropTypes.number,
     section: PropTypes.object,
     showDialogCb: PropTypes.func,
+    playingCb: PropTypes.func,
+    isPlaying: PropTypes.bool,
 };
 
 const styles = {
@@ -161,5 +173,8 @@ const styles = {
     timerStyle: {
         position: 'absolute',
         right: '60px',
-    }
+    },
+    wrapper: {
+        position: 'relative',
+    },
 };

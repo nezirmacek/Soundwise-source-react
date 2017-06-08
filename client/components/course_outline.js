@@ -39,10 +39,12 @@ export default class CourseOutline extends Component {
             },
             userCourses: {},
             isDialogShown: false,
+            playingLessonId: null,
         };
         this.renderDescription = this.renderDescription.bind(this);
         this.renderFeatures = this.renderFeatures.bind(this);
         this.renderModules = this.renderModules.bind(this);
+        this.setPlayingLesson = this.setPlayingLesson.bind(this);
     }
 
     componentDidMount() {
@@ -59,6 +61,10 @@ export default class CourseOutline extends Component {
 
     showDialog (isDialodShown) {
         this.setState({ isDialogShown: isDialodShown });
+    }
+
+    setPlayingLesson (id) {
+        this.setState({playingLessonId: id});
     }
 
     /*RENDER*/
@@ -106,6 +112,8 @@ export default class CourseOutline extends Component {
                                 index={i}
                                 section={section}
                                 showDialogCb={this.showDialog.bind(this, true)}
+                                playingCb={this.setPlayingLesson}
+                                isPlaying={section.section_id === this.state.playingLessonId}
                             />
                         ))
                     }
