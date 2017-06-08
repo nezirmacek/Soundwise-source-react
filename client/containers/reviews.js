@@ -30,10 +30,10 @@ class _Reviews extends Component {
     })
   }
 
-  renderRow(review) {
+  renderRow(review, i) {
 
     return (
-      <Card>
+      <Card key={i}>
         <CardHeader
           title={review.reviewer}
           subtitle={review.date}
@@ -89,7 +89,7 @@ class _Reviews extends Component {
                         size={28}
                         color2={'#ffd700'}
                         edit={false}
-                        /> <span style={{marginLeft: '10px', fontSize: '20'}}>{`(${ratings.length})`}</span>
+                        /> <span style={{marginLeft: '10px', fontSize: '20px'}}>{`(${ratings.length})`}</span>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@ class _Reviews extends Component {
               <div className="col-md-6 center-col col-sm-12 text-center">
                 <h3 className="title-extra-large-1 alt-font xs-title-large  margin-four-bottom tz-text" >Reviews</h3>
               </div>
-              {this.state.reviews.map(review => this.renderRow(review))}
+              {this.state.reviews.map((review, i) => this.renderRow(review, i))}
             </div>
           </div>
         </section>
