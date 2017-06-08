@@ -58,7 +58,10 @@ class _SoundwiseHeader extends Component {
             return (
             <ul className="nav navbar-nav">
               <li className="propClone sm-no-border">
-                <Link to='/courses' className="inner-link">COURSES</Link>
+                <Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
+              </li>
+              <li>
+                <Link to='/myprograms'>My Library</Link>
               </li>
               <li className="propClone sm-no-border" >
                 <a className='dropdown-toggle' data-toggle="dropdown">
@@ -73,15 +76,12 @@ class _SoundwiseHeader extends Component {
                     </li>
                   </ul>
               </li>
-              <li>
-                <Link to='/myprograms'>My Library</Link>
-              </li>
             </ul>
             )
         } else {
             return (
             <ul className="nav navbar-nav">
-                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">COURSES</Link>
+                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
                 </li>
                 <li className="propClone sm-no-border" style={styles.navItem}><Link className="inner-link" to="/signin">LOG IN</Link>
                 </li>

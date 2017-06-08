@@ -29,6 +29,7 @@ class _Header extends Component {
     this.state = {
       buttonValue: 0
     }
+    this.renderLogin = this.renderLogin.bind(this)
   }
 
   capFirstLetter(string) {
@@ -55,40 +56,46 @@ class _Header extends Component {
     }
   }
 
-  renderLogin() {
-    console.log('logged in? ', this.props.isLoggedIn)
-      if(this.props.isLoggedIn) {
-          return (
-          <ul className="nav navbar-nav">
-            <li className="propClone" style={styles.navItem}>
-              <a className='dropdown-toggle' data-toggle="dropdown">
-              {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
-              <span className="caret"></span>
-              </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link to='/myprograms'>
-                      <font style={{color: 'black'}}>MY PROGRAMS</font>
-                    </Link>
-                  </li>
-                  <li >
-                    <a onClick={() => this.signoutUser()}
-                      style={{backgroundColor: 'transparent'}}>
-                      <font style={{color: 'black'}}>LOG OUT</font>
-                    </a>
-                  </li>
-                </ul>
-            </li>
-          </ul>
-          )
-      } else {
-          return (
+    renderLogin() {
+
+        if(this.props.isLoggedIn) {
+            return (
             <ul className="nav navbar-nav">
-                <li className="propClone" style={styles.navItem}><Link className="inner-link" to='/signin'>LOG IN</Link></li>
+              <li className="propClone sm-no-border">
+                <Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
+              </li>
+              <li>
+                <Link to='/myprograms'>My Library</Link>
+              </li>
+              <li className="propClone sm-no-border" >
+                <a className='dropdown-toggle' data-toggle="dropdown">
+                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                <span className="caret"></span>
+                </a>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <a onClick={() => this.signoutUser()}>
+                        <font style={{color: 'black'}}>LOG OUT</font>
+                      </a>
+                    </li>
+                  </ul>
+              </li>
             </ul>
-          )
-      }
-  }
+            )
+        } else {
+            return (
+            <ul className="nav navbar-nav">
+                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
+                </li>
+                <li className="propClone sm-no-border" style={styles.navItem}><Link className="inner-link" to="/signin">LOG IN</Link>
+                </li>
+                <li>
+                  <Link to='/cart'><i className="material-icons" style={{fontSize: '26px'}}>shopping_cart</i></Link>
+                </li>
+            </ul>
+            )
+        }
+    }
 
   render() {
     return (
@@ -108,10 +115,7 @@ class _Header extends Component {
                                 <span className="icon-bar"></span>
                             </button>
                             <div id="bs-navbar-collapse-1" className="collapse navbar-collapse pull-right font-weight-500">
-                                <ul className="nav navbar-nav">
-                                    <li className="propClone"><a className="inner-link" href="#">SAMPLE COURSES</a></li>
-                                    <li className="propClone"><a className="inner-link" href="#">LOG IN</a></li>
-                                </ul>
+                                {this.renderLogin()}
                             </div>
                         </div>
                     </div>

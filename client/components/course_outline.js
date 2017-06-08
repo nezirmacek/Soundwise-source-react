@@ -156,7 +156,7 @@ export default class CourseOutline extends Component {
                     </div>
                 </section>
                 {
-                    this.props.relatedCourses.length >= 5 &&
+                    this.props.relatedCourses.length >= 4 &&
                     <RelatedCourses courses={this.props.relatedCourses} cb={this.props.cb} title={'PEOPLE WHO TOOK THIS COURSE ALSO TOOK'}/>
                 }
                 <Instructor course={this.state.course}/>
