@@ -230,7 +230,7 @@ class _CourseSignup extends Component {
             <div className="">
                 <div className="row">
                     <div className="col-md-8 center-col col-sm-12 text-center">
-                        <h3 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Get started</h3>
+                        <h3 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Sign Up for the Course</h3>
                         <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom  tz-text">Already have a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Log in here.</a></div>
                     </div>
                     <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1em', margin: '1em'}}>
