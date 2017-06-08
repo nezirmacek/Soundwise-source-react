@@ -6,8 +6,8 @@ import React from 'react'
 const renderBio = (bio) => {
   return (
     <div>
-      {bio.map(para => (
-        <p>{para}</p>
+      {bio.map((para, i) => (
+        <p key={i}>{para}</p>
       ))}
     </div>
   )

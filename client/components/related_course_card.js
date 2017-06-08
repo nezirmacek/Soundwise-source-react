@@ -8,15 +8,7 @@ import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'mat
 import { Link } from 'react-router-dom';
 import ReactStars from 'react-stars';
 import * as _ from 'lodash';
-
-const style = {
-    bottomShadowed: {
-        height: 0,
-    },
-    cardContent: {
-        paddingBottom: 30,
-    }
-};
+import PropTypes from 'prop-types';
 
 export default class RelatedCourseCard extends Component {
     constructor(props) {
@@ -39,11 +31,11 @@ export default class RelatedCourseCard extends Component {
             if (!cardHeight || cardHeight < _cardHeight) {
                 cb(_cardHeight);
             }
-        }, 100);
+        });
     }
 
     render () {
-        const { cardHeight, course } = this.props;
+        const { cardHeight, course, index } = this.props;
         const _style = JSON.parse(JSON.stringify(style));
         _style.bottomShadowed.height = cardHeight;
 
@@ -61,9 +53,17 @@ export default class RelatedCourseCard extends Component {
                                 </Link>
                             </div>
                             <div ref={(content) => this.references.content = content} style={course.reviews && _style.cardContent}>
-                                <CardTitle
-                                    title={course.name}
-                                />
+                                <div style={_style.title}>{course.name}</div>
+                                <div style={_style.author}>
+                                    <img alt={''} src={course.teacher_thumbnail} style={_style.authorThumbNail}/>
+                                    <div>
+                                        <div style={_style.teacherName}>{course.teacher}</div>
+                                        <div className="one-line" style={_style.teacherRrofession}>
+                                            {course.teacher_profession}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={_style.courseDescription}>{course.description}</div>
                                 <div className="stars-wrapper">
                                     {
                                         course.reviews &&
@@ -83,4 +83,56 @@ export default class RelatedCourseCard extends Component {
             </div>
         );
     }
+};
+
+RelatedCourseCard.propTypes = {
+    cardHeight: PropTypes.number,
+    course: PropTypes.object,
+    cb: PropTypes.func,
+    index: PropTypes.number,
+    blockIndex: PropTypes.number,
+};
+
+const style = {
+    bottomShadowed: {
+        height: 0,
+    },
+    title: {
+        fontSize: '18px',
+        lineHeight: '22px',
+        fontWeight: 'bold',
+        padding: '15px',
+    },
+    cardContent: {
+        paddingBottom: 30,
+    },
+    author: {
+        display: 'flex',
+        alignItems: 'center',
+        height: '50px',
+    },
+    authorThumbNail: {
+        width: '40px',
+        height: '40px',
+        borderRadius: '20px',
+        border: '1px solid #555',
+        marginLeft: '20px',
+        marginRight: '15px',
+    },
+    teacherName: {
+        fontWeight: 'bold',
+        fontSize: '14px',
+        lineHeight: '14px',
+    },
+    teacherRrofession: {
+        fontSize: '10px',
+    },
+    courseDescription: {
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        paddingBottom: '20px',
+        paddingTop: '10px',
+        fontSize: '10px',
+        lineHeight: '14px',
+    },
 };

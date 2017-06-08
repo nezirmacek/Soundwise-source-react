@@ -4,7 +4,6 @@ import { withRouter } from 'react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import ReactStars from 'react-stars'
-import Levels from 'react-activity/lib/Levels'
 import {orange50} from 'material-ui/styles/colors'
 import Spinner from 'react-activity/lib/Spinner'
 import Axios from 'axios'
@@ -38,25 +37,16 @@ const styles = {
   }
 }
 
-let player, source, interval
-
 class _CourseHeader extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      playing: false,
-      initialized: false,
-      displayTimer: 'none',
-      currentTime: 0,
-      duration: 0,
       paid: false,
       startPaymentSubmission: false,
       paymentError: ''
     }
 
     this.checkOut = this.checkOut.bind(this)
-    this.handlePlayOrPause = this.handlePlayOrPause.bind(this)
-    this.handleEnd = this.handleEnd.bind(this)
     this.addCourseToUser = this.addCourseToUser.bind(this)
     this.submitPayment = this.submitPayment.bind(this)
     this.renderProgressBar = this.renderProgressBar.bind(this)
@@ -64,11 +54,6 @@ class _CourseHeader extends Component {
   }
 
   componentDidMount() {
-    player = document.getElementById('audio')
-    source = document.getElementById('audioSource')
-
-    player.addEventListener('ended', this.handleEnd)
-
     // cache course image
     // if('caches' in window && nextprops.course.img_url_mobile) {
     //     let headers = new Headers()
@@ -97,69 +82,6 @@ class _CourseHeader extends Component {
     //         })
     //     })
     // }
-  }
-
-  handleEnd() {
-    this.setState({
-      playing: false,
-      displayTimer: 'none'
-    })
-  }
-
-  handlePlayOrPause() {
-    const that = this
-    if(this.state.playing) {
-      player.pause()
-
-      this.setState({
-        playing: false,
-        displayTimer: 'none',
-        // initialized: false
-      })
-
-      clearInterval(interval)
-
-    } else {
-      if(this.state.initialized && source.src == this.props.course.trailer_url) {
-        player.play()
-      } else {
-        source.src = this.props.course.trailer_url
-        player.load()
-        player.play()
-        this.setState({
-          initialized: true
-        })
-      }
-
-      this.setState({
-        playing: true,
-        displayTimer: '',
-        duration: player.duration
-      })
-
-      interval = setInterval(() => {
-        that.setState({
-          currentTime: player.currentTime,
-          duration: player.duration})
-      }, 1000)
-    }
-  }
-
-  renderPlayOrPause() {
-    if(this.state.playing) {
-      return (
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em'}}>
-          <i style={styles.icon} className="material-icons" >pause_circle_outline</i>
-          <span style={{fontSize: '30px', paddingLeft: '1em'}}><strong>PAUSE</strong></span>
-        </div>      )
-    } else {
-      return (
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1em'}}>
-          <i style={styles.icon} className="material-icons">play_circle_outline</i>
-          <span style={{fontSize: '30px', paddingLeft: '0.5em'}}><strong>PLAY LESSON 1</strong></span>
-        </div>
-      )
-    }
   }
 
   addCourseToUser() {
@@ -397,17 +319,12 @@ class _CourseHeader extends Component {
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom" style={{height: '378px'}}>
                         <div className="" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
-                            <img src={this.props.course.img_url_mobile} data-img-size="(W)450px X (H)450px" alt=""
-                              style={{width: '350px', height: '350px', display: 'block'}}/>
-                            <div style={timerStyle}>
-                              <Levels color="#F76B1C" size={12} speed={1} />
-                              <span style={{paddingLeft: '0.5em'}}>{`${remainingMin}:${remaingingSec}`}</span>
-                            </div>
-                            <div style={{textAlign: 'center'}}>
-                              <a onClick={this.handlePlayOrPause}>
-                                {this.renderPlayOrPause()}
-                              </a>
-                            </div>
+                            <img
+                                src={this.props.course.img_url_mobile}
+                                data-img-size="(W)450px X (H)450px"
+                                alt=""
+                                style={{width: '350px', height: '350px', display: 'block'}}
+                            />
                         </div>
                     </div>
                 </div>
@@ -416,7 +333,6 @@ class _CourseHeader extends Component {
         <CourseSignup course={this.props.course}/>
       </div>
     )
-
   }
 }
 

@@ -26,7 +26,7 @@ import {Course} from './containers/course_page'
 import {Course_Purchased} from './containers/course_page_purchased'
 import {Cart} from './containers/cart'
 import {Checkout} from './containers/checkout'
-import {CoursesCatalog} from './containers/courses_catalog';
+import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import NotFound from './components/page_404'
 import PassRecovery from './components/pass_recovery'
 import ScrollToTop from './components/scroll_to_top'
