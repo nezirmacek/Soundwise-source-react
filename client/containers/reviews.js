@@ -3,30 +3,32 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as firebase from "firebase"
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card'
-import ReactStars from 'react-stars'
+import ReactStars from 'react-stars';
+import PropTypes from 'prop-types';
 
 import { ReviewModal } from '../containers/review_modal'
 import { openReviewbox } from '../actions/index'
 
+function _getReviewArrayFromCourse (course) {
+    const reviews = [];
+    for(var key in course.reviews) {
+        reviews.push(course.reviews[key])
+    }
+    return reviews;
+}
+
 class _Reviews extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      reviews: [
-        {}
-      ]
-    }
+      reviews: _getReviewArrayFromCourse(props.course),
+    };
     this.handleReviewRequest = this.handleReviewRequest.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    const reviews = []
-    for(var key in nextProps.course.reviews) {
-      reviews.push(nextProps.course.reviews[key])
-    }
-
     this.setState({
-      reviews
+      reviews: _getReviewArrayFromCourse(nextProps.course),
     })
   }
 
@@ -65,7 +67,7 @@ class _Reviews extends Component {
   render() {
     const ratings = this.state.reviews.map(review => review.rating)
     const total = ratings.reduce((sum, cur) => (sum + cur), 0)
-    const average_rating = ratings.length == 0 ? '__' : Math.floor(total / ratings.length * 10) / 10
+    const average_rating = ratings.length === 0 ? 0 : Math.floor(total / ratings.length * 10) / 10;
 
     return (
       <div>
@@ -118,4 +120,11 @@ const mapStateToProps = state => {
   }
 }
 
-export const Reviews = connect(mapStateToProps, mapDispatchToProps)(_Reviews)
+export const Reviews = connect(mapStateToProps, mapDispatchToProps)(_Reviews);
+
+Reviews.propTypes = {
+    userInfo: PropTypes.object,
+    course: PropTypes.object,
+    isLoggedIn: PropTypes.bool,
+    openReviewbox: PropTypes.func,
+};

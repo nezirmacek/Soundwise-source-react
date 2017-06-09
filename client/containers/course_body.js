@@ -4,9 +4,9 @@ import {Tabs, Tab} from 'material-ui/Tabs'
 import SwipeableViews from 'react-swipeable-views'
 import {cyanA200, lime50, orange50, deepOrange800, grey50} from 'material-ui/styles/colors'
 
-import CourseOutline from './course_outline'
-import {PlayerBar} from '../containers/player_bar'
-import {Reviews} from '../containers/reviews'
+import CourseOutline from '../components/course_outline'
+import {PlayerBar} from './player_bar'
+import {Reviews} from './reviews'
 
 
 const styles = {
@@ -50,8 +50,6 @@ class _CourseBody extends React.Component {
   }
 
   render() {
-
-    // console.log('this.props.currentCourse: ', this.props.currentCourse)
     styles.tab = []
     styles.tab[0] = styles.tabs
     styles.tab[1] = styles.tabs

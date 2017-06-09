@@ -21,13 +21,13 @@ export default class RelatedCourseCard extends Component {
     }
 
     componentDidMount() {
-        const { cardHeight, course, cb } = this.props;
+        const { cardHeight, cb } = this.props;
         // recalculate card height
         setTimeout(() => {
-            let _cardHeight = this.references.image.clientWidth + this.references.content.clientHeight;
-            if (course.reviews) {
-                _cardHeight += 20;
-            }
+            let _cardHeight = this.references.image.clientWidth
+                + this.references.content.clientHeight
+                + this.references.footer.clientHeight
+                - 30;
             if (!cardHeight || cardHeight < _cardHeight) {
                 cb(_cardHeight);
             }
@@ -64,17 +64,20 @@ export default class RelatedCourseCard extends Component {
                                     </div>
                                 </div>
                                 <div style={_style.courseDescription}>{course.description}</div>
-                                <div className="stars-wrapper">
-                                    {
-                                        course.reviews &&
-                                        <ReactStars
-                                            count={5}
-                                            value={_.meanBy(_.values(course.reviews), review => review.rating)}
-                                            size={40}
-                                            edit={false}
-                                            color2={'#ffd700'}
-                                        />
-                                    }
+                                <div style={_style.cardFooter} ref={(footer) => this.references.footer = footer}>
+                                    <div className="stars-wrapper" style={_style.starsWrapper}>
+                                        {
+                                            course.reviews &&
+                                            <ReactStars
+                                                count={5}
+                                                value={_.meanBy(_.values(course.reviews), review => review.rating)}
+                                                size={40}
+                                                edit={false}
+                                                color2={'#ffd700'}
+                                            />
+                                        }
+                                    </div>
+                                    <div style={_style.priceBlock}>{course.price && `$${course.price}` || 'Free'}</div>
                                 </div>
                             </div>
                         </div>
@@ -135,4 +138,20 @@ const style = {
         fontSize: '10px',
         lineHeight: '14px',
     },
+    cardFooter: {
+        position: 'absolute',
+        bottom: '24px',
+        paddingLeft: '15px',
+        paddingRight: '15px',
+        width: 'calc(100% - 30px)',
+    },
+    starsWrapper: {
+        float: 'left',
+        width: '180px',
+    },
+    priceBlock: {
+        float: 'right',
+        fontSize: '20px',
+        marginTop: '12px',
+    }
 };
