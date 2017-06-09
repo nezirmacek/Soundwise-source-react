@@ -114,11 +114,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-  const { userInfo, isLoggedIn } = state.user
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo, isLoggedIn
   }
-}
+};
 
 export const Reviews = connect(mapStateToProps, mapDispatchToProps)(_Reviews);
 

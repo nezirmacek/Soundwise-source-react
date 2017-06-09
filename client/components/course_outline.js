@@ -3,25 +3,18 @@ import {Card, CardHeader} from 'material-ui/Card';
 import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import PropTypes from 'prop-types';
 
 import HowItWorks from './how_it_works';
 import Instructor from './instructor';
 import RelatedCourses from './related_courses';
 import LessonPlayer from './lesson_player';
-
-const styles = {
-    moduleTitle: {
-        fontSize: '32px',
-        backgroundColor: '#F76B1C'
-    },
-    curriculumContainer: {
-        marginTop: '0em'
-    }
-};
+import AddCourseToUser from '../helpers/add_course_to_user'; // TODO: this need to contain { props: { course, userInfo, history } }
 
 export default class CourseOutline extends Component {
     constructor(props) {
         super(props);
+        console.log('>>>>>>>>>>P0', props);
 
         this.state = {
             course: {
@@ -45,6 +38,7 @@ export default class CourseOutline extends Component {
         this.renderFeatures = this.renderFeatures.bind(this);
         this.renderModules = this.renderModules.bind(this);
         this.setPlayingLesson = this.setPlayingLesson.bind(this);
+        this.addCourseToUser = AddCourseToUser.bind(this);
     }
 
     componentDidMount() {
@@ -65,6 +59,24 @@ export default class CourseOutline extends Component {
 
     setPlayingLesson (id) {
         this.setState({playingLessonId: id});
+    }
+
+    checkOut () {
+        if (this.props.isLoggedIn) {
+            this.showDialog(true);
+        } else {
+            this.props.openSignupbox(true);
+        }
+    }
+
+    takeCourse () {
+        if (this.props.course.price === 0) {
+            // this.addCourseToUser();
+        } else {
+            // this.props.addCourseToCart(this.props.course); // TODO: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+            // this.props.history.push('/cart');
+        }
+        this.showDialog(false);
     }
 
     /*RENDER*/
@@ -111,7 +123,7 @@ export default class CourseOutline extends Component {
                                 key={i}
                                 index={i}
                                 section={section}
-                                showDialogCb={this.showDialog.bind(this, true)}
+                                showDialogCb={this.checkOut.bind(this)}
                                 playingCb={this.setPlayingLesson}
                                 isPlaying={section.section_id === this.state.playingLessonId}
                             />
@@ -191,9 +203,15 @@ export default class CourseOutline extends Component {
                     title="Can't listen to this lesson"
                     actions={[
                         <FlatButton
-                            label="Ok"
+                            label="Take a course"
                             primary={true}
                             keyboardFocused={true}
+                            onTouchTap={this.takeCourse.bind(this)}
+                        />,
+                        <FlatButton
+                            label="Not now"
+                            primary={false}
+                            keyboardFocused={false}
                             onTouchTap={this.showDialog.bind(this, false)}
                         />,
                     ]}
@@ -201,9 +219,29 @@ export default class CourseOutline extends Component {
                     open={this.state.isDialogShown}
                     onRequestClose={this.showDialog.bind(this, false)}
                 >
-                    Please enroll in the course to listen to this lesson
+                    This lesson is not available to you at the moment.
+                    In order to listen to this lesson please take a course.
+                    Do you want to take a course now?
                 </Dialog>
             </div>
         )
     }
 }
+
+CourseOutline.propTypes = {
+    course: PropTypes.object,
+    relatedCourses: PropTypes.array,
+    cb: PropTypes.func,
+    isLoggedIn: PropTypes.bool,
+    openSignupbox: PropTypes.func,
+};
+
+const styles = {
+    moduleTitle: {
+        fontSize: '32px',
+        backgroundColor: '#F76B1C'
+    },
+    curriculumContainer: {
+        marginTop: '0em'
+    }
+};

@@ -13,6 +13,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { withRouter } from 'react-router'
 
 import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index'
+import AddCourseToUser from '../helpers/add_course_to_user';
 
 var provider = new firebase.auth.FacebookAuthProvider()
 
@@ -73,7 +74,7 @@ class _CourseSignup extends Component {
     this.handleSignupOrLogin = this.handleSignupOrLogin.bind(this)
     this.handleFBSignin = this.handleFBSignin.bind(this)
     this.handleFBSignup = this.handleFBSignup.bind(this)
-    this.addCourseToUser = this.addCourseToUser.bind(this)
+    this.addCourseToUser = AddCourseToUser.bind(this)
   }
 
   handleChange(e) {
@@ -185,43 +186,6 @@ class _CourseSignup extends Component {
       })
   }
 
-  addCourseToUser() {
-    const that = this
-    const userId = firebase.auth().currentUser.uid
-    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course
-
-    let sectionProgress = {}
-    this.props.course.modules.forEach(module => {
-      module.sections.forEach(section => {
-        sectionProgress[section.section_id] = {
-          playProgress: 0,
-          completed: false,
-          timesRepeated: 0
-        }
-      })
-    })
-
-    const updates = {}
-    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
-
-    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
-    firebase.database().ref().update(updates)
-
-    Axios.post('/api/email_signup', { //handle mailchimp api call
-      firstName: that.props.userInfo.firstName,
-      lastName: that.props.userInfo.lastName,
-      email: that.props.userInfo.email,
-      courseID: this.props.course.id
-    })
-    .then(() => {
-      that.props.history.push('/confirmation')
-    })
-    .catch((err) => {
-      that.props.history.push('/confirmation')
-    })
-
-  }
-
   signupForm() {
     const { firstName, lastName, email, password } = this.state
     return (
@@ -286,10 +250,24 @@ class _CourseSignup extends Component {
                   <div className="col-md-6 center-col col-sm-12 text-center">
                           <input
                             onChange={this.handleChange}
-                            value={email} type="email" name="email" id="email" data-email="required" placeholder="Email" className="big-input bg-light-gray alt-font border-radius-4"/>
+                            value={email}
+                            type="email"
+                            name="email"
+                            id="email"
+                            data-email="required"
+                            placeholder="Email"
+                            className="big-input bg-light-gray alt-font border-radius-4"
+                          />
                           <input
                             onChange={this.handleChange}
-                            value={password} type="password" name="password" id="password" data-email="required" placeholder="Password" className="big-input bg-light-gray alt-font border-radius-4"/>
+                            value={password}
+                            type="password"
+                            name="password"
+                            id="password"
+                            data-email="required"
+                            placeholder="Password"
+                            className="big-input bg-light-gray alt-font border-radius-4"
+                          />
                           <div className="pull-right">
                             <a href="https://mysoundwise.com/password_reset" target="_blank">Forgot your password?</a>
                           </div>

@@ -102,6 +102,8 @@ class _Course extends Component {
       }
     };
 
+
+
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
     const _course = this.props.courses[this.props.match.params.courseId] || this.state.course;
