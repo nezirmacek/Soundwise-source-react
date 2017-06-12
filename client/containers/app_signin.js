@@ -129,7 +129,7 @@ class _AppSignin extends Component {
       firebase.database().ref('users/' + userId)
       .once('value')
       .then(snapshot => {
-        if(snapshot.val().firstName !== undefined) { // if user already exists
+        if(snapshot.val() && typeof(snapshot.val().firstName) !== 'undefined') { // if user already exists
 
           const firstName = snapshot.val().firstName
           const lastName = snapshot.val().lastName
