@@ -35,165 +35,217 @@ const store = createStore(
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {
-      "name": "The Crash Course on Startup Legal Issues",
-      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/the+crash+course+on+startup+legal+issues.png",
-      "id": 123,
-      "run_time": 2900,
+      "name": "Easy Networking: How to Make Connections That Count",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/EASY+NETWORKING-.png",
+      "id": 125,
+      "run_time": 3260,
       "price": 0,
-      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+1.mp3",
-      "category": "Entrepreneurship",
-      "keywords": "financials, law, cofounders, trademarks, copyrights, patents, intellectual property, legal, venture capital, startup financing, startup legal issues, equity splits, startup employment, entrepreneurship, entrepreneur, Charlie Tillet, business model, business plan, revenue model, MIT, MIT Sloan, startups, marketing, product launch, sales, customer acquisition, lean startup, business, audiobooks, audio courses, online courses",
-      "description": ["This course offers a comprehensive overview of startup legal issues, including how to protect your intellectual properties, how to avoid the major tax traps in starting a company, and the important legal concepts and terms involved in distributing equity and soliciting investments."],
-      "description_long":["Learning about the laws may not be your favorite part of running a startup. But if you are unaware of the legal ramifications of the actions you take, it may cost you and your company heavily down the road.", "In this course, seasoned entrepreneur and startup lawyer Joe Hadzima walks you through the legal issues you’ll likely encounter in the startup life cycle, from protecting your company’s intellectual assets through patents, copyrights and trademarks, to negotiating with investors on venture deal terms. At the end of the course, you will have a comprehensive understanding of the most important startup legal issues you need to look into or seek professional help on."],
-      "features": ["Learn how to protect the intellectual properties of your business", "Learn how to choose the right legal form for your business", "Overview of legal issues related to equity distribution among co-founders and early employees", "Legal concepts and terms in venture capital financing", "7 audio lessons", "Notes and action steps for every lesson", "Option to play audios offline (on computer and android phone with Chrome browser"],
+      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-1.mp3",
+      "category": "Communication",
+      "keywords": "Marsha Shandur, Networking, introverts, career development, making friends, Communication, events, how to write emails, marketing, persuasion, influence, effective Networking, connections, coaching, audiobooks, audio courses, online courses",
+      "description": ["If you don’t enjoy networking, you are probably doing it wrong. In this course, networking coach Marsha Shandur teaches you the effective strategies to make instant connections with people...while having fun. An introvert-must-listen. "],
+      "description_long":["If you want to get ahead in business and life, being fantastic at what you do is not enough. Success builds on human relationships. It builds on your ability to create an effective network.", "But if you don’t enjoy networking, you are not alone. Networking has gotten a bad rep. There’s this belief that it involves walking up to the most important person in the room, telling them how much you love their tie, and then asking them for favors.", "Not true.", "The award-winning networking coach Marsha Shandur will show you that real networking actually looks like this: talking to people that you get on well with, about things that you’re both interested in. Making genuine human connections.", "Imagine if you could go to any event – yes, even the networking events that usually make you want to hide under the registration desk – get a ton out of it for your business and career and, actually enjoy yourself. Really!", "It’s easy to make instant connections with people. You just need to know how.", "Marsha’s course will teach you the mindset and strategies to avoid common networking traps and effortlessly build rapport with people you want to connect to, both in person and over email—especially if you’re an introvert."],
+      "features": ["Learn to establish instant connection with others effortlessly", "Feel at home in networking events", "Write effective networking emails", "The right way to ask favors", "12 audio lessons", "Option to play audios offline (on computer and android phone with Chrome browser)"],
       "metrics": {
-          66: {
+          73: {
             timesCompleted: 0
           },
-          67: {
+          74: {
             timesCompleted: 0
           },
-          68: {
+          75: {
             timesCompleted: 0
           },
-          69: {
+          76: {
             timesCompleted: 0
           },
-          70: {
+          77: {
             timesCompleted: 0
           },
-          71: {
+          78: {
             timesCompleted: 0
           },
-          72: {
+          79: {
+            timesCompleted: 0
+          },
+          80: {
+            timesCompleted: 0
+          },
+          81: {
+            timesCompleted: 0
+          },
+          82: {
+            timesCompleted: 0
+          },
+          83: {
+            timesCompleted: 0
+          },
+          84: {
             timesCompleted: 0
           }
         },
-      "teacher": "Joseph Hadzima",
-      "teacher_profession": "entrepreneur and lawyer",
-      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Joe-Hadzima-400.jpg",
-      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Joe-Hadzima-400.jpg",
-      "teacher_bio": ["Joe has been involved in the founding of more than 100 companies as a founder, investor, director, legal counsel, or employee. He is the managing director of Main Street Partners LLC, as well as the president of its portfolio company, IPVision, Inc., an intellectual property management, systems, and services firm."],
-      "teacher_website": "http://www.ipvisioninc.com/",
-      "teacher_linkedin": "https://www.linkedin.com/in/joehadzima/",
-      "teacher_facebook": "",
-      "teacher_twitter": "https://twitter.com/JoeHadzima",
-      "teacher_instagram": "",
+      "teacher": "Marsha Shandur",
+      "teacher_profession": "Networking Coach",
+      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/marsha_shandur.jpg",
+      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/marsha_shandur.jpg",
+      "teacher_bio": ["Marsha has 17 years of experience as a successful radio presenter, musician manager and music supervisor for hit TV shows – where she learnt a lot about networking. She is the host for True Stories Told Live, Toronto’s biggest storytelling show, and has coached over a hundred storytellers in the last two years. She is also the official Story Coach for Portland’s World Domination Summit."],
+      "teacher_website": "http://www.yesyesmarsha.com/",
+      "teacher_linkedin": "https://www.linkedin.com/in/yesyesmarsha/?ppe=1",
+      "teacher_facebook": "https://www.facebook.com/yesyesmarsha",
+      "teacher_twitter": "https://twitter.com/yesyesmarsha?lang=en",
+      "teacher_instagram": "https://www.instagram.com/yesyesmarsha/",
       "modules": [
         {
           "module_id": 1,
-          "module_title": "The Crash Course on Startup Legal Issues",
+          "module_title": "Easy Networking: How to Make Connections That Count",
           "sections": [
             {
-              "section_id": 66,
+              "section_id": 73,
               "section_number": 1,
-              "run_time": "3:43",
-              "title": "How can intellectual properties help your business?",
+              "run_time": "3:10",
+              "title": "The REAL reason you HAVE to network (its not what you think)",
               "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+1.mp3",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-1.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-01.jpg",
-              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5821", "link_text": "Questions of Copyright: Another Weapon in the Property Arsenal", "description": "Basic concepts of copyright protection"}, {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5823", "link_text": "Of Kleenex and Cheez Whiz: Trademarks are Nothing to Sneeze At", "description": "Practical tips on trademarks"}]
+              "notes_url": "",
+              "resources": [{"link": "http://yym.ca/freeuppp", "link_text": "The Yes Yes Marsha Mailer", "description": "Get tips and advice - including things I'd NEVER say on the internet"}]
             },
             {
-              "section_id": 67,
+              "section_id": 74,
               "section_number": 2,
-              "run_time": "6:54",
-              "title": "Four types of IP protection and how each works",
-              "actions": "Think about the intellectual assets your company has. Do you have any assets you should potentially protect with trademark or copyright?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+2.mp3",
+              "run_time": "6:55",
+              "title": "Networking for introverts - top ten tips from Yes Yes Marsha",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-2.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-02.jpg",
-              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5821", "link_text": "Questions of Copyright: Another Weapon in the Property Arsenal", "description": "Basic concepts of copyright protection"}, {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5823", "link_text": "Of Kleenex and Cheez Whiz: Trademarks are Nothing to Sneeze At", "description": "Practical tips on trademarks"}]
+              "notes_url": "",
+              "resources": [{"link": "http://www.yesyesmarsha.com/top10/", "link_text": "YesYesMarsha.com", "description": "Free email template"}]
             },
             {
-              "section_id": 68,
+              "section_id": 75,
               "section_number": 3,
-              "run_time": "10:51",
-              "title": "Four steps to get a patent",
-              "actions": "Think about the intellectual assets your company has. Do you have any asset that is commercially valuable and may quality for a patent?",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+3.mp3",
+              "run_time": "3:10",
+              "title": "How not to be self-conscious",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-3.mp3",
               "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-03.jpg",
-              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5822", "link_text": "The Importance of Patents: It Pays to Know Patent Regulations", "description": "What is a patent, how do you get one and what value are they?"}]
-            },
-            {
-              "section_id": 69,
-              "section_number": 4,
-              "run_time": "8:16",
-              "title": "How to decide the legal form of your company and avoid Section 83 trap",
-              "actions": "If you have not incorporated your startup, do some research on the characteristics of LLC, C Corp and S Corp. Think about which legal form would be best for your company given your goals and long term vision.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+4.mp3",
-              "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-04.jpg",
-              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5794", "link_text": "Subchapter S: Some Myths, Realities and Practical Considerations", "description": "What is a Subchapter S Corporation and why / when should you use it?"},
-                {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5795", "link_text": "Is An LLC For Me?", "description": "What is a Limited Liability Company and is it appropriate for a technology growth company?"}]
-            },
-            {
-              "section_id": 70,
-              "section_number": 5,
-              "run_time": "7:20",
-              "title": "How to slice the equity pie",
-              "actions": "If you have cofounders or collaborators for your startup, have you formally discussed the equity arrangement? If not, have the discussion soon and complete the paperwork. You can use the “Founders’ Memo” included in the Resources section of this lesson to guide your discussion.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+5.mp3",
-              "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-05.jpg",
-              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/FoundersMemo.pdf", "link_text": "Founders' Memo", "description": 'Designed to educate the "team" of Founders as they work out the relationships among themselves. It should be considered by anyone who is thinking of starting a new venture.'},
-                {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5820", "link_text": "Ten Commandments of How To Work Effectively With Lawyers", "description": "Practical tips about how to use your lawyers effectively."},
-                ]
-            },
-            {
-              "section_id": 71,
-              "section_number": 6,
-              "run_time": "5:18",
-              "title": "Different types of equity compensation and related legal issues",
-              "actions": "Depending on the stage of your company, you may want to issue founders’ stocks, restricted stocks, or stock options to your stakeholders. Discuss with your lawyer about what would make the most sense for your company.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+6.mp3",
-              "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-06.jpg",
-              "resources": [{"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5801", "link_text": "Steer Clear of the Tempest: A Startup Tragedy in Three Acts", "description": "The importance of securities laws and how one company's failure to comply with these laws may have caused the company to fail itself."},
-                {"link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5796", "link_text": "Thinking About Valuation", "description": "Pre-Money and Post-Money Valuation; Some techniques for valuing a venture."},
-                {
-                  "link_text": "Dilution: Here Is A Primer of Stock Vocabulary", "description": "A primer on stock vocabulary relating to dilution.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5797"
-                },
-                {
-                  "link_text": "Take Stock When Using Stock in Trade Part One: Stock Basics", "description": "Covers basic terminology and concepts about stock and about equity compensation of employees.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5798"
-                },
-                {
-                  "link_text": "Take Stock When Using Stock in Trade Part Two: Stock and Options", "description": "Some considerations in using stock and options.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5799"
-                },
-                {
-                  "link_text": "Employees' Stock Reward - How Much Stock Do They Deserve?", "description": "What is appropriate stock compensation for employees?", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5800"
-                }
-                ]
-            },
-            {
-              "section_id": 72,
-              "section_number": 7,
-              "run_time": "7:58",
-              "title": "Capital structure and investor term variations you need to know",
-              "actions": "If your company is looking to raise your first round of funding, do some research on how convertible note financing works and discuss with your lawyer about whether that is a good option for you. You can start your research with the materials included in the Resources section of this lesson.",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/lesson+7.mp3",
-              "transcript_url": "",
-              "notes_url": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Lesson-07.jpg",
-              "resources": [
-                {
-                  "link_text": "All Financing Sources Are Not Equal", "description": "There are differences among financing sources - pick the one that ís right for you.", "link": "http://www.mitef.org/s/1314/interior-2-col.aspx?sid=1314&gid=5&pgid=5803"
-                },
-                {
-                  "link_text": "A Beginner's Guide to Venture Capital (PPT)", "description": "How is a Venture Capital Fund Structured? How Are VCs Compensated? What Do These Things Mean To You?", "link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Beginners+Guide+to+VC+(1).ppt"
-                },
-                {
-                  "link_text": "Venture Capital Deal Terms (PPT)", "description": "Presentation Slides from MIT Enterprise Forum Satellite Broadcast on Structuring Deals.", "link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/Venture+Capital+Deal+Terms+(1).ppt"
-                },
-                {
-                  "link_text": "Sample First Round Venture Capital Termshee (PDF)", "description": "This is a sample termsheet from a venture capital firm for a first round (Series A Convertible Preferred) deal.", "link": "https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/VCTermsheet.pdf"
-                },
-                {
-                  "link_text": "startupcompanylawyer.com", "description": "Good discussion on the pros and cons of convertible note", "link": "http://www.startupcompanylawyer.com/category/convertible-note-bridge-financing/"
-                }
+              "notes_url": "",
+              "resources": [{"link": "http://www.yesyesmarsha.com/names/", "link_text": "YesYesMarsha.com", "description": "Get my free guide for how to remember ANYONE's name"},
+                {"link": "http://www.yesyesmarsha.com/brain/?doing_wp_cron=1496888506.6735260486602783203125", "link_text": "A Behind-The-Scenes Tour of my Brain Going to a Conference", "description": "I’m awkward at events, too"}
               ]
-            }
+            },
+            {
+              "section_id": 76,
+              "section_number": 4,
+              "run_time": "4:02",
+              "title": "How to avoid small talk",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-4.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": ""
+            },
+            {
+              "section_id": 77,
+              "section_number": 5,
+              "run_time": "3:19",
+              "title": "How to get out of an awkward conversation (without being offensive)",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-5.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": ""
+            },
+            {
+              "section_id": 78,
+              "section_number": 6,
+              "run_time": "3:50",
+              "title": "How to stop acting like a weirdo around people you want to impress. (Introducing your DORK GOBLIN)",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-6.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": ""
+            },
+            {
+              "section_id": 79,
+              "section_number": 7,
+              "run_time": "4:45",
+              "title": "How to ask a favour from an old contact or colleague",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-7.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": [
+                {"link_text": "Email template", "description": "Email template for asking a favor", "link": "http://www.yesyesmarsha.com/colleague/"}
+              ]
+            },
+            {
+              "section_id": 80,
+              "section_number": 8,
+              "run_time": "4:10",
+              "title": "How to contact big-shots in your industry",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-8.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": [
+                {"link_text": "Favor leads to liking ", "description": "Humans are wired to reciprocate ", "link": "http://med.stanford.edu/coi/journal%20articles/Regan_DT-Effects_of_A_Favor_and_Liking_on_Compliance.pdf"}
+              ]
+            },
+            {
+              "section_id": 81,
+              "section_number": 9,
+              "run_time": "5:19",
+              "title": "Embarrassed yourself in front of a VIP? Here's how to recover",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-9.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": ""
+            },
+            {
+              "section_id": 82,
+              "section_number": 10,
+              "run_time": "5:52",
+              "title": "How to warm up a cold contact BEFORE you email them",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-10.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": ""
+            },
+            {
+              "section_id": 83,
+              "section_number": 11,
+              "run_time": "4:52",
+              "title": "How to write an email subject line - that gets your message read",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-11.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": [
+                {"link_text": "Are You Making This One HUGE, Common Mistake In Your Emails?", "description": "Make the email about them, not about you", "link": "http://www.yesyesmarsha.com/notme/"},
+                {"link_text": "This Is The Most Important Moment Of Your Life. Don’t Fug It Up.", "description": "Don’t ask what you can google", "link": "http://www.yesyesmarsha.com/godblog/"},
+                {"link_text": "Important Rule When Emailing Big Shots", "description": "Keep your email brief", "link": "http://www.yesyesmarsha.com/brevity/"}
+              ]
+            },
+            {
+              "section_id": 84,
+              "section_number": 12,
+              "run_time": "4:56",
+              "title": "The best way to sign off an email",
+              "actions": "",
+              "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-12.mp3",
+              "transcript_url": "",
+              "notes_url": "",
+              "resources": [
+                {"link_text": "Are You Making This One HUGE, Common Mistake In Your Emails?", "description": "Make the email about them, not about you", "link": "http://www.yesyesmarsha.com/notme/"},
+                {"link_text": "This Is The Most Important Moment Of Your Life. Don’t Fug It Up.", "description": "Don’t ask what you can google", "link": "http://www.yesyesmarsha.com/godblog/"},
+                {"link_text": "Important Rule When Emailing Big Shots", "description": "Keep your email brief", "link": "http://www.yesyesmarsha.com/brevity/"},
+                {"link_text": "How to Win Friends and Influence People in the Digital Age", "description": "A useful book", "link": "https://www.amazon.com/dp/1451612591/ref=cm_sw_r_cp_dp_T2_FglozbPH4CD30"}
+              ]
+            },
           ]
         }
       ]
@@ -209,7 +261,7 @@ const coupon = {
 
 firebase.initializeApp(config)
 
-// firebase.database().ref('courses/' + courseInfo.id)
+// firebase.database().ref('staging/' + courseInfo.id)
 //   .set(courseInfo)
 //   .then(() => console.log('courseInfo set.'))
 //   .catch((err) => console.log(err))
