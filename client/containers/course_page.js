@@ -22,7 +22,7 @@ import {setCurrentPlaylist, setCurrentCourse, loadCourses} from '../actions/inde
 
 class _Course extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       course: {
         runtime: '',
@@ -137,7 +137,13 @@ class _Course extends Component {
         <CourseHeader course={_course}/>
 
         <MuiThemeProvider >
-          <CourseBody  course={_course} relatedCourses={_relatedCourses} cb={this.setMaxCardHeight.bind(this)}/>
+          <CourseBody
+              course={_course}
+              relatedCourses={_relatedCourses}
+              cb={this.setMaxCardHeight.bind(this)}
+              userInfo={this.props.userInfo}
+              history={this.props.history}
+          />
         </MuiThemeProvider>
         <CourseFooter course={_course} />
         <Footer />

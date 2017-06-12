@@ -1,10 +1,9 @@
 /**
  * Created by developer on 05.06.17.
  */
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import { Card, CardMedia } from 'material-ui/Card';
 import { Link } from 'react-router-dom';
 import ReactStars from 'react-stars';
 import * as _ from 'lodash';

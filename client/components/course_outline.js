@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Card, CardHeader} from 'material-ui/Card';
-import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
@@ -9,12 +8,12 @@ import HowItWorks from './how_it_works';
 import Instructor from './instructor';
 import RelatedCourses from './related_courses';
 import LessonPlayer from './lesson_player';
-import AddCourseToUser from '../helpers/add_course_to_user'; // TODO: this need to contain { props: { course, userInfo, history } }
+import AddCourseToUser from '../helpers/add_course_to_user'; // this need to contain { props: { course, userInfo, history } }
+import DialogPopup from './dialog_popup';
 
 export default class CourseOutline extends Component {
     constructor(props) {
         super(props);
-        console.log('>>>>>>>>>>P0', props);
 
         this.state = {
             course: {
@@ -31,7 +30,8 @@ export default class CourseOutline extends Component {
                 ]
             },
             userCourses: {},
-            isDialogShown: false,
+            isTakeLessonDialogShown: false,
+            isBuyCourseDialogShown: false,
             playingLessonId: null,
         };
         this.renderDescription = this.renderDescription.bind(this);
@@ -54,7 +54,7 @@ export default class CourseOutline extends Component {
     }
 
     showDialog (isDialodShown) {
-        this.setState({ isDialogShown: isDialodShown });
+        this.setState({ isTakeLessonDialogShown: isDialodShown });
     }
 
     setPlayingLesson (id) {
@@ -71,12 +71,17 @@ export default class CourseOutline extends Component {
 
     takeCourse () {
         if (this.props.course.price === 0) {
-            // this.addCourseToUser();
+            this.addCourseToUser();
         } else {
-            // this.props.addCourseToCart(this.props.course); // TODO: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-            // this.props.history.push('/cart');
+            this.setState({ isBuyCourseDialogShown: true });
         }
         this.showDialog(false);
+    }
+
+    buyCourse () {
+        this.props.addCourseToCart(this.props.course);
+        this.props.history.push('/cart');
+        this.setState({ isBuyCourseDialogShown: false });
     }
 
     /*RENDER*/
@@ -199,30 +204,18 @@ export default class CourseOutline extends Component {
                         </div>
                     </div>
                 </section>
-                <Dialog
-                    title="Can't listen to this lesson"
-                    actions={[
-                        <FlatButton
-                            label="Take a course"
-                            primary={true}
-                            keyboardFocused={true}
-                            onTouchTap={this.takeCourse.bind(this)}
-                        />,
-                        <FlatButton
-                            label="Not now"
-                            primary={false}
-                            keyboardFocused={false}
-                            onTouchTap={this.showDialog.bind(this, false)}
-                        />,
-                    ]}
-                    modal={false}
-                    open={this.state.isDialogShown}
+                <DialogPopup
+                    dialogType={'lessonDisabled'}
+                    buttonActions={[ this.takeCourse.bind(this), this.showDialog.bind(this, false) ]}
+                    isShown={this.state.isTakeLessonDialogShown}
                     onRequestClose={this.showDialog.bind(this, false)}
-                >
-                    This lesson is not available to you at the moment.
-                    In order to listen to this lesson please take a course.
-                    Do you want to take a course now?
-                </Dialog>
+                />
+                <DialogPopup
+                    dialogType={'buyCourseOfLesson'}
+                    buttonActions={[ this.buyCourse.bind(this), this.showDialog.bind(this, false) ]}
+                    isShown={this.state.isBuyCourseDialogShown}
+                    onRequestClose={this.showDialog.bind(this, false)}
+                />
             </div>
         )
     }
@@ -234,6 +227,9 @@ CourseOutline.propTypes = {
     cb: PropTypes.func,
     isLoggedIn: PropTypes.bool,
     openSignupbox: PropTypes.func,
+    userInfo: PropTypes.object,
+    history: PropTypes.object,
+    addCourseToCart: PropTypes.func,
 };
 
 const styles = {

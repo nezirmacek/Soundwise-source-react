@@ -9,13 +9,12 @@ import PropTypes from 'prop-types';
 import CourseOutline from '../components/course_outline';
 import {PlayerBar} from './player_bar';
 import {Reviews} from './reviews';
-import { openSignupbox } from '../actions/index';
+import { openSignupbox, addCourseToCart } from '../actions/index';
 
 class _CourseBody extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log('>>>>>>>>>>P1', props);
 
     this.state = {
       slideIndex: 0,
@@ -29,7 +28,7 @@ class _CourseBody extends React.Component {
   }
 
   render() {
-    const { course, relatedCourses, cb, isLoggedIn, openSignupbox } = this.props;
+    const { course, relatedCourses, cb, isLoggedIn, openSignupbox, userInfo, history, addCourseToCart } = this.props;
     styles.tab = []
     styles.tab[0] = styles.tabs
     styles.tab[1] = styles.tabs
@@ -56,6 +55,9 @@ class _CourseBody extends React.Component {
                             cb={cb}
                             isLoggedIn={isLoggedIn}
                             openSignupbox={openSignupbox}
+                            userInfo={userInfo}
+                            history={history}
+                            addCourseToCart={addCourseToCart}
                         />
                     </div>
                     <div style={styles.slide}>
@@ -70,7 +72,7 @@ class _CourseBody extends React.Component {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ openSignupbox }, dispatch)
+    return bindActionCreators({ openSignupbox, addCourseToCart }, dispatch)
 }
 
 const mapStateToProps = store => {
@@ -92,6 +94,9 @@ CourseBody.propTypes = {
     isLoggedIn: PropTypes.bool,
     dispatch: PropTypes.func,
     openSignupbox: PropTypes.func,
+    userInfo: PropTypes.object,
+    history: PropTypes.object,
+    addCourseToCart: PropTypes.func,
 };
 
 const styles = {

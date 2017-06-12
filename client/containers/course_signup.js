@@ -1,21 +1,21 @@
-import React, {Component} from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import * as firebase from "firebase"
-import Axios from 'axios'
-import TextField from 'material-ui/TextField'
-import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
-import {orange500, blue500} from 'material-ui/styles/colors'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import { Link, Redirect } from 'react-router-dom'
-import { withRouter } from 'react-router'
+import React, {Component} from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as firebase from 'firebase';
+import Axios from 'axios';
+import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import {orange500, blue500} from 'material-ui/styles/colors';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index'
+import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
 import AddCourseToUser from '../helpers/add_course_to_user';
 
-var provider = new firebase.auth.FacebookAuthProvider()
+var provider = new firebase.auth.FacebookAuthProvider();
 
 const styles = {
   errorStyle: {

@@ -1,10 +1,12 @@
 /**
  * Created by developer on 09.06.17.
  */
+import * as firebase from 'firebase';
+import Axios from 'axios';
 
 // uses this of call place
 // this need to contain { props: { course, userInfo, history } }
-export default function AddCourseToUser (firebase, Axios) {
+export default function AddCourseToUser () {
     const that = this;
     const userId = firebase.auth().currentUser.uid;
 
