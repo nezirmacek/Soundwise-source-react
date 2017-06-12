@@ -4,7 +4,10 @@
   "description": "Soundwise web app",
   "main": "server.js",
   "scripts": {
-    "test": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
+    "test": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+    "start": "webpack --watch",
+    "start:server": "nodemon server.js",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",

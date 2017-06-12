@@ -15,20 +15,20 @@ npm install
 ### Start the Server
 
 ```
-nodemon server.js
+npm run-script start:server
+```
+
+### Start the webpack bundle compiler
+
+```
+npm run-script start
 ```
 
 ### Compile JSX
 
 ```
-webpack
+npm run-script build
 ```
-or
-
-```
-webpack --watch
-```
-to watch file changes and compile.
 
 ### Directories
 - Front end code is under `/client`
