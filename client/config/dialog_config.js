@@ -4,34 +4,32 @@
 
 const DIALOG_CONFIG = {
     lessonDisabled: {
-        title: 'Can\'t listen to this lesson',
-        message: 'This lesson is not available to you at the moment. ' +
-            'In order to listen to this lesson please take a course. ' +
-            'Do you want to take a course now?',
+        title: 'You haven\'t signed up for the course',
+        message: 'To listen to this course please click on the button below.',
         actions: [
             {
-                label: 'Take a course',
+                label: 'Take the course',
                 primary: true,
                 keyboardFocused: true,
             },
             {
-                label: 'Not now',
+                label: 'Cancel',
                 primary: false,
                 keyboardFocused: false,
             },
         ],
     },
     buyCourseOfLesson: {
-        title: 'This course isn\'t free',
-        message: 'Do you want to buy this course?',
+        title: 'You haven\'t signed up for the course',
+        message: 'Do you want to take this course?',
         actions: [
             {
-                label: 'Buy',
+                label: 'Take the course',
                 primary: true,
                 keyboardFocused: true,
             },
             {
-                label: 'Not now',
+                label: 'Cancel',
                 primary: false,
                 keyboardFocused: false,
             },

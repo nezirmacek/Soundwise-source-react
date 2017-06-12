@@ -237,7 +237,7 @@ class _CourseSignup extends Component {
           <div className="">
               <div className="row">
                   <div className="col-md-8 center-col col-sm-12 text-center">
-                      <h2 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Log In</h2>
+                      <h2 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Log In to Take the Course</h2>
                       <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom tz-text">Need a Soundwise account? <a onClick={() => this.switchForm()} className="text-decoration-underline">Get started here.</a></div>
                   </div>
                   <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1.5em', margin: '2em'}}>
@@ -245,7 +245,7 @@ class _CourseSignup extends Component {
                   </div>
                   <div className="col-md-6 center-col col-sm-12 text-center">
                       <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col  tz-text">Or</div>
-                      <h4 className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Sign up with email</h4>
+                      <h4 className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Log in with email</h4>
                   </div>
                   <div className="col-md-6 center-col col-sm-12 text-center">
                           <input

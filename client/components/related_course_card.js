@@ -70,7 +70,7 @@ export default class RelatedCourseCard extends Component {
                                             <ReactStars
                                                 count={5}
                                                 value={_.meanBy(_.values(course.reviews), review => review.rating)}
-                                                size={40}
+                                                size={30}
                                                 edit={false}
                                                 color2={'#ffd700'}
                                             />
@@ -143,6 +143,8 @@ const style = {
         paddingLeft: '15px',
         paddingRight: '15px',
         width: 'calc(100% - 30px)',
+        display: 'flex',
+        justifyContent: 'center'
     },
     starsWrapper: {
         float: 'left',
@@ -152,5 +154,7 @@ const style = {
         float: 'right',
         fontSize: '20px',
         marginTop: '12px',
+        paddingRight: '2em',
+        paddingBottom: '1em'
     }
 };
