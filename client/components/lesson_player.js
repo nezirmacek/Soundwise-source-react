@@ -112,9 +112,9 @@ export default class LessonPlayer extends Component {
                     </source>
                 </audio>
                 <Card key={this.props.index}>
-                    <div style={{display:'flex', alignItems: 'center', paddingLeft: '20px'}}>
+                    <div style={{paddingLeft: '20px'}} className="table-row">
                         <i
-                            className={`fa ${iconClass}`}
+                            className={`fa ${iconClass} table-cell`}
                             style={{fontSize: '38px', color: section.preview && '#61E1FB' || '#ccc'}}
                             aria-hidden="true"
                         >
@@ -122,12 +122,13 @@ export default class LessonPlayer extends Component {
                         <CardHeader
                             title={`Lesson ${section.section_number}: ${section.title}`}
                             style = {styles.sectionTitle}
+                            className="table-cell"
                         />
                         {
                             isPlaying
                             &&
                             (
-                                <div style={styles.timerStyle}>
+                                <div style={styles.timer}>
                                     <Levels color="#F76B1C" size={12} speed={1} />
                                     <span style={{paddingLeft: '0.5em'}}>
                                         {`${remainingMin}:${remaingingSec}`}
@@ -136,7 +137,7 @@ export default class LessonPlayer extends Component {
                             )
                             ||
                             (
-                                <div style={styles.timerStyle}>
+                                <div style={styles.timer}>
                                     <span style={{paddingLeft: '0.5em'}}>
                                         {section.run_time}
                                     </span>
@@ -170,9 +171,13 @@ const styles = {
     sectionTitle: {
         fontSize: '32px',
     },
-    timerStyle: {
+    timer: {
         position: 'absolute',
-        right: '60px',
+        top: '0',
+        bottom: '0',
+        right: '15px',
+        margin: 'auto 0',
+        display: 'inline-table',
     },
     wrapper: {
         position: 'relative',

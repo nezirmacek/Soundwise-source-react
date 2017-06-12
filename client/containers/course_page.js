@@ -13,7 +13,7 @@ import { CourseHeader } from '../components/course_header'
 import { CourseHeaderPurchased } from '../components/course_header_purchased'
 import Footer from '../components/footer'
 
-import { CourseBody } from '../components/course_body'
+import { CourseBody } from './course_body'
 import { CourseFooter } from '../components/course_footer'
 import SocialShare from '../components/socialshare'
 import { SoundwiseHeader } from '../components/soundwise_header'
@@ -22,7 +22,7 @@ import {setCurrentPlaylist, setCurrentCourse, loadCourses} from '../actions/inde
 
 class _Course extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       course: {
         runtime: '',
@@ -102,6 +102,8 @@ class _Course extends Component {
       }
     };
 
+
+
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
     const _course = this.props.courses[this.props.match.params.courseId] || this.state.course;
@@ -135,7 +137,13 @@ class _Course extends Component {
         <CourseHeader course={_course}/>
 
         <MuiThemeProvider >
-          <CourseBody  course={_course} relatedCourses={_relatedCourses} cb={this.setMaxCardHeight.bind(this)}/>
+          <CourseBody
+              course={_course}
+              relatedCourses={_relatedCourses}
+              cb={this.setMaxCardHeight.bind(this)}
+              userInfo={this.props.userInfo}
+              history={this.props.history}
+          />
         </MuiThemeProvider>
         <CourseFooter course={_course} />
         <Footer />

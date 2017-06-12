@@ -44,13 +44,15 @@ class _Routes extends Component {
         const userId = user.uid
         firebase.database().ref('users/' + userId)
         .on('value', snapshot => {
-            const firstName = snapshot.val().firstName
-            const lastName = snapshot.val().lastName
-            const email = snapshot.val().email
-            const courses = snapshot.val().courses
-            const pic_url = snapshot.val().pic_url || ""
-            const stripe_id = snapshot.val().stripe_id
-            that.props.signinUser({firstName, lastName, email, courses, pic_url, stripe_id})
+            if (snapshot.val()) {
+                const firstName = snapshot.val().firstName
+                const lastName = snapshot.val().lastName
+                const email = snapshot.val().email
+                const courses = snapshot.val().courses
+                const pic_url = snapshot.val().pic_url || ""
+                const stripe_id = snapshot.val().stripe_id
+                that.props.signinUser({firstName, lastName, email, courses, pic_url, stripe_id})
+            }
         })
       }
     })

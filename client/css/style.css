@@ -668,13 +668,8 @@ footer .social-icon a:last-child{ margin-right:0;}
     box-shadow: 0 5px 10px rgba(0,0,0,0.5);
     margin-bottom: 15px;
 }
-.stars-wrapper {
-    padding-left: 15px;
-    position: absolute;
-    bottom: 24px;
-}
 .stars-wrapper span {
-    line-height: 1.42;
+    line-height: 1;
 }
 
 .slick-slide {
@@ -703,4 +698,13 @@ footer .social-icon a:last-child{ margin-right:0;}
     word-wrap: normal;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.table-row {
+    display: table;
+}
+.table-cell,
+.fa.table-cell {
+    display: table-cell;
+    vertical-align: middle;
 }
