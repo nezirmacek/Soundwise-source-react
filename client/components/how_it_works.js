@@ -24,12 +24,12 @@ export default class HowItWorks extends Component {
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nineteen-bottom">
                           <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bicycle" aria-hidden="true"></i></div>
                           <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">LEARN ON THE GO</h3>
-                          <div className="text-large center-col tz-text text-dark-gray"> <p>Audio lessons are perfect for listening on your phone. You can also preload the lessons and access them offline, without using your data plan (android only).</p></div>
+                          <div className="text-large center-col tz-text text-dark-gray"> <p>Audio lessons are perfect for listening on your phone. You can also preload the lessons and access them offline, without using your data plan.</p></div>
                       </div>
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center xs-margin-nineteen-bottom">
                           <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-file-pdf-o" aria-hidden="true"></i></div>
                           <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">COMPLEMENTARY MATERIALS</h3>
-                          <div className="text-large center-col tz-text text-dark-gray"><p>The courses come with transcripts or cheatsheets for your review. Some courses also include additional resources (e.g. links to articles and videos).</p></div>
+                          <div className="text-large center-col tz-text text-dark-gray"><p>The courses come with transcripts, notes, and/or additional resources to help you learn better.</p></div>
                       </div>
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center">
                           <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bolt" aria-hidden="true"></i></div>
