@@ -36,16 +36,16 @@ const store = createStore(
 
 const courseInfo = {
       "name": "Easy Networking: How to Make Connections That Count",
-      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/EASY+NETWORKING-.png",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/EASY+NETWORKING.png",
       "id": 125,
       "run_time": 3260,
       "price": 0,
       "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-1.mp3",
       "category": "Communication",
-      "keywords": "Marsha Shandur, Networking, introverts, career development, making friends, Communication, events, how to write emails, marketing, persuasion, influence, effective Networking, connections, coaching, audiobooks, audio courses, online courses",
-      "description": ["If you don’t enjoy networking, you are probably doing it wrong. In this course, networking coach Marsha Shandur teaches you the effective strategies to make instant connections with people...while having fun. An introvert-must-listen. "],
-      "description_long":["If you want to get ahead in business and life, being fantastic at what you do is not enough. Success builds on human relationships. It builds on your ability to create an effective network.", "But if you don’t enjoy networking, you are not alone. Networking has gotten a bad rep. There’s this belief that it involves walking up to the most important person in the room, telling them how much you love their tie, and then asking them for favors.", "Not true.", "The award-winning networking coach Marsha Shandur will show you that real networking actually looks like this: talking to people that you get on well with, about things that you’re both interested in. Making genuine human connections.", "Imagine if you could go to any event – yes, even the networking events that usually make you want to hide under the registration desk – get a ton out of it for your business and career and, actually enjoy yourself. Really!", "It’s easy to make instant connections with people. You just need to know how.", "Marsha’s course will teach you the mindset and strategies to avoid common networking traps and effortlessly build rapport with people you want to connect to, both in person and over email—especially if you’re an introvert."],
-      "features": ["Learn to establish instant connection with others effortlessly", "Feel at home in networking events", "Write effective networking emails", "The right way to ask favors", "12 audio lessons", "Option to play audios offline (on computer and android phone with Chrome browser)"],
+      "keywords": "Marsha Shandur, yes yes Marsha, Networking, introverts, career development, making friends, Communication, events, how to write emails, marketing, persuasion, influence, effective Networking, connections, coaching, audiobooks, audio courses, online courses",
+      "description": ["If you don’t enjoy networking, you could be doing it wrong. In this course, Networking Mentor Marsha (from YesYesMarsha.com)  teaches you the effective strategies to make instant connections with people...while actually having fun. An introvert must-listen."],
+      "description_long":["You’re great at what you do - but, deep down, you know that isn’t enough. Success builds on human relationships. So if you want to get ahead in business and life? You have to network.", "But networking. Ugh.", "Here’s the thing: networking isn’t what you think it is. It’s not walking up to the most important person in the room, telling them how much you love their tie, and then asking them for favors. That kind of brown-nosing might work for some people - but not you.", "Networking Mentor Yes Yes Marsha will show you that real networking is just this: talking to people that you get on well with, about things that you’re both interested in. Making genuine human connections.", "Imagine if you could go to any event – yes, even the networking events that usually make you want to hide under the registration desk – get a ton out of it for your business and career and, actually enjoy yourself. Really!", "It’s easy to make instant connections with people. You just need to know how.", "Marsha’s course will teach you the mindset and strategies to avoid common networking traps and effortlessly build rapport with people you want to connect to, both in person and over email—especially if you’re an introvert."],
+      "features": ["Learn to establish instant connection with others effortlessly", "Feel at home at networking events", "Write effective networking emails", "The right way to ask favors", "12 audio lessons", "Option to play audios offline (on computer and android phone with Chrome browser)"],
       "metrics": {
           73: {
             timesCompleted: 0
@@ -84,11 +84,11 @@ const courseInfo = {
             timesCompleted: 0
           }
         },
-      "teacher": "Marsha Shandur",
-      "teacher_profession": "Networking Coach",
-      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/marsha_shandur.jpg",
-      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/marsha_shandur.jpg",
-      "teacher_bio": ["Marsha has 17 years of experience as a successful radio presenter, musician manager and music supervisor for hit TV shows – where she learnt a lot about networking. She is the host for True Stories Told Live, Toronto’s biggest storytelling show, and has coached over a hundred storytellers in the last two years. She is also the official Story Coach for Portland’s World Domination Summit."],
+      "teacher": "Yes Yes Marsha",
+      "teacher_profession": "Networking Mentor",
+      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/Marsha-yesyesMarsha.jpg",
+      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/Marsha-yesyesMarsha.jpg",
+      "teacher_bio": ["When it comes to networking, Marsha believes that nobody wants to be schmoozed. As the founder of YesYesMarsha.com, she helps people (like you!) build meaningful business and career connections that move your career forward faster, using networking and powerful, personal storytelling. Throughout her career as a Coach, DJ, Music Supervisor for hit TV shows and Author on Bloomsbury Publishing, she has been featured on Forbes, the BBC and Mashable. (Photo credit: Caroline White)"],
       "teacher_website": "http://www.yesyesmarsha.com/",
       "teacher_linkedin": "https://www.linkedin.com/in/yesyesmarsha/?ppe=1",
       "teacher_facebook": "https://www.facebook.com/yesyesmarsha",
@@ -119,7 +119,7 @@ const courseInfo = {
               "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-2.mp3",
               "transcript_url": "",
               "notes_url": "",
-              "resources": [{"link": "http://www.yesyesmarsha.com/top10/", "link_text": "YesYesMarsha.com", "description": "Free email template"}]
+              "resources": [{"link": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/Yes+Yes+Marsha+-+Nice+To+Meet+You+Email+Template.pdf", "link_text": "An email template from YesYesMarsha.com", "description": "Nice to meet you"}]
             },
             {
               "section_id": 75,
@@ -130,7 +130,8 @@ const courseInfo = {
               "section_url": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/lesson-3.mp3",
               "transcript_url": "",
               "notes_url": "",
-              "resources": [{"link": "http://www.yesyesmarsha.com/names/", "link_text": "YesYesMarsha.com", "description": "Get my free guide for how to remember ANYONE's name"},
+              "resources": [
+                {"link": "http://www.yesyesmarsha.com/names/", "link_text": "Free guide", "description": "Get Marsha's free guide on how to remember ANYONE's name"},
                 {"link": "http://www.yesyesmarsha.com/brain/?doing_wp_cron=1496888506.6735260486602783203125", "link_text": "A Behind-The-Scenes Tour of my Brain Going to a Conference", "description": "I’m awkward at events, too"}
               ]
             },
@@ -177,7 +178,7 @@ const courseInfo = {
               "transcript_url": "",
               "notes_url": "",
               "resources": [
-                {"link_text": "Email template", "description": "Email template for asking a favor", "link": "http://www.yesyesmarsha.com/colleague/"}
+                {"link_text": "Email template", "description": "Email template for asking a favor from a long-lost colleague", "link": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/Yes+Yes+Marsha+-+Email+Template+to+Ask+Long-Lost+Colleague+for+Favour.pdf"}
               ]
             },
             {
@@ -190,7 +191,12 @@ const courseInfo = {
               "transcript_url": "",
               "notes_url": "",
               "resources": [
-                {"link_text": "Favor leads to liking ", "description": "Humans are wired to reciprocate ", "link": "http://med.stanford.edu/coi/journal%20articles/Regan_DT-Effects_of_A_Favor_and_Liking_on_Compliance.pdf"}
+                {"link_text": "Favor leads to liking ", "description": "Humans are wired to reciprocate ", "link": "http://med.stanford.edu/coi/journal%20articles/Regan_DT-Effects_of_A_Favor_and_Liking_on_Compliance.pdf"},
+                {
+                  "link_text": "Free email template",
+                  "link": "https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/Yes+Yes+Marsha+-+Email+Template+for+how+to+Ask+a+Favour+from+a+Big-Shot.pdf",
+                  "description": "Email template for asking a favor from a big shot"
+                }
               ]
             },
             {
@@ -261,7 +267,7 @@ const coupon = {
 
 firebase.initializeApp(config)
 
-// firebase.database().ref('staging/' + courseInfo.id)
+// firebase.database().ref('courses/' + courseInfo.id)
 //   .set(courseInfo)
 //   .then(() => console.log('courseInfo set.'))
 //   .catch((err) => console.log(err))

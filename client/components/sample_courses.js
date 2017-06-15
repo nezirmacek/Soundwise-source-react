@@ -45,7 +45,7 @@ const Sample_Courses = () => (
                                     <li className="html wordpress magento xs-no-padding">
                                         <figure>
                                             <div className="gallery-img lightbox-gallery">
-                                                <Link to='/courses'><img src="https://s3.amazonaws.com/soundwiseinc/Joe+Hadzima/the+crash+course+on+startup+legal+issues.png" id="tz-bg-147" data-img-size="(W)800px X (H)650px" alt="" /></Link>
+                                                <Link to='/courses'><img src="https://s3.amazonaws.com/soundwiseinc/Marsha+Shandur/EASY+NETWORKING.png" id="tz-bg-147" data-img-size="(W)800px X (H)650px" alt="" /></Link>
                                             </div>
                                         </figure>
                                     </li>
