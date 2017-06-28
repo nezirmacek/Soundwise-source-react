@@ -47,7 +47,7 @@ const courseInfo = {
       "description_long":['Despite promises of "fast and easy" results from slick marketers, real personal growth is neither fast nor easy. The truth is that hard work, courage, and self-discipline are required to achieve meaningful results--results that are not attained by those who cling to the fantasy of achievement without effort.', "Personal Development for Smart People reveals the unvarnished truth about what it takes to consciously grow as a human being. In this course, you'll learn practical, insightful methods for improving your health, relationships, career, finances, and more. You'll see how to become the conscious creator of your life instead of feeling hopelessly adrift, enjoy a fulfilling career that honors your unique self-expression, wake up early feeling motivated, energized, and enthusiastic, achieve inspiring goals with disciplined daily habits and much more.", "With his refreshingly honest yet highly motivating style, Steve Pavlina will help you courageously explore, creatively express, and consciously embrace your extraordinary human journey."],
       "features": ["Practical tools for finding your purpose and direction", "Actionable insights on how to live a fulfilling life", "Build courage, confidence, and self-awareness", "Break through limiting beliefs and achieve personal goals", "12 audio lessons", "Option to play audios offline (on computer and android phone with Chrome browser)"],
       "metrics": {
-          85{
+          85: {
             timesCompleted: 0
           },
           86: {
