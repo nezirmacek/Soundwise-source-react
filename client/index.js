@@ -94,6 +94,166 @@ const courseInfo = {
       "teacher_facebook": "",
       "teacher_twitter": "https://twitter.com/stevepavlina?lang=en",
       "teacher_instagram": "",
+      "teachers": [
+        {
+          "teacher": "Steve Pavlina",
+          "teacher_profession": "Personal Growth Teacher",
+          "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/Steve-Pavlina-Headshot.jpeg",
+          "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/Steve-Pavlina-Headshot.jpeg",
+          "teacher_bio": ["Steve is widely recognized as the most successful personal-development blogger, attracting more than two million monthly readers who value his unique insights. Instead of posing as a self-help guru with the answers, Steve encourages people to conduct their own personal growth experiments and learn through direct experience. He has been quoted as an expert by the New York Times, USA Today, U.S. News & World Report, The Guardian, Chicago Tribune, Los Angeles Daily News, and many other publications."],
+          "teacher_website": "https://en.wikipedia.org/wiki/Steve_Pavlina",
+          "teacher_linkedin": "",
+          "teacher_facebook": "",
+          "teacher_twitter": "https://twitter.com/stevepavlina?lang=en",
+          "teacher_instagram": "",
+        }
+      ],
+      "sections": [
+        {
+          "section_id": 85,
+          "section_number": 1,
+          "run_time": "7:44",
+          "content": "This lesson is an introduction to the course with a story about how I got started on the personal growth path.",
+          "title": "My story",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/1+-+my+story.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 86,
+          "section_number": 2,
+          "run_time": "9:28",
+          "title": "First step: accepting the reality of where you are ",
+          "content": "This lesson explores the topic of moving beyond denial and ignorance to face and accept the truth in your life, including two different methods for how to accomplish that.",
+          "actions": "",
+          "section_url": "  https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/2+-+accepting+the+reality+of+where+you+are+now.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 87,
+          "section_number": 3,
+          "run_time": "10:04",
+          "title": "How to use your intuition to help achieving your goals",
+          "content": "This lesson will teach you two different methods for accessing your intuition and communicating with your subconscious mind. You’ll also learn how you can apply these skills to help you achieve your goals and overcome resistance.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/3+-+how+your+intuition+can+help+you+achieve+your+goals.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 88,
+          "section_number": 4,
+          "run_time": "9:47",
+          "title": "Your beliefs and how to make them work for you",
+          "content": "This lesson is about understanding beliefs and how to modify your beliefs in order to make goal achievement easier.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/4+-+your+beliefs+and+how+to+make+them+work+for+you.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 89,
+          "section_number": 5,
+          "run_time": "6:28",
+          "title": "What to do when faced with difficult decisions",
+          "content": "This lesson explores those frustrating problems of life where you feel you must choose between a limited number of options, none of which seems very appealing.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/5+-+what+to+do+when+you+have+difficult+choices+to+make.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 90,
+          "section_number": 6,
+          "run_time": "9:23",
+          "title": "How to overcome your fear",
+          "content": "This lesson explores the topic of fear. It presents two ways to overcome fear, first by building courage and secondly by shifting your mental model of reality to eliminate the experience of fear entirely.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/6+-+overcoming+your+fear.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 91,
+          "section_number": 7,
+          "run_time": "7:07",
+          "title": "Getting clarity about your life from multiple perspectives",
+          "content": "The goal of this lesson is to help you answer the question, “How shall I live my life?”.  By using your imagination to look at your life from other perspectives in both time and space, you can gain tremendous clarity. You will see how your life looks from different angles.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/7+-+getting+clarity+about+your+life+from+multiple+perspectives.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 92,
+          "section_number": 8,
+          "run_time": "9:11",
+          "title": "4 ways to build confidence",
+          "content": "This lesson will give you four different methods for boosting your confidence.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/8+-+4+ways+to+build+confidence.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 93,
+          "section_number": 9,
+          "run_time": "9:52",
+          "title": "How to find your purpose",
+          "content": "This lesson takes the high concept of purpose and brings it down to the level of practical application.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/9+-+how+to+find+your+purpose.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 94,
+          "section_number": 10,
+          "run_time": "6:59",
+          "title": "Why living your purpose is so important",
+          "content": "This lesson discusses why purpose is crucial for boosting self-esteem and living a fulfilling life.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/10+-+why+purpose+is+so+important.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 95,
+          "section_number": 11,
+          "run_time": "8:46",
+          "title": "Tips for achieving your goals faster",
+          "content": "In this lesson you’ll gain insights on closing the gap between your current position and your goals/intentions.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/11+-+how+to+achieve+your+goals+faster.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+        {
+          "section_id": 96,
+          "section_number": 12,
+          "run_time": "8:31",
+          "title": "Bonus: Kick-starting your own business",
+          "content": "This lesson will give you tips on how to kick-start your own business, especially a part-time, home-based business.",
+          "actions": "",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/12+-++bonus_kickstarting+your+own+business.mp3",
+          "transcript_url": "",
+          "notes_url": "",
+          "resources": ""
+        },
+      ],
       "modules": [
         {
           "module_id": 1,
@@ -250,7 +410,7 @@ const courseInfo = {
 
 const expiration = new Date(2099, 7, 31)
 const coupon = {
-  course_id: 116,
+  course_id: 126,
   discount: 100, //50% discount
   count: 0,
   expiration: expiration.toString()
@@ -266,7 +426,7 @@ firebase.initializeApp(config)
 // firebase.database().ref('courses/115/metrics')
 //   .set(update)
 
-// firebase.database().ref('coupons/parent100')
+// firebase.database().ref('coupons/pavlina100')
 //   .set(coupon)
 
 export default class App extends Component {

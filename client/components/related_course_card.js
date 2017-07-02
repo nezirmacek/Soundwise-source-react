@@ -42,14 +42,13 @@ export default class RelatedCourseCard extends Component {
             <div className="col-md-12 col-sm-12 col-xs-12">
                 <MuiThemeProvider>
                     <Card>
+                      <Link to={`/courses/${course.id}`}>
                         <div className="float-left width-100 bottom-shadowed" style={_style.bottomShadowed}>
                             <div ref={(image) => this.references.image = image} className="feature-box-image">
-                                <Link to={`/courses/${course.id}`}>
                                     <CardMedia>
                                         <img alt="" src={course.img_url_mobile}
                                              data-img-size="(W)800px X (H)533px" style={{objectFit: 'cover'}}/>
                                     </CardMedia>
-                                </Link>
                             </div>
                             <div ref={(content) => this.references.content = content} style={course.reviews && _style.cardContent}>
                                 <div style={_style.title}>{course.name}</div>
@@ -80,6 +79,7 @@ export default class RelatedCourseCard extends Component {
                                 </div>
                             </div>
                         </div>
+                      </Link>
                     </Card>
                 </MuiThemeProvider>
             </div>
