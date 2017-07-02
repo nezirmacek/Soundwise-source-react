@@ -85,7 +85,7 @@ class _Header extends Component {
         } else {
             return (
             <ul className="nav navbar-nav">
-                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
+                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">COURSES</Link>
                 </li>
                 <li className="propClone sm-no-border" style={styles.navItem}><Link className="inner-link" to="/signin">LOG IN</Link>
                 </li>

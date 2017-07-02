@@ -58,7 +58,7 @@ class _SoundwiseHeader extends Component {
             return (
             <ul className="nav navbar-nav">
               <li className="propClone sm-no-border">
-                <Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
+                <Link to='/courses' className="inner-link">COURSES</Link>
               </li>
               <li>
                 <Link to='/myprograms'>My Library</Link>
