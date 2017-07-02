@@ -48,9 +48,9 @@ export default class CourseCard extends Component {
                             </div>
                             <div ref={(item) => this.references.teacher = item}>
                                 <CardHeader
-                                    title={`with ${this.props.course.teacher}`}
-                                    subtitle={this.props.course.teacher_profession}
-                                    avatar={this.props.course.teacher_thumbnail}
+                                    title={`with ${this.props.course.teachers[0].teacher}`}
+                                    subtitle={this.props.course.teachers[0].teacher_profession}
+                                    avatar={this.props.course.teachers[0].teacher_thumbnail}
                                 />
                             </div>
                             <div

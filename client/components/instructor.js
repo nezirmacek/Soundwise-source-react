@@ -65,20 +65,20 @@ const Instructor = (props) => (
           </div>
           <div className="row">
             <div className="item">
-                <div className="col-md-6 col-sm-6 about-img cover-background tz-builder-bg-image" id="tz-bg-45" data-img-size="(W)800px X (H)800px" style={{height: '600px', background: `linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url(${props.course.teacher_img})`}}></div>
+                <div className="col-md-6 col-sm-6 about-img cover-background tz-builder-bg-image" id="tz-bg-45" data-img-size="(W)800px X (H)800px" style={{height: '600px', background: `linear-gradient(rgba(0,0,0,0.01), rgba(0,0,0,0.01)), url(${props.course.teachers[0].teacher_img})`}}></div>
                 <div className="col-md-6 col-sm-6 about-text bg-cream text-left tz-background-color" id="tz-bg-color-7" style={{overflowY: 'auto', height: '600px'}}>
                    <div className="should-have-a-children scroll-me" >
-                    <span className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500" id="tz-slider-text127">{props.course.teacher}</span>
+                    <span className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500" id="tz-slider-text127">{props.course.teachers[0].teacher}</span>
                     <div className="text-dark-gray text-medium margin-twelve no-margin-lr tz-text" id="tz-slider-text130"><p></p></div>
                     <div className="text-dark-gray text-large tz-text" id="tz-slider-text129" >
-                      {renderBio(props.course.teacher_bio)}
+                      {renderBio(props.course.teachers[0].teacher_bio)}
                     </div>
                     <div className="row">
                         <div className="col-md-10 col-md-offset-1 col-sm-12 text-center">
-                              {renderWebsite(props.course.teacher_website)}
-                              {renderTwitter(props.course.teacher_twitter)}
-                              {renderFacebook(props.course.teacher_facebook)}
-                              {renderLinkedin(props.course.teacher_linkedin)}
+                              {renderWebsite(props.course.teachers[0].teacher_website)}
+                              {renderTwitter(props.course.teachers[0].teacher_twitter)}
+                              {renderFacebook(props.course.teachers[0].teacher_facebook)}
+                              {renderLinkedin(props.course.teachers[0].teacher_linkedin)}
                         </div>
                     </div>
                    </div>

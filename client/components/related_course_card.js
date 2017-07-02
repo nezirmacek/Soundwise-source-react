@@ -53,11 +53,11 @@ export default class RelatedCourseCard extends Component {
                             <div ref={(content) => this.references.content = content} style={course.reviews && _style.cardContent}>
                                 <div style={_style.title}>{course.name}</div>
                                 <div style={_style.author}>
-                                    <img alt={''} src={course.teacher_thumbnail} style={_style.authorThumbNail}/>
+                                    <img alt={''} src={course.teachers[0].teacher_thumbnail} style={_style.authorThumbNail}/>
                                     <div>
-                                        <div style={_style.teacherName}>{course.teacher}</div>
+                                        <div style={_style.teacherName}>{course.teachers[0].teacher}</div>
                                         <div className="one-line" style={_style.teacherRrofession}>
-                                            {course.teacher_profession}
+                                            {course.teachers[0].teacher_profession}
                                         </div>
                                     </div>
                                 </div>

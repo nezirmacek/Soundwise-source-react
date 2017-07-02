@@ -429,6 +429,49 @@ firebase.initializeApp(config)
 // firebase.database().ref('coupons/pavlina100')
 //   .set(coupon)
 
+// *** change database structure for teacher info ***
+
+// firebase.database().ref('courses/' + 125)
+// .on('value', snapshot => {
+//     if (snapshot.val()) {
+//       const {
+//               teacher,
+//               teacher_profession,
+//               teacher_img,
+//               teacher_thumbnail,
+//               teacher_bio,
+//               teacher_website,
+//               teacher_linkedin,
+//               teacher_facebook,
+//               teacher_twitter,
+//               teacher_instagram
+//             } = snapshot.val()
+//       const sections = snapshot.val().modules[0].sections
+//       const teachers = [
+//            {
+//               teacher,
+//               teacher_profession,
+//               teacher_img,
+//               teacher_thumbnail,
+//               teacher_bio,
+//               teacher_website,
+//               teacher_linkedin,
+//               teacher_facebook,
+//               teacher_twitter,
+//             }
+//      ]
+//       firebase.database().ref('courses/125/teachers')
+//         .set(teachers)
+//         .then(() => console.log('125: teachers set.'))
+//         .catch((err) => console.log(err))
+
+//       firebase.database().ref('courses/125/sections')
+//         .set(sections)
+//         .then(() => console.log('125: sections set.'))
+//         .catch((err) => console.log(err))
+//     }
+// })
+
 export default class App extends Component {
   constructor() {
     super()

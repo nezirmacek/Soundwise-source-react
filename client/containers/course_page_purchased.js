@@ -29,7 +29,7 @@ class _Course_Purchased extends Component {
         price: '',
         name: '',
         description: '',
-        modules: [],
+        sections: [],
         resources: []
       },
       userCourses: {},
@@ -66,11 +66,12 @@ class _Course_Purchased extends Component {
                     that.props.setCurrentCourse(snapshot.val())
 
                     let sections = []
-                    snapshot.val().modules.forEach(module => { // build a playlist of sections
-                      module.sections.forEach(section => {
+                    snapshot.val().sections.forEach(section => { // build a playlist of sections
                         sections.push(section)
-                      })
                     })
+                    sections.sort((a, b) => (
+                      a.section_number - b.section_number
+                    ))
                     that.props.setCurrentPlaylist(sections)
                 })
               }
@@ -100,11 +101,12 @@ class _Course_Purchased extends Component {
 
       this.props.setCurrentCourse(nextProps.courses[this.props.match.params.courseId])
       let sections = []
-      nextProps.courses[this.props.match.params.courseId].modules.forEach(module => { // build a playlist of sections
-        module.sections.forEach(section => {
+      nextProps.courses[this.props.match.params.courseId].sections.forEach(section => { // build a playlist of sections
           sections.push(section)
-        })
       })
+      sections.sort((a, b) => (
+        a.section_number - b.section_number
+      ))
       this.props.setCurrentPlaylist(sections)
     }
 

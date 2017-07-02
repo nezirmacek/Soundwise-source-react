@@ -23,11 +23,8 @@ export default class CourseOutline extends Component {
                 description_long: [''],
                 features: [''],
                 teacher_bio: [''],
-                modules: [
-                    {
-                        sections: []
-                    }
-                ]
+                teachers: [{teacher_bio: ['']}],
+                sections: [],
             },
             userCourses: {},
             isTakeLessonDialogShown: false,
@@ -36,7 +33,7 @@ export default class CourseOutline extends Component {
         };
         this.renderDescription = this.renderDescription.bind(this);
         this.renderFeatures = this.renderFeatures.bind(this);
-        this.renderModules = this.renderModules.bind(this);
+        this.renderSections = this.renderSections.bind(this);
         this.setPlayingLesson = this.setPlayingLesson.bind(this);
         this.addCourseToUser = AddCourseToUser.bind(this);
     }
@@ -114,16 +111,19 @@ export default class CourseOutline extends Component {
         )
     }
 
-    renderModules = (course) => {
+    renderSections (course) {
         return (
-            course.modules.map((module, mi) => (
-                <Card key={mi}>
-                    <CardHeader
-                        title={module.module_title}
-                        style={styles.moduleTitle}
-                    />
+            <Card >
+                <CardHeader
+                  title={course.name}
+                  style = {styles.moduleTitle}
+                />
+                <div>
                     {
-                        module.sections.map((section, i) => (
+                        course.sections.sort((a, b) => (
+                            a.section_number - b.section_number
+                        ))
+                        .map((section, i) => (
                             <LessonPlayer
                                 key={i}
                                 index={i}
@@ -134,10 +134,10 @@ export default class CourseOutline extends Component {
                             />
                         ))
                     }
-                </Card>
-            ))
+                </div>
+            </Card>
         )
-    };
+    }
 
     render() {
         return (
@@ -168,7 +168,7 @@ export default class CourseOutline extends Component {
                                     </h2>
                                 </div>
                             </div>
-                            {this.renderModules(this.state.course)}
+                            {this.renderSections(this.state.course)}
                         </div>
                     </div>
                 </section>

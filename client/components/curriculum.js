@@ -32,11 +32,11 @@ class _Curriculum extends Component {
         price: '',
         name: '',
         description: '',
-        modules: [],
+        sections: [],
         resources: []
       }
     }
-    this.renderModules = this.renderModules.bind(this)
+    this.renderSections = this.renderSections.bind(this)
     this.handleEnd = this.handleEnd.bind(this)
     this.updateSectionProgress = this.updateSectionProgress.bind(this)
   }
@@ -142,25 +142,25 @@ class _Curriculum extends Component {
     }, 1000)
   }
 
-  renderModules() {
+  renderSections() {
     const that = this
 
     if(this.state.course.name.length > 0) {
 
       return (
-        this.state.course.modules.map(module => (
-          <Card key={module.module_id}>
+          <Card >
             <CardHeader
-              title={module.module_title}
+              title={this.state.course.name}
               style = {styles.moduleTitle}
             />
             <div className=''>
-            {module.sections.map(section => (
-              <CourseSection key={section.section_id} section={section} course={that.props.userCourse} />
-            ))}
+            {
+              this.state.course.sections.map(section => (
+                    <CourseSection key={section.section_id} section={section} course={that.props.userCourse} />
+              ))
+            }
             </div>
           </Card>
-        ))
       )
     }
   }
@@ -170,7 +170,7 @@ class _Curriculum extends Component {
       <section className="padding-60px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1" >
         <div className="container">
           <div style={styles.curriculumContainer}>
-            {this.renderModules()}
+            {this.renderSections()}
           </div>
         </div>
       </section>

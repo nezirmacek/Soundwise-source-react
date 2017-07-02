@@ -17,22 +17,37 @@ class _MyCourses extends Component {
 
         this.state = {
             cardHeight: 0,
+            courseArr: []
         };
     }
 
-    componentDidMount () {
+    componentWillMount () {
         // console.log('all courses: ', this.props.courses)
-
-        const that = this;
+        let userCourses = []
+        const that = this
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
                 const userId = user.uid;
 
                 firebase.database().ref('users/' + userId + '/courses')
-                    .once('value')
-                    .then(snapshot => {
-                        that.props.loadUserCourses(snapshot.val())
+                .once('value')
+                .then(snapshot => {
+                    const courseIDs = Object.keys(snapshot.val())
+
+                    courseIDs.forEach(id => {
+                        firebase.database().ref('courses/'+id)
+                        .on('value', snapshot => {
+                            userCourses.push(snapshot.val())
+                        })
                     })
+
+                })
+                .then(() => {
+                    // console.log('userCourses: ', userCourses)
+                    that.setState({
+                        courseArr: userCourses
+                    })
+                })
             }
         })
     }
@@ -44,13 +59,8 @@ class _MyCourses extends Component {
     }
 
     render () {
-        const courses = this.props.userCourses;
-        const isLoggedIn = this.props.isLoggedIn;
-
-        const courseArr = [];
-        for (var key in courses) {
-            courseArr.push(courses[key]);
-        }
+        const courseArr = this.state.courseArr
+        const isLoggedIn = this.props.isLoggedIn
 
         if (isLoggedIn === false) {
             return (
