@@ -107,7 +107,7 @@ export default class RelatedCourses extends Component {
         </section>
       );
     }
-  };
+};
 
 RelatedCourses.propTypes = {
   courses: PropTypes.array,

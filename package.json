@@ -51,6 +51,8 @@
     "react-dom": "^15.4.2",
     "react-gemini-scrollbar": "^2.3.0",
     "react-helmet": "^5.0.2",
+    "react-icons": "^2.2.5",
+    "react-pdf-js": "^1.0.35",
     "react-progress-label": "^1.2.2",
     "react-redux": "^4.0.0",
     "react-router": "^4.0.0",

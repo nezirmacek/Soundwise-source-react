@@ -72,7 +72,9 @@ function setCurrentSection(state={
 
 function setCourses(state={
   courses: {},
-  currentCourse: {},
+  currentCourse: {
+      teachers: [],
+  },
   userCourses: {},
   currentPlaylist: [],
   currentTime: 0,

@@ -708,3 +708,10 @@ footer .social-icon a:last-child{ margin-right:0;}
     display: table-cell;
     vertical-align: middle;
 }
+.notesWrapper {
+    display: block;
+    width: 100%;
+}
+.notesWrapper canvas {
+    width: 100%;
+}
