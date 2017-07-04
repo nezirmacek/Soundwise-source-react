@@ -42,7 +42,7 @@ class _ReviewModal extends Component {
   }
 
   handleReviewChange(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     this.setState({
       review: e.target.value
@@ -50,16 +50,16 @@ class _ReviewModal extends Component {
   }
 
   handleSubmit() {
-    const {rating, review} = this.state
-    const time = new Date()
-    const date = time.toDateString()
+    const {rating, review} = this.state;
+    const time = new Date();
+    const date = time.toDateString();
     const pic = (this.props.userInfo.pic_url!==undefined && this.props.userInfo.pic_url.length > 0) ? this.props.userInfo.pic_url : '../images/smiley_face.jpg'
     const reviewer = `${this.props.userInfo.firstName} ${this.props.userInfo.lastName.slice(0,1)}.`
 
     firebase.database().ref('courses/' + this.props.course.id)
-      .child('reviews').push({date, reviewer, rating, review, pic})
+      .child('reviews').push({date, reviewer, rating, review, pic});
 
-    this.props.openReviewbox(false)
+    this.props.openReviewbox(false);
   }
 
   reviewForm() {
@@ -121,11 +121,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-  const { userInfo, isLoggedIn } = state.user
-  const { reviewFormOpen } = state.reviewBox
+  const { userInfo, isLoggedIn } = state.user;
+  const { reviewFormOpen } = state.reviewBox;
   return {
     userInfo, isLoggedIn, reviewFormOpen
   }
 }
 
-export const ReviewModal = connect(mapStateToProps, mapDispatchToProps)(_ReviewModal)
+export const ReviewModal = connect(mapStateToProps, mapDispatchToProps)(_ReviewModal);

@@ -70,27 +70,11 @@ export function changePlayStatus(status) {
 }
 
 export function openSignupbox(open) {
-  if(open === true) {
-    return {
-      type: types.OPEN_SIGNUPBOX,
-    }
-  } else if(open === false) {
-    return {
-      type: types.CLOSE_SIGNUPBOX,
-    }
-  }
+    return { type: open === true && types.OPEN_SIGNUPBOX || open === false && types.CLOSE_SIGNUPBOX };
 }
 
 export function openConfirmationbox(open) {
-  if(open) {
-    return {
-      type: types.OPEN_CONFIRMATIONBOX,
-    }
-  } else {
-    return {
-      type: types.CLOSE_CONFIRMATIONBOX,
-    }
-  }
+    return { type: open && types.OPEN_CONFIRMATIONBOX || types.CLOSE_CONFIRMATIONBOX };
 }
 
 export function setCurrentCourse(course) {
@@ -101,15 +85,7 @@ export function setCurrentCourse(course) {
 }
 
 export function openReviewbox(open) {
-  if(open) {
-    return {
-      type: types.OPEN_REVIEWBOX
-    }
-  } else {
-    return {
-      type: types.CLOSE_REVIEWBOX
-    }
-  }
+  return { type: open && types.OPEN_REVIEWBOX || types.CLOSE_REVIEWBOX }
 }
 
 export function addCourseToCart(course) {
