@@ -1,20 +1,19 @@
-import React, {Component} from 'react'
-import { Link, Redirect } from 'react-router-dom'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import ReactStars from 'react-stars'
-import StarRating from 'react-star-rating'
+import React, {Component} from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import ReactStars from 'react-stars';
+import StarRating from 'react-star-rating';
 
-import { CourseSignup } from '../containers/course_signup'
-import { ReviewModal } from '../containers/review_modal'
-import SocialShare from './socialshare'
-import { openReviewbox } from '../actions/index'
+import { CourseSignup } from '../containers/course_signup';
+import { ReviewModal } from '../containers/review_modal';
+import SocialShare from './socialshare';
+import { openReviewbox } from '../actions/index';
 
 class _CourseHeaderPurchased extends Component {
   constructor(props) {
     super(props)
   }
-
 
   render() {
     let run_time = ''
@@ -98,8 +97,7 @@ class _CourseHeaderPurchased extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ openReviewbox }, dispatch)
+  return bindActionCreators({ openReviewbox }, dispatch);
 }
 
-
-export const CourseHeaderPurchased = connect(null, mapDispatchToProps)(_CourseHeaderPurchased)
+export const CourseHeaderPurchased = connect(null, mapDispatchToProps)(_CourseHeaderPurchased);

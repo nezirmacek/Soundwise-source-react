@@ -1,6 +1,7 @@
-import { combineReducers } from 'redux'
-import { routerReducer as routing } from 'react-router-redux'
-import * as types from '../actions/types'
+import { combineReducers } from 'redux';
+import { routerReducer as routing } from 'react-router-redux';
+import * as types from '../actions/types';
+import * as _ from 'lodash';
 
 function user(state= {
   userInfo: {},
@@ -27,6 +28,20 @@ function user(state= {
     default:
       return state
   }
+}
+
+function categories(state= {
+    categories: {},
+}, action) {
+    switch (action.type) {
+        case types.SUBSCRIBE_TO_CATEGORIES:
+            return {
+                ...state,
+                categories: action.payload,
+            };
+        default:
+            return state;
+    }
 }
 
 function setPlayer(state={
@@ -72,7 +87,9 @@ function setCurrentSection(state={
 
 function setCourses(state={
   courses: {},
-  currentCourse: {},
+  currentCourse: {
+      teachers: [],
+  },
   userCourses: {},
   currentPlaylist: [],
   currentTime: 0,
@@ -165,17 +182,26 @@ function checkoutProcess(state={
 }, action) {
   switch(action.type) {
     case types.ADDTOCART:
-      return {
-        ...state,
-        shoppingCart: state.shoppingCart.concat([action.payload])
-      }
+        let _cart = JSON.parse(JSON.stringify(state.shoppingCart));
+        const courseInCart = _.find(_cart, {id: action.payload.id});
+        if (!courseInCart) {
+            _cart.push(action.payload);
+            let _newState =  {
+                ...state,
+                shoppingCart: _cart,
+            };
+            return _newState;
+        } else {
+            return state;
+        }
+        break;
     case types.DELETE_FROM_CART:
-      const itemToDelete = state.shoppingCart.indexOf(action.payload)
-      const newCart = state.shoppingCart.slice(0, itemToDelete).concat(state.shoppingCart.slice(itemToDelete + 1))
-      return {
+      const newCart = JSON.parse(JSON.stringify(state.shoppingCart));
+      _.remove(newCart, course => course.id === action.payload.id);
+        return {
         ...state,
-        shoppingCart:newCart
-      }
+        shoppingCart: newCart,
+      };
     case types.DELETE_ALL:
       return {
         ...state,
@@ -194,6 +220,7 @@ const rootReducer = combineReducers({
   signupBox,
   reviewBox,
   user,
+  categories,
   checkoutProcess
 })
 

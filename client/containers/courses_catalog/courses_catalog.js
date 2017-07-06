@@ -23,19 +23,35 @@ class _CoursesCatalog extends Component {
     }
 
     render() {
+        const { categories } = this.props;
+
         // reparse courses to _categories = [{name:'xxx', courses:[...]},{...},...]; to use map inline
         const _categories = [];
-        for (let key in this.props.courses) {
-            if (this.props.courses.hasOwnProperty(key)) {
-                const __course = this.props.courses[key];
-                let _currentCategory = _.find(_categories, {name: CATS[__course.category]});
-                if (!_currentCategory) { // check if category of course is already added
-                    _categories.push({ name: CATS[__course.category], courses: [__course] });
-                } else {
-                    _currentCategory.courses.push(__course); // use link to object
+        for (let key in categories) {
+            if (categories.hasOwnProperty(key)) {
+                let _category = categories[key];
+                let _parsedCategory = { name: CATS[key], courses: [] };
+                for (let courseId in _category) {
+                    if (_category.hasOwnProperty(courseId)) {
+                        if (this.props.courses[courseId]) {
+                            _parsedCategory.courses.push(this.props.courses[courseId]);
+                        }
+                    }
                 }
+                _categories.push(_parsedCategory);
             }
         }
+        // for (let key in this.props.courses) {
+        //     if (this.props.courses.hasOwnProperty(key)) {
+        //         const __course = this.props.courses[key];
+        //         let _currentCategory = _.find(_categories, {name: CATS[__course.category]});
+        //         if (!_currentCategory) { // check if category of course is already added
+        //             _categories.push({ name: CATS[__course.category], courses: [__course] });
+        //         } else {
+        //             _currentCategory.courses.push(__course); // use link to object
+        //         }
+        //     }
+        // }
         _categories.sort((a, b) => { // sort categories by courses number in array
             if (a.courses.length > b.courses.length) {
                 return -1;
@@ -80,9 +96,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = store => {
+    console.log('>>>>>>>>>>', store);
+    const { categories } = store.categories;
     const { userInfo, isLoggedIn } = store.user;
     const { courses } = store.setCourses;
-    return { userInfo, isLoggedIn, courses };
+    return { userInfo, isLoggedIn, courses, categories };
 };
 
 const CoursesCatalog_worouter = connect(mapStateToProps, mapDispatchToProps)(_CoursesCatalog);
