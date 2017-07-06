@@ -168,10 +168,19 @@ function checkoutProcess(state={
 }, action) {
   switch(action.type) {
     case types.ADDTOCART:
-      return {
-        ...state,
-        shoppingCart: state.shoppingCart.concat([action.payload])
-      }
+        let _cart = JSON.parse(JSON.stringify(state.shoppingCart));
+        const courseInCart = _.find(_cart, {id: action.payload.id});
+        if (!courseInCart) {
+            _cart.push(action.payload);
+            let _newState =  {
+                ...state,
+                shoppingCart: _cart,
+            };
+            return _newState;
+        } else {
+            return state;
+        }
+        break;
     case types.DELETE_FROM_CART:
       const newCart = JSON.parse(JSON.stringify(state.shoppingCart));
       _.remove(newCart, course => course.id === action.payload.id);
