@@ -25,7 +25,7 @@ import {MyCourses} from './containers/mycourses'
 import {Course} from './containers/course_page'
 import {Staged_Course} from './containers/staged_course_page'
 import {Course_Purchased} from './containers/course_page_purchased'
-import {Cart} from './containers/cart'
+import {Cart} from './containers/cart/cart'
 import {Checkout} from './containers/checkout'
 import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import NotFound from './components/page_404'

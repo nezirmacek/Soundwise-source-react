@@ -6,6 +6,7 @@ import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
 import { withRouter } from 'react-router';
 import * as firebase from 'firebase';
+import moment from 'moment';
 
 import { SoundwiseHeader } from '../components/soundwise_header';
 import {deleteCart} from '../actions/index';
@@ -15,10 +16,9 @@ let stripe, elements;
 
 class _Checkout extends Component {
     constructor(props) {
-        super(props)
+        super(props);
+
         this.state={
-            coupon: '',
-            couponError: '',
             paymentError: '',
             submitDisabled: false,
             number: '',
@@ -28,82 +28,25 @@ class _Checkout extends Component {
             totalPay: 0,
             paid: false,
             startPaymentSubmission: false
-        }
-        this.onSubmit = this.onSubmit.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleCoupon = this.handleCoupon.bind(this)
-        this.stripeTokenHandler = this.stripeTokenHandler.bind(this)
-        this.renderProgressBar = this.renderProgressBar.bind(this)
-        this.addCourseToUser = this.addCourseToUser.bind(this)
+        };
+
+        this.onSubmit = this.onSubmit.bind(this);
+        this.stripeTokenHandler = this.stripeTokenHandler.bind(this);
+        this.renderProgressBar = this.renderProgressBar.bind(this);
+        this.addCourseToUser = this.addCourseToUser.bind(this);
     }
 
     componentDidMount() {
-        stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP')
+        stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         this.setState({
-            totalPay: this.props.shoppingCart.reduce((cum, course) => {
-                return cum + course.price
-            }, 0) * 100 // in cents
-        })
+            totalPay: this.props.total
+        });
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            totalPay: nextProps.shoppingCart.reduce((cum, course) => {
-                return cum + course.price
-            }, 0) * 100 // in cents
-        })
-    }
-
-    handleChange(e) {
-        this.setState({
-            [e.target.name]: e.target.value
-        })
-    }
-
-    handleCoupon() {
-        const that = this;
-
-        firebase.database().ref('/coupons').once('value')
-            .then(snapshot => {
-                const coupons = snapshot.val();
-                const today = Date.now();
-                const expiration = Date.parse(coupons[that.state.coupon].expiration) || today;
-
-                if(coupons[that.state.coupon] && today <= expiration) {
-                    const coupon = coupons[that.state.coupon];
-                    const discountedPrice = that.props.shoppingCart.reduce((cumm, course) => {
-
-                        if(course.id === coupon.course_id) {
-
-                            return cumm + course.price - coupon.discount / 100 * course.price
-                        } else {
-                            return cumm + course.price
-                        }
-                    }, 0);
-
-                    that.setState({
-                        totalPay:  Math.floor(discountedPrice * 100) //in cents
-                    });
-
-                    var updates = {};
-                    updates['/coupons/' + that.state.coupon + '/count'] = coupon.count + 1
-                    firebase.database().ref().update(updates)
-
-                    if(that.state.totalPay === 0) { //if it's free course, then no need for credit card info. Push course to user and then redirect
-                        that.addCourseToUser(that.props.userInfo.stripe_id)
-                    }
-
-
-                } else if(coupons[that.state.coupon] && today > Date.parse(coupons[that.state.coupon].expiration)) {
-                    that.setState({
-                        couponError: 'This coupon has expired'
-                    })
-                } else {
-                    that.setState({
-                        couponError: 'This coupon does not exist'
-                    })
-                }
-            })
+            totalPay: nextProps.total
+        });
     }
 
     async onSubmit(event) {
@@ -225,6 +168,13 @@ class _Checkout extends Component {
         // }, 0)
         const subtotal = Math.floor(this.state.totalPay) / 100;
 
+        const monthOptions = [];
+        const yearOptions = [];
+        for (let i=0; i<12; i++) {
+            monthOptions.push(<option value={i} key={i}>{moment().month(i).format('MMM (MM)')}</option>);
+            yearOptions.push(<option value={i + +moment().format('YYYY')} key={i}>{i + +moment().format('YYYY')}</option>);
+        }
+
         return (
             <div>
                 <section className="bg-white builder-bg" id="subscribe-section6">
@@ -241,9 +191,6 @@ class _Checkout extends Component {
 
                                     {/*card number*/}
                                     <div style={styles.relativeBlock}>
-                                        {/*<label className='title-large alt-font  font-weight-400 margin-three-top margin-three-bottom sm-margin-six-bottom xs-no-margin xs-padding-bottom-20px xs-title-large display-block tz-text'>*/}
-                                            {/*Card Number*/}
-                                        {/*</label>*/}
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -268,18 +215,9 @@ class _Checkout extends Component {
                                                 id="expiry-month"
                                                 style={styles.select}
                                             >
-                                                <option value="1">Jan (01)</option>
-                                                <option value="2">Feb (02)</option>
-                                                <option value="3">Mar (03)</option>
-                                                <option value="4">Apr (04)</option>
-                                                <option value="5">May (05)</option>
-                                                <option value="6">June (06)</option>
-                                                <option value="7">July (07)</option>
-                                                <option value="8">Aug (08)</option>
-                                                <option value="9">Sep (09)</option>
-                                                <option value="10">Oct (10)</option>
-                                                <option value="11">Nov (11)</option>
-                                                <option value="12">Dec (12)</option>
+                                                {
+                                                    monthOptions.map(item => item)
+                                                }
                                             </select>
                                         </div>
 
@@ -291,18 +229,9 @@ class _Checkout extends Component {
                                                 name="exp_year"
                                                 style={styles.select}
                                             >
-                                                <option value="2017">2017</option>
-                                                <option value="2018">2018</option>
-                                                <option value="2019">2019</option>
-                                                <option value="2020">2020</option>
-                                                <option value="2021">2021</option>
-                                                <option value="2022">2022</option>
-                                                <option value="2023">2023</option>
-                                                <option value="2024">2024</option>
-                                                <option value="2025">2025</option>
-                                                <option value="2026">2026</option>
-                                                <option value="2027">2027</option>
-                                                <option value="2028">2028</option>
+                                                {
+                                                    yearOptions.map(item => item)
+                                                }
                                             </select>
                                         </div>
 
@@ -460,7 +389,7 @@ const mapStateToProps = state => {
     return {
         userInfo,
         isLoggedIn,
-        shoppingCart
+        shoppingCart,
     }
 };
 
