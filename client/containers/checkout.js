@@ -61,16 +61,16 @@ class _Checkout extends Component {
     }
 
     handleCoupon() {
-        const that = this
+        const that = this;
 
         firebase.database().ref('/coupons').once('value')
             .then(snapshot => {
-                const coupons = snapshot.val()
-                const today = Date.now()
-                const expiration = Date.parse(coupons[that.state.coupon].expiration) || today
+                const coupons = snapshot.val();
+                const today = Date.now();
+                const expiration = Date.parse(coupons[that.state.coupon].expiration) || today;
 
                 if(coupons[that.state.coupon] && today <= expiration) {
-                    const coupon = coupons[that.state.coupon]
+                    const coupon = coupons[that.state.coupon];
                     const discountedPrice = that.props.shoppingCart.reduce((cumm, course) => {
 
                         if(course.id === coupon.course_id) {
@@ -79,13 +79,13 @@ class _Checkout extends Component {
                         } else {
                             return cumm + course.price
                         }
-                    }, 0)
+                    }, 0);
 
                     that.setState({
                         totalPay:  Math.floor(discountedPrice * 100) //in cents
-                    })
+                    });
 
-                    var updates = {}
+                    var updates = {};
                     updates['/coupons/' + that.state.coupon + '/count'] = coupon.count + 1
                     firebase.database().ref().update(updates)
 
@@ -107,23 +107,23 @@ class _Checkout extends Component {
     }
 
     async onSubmit(event) {
-        event.preventDefault()
+        event.preventDefault();
 
         this.setState({
             startPaymentSubmission: true
-        })
-        const {number, cvc} = this.state
-        const exp_month = Number(this.state.exp_month)
-        const exp_year = Number(this.state.exp_year)
-        this.setState({ submitDisabled: true, paymentError: null })
+        });
+        const {number, cvc} = this.state;
+        const exp_month = Number(this.state.exp_month);
+        const exp_year = Number(this.state.exp_year);
+        this.setState({ submitDisabled: true, paymentError: null });
 
-        Stripe.card.createToken({number, cvc, exp_month, exp_year}, this.stripeTokenHandler)
+        Stripe.card.createToken({number, cvc, exp_month, exp_year}, this.stripeTokenHandler);
     }
 
     stripeTokenHandler(status, response) {
-        const amount = this.state.totalPay
-        const email = this.props.userInfo.email
-        const that = this
+        const amount = this.state.totalPay;
+        const email = this.props.userInfo.email;
+        const that = this;
 
         if(response.error) {
             this.setState({
@@ -142,14 +142,14 @@ class _Checkout extends Component {
             })
                 .then(function (response) {
 
-                    const paid = response.data.paid //boolean
-                    const customer = response.data.customer
+                    const paid = response.data.paid; //boolean
+                    const customer = response.data.customer;
 
                     if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
                         that.setState({
                             paid,
                             startPaymentSubmission: false
-                        })
+                        });
 
                         that.addCourseToUser(customer) //push course to user profile and redirect
                     }
@@ -165,11 +165,11 @@ class _Checkout extends Component {
     }
 
     addCourseToUser(customer) {
-        const that = this
-        const userId = firebase.auth().currentUser.uid
-        const course = this.props.shoppingCart[0]
+        const that = this;
+        const userId = firebase.auth().currentUser.uid;
+        const course = this.props.shoppingCart[0];
 
-        let sectionProgress = {}
+        let sectionProgress = {};
         course.modules.forEach(module => {
             module.sections.forEach(section => {
                 sectionProgress[section.section_id] = {
@@ -178,18 +178,18 @@ class _Checkout extends Component {
                     timesRepeated: 0
                 }
             })
-        })
+        });
 
-        course.sectionProgress = sectionProgress
+        course.sectionProgress = sectionProgress;
 
-        const updates = {}
-        updates['/users/' + userId + '/courses/' + course.id] = course
+        const updates = {};
+        updates['/users/' + userId + '/courses/' + course.id] = course;
         // store stripe customer ID info: (only works with real credit cards)
         if(customer !== undefined && customer.length > 0) {
             updates['/users/' + userId + '/stripe_id'] = customer
         }
-        updates['/courses/' + course.id + '/users/' + userId] = userId
-        firebase.database().ref().update(updates)
+        updates['/courses/' + course.id + '/users/' + userId] = userId;
+        firebase.database().ref().update(updates);
 
         Axios.post('/api/email_signup', { //handle mailchimp api call
             firstName: that.props.userInfo.firstName,
@@ -198,12 +198,12 @@ class _Checkout extends Component {
             courseID: course.id
         })
             .then(() => {
-                that.props.deleteCart()
-                that.props.history.push('/confirmation')
+                that.props.deleteCart();
+                that.props.history.push('/confirmation');
             })
             .catch((err) => {
-                that.props.deleteCart()
-                that.props.history.push('/confirmation')
+                that.props.deleteCart();
+                that.props.history.push('/confirmation');
             })
 
     }
@@ -219,49 +219,16 @@ class _Checkout extends Component {
     }
 
     render() {
-        const items_num = this.props.shoppingCart.length
+        const items_num = this.props.shoppingCart.length;
         // const subtotal = this.props.shoppingCart.reduce((cumm, course) => {
         //   return cumm + course.price
         // }, 0)
-        const subtotal = Math.floor(this.state.totalPay) / 100
+        const subtotal = Math.floor(this.state.totalPay) / 100;
 
         return (
             <div>
                 <section className="bg-white builder-bg" id="subscribe-section6">
                     <div className='container' style={{paddingBottom: '70px'}}>
-                        {/*<div className='row equalize sm-equalize-auto equalize-display-inherit' style={{paddingBottom: '30px'}}>*/}
-                            {/*<div className="col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{paddingBottom: '50px'}}>*/}
-                                {/*<div className="row equalize ">*/}
-                                    {/*<div className="col-md-7 display-table col-sm-12 col-xs-12" style={{overflow: 'hidden'}}>*/}
-                                        {/*<div className="pull-left" style={{display: 'inline-block'}}>*/}
-                                            {/*<input*/}
-                                                {/*onChange={this.handleChange}*/}
-                                                {/*className=" bg-light-gray alt-font big-input border-radius-4"*/}
-                                                {/*name = 'coupon'*/}
-                                                {/*placeholder='coupon code' style={{width: '100%', height: '3.5em'}}*/}
-                                            {/*/>*/}
-                                        {/*</div>*/}
-                                        {/*<div className="pull-left">*/}
-                                            {/*<a*/}
-                                                {/*onClick = {this.handleCoupon}*/}
-                                                {/*className='btn btn-extra-large btn-3d text-white tz-text'*/}
-                                                {/*style={{float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden', display: 'block', height: '3.5em'}}*/}
-                                            {/*>*/}
-                                                {/*Apply*/}
-                                            {/*</a>*/}
-                                        {/*</div>*/}
-                                        {/*<div style={{color: 'red'}}>{this.state.couponError}</div>*/}
-                                    {/*</div>*/}
-                                    {/*<div className="col-md-4 col-sm-12 col-xs-12 display-table xs-text-center  " style={{height: '62px'}}>*/}
-                                        {/*<div className=" margin-six-right display-table-cell-vertical-middle text-center">*/}
-                                            {/*<h3 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">*/}
-                                                {/*{`Total: $${subtotal}`}*/}
-                                            {/*</h3>*/}
-                                        {/*</div>*/}
-                                    {/*</div>*/}
-                                {/*</div>*/}
-                            {/*</div>*/}
-                        {/*</div>*/}
                         <div className="row equalize ">
                             <div className="col-md-6 center-col col-sm-12 ">
                                 <div style={styles.totalRow}>
@@ -345,7 +312,7 @@ class _Checkout extends Component {
                                             required
                                             className='border-radius-4'
                                             size='4'
-                                            type='text'
+                                            type='password'
                                             name='cvc'
                                             placeholder="CVC"
                                             style={Object.assign({}, styles.input, styles.cvc)}
@@ -359,9 +326,9 @@ class _Checkout extends Component {
                                             <span style={{color: 'red'}}>{ this.state.paymentError }</span>
                                         }
                                         <button
-                                            className='contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text'
+                                            className='contact-submit btn propClone btn-3d text-white width-100 builder-bg tz-text'
                                             type='submit'
-                                            style={{backgroundColor: Colors.mainOrange}}
+                                            style={styles.button}
                                         >
                                             PAY NOW
                                         </button>
@@ -409,14 +376,14 @@ const styles = {
     cardsImage: {
         position: 'absolute',
         right: 4,
-        top: 32,
+        top: 10,
         width: 179,
         height: 26,
     },
     input: {
         height: 46,
         fontSize: 14,
-        margin: '20px 0 0 0',
+        margin: '40px 0 0 0',
     },
     selectBlock: {
         width: '35%',
@@ -465,6 +432,11 @@ const styles = {
         height: 52,
         position: 'relative',
         bottom: 10,
+    },
+    button: {
+        height: 46,
+        backgroundColor: Colors.mainOrange,
+        fontSize: 14,
     },
     securedTextWrapper: {
         marginTop: 15,

@@ -61,6 +61,26 @@ class _Cart extends Component {
                                     {`$${course.price}`}
                                 </span>
                             </div>
+
+
+                            {/*<div className="pull-left" style={{display: 'inline-block'}}>*/}
+                            {/*<input*/}
+                            {/*onChange={this.handleChange}*/}
+                            {/*className=" bg-light-gray alt-font big-input border-radius-4"*/}
+                            {/*name = 'coupon'*/}
+                            {/*placeholder='coupon code' style={{width: '100%', height: '3.5em'}}*/}
+                            {/*/>*/}
+                            {/*</div>*/}
+                            {/*<div className="pull-left">*/}
+                            {/*<a*/}
+                            {/*onClick = {this.handleCoupon}*/}
+                            {/*className='btn btn-extra-large btn-3d text-white tz-text'*/}
+                            {/*style={{float: 'right', backgroundColor: '#F76B1C', overflow: 'hidden', display: 'block', height: '3.5em'}}*/}
+                            {/*>*/}
+                            {/*Apply*/}
+                            {/*</a>*/}
+                            {/*</div>*/}
+                            {/*<div style={{color: 'red'}}>{this.state.couponError}</div>*/}
                         </div>
                     </div>
                 </div>
