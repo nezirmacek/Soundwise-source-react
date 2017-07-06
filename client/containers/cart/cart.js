@@ -25,6 +25,16 @@ class _Cart extends Component {
         };
     }
 
+    componentWillReceiveProps (nextProps) {
+        // add discountedPrice field to courses
+        let _shoppingCart = JSON.parse(JSON.stringify(nextProps.shoppingCart)); // to not mutate props
+        _shoppingCart.map(course => {
+            let _oldCourse = _.find(this.state.shoppingCart, {id: course.id});
+            course.discountedPrice = _oldCourse && _oldCourse.discountedPrice|| _oldCourse && _oldCourse.price || 0;
+        });
+        this.setState({shoppingCart: _shoppingCart});
+    }
+
     setCourseDiscountedPrice (courseId, discountedPrice) {
         let _newState = JSON.parse(JSON.stringify(this.state)); // to not mutate state
         let _course = _.find(_newState.shoppingCart, {id: courseId});
@@ -73,6 +83,7 @@ class _Cart extends Component {
                                                                 course={course}
                                                                 key={i}
                                                                 setDiscountedPrise={this.setCourseDiscountedPrice.bind(this)}
+                                                                deleteCourseFromCart={this.props.deleteCourseFromCart}
                                                             />
                                                         )
                                                     })

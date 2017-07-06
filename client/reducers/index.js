@@ -1,6 +1,7 @@
-import { combineReducers } from 'redux'
-import { routerReducer as routing } from 'react-router-redux'
-import * as types from '../actions/types'
+import { combineReducers } from 'redux';
+import { routerReducer as routing } from 'react-router-redux';
+import * as types from '../actions/types';
+import * as _ from 'lodash';
 
 function user(state= {
   userInfo: {},
@@ -172,12 +173,12 @@ function checkoutProcess(state={
         shoppingCart: state.shoppingCart.concat([action.payload])
       }
     case types.DELETE_FROM_CART:
-      const itemToDelete = state.shoppingCart.indexOf(action.payload)
-      const newCart = state.shoppingCart.slice(0, itemToDelete).concat(state.shoppingCart.slice(itemToDelete + 1))
-      return {
+      const newCart = JSON.parse(JSON.stringify(state.shoppingCart));
+      _.remove(newCart, course => course.id === action.payload.id);
+        return {
         ...state,
-        shoppingCart:newCart
-      }
+        shoppingCart: newCart,
+      };
     case types.DELETE_ALL:
       return {
         ...state,

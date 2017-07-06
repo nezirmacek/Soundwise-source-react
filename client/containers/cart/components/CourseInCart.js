@@ -115,6 +115,7 @@ export default class CourseInCart extends Component {
 CourseInCart.propTypes = {
     course: PropTypes.object,
     setDiscountedPrise: PropTypes.func,
+    deleteCourseFromCart: PropTypes.func,
 };
 
 const styles = {
