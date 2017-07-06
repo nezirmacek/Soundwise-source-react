@@ -44,6 +44,9 @@ class _Checkout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if(nextProps.total === 0) { //if it's free course, then no need for credit card info. Push course to user and then redirect
+            this.addCourseToUser(this.props.userInfo.stripe_id)
+        }
         this.setState({
             totalPay: nextProps.total
         });
