@@ -1,4 +1,5 @@
-import * as types from './types'
+import * as types from './types';
+import * as firebase from 'firebase';
 
 export function signupUser(user) {
   return {
@@ -113,4 +114,17 @@ export function changeSpeed(value) {
     type: types.CHANGE_SPEED,
     payload: value
   }
+}
+
+export function subscribeToCategories () {
+    return (dispatch) => {
+        firebase.database().ref('categories')
+            .on('value', snapshot => {
+                let _categories = snapshot.val();
+                dispatch({
+                    type: types.SUBSCRIBE_TO_CATEGORIES,
+                    payload: _categories,
+                });
+            })
+    };
 }

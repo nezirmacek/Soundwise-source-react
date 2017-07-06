@@ -1,41 +1,42 @@
-import React, {Component} from 'react'
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
-import firebase from 'firebase'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import {Helmet} from "react-helmet"
-import { browserHistory } from 'react-router'
-import injectTapEventPlugin from 'react-tap-event-plugin'
+import React, {Component} from 'react';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import firebase from 'firebase';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import {Helmet} from "react-helmet";
+import { browserHistory } from 'react-router';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
-injectTapEventPlugin()
+injectTapEventPlugin();
 
-import { config } from '../config'
-import {loadCourses} from './actions/index'
-import Page from './components/page'
-import About from './components/about'
-import Referral from './components/referral'
-import CreatorTerms from './components/creator_terms'
-import TermsFreeContent from './components/terms_free_content_May2017'
-import { OrderConfirmation } from './components/order_confirmation'
-import {AppSignup} from './containers/app_signup'
-import {AppSignin} from './containers/app_signin'
-import {Courses} from './containers/courses'
-import {MyCourses} from './containers/mycourses'
-import {Course} from './containers/course_page'
-import {Staged_Course} from './containers/staged_course_page'
-import {Course_Purchased} from './containers/course_page_purchased'
-import {Cart} from './containers/cart/cart'
-import {Checkout} from './containers/checkout'
+import { config } from '../config';
+import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
+import Page from './components/page';
+import About from './components/about';
+import Referral from './components/referral';
+import CreatorTerms from './components/creator_terms';
+import TermsFreeContent from './components/terms_free_content_May2017';
+import { OrderConfirmation } from './components/order_confirmation';
+import {AppSignup} from './containers/app_signup';
+import {AppSignin} from './containers/app_signin';
+import {Courses} from './containers/courses';
+import {MyCourses} from './containers/mycourses';
+import {Course} from './containers/course_page';
+import {Staged_Course} from './containers/staged_course_page';
+import {Course_Purchased} from './containers/course_page_purchased';
+import {Cart} from './containers/cart/cart';
+import {Checkout} from './containers/checkout';
 import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
-import NotFound from './components/page_404'
-import PassRecovery from './components/pass_recovery'
-import ScrollToTop from './components/scroll_to_top'
-import { signinUser } from './actions/index'
+import NotFound from './components/page_404';
+import PassRecovery from './components/pass_recovery';
+import ScrollToTop from './components/scroll_to_top';
 
 class _Routes extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props);
+
+    props.subscribeToCategories();
   }
 
   componentDidMount() {
@@ -110,7 +111,7 @@ class _Routes extends Component {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ loadCourses, signinUser }, dispatch)
+  return bindActionCreators({ loadCourses, signinUser, subscribeToCategories }, dispatch)
 }
 
 export const Routes = connect(null, mapDispatchToProps)(_Routes)

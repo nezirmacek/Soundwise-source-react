@@ -30,6 +30,20 @@ function user(state= {
   }
 }
 
+function categories(state= {
+    categories: {},
+}, action) {
+    switch (action.type) {
+        case types.SUBSCRIBE_TO_CATEGORIES:
+            return {
+                ...state,
+                categories: action.payload,
+            };
+        default:
+            return state;
+    }
+}
+
 function setPlayer(state={
   playerLaunched: false,
   speed: 1
@@ -206,6 +220,7 @@ const rootReducer = combineReducers({
   signupBox,
   reviewBox,
   user,
+  categories,
   checkoutProcess
 })
 
