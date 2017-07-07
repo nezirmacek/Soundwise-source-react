@@ -1,31 +1,20 @@
-import React, {Component} from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card'
-import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors'
-import firebase from "firebase"
+import React, {Component} from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {orange50, deepOrange800, grey50} from 'material-ui/styles/colors';
+import firebase from "firebase";
+import PropTypes from 'prop-types';
 
-import {CourseSection} from './course_section'
-import {getCurrentProgress, changePlayStatus, setCurrentPlaySection, loadUserCourses, setCurrentCourse} from '../actions/index'
+import {CourseSection} from './course_section';
+import {getCurrentProgress, changePlayStatus, setCurrentPlaySection, loadUserCourses, setCurrentCourse} from '../actions/index';
 
 let intervals = [], player, source;
-
-const styles = {
-    moduleTitle: {
-        fontSize: 24,
-        backgroundColor: '#F76B1C'
-    },
-    sectionTitle: {
-        backgroundColor: orange50
-    },
-    curriculumContainer: {
-        marginTop: '0em'
-    }
-}
 
 class _Curriculum extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             course: {
                 runtime: '',
@@ -35,19 +24,18 @@ class _Curriculum extends Component {
                 sections: [],
                 resources: []
             }
-        }
-        this.renderSections = this.renderSections.bind(this)
-        this.handleEnd = this.handleEnd.bind(this)
-        this.updateSectionProgress = this.updateSectionProgress.bind(this)
+        };
+        this.renderSections = this.renderSections.bind(this);
+        this.handleEnd = this.handleEnd.bind(this);
+        this.updateSectionProgress = this.updateSectionProgress.bind(this);
     }
 
     componentDidMount() {
 
-        player = document.getElementById('audio')
-        source = document.getElementById('audioSource')
+        player = document.getElementById('audio');
+        source = document.getElementById('audioSource');
 
-        player.addEventListener('ended', this.handleEnd)
-
+        player.addEventListener('ended', this.handleEnd);
     }
 
     updateSectionProgress(sectionId) {
@@ -60,52 +48,57 @@ class _Curriculum extends Component {
         update.timesRepeated = update.timesRepeated + 1;
 
         // record user listening progress data
-        let updates = {}
-        updates['/users/' + userId + '/courses/' + this.props.userCourse.id + '/sectionProgress/' + sectionId] = update
-        firebase.database().ref().update(updates)
+        let updates = {};
+        updates['/users/' + userId + '/courses/' + this.props.userCourse.id + '/sectionProgress/' + sectionId] = update;
+        firebase.database().ref().update(updates);
 
-        const sectionProgress = Object.assign({}, this.props.userCourse.sectionProgress, {sectionId: update})
-        const course = Object.assign({}, this.props.userCourse, {sectionProgress})
-        this.props.setCurrentCourse(course)
+        const sectionProgress = Object.assign({}, this.props.userCourse.sectionProgress, {sectionId: update});
+        const course = Object.assign({}, this.props.userCourse, {sectionProgress});
+        this.props.setCurrentCourse(course);
 
         // record section completion in course data:
         firebase.database().ref('/courses/' + this.props.course.id + '/metrics/' + sectionId)
             .once('value')
             .then(snapshot => {
-                const completed = snapshot.val().timesCompleted + 1
-                let update = {}
-                update['/courses/' + this.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed
-                firebase.database().ref().update(update)
+                const completed = snapshot.val().timesCompleted + 1;
+                let update = {};
+                update['/courses/' + this.props.course.id + '/metrics/' + sectionId + '/timesCompleted'] = completed;
+                firebase.database().ref().update(update);
             })
     }
 
     handleEnd() {
-        this.updateSectionProgress(this.props.currentSection.section_id)
+        this.updateSectionProgress(this.props.currentSection.section_id);
 
         // const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1
-        const sectionNumber = this.props.currentSection.section_number
+        const sectionNumber = this.props.currentSection.section_number; // this is the index of next section
 
         if(sectionNumber < this.props.currentPlaylist.length ) {
-            this.props.setCurrentPlaySection(this.props.currentPlaylist[sectionNumber])
+            this.props.setCurrentPlaySection(this.props.currentPlaylist[sectionNumber]);
 
-            source.src = this.props.currentPlaylist[sectionNumber].section_url
-            player.load()
-            player.play()
-            this.props.changePlayStatus(true)
+            source.src = this.props.currentPlaylist[sectionNumber].section_url;
+            player.load();
+            player.play();
+            this.props.changePlayStatus(true);
 
         } else {
-            player.pause()
-            this.props.changePlayStatus(false)
+            player.pause();
+            this.props.changePlayStatus(false);
+        }
+
+        // check when to show review popup: if it is sections[1+] finished, then show
+        if (sectionNumber > 1 && !this.props.userCourse.isRated) {
+            this.props.openReviewbox(true);
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        player = document.getElementById('audio')
-        const that = this
+        player = document.getElementById('audio');
+        const that = this;
 
         this.setState({
             course: nextProps.course
-        })
+        });
 
         // if(nextProps.course.id !== this.props.course.id) {
         //   firebase.auth().onAuthStateChanged(user => {
@@ -163,7 +156,11 @@ class _Curriculum extends Component {
                     <div className=''>
                         {
                             this.state.course.sections.map(section => (
-                                <CourseSection key={section.section_id} section={section} course={that.props.userCourse} />
+                                <CourseSection
+                                    key={section.section_id}
+                                    section={section}
+                                    course={that.props.userCourse}
+                                />
                             ))
                         }
                     </div>
@@ -182,6 +179,25 @@ class _Curriculum extends Component {
                 </div>
             </section>
         )
+    }
+}
+
+_Curriculum.propTypes = {
+    course: PropTypes.object,
+    userCourse: PropTypes.object,
+    openReviewbox: PropTypes.func,
+};
+
+const styles = {
+    moduleTitle: {
+        fontSize: 24,
+        backgroundColor: '#F76B1C'
+    },
+    sectionTitle: {
+        backgroundColor: orange50
+    },
+    curriculumContainer: {
+        marginTop: '0em'
     }
 }
 
