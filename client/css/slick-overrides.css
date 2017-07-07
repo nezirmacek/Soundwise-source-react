@@ -16,9 +16,9 @@
 }
 .slick-override-arrow.-prev-arrow {
     right: auto;
-    left: -25px;
+    left: -16px;
 }
 .slick-override-arrow.-next-arrow {
-    right: -25px;
+    right: -16px;
     left: auto;
 }
