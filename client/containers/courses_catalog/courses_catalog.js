@@ -41,17 +41,6 @@ class _CoursesCatalog extends Component {
                 _categories.push(_parsedCategory);
             }
         }
-        // for (let key in this.props.courses) {
-        //     if (this.props.courses.hasOwnProperty(key)) {
-        //         const __course = this.props.courses[key];
-        //         let _currentCategory = _.find(_categories, {name: CATS[__course.category]});
-        //         if (!_currentCategory) { // check if category of course is already added
-        //             _categories.push({ name: CATS[__course.category], courses: [__course] });
-        //         } else {
-        //             _currentCategory.courses.push(__course); // use link to object
-        //         }
-        //     }
-        // }
         _categories.sort((a, b) => { // sort categories by courses number in array
             if (a.courses.length > b.courses.length) {
                 return -1;
