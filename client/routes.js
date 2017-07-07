@@ -1,11 +1,14 @@
-import React, {Component} from 'react';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import firebase from 'firebase';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import {Helmet} from "react-helmet";
-import { browserHistory } from 'react-router';
-import injectTapEventPlugin from 'react-tap-event-plugin';
+
+import React, {Component} from 'react'
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
+import firebase from 'firebase'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import {Helmet} from "react-helmet"
+import { browserHistory } from 'react-router'
+import Butter from 'buttercms'
+const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8')
+import injectTapEventPlugin from 'react-tap-event-plugin'
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
@@ -63,6 +66,14 @@ class _Routes extends Component {
             .on('value', snapshot => {
               this.props.loadCourses(snapshot.val())
             })
+
+    butter.post.list({page: 1, page_size: 10}).then(function(response) {
+      console.log(response)
+    })
+
+    butter.content.retrieve(['homepage_headline']).then(function(response) {
+      console.log(response)
+    })
 
   }
 
