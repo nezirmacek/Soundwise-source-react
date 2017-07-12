@@ -1,27 +1,27 @@
-import React, {Component} from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import * as firebase from 'firebase'
-import Axios from 'axios'
+import React, {Component} from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as firebase from 'firebase';
+import Axios from 'axios';
 
-import { openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index'
-import { withRouter } from 'react-router'
-import {orange50} from 'material-ui/styles/colors'
+import { openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
+import { withRouter } from 'react-router';
+import {orange50} from 'material-ui/styles/colors';
 
 class _CourseFooter extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.checkOut = this.checkOut.bind(this)
-    this.addCourseToUser = this.addCourseToUser.bind(this)
+    this.checkOut = this.checkOut.bind(this);
+    this.addCourseToUser = this.addCourseToUser.bind(this);
   }
 
   addCourseToUser() {
-    const that = this
-    const userId = firebase.auth().currentUser.uid
-    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course
+    const that = this;
+    const userId = firebase.auth().currentUser.uid;
+    const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course; // TODO: remove general course fields from user/course
 
-    let sectionProgress = {}
+    let sectionProgress = {};
     this.props.course.modules.forEach(module => {
       module.sections.forEach(section => {
         sectionProgress[section.section_id] = {
@@ -32,11 +32,11 @@ class _CourseFooter extends Component {
       })
     })
 
-    const updates = {}
-    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
+    const updates = {};
+    updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}; // TODO: remove general course fields from user/course
 
-    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
-    firebase.database().ref().update(updates)
+    updates['/courses/' + this.props.course.id + '/users/' + userId] = userId;
+    firebase.database().ref().update(updates);
 
     Axios.post('/api/email_signup', { //handle mailchimp api call
       firstName: that.props.userInfo.firstName,

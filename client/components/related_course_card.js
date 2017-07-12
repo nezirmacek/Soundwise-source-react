@@ -142,13 +142,14 @@ const style = {
         bottom: '24px',
         paddingLeft: '15px',
         paddingRight: '15px',
-        width: 'calc(100% - 30px)',
+        width: '100%',
         display: 'flex',
         justifyContent: 'center'
     },
     starsWrapper: {
         float: 'left',
         width: '180px',
+        minWidth: '136px',
     },
     priceBlock: {
         float: 'right',

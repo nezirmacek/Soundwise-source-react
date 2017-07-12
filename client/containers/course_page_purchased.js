@@ -125,13 +125,14 @@ class _Course_Purchased extends Component {
             this.props.setCurrentPlaylist(sections);
         }
 
-        // if userCourse wasn't completed and become completed, need to show review modal
-        if (
-            !checkIfUserCourseCompleted(this.props.userCourses[nextProps.match.params.courseId])
-            && checkIfUserCourseCompleted(nextProps.userCourses[nextProps.match.params.courseId])
-        ) {
-            this.props.openReviewbox(true);
-        }
+        // // if userCourse wasn't completed and become completed, need to show review modal
+        // if (
+        //     !this.props.userCourses[nextProps.match.params.courseId].isRated
+        //     && !checkIfUserCourseCompleted(this.props.userCourses[nextProps.match.params.courseId])
+        //     && checkIfUserCourseCompleted(nextProps.userCourses[nextProps.match.params.courseId])
+        // ) {
+        //     this.props.openReviewbox(true);
+        // }
     }
 
     renderSnackbar() {
@@ -205,7 +206,11 @@ class _Course_Purchased extends Component {
                 <SoundwiseHeader />
                 <CourseHeaderPurchased course={course}/>
                 <MuiThemeProvider >
-                    <CourseBodyPurchased course={course} userCourse={this.props.userCourses[this.props.match.params.courseId]}/>
+                    <CourseBodyPurchased
+                        course={course}
+                        userCourse={this.props.userCourses[this.props.match.params.courseId]}
+                        openReviewbox={this.props.openReviewbox}
+                    />
                 </MuiThemeProvider>
 
                 {this.renderSnackbar()}

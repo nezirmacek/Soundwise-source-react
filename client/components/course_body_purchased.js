@@ -86,7 +86,7 @@ export default class CourseBodyPurchased extends React.Component {
      <div className='vbox'>
         <div className=''>
             <div style={{}}>
-              <Curriculum course = {course} userCourse={this.props.userCourse}/>
+              <Curriculum course = {course} userCourse={this.props.userCourse} openReviewbox={this.props.openReviewbox}/>
             </div>
         </div>
 
