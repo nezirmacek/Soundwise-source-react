@@ -35,7 +35,7 @@ const store = createStore(
 // const history = syncHistoryWithStore(browserHistory, store)
 
 const courseInfo = {
-      "name": "Personal Development for Smart People",
+      "name": "How to Get Anything You Want: A Course on Inner Mastery",
       "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/personal+dev+for+smart+people.png",
       "id": 126,
       "run_time": 6260,
