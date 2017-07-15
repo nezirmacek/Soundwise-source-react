@@ -22,12 +22,13 @@ export default class CourseInCart extends Component {
         })
     }
 
+
     handleCoupon() {
         const that = this;
 
         firebase.database().ref('/coupons').once('value')
             .then(snapshot => {
-                const { course, setDiscountedPrise } = this.props;
+                const { course, setDiscountedPrise, addCourseToUser, userInfo } = this.props;
                 const coupons = snapshot.val();
                 const today = Date.now();
                 const expiration = coupons[that.state.coupon] && Date.parse(coupons[that.state.coupon].expiration) || today;
@@ -44,6 +45,10 @@ export default class CourseInCart extends Component {
                         // send new discountedPrice to cart
                         let discountedPrice = course.price * (1 - coupon.discount / 100);
                         setDiscountedPrise(course.id, Math.floor(discountedPrice * 100) / 100);
+                        if(discountedPrice == 0) {
+                            addCourseToUser()
+                        }
+
                     } else {
                         // TODO: show message that coupon is belong to another course
                     }

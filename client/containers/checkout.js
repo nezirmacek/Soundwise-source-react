@@ -116,14 +116,12 @@ class _Checkout extends Component {
         const course = this.props.shoppingCart[0];
 
         let sectionProgress = {};
-        course.modules.forEach(module => {
-            module.sections.forEach(section => {
+        course.sections.forEach(section => {
                 sectionProgress[section.section_id] = {
                     playProgress: 0,
                     completed: false,
                     timesRepeated: 0
                 }
-            })
         });
 
         course.sectionProgress = sectionProgress;

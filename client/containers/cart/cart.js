@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import * as _ from 'lodash';
+import * as firebase from 'firebase';
+import Axios from 'axios';
 
 import { SoundwiseHeader } from '../../components/soundwise_header';
 import {deleteCourseFromCart, openSignupbox} from '../../actions/index';
@@ -23,6 +25,7 @@ class _Cart extends Component {
             redirectToCheckout: false,
             shoppingCart: _shoppingCart, // to change courses locally
         };
+        this.addCourseToUser = this.addCourseToUser.bind(this)
     }
 
     componentWillReceiveProps (nextProps) {
@@ -33,6 +36,45 @@ class _Cart extends Component {
             course.discountedPrice = _oldCourse && _oldCourse.discountedPrice|| _oldCourse && _oldCourse.price || 0;
         });
         this.setState({shoppingCart: _shoppingCart});
+    }
+
+    addCourseToUser() {
+        const that = this;
+        const userId = firebase.auth().currentUser.uid;
+        const course = this.props.shoppingCart[0];
+
+        let sectionProgress = {};
+        course.sections.forEach(section => {
+                sectionProgress[section.section_id] = {
+                    playProgress: 0,
+                    completed: false,
+                    timesRepeated: 0
+                }
+        });
+
+        course.sectionProgress = sectionProgress;
+
+        const updates = {};
+        updates['/users/' + userId + '/courses/' + course.id] = course;
+
+        updates['/courses/' + course.id + '/users/' + userId] = userId;
+        firebase.database().ref().update(updates);
+
+        Axios.post('/api/email_signup', { //handle mailchimp api call
+            firstName: that.props.userInfo.firstName,
+            lastName: that.props.userInfo.lastName,
+            email: that.props.userInfo.email,
+            courseID: course.id
+        })
+            .then(() => {
+                that.props.deleteCart();
+                that.props.history.push('/confirmation');
+            })
+            .catch((err) => {
+                that.props.deleteCart();
+                that.props.history.push('/confirmation');
+            })
+
     }
 
     setCourseDiscountedPrice (courseId, discountedPrice) {
@@ -83,6 +125,8 @@ class _Cart extends Component {
                                                                 course={course}
                                                                 key={i}
                                                                 setDiscountedPrise={this.setCourseDiscountedPrice.bind(this)}
+                                                                addCourseToUser={this.addCourseToUser.bind(this)}
+                                                                userInfo={this.props.userInfo}
                                                                 deleteCourseFromCart={this.props.deleteCourseFromCart}
                                                             />
                                                         )

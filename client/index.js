@@ -36,381 +36,205 @@ const store = createStore(
 
 const courseInfo = {
       "name": "How to Get Anything You Want: A Course on Inner Mastery",
-      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/personal+dev+for+smart+people.png",
-      "id": 126,
-      "run_time": 6260,
-      "price": 1.99,
-      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/1+-+my+story.mp3",
+      "img_url_mobile": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/A+COURSE+OF+INNER+MASTERY.png",
+      "id": 127,
+      "run_time": 5774,
+      "price": 11,
+      "trailer_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/1_The_shortest_path_finished_64kbs.mp3",
       "category": "Personal growth",
-      "keywords": "Steve Pavlina, personal growth, personal development, growth, build confidence, achieve goals, happiness, life purpose, overcome fear, self esteem, limiting beliefs, start a business, coaching, audiobooks, audio courses, online courses",
-      "description": ["Personal growth author and teacher Steve Pavlina presents actionable insights and tips in this course to help you build confidence, achieve goals, and discover your unique path to a fulfilling life."],
-      "description_long":['Despite promises of "fast and easy" results from slick marketers, real personal growth is neither fast nor easy. The truth is that hard work, courage, and self-discipline are required to achieve meaningful results--results that are not attained by those who cling to the fantasy of achievement without effort.', "Personal Development for Smart People reveals the unvarnished truth about what it takes to consciously grow as a human being. In this course, you'll learn practical, insightful methods for improving your health, relationships, career, finances, and more. You'll see how to become the conscious creator of your life instead of feeling hopelessly adrift, enjoy a fulfilling career that honors your unique self-expression, wake up early feeling motivated, energized, and enthusiastic, achieve inspiring goals with disciplined daily habits and much more.", "With his refreshingly honest yet highly motivating style, Steve Pavlina will help you courageously explore, creatively express, and consciously embrace your extraordinary human journey."],
-      "features": ["Practical tools for finding your purpose and direction", "Actionable insights on how to live a fulfilling life", "Build courage, confidence, and self-awareness", "Break through limiting beliefs and achieve personal goals", "12 audio lessons", "Option to play audios offline (on computer and android phone with Chrome browser)"],
+      "keywords": "Natasha Che, personal growth, personal development, growth, misfit, build confidence, authenticity, achieve goals, happiness, life purpose, overcome fear, self esteem, limiting beliefs, start a business, coaching, audiobooks, audio courses, online courses, training, tutorial",
+      "description": ["Stop struggling and start living. Learn to make things happen in your external reality from a place of power. Learn how to refine your intuition, deepen your self love, and create an inspired life aligned with your highest destiny."],
+      "description_long":['You have so much potential, but you’re not living it despite trying hard. You feel stuck on a certain level and struggle to find peace and purpose. You yearn for more freedom and authenticity. You don’t want to live someone else’s life anymore.', 'If any of that sounds like you, I want to tell you something-- In order to become a powerful creator in your external world, you need to align yourself internally first.', 'Like so many people, I grew up believing that the way to get what I wanted from life was by having a relentless drive and pushing harder. I did achieve a lot that way. But I also ended up exhausted and depressed.', 'An internal awakening that lasted several years made me finally realize there was a better way.', 'As within, so without. When you have the inner clarity and authentic confidence in your own destiny, creating the life you want becomes so much easier.', 'But how do you get to that place? This course teaches you how. Drawing from my personal experience and that of many others whom I mentored, I put together the essential components that you need to work on to facilitate an inner transformation—from self judgment to self love, from anxiety to freedom, from social conditioning to self expression, from operating within your limited human will to living as a channel of grace.', 'My goal is to help you find that deep connection with your higher self and take actions from a place of authentic inspiration, so that you can live more effortlessly and receiving what you really want from life with more grace and ease.'],
+      "features": ["Learn how to find your unique path to success and happiness", "Make things happen in your outer world from a place of inner power", "Become more intuitive and aligned with your highest truth", "Struggle less and thrive more", "Shed social conditioning and gain freedom to embody your most authentic self", "Gain clarity about your life choices and take inspired actions", "11 audio lessons with complementary notes and action steps/exercises"],
       "metrics": {
-          85: {
+          97: {
             timesCompleted: 0
           },
-          86: {
+          98: {
             timesCompleted: 0
           },
-          87: {
+          99: {
             timesCompleted: 0
           },
-          88: {
+          100: {
             timesCompleted: 0
           },
-          89: {
+          101: {
             timesCompleted: 0
           },
-          90: {
+          102: {
             timesCompleted: 0
           },
-          91: {
+          103: {
             timesCompleted: 0
           },
-          92: {
+          104: {
             timesCompleted: 0
           },
-          93: {
+          105: {
             timesCompleted: 0
           },
-          94: {
+          106: {
             timesCompleted: 0
           },
-          95: {
-            timesCompleted: 0
-          },
-          96: {
+          107: {
             timesCompleted: 0
           }
         },
-      "teacher": "Steve Pavlina",
-      "teacher_profession": "Personal Growth Teacher",
-      "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/Steve-Pavlina-Headshot.jpeg",
-      "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/Steve-Pavlina-Headshot.jpeg",
-      "teacher_bio": ["Steve is widely recognized as the most successful personal-development blogger, attracting more than two million monthly readers who value his unique insights. Instead of posing as a self-help guru with the answers, Steve encourages people to conduct their own personal growth experiments and learn through direct experience. He has been quoted as an expert by the New York Times, USA Today, U.S. News & World Report, The Guardian, Chicago Tribune, Los Angeles Daily News, and many other publications."],
-      "teacher_website": "https://en.wikipedia.org/wiki/Steve_Pavlina",
-      "teacher_linkedin": "",
-      "teacher_facebook": "",
-      "teacher_twitter": "https://twitter.com/stevepavlina?lang=en",
-      "teacher_instagram": "",
       "teachers": [
         {
-          "teacher": "Steve Pavlina",
+          "teacher": "Dr. Natasha Che",
           "teacher_profession": "Personal Growth Teacher",
-          "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/Steve-Pavlina-Headshot.jpeg",
-          "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/Steve-Pavlina-Headshot.jpeg",
-          "teacher_bio": ["Steve is widely recognized as the most successful personal-development blogger, attracting more than two million monthly readers who value his unique insights. Instead of posing as a self-help guru with the answers, Steve encourages people to conduct their own personal growth experiments and learn through direct experience. He has been quoted as an expert by the New York Times, USA Today, U.S. News & World Report, The Guardian, Chicago Tribune, Los Angeles Daily News, and many other publications."],
-          "teacher_website": "https://en.wikipedia.org/wiki/Steve_Pavlina",
+          "teacher_img": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/natasha_che.jpg",
+          "teacher_thumbnail": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/natasha_che.jpg",
+          "teacher_bio": ["Natasha is a personal growth teacher, entrepreneur, and writer. She helps people navigate life transition, expedite inner awakening and find their unique path in life through her articles, videos and mentoring sessions. She is also the founder of Soundwise Inc. Natasha had a successful career in international development and is a recovering over-achiever. She has three college degrees and a PhD from Georgetown University."],
+          "teacher_website": "http://natashache.com",
           "teacher_linkedin": "",
-          "teacher_facebook": "",
-          "teacher_twitter": "https://twitter.com/stevepavlina?lang=en",
+          "teacher_facebook": "https://www.facebook.com/AuthorNatashaChe",
+          "teacher_twitter": "https://twitter.com/RealNatashaChe",
           "teacher_instagram": "",
         }
       ],
       "sections": [
         {
-          "section_id": 85,
+          "section_id": 97,
           "section_number": 1,
-          "run_time": "7:44",
-          "content": "This lesson is an introduction to the course with a story about how I got started on the personal growth path.",
-          "title": "My story",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/1+-+my+story.mp3",
+          "run_time": "07:59",
+          "content": "",
+          "preview": "true",
+          "title": "The Shortest Path Towards Purpose And Abundance",
+          "actions": "For most people, our parents are a symbol of social conditioning. Write a letter of gratitude to your parents. No matter how you feel about your relationship with them, think about the things you can possibly thank them for and write them down. And then tell them that although they taught you so much, it’s time that you start following your own inner self as your ultimate guidance in life. Whether they’re ok with it or not, from now on you’re going to following your own path. Ask for their blessing. And thank them for all the things they’ve done for you. But tell them, firmly, that your decision has been made. You don’t need to mail this letter. But the action of writing will inform your subconscious.",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/1_The_shortest_path_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+1.pdf",
           "resources": ""
         },
         {
-          "section_id": 86,
+          "section_id": 98,
           "section_number": 2,
-          "run_time": "9:28",
-          "title": "First step: accepting the reality of where you are ",
-          "content": "This lesson explores the topic of moving beyond denial and ignorance to face and accept the truth in your life, including two different methods for how to accomplish that.",
-          "actions": "",
-          "section_url": "  https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/2+-+accepting+the+reality+of+where+you+are+now.mp3",
+          "run_time": "11:40",
+          "content": "",
+          "title": "The Secret To Finding Your Authentic Path",
+          "actions": "For a few times throughout your day, tune in to yourself and ask “What do I want to do now?” Listen for your slightest impulse. When you get an answer, don’t filter it. Go do it.",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/2_the_aut_path_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+2.pdf",
           "resources": ""
         },
         {
-          "section_id": 87,
+          "section_id": 99,
           "section_number": 3,
-          "run_time": "10:04",
-          "title": "How to use your intuition to help achieving your goals",
-          "content": "This lesson will teach you two different methods for accessing your intuition and communicating with your subconscious mind. You’ll also learn how you can apply these skills to help you achieve your goals and overcome resistance.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/3+-+how+your+intuition+can+help+you+achieve+your+goals.mp3",
+          "run_time": "09:40",
+          "content": "",
+          "title": "You Move Faster When You Are Not In The Driver’s Seat",
+          "actions": "Whenever you feel frustrated and impatient that something you want is not happening fast enough, try the following steps: 1) consciously slow down your breath, 2) ask your higher self to step in and take charge of the situation, 3) ask your higher self what you need to know right now, 4) embody your higher self, as much as you can, and give the answer.",
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/3__you_move_fasterfinished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+3.pdf",
           "resources": ""
         },
         {
-          "section_id": 88,
+          "section_id": 100,
           "section_number": 4,
-          "run_time": "9:47",
-          "title": "Your beliefs and how to make them work for you",
-          "content": "This lesson is about understanding beliefs and how to modify your beliefs in order to make goal achievement easier.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/4+-+your+beliefs+and+how+to+make+them+work+for+you.mp3",
+          "run_time": "09:26",
+          "content": "",
+          "title": "How To Trust Your Path ",
+          "actions": 'Have a conversation as your higher self with your human self. It could be a conversation while you’re mediating or walking. Or it could be a written conversation. Ask your human self, “What can I do to serve you? How can I help?” And listen for the answer.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/4_how+to+trust+your+path_64kbps.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+4.pdf",
           "resources": ""
         },
         {
-          "section_id": 89,
+          "section_id": 101,
           "section_number": 5,
-          "run_time": "6:28",
-          "title": "What to do when faced with difficult decisions",
-          "content": "This lesson explores those frustrating problems of life where you feel you must choose between a limited number of options, none of which seems very appealing.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/5+-+what+to+do+when+you+have+difficult+choices+to+make.mp3",
+          "run_time": "06:10",
+          "content": "",
+          "title": "Why Do We Struggle?",
+          "actions": 'Observe yourself when you’re doing something that feels difficult. Notice how your body is feeling. Do you tense up or relax? Notice your thoughts. What do you say to yourself? What conclusion are you drawing about you and the world when there’s a gap between what you expect and what’s happening? Ask yourself, where does your expectation come from?',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/5_Why_do_we_struggle_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+5.pdf",
           "resources": ""
         },
         {
-          "section_id": 90,
+          "section_id": 102,
           "section_number": 6,
-          "run_time": "9:23",
-          "title": "How to overcome your fear",
-          "content": "This lesson explores the topic of fear. It presents two ways to overcome fear, first by building courage and secondly by shifting your mental model of reality to eliminate the experience of fear entirely.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/6+-+overcoming+your+fear.mp3",
+          "run_time": "06:15",
+          "content": "",
+          "title": "The Way Out Of Struggle",
+          "actions": 'Observe yourself throughout the day. Whenever you have a thought coming up that says you “should” be doing something, observe how you feel in your body. Is there a part of your body that tightens up at that thought? If so, consciously relax it. And then send love to the part of you that insists on what you “should” do.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/6__The_way_out_of_struggle_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+6.pdf",
           "resources": ""
         },
         {
-          "section_id": 91,
+          "section_id": 103,
           "section_number": 7,
-          "run_time": "7:07",
-          "title": "Getting clarity about your life from multiple perspectives",
-          "content": "The goal of this lesson is to help you answer the question, “How shall I live my life?”.  By using your imagination to look at your life from other perspectives in both time and space, you can gain tremendous clarity. You will see how your life looks from different angles.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/7+-+getting+clarity+about+your+life+from+multiple+perspectives.mp3",
+          "run_time": "10:19",
+          "content": "",
+          "title": "Bulletproof Your Self Love",
+          "actions": 'Write a love letter to yourself from your higher self, the part of you that’s holding the unconditional love and respect for you.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/7__Bulletproof_your_self_love_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+7.pdf",
           "resources": ""
         },
         {
-          "section_id": 92,
+          "section_id": 104,
           "section_number": 8,
-          "run_time": "9:11",
-          "title": "4 ways to build confidence",
-          "content": "This lesson will give you four different methods for boosting your confidence.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/8+-+4+ways+to+build+confidence.mp3",
+          "run_time": "05:29",
+          "content": "",
+          "title": "Why You Need A Bias Towards Action",
+          "actions": 'If you feel you’re lacking clarity/direction in any area of your life, ask yourself what’s the immediate next step you can take in this area, no matter how small the step is. And then go execute that step.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/8__Why_You_Need_A_Bias_towards_Action__finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+8.pdf",
           "resources": ""
         },
         {
-          "section_id": 93,
+          "section_id": 105,
           "section_number": 9,
-          "run_time": "9:52",
-          "title": "How to find your purpose",
-          "content": "This lesson takes the high concept of purpose and brings it down to the level of practical application.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/9+-+how+to+find+your+purpose.mp3",
+          "run_time": "10:05",
+          "content": "",
+          "title": "What To Do When You’re Feeling Stuck",
+          "actions": 'Next time when you feel “empty”—no matter what triggers it or if there’s a trigger at all—I want you to do something courageous: instead of running away from it and distracting yourself with work or entertainment, go towards the emptiness. Feel into the core of emptiness and allow yourself to be totally immersed in it, however uncomfortable it is. If it feels too scary, ask your higher self to step in and support you while you do this. Stay in the emptiness, for as long as you can stand it.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/9___What_to_do_when_youre_feeling_stuck_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+9.pdf",
           "resources": ""
         },
         {
-          "section_id": 94,
+          "section_id": 106,
           "section_number": 10,
-          "run_time": "6:59",
-          "title": "Why living your purpose is so important",
-          "content": "This lesson discusses why purpose is crucial for boosting self-esteem and living a fulfilling life.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/10+-+why+purpose+is+so+important.mp3",
+          "run_time": "08:19",
+          "content": "",
+          "title": "How To Create Relationships Aligned With Who You Really Are",
+          "actions": 'When you’re in a situation where you’re experiencing conflict with a loved one, notice your own internal state. Are you withholding your love for them? Is there an underlining assumption that says “I’ll give you my love if you behave”? Notice how your body feels. Is it tense and contracted, or is it relaxed and open? Send love both to yourself and to the other person. Tell the person that you’re not going to abandon him/her, no matter what happens. And then check how your body feels.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/10__How_to_Create_Relationships_Aligned_with_Who_You_Really_Are_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+10.pdf",
           "resources": ""
         },
         {
-          "section_id": 95,
+          "section_id": 107,
           "section_number": 11,
-          "run_time": "8:46",
-          "title": "Tips for achieving your goals faster",
-          "content": "In this lesson you’ll gain insights on closing the gap between your current position and your goals/intentions.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/11+-+how+to+achieve+your+goals+faster.mp3",
+          "run_time": "10:52",
+          "content": "",
+          "title": "From Inner Mastery To Outer Attainment",
+          "actions": 'Every morning for the next week, write down three things you feel thankful for in your life, and then three things you did right the day before.',
+          "section_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/11__From_inner_mastery_to_outer_attainment_finished_64kbs.mp3",
           "transcript_url": "",
-          "notes_url": "",
-          "resources": ""
-        },
-        {
-          "section_id": 96,
-          "section_number": 12,
-          "run_time": "8:31",
-          "title": "Bonus: Kick-starting your own business",
-          "content": "This lesson will give you tips on how to kick-start your own business, especially a part-time, home-based business.",
-          "actions": "",
-          "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/12+-++bonus_kickstarting+your+own+business.mp3",
-          "transcript_url": "",
-          "notes_url": "",
+          "notes_url": "https://s3.amazonaws.com/soundwiseinc/Natasha+Che/lesson+11.pdf",
           "resources": ""
         },
       ],
-      "modules": [
-        {
-          "module_id": 1,
-          "module_title": "Personal Development for Smart People",
-          "sections": [
-            {
-              "section_id": 85,
-              "section_number": 1,
-              "run_time": "7:44",
-              "content": "This lesson is an introduction to the course with a story about how I got started on the personal growth path.",
-              "title": "My story",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/1+-+my+story.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 86,
-              "section_number": 2,
-              "run_time": "9:28",
-              "title": "First step: accepting the reality of where you are ",
-              "content": "This lesson explores the topic of moving beyond denial and ignorance to face and accept the truth in your life, including two different methods for how to accomplish that.",
-              "actions": "",
-              "section_url": "  https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/2+-+accepting+the+reality+of+where+you+are+now.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 87,
-              "section_number": 3,
-              "run_time": "10:04",
-              "title": "How to use your intuition to help achieving your goals",
-              "content": "This lesson will teach you two different methods for accessing your intuition and communicating with your subconscious mind. You’ll also learn how you can apply these skills to help you achieve your goals and overcome resistance.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/3+-+how+your+intuition+can+help+you+achieve+your+goals.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 88,
-              "section_number": 4,
-              "run_time": "9:47",
-              "title": "Your beliefs and how to make them work for you",
-              "content": "This lesson is about understanding beliefs and how to modify your beliefs in order to make goal achievement easier.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/4+-+your+beliefs+and+how+to+make+them+work+for+you.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 89,
-              "section_number": 5,
-              "run_time": "6:28",
-              "title": "What to do when faced with difficult decisions",
-              "content": "This lesson explores those frustrating problems of life where you feel you must choose between a limited number of options, none of which seems very appealing.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/5+-+what+to+do+when+you+have+difficult+choices+to+make.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 90,
-              "section_number": 6,
-              "run_time": "9:23",
-              "title": "How to overcome your fear",
-              "content": "This lesson explores the topic of fear. It presents two ways to overcome fear, first by building courage and secondly by shifting your mental model of reality to eliminate the experience of fear entirely.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/6+-+overcoming+your+fear.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 91,
-              "section_number": 7,
-              "run_time": "7:07",
-              "title": "Getting clarity about your life from multiple perspectives",
-              "content": "The goal of this lesson is to help you answer the question, “How shall I live my life?”.  By using your imagination to look at your life from other perspectives in both time and space, you can gain tremendous clarity. You will see how your life looks from different angles.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/7+-+getting+clarity+about+your+life+from+multiple+perspectives.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 92,
-              "section_number": 8,
-              "run_time": "9:11",
-              "title": "4 ways to build confidence",
-              "content": "This lesson will give you four different methods for boosting your confidence.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/8+-+4+ways+to+build+confidence.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 93,
-              "section_number": 9,
-              "run_time": "9:52",
-              "title": "How to find your purpose",
-              "content": "This lesson takes the high concept of purpose and brings it down to the level of practical application.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/9+-+how+to+find+your+purpose.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 94,
-              "section_number": 10,
-              "run_time": "6:59",
-              "title": "Why living your purpose is so important",
-              "content": "This lesson discusses why purpose is crucial for boosting self-esteem and living a fulfilling life.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/10+-+why+purpose+is+so+important.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 95,
-              "section_number": 11,
-              "run_time": "8:46",
-              "title": "Tips for achieving your goals faster",
-              "content": "In this lesson you’ll gain insights on closing the gap between your current position and your goals/intentions.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/11+-+how+to+achieve+your+goals+faster.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-            {
-              "section_id": 96,
-              "section_number": 12,
-              "run_time": "8:31",
-              "title": "Bonus: Kick-starting your own business",
-              "content": "This lesson will give you tips on how to kick-start your own business, especially a part-time, home-based business.",
-              "actions": "",
-              "section_url": "https://s3.amazonaws.com/soundwiseinc/Steve+Pavlina/12+-++bonus_kickstarting+your+own+business.mp3",
-              "transcript_url": "",
-              "notes_url": "",
-              "resources": ""
-            },
-          ]
-        }
-      ]
     }
 
 const expiration = new Date(2099, 7, 31)
 const coupon = {
-  course_id: 126,
+  course_id: 127,
   discount: 100, //50% discount
   count: 0,
   expiration: expiration.toString()
@@ -426,8 +250,8 @@ firebase.initializeApp(config)
 // firebase.database().ref('courses/115/metrics')
 //   .set(update)
 
-// firebase.database().ref('coupons/pavlina100')
-//   .set(coupon)
+firebase.database().ref('coupons/natasha100')
+  .set(coupon)
 
 // *** change database structure for teacher info ***
 
