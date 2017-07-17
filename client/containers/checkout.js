@@ -23,8 +23,8 @@ class _Checkout extends Component {
             submitDisabled: false,
             number: '',
             cvc: '',
-            exp_month: '',
-            exp_year: '',
+            exp_month: '0',
+            exp_year: new Date().getFullYear(),
             totalPay: 0,
             paid: false,
             startPaymentSubmission: false
@@ -38,6 +38,7 @@ class _Checkout extends Component {
     }
 
     componentDidMount() {
+        // stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
         stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         this.setState({
             totalPay: this.props.total
@@ -66,10 +67,10 @@ class _Checkout extends Component {
             startPaymentSubmission: true
         });
         const {number, cvc} = this.state;
-        const exp_month = Number(this.state.exp_month);
+        const exp_month = Number(this.state.exp_month) + 1;
         const exp_year = Number(this.state.exp_year);
         this.setState({ submitDisabled: true, paymentError: null });
-
+        console.log('state: ', {number, cvc, exp_month, exp_year})
         Stripe.card.createToken({number, cvc, exp_month, exp_year}, this.stripeTokenHandler);
     }
 
