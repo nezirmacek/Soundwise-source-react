@@ -34,6 +34,7 @@ class _Checkout extends Component {
         this.stripeTokenHandler = this.stripeTokenHandler.bind(this);
         this.renderProgressBar = this.renderProgressBar.bind(this);
         this.addCourseToUser = this.addCourseToUser.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -51,6 +52,12 @@ class _Checkout extends Component {
             totalPay: nextProps.total
         });
     }
+
+      handleChange(e) {
+        this.setState({
+          [e.target.name]: e.target.value
+        })
+      }
 
     async onSubmit(event) {
         event.preventDefault();
