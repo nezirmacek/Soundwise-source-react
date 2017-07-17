@@ -70,7 +70,6 @@ class _Checkout extends Component {
         const exp_month = Number(this.state.exp_month) + 1;
         const exp_year = Number(this.state.exp_year);
         this.setState({ submitDisabled: true, paymentError: null });
-        console.log('state: ', {number, cvc, exp_month, exp_year})
         Stripe.card.createToken({number, cvc, exp_month, exp_year}, this.stripeTokenHandler);
     }
 
