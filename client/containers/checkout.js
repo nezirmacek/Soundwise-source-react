@@ -38,8 +38,8 @@ class _Checkout extends Component {
     }
 
     componentDidMount() {
-        // stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+        // stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         this.setState({
             totalPay: this.props.total
         });
@@ -121,43 +121,44 @@ class _Checkout extends Component {
     addCourseToUser(customer) {
         const that = this;
         const userId = firebase.auth().currentUser.uid;
-        const course = this.props.shoppingCart[0];
+        this.props.shoppingCart.map(cartCourse => {
+            const course = cartCourse;
 
-        let sectionProgress = {};
-        course.sections.forEach(section => {
+            let sectionProgress = {};
+            course.sections.forEach(section => {
                 sectionProgress[section.section_id] = {
                     playProgress: 0,
                     completed: false,
                     timesRepeated: 0
                 }
+            });
+
+            course.sectionProgress = sectionProgress;
+
+            const updates = {};
+            updates['/users/' + userId + '/courses/' + course.id] = course;
+            // store stripe customer ID info: (only works with real credit cards)
+            if (customer !== undefined && customer.length > 0) {
+                updates['/users/' + userId + '/stripe_id'] = customer
+            }
+            updates['/courses/' + course.id + '/users/' + userId] = userId;
+            firebase.database().ref().update(updates);
+
+            Axios.post('/api/email_signup', { //handle mailchimp api call
+                firstName: that.props.userInfo.firstName,
+                lastName: that.props.userInfo.lastName,
+                email: that.props.userInfo.email,
+                courseID: course.id
+            })
+                .then(() => {
+                    that.props.deleteCart();
+                    that.props.history.push('/confirmation');
+                })
+                .catch((err) => {
+                    that.props.deleteCart();
+                    that.props.history.push('/confirmation');
+                });
         });
-
-        course.sectionProgress = sectionProgress;
-
-        const updates = {};
-        updates['/users/' + userId + '/courses/' + course.id] = course;
-        // store stripe customer ID info: (only works with real credit cards)
-        if(customer !== undefined && customer.length > 0) {
-            updates['/users/' + userId + '/stripe_id'] = customer
-        }
-        updates['/courses/' + course.id + '/users/' + userId] = userId;
-        firebase.database().ref().update(updates);
-
-        Axios.post('/api/email_signup', { //handle mailchimp api call
-            firstName: that.props.userInfo.firstName,
-            lastName: that.props.userInfo.lastName,
-            email: that.props.userInfo.email,
-            courseID: course.id
-        })
-            .then(() => {
-                that.props.deleteCart();
-                that.props.history.push('/confirmation');
-            })
-            .catch((err) => {
-                that.props.deleteCart();
-                that.props.history.push('/confirmation');
-            })
-
     }
 
     renderProgressBar() {
