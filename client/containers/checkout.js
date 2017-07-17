@@ -38,8 +38,8 @@ class _Checkout extends Component {
     }
 
     componentDidMount() {
-        stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        // stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        // stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+        stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         this.setState({
             totalPay: this.props.total
         });
