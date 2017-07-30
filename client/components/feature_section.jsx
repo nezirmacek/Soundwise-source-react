@@ -41,61 +41,50 @@ const settings = {
 }
 
 const Feature_section = () => (
-  <section className="bg-white builder-bg padding-110px-tb" id="portfolios-section4">
-    <div className="container">
-      <div className="row">
-        { /* section title */ }
-        <div className="col-md-12 col-sm-12 col-xs-12 ">
-          <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text text-center"
-            id="tz-slider-text104">SO MUCH TO LEARN. SO LITTLE TIME.</h2>
-          <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" id="tz-slider-text105">
-            <ul>
-              <li>Curated audio content from thought leaders and expert practitioners</li>
-              <li>Flexible playlists of short audios</li>
-              <li>Rich information always, boring never</li>
-              <li>Option to take audio courses for more in-depth study</li>
-              <li>Learning challenges that keep you motivated to implement what you learned</li>
-            </ul>
-          </div>
-        </div>
-        { /* end section title */ }
-      </div>
-    </div>
-    <div className='container'>
-      <div className='row'>
-        <Slider {...settings}>
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
-            <img src="images/discover.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-36" alt />
-          </div>
-          { /* end portfolio */ }
-          { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
-            <img src="images/discover_playlist.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-37" alt />
-          </div>
-          { /* end portfolio */ }
-          { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
-            <img src="images/challenges.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-38" alt />
-          </div>
-          { /* end portfolio */ }
-          { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
-            <img src="images/my_classes.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-39" alt />
-          </div>
-          { /* end portfolio */ }
-          { /* portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
-            <img src="images/class_details.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-40" alt />
-          </div>
-          { /* end portfolio */ }
-          <div className="item col-md-12 col-sm-12 col-xs-12 text-center ">
-            <img src="images/about_me.png" data-img-size="(W)800px X (H)1417px" id="tz-bg-40" alt />
-          </div>
-          { /* end portfolio */ }
-        </Slider>
-      </div>
-    </div>
-  </section>
+            <section className="padding-80px-tb feature-style4 bg-white builder-bg xs-padding-30px-tb" id="feature-section7">
+                <div className="container">
+                    <div className="row">
+
+                        <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                            <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">HOW IT WORKS</h2>
+                            <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">Less time sitting in meetings/classrooms is more time for your agents to work on their busienss. Use Soundwise to make your agents more productive and better trained.</div>
+                        </div>
+
+                    </div>
+                    <div className="row">
+                        <div className="col-md-12 col-sm-12 col-xs-12 four-column">
+
+                            <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nineteen-bottom">
+                                <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/broadcast.png" data-img-size="(W)90px X (H)90px"/></div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Record / Upload</h3>
+                                <div className="text-medium tz-text"> <p>Record or upload your training classes or sales meetings through Soundwise web interface.</p> </div>
+                            </div>
+
+
+                            <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nineteen-bottom">
+                                <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/phone_buzz.png" data-img-size="(W)90px X (H)90px"/></div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Notify / Remind</h3>
+                                <div className="text-medium tz-text"> <p>Your agents will be notified on their phone when new audios are available and be reminded to listen to them.</p> </div>
+                            </div>
+
+
+                            <div className="col-md-3 col-sm-6 col-xs-12 text-center xs-margin-nine-bottom xs-margin-nineteen-bottom">
+                                <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/earphones.png" data-img-size="(W)90px X (H)90px"/></div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Listen / Comment</h3>
+                                <div className="text-medium tz-text"> <p>Agents listen to your materials at a time convenient to them. They can also give comments/raise questions from their phones.</p> </div>
+                            </div>
+
+
+                            <div className="col-md-3 col-sm-6 col-xs-12 text-center">
+                                <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/analytics.png" data-img-size="(W)90px X (H)90px"/></div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Track / Analyze</h3>
+                                <div className="text-medium tz-text"> <p>Listening stats and tracking provide proof of who's listened to what, and help you analyze what kinds of materials are more popular.</p> </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
 );
 
 export default Feature_section;

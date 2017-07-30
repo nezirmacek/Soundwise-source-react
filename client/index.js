@@ -275,77 +275,10 @@ const courseInfo = {
     }
 
 const expiration = new Date(2099, 7, 31)
-const coupon = {
-  course_id: 128,
-  discount: 100, //50% discount
-  count: 0,
-  expiration: expiration.toString()
-}
+
 
 firebase.initializeApp(config)
 
-const date1 = new Date(2017, 7, 13)
-const date2 = new Date(2017, 7, 14)
-const date3 = new Date(2017, 7, 15)
-const date4 = new Date(2017, 7, 16)
-const reviews = [
-  {
-    date: 'Thur July 13 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "David B.",
-    review: "I tried his approach for a major presentation at for a group of top sales executives. The speech is coming up in a few weeks, but in preparing the speech and practicing it on a few people, incorporating stories has changed the impact and effectiveness of what I communicate. Paul’s guide will be the cornerstone to all my future speeches, and to most of my prospecting calls."
-  },
-  {
-    date: 'Thur July 13 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "Maria K.",
-    review: "Great advice for novices who have yet to understand branding and messaging."
-  },
-  {
-    date: 'Thur July 13 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "Chris S.",
-    review: "Great resource for sales pro."
-  },
-  {
-    date: 'Fri July 14 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "John S.",
-    review: "The instructor did a fantastic job of explaining why storytelling is so important, how to do it superbly and how to build it into your sales toolkit as part of being an outstanding salesperson. I agree completely that being able to tell a compelling, focused and well-developed story is an essential skill for being a highly successful salesperson. "
-  },
-  {
-    date: 'Sat July 15 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "T C.",
-    review: "Good quality and fun. "
-  },
-  {
-    date: 'Sat July 15 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "ARM",
-    review: "Exactly as described."
-  },
-  {
-    date: 'Sun July 16 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "Martin Z.",
-    review: "Critical for entrepreneurs selling their startup to investors, strategic partners, and customers."
-  },
-  {
-    date: 'Mon July 17 2017',
-    pic: "https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=f3103dc0d47e69cf2c603300c9903641&oe=59DC8173",
-    rating: 5,
-    reviewer: "Anthony I.",
-    review: "Packed with insightful things about the way humans build trust and the role of stories in that process…very convincing argument for why you need to tell better stories in your sales presentations."
-  },
-]
 
 // firebase.database().ref('courses/128/reviews')
 //     .set(reviews)
@@ -361,45 +294,15 @@ const reviews = [
 // firebase.database().ref('coupons/ps100')
 //   .set(coupon)
 
-// *** change database structure for teacher info ***
+// *** add course to one particular user ***
 
-// firebase.database().ref('courses/' + 125)
+// firebase.database().ref('users/xD5tW78sX6M96C4xpd7iOIN5Qth1/courses/127')
 // .on('value', snapshot => {
 //     if (snapshot.val()) {
-//       const {
-//               teacher,
-//               teacher_profession,
-//               teacher_img,
-//               teacher_thumbnail,
-//               teacher_bio,
-//               teacher_website,
-//               teacher_linkedin,
-//               teacher_facebook,
-//               teacher_twitter,
-//               teacher_instagram
-//             } = snapshot.val()
-//       const sections = snapshot.val().modules[0].sections
-//       const teachers = [
-//            {
-//               teacher,
-//               teacher_profession,
-//               teacher_img,
-//               teacher_thumbnail,
-//               teacher_bio,
-//               teacher_website,
-//               teacher_linkedin,
-//               teacher_facebook,
-//               teacher_twitter,
-//             }
-//      ]
-//       firebase.database().ref('courses/125/teachers')
-//         .set(teachers)
-//         .then(() => console.log('125: teachers set.'))
-//         .catch((err) => console.log(err))
 
-//       firebase.database().ref('courses/125/sections')
-//         .set(sections)
-//         .then(() => console.log('125: sections set.'))
+//       firebase.database().ref('users/DUbIlexWhjQKI4WgOgrqHMS68t93/courses/127')
+//         .set(snapshot.val())
+//         .then(() => console.log('course added'))
 //         .catch((err) => console.log(err))
 //     }
 // })

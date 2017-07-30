@@ -29,7 +29,7 @@ class _Header extends Component {
     this.state = {
       buttonValue: 0
     }
-    this.renderLogin = this.renderLogin.bind(this)
+
   }
 
   capFirstLetter(string) {
@@ -56,89 +56,59 @@ class _Header extends Component {
     }
   }
 
-    renderLogin() {
-
-        if(this.props.isLoggedIn) {
-            return (
-            <ul className="nav navbar-nav">
-              <li className="propClone sm-no-border">
-                <Link to='/courses' className="inner-link">COURSES</Link>
-              </li>
-              <li>
-                <Link to='/myprograms'>My Library</Link>
-              </li>
-              <li className="propClone sm-no-border" >
-                <a className='dropdown-toggle' data-toggle="dropdown">
-                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
-                <span className="caret"></span>
-                </a>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <a onClick={() => this.signoutUser()}>
-                        <font style={{color: 'black'}}>LOG OUT</font>
-                      </a>
-                    </li>
-                  </ul>
-              </li>
-            </ul>
-            )
-        } else {
-            return (
-            <ul className="nav navbar-nav">
-                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">COURSES</Link>
-                </li>
-                <li className="propClone sm-no-border" style={styles.navItem}><Link className="inner-link" to="/signin">LOG IN</Link>
-                </li>
-                <li>
-                  <Link to='/cart'><i className="material-icons" style={{fontSize: '26px'}}>shopping_cart</i></Link>
-                </li>
-            </ul>
-            )
-        }
-    }
 
   render() {
     return (
-      <div>
-        <header className="header-style7" id="header-section18">
-            <nav className="navbar tz-header-bg no-margin alt-font shrink-transparent-header-dark dark-header">
-                <div className="container navigation-menu">
-                    <div className="row">
-                        <div className="col-md-3 col-sm-0 col-xs-0">
-                            <Link to="/" className="inner-link"><img alt="" src="/images/soundwiselogo_white.svg"/></Link>
-                        </div>
-                        <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
-                            <button data-target="#bs-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
-                                <span className="sr-only">Toggle navigation</span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                            </button>
-                            <div id="bs-navbar-collapse-1" className="collapse navbar-collapse pull-right font-weight-500">
-                                {this.renderLogin()}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <section className="no-padding position-relative cover-background tz-builder-bg-image border-none xs-padding-50px-tb hero-style9" id="hero-section18" data-img-size="(W)1920px X (H)800px"
-          style={ {  backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.401961), rgba(0, 0, 0, 0.501961)), url("images/header_img4_sm.jpg")',  paddingTop: 0,  paddingBottom: 0} } data-selector=".tz-builder-bg-image">
-          <div className="container one-fourth-screen position-relative">
-            <div className="row">
-              <div className="slider-typography xs-position-static text-center">
-                <div className="slider-text-middle-main">
-                  <div className="slider-text-middle text-left xs-padding-fifteen xs-no-padding-lr">
-                    <Slider></Slider>
+      <div className="header-style6">
+          <header className="header-style10" id="header-section17">
+
+              <nav className="navbar tz-header-bg alt-font no-margin shrink-transparent-header-dark dark-header">
+                  <div className="container navigation-menu">
+                      <div className="row">
+
+                          <div className="col-md-3 col-sm-4 col-xs-9">
+                              <a href="#home" className="inner-link"><img alt="" src="images/soundwiselogo_white.svg" data-img-size="(W)163px X (H)40px"/></a>
+                          </div>
+
+                          <div className="col-md-9 col-sm-8 col-xs-3 position-inherit">
+                              <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
+                                  <span className="sr-only">Toggle navigation</span>
+                                  <span className="icon-bar"></span>
+                                  <span className="icon-bar"></span>
+                                  <span className="icon-bar"></span>
+                              </button>
+                              <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
+                                  <ul className="nav navbar-nav">
+                                      <li className="propClone"><a className="inner-link" href="#"></a></li>
+                                      <li className="propClone"><a className="inner-link" href="#"></a></li>
+                                  </ul>
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                </div>
+              </nav>
+
+          </header>
+          <section className="no-padding cover-background tz-builder-bg-image border-none" data-img-size="(W)1920px X (H)994px" style={{background:"linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('images/header_img_bg_2.png')"}}>
+              <div className="container one-fourth-screen xs-padding-nineteen-bottom position-relative">
+                  <div className="slider-typography xs-position-static text-center">
+                      <div className="slider-text-middle-main">
+
+                          <div className="slider-text-middle text-left padding-left-right-px">
+                              <div className="col-md-6 no-padding margin-twenty-top sm-margin-twenty-three-top header-banner">
+                                  <h1 className="title-extra-large-4 md-title-extra-large-3 font-weight-400 line-height-65 sm-title-extra-large text-white  text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text">Train, engage and retain your agents with audios</h1>
+                                  <div className="text-white text-extra-large margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text"><p>Soundwise allows real estate brokers and trainers to easily disseminate training materials and updates in audio to help their agents stay productive and engaged.</p></div>
+                                  <div className="float-left width-100">
+                                      <a className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left" href="#" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">Try it free for 30 days</span></a>
+
+                                  </div>
+                              </div>
+                          </div>
+
+                      </div>
+                  </div>
               </div>
-              { /* back to down */ }
-              <Headerscroll></Headerscroll>
-              { /* end back to down */ }
-            </div>
-          </div>
-        </section>
+          </section>
       </div>
     )
   }

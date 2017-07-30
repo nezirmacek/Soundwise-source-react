@@ -38,11 +38,11 @@ Table of Contents
     Navbar
 ====================================== */
 
-.navbar {padding: 20px 0 20px; z-index: 999; width: 100%; border-radius: 0; border: 0;}
-.navbar img {max-height:35px}
+.navbar {padding: 10px 0 10px; z-index: 999; width: 100%; border-radius: 0; border: 0;}
+.navbar img {max-height:60px}
 .navbar li {margin:13px 20px;}
 .navbar li:last-child { margin-right: 0;}
-.navbar li a {font-size: 12px; padding: 0;cursor: pointer !important; border-bottom: 1px solid transparent; }
+.navbar li a {font-size: 16px; padding: 0;cursor: pointer !important; border-bottom: 1px solid transparent; }
 .navbar li a:hover {opacity: 0.8;}
 .navbar li a.active {opacity: 0.8;}
 .navbar .nav-button { margin: 10px 0 8px 30px;}

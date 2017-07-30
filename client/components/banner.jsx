@@ -3,29 +3,55 @@ import Bannerright from './bannerright';
 import Smallimg from './smallimg';
 
 const Banner = () => (
-  <section id='intro' className="position-relative hero-section23 cover-background tz-builder-bg-image border-none xs-padding-top-30px hero-style23" data-img-size="(W)1920px X (H)1000px"
-    style={ {  background: 'linear-gradient(rgba(0, 0, 0, 0.00784314), rgba(0, 0, 0, 0.00784314)), url("images/section2_background.png")'} } data-selector=".tz-builder-bg-image">
-    <div className="container position-relative">
-      <div className="row equalize xs-equalize-auto equalize-display-inherit two-column">
-        { /* slider text */ }
-        <div className="col-md-6 col-sm-6 col-xs-12 display-table pull-right xs-text-center" style={ {  height: 728} }>
-          <div className="display-table-cell-vertical-middle" style={{color: 'black'}}>
-            <h2 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large alt-font xs-title-extra-large text-dark-gray margin-thirteen-bottom xs-margin-five-bottom tz-text"
-              data-selector=".tz-text" id="ui-id-20" style={ {  backgroundColor: 'rgba(0, 0, 0, 0)',  fontSize: 60,  fontWeight: 500,  fontFamily: 'Montserrat, sans-serif',  textTransform: 'none',  borderRadius: 0} }>Build the skills for a life well lived...10 minutes at a time.</h2>
-            <Bannerright></Bannerright>
-            <div className="btn-dual">
-              <a className="btn btn-large propClone bg-golden-yellow text-black xs-margin-ten-bottom xs-width-100" href="https://eepurl.com/cyNzD5" data-selector="a.btn, button.btn"
-                style={ {} }><span className="tz-text" data-selector=".tz-text" style={ {} }>GET ADVANCE ACCESS</span></a>
-            </div>
-          </div>
-        </div>
-        { /* end slider text */ }
-        { /* image */ }
-        <Smallimg></Smallimg>
-        { /* end image */ }
-      </div>
-    </div>
-  </section>
+            <section className="bg-gray builder-bg border-none" id="content-section20">
+                <div className="container-fluid">
+                    <div className="row equalize">
+                        <div className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten" style={{height: "755px"}}>
+                            <div className="display-table-cell-vertical-middle padding-twenty-two md-padding-seven xs-no-padding-lr">
+
+                                <div className="col-md-12 col-sm-12 col-xs-12 margin-nine-top xs-no-padding-lr">
+                                    <h2 className="title-extra-large-2 sm-title-extra-large xs-title-extra-large font-weight-300 text-dark-gray margin-three-bottom xs-margin-fifteen-bottom tz-text">A Better Way for Real Estate Agent Training</h2>
+                                    <div className="text-extra-large sm-text-extra-large font-weight-300 width-85 md-width-100 margin-twenty-bottom sm-margin-fifteen-bottom tz-text"><p>Let your agents take the training wherever they go. </p></div>
+                                </div>
+
+
+                                <div className="two-column">
+                                    <div className="col-lg-6 col-md-12 col-sm-6 col-xs-12 margin-eight-bottom xs-margin-fifteen-bottom xs-no-padding-lr">
+                                        <div className="float-left width-100 margin-four-bottom">
+                                            <div className="col-md-2 col-sm-2 col-xs-12 no-padding"><i className="fa fa-headphones ti-desktop text-fast-blue title-extra-large tz-icon-color"></i></div>
+                                            <h3 className="title-small md-title-small sm-title-small text-dark-gray col-md-10 col-sm-10 col-xs-12 no-padding-left no-padding margin-three-top md-margin-two-top sm-margin-four-top tz-text">Asynchronous training</h3>
+                                        </div>
+                                        <div className="text-medium width-90 md-width-100 clear-both tz-text"><p>Audio training is flexible and can be consumed anytime, anywhere.</p></div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-12 col-sm-6 col-xs-12 margin-eight-bottom xs-margin-fifteen-bottom xs-no-padding-lr">
+                                        <div className="float-left width-100 margin-four-bottom">
+                                            <div className="col-md-2 col-sm-2 col-xs-12 no-padding"><i className="fa fa-bullhorn ti-ruler-pencil text-fast-blue title-extra-large tz-icon-color"></i></div>
+                                            <h3 className="title-small md-title-small sm-title-small text-dark-gray col-md-10 col-sm-10 col-xs-12 no-padding-left no-padding margin-three-top md-margin-two-top sm-margin-four-top tz-text">Easy Dissemination</h3>
+                                        </div>
+                                        <div className="text-medium width-90 md-width-100 clear-both tz-text"><p>Easily record and send audios of your sales meetings and training classes and compliance updates to agents' phone. </p></div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-12 col-sm-6 col-xs-12 margin-eight-bottom xs-margin-fifteen-bottom xs-no-padding-lr">
+                                        <div className="float-left width-100 margin-four-bottom">
+                                            <div className="col-md-2 col-sm-2 col-xs-12 no-padding"><i className="fa fa-folder-open-o ti-world text-fast-blue title-extra-large tz-icon-color"></i></div>
+                                            <h3 className="title-small md-title-small sm-title-small text-dark-gray col-md-10 col-sm-10 col-xs-12 no-padding-left no-padding margin-three-top md-margin-two-top sm-margin-four-top tz-text">Reference & Repeat</h3>
+                                        </div>
+                                        <div className="text-medium width-90 md-width-100 clear-both tz-text"><p>Audio files are organized and searchable for easy reference and re-listening.</p></div>
+                                    </div>
+                                    <div className="col-lg-6 col-md-12 col-sm-6 col-xs-12 margin-eight-bottom xs-no-padding-lr">
+                                        <div className="float-left width-100 margin-four-bottom">
+                                            <div className="col-md-2 col-sm-2 col-xs-12 no-padding"><i className="fa fa-bar-chart ti-map-alt text-fast-blue title-extra-large tz-icon-color"></i></div>
+                                            <h3 className="title-small md-title-small sm-title-small text-dark-gray col-md-10 col-sm-10 col-xs-12 no-padding-left no-padding margin-three-top md-margin-two-top sm-margin-four-top tz-text">Tracking & Analytics</h3>
+                                        </div>
+                                        <div className="text-medium width-90 md-width-100 clear-both tz-text"><p>Track who's listened to what and review listening statistics.</p></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div className="col-md-6 col-sm-12 col-xs-12 tz-builder-bg-image sm-height-600-px xs-height-400-px cover-background" data-img-size="(W)1000px X (H)800px" style={{background: "linear-gradient(rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.01)), url('images/section_img_2.png')", height: "755px"}}></div>
+                    </div>
+                </div>
+            </section>
 );
 
 export default Banner;
