@@ -33,7 +33,7 @@ module.exports = {
     historyApiFallback: true,
     contentBase: './client'
   },
-  // plugins: [
+  plugins: [
   //   new SWPrecacheWebpackPlugin(
   //     {
   //       cacheId: 'Soundwise',
@@ -88,11 +88,11 @@ module.exports = {
   //       // }],
   //     }
   //   ),
-  //   // new webpack.optimize.UglifyJsPlugin(),
-  //   // new webpack.DefinePlugin({
-  //   //   'process.env': {
-  //   //     NODE_ENV: JSON.stringify('production')
-  //   //   }
-  //   // })
-  // ]
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    })
+  ]
 };
