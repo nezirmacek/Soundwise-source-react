@@ -6,7 +6,7 @@ const Pricing = () => (
           <div className="row">
 
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                  <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">TRY IT FREE FOR 30 DAYS</h2>
+                  <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">TRY IT FOR FREE FOR 30 DAYS</h2>
                   <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">No credit card required. Cancel anytime.</div>
               </div>
 
