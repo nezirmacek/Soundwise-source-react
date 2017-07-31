@@ -99,7 +99,7 @@ class _Header extends Component {
                                   <h1 className="title-extra-large-4 md-title-extra-large-3 font-weight-400 line-height-65 sm-title-extra-large text-white  text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text">Train, engage and retain your agents with audios</h1>
                                   <div className="text-white text-extra-large margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text"><p>Soundwise allows real estate brokers and trainers to easily disseminate training materials and updates in audio to help their agents stay productive and engaged.</p></div>
                                   <div className="float-left width-100">
-                                      <a className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left" href="#" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">Try it free for 30 days</span></a>
+                                      <a className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">REQUEST A DEMO</span></a>
 
                                   </div>
                               </div>

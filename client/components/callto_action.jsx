@@ -14,7 +14,7 @@ const Callto_action = () => (
         { /* end section title */ }
         { /* button */ }
         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-          <a className="btn-large btn text-dark-blue btn-3d" href="https://eepurl.com/cyNzD5" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">TRY IT FOR FREE</span></a>
+          <a className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">REQUEST A DEMO</span></a>
         </div>
         { /* end button */ }
       </div>
