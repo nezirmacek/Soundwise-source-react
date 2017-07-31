@@ -88,9 +88,9 @@ class _Routes extends Component {
               <meta property="og:title" content="Soundwise"/>
               <meta property="fb:app_id" content='1726664310980105' />
               <meta property="og:description" content="Soundwise is a audio content management system that helps real estate trainers and brokers disseminate trainings and informational updates in audio to real estate agents."/>
-              <meta property="og:image" content="https://mysoundwise.com/images/thumnail_FB.png" />
+              <meta property="og:image" content="https://mysoundwise.com/images/soundwise_homepage.png" />
               <title>Soundwise: the most efficient way to train real estate agents</title>
-              <meta name="description" content="Audio courses to help you improve your life and career from top experts in personal development, science, and business." />
+              <meta name="description" content="Soundwise is a audio content management system that helps real estate trainers and brokers disseminate trainings and informational updates in audio to real estate agents." />
               <meta name="keywords" content="soundwise, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app" />
             </Helmet>
             <Switch>
