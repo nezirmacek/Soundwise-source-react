@@ -44,7 +44,7 @@ const Pricing = () => (
 
           <div className="row">
             <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-              <a className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">REQUEST A DEMO</span></a>
+              <a className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">TRY IT FOR FREE</span></a>
             </div>
           </div>
 
