@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Pricing = () => (
   <section className="bg-white builder-bg padding-70px-tb xs-padding-30px-tb" id="pricing-table4">
@@ -44,7 +45,7 @@ const Pricing = () => (
 
           <div className="row">
             <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-              <a className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">TRY IT FOR FREE</span></a>
+              <Link to="/trial_request" className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
             </div>
           </div>
 
