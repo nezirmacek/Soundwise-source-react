@@ -3,6 +3,7 @@ var express = require('express')
 var handlePayment = require('./server/payment.js').handlePayment
 var handleEmailSignup = require('./server/emailSignup.js').handleEmailSignup
 var handleReferral = require('./server/emailSignup.js').handleReferral
+var handleTrialRequest = require('./server/emailSignup.js').handleTrialRequest
 
 var bodyParser = require('body-parser')
 var path = require('path')
@@ -36,6 +37,7 @@ app.get('*', function (request, response){
 app.post('/api/charge', handlePayment)
 app.post('/api/email_signup', handleEmailSignup)
 app.post('/api/referral', handleReferral)
+app.post('/api/trial_request', handleTrialRequest)
 
 app.listen((process.env.PORT || 8080), function() {
   console.log('listening on port: ', process.env.PORT || 8080)
