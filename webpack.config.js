@@ -14,17 +14,23 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
-    loaders: [{
-      exclude: /node_modules/,
-      loader: 'babel',
-      query: {
-        presets: ['react', 'es2015', 'stage-1']
-      }
-    },
-    {
-      test: /\.(jpg|png)$/,
-      loader: 'url-loader?mimetype=image/png'
-    }]
+      loaders: [
+          {
+              test: /\.json$/,
+              loader: 'json-loader'
+          },
+          {
+              exclude: /node_modules/,
+              loader: 'babel',
+              query: {
+                  presets: ['react', 'es2015', 'stage-1']
+              }
+          },
+          {
+              test: /\.(jpg|png)$/,
+              loader: 'url-loader?mimetype=image/png'
+          }
+      ]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']

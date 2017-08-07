@@ -715,3 +715,25 @@ footer .social-icon a:last-child{ margin-right:0;}
 .notesWrapper canvas {
     width: 100%;
 }
+.menu-button {
+    width: 229px;
+    height: 37px;
+    border: 1px solid #F76B1C;
+    border-radius: 23px;
+    padding-top: 7px;
+    padding-left: 15px;
+    bottom: 8px;
+}
+.orange-text {
+    color: #F76B1C;
+    font-size: 22px;
+    padding-right: 26px;
+}
+
+/*styles for react-mic component*/
+.sound-wave {
+    height: 50px;
+    width: 138px;
+    position: relative;
+    bottom: 15px;
+}

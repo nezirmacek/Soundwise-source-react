@@ -1,95 +1,107 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
-import * as firebase from "firebase"
-import { bindActionCreators } from 'redux'
-import IconMenu from 'material-ui/IconMenu'
-import MenuItem from 'material-ui/MenuItem'
-import IconButton from 'material-ui/IconButton'
-import FontIcon from 'material-ui/FontIcon'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import * as firebase from 'firebase';
+import { bindActionCreators } from 'redux';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton';
+import FontIcon from 'material-ui/FontIcon';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import {signoutUser} from '../actions/index'
+import {signoutUser} from '../actions/index';
 
 const styles = {
   navItem: {
-    display: 'inline'
+    display: 'inline',
   }
-}
+};
 
 class _SoundwiseHeader extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state={
           buttonValue: 0
-        }
-        this.signoutUser = this.signoutUser.bind(this)
-        this.handleButtonChange = this.handleButtonChange.bind(this)
+        };
+        this.signoutUser = this.signoutUser.bind(this);
+        this.handleButtonChange = this.handleButtonChange.bind(this);
     }
 
     signoutUser() {
-      let that = this
-      firebase.auth().signOut().then(function() {
-
-          that.props.signoutUser()
-        }, function(error) {
-          console.error('Sign Out Error', error);
-        })
-
+        let that = this;
+        firebase.auth().signOut().then(
+            function() {
+                that.props.signoutUser();
+            },
+            function(error) {
+                console.error('Sign Out Error', error);
+            }
+        );
     }
 
     capFirstLetter(name) {
-        return name.charAt(0).toUpperCase() + name.slice(1)
+        return name.charAt(0).toUpperCase() + name.slice(1);
     }
 
     handleButtonChange(e, value) {
       this.setState({
         buttonValue: Number(value)
-      })
+      });
       if(Number(value)==1) {
-        this.signoutUser()
+        this.signoutUser();
       }
     }
 
     renderLogin() {
-
         if(this.props.isLoggedIn) {
             return (
-            <ul className="nav navbar-nav">
-              <li className="propClone sm-no-border">
-                <Link to='/courses' className="inner-link">COURSES</Link>
-              </li>
-              <li>
-                <Link to='/myprograms'>My Library</Link>
-              </li>
-              <li className="propClone sm-no-border" >
-                <a className='dropdown-toggle' data-toggle="dropdown">
-                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
-                <span className="caret"></span>
-                </a>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <a onClick={() => this.signoutUser()}>
-                        <font style={{color: 'black'}}>LOG OUT</font>
-                      </a>
+                <ul className="nav navbar-nav">
+                    <li className="menu-button">
+                        <Link to='/dashboard' className="inner-link">
+                            <label className="inner-link orange-text">+</label>
+                            Add new episode
+                        </Link>
                     </li>
-                  </ul>
-              </li>
-            </ul>
-            )
+                    <li className="propClone sm-no-border">
+                        <Link to='/courses' className="inner-link">COURSES</Link>
+                    </li>
+                    <li>
+                        <Link to='/myprograms'>My Library</Link>
+                    </li>
+                    <li className="propClone sm-no-border" >
+                        <a className='dropdown-toggle' data-toggle="dropdown">
+                            {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                            <span className="caret"></span>
+                        </a>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <a onClick={() => this.signoutUser()}>
+                                    <font style={{color: 'black'}}>LOG OUT</font>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            );
         } else {
             return (
-            <ul className="nav navbar-nav">
-                <li className="propClone sm-no-border"><Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
-                </li>
-                <li className="propClone sm-no-border" style={styles.navItem}><Link className="inner-link" to="/signin">LOG IN</Link>
-                </li>
-                <li>
-                  <Link to='/cart'><i className="material-icons" style={{fontSize: '26px'}}>shopping_cart</i></Link>
-                </li>
-            </ul>
-            )
+                <ul className="nav navbar-nav">
+                    <li className="propClone sm-no-border">
+                        <Link to='/courses' className="inner-link">SAMPLE COURSES</Link>
+                    </li>
+                    <li className="propClone sm-no-border" style={styles.navItem}>
+                        <Link className="inner-link" to="/signin">LOG IN</Link>
+                    </li>
+                    <li>
+                        <Link to='/cart'>
+                            <i className="material-icons" style={{fontSize: '26px'}}>
+                                shopping_cart
+                            </i>
+                        </Link>
+                    </li>
+                </ul>
+            );
         }
     }
 
@@ -123,14 +135,14 @@ class _SoundwiseHeader extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ signoutUser }, dispatch)
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const { userInfo, isLoggedIn } = state.user
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo, isLoggedIn
   }
-}
+};
 
-export const SoundwiseHeader = connect(mapStateToProps, mapDispatchToProps)(_SoundwiseHeader)
+export const SoundwiseHeader = connect(mapStateToProps, mapDispatchToProps)(_SoundwiseHeader);

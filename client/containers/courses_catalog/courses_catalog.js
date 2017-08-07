@@ -85,7 +85,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = store => {
-    console.log('>>>>>>>>>>', store);
     const { categories } = store.categories;
     const { userInfo, isLoggedIn } = store.user;
     const { courses } = store.setCourses;

@@ -46,30 +46,30 @@ class _AppSignin extends Component {
   }
 
   async signIn() {
-    let {firstName, lastName, email, password, pic_url, courses} = this.state
+    let {firstName, lastName, email, password, pic_url, courses} = this.state;
 
     try {
-        await firebase.auth().signInWithEmailAndPassword(email, password)
+        await firebase.auth().signInWithEmailAndPassword(email, password);
 
-        const userId = firebase.auth().currentUser.uid
+        const userId = firebase.auth().currentUser.uid;
         firebase.database().ref('users/' + userId)
         .once('value')
         .then(snapshot => {
-            firstName = snapshot.val().firstName
-            lastName = snapshot.val().lastName
-            email = snapshot.val().email
-            pic_url = snapshot.val().pic_url
-            courses = snapshot.val().courses || {}
-            this.props.signinUser({firstName, lastName, email, pic_url, courses})
+            firstName = snapshot.val().firstName;
+            lastName = snapshot.val().lastName;
+            email = snapshot.val().email;
+            pic_url = snapshot.val().pic_url;
+            courses = snapshot.val().courses || {};
+            this.props.signinUser({firstName, lastName, email, pic_url, courses});
 
-            this.props.history.push('/myprograms')
+            this.props.history.push('/myprograms');
         })
 
     } catch (error) {
         this.setState({
             message: error.toString()
-        })
-        console.log(error.toString())
+        });
+        console.log(error.toString());
     }
   }
 

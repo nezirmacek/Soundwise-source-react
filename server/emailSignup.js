@@ -74,3 +74,41 @@ module.exports.handleReferral = (req, res) => {
     res.send(err)
   })
 }
+
+module.exports.handleTrialRequest = (req, res) => {
+
+  const options = {
+    method: 'POST',
+    uri: 'https://us7.api.mailchimp.com/3.0/lists/41f2751be3/members',
+    auth: {
+      user: 'soundwise',
+      pass: '8ef33347b5ca183fa94a22e6b7302842-us7'
+    },
+    body: {
+      "email_address": req.body.email,
+      "status": "subscribed",
+      "merge_fields": {
+          "FNAME": req.body.firstName,
+          "LNAME": req.body.lastName,
+          "MMERGE3": req.body.company,
+          "MMERGE4": req.body.title,
+          "MMERGE5": req.body.phone
+      }
+    },
+    json: true
+  }
+
+  if(req.body.firstName && req.body.lastName && req.body.company && req.body.phone && req.body.title && req.body.email) {
+
+    request(options)
+      .then(function (response) {
+        console.log('mailchimp success')
+        res.send(response)
+      })
+      .catch(function (err) {
+        console.log('mailchimp failed: ', err)
+        res.send(err)
+      })
+
+  }
+}

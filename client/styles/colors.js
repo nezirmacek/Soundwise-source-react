@@ -7,6 +7,10 @@ const Colors = {
     mainOrange: '#F76B1C',
     mainGrey: '#979797',
     mainWhite: '#fff',
+    mainRed: '#ea4f3f',
+    black: '#000',
+    lightGrey: '#acb3bc',
+    link: '#61e1fb',
 };
 
 export default Colors;

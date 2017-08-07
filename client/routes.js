@@ -1,23 +1,23 @@
-
-import React, {Component} from 'react'
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
-import firebase from 'firebase'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import {Helmet} from "react-helmet"
-import { browserHistory } from 'react-router'
-import Butter from 'buttercms'
-const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8')
-import injectTapEventPlugin from 'react-tap-event-plugin'
+import React, {Component} from 'react';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import firebase from 'firebase';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import {Helmet} from 'react-helmet';
+import { browserHistory } from 'react-router';
+import Butter from 'buttercms';
+const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8');
+import injectTapEventPlugin from 'react-tap-event-plugin';
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
-import { config } from '../config';
+import { config, awsConfig } from '../config';
 import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
 import Page from './components/page';
 import About from './components/about';
 import Referral from './components/referral';
+import TrialRequest from './components/trialrequest'
 import CreatorTerms from './components/creator_terms';
 import TermsFreeContent from './components/terms_free_content_May2017';
 import { OrderConfirmation } from './components/order_confirmation';
@@ -31,6 +31,7 @@ import {Course_Purchased} from './containers/course_page_purchased';
 import {Cart} from './containers/cart/cart';
 import {Checkout} from './containers/checkout';
 import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
+import {Dashboard} from './containers/dashboard/dashboard';
 import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
@@ -75,6 +76,8 @@ class _Routes extends Component {
       console.log(response)
     })
 
+      // new AWS.Credentials(awsConfig);
+
   }
 
   render() {
@@ -98,6 +101,7 @@ class _Routes extends Component {
                 <Route path="/about" component={About}/>
                 <Route path='/signup' component={AppSignup} />
                 <Route path='/signin' component={AppSignin} />
+                <Route path='/trial_request' component={TrialRequest} />
                 <Route path="/gift" component={Referral} />
                 <Route path="/creator_terms" component={CreatorTerms} />
                 <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
@@ -109,6 +113,7 @@ class _Routes extends Component {
                 <Route path="/staging/:courseId" component={Staged_Course} />
                 <Route path="/password_reset" component={PassRecovery} />
                 <Route exact path ="/courses" component={CoursesCatalog} />
+                <Route path="/dashboard" component={Dashboard} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 
 const Callto_action = () => (
   <section className="padding-110px-tb bg-dark-blue footer-top builder-bg xs-padding-60px-tb border-none" id="callto-action6">
@@ -14,7 +15,7 @@ const Callto_action = () => (
         { /* end section title */ }
         { /* button */ }
         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-          <a className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">REQUEST A DEMO</span></a>
+          <Link to="/trial_request" className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
         </div>
         { /* end button */ }
       </div>

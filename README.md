@@ -12,6 +12,14 @@ From within the root directory:
 npm install
 ```
 
+#### Issues
+wrong buffer length:
+node_modules/microm/dist/microm.js:3125
+change
+self.buffer = new ArrayBuffer(view);
+to
+self.buffer = new ArrayBuffer(view.buffer.byteLength);
+
 ### Start the Server
 
 ```
@@ -37,6 +45,14 @@ npm run-script build
 ### URL format
 - Course landing page: `localhost:8080/courses/120`
 - Course page: `localhost:8080/myprograms/120`
+
+## api
+```
+sudo npm i -g strongloop
+cd api/
+npm i
+node .
+```
 
 ## To-dos:
 - [ ] Fix audio player bug (for chrome)

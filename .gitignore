@@ -1,6 +1,7 @@
 config.js
 node_modules/
 bower_components/
+client/bundle.js
 *.log
 /_.*
 _.*

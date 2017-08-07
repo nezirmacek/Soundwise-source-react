@@ -47,7 +47,7 @@ const Feature_section = () => (
 
                         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                             <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">HOW IT WORKS</h2>
-                            <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">Less time sitting in meetings/classrooms is more time for your agents to work on their busienss. Use Soundwise to make your agents more productive and better trained.</div>
+                            <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">Less time sitting in meetings/classrooms is more time for your agents to work on their business. Use Soundwise to make your agents more productive and better trained.</div>
                         </div>
 
                     </div>
