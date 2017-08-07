@@ -23,10 +23,9 @@ self.buffer = new ArrayBuffer(view.buffer.byteLength);
 
 #####- Error: Cannot resolve module 'fs' in /home/developer/www/SoundwiseCMS_web/node_modules/request/lib:
 open node_modules/request/lib/har.js
-and change
+and remove
 var fs = require('fs')
-to
-import fs from 'fs';
+because fs is the default nodejs package
 
 ### Start the Server
 
