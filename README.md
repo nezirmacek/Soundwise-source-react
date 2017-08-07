@@ -13,12 +13,20 @@ npm install
 ```
 
 #### Issues
-wrong buffer length:
+
+#####- wrong buffer length:
 node_modules/microm/dist/microm.js:3125
 change
 self.buffer = new ArrayBuffer(view);
 to
 self.buffer = new ArrayBuffer(view.buffer.byteLength);
+
+#####- Error: Cannot resolve module 'fs' in /home/developer/www/SoundwiseCMS_web/node_modules/request/lib:
+open node_modules/request/lib/har.js
+and change
+var fs = require('fs')
+to
+import fs from 'fs';
 
 ### Start the Server
 
