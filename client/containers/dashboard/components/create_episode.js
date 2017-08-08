@@ -7,7 +7,6 @@ import firebase from 'firebase';
 import Microm from 'microm';
 import { ReactMic } from 'react-mic';
 import Loader from 'react-loader';
-import ReactS3Uploader from 'react-s3-uploader';
 import rp from 'request-promise';
 import axios from 'axios';
 
@@ -130,20 +129,12 @@ export default class CreateEpisode extends Component {
     }
 
     upload (blobFile) {
-        // console.log(blobFile instanceof Blob);
-        // const reader = new window.FileReader();
-        // reader.readAsDataURL(blobFile);
-        // reader.onloadend = function() {
-        //     const base64data = reader.result;
-        //     // console.log(base64data );
-        //     // upload file to aws s3
-        //     _uploadToAws(base64data);
-        // }
         _uploadToAws(blobFile);
     }
 
-    uploadNotes () {
+    uploadNotes (blobFile) {
         // upload file to aws s3
+        // _uploadToAws(blobFile);
     }
 
     render() {
@@ -224,20 +215,6 @@ export default class CreateEpisode extends Component {
                                     onChange={this.setFileName.bind(this, 'audio')}
                                     style={styles.inputFileHidden}
                                 />
-                                {/*<ReactS3Uploader*/}
-                                    {/*className={'react-uploader'}*/}
-                                    {/*signingUrl="/s3/sign"*/}
-                                    {/*signingUrlMethod="GET"*/}
-                                    {/*accept="image/*"*/}
-                                    {/*preprocess={this.onUploadStart.bind(this)}*/}
-                                    {/*onProgress={this.onUploadProgress.bind(this)}*/}
-                                    {/*onError={this.onUploadError.bind(this)}*/}
-                                    {/*onFinish={this.onUploadFinish.bind(this)}*/}
-                                    {/*uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}*/}
-                                    {/*contentDisposition="auto"*/}
-                                    {/*scrubFilename={(filename) => filename.replace(/[^\w\d_\-.]+/ig, '')}*/}
-                                    {/*server="http://cross-origin-server.com"*/}
-                                {/*/>*/}
                                 <input
                                     type="text"
                                     readOnly="1"

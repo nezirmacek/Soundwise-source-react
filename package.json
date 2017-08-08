@@ -65,7 +65,6 @@
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",
     "react-router-redux": "^4.0.6",
-    "react-s3-uploader": "^4.2.0",
     "react-slick": "^0.14.11",
     "react-star-rating": "^1.4.2",
     "react-stars": "^2.1.0",
