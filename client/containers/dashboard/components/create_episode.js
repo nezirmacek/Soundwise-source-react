@@ -10,6 +10,8 @@ import Loader from 'react-loader';
 import rp from 'request-promise';
 import axios from 'axios';
 
+import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
+import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 
 const microm = new Microm(); // from microm module
@@ -235,12 +237,14 @@ export default class CreateEpisode extends Component {
                 </div>
                 <div className="row">
                     <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                        <input
+                        <ValidatedInput
                             type="text"
-                            style={styles.inputTitle}
+                            styles={styles.inputTitle}
+                            wrapperStyles={styles.inputTitleWrapper}
                             placeholder={'Title*'}
                             onChange={(e) => {this.setState({title: e.target.value})}}
                             value={this.state.title}
+                            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 40)]}
                         />
                         <textarea
                             style={styles.inputDescription}
@@ -447,14 +451,19 @@ const styles = {
         fontSize: 9,
         border: 0,
     },
-
+    
+    inputTitleWrapper: {
+        width: '100%',
+        marginTop: 20,
+        marginBottom: 20,
+    },
     inputTitle: {
         height: 25,
         backgroundColor: Colors.mainWhite,
         width: '100%',
         fontSize: 12,
-        marginTop: 20,
         borderRadius: 4,
+        marginBottom: 0,
     },
     inputDescription: {
         height: 80,
