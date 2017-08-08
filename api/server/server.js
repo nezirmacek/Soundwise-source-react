@@ -22,11 +22,11 @@ app.start = function() {
   });
 };
 
-
-app.use('/fileUploads/upload', mutilpart());
+app.use('/api/fileUploads/upload', mutilpart());
+// app.use('/upload/images', mutilpart()); // WORKS
 
 uploader.use(new S3Strategy({
-  uploadPath: '/uploads',
+  uploadPath: '/test_files',
   headers: {
     'x-amz-acl': 'public-read'
   },
@@ -37,8 +37,11 @@ uploader.use(new S3Strategy({
   }
 }));
 
-// app.post('/upload/image', function(req, res, next) {
-//   uploader.upload('s3', req.files['images'], function(err, files) {
+// WORKS
+// app.post('/upload/images', function(req, res, next) {
+//   console.log('>>>>>>>>>>REQ BODY', req.body);
+//   console.log('>>>>>>>>>>REQ FILES', req.files);
+//   uploader.upload('s3', req.files.file, function(err, files) {
 //     if (err) {
 //       return next(err);
 //     }

@@ -2,9 +2,9 @@
 var uploader = require('express-fileuploader');
 
 module.exports = function(Fileupload) {
-  Fileupload.upload = function (file, cb) {
-    console.log('>>>>>>>>>>', file);
-    uploader.upload('s3', [file], function(err, files) {
+  Fileupload.upload = function (req, res, cb) {
+    console.log('>>>>>>>>>>', req.files.file);
+    uploader.upload('s3', req.files.file, function(err, files) {
       if (err) {
         return cb(err, null);
       }
@@ -15,10 +15,17 @@ module.exports = function(Fileupload) {
     'upload',
     {
       http: {path: '/upload', verb: 'post', status: 200, errorStatus: 400},
-      description: ['',''],
+      description: [
+        'uploads file to aws s3',
+        'send blob file from input'
+      ],
       notes: '',
-      accepts: {},
-      returns: {type: 'string', root: true}
+      // accepts: {arg: 'file', type: 'file', http: {source: 'body'}, required: true, root: true},
+      accepts: [
+        {arg: 'req', type: 'object', http: {source: 'req'}},
+        {arg: 'res', type: 'object', http: {source: 'res'}},
+      ],
+      returns: {arg: 'status', type: 'string'}
     }
   )
 };

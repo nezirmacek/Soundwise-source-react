@@ -9,6 +9,7 @@ import { ReactMic } from 'react-mic';
 import Loader from 'react-loader';
 import ReactS3Uploader from 'react-s3-uploader';
 import rp from 'request-promise';
+import axios from 'axios';
 
 import Colors from '../../../styles/colors';
 
@@ -20,17 +21,20 @@ microm.on('loadedmetadata', (duration) => {});
 microm.on('play', () => {});
 microm.on('pause', () => {});
 
-// function _forceDownload(){
-//     console.log('forceDownload');
-//     //var blob = new Blob(mp3Data, {type:'audio/mpeg'});
-//     var url = (window.URL || window.webkitURL).createObjectURL(blob);
-//     var link = window.document.createElement('a');
-//     link.href = url;
-//     link.download = 'output.mp3';
-//     var click = document.createEvent("Event");
-//     click.initEvent("click", true, true);
-//     link.dispatchEvent(click);
-// }
+function _uploadToAws (file) {
+    let data = new FormData();
+    data.append('file', file);
+    // axios.post('http://localhost:3000/upload/images', data) - alternative address (need to uncomment on backend)
+    axios.post('http://localhost:3000/api/fileUploads/upload', data)
+        .then(function (res) {
+            // POST succeeded...
+            console.log('SUCCESS uploaded to aws: ', res);
+        })
+        .catch(function (err) {
+            // POST failed...
+            console.log('>>>>>>>>>>ERROR: ', err);
+        });
+}
 
 export default class CreateEpisode extends Component {
     constructor(props) {
@@ -98,60 +102,49 @@ export default class CreateEpisode extends Component {
     }
 
     save () {
+        let _self = this;
+        console.log('start converting to mp3');
         microm.getMp3().then(res => {
-            console.log('>>>>>>>>>>', res);
+            console.log('start uploading mp3 to aws: ', res.blob);
             //upload file to aws s3
+            _uploadToAws(res.blob);
         });
+        
+        //upload file to aws s3
+        // _uploadToAws(microm.getBlob());
+    
+        // var fileName = 'cat_voice';
+        // microm.download(fileName);
     }
 
     setFileName (type, e) {
+        console.log('>>>>>>>>>>FILE', e.target.files);
         if (e.target.value) {
             if (type === 'audio') {
                 this.setState({uploaded: true});
             }
-            this[type] = e.target; // TODO: check what we need to keep here
+            
+            this[type] = [e.target.files[0]]; // TODO: check what we need to keep here
         }
         document.getElementById(type).value = e.target.value;
     }
 
-    upload () {
-        //upload file to aws s3
-        const _rpOptions = {
-            method: 'POST',
-            uri: 'http://localhost:3000/api/fileUploads/upload',
-            body: {
-                file: this.audio
-            },
-            // json: true, // Automatically stringifies the body to JSON
-            headers: {
-                /* 'content-type': 'application/x-www-form-urlencoded' */ // Is set automatically
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'application/json',
-            }
-        };
-        rp(_rpOptions)
-            .then(function (body) {
-                // POST succeeded...
-                console.log('>>>>>>>>>>SUCCESS');
-            })
-            .catch(function (err) {
-                // POST failed...
-                console.log('>>>>>>>>>>ERROR: ', err);
-            });
+    upload (blobFile) {
+        // console.log(blobFile instanceof Blob);
+        // const reader = new window.FileReader();
+        // reader.readAsDataURL(blobFile);
+        // reader.onloadend = function() {
+        //     const base64data = reader.result;
+        //     // console.log(base64data );
+        //     // upload file to aws s3
+        //     _uploadToAws(base64data);
+        // }
+        _uploadToAws(blobFile);
     }
 
     uploadNotes () {
-        //upload file to aws s3
+        // upload file to aws s3
     }
-
-    onUploadStart (file, next) {
-        console.log('>>>>>>>>>>START', file);
-        this.audio = file;
-        // next(file); // if this is uncommented, then file will be uploaded immediately
-    }
-    onUploadProgress () {}
-    onUploadError () {}
-    onUploadFinish () {}
 
     render() {
         const {isRecording, isRecorded, isPlaying, isLoading, uploaded} = this.state;
@@ -224,41 +217,41 @@ export default class CreateEpisode extends Component {
                         <div style={styles.recorder}>
                             <span>Upload</span>
                             <div style={styles.inputFileWrapper}>
-                                {/*<input*/}
-                                    {/*type="file"*/}
-                                    {/*name="upload"*/}
-                                    {/*id="upload_hidden_audio"*/}
-                                    {/*onChange={this.setFileName.bind(this, 'audio')}*/}
-                                    {/*style={styles.inputFileHidden}*/}
-                                {/*/>*/}
-                                <ReactS3Uploader
-                                    className={'react-uploader'}
-                                    signingUrl="/s3/sign"
-                                    signingUrlMethod="GET"
-                                    accept="image/*"
-                                    preprocess={this.onUploadStart.bind(this)}
-                                    onProgress={this.onUploadProgress.bind(this)}
-                                    onError={this.onUploadError.bind(this)}
-                                    onFinish={this.onUploadFinish.bind(this)}
-                                    uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}
-                                    contentDisposition="auto"
-                                    scrubFilename={(filename) => filename.replace(/[^\w\d_\-.]+/ig, '')}
-                                    server="http://cross-origin-server.com"
+                                <input
+                                    type="file"
+                                    name="upload"
+                                    id="upload_hidden_audio"
+                                    onChange={this.setFileName.bind(this, 'audio')}
+                                    style={styles.inputFileHidden}
                                 />
-                                {/*<input*/}
-                                    {/*type="text"*/}
-                                    {/*readOnly="1"*/}
-                                    {/*id="audio"*/}
-                                    {/*style={styles.inputFileVisible}*/}
-                                    {/*placeholder={'No Audio File Selected'}*/}
-                                    {/*onClick={() => {document.getElementById('upload_hidden_audio').click();}}*/}
+                                {/*<ReactS3Uploader*/}
+                                    {/*className={'react-uploader'}*/}
+                                    {/*signingUrl="/s3/sign"*/}
+                                    {/*signingUrlMethod="GET"*/}
+                                    {/*accept="image/*"*/}
+                                    {/*preprocess={this.onUploadStart.bind(this)}*/}
+                                    {/*onProgress={this.onUploadProgress.bind(this)}*/}
+                                    {/*onError={this.onUploadError.bind(this)}*/}
+                                    {/*onFinish={this.onUploadFinish.bind(this)}*/}
+                                    {/*uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}*/}
+                                    {/*contentDisposition="auto"*/}
+                                    {/*scrubFilename={(filename) => filename.replace(/[^\w\d_\-.]+/ig, '')}*/}
+                                    {/*server="http://cross-origin-server.com"*/}
                                 {/*/>*/}
-                                {/*<button*/}
-                                    {/*onClick={() => {this.upload.bind(this)}}*/}
-                                    {/*style={{...styles.uploadButton, backgroundColor: uploaded && Colors.mainOrange || Colors.lightGrey}}*/}
-                                {/*>*/}
-                                    {/*Upload*/}
-                                {/*</button>*/}
+                                <input
+                                    type="text"
+                                    readOnly="1"
+                                    id="audio"
+                                    style={styles.inputFileVisible}
+                                    placeholder={'No Audio File Selected'}
+                                    onClick={() => {document.getElementById('upload_hidden_audio').click();}}
+                                />
+                                <button
+                                    onClick={() => {this.upload(document.getElementById('upload_hidden_audio').files[0])}}
+                                    style={{...styles.uploadButton, backgroundColor: uploaded && Colors.mainOrange || Colors.lightGrey}}
+                                >
+                                    Upload
+                                </button>
                             </div>
                         </div>
                     </div>
