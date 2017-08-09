@@ -44,34 +44,74 @@ class _AppSignin extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleFBAuth = this.handleFBAuth.bind(this)
   }
-
-  async signIn() {
-    let {firstName, lastName, email, password, pic_url, courses} = this.state;
-
-    try {
-        await firebase.auth().signInWithEmailAndPassword(email, password);
-
-        const userId = firebase.auth().currentUser.uid;
-        firebase.database().ref('users/' + userId)
-        .once('value')
-        .then(snapshot => {
-            firstName = snapshot.val().firstName;
-            lastName = snapshot.val().lastName;
-            email = snapshot.val().email;
-            pic_url = snapshot.val().pic_url;
-            courses = snapshot.val().courses || {};
-            this.props.signinUser({firstName, lastName, email, pic_url, courses});
-
-            this.props.history.push('/myprograms');
-        })
-
-    } catch (error) {
-        this.setState({
-            message: error.toString()
-        });
-        console.log(error.toString());
+    
+    async signIn() {
+        const that = this;
+        let {firstName, lastName, email, password, pic_url, courses} = this.state;
+        
+        try {
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+            
+            const userId = firebase.auth().currentUser.uid;
+            firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
+                if (snapshot.val()) {
+                    const _user = JSON.parse(JSON.stringify(snapshot.val()));
+                    that.props.signinUser(_user);
+                    this.props.history.push('/myprograms');
+                    
+                    if (_user.soundcasts_managed && _user.admin) {
+                        for (let key in _user.soundcasts_managed) {
+                            firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
+                                if (snapshot.val()) {
+                                    _user.soundcasts_managed[key] = JSON.parse(JSON.stringify(snapshot.val()));
+                                    firebase.database().ref(`episodes`)
+                                        .once('value')
+                                        .then(
+                                            snapshot => {
+                                                if (snapshot.val()) {
+                                                    _user.soundcasts_managed[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
+                                                }
+                                            },
+                                            err => {
+                                                console.log('ERROR get episodes', err);
+                                            }
+                                        );
+                                }
+                            });
+                        }
+                    }
+                    
+                    if (_user.subscriptions) {
+                        for (let key in _user.subscriptions) {
+                            firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
+                                if (snapshot.val()) {
+                                    _user.subscriptions[key] = JSON.parse(JSON.stringify(snapshot.val()));
+                                    firebase.database().ref(`episodes`)
+                                        .once('value')
+                                        .then(
+                                            snapshot => {
+                                                if (snapshot.val()) {
+                                                    _user.subscriptions[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
+                                                }
+                                            },
+                                            err => {
+                                                console.log('ERROR get episodes', err);
+                                            }
+                                        );
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            
+        } catch (error) {
+            this.setState({
+                message: error.toString()
+            });
+            console.log(error.toString());
+        }
     }
-  }
 
   handleChange(e) {
     this.setState({

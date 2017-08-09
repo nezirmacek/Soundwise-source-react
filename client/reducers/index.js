@@ -4,30 +4,90 @@ import * as types from '../actions/types';
 import * as _ from 'lodash';
 
 function user(state= {
-  userInfo: {},
-  isLoggedIn: ''
+    userInfo: {
+        soundcasts_managed: {},
+        subscriptions: {},
+    },
+    isLoggedIn: ''
 }, action) {
-  switch (action.type) {
-    case types.SIGNUP:
-      return {
-        ...state,
-        userInfo: action.payload,
-        isLoggedIn: true
-      }
-    case types.SIGNIN:
-      return {
-        ...state,
-        userInfo: action.payload,
-        isLoggedIn: true
-      }
-    case types.SIGNOUT:
-      return {
-        ...state,
-        isLoggedIn: false
-      }
-    default:
-      return state
-  }
+    const newState = JSON.parse(JSON.stringify(state));
+    switch (action.type) {
+        case types.SIGNUP:
+            return {
+                ...state,
+                userInfo: action.payload,
+                isLoggedIn: true
+            }
+        case types.SIGNIN:
+            return {
+                ...state,
+                userInfo: action.payload,
+                isLoggedIn: true
+            }
+        case types.SIGNOUT:
+            return {
+                ...state,
+                isLoggedIn: false
+            };
+        case types.ADD_MANAGED_SOUNDCASTS:
+            return {
+                ...state,
+                userInfo: {
+                    ...state.userInfo,
+                    soundcasts_managed: action.payload,
+                }
+            };
+        case types.EDIT_MANAGED_SOUNDCAST:
+            return {
+                ...state,
+                userInfo: {
+                    ...state.userInfo,
+                    soundcasts_managed: {
+                        ...state.userInfo.soundcasts_managed,
+                        [action.payload.id]: action.payload,
+                    },
+                }
+            };
+        case types.ADD_SUBSCRIPTIONS:
+            return {
+                ...state,
+                userInfo: {
+                    ...state.userInfo,
+                    subscriptions: action.payload,
+                }
+            };
+        case types.EDIT_SUBSCRIPTION:
+            return {
+                ...state,
+                userInfo: {
+                    ...state.userInfo,
+                    subscriptions: {
+                        ...state.userInfo.subscriptions,
+                        [action.payload.id]: action.payload,
+                    },
+                }
+            };
+        case types.ADD_EPISODES:
+            action.payload.map(episode => {
+                if (newState.userInfo.soundcasts_managed[episode.soundcastID]) {
+                    newState.userInfo.soundcasts_managed[episode.soundcastID].episodes[episode.id] = episode;
+                }
+                if (newState.userInfo.subscriptions[episode.soundcastID]) {
+                    newState.userInfo.subscriptions[episode.soundcastID].episodes[episode.id] = episode;
+                }
+            });
+            return newState;
+        case types.EDIT_EPISODE:
+            if (newState.userInfo.soundcasts_managed[action.payload.soundcastID]) {
+                newState.userInfo.soundcasts_managed[action.payload.soundcastID].episodes[episode.id] = episode;
+            }
+            if (newState.userInfo.subscriptions[action.payload.soundcastID]) {
+                newState.userInfo.subscriptions[action.payload.soundcastID].episodes[episode.id] = episode;
+            }
+            return newState;
+        default:
+            return state;
+    }
 }
 
 function categories(state= {

@@ -90,6 +90,7 @@ firebase:
             "subscribed": {
                 "ilovewordsworth@gmail(dot)com": "xD5tW78sX6M96C4xpd7iOIN5Qth1"
             }
+            publisherID: "xD5tW78sX6M96C4xpd7iOIN5Qth1"
         }
 
         episode: {
@@ -109,6 +110,7 @@ firebase:
                 "voesfmvioedkht": true,
                 "4fionviutrmrem": true
             }
+            isPublished: true,
         }
 
         comment:  {
@@ -138,7 +140,7 @@ firebase:
                 "35546702-76cb-11e7-b5a5-be2e44b06b34": true
             },
             "email": [
-                "denis@me.come"
+                "a@1.com" / qweqwe
             ],
             "subscriptions": {
                 "5a83201c-76bd-11e7-b5a5-be2e44b06b34": true,

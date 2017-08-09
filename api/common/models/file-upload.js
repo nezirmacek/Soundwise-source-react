@@ -3,11 +3,11 @@ var uploader = require('express-fileuploader');
 
 module.exports = function(Fileupload) {
   Fileupload.upload = function (req, res, cb) {
-    console.log('>>>>>>>>>>', req.files.file);
     uploader.upload('s3', req.files.file, function(err, files) {
       if (err) {
         return cb(err, null);
       }
+      console.log('>>>>>>>>>>files', files);
       cb(null, JSON.stringify(files));
     });
   };
@@ -25,7 +25,7 @@ module.exports = function(Fileupload) {
         {arg: 'req', type: 'object', http: {source: 'req'}},
         {arg: 'res', type: 'object', http: {source: 'res'}},
       ],
-      returns: {arg: 'status', type: 'string'}
+      returns: {type: 'array', root: true}
     }
   )
 };

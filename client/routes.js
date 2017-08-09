@@ -42,43 +42,83 @@ class _Routes extends Component {
 
     props.subscribeToCategories();
   }
-
-  componentDidMount() {
-    const that = this
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        const userId = user.uid
-        firebase.database().ref('users/' + userId)
-        .on('value', snapshot => {
-            if (snapshot.val()) {
-                const firstName = snapshot.val().firstName
-                const lastName = snapshot.val().lastName
-                const email = snapshot.val().email
-                const courses = snapshot.val().courses
-                const pic_url = snapshot.val().pic_url || ""
-                const stripe_id = snapshot.val().stripe_id
-                that.props.signinUser({firstName, lastName, email, courses, pic_url, stripe_id})
+    
+    componentDidMount() {
+        const that = this
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                const userId = user.uid;
+                // watch user
+                firebase.database().ref(`users/${userId}`).on('value', snapshot => {
+                    if (snapshot.val()) {
+                        let _user = JSON.parse(JSON.stringify(snapshot.val()));
+                        that.props.signinUser(_user);
+    
+                        if (_user.soundcasts_managed && _user.admin) {
+                            for (let key in _user.soundcasts_managed) {
+                                // watch managed soundcasts
+                                firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
+                                firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
+                                    if (snapshot.val()) {
+                                        _user = JSON.parse(JSON.stringify(_user));
+                                        _user.soundcasts_managed[key] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        that.props.signinUser(_user);
+                                        // watch episodes of soundcasts
+                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).off(); // to avoid error when subscribe twice
+                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).on('value', snapshot => {
+                                            if (snapshot.val()) {
+                                                _user = JSON.parse(JSON.stringify(_user));
+                                                _user.soundcasts_managed[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
+                                                that.props.signinUser(_user);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                        
+                        if (_user.subscriptions) {
+                            for (let key in _user.subscriptions) {
+                                // watch soundcasts subscriptions
+                                firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
+                                firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
+                                    if (snapshot.val()) {
+                                        _user = JSON.parse(JSON.stringify(_user));
+                                        _user.subscriptions[key] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        that.props.signinUser(_user);
+                                        // watch episodes of soundcasts
+                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).off(); // to avoid error when subscribe twice
+                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).on('value', snapshot => {
+                                            if (snapshot.val()) {
+                                                _user = JSON.parse(JSON.stringify(_user));
+                                                _user.subscriptions[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
+                                                that.props.signinUser(_user);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
             }
+        });
+        
+        firebase.database().ref('courses').on('value', snapshot => {
+            this.props.loadCourses(snapshot.val());
+        });
+        
+        butter.post.list({page: 1, page_size: 10}).then(function(response) {
+            console.log(response)
         })
-      }
-    })
-
-    firebase.database().ref('courses')
-            .on('value', snapshot => {
-              this.props.loadCourses(snapshot.val())
-            })
-
-    butter.post.list({page: 1, page_size: 10}).then(function(response) {
-      console.log(response)
-    })
-
-    butter.content.retrieve(['homepage_headline']).then(function(response) {
-      console.log(response)
-    })
-
-      // new AWS.Credentials(awsConfig);
-
-  }
+        
+        butter.content.retrieve(['homepage_headline']).then(function(response) {
+            console.log(response)
+        })
+        
+        // new AWS.Credentials(awsConfig);
+        
+    }
 
   render() {
     return (

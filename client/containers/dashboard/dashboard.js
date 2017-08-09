@@ -35,15 +35,23 @@ class _Dashboard extends Component {
     constructor (props) {
         super(props);
 
-        if (!props.isLoggedIn) {
+        if (!props.isLoggedIn || !props.userInfo.admin) {
             this.props.history.push('/signin');
         }
         this.state = {
             activeMenuItem: 1,
         };
     }
+    
+    componentWillReceiveProps (nextProps) {
+        if (!nextProps.userInfo.admin) {
+            nextProps.history.push('/signin');
+        }
+    }
 
     render() {
+        const { userInfo, history } = this.props;
+        
         return (
             <div>
                 <SoundwiseHeader />
@@ -73,7 +81,10 @@ class _Dashboard extends Component {
                             null
                             ||
                             this.state.activeMenuItem === 1 &&
-                            <CreateEpisode />
+                            <CreateEpisode
+                                userInfo={userInfo}
+                                history={history}
+                            />
                             ||
                             this.state.activeMenuItem === 2 &&
                             null

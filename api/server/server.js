@@ -26,7 +26,7 @@ app.use('/api/fileUploads/upload', mutilpart());
 // app.use('/upload/images', mutilpart()); // WORKS
 
 uploader.use(new S3Strategy({
-  uploadPath: '/test_files',
+  uploadPath: 'demo/',
   headers: {
     'x-amz-acl': 'public-read'
   },
@@ -37,10 +37,8 @@ uploader.use(new S3Strategy({
   }
 }));
 
-// WORKS
+// // WORKS
 // app.post('/upload/images', function(req, res, next) {
-//   console.log('>>>>>>>>>>REQ BODY', req.body);
-//   console.log('>>>>>>>>>>REQ FILES', req.files);
 //   uploader.upload('s3', req.files.file, function(err, files) {
 //     if (err) {
 //       return next(err);

@@ -10,7 +10,6 @@ import CourseCard from '../components/course_card';
 import {loadUserCourses} from '../actions/index';
 import {Course} from './course_page';
 
-
 class _MyCourses extends Component {
     constructor (props) {
         super(props);
@@ -27,20 +26,21 @@ class _MyCourses extends Component {
         const that = this;
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                const userId = user.uid;
+                const userId = firebase.auth().currentUser.uid;
 
                 firebase.database().ref('users/' + userId + '/courses')
                 .once('value')
                 .then(snapshot => {
-                    const courseIDs = Object.keys(snapshot.val());
-
-                    courseIDs.forEach(id => {
-                        firebase.database().ref('courses/'+id)
-                        .on('value', snapshot => {
-                            userCourses.push(snapshot.val());
+                    if (snapshot.val()) {
+                        const courseIDs = Object.keys(snapshot.val());
+        
+                        courseIDs.forEach(id => {
+                            firebase.database().ref('courses/' + id)
+                                .on('value', snapshot => {
+                                    userCourses.push(snapshot.val());
+                                })
                         })
-                    })
-
+                    }
                 })
                 .then(() => {
                     // console.log('userCourses: ', userCourses)

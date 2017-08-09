@@ -61,6 +61,17 @@ npm i
 node .
 ```
 
+### issues:
+
+####- express-fileuploader module changes files names when upload to aws s3:
+api/node_modules/express-fileuploader/lib/index.js:91-93
+```
+var uid = uuid.v1(),
+    ext = path.extname(file.name);
+file.name = uid + ext;
+```
+comment these 3 strings
+
 ## To-dos:
 - [ ] Fix audio player bug (for chrome)
 - [ ] Fix potential Facebook log in error (no redirect after log in)

@@ -9,6 +9,7 @@ import { ReactMic } from 'react-mic';
 import Loader from 'react-loader';
 import rp from 'request-promise';
 import axios from 'axios';
+import moment from 'moment';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -22,21 +23,6 @@ microm.on('loadedmetadata', (duration) => {});
 microm.on('play', () => {});
 microm.on('pause', () => {});
 
-function _uploadToAws (file) {
-    let data = new FormData();
-    data.append('file', file);
-    // axios.post('http://localhost:3000/upload/images', data) - alternative address (need to uncomment on backend)
-    axios.post('http://localhost:3000/api/fileUploads/upload', data)
-        .then(function (res) {
-            // POST succeeded...
-            console.log('SUCCESS uploaded to aws: ', res);
-        })
-        .catch(function (err) {
-            // POST failed...
-            console.log('>>>>>>>>>>ERROR: ', err);
-        });
-}
-
 export default class CreateEpisode extends Component {
     constructor(props) {
         super(props);
@@ -47,15 +33,29 @@ export default class CreateEpisode extends Component {
             isPlaying: false,
             isLoading: false,
 
-            uploaded: false,
+            audioUploaded: false,
+            notesUploaded: false,
 
             title: '',
             description: '',
             actions: '',
+    
+            audioUrl: '', // linkto uploaded file aws s3
+            notesUrl: '', // linkto uploaded file aws s3
         };
 
         this.audio = null;
         this.notes = null;
+    
+        this.currentSoundcastId = null;
+        
+        // if (props.userInfo.soundcasts_managed && props.userInfo.soundcasts_managed[props.currentSoundcastId]) {
+        //     const _titleArray = props.userInfo.soundcasts_managed[props.currentSoundcastId].title.split(' ');
+        //     let _transformedTitle = '';
+        //     _titleArray.map(word => _transformedTitle += word);
+        //     _transformedTitle = _transformedTitle.substr(0, 20);
+            this.episodeId = `${moment().format('x')}e`;
+        // }
     }
 
     componentDidMount () {
@@ -108,39 +108,83 @@ export default class CreateEpisode extends Component {
         microm.getMp3().then(res => {
             console.log('start uploading mp3 to aws: ', res.blob);
             //upload file to aws s3
-            _uploadToAws(res.blob);
+            this._uploadToAws(res.blob, 'audio');
         });
-        
-        //upload file to aws s3
-        // _uploadToAws(microm.getBlob());
+    }
     
-        // var fileName = 'cat_voice';
-        // microm.download(fileName);
+    _uploadToAws (file, type) {
+        const _self = this;
+        let data = new FormData();
+        const splittedFileName = file.name.split('.');
+        const ext = (splittedFileName)[splittedFileName.length - 1];
+        data.append('file', file, `${this.episodeId}.${ext}`);
+        // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
+        axios.post('http://localhost:3000/api/fileUploads/upload', data)
+            .then(function (res) {
+                // POST succeeded...
+                console.log('success upload to aws s3: ', res);
+                _self.setState({[`${type}Url`]: (JSON.parse(res.data))[0].url});
+            })
+            .catch(function (err) {
+                // POST failed...
+                console.log('ERROR upload to aws s3: ', err);
+            });
     }
 
     setFileName (type, e) {
-        console.log('>>>>>>>>>>FILE', e.target.files);
         if (e.target.value) {
-            if (type === 'audio') {
-                this.setState({uploaded: true});
-            }
-            
-            this[type] = [e.target.files[0]]; // TODO: check what we need to keep here
+            this.setState({[`${type}Uploaded`]: true});
+            this[type] = [e.target.files[0]];
         }
         document.getElementById(type).value = e.target.value;
     }
-
-    upload (blobFile) {
-        _uploadToAws(blobFile);
+    
+    saveEpisode (isPublished) {
+        const { title, description, actions, audioUrl, notesUrl } = this.state;
+        const { userInfo } = this.props;
+        
+        if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
+            const newEpisode = {
+                title,
+                description,
+                actionstep: actions,
+                timestamp: moment().format('X'),
+                creatorID: firebase.auth().currentUser.uid,
+                url: audioUrl,
+                notes: notesUrl,
+                soundcastID: this.currentSoundcastId,
+                isPublished: isPublished,
+            };
+    
+            firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
+                res => {
+                    console.log('success add episode: ', res);
+                },
+                err => {
+                    console.log('ERROR add episode: ', err);
+                }
+            );
+        }
     }
-
-    uploadNotes (blobFile) {
-        // upload file to aws s3
-        // _uploadToAws(blobFile);
+    
+    changeSoundcastId (e) {
+        this.currentSoundcastId = e.target.value;
     }
 
     render() {
-        const {isRecording, isRecorded, isPlaying, isLoading, uploaded} = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
+        const { userInfo } = this.props;
+        
+        const _soundcasts_managed = [];
+        for (let id in userInfo.soundcasts_managed) {
+            const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
+            if (_soundcast.title) {
+                _soundcast.id = id;
+                _soundcasts_managed.push(_soundcast);
+            }
+        }
+        this.currentSoundcastId = this.currentSoundcastId || _soundcasts_managed[0].id;
+        
         return (
             <div>
                 <span style={styles.titleText}>
@@ -225,12 +269,19 @@ export default class CreateEpisode extends Component {
                                     placeholder={'No Audio File Selected'}
                                     onClick={() => {document.getElementById('upload_hidden_audio').click();}}
                                 />
-                                <button
-                                    onClick={() => {this.upload(document.getElementById('upload_hidden_audio').files[0])}}
-                                    style={{...styles.uploadButton, backgroundColor: uploaded && Colors.mainOrange || Colors.lightGrey}}
-                                >
-                                    Upload
-                                </button>
+                                {
+                                    !audioUrl
+                                    &&
+                                    <button
+                                        onClick={() => {audioUploaded && this._uploadToAws(document.getElementById('upload_hidden_audio').files[0], 'audio');}}
+                                        style={{...styles.uploadButton, backgroundColor: audioUploaded && Colors.mainOrange || Colors.lightGrey}}
+                                    >
+                                        Upload
+                                    </button>
+                                    ||
+                                    null
+                                }
+                                
                             </div>
                         </div>
                     </div>
@@ -278,31 +329,51 @@ export default class CreateEpisode extends Component {
                                     placeholder={'No File Selected'}
                                     onClick={() => {document.getElementById('upload_hidden_notes').click();}}
                                 />
-                                <button
-                                    onClick={() => {this.uploadNotes.bind(this)}}
-                                    style={{...styles.uploadButton, backgroundColor: uploaded && Colors.mainOrange || Colors.lightGrey}}
-                                >
-                                    Upload
-                                </button>
+                                {
+                                    !notesUrl
+                                    &&
+                                    <button
+                                        onClick={() => {notesUploaded && this._uploadToAws(document.getElementById('upload_hidden_notes').files[0], 'notes');}}
+                                        style={{...styles.uploadButton, backgroundColor: notesUploaded && Colors.mainOrange || Colors.lightGrey}}
+                                    >
+                                        Upload
+                                    </button>
+                                    ||
+                                    null
+                                }
+                                
                             </div>
                             <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                         </div>
                         <div style={styles.souncastSelectWrapper}>
                             <span style={styles.notesLabel}>Publish in</span>
-                            <select style={styles.souncastSelect}>
-                                <option value="0">cast 1</option>
-                                <option value="1">cast 1</option>
-                                <option value="2">cast 1</option>
-                                <option value="3">cast 1</option>
+                            <select style={styles.souncastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
+                                {
+                                    _soundcasts_managed.map((souncast, i) => {
+                                        return (
+                                            <option value={souncast.id} key={i}>{souncast.title}</option>
+                                        );
+                                    })
+                                }
                             </select>
                         </div>
                     </div>
                     <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                         <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6">
-                            <div style={styles.draftButton}>Save draft</div>
+                            <div
+                                style={styles.draftButton}
+                                onClick={this.saveEpisode.bind(this, false)}
+                            >
+                                Save draft
+                            </div>
                         </div>
                         <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6">
-                            <div style={{...styles.draftButton, ...styles.publishButton}}>Publish</div>
+                            <div
+                                style={{...styles.draftButton, ...styles.publishButton}}
+                                onClick={this.saveEpisode.bind(this, true)}
+                            >
+                                Publish
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -312,7 +383,8 @@ export default class CreateEpisode extends Component {
 };
 
 CreateEpisode.propTypes = {
-
+    userInfo: PropTypes.object,
+    history: PropTypes.object,
 };
 
 const loaderOptions = {
