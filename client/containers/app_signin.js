@@ -55,49 +55,53 @@ class _AppSignin extends Component {
             const userId = firebase.auth().currentUser.uid;
             firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
                 if (snapshot.val()) {
-                    const _user = JSON.parse(JSON.stringify(snapshot.val()));
+                    let _user = JSON.parse(JSON.stringify(snapshot.val()));
                     that.props.signinUser(_user);
                     this.props.history.push('/myprograms');
-                    
+    
                     if (_user.soundcasts_managed && _user.admin) {
                         for (let key in _user.soundcasts_managed) {
                             firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
                                 if (snapshot.val()) {
-                                    _user.soundcasts_managed[key] = JSON.parse(JSON.stringify(snapshot.val()));
-                                    firebase.database().ref(`episodes`)
-                                        .once('value')
-                                        .then(
-                                            snapshot => {
+                                    _user = JSON.parse(JSON.stringify(_user));
+                                    const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                                    _user.soundcasts_managed[key] = _soundcast;
+                                    that.props.signinUser(_user);
+                                    if (_soundcast.episodes) {
+                                        for (let epkey in _soundcast.episodes) {
+                                            firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
                                                 if (snapshot.val()) {
-                                                    _user.soundcasts_managed[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
+                                                    _user = JSON.parse(JSON.stringify(_user));
+                                                    _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                    that.props.signinUser(_user);
                                                 }
-                                            },
-                                            err => {
-                                                console.log('ERROR get episodes', err);
-                                            }
-                                        );
+                                            });
+                                        }
+                                    }
                                 }
                             });
                         }
                     }
-                    
+    
                     if (_user.subscriptions) {
                         for (let key in _user.subscriptions) {
                             firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
                                 if (snapshot.val()) {
-                                    _user.subscriptions[key] = JSON.parse(JSON.stringify(snapshot.val()));
-                                    firebase.database().ref(`episodes`)
-                                        .once('value')
-                                        .then(
-                                            snapshot => {
+                                    _user = JSON.parse(JSON.stringify(_user));
+                                    const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                                    _user.subscriptions[key] = _soundcast;
+                                    that.props.signinUser(_user);
+                                    if (_soundcast.episodes) {
+                                        for (let epkey in _soundcast.episodes) {
+                                            firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
                                                 if (snapshot.val()) {
-                                                    _user.subscriptions[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
+                                                    _user = JSON.parse(JSON.stringify(_user));
+                                                    _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                    that.props.signinUser(_user);
                                                 }
-                                            },
-                                            err => {
-                                                console.log('ERROR get episodes', err);
-                                            }
-                                        );
+                                            });
+                                        }
+                                    }
                                 }
                             });
                         }

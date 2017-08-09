@@ -61,17 +61,22 @@ class _Routes extends Component {
                                 firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
                                     if (snapshot.val()) {
                                         _user = JSON.parse(JSON.stringify(_user));
-                                        _user.soundcasts_managed[key] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                                        _user.soundcasts_managed[key] = _soundcast;
                                         that.props.signinUser(_user);
-                                        // watch episodes of soundcasts
-                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).off(); // to avoid error when subscribe twice
-                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).on('value', snapshot => {
-                                            if (snapshot.val()) {
-                                                _user = JSON.parse(JSON.stringify(_user));
-                                                _user.soundcasts_managed[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
-                                                that.props.signinUser(_user);
+                                        if (_soundcast.episodes) {
+                                            for (let epkey in _soundcast.episodes) {
+                                                // watch episodes of soundcasts
+                                                firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
+                                                firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
+                                                    if (snapshot.val()) {
+                                                        _user = JSON.parse(JSON.stringify(_user));
+                                                        _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                        that.props.signinUser(_user);
+                                                    }
+                                                });
                                             }
-                                        });
+                                        }
                                     }
                                 });
                             }
@@ -84,17 +89,22 @@ class _Routes extends Component {
                                 firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
                                     if (snapshot.val()) {
                                         _user = JSON.parse(JSON.stringify(_user));
-                                        _user.subscriptions[key] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                                        _user.subscriptions[key] = _soundcast;
                                         that.props.signinUser(_user);
-                                        // watch episodes of soundcasts
-                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).off(); // to avoid error when subscribe twice
-                                        firebase.database().ref(`episodes?orderBy="soundcastID"&equalTo="${key}"`).on('value', snapshot => {
-                                            if (snapshot.val()) {
-                                                _user = JSON.parse(JSON.stringify(_user));
-                                                _user.subscriptions[key].episodes = JSON.parse(JSON.stringify(snapshot.val()));
-                                                that.props.signinUser(_user);
+                                        if (_soundcast.episodes) {
+                                            for (let epkey in _soundcast.episodes) {
+                                                // watch episodes of soundcasts
+                                                firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
+                                                firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
+                                                    if (snapshot.val()) {
+                                                        _user = JSON.parse(JSON.stringify(_user));
+                                                        _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                        that.props.signinUser(_user);
+                                                    }
+                                                });
                                             }
-                                        });
+                                        }
                                     }
                                 });
                             }

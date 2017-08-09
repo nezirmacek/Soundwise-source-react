@@ -1,4 +1,4 @@
-web (https://github.com/natashache/SoundwiseCMS_mobile):
+web (https://github.com/natashache/SoundwiseCMS_web):
     1. soundcast:
         - Each series in the library will need to be updated as the group administrator upload new episodes from the
         web interface.
@@ -41,7 +41,7 @@ web (https://github.com/natashache/SoundwiseCMS_mobile):
         - The first admin of an organization will need to create a user account for herself,
         - create a publisher for the organization,
         - and then she has the right to make others admins of the publisher.
-mobile:
+mobile (https://github.com/natashache/SoundwiseCMS_mobile):
     0. common:
         - start a new react native project called “SoundwiseCMS_mobile”, copy and paste the useful code from the old
         app, and then push it to the new GitHub repo for the mobile app
@@ -95,7 +95,7 @@ firebase:
 
         episode: {
             "title": "Example Episode",
-            "timestamp": 1501556215,
+            "date_created": 1501556215,
             "creatorID": "xD5tW78sX6M96C4xpd7iOIN5Qth1",
             "description": "This is an example episode.",
             "url": "https://s3.amazonaws.com/soundwiseinc/demo/7+Instant+Gratification.mp3",

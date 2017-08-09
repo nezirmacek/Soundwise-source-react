@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 
 import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
+import SoundcastsManaged from './components/soundcasts_managed';
 
 const verticalMenuItems = [
     {
@@ -78,7 +79,10 @@ class _Dashboard extends Component {
                     <div className="col-lg-10 col-md-9 col-sm-8 col-xs-6" style={styles.contentWrapper}>
                         {
                             this.state.activeMenuItem === 0 &&
-                            null
+                            <SoundcastsManaged
+                                userInfo={userInfo}
+                                history={history}
+                            />
                             ||
                             this.state.activeMenuItem === 1 &&
                             <CreateEpisode

@@ -148,7 +148,7 @@ export default class CreateEpisode extends Component {
                 title,
                 description,
                 actionstep: actions,
-                timestamp: moment().format('X'),
+                date_created: moment().format('X'),
                 creatorID: firebase.auth().currentUser.uid,
                 url: audioUrl,
                 notes: notesUrl,
@@ -162,6 +162,15 @@ export default class CreateEpisode extends Component {
                 },
                 err => {
                     console.log('ERROR add episode: ', err);
+                }
+            );
+    
+            firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
+                res => {
+                    console.log('success add episodeID to soundcast: ', res);
+                },
+                err => {
+                    console.log('ERROR add episodeID to soundcast: ', err);
                 }
             );
         }
