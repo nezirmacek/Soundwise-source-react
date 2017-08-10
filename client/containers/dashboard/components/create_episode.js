@@ -115,8 +115,13 @@ export default class CreateEpisode extends Component {
     _uploadToAws (file, type) {
         const _self = this;
         let data = new FormData();
-        const splittedFileName = file.name.split('.');
-        const ext = (splittedFileName)[splittedFileName.length - 1];
+        let ext = '';
+        if (file.name) {
+            const splittedFileName = file.name.split('.');
+            ext = (splittedFileName)[splittedFileName.length - 1];
+        } else {
+            ext = 'mp3';
+        }
         data.append('file', file, `${this.episodeId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
         axios.post('http://localhost:3000/api/fileUploads/upload', data)
