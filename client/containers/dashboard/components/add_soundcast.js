@@ -11,7 +11,7 @@ import firebase from 'firebase';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
-import { OrangeSubmitButton } from '../../../components/buttons/buttons';
+import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
 export default class AddSoundcast extends Component {
     constructor (props) {
@@ -20,7 +20,7 @@ export default class AddSoundcast extends Component {
         this.state = {
             title: '',
             subscribers: '',
-            imageUrl: '',
+            imageURL: '',
             fileUploaded: false,
         };
     
@@ -38,7 +38,7 @@ export default class AddSoundcast extends Component {
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
-                _self.setState({imageUrl: (JSON.parse(res.data))[0].url});
+                _self.setState({imageURL: (JSON.parse(res.data))[0].url});
             })
             .catch(function (err) {
                 // POST failed...
@@ -54,7 +54,7 @@ export default class AddSoundcast extends Component {
     }
     
     submit () {
-        const { title, imageUrl, subscribers } = this.state;
+        const { title, imageURL, subscribers } = this.state;
         const { userInfo, history } = this.props;
     
         const subscribersArr = subscribers.split(',');
@@ -68,7 +68,7 @@ export default class AddSoundcast extends Component {
         
         const newSoundcast = {
             title,
-            imageUrl,
+            imageURL,
             creatorID,
             publisherID: userInfo.publisherID,
             subscribed,
@@ -122,7 +122,7 @@ export default class AddSoundcast extends Component {
     }
     
     render() {
-        const { imageUrl, title, subscribers, fileUploaded } = this.state;
+        const { imageURL, title, subscribers, fileUploaded } = this.state;
         const { userInfo, history } = this.props;
         
         return (
@@ -174,7 +174,7 @@ export default class AddSoundcast extends Component {
                                         onClick={() => {document.getElementById('upload_hidden_cover').click();}}
                                     />
                                     {
-                                        !imageUrl
+                                        !imageURL
                                         &&
                                         <button
                                             onClick={() => {fileUploaded && this._uploadToAws(document.getElementById('upload_hidden_cover').files[0]);}}
@@ -189,17 +189,19 @@ export default class AddSoundcast extends Component {
                                 <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                        <OrangeSubmitButton
-                            label="Add New Soundcast"
-                            onClick={this.submit.bind(this)}
-                        />
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    
+                        
+                        <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                            <OrangeSubmitButton
+                                label="Add New Soundcast"
+                                onClick={this.submit.bind(this)}
+                            />
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <TransparentShortSubmitButton
+                                label="Cancel"
+                                onClick={() => history.goBack()}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

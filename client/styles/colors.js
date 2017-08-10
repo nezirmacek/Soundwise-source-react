@@ -11,6 +11,7 @@ const Colors = {
     black: '#000',
     lightGrey: '#acb3bc',
     link: '#61e1fb',
+    darkGrey: '#4a4a4a',
 };
 
 export default Colors;
