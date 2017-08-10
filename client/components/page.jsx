@@ -10,6 +10,7 @@ import Media_mention from './media_mention'
 import Callto_action from './callto_action'
 import Footer from './footer'
 import Pricing from './pricing'
+import Video from './video'
 
 const customContentStyle = {
   width: '100%',
@@ -36,7 +37,7 @@ class Page extends Component {
             <Header></Header>
             <Banner></Banner>
             <Feature_section></Feature_section>
-
+            <Video></Video>
             <Pricing></Pricing>
             <Media_mention></Media_mention>
             <Callto_action></Callto_action>
