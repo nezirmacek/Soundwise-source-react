@@ -6,11 +6,11 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import Colors from '../../../styles/colors';
+import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 
 export default class SoundcastsManaged extends Component {
     render() {
-        // const {  } = this.state;
-        const { userInfo } = this.props;
+        const { userInfo, history } = this.props;
     
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
@@ -64,14 +64,18 @@ export default class SoundcastsManaged extends Component {
                                     <div style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
                                     <div style={{...styles.button, borderColor: Colors.mainGrey}}>Add new episode</div>
                                 </div>
-    
-                                <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div style={styles.addButton}>Add New Soundcast</div>
-                                </div>
                             </div>
                         );
                     })
                 }
+                <div className="row" style={styles.row}>
+                    <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <OrangeSubmitButton
+                            label="Add New Soundcast"
+                            onClick={() => {history.push('/dashboard/add_soundcast');}}
+                        />
+                    </div>
+                </div>
             </div>
         );
     }
@@ -149,21 +153,5 @@ const styles = {
         marginTop: 10,
         marginRight: 15,
         borderStyle: 'solid',
-    },
-    addButton: {
-        width: 219,
-        height: 30,
-        backgroundColor: Colors.mainOrange,
-        borderRadius: 15,
-        overflow: 'hidden',
-        margin: '40px auto',
-        fontSize: 13,
-        letterSpacing: 2.5,
-        wordSpacing: 5,
-        color: Colors.mainWhite,
-        paddingTop: 4,
-        paddingRight: 20,
-        paddingBottom: 4,
-        paddingLeft: 20,
     },
 };

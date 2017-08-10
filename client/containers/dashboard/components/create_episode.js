@@ -350,7 +350,6 @@ export default class CreateEpisode extends Component {
                                     ||
                                     null
                                 }
-                                
                             </div>
                             <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                         </div>
