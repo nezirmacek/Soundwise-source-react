@@ -58,7 +58,7 @@ class _SoundwiseHeader extends Component {
             return (
                 <ul className="nav navbar-nav">
                     <li className="menu-button">
-                        <Link to='/dashboard' className="inner-link">
+                        <Link to='/dashboard/add_episode' className="inner-link">
                             <label className="inner-link orange-text">+</label>
                             Add new episode
                         </Link>

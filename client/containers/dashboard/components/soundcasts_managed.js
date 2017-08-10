@@ -8,16 +8,6 @@ import moment from 'moment';
 import Colors from '../../../styles/colors';
 
 export default class SoundcastsManaged extends Component {
-    constructor(props) {
-        super(props);
-        
-        
-    }
-    
-    componentDidMount () {
-    
-    }
-    
     render() {
         // const {  } = this.state;
         const { userInfo } = this.props;
@@ -38,8 +28,6 @@ export default class SoundcastsManaged extends Component {
                 _soundcasts_managed.push(_soundcast);
             }
         }
-
-        console.log('>>>>>>>>>>_soundcasts_managed', _soundcasts_managed);
         
         return (
             <div>
@@ -68,6 +56,7 @@ export default class SoundcastsManaged extends Component {
                                         <span style={styles.soundcastUpdated}>
                                             {soundcast.subscribers && Object.keys(soundcast.subscribers).length || 0} subscribers
                                         </span>
+                                        <span style={styles.addLink}>Add</span>
                                     </div>
                                 </div>
                                 <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
@@ -132,6 +121,18 @@ const styles = {
         paddingTop: 10,
         float: 'right',
         fontSize: 9,
+    },
+    addLink: {
+        color: Colors.link,
+        fontSize: 9,
+        display: 'block',
+        float: 'none',
+        height: 11,
+        lineHeight: '11px',
+        position: 'relative',
+        bottom: 5,
+        width: 16,
+        margin: '0 auto',
     },
     button: {
         height: 22,

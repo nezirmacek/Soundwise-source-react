@@ -163,7 +163,7 @@ class _Routes extends Component {
                 <Route path="/staging/:courseId" component={Staged_Course} />
                 <Route path="/password_reset" component={PassRecovery} />
                 <Route exact path ="/courses" component={CoursesCatalog} />
-                <Route path="/dashboard" component={Dashboard} />
+                <Route path="/dashboard/:tab" component={Dashboard} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>
