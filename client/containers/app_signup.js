@@ -160,7 +160,17 @@ class _AppSignup extends Component {
                     <div style={styles.containerWrapper}>
                         <div style={styles.container} className="center-col text-center">
                             <div style={styles.title}>Let's get started!</div>
-                            <img alt="Sign up with Facebook" src="/images/signup-with-facebook-button.png" style={styles.fb}/>
+                            <button
+                                onClick={() => this.handleFBAuth()}
+                                className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
+                                style={styles.fb}
+                            >
+                                <i
+                                    className="fa fa-facebook icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
+                                    style={styles.fbIcon}
+                                ></i>
+                                <span className="tz-text">Sign up with Facebook</span>
+                            </button>
                             <hr />
                             <span style={styles.withEmailText}>or with email</span>
                         </div>
@@ -245,8 +255,6 @@ const styles = {
         paddingLeft: 0,
     },
     logo: {
-        width: 163,
-        height: 39,
         marginBottom: 18,
     },
     containerWrapper: {
@@ -267,6 +275,13 @@ const styles = {
         width: 212,
         height: 44,
         marginTop: 16,
+    },
+    fbIcon: {
+        marginLeft: 0,
+        marginRight: 20,
+        position: 'relative',
+        bottom: 2,
+        right: '10%',
     },
     withEmailText: {
         fontSize: 9,
