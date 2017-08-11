@@ -8,25 +8,26 @@ import PropTypes from 'prop-types';
 const props = {
     label: PropTypes.string,
     onClick: PropTypes.func,
+    styles: PropTypes.object,
 };
 
 export const OrangeSubmitButton = (props) => {
-    const { label, onClick } = props;
+    const { label, onClick, styles } = props;
     return (
-        <div style={styles.orangeSubmitButton} onClick={onClick}>{label}</div>
+        <div style={{..._styles.orangeSubmitButton, ...(styles || {}) }} onClick={onClick}>{label}</div>
     );
 };
 OrangeSubmitButton.propTypes = props;
 
 export const TransparentShortSubmitButton = (props) => {
-    const { label, onClick } = props;
+    const { label, onClick, styles } = props;
     return (
-        <div style={{...styles.orangeSubmitButton, ...styles.transparentShortSubmitButton}} onClick={onClick}>{label}</div>
+        <div style={{..._styles.orangeSubmitButton, ..._styles.transparentShortSubmitButton, ...(styles || {}) }} onClick={onClick}>{label}</div>
     );
 };
 TransparentShortSubmitButton.propTypes = props;
 
-const styles = {
+const _styles = {
     orangeSubmitButton: {
         width: 219,
         height: 30,

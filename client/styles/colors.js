@@ -12,6 +12,8 @@ const Colors = {
     lightGrey: '#acb3bc',
     link: '#61e1fb',
     darkGrey: '#4a4a4a',
+    window: '#eee',
+    mainGreen: '#88d68f',
 };
 
 export default Colors;

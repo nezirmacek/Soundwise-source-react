@@ -23,7 +23,7 @@ export default class ValidatedInput extends Component {
     }
     
     render () {
-        const { validators, styles, type, placeholder, onChange, value, wrapperStyles } = this.props;
+        const { validators, styles, type, placeholder, onChange, value, wrapperStyles, errorStyles } = this.props;
         const { isTouched } = this.state;
         const _validateResults = [];
         validators.map((validator) => {
@@ -47,7 +47,7 @@ export default class ValidatedInput extends Component {
                     &&
                     _validateResults.map((error, i) => {
                         return (
-                            <div key={i} style={_styles.errorText}>
+                            <div key={i} style={{..._styles.errorText, ...(errorStyles || {})}}>
                                 {error}
                             </div>
                         );
@@ -64,6 +64,7 @@ ValidatedInput.propTypes = {
     validators: PropTypes.array,
     styles: PropTypes.object,
     wrapperStyles: PropTypes.object,
+    errorStyles: PropTypes.object,
     type: PropTypes.string,
     placeholder: PropTypes.string,
     onChange: PropTypes.func,

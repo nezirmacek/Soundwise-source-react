@@ -120,7 +120,7 @@ export default class CreateEpisode extends Component {
             const splittedFileName = file.name.split('.');
             ext = (splittedFileName)[splittedFileName.length - 1];
         } else {
-            ext = 'mp3';
+            const ext = 'mp3';
         }
         data.append('file', file, `${this.episodeId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
