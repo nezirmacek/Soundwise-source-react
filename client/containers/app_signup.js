@@ -41,9 +41,9 @@ class _AppSignup extends Component {
     
     async signUp() {
         const that = this;
-        const {firstName, lastName, email, password, pic_url} = this.state;
+        const {firstName, lastName, email, password, pic_url, isAccepted} = this.state;
     
-        if (!this._validateForm(firstName, lastName, email, password)) return;
+        if (!this._validateForm(firstName, lastName, email, password, isAccepted)) return;
         
         try {
             await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password);
@@ -63,7 +63,7 @@ class _AppSignup extends Component {
         }
     }
     
-    _validateForm (firstName, lastName, email, password) {
+    _validateForm (firstName, lastName, email, password, isAccepted) {
         if(firstName.length < 1 || lastName.length < 1) {
             alert('Please enter your name!');
             return false;
@@ -72,6 +72,9 @@ class _AppSignup extends Component {
             return false;
         } else if (password.length < 1 ) {
             alert('Please enter a passowrd!');
+            return false;
+        } else if (!isAccepted ) {
+            alert('Please read and accept terms of use and privacy policy!');
             return false;
         } else {
             return true;
