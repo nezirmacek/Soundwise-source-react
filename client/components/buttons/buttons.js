@@ -14,7 +14,12 @@ const props = {
 export const OrangeSubmitButton = (props) => {
     const { label, onClick, styles } = props;
     return (
-        <div style={{..._styles.orangeSubmitButton, ...(styles || {}) }} onClick={onClick}>{label}</div>
+        <div
+            style={{..._styles.orangeSubmitButton, ...(styles || {}) }} onClick={onClick}
+            className="text-center"
+        >
+            {label}
+        </div>
     );
 };
 OrangeSubmitButton.propTypes = props;
@@ -22,7 +27,12 @@ OrangeSubmitButton.propTypes = props;
 export const TransparentShortSubmitButton = (props) => {
     const { label, onClick, styles } = props;
     return (
-        <div style={{..._styles.orangeSubmitButton, ..._styles.transparentShortSubmitButton, ...(styles || {}) }} onClick={onClick}>{label}</div>
+        <div
+            style={{..._styles.orangeSubmitButton, ..._styles.transparentShortSubmitButton, ...(styles || {}) }} onClick={onClick}
+            className="text-center"
+        >
+            {label}
+        </div>
     );
 };
 TransparentShortSubmitButton.propTypes = props;
