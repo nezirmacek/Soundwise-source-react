@@ -47,7 +47,7 @@ class _AppSignin extends Component {
                     let _user = JSON.parse(JSON.stringify(snapshot.val()));
                     signinUser(_user);
                     if (_user.admin) {
-                        history.push('/dashboard');
+                        history.push('/dashboard/add_episode');
                     } else {
                         history.push('/myprograms');
                     }
@@ -178,7 +178,7 @@ class _AppSignin extends Component {
                         signinUser(_user);
                         
                         if (_user.admin) {
-                            history.push('/dashboard');
+                            history.push('/dashboard/add_episode');
                         } else {
                             history.push('/myprograms');
                         }

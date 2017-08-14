@@ -86,7 +86,7 @@ class _AppSignup extends Component {
                     firebase.database().ref(`publishers/${this.publisherName}`).set(_newPublisher).then(
                         res => {
                             console.log('success add publisher: ', res);
-                            history.push('/dashboard');
+                            history.push('/dashboard/add_episode');
                         },
                         err => {
                             console.log('ERROR add publisher: ', err);
