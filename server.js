@@ -1,9 +1,9 @@
 require('dotenv').config()
 var express = require('express')
-var handlePayment = require('./server/payment.js').handlePayment
-var handleEmailSignup = require('./server/emailSignup.js').handleEmailSignup
-var handleReferral = require('./server/emailSignup.js').handleReferral
-var handleTrialRequest = require('./server/emailSignup.js').handleTrialRequest
+var handlePayment = require('./api/server/scripts/payment.js').handlePayment
+var handleEmailSignup = require('./api/server/scripts/emailSignup.js').handleEmailSignup
+var handleReferral = require('./api/server/scripts/emailSignup.js').handleReferral
+var handleTrialRequest = require('./api/server/scripts/emailSignup.js').handleTrialRequest
 
 var bodyParser = require('body-parser')
 var path = require('path')
