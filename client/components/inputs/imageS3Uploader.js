@@ -20,6 +20,13 @@ export default class ImageS3Uploader extends Component {
         this.visibleFileInputRef = null;
     }
     
+    componentDidMount () {
+        // const _input = document.getElementById('upload_hidden_cover');
+        // _input.addEventListener('change', (e) => {
+        //     console.log('>>>>>>>>>>PATH', e);
+        // });
+    }
+    
     _uploadToAws (file) {
         const { cb, fileName } = this.props;
         const _self = this;
@@ -45,7 +52,7 @@ export default class ImageS3Uploader extends Component {
         if (e.target.value) {
             this.setState({fileUploaded: true});
         }
-        this.visibleFileInputRef.value = e.target.value;
+        this.visibleFileInputRef.value = e.target.files[0].name;
     }
     
     render () {

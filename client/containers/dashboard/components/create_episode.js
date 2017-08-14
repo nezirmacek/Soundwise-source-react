@@ -197,7 +197,7 @@ export default class CreateEpisode extends Component {
                 _soundcasts_managed.push(_soundcast);
             }
         }
-        this.currentSoundcastId = this.currentSoundcastId || _soundcasts_managed[0].id;
+        this.currentSoundcastId = this.currentSoundcastId || _soundcasts_managed.length && _soundcasts_managed[0].id || null;
         
         return (
             <div>

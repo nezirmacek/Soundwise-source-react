@@ -42,7 +42,7 @@ const _styles = {
         boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.5)',
     },
     errorStyles: {
-        fontSize: 9,
+        fontSize: 11,
         position: 'relative',
         bottom: 20,
     },

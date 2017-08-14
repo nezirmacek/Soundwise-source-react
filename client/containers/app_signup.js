@@ -37,17 +37,18 @@ class _AppSignup extends Component {
             pic_url: props.match.params.mode === 'admin' && '../images/publisher_image.png' || '../images/smiley_face.jpg',
             publisherImage: null,
             redirectToReferrer: false,
-            isAccepted: false,
             isPublisherFormShown: false,
+            isFBauth: false,
         };
         
         this.publisherName = moment().format('x') + 'p';
     }
     
     signUp() {
-        const {firstName, lastName, email, password, pic_url, isAccepted} = this.state;
+        const {firstName, lastName, email, password, pic_url} = this.state;
     
-        if (!this._validateForm(firstName, lastName, email, password, isAccepted)) return;
+        this.setState({ isFBauth: false });
+        if (!this._validateForm(firstName, lastName, email, password)) return;
         
         if (!this.props.match.params.mode === 'admin') { // user case
             this._signUp();
@@ -61,72 +62,87 @@ class _AppSignup extends Component {
     }
     
     signUpAdmin () {
-        const {firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isAccepted} = this.state;
+        const { match, history } = this.props;
+        const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
+        this.setState({ isFBauth: true });
         if(publisher_name.length < 1) {
             alert('Please enter your name!');
             return;
         }
-        if (!this._validateForm(firstName, lastName, email, password, isAccepted)) return;
+        if (!this._validateForm(firstName, lastName, email, password, isFBauth)) return;
     
-        this._signUp();
-    
-        if (this.props.match.params.mode === 'admin') { // admin case
-            let _newPublisher = {
-                name: publisher_name,
-                imageUrl: publisherImage,
-                // TODO: add admins!!!
-                // administrators: {
-                //     [firebase.auth().currentUser.uid]: true,
-                // },
-            };
-    
-            firebase.database().ref(`publishers/${this.publisherName}`).set(_newPublisher).then(
-                res => {
-                    console.log('success add publisher: ', res);
-                },
-                err => {
-                    console.log('ERROR add publisher: ', err);
+        this._signUp().then(
+            res => {
+                if (this.props.match.params.mode === 'admin') { // admin case
+                    
+                    let _newPublisher = {
+                        name: publisher_name,
+                        imageUrl: publisherImage,
+                        administrators: {
+                            [firebase.auth().currentUser.uid]: true,
+                        },
+                    };
+        
+                    firebase.database().ref(`publishers/${this.publisherName}`).set(_newPublisher).then(
+                        res => {
+                            console.log('success add publisher: ', res);
+                            history.push('/dashboard');
+                        },
+                        err => {
+                            console.log('ERROR add publisher: ', err);
+                        }
+                    );
                 }
-            );
-        }
+            }
+        );
     }
     
-    async _signUp () {
-        const that = this;
-        const {firstName, lastName, email, password, pic_url, isAccepted} = this.state;
-        try {
-            await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password);
-            this.setState({message: "account created"});
-        
-            const userId = firebase.auth().currentUser.uid;
-            const userToSave = {firstName, lastName, email, pic_url};
-            firebase.database().ref('users/' + userId).set(userToSave);
-        
-            that.props.signupUser(userToSave);
-            that.props.history.push('/myprograms');
-        } catch (error) {
-            this.setState({
-                message: error.toString()
-            });
-            console.log(error.toString())
-        }
-    }
-    
-    _validateForm (firstName, lastName, email, password, isAccepted) {
+    _validateForm (firstName, lastName, email, password, isFBauth) {
         if(firstName.length < 1 || lastName.length < 1) {
             alert('Please enter your name!');
             return false;
         } else if (email.indexOf('@') < 0) {
             alert ('Please enter a valid email!');
             return false;
-        } else if (password.length < 1 ) {
+        } else if (password.length < 1 && !isFBauth ) {
             alert('Please enter a passowrd!');
-            return false;
-        } else if (!isAccepted ) {
-            alert('Please read and accept terms of use and privacy policy!');
             return false;
         } else {
             return true;
+        }
+    }
+    
+    async _signUp () {
+        const { match, history, signupUser } = this.props;
+        const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
+        try {
+            if (!isFBauth) {
+                await firebase.auth().createUserWithEmailAndPassword(email, password);
+            }
+            this.setState({message: "account created"});
+            this.signUpUser();
+            return true;
+        } catch (error) {
+            this.setState({
+                message: error.toString()
+            });
+            console.log(error.toString());
+            Promise.reject(error);
+        }
+    }
+    
+    signUpUser () {
+        const { match, history, signupUser } = this.props;
+        const {firstName, lastName, email, pic_url} = this.state;
+        
+        const userId = firebase.auth().currentUser.uid;
+        const userToSave = {firstName, lastName, email, pic_url};
+        firebase.database().ref('users/' + userId).set(userToSave);
+    
+        signupUser(userToSave);
+        // for user -> goTo myPrograms, for admin need to register publisher first
+        if (match.params.mode !== 'admin') {
+            history.push('/myprograms');
         }
     }
     
@@ -137,7 +153,9 @@ class _AppSignup extends Component {
     }
     
     handleFBAuth() {
+        const { match, history, signupUser } = this.props;
         const that = this;
+        this.setState({ isFBauth: true });
         
         firebase.auth().signInWithPopup(provider)
             .then(function(result) {
@@ -145,14 +163,24 @@ class _AppSignup extends Component {
                 // The signed-in user info.
                 const { email, photoURL, displayName } = result.user;
                 const name = displayName.split(' ');
-                const userToSave = {firstName: name[0], lastName: name[1], email, pic_url: photoURL};
                 
-                const userId = firebase.auth().currentUser.uid;
-                firebase.database().ref('users/' + userId).set(userToSave);
-                
-                that.props.signupUser(userToSave);
-                that.props.history.push('/myprograms')
-                
+                if (match.params.mode === 'admin') {
+                    that.setState({
+                        firstName: name[0],
+                        lastName: name[1],
+                        email,
+                        pic_url: photoURL,
+                        isPublisherFormShown: true,
+                    });
+                } else {
+                    that.setState({
+                        firstName: name[0],
+                        lastName: name[1],
+                        email,
+                        pic_url: photoURL,
+                    });
+                    that.signUpUser();
+                }
             })
             .catch(function(error) {
                 // Handle Errors here.
@@ -182,19 +210,23 @@ class _AppSignup extends Component {
                                     .once('value')
                                     .then(snapshot => {
                                         const { firstName, lastName, email, pic_url } = snapshot.val();
-                                        that.props.signupUser({firstName, lastName, email, pic_url});
-                                        that.props.history.push('/myprograms');
+                                        that.setState({ firstName, lastName, email, pic_url });
+                                        if (match.params.mode === 'admin') {
+                                            that.setState({isPublisherFormShown: true});
+                                        } else {
+                                            that.signUpUser();
+                                        }
                                     });
                             })
                         }
-                        
                     })
                 }
             });
     }
     
     render() {
-        const { firstName, lastName, email, password, redirectToReferrer, isAccepted, isPublisherFormShown, publisher_name } = this.state;
+        const { match } = this.props;
+        const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name } = this.state;
         const { from } = this.props.location.state || { from: { pathname: '/courses' } };
         
         if(redirectToReferrer) {
@@ -268,25 +300,34 @@ class _AppSignup extends Component {
                                     validators={[minLengthValidator.bind(null, 1)]}
                                 />
                                 <div>
-                                    <input
-                                        type="checkbox"
-                                        onChange={(e) => {this.setState({isAccepted: e.target.checked});}}
-                                        checked={isAccepted}
-                                        style={styles.checkbox}
-                                    />
+                                    {/*<input*/}
+                                        {/*type="checkbox"*/}
+                                        {/*onChange={(e) => {this.setState({isAccepted: e.target.checked});}}*/}
+                                        {/*checked={isAccepted}*/}
+                                        {/*style={styles.checkbox}*/}
+                                    {/*/>*/}
                                     <span style={styles.acceptText}>
-                                        I agree to the terms of use and privacy policy
+                                        By signing up I accept the terms of use and privacy policy
                                     </span>
                                 </div>
-                                <OrangeSubmitButton
-                                    label="NEXT"
-                                    onClick={this.signUp.bind(this)}
-                                    styles={styles.submitButton}
-                                />
+                                {
+                                    match.params.mode === 'admin'
+                                    &&
+                                    <OrangeSubmitButton
+                                        label="NEXT"
+                                        onClick={this.signUp.bind(this)}
+                                    />
+                                    ||
+                                    <OrangeSubmitButton
+                                        label="CREATE ACCOUNT"
+                                        onClick={this.signUp.bind(this)}
+                                        styles={styles.submitButton}
+                                    />
+                                }
                                 <hr />
                                 <div>
                                     <span style={styles.italicText}>Already have an account? </span>
-                                    <span style={{...styles.italicText, color: Colors.link}}>Sign in ></span>
+                                    <Link to="/signin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in ></Link>
                                 </div>
                             </div>
                         </div>
@@ -358,7 +399,7 @@ const styles = {
     },
     title: {
         paddingTop: 20,
-        fontSize: 17,
+        fontSize: 19,
         color: Colors.fontBlack,
     },
     fb: {
@@ -374,7 +415,7 @@ const styles = {
         right: '10%',
     },
     withEmailText: {
-        fontSize: 9,
+        fontSize: 11,
         display: 'inline-block',
         paddingLeft: 20,
         paddingRight: 20,
@@ -387,7 +428,7 @@ const styles = {
         width: 20,
     },
     acceptText: {
-        fontSize: 9,
+        fontSize: 11,
         position: 'relative',
         bottom: 3,
     },
@@ -398,7 +439,7 @@ const styles = {
         borderColor: Colors.link,
     },
     italicText: {
-        fontSize: 9,
+        fontSize: 11,
         fontStyle: 'Italic',
         marginBottom: 10,
         display: 'inline-block',
@@ -407,14 +448,14 @@ const styles = {
     },
     
     inputLabel: {
-        fontSize: 10,
+        fontSize: 12,
         marginBottom: 0,
         marginTop: 0,
         position: 'relative',
         top: 10,
     },
     greyInputText: {
-        fontSize: 10,
+        fontSize: 12,
     },
 };
 

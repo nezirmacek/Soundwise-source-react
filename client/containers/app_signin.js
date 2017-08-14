@@ -1,19 +1,19 @@
-import React, {Component} from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import * as firebase from "firebase"
-import {orange500, blue500} from 'material-ui/styles/colors'
+import React, {Component} from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as firebase from 'firebase';
+import {orange500, blue500} from 'material-ui/styles/colors';
 import {
   Route,
   Link,
   Redirect
-} from 'react-router-dom'
-import { withRouter } from 'react-router'
+} from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-import {SoundwiseHeader} from '../components/soundwise_header'
-import { signinUser } from '../actions/index'
+import {SoundwiseHeader} from '../components/soundwise_header';
+import { signinUser } from '../actions/index';
 
-var provider = new firebase.auth.FacebookAuthProvider()
+var provider = new firebase.auth.FacebookAuthProvider();
 
 const styles = {
   button: {
@@ -40,9 +40,9 @@ class _AppSignin extends Component {
       courses: '',
       redirectToReferrer: false
     }
-    this.signIn = this.signIn.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.handleFBAuth = this.handleFBAuth.bind(this)
+    this.signIn = this.signIn.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleFBAuth = this.handleFBAuth.bind(this);
   }
     
     async signIn() {
@@ -277,26 +277,74 @@ class _AppSignin extends Component {
           <div className="container">
               <div className="row">
                   <div className="col-md-8 center-col col-sm-12 text-center">
-                      <h2 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text" style={styles.headerText}>Log In</h2>
-                      <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Need a Soundwise account? <Link to="/signup" className="text-decoration-underline">Get started here.</Link></div>
+                      <h2
+                          className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text"
+                          style={styles.headerText}
+                      >
+                          Log In
+                      </h2>
+                      <div
+                          className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"
+                      >
+                          Need a Soundwise account?
+                          <Link to="/signup/user" className="text-decoration-underline">
+                              Get started here.
+                          </Link>
+                      </div>
                   </div>
-                  <div className="col-md-6 col-sm-11 col-xs-11 center-col text-center" style={{padding: '1.5em', margin: '2em'}}>
-                      <button onClick={() => this.handleFBAuth()}  className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"><i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i><span className="tz-text">Log in with Facebook</span></button>
+                  <div
+                      className="col-md-6 col-sm-11 col-xs-11 center-col text-center"
+                      style={{padding: '1.5em', margin: '2em'}}
+                  >
+                      <button
+                          onClick={() => this.handleFBAuth()}
+                          className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"
+                      >
+                          <i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i>
+                          <span className="tz-text">Log in with Facebook</span>
+                      </button>
                   </div>
                   <div className="col-md-6 center-col col-sm-12 text-center">
-                      <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Or</div>
-                      <h4 className="title-extra-large xs-title-large width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">Sign in with email</h4>
+                      <div
+                          className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"
+                      >
+                          Or
+                      </div>
+                      <h4
+                          className="title-extra-large xs-title-large width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"
+                      >
+                          Sign in with email
+                      </h4>
                   </div>
                   <div className="col-md-6 center-col col-sm-12 text-center">
                           <input
                             onChange={this.handleChange}
-                            value={email} type="email" name="email" id="email" data-email="required" placeholder="Email" className="big-input bg-light-gray alt-font border-radius-4"/>
+                            value={email}
+                            type="email"
+                            name="email"
+                            id="email"
+                            data-email="required"
+                            placeholder="Email"
+                            className="big-input bg-light-gray alt-font border-radius-4"
+                          />
                           <input
                             onChange={this.handleChange}
-                            value={password} type="password" name="password" id="password" data-email="required" placeholder="Password" className="big-input bg-light-gray alt-font border-radius-4"/>
+                            value={password}
+                            type="password"
+                            name="password"
+                            id="password"
+                            data-email="required"
+                            placeholder="Password"
+                            className="big-input bg-light-gray alt-font border-radius-4"
+                          />
                           <button
                             onClick={this.signIn}
-                            type="submit" className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text" style={styles.button}>Log In</button>
+                            type="submit"
+                            className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text"
+                            style={styles.button}
+                          >
+                              Log In
+                          </button>
                           <div className="pull-right">
                             <a href="https://mysoundwise.com/password_reset" target="_blank">Forgot your password?</a>
                           </div>

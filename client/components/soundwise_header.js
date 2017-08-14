@@ -55,35 +55,55 @@ class _SoundwiseHeader extends Component {
 
     renderLogin() {
         if(this.props.isLoggedIn) {
-            return (
-                <ul className="nav navbar-nav">
-                    <li className="menu-button">
-                        <Link to='/dashboard/add_episode' className="inner-link">
-                            <label className="inner-link orange-text">+</label>
-                            Add new episode
-                        </Link>
-                    </li>
-                    <li className="propClone sm-no-border">
-                        <Link to='/courses' className="inner-link">COURSES</Link>
-                    </li>
-                    <li>
-                        <Link to='/myprograms'>My Library</Link>
-                    </li>
-                    <li className="propClone sm-no-border" >
-                        <a className='dropdown-toggle' data-toggle="dropdown">
-                            {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
-                            <span className="caret"></span>
-                        </a>
-                        <ul className="dropdown-menu">
-                            <li>
-                                <a onClick={() => this.signoutUser()}>
-                                    <font style={{color: 'black'}}>LOG OUT</font>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            );
+            if (this.props.userInfo.admin) {
+                return (
+                    <ul className="nav navbar-nav">
+                        <li className="menu-button">
+                            <Link to='/dashboard/add_episode' className="inner-link">
+                                <label className="inner-link orange-text">+</label>
+                                Add new episode
+                            </Link>
+                        </li>
+                        <li className="propClone sm-no-border" >
+                            <a className='dropdown-toggle' data-toggle="dropdown">
+                                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                                <span className="caret"></span>
+                            </a>
+                            <ul className="dropdown-menu">
+                                <li>
+                                    <a onClick={() => this.signoutUser()}>
+                                        <font style={{color: 'black'}}>LOG OUT</font>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                );
+            } else {
+                return (
+                    <ul className="nav navbar-nav">
+                        <li className="propClone sm-no-border">
+                            <Link to='/courses' className="inner-link">COURSES</Link>
+                        </li>
+                        <li>
+                            <Link to='/myprograms'>My Library</Link>
+                        </li>
+                        <li className="propClone sm-no-border" >
+                            <a className='dropdown-toggle' data-toggle="dropdown">
+                                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                                <span className="caret"></span>
+                            </a>
+                            <ul className="dropdown-menu">
+                                <li>
+                                    <a onClick={() => this.signoutUser()}>
+                                        <font style={{color: 'black'}}>LOG OUT</font>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                );
+            }
         } else {
             return (
                 <ul className="nav navbar-nav">
@@ -116,12 +136,14 @@ class _SoundwiseHeader extends Component {
                                 <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                             </div>
                             <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
+                                {/*menu button for md, sm, xs*/}
                                 <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
                                     <span className="sr-only">Toggle navigation</span>
                                     <span className="icon-bar"></span>
                                     <span className="icon-bar"></span>
                                     <span className="icon-bar"></span>
                                 </button>
+                                {/*inline menu for lg*/}
                                 <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right font-weight-500">
                                     {this.renderLogin()}
                                 </div>

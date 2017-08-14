@@ -56,6 +56,7 @@ const _styles = {
         borderColor: Colors.mainOrange,
         borderWidth: 1,
         borderStyle: 'solid',
+        cursor: 'pointer',
     },
     transparentShortSubmitButton: {
         backgroundColor: 'transparent',
