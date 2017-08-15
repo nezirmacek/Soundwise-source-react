@@ -55,6 +55,28 @@ class _Routes extends Component {
                         that.props.signinUser(_user);
     
                         if (_user.soundcasts_managed && _user.admin) {
+                            if (_user.publisherID) {
+								// add publisher with admins (without watching)
+								firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
+									if (snapshot.val()) {
+										const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
+										_publisher.id = _user.publisherID;
+										_user.publisher = _publisher;
+										
+										if (_user.publisher.administrators) {
+										    for (let adminId in _user.publisher.administrators) {
+												firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
+													if (snapshot.val()) {
+														const _admin = JSON.parse(JSON.stringify(snapshot.val()));
+														_user.publisher.administrators[adminId] = _admin;
+													}
+												});
+                                            }
+                                        }
+									}
+								});
+							}
+                            
                             for (let key in _user.soundcasts_managed) {
                                 // watch managed soundcasts
                                 firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
@@ -163,7 +185,8 @@ class _Routes extends Component {
                 <Route path="/staging/:courseId" component={Staged_Course} />
                 <Route path="/password_reset" component={PassRecovery} />
                 <Route exact path ="/courses" component={CoursesCatalog} />
-                <Route path="/dashboard/:tab" component={Dashboard} />
+                <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
+                <Route path="/dashboard/:tab/:id" component={Dashboard} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>

@@ -4,7 +4,8 @@
 const Colors = {
     fontBlack: '#3c3d41',
     fontGrey: '#9b9b9b',
-    mainOrange: '#F76B1C',
+	fontDarkGrey: '#7f8fa4',
+    mainOrange: '#f76b1c',
     mainGrey: '#979797',
     mainWhite: '#fff',
     mainRed: '#ea4f3f',
@@ -14,6 +15,7 @@ const Colors = {
     darkGrey: '#4a4a4a',
     window: '#eee',
     mainGreen: '#88d68f',
+	lightBorder: 'rgba(151, 151, 151, 0.3)',
 };
 
 export default Colors;

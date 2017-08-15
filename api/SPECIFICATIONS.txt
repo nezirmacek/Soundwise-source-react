@@ -111,6 +111,8 @@ firebase:
                 "4fionviutrmrem": true
             }
             isPublished: true,
+            duration: 96,
+            totalListens: 34,
         }
 
         comment:  {
@@ -154,3 +156,15 @@ firebase:
         - A publisher can have one or more administrators who have access to the publisher account.
         For example, the publisher is Keller Williams Realty company. The administrators are the vice president and the
         secretary, who can upload content and distribute to the group.
+        publisher: {
+            name: 'a_publisher',
+            imageUrl: 'https://...',
+            administrators: {
+                eprhegheghgoidfugois: true,
+                cvoiuyoersqpfkqrbqoi: true,
+            },
+            sountcasts: {
+                1231231231234s: true,
+                1502366385413s: true,
+            },
+        }

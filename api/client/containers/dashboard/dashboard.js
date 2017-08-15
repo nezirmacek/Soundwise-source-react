@@ -107,6 +107,7 @@ class _Dashboard extends Component {
                             <currentTab.Component
                                 userInfo={userInfo}
                                 history={history}
+                                id={match.params.id}
                             />
                             ||
                             null

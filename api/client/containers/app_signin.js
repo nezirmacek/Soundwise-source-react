@@ -53,6 +53,28 @@ class _AppSignin extends Component {
                     }
                     
                     if (_user.soundcasts_managed && _user.admin) {
+                        if (_user.publisherID) {
+                            // add publisher with admins (without watching)
+                            firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
+                                if (snapshot.val()) {
+                                    const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
+                                    _publisher.id = _user.publisherID;
+                                    _user.publisher = _publisher;
+                
+                                    if (_user.publisher.administrators) {
+                                        for (let adminId in _user.publisher.administrators) {
+                                            firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
+                                                if (snapshot.val()) {
+                                                    const _admin = JSON.parse(JSON.stringify(snapshot.val()));
+                                                    _user.publisher.administrators[adminId] = _admin;
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        
                         for (let key in _user.soundcasts_managed) {
                             firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
                                 if (snapshot.val()) {
