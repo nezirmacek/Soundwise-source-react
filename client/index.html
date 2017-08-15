@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="https://www.w3.org/1999/xhtml"
+      xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+    <meta name="fragment" content="!">
+<!--     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mysoundwise.com/">
+    <meta property="og:title" content="Soundwise">
+    <meta property="og:description" content="Soundwise is a mobile learning platform that helps you improve your life and career through short audio lessons from top experts in personal development, science, and business.">
+    <meta property="og:image" content="https://mysoundwise.com/images/thumnail_FB.png" />
+    <title>Soundwise</title>
+    <meta name="description" content="Audio courses to help you improve your life and career from top experts in personal development, science, and business." >
+    <meta name="keywords" content="soundwise, soundwise inc, audio, mobile application, learning, online learning, online course, podcast, audio book, audible, marketing, entrepreneurship, fitness, how to, personal development, personal growth, learning on the go, online course, audio course, business, career, life, wellness, relationship, empowerment, spirituality, self help" > -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <base href="/" > -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="css/flat-ui-pro.css" rel="stylesheet"> -->
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/jplayer.flat.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/simple-line-icons.css" type="text/css" />
+    <!-- <link href="/css/font-awesome.min.css" rel="stylesheet"> -->
+    <link href="/css/base.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/magnific-popup.css" rel="stylesheet">
+    <link href="/css/responsive.css" rel="stylesheet">
+    <link href="/css/owl.carousel.css" rel="stylesheet">
+    <link href="/css/owl.transitions.css" rel="stylesheet">
+    <link href="/css/themify-icons.css" rel="stylesheet">
+    <link href="/css/slick-overrides.css" rel="stylesheet">
+    <!-- <link href="/scripts/react-activity/dist/react-activity.css" /> -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <!-- <link rel="shortcut icon" href="images/icon/favicon.ico"> -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+    <link rel="android-chrome-icon" type="image/png" href="/images/android-chrome-192x192.png" sizes="192x192">
+    <link rel="android-chrome-icon" type="image/png" href="/images/android-chrome-512x512.png" sizes="512x512">
+    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Popup Styles start -->
+    <!-- Font Awesome iconic font -->
+    <!-- Google fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Allura&subset=latin' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
+    <!-- slick carousel -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
+    <!-- <script type="text/javascript" src="https://js.stripe.com/v3/"></script> -->
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+</head>
+<body >
+    <div id='root'>
+    </div>
+    <audio
+        preload = 'auto'
+        id='audio'>
+        <source src='' id='audioSource'>
+        </source>
+    </audio>
+    <script type="text/javascript" src='/bundle.js'></script>
+    <script>
+        var siteUrl = '';
+        var baseUrl = '';
+    </script>
+    <!-- javascript libraries -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.appear.js"></script>
+    <script type="text/javascript" src="/js/smooth-scroll.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <!-- wow animation -->
+    <!-- <script type="text/javascript" src="/js/wow.min.js"></script> -->
+    <!-- owl carousel -->
+    <!-- <script type="text/javascript" src="/js/owl.carousel.min.js"></script> -->
+    <!-- images loaded -->
+    <script type="text/javascript" src="/js/imagesloaded.pkgd.min.js"></script>
+    <!-- isotope -->
+    <script type="text/javascript" src="/js/jquery.isotope.min.js"></script>
+    <!-- navigation -->
+    <script type="text/javascript" src="/js/jquery.nav.js"></script>
+    <!-- equalize -->
+    <script type="text/javascript" src="/js/equalize.min.js"></script>
+    <!-- fit videos -->
+    <script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+    <!-- number counter -->
+    <script type="text/javascript" src="/js/jquery.countTo.js"></script>
+    <!-- time counter  -->
+    <!-- <script type="text/javascript" src="/js/counter.js"></script> -->
+    <!-- main -->
+    <!-- <script type="text/javascript" src="/js/main.js"></script> -->
+    <!-- popup scripts start -->
+    <!-- popup scripts end -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-93258410-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script>
+        // <!-- Hotjar Tracking -->
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:471489,hjsv:5};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+<!--     <script>
+        // Check for browser support of service worker
+        if ('serviceWorker' in navigator) {
+         navigator.serviceWorker.register('/service-worker.js')
+         .then(function(registration) {
+           // Successful registration
+           // console.log('Hooray. Registration successful, scope is:', registration.scope);
+         }).catch(function(err) {
+           // Failed registration, service worker won’t be installed
+           console.log('Whoops. Service worker registration failed, error:', error);
+         });
+        }
+    </script> -->
+</body>
