@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+var express = require('express');
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 var mutilpart = require('connect-multiparty');
@@ -47,11 +48,7 @@ uploader.use(new S3Strategy({
   }
 }));
 
-app.use(express.static(__dirname + '/client'));
-app.get('*', function (request, response){
-  response.sendFile(path.resolve(__dirname+'/client/index.html'))
-});
-
+// use part
 app.post('/api/charge', handlePayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
@@ -66,6 +63,12 @@ app.post('/api/trial_request', handleTrialRequest);
 //     res.send(JSON.stringify(files));
 //   });
 // });
+
+// the last use case - receive frontent files
+app.use(express.static('./client'));
+app.get('*', function (request, response){
+  response.sendFile(path.resolve('./client/index.html'))
+});
 
 // var prerendercloud = require('prerendercloud')
 //************* prerender.cloud *****************
