@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as firebase from "firebase";
@@ -17,7 +17,7 @@ import {SoundwiseHeader} from '../components/soundwise_header';
 import { signupUser } from '../actions/index';
 import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
-import {minLengthValidator, emailValidator} from '../helpers/validators';
+import { minLengthValidator, emailValidator } from '../helpers/validators';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
 
@@ -259,7 +259,7 @@ class _AppSignup extends Component {
                                         className="fa fa-facebook icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
                                         style={styles.fbIcon}
                                     ></i>
-                                    <span className="tz-text">Sign up with Facebook</span>
+                                    <span className="tz-text">SIGN UP with FACEBOOK</span>
                                 </button>
                                 <hr />
                                 <span style={styles.withEmailText}>or with email</span>
