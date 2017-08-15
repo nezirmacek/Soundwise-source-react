@@ -5,10 +5,10 @@ import * as firebase from "firebase";
 import PropTypes from 'prop-types';
 import {orange500, blue500} from 'material-ui/styles/colors';
 import {
-    BrowserRouter as Router,
-    Route,
-    Link,
-    Redirect,
+	BrowserRouter as Router,
+	Route,
+	Link,
+	Redirect,
 } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import moment from 'moment';
@@ -41,7 +41,7 @@ class _AppSignup extends Component {
             isFBauth: false,
         };
         
-        this.publisherName = moment().format('x') + 'p';
+        this.publisherID = moment().format('x') + 'p';
     }
     
     signUp() {
@@ -50,7 +50,7 @@ class _AppSignup extends Component {
         this.setState({ isFBauth: false });
         if (!this._validateForm(firstName, lastName, email, password)) return;
         
-        if (!this.props.match.params.mode === 'admin') { // user case
+        if (this.props.match.params.mode !== 'admin') { // user case
             this._signUp();
         } else { // admin case
             this.setState({isPublisherFormShown: true});
@@ -83,7 +83,7 @@ class _AppSignup extends Component {
                         },
                     };
         
-                    firebase.database().ref(`publishers/${this.publisherName}`).set(_newPublisher).then(
+                    firebase.database().ref(`publishers/${this.publisherID}`).set(_newPublisher).then(
                         res => {
                             console.log('success add publisher: ', res);
                             history.push('/dashboard/add_episode');
@@ -136,9 +136,15 @@ class _AppSignup extends Component {
         const {firstName, lastName, email, pic_url} = this.state;
         
         const userId = firebase.auth().currentUser.uid;
-        const userToSave = {firstName, lastName, email, pic_url};
+        const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
+		// add admin fields
+		if (match.params.mode === 'admin') {
+			userToSave.admin = true;
+			userToSave.publisherID = this.publisherID;
+		}
+		
         firebase.database().ref('users/' + userId).set(userToSave);
-    
+		
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin') {
@@ -232,13 +238,13 @@ class _AppSignup extends Component {
         if(redirectToReferrer) {
             return (
                 <Redirect to={from} />
-            )
-        }
-        return (
+			)
+		}
+		return (
             <div className="row" style={{...styles.row, height: window.innerHeight}}>
-                {
-                    !isPublisherFormShown
-                    &&
+				{
+					!isPublisherFormShown
+					&&
                     <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
                         <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
                         <div style={styles.containerWrapper}>
@@ -357,7 +363,7 @@ class _AppSignup extends Component {
                                 <div style={styles.italicText}>(i.e. your company logo)</div>
                                 <ImageS3Uploader
                                     cb={this.getUrl.bind(this)}
-                                    fileName={this.publisherName}
+                                    fileName={this.publisherID}
                                 />
                                 <OrangeSubmitButton
                                     label="CREATE ACCOUNT"
