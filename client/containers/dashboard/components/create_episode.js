@@ -165,6 +165,7 @@ export default class CreateEpisode extends Component {
     render() {
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
         const { userInfo } = this.props;
+        console.log('>>>>>>>>>>', isRecorded);
         
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
@@ -442,6 +443,7 @@ const styles = {
         borderRadius: 18,
         overflow: 'hidden',
         float: 'left',
+        cursor: 'pointer',
     },
     recordIcon: {
         color: Colors.mainWhite,
@@ -469,6 +471,7 @@ const styles = {
         float: 'left',
         marginLeft: 15,
         position: 'relative',
+		cursor: 'pointer',
     },
     playIcon: {
         fontSize: 40,
@@ -484,12 +487,14 @@ const styles = {
         position: 'relative',
         top: 10,
         marginLeft: 15,
+		cursor: 'pointer',
     },
     trashWrapper: {
         float: 'left',
         width: 15,
         position: 'relative',
         top: 9,
+		cursor: 'pointer',
     },
     trashIcon: {
         fontSize: 20,
@@ -528,6 +533,7 @@ const styles = {
         color: Colors.mainWhite,
         fontSize: 9,
         border: 0,
+		cursor: 'pointer',
     },
     
     inputTitleWrapper: {
@@ -592,6 +598,7 @@ const styles = {
         marginLeft: 'auto',
         textAlign: 'center',
         paddingTop: 5,
+		cursor: 'pointer',
     },
     publishButton: {
         backgroundColor: Colors.mainOrange,
