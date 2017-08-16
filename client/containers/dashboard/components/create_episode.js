@@ -4,7 +4,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
-import Microm from 'microm';
 import { ReactMic } from 'react-mic';
 import Loader from 'react-loader';
 import rp from 'request-promise';
@@ -14,14 +13,6 @@ import moment from 'moment';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
-
-const microm = new Microm(); // from microm module
-let mp3 = null;
-let stream = null;
-microm.on('timeupdate', (time) => {});
-microm.on('loadedmetadata', (duration) => {});
-microm.on('play', () => {});
-microm.on('pause', () => {});
 
 export default class CreateEpisode extends Component {
     constructor(props) {
@@ -41,11 +32,13 @@ export default class CreateEpisode extends Component {
             actions: '',
     
             audioUrl: '', // linkto uploaded file aws s3
+			blob: {}, // to play audio from react-mic
             notesUrl: '', // linkto uploaded file aws s3
         };
 
         this.audio = null;
         this.notes = null;
+		this.player = null;
     
         this.currentSoundcastId = null;
         
@@ -59,57 +52,41 @@ export default class CreateEpisode extends Component {
     }
 
     componentDidMount () {
-        microm.on('ended', () => {
-            this.setState({isPlaying: false});
-        });
-    }
+		this.player.onended = () => this.setState({isPlaying: false});
+	}
+    
+    record () {
+		this.setState({
+			isRecording: true,
+		});
+	}
 
-    recordOrStop () {
-        const _self = this;
-
-        if (!this.state.isRecording) {
-            microm.record()
-                .then(function(s) {
-                    stream = s;
-                    console.log('recording...')
-                })
-                .catch(function() {
-                    console.log('error recording');
-                });
-        } else {
-            this.setState({isLoading: true});
-            microm.stop()
-                .then(function(result) {
-                    // stream.getAudioTracks().forEach(track => track.stop()); // removes the red icon // TODO: fix
-                    mp3 = result;
-                    console.log(mp3.url, mp3.blob, mp3.buffer);
-
-                    _self.setState({isRecorded: true, isLoading: false});
-                });
-        }
-        this.setState({isRecording: !this.state.isRecording});
+    stop (blobObject) {
+		this.setState({
+			blob : blobObject,
+			isRecorded: true,
+			isLoading: false,
+			isRecording: false,
+		});
     }
 
     play () {
+		this.player.play();
         if (this.state.isRecorded) {
-            microm.play();
             this.setState({isPlaying: true});
         }
     }
 
     pause () {
-        microm.pause();
+		this.player.pause();
         this.setState({isPlaying: false});
     }
 
     save () {
         let _self = this;
         console.log('start converting to mp3');
-        microm.getMp3().then(res => {
-            console.log('start uploading mp3 to aws: ', res.blob);
-            //upload file to aws s3
-            this._uploadToAws(res.blob, 'audio');
-        });
+		//upload file to aws s3
+		this._uploadToAws(this.state.blob.blob, 'audio');
     }
     
     _uploadToAws (file, type) {
@@ -120,7 +97,7 @@ export default class CreateEpisode extends Component {
             const splittedFileName = file.name.split('.');
             ext = (splittedFileName)[splittedFileName.length - 1];
         } else {
-            const ext = 'mp3';
+            ext = 'mp3';
         }
         data.append('file', file, `${this.episodeId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
@@ -208,19 +185,32 @@ export default class CreateEpisode extends Component {
                     <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         <div style={styles.recorder}>
                             <div style={styles.recordTitleText}>Record</div>
-                            <div style={styles.recordButton} onClick={(e) => this.recordOrStop(e)}>
-                                <i
-                                    className={`fa fa-${isRecording && 'stop' || 'microphone'}`}
-                                    style={styles.recordIcon}
-                                ></i>
-                            </div>
+							{
+								!isRecording
+								&&
+								<div style={styles.recordButton} onClick={(e) => this.record(e)}>
+									<i
+										className={'fa fa-microphone'}
+										style={styles.recordIcon}
+									></i>
+								</div>
+								||
+								<div style={styles.recordButton} onClick={(e) => this.stop(e)}>
+									<i
+										className={`fa fa-stop`}
+										style={styles.recordIcon}
+									></i>
+								</div>
+							}
                             <div style={styles.micWrapper}>
                                 <ReactMic
                                     record={isRecording}
                                     className="sound-wave"
-                                    onStop={() => {}}
+									onStart={this.record.bind(this)}
+                                    onStop={this.stop.bind(this)}
                                     strokeColor={Colors.mainWhite}
                                     backgroundColor={Colors.lightGrey}
+									audioBitsPerSecond={192000}
                                 />
                             </div>
                             {
@@ -259,6 +249,9 @@ export default class CreateEpisode extends Component {
                                     style={{...styles.trashIcon, color: isRecorded && Colors.mainOrange || Colors.fontGrey}}
                                 ></i>
                             </div>
+							<div style={{width: 0, height: 0, overflow: 'hidden'}}>
+								<audio ref={player => this.player = player} controls="controls" src={this.state.blob.blobURL}></audio>
+							</div>
                         </div>
                     </div>
                     <div className="col-lg-1 col-md-1 col-sm-12 col-xs-12">
