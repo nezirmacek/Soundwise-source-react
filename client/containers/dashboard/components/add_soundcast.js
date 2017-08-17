@@ -16,17 +16,17 @@ import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../compo
 export default class AddSoundcast extends Component {
     constructor (props) {
         super(props);
-        
+
         this.state = {
             title: '',
             subscribers: '',
             imageURL: '',
             fileUploaded: false,
         };
-    
+
         this.soundcastId = `${moment().format('x')}s`;
     }
-    
+
     _uploadToAws (file) {
         const _self = this;
         let data = new FormData();
@@ -45,27 +45,27 @@ export default class AddSoundcast extends Component {
                 console.log('ERROR upload to aws s3: ', err);
             });
     }
-    
+
     setFileName (e) {
         if (e.target.value) {
             this.setState({fileUploaded: true});
         }
         document.getElementById('file').value = e.target.value;
     }
-    
+
     submit () {
         const { title, imageURL, subscribers } = this.state;
         const { userInfo, history } = this.props;
-    
+
         const subscribersArr = subscribers.split(',');
         const subscribed = {};
         subscribersArr.map(email => {
             const _email = email.replace(/\./g, "(dot)");
             subscribed[_email] = true;
         });
-        
+
         const creatorID = firebase.auth().currentUser.uid;
-        
+
         const newSoundcast = {
             title,
             imageURL,
@@ -73,7 +73,7 @@ export default class AddSoundcast extends Component {
             publisherID: userInfo.publisherID,
             subscribed,
         };
-    
+
         let _promises = [
         // add soundcast
             firebase.database().ref(`soundcasts/${this.soundcastId}`).set(newSoundcast).then(
@@ -109,7 +109,7 @@ export default class AddSoundcast extends Component {
                 }
             ),
         ];
-        
+
         Promise.all(_promises).then(
             res => {
                 console.log('complete add soundcast');
@@ -120,16 +120,18 @@ export default class AddSoundcast extends Component {
             }
         );
     }
-    
+
     render() {
         const { imageURL, title, subscribers, fileUploaded } = this.state;
         const { userInfo, history } = this.props;
-        
+
         return (
-            <div>
-                <span style={styles.titleText}>
-                    Add New Soundcast
-                </span>
+            <div className='padding-30px-tb'>
+              <div className='padding-bottom-20px'>
+                  <span className='title-medium '>
+                      Add A Soundcast
+                  </span>
+              </div>
                 <div className="row">
                     <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
                         <ValidatedInput
@@ -189,7 +191,7 @@ export default class AddSoundcast extends Component {
                                 <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                             </div>
                         </div>
-                        
+
                         <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
                                 label="Add New Soundcast"
@@ -254,7 +256,7 @@ const styles = {
         width: 'calc(100% - 133px)',
         float: 'left',
     },
-    
+
     // TODO: move to separate component if functions are the same as in create_episode
     inputFileWrapper: {
         margin: 10,
@@ -289,7 +291,7 @@ const styles = {
         fontSize: 9,
         border: 0,
     },
-    
+
     fileTypesLabel: {
         fontSize: 9,
         marginLeft: 10,

@@ -12,7 +12,7 @@ import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 export default class SoundcastsManaged extends Component {
     render() {
         const { userInfo, history, id } = this.props;
-        
+
         if (!id) {
 			const _soundcasts_managed = [];
 			for (let id in userInfo.soundcasts_managed) {
@@ -30,12 +30,14 @@ export default class SoundcastsManaged extends Component {
 					_soundcasts_managed.push(_soundcast);
 				}
 			}
-			
+
 			return (
-				<div>
-                <span style={styles.titleText}>
-                    Soundcasts
-                </span>
+				<div className='padding-30px-tb'>
+          <div className='padding-bottom-20px'>
+              <span className='title-medium '>
+                  Soundcasts
+              </span>
+          </div>
 					{
 						_soundcasts_managed.map((soundcast, i) => {
 							return (
@@ -109,7 +111,7 @@ export default class SoundcastsManaged extends Component {
 						{
 							_episodes.map((episode, i) => {
 								episode.creator = userInfo.publisher.administrators[episode.creatorID];
-								
+
 								return (
 									<tr key={i} style={styles.tr}>
 										<td style={styles.td}>
@@ -131,7 +133,7 @@ export default class SoundcastsManaged extends Component {
 				</div>
 			);
 		}
-    
+
     }
 };
 
@@ -210,7 +212,7 @@ const styles = {
         borderStyle: 'solid',
         cursor: 'pointer',
     },
-	
+
 	itemContainer: {
     	marginTop: 30,
     	marginRight: 20,

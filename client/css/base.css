@@ -41,6 +41,9 @@ html {
     overflow-x: hidden;
 }
 body{ font-family: 'Open Sans', sans-serif; -webkit-font-smoothing: antialiased; font-smoothing: antialiased; font-size:13px; color:#707070; line-height:22px; letter-spacing: 0.01em; overflow-x: hidden; }
+#root {
+    height: 100%; width: 100%;
+}
 a { text-decoration: none; color:#4e4e4e; cursor: pointer !important; outline: 0; }
 a:hover, a:focus{ text-decoration: none;}
 a:focus {outline: none; }

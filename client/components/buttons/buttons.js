@@ -39,17 +39,17 @@ TransparentShortSubmitButton.propTypes = props;
 
 const _styles = {
     orangeSubmitButton: {
-        width: 219,
-        height: 30,
+        width: 229,
+        height: 37,
         backgroundColor: Colors.mainOrange,
-        borderRadius: 15,
+        borderRadius: 23,
         overflow: 'hidden',
         margin: '40px auto',
-        fontSize: 13,
+        fontSize: 14,
         letterSpacing: 2.5,
         wordSpacing: 5,
         color: Colors.mainWhite,
-        paddingTop: 4,
+        paddingTop: 6,
         paddingRight: 20,
         paddingBottom: 4,
         paddingLeft: 20,

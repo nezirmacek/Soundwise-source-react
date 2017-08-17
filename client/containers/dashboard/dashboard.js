@@ -22,7 +22,7 @@ const verticalMenuItems = [
     {
         path: 'add_episode',
         label: 'Add Episode',
-        iconClass: 'bullseye',
+        iconClass: 'plus-square-o',
         isMenuItemVisible: true,
         Component: CreateEpisode,
     },
@@ -34,7 +34,7 @@ const verticalMenuItems = [
     {
         path: '',
         label: 'Analytics',
-        iconClass: 'lightbulb-o',
+        iconClass: 'bar-chart',
         isMenuItemVisible: true,
         Component: SoundcastsManaged,
     },
@@ -62,7 +62,7 @@ class _Dashboard extends Component {
             this.props.history.push('/signin');
         }
     }
-    
+
     componentWillReceiveProps (nextProps) {
         if (!nextProps.userInfo.admin) {
             nextProps.history.push('/signin');
@@ -72,11 +72,11 @@ class _Dashboard extends Component {
     render() {
         const { userInfo, history, match } = this.props;
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
-        
+
         return (
-            <div>
+            <div style={{position: 'absolute', height: '100%', width: '100%'}}>
                 <SoundwiseHeader />
-                <div className="row">
+                <div className="row" style={{minHeight: '100%', width: '100%'}}>
                     <div className="col-lg-2 col-md-3 col-sm-4 col-xs-6" style={styles.verticalMenu}>
                         {
                             verticalMenuItems.map((item, i) => {
@@ -131,6 +131,7 @@ const styles = {
         fontSize: 16,
         paddingTop: 25,
         paddingLeft: 19,
+        cursor: 'pointer',
     },
     activeVerticalMenuItem: {
         width: '100%',
@@ -150,11 +151,12 @@ const styles = {
     },
     contentWrapper: {
         backgroundColor: '#f5f5f5',
-        minHeight: 375,
+        minHeight: '650',
         paddingTop: 10,
         paddingRight: 20,
         paddingBottom: 10,
         paddingLeft: 20,
+        marginBottom: 0
     },
 };
 

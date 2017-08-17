@@ -8,7 +8,7 @@ export function minLengthValidator (limit, value) {
 }
 
 export function maxLengthValidator (limit, value) {
-    return value.length > limit && `Maximal length is ${limit}` || '';
+    return value.length > limit && `Maximal length is ${limit} characters` || '';
 }
 
 export function minValidator (limit, value) {

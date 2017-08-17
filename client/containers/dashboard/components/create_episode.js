@@ -23,6 +23,7 @@ export default class CreateEpisode extends Component {
             isRecorded: false,
             isPlaying: false,
             isLoading: false,
+            isSaved: false,
 
             audioUploaded: false,
             notesUploaded: false,
@@ -30,7 +31,7 @@ export default class CreateEpisode extends Component {
             title: '',
             description: '',
             actions: '',
-    
+
             audioUrl: '', // linkto uploaded file aws s3
 			blob: {}, // to play audio from react-mic
             notesUrl: '', // linkto uploaded file aws s3
@@ -39,9 +40,12 @@ export default class CreateEpisode extends Component {
         this.audio = null;
         this.notes = null;
 		this.player = null;
-    
+
         this.currentSoundcastId = null;
-        
+
+        this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
+        this.renderRecorder = this.renderRecorder.bind(this)
+
         // if (props.userInfo.soundcasts_managed && props.userInfo.soundcasts_managed[props.currentSoundcastId]) {
         //     const _titleArray = props.userInfo.soundcasts_managed[props.currentSoundcastId].title.split(' ');
         //     let _transformedTitle = '';
@@ -54,7 +58,7 @@ export default class CreateEpisode extends Component {
     componentDidMount () {
 		this.player.onended = () => this.setState({isPlaying: false});
 	}
-    
+
     record () {
 		this.setState({
 			isRecording: true,
@@ -87,8 +91,9 @@ export default class CreateEpisode extends Component {
         console.log('start converting to mp3');
 		//upload file to aws s3
 		this._uploadToAws(this.state.blob.blob, 'audio');
+        this.setState({isSaved: true})
     }
-    
+
     _uploadToAws (file, type) {
         const _self = this;
         let data = new FormData();
@@ -120,11 +125,11 @@ export default class CreateEpisode extends Component {
         }
         document.getElementById(type).value = e.target.value;
     }
-    
+
     saveEpisode (isPublished) {
         const { title, description, actions, audioUrl, notesUrl } = this.state;
         const { userInfo } = this.props;
-        
+
         if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
             const newEpisode = {
                 title,
@@ -137,7 +142,7 @@ export default class CreateEpisode extends Component {
                 soundcastID: this.currentSoundcastId,
                 isPublished: isPublished,
             };
-    
+
             firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
                 res => {
                     console.log('success add episode: ', res);
@@ -146,7 +151,7 @@ export default class CreateEpisode extends Component {
                     console.log('ERROR add episode: ', err);
                 }
             );
-    
+
             firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
                 res => {
                     console.log('success add episodeID to soundcast: ', res);
@@ -157,7 +162,110 @@ export default class CreateEpisode extends Component {
             );
         }
     }
-    
+
+    renderRecorder() {
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl, isSaved } = this.state;
+        if(isSaved) {
+            return (
+                <div style={{textAlign: 'center'}}>
+                    <div className='title-small'>
+                        Audio file saved to
+                    </div>
+                    <div className='text-small'>
+                        {audioUrl}
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    {
+                        !isRecording
+                        &&
+                        <div style={styles.recordButton}   onClick={(e) => this.record(e)}>
+                            <span className="fa-stack fa-2x">
+                              <i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i>
+                              <i className="fa fa-microphone fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </div>
+                        ||
+                        <div style={styles.recordButton} onClick={(e) => this.stop(e)}>
+                            <span className="fa-stack fa-2x">
+                              <i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i>
+                              <i className="fa fa-square fa-stack-1x fa-inverse"></i>
+                            </span>                             </div>
+                    }
+                    <div style={styles.micWrapper}>
+                        <ReactMic
+                            record={isRecording}
+                            className="sound-wave"
+                            onStart={this.record.bind(this)}
+                            onStop={this.stop.bind(this)}
+                            strokeColor={Colors.mainWhite}
+                            backgroundColor={Colors.lightGrey}
+                            audioBitsPerSecond={192000}
+                        />
+                    </div>
+                    <div style={styles.time}>
+                        <span>00:00</span>
+                    </div>
+                    {this.renderPlayAndSave()}
+                    <div style={{width: 0, height: 0, overflow: 'hidden'}}>
+                        <audio ref={player => this.player = player} controls="controls" src={this.state.blob.blobURL}></audio>
+                    </div>
+                </div>
+            )
+        }
+    }
+
+    renderPlayAndSave() {
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
+        if(!isRecorded) {
+            return (
+                <div></div>
+            )
+        } else {
+            return (
+                <div>
+                    {
+                        !isPlaying
+                        &&
+                        <div style={styles.playButtonWrapper} onClick={this.play.bind(this)}>
+                            {
+                                !isLoading
+                                &&
+                                <i
+                                    className="fa fa-play-circle-o"
+                                    style={{
+                                        ...styles.playIcon,
+                                        color: isRecorded && Colors.mainOrange || Colors.fontGrey
+                                    }}
+                                ></i>
+                                ||
+                                <Loader loaded={!isLoading} options={loaderOptions}></Loader>
+                            }
+                        </div>
+                        ||
+                        <div style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
+                            <i
+                                className="fa fa-pause-circle-o"
+                                style={{
+                                    ...styles.playIcon,
+                                    color: isRecorded && Colors.mainOrange || Colors.fontGrey
+                                }}
+                            ></i>
+                        </div>
+                    }
+                    <div style={styles.saveText} onClick={this.save.bind(this)}>Save</div>
+                    <div style={styles.trashWrapper} onClick={() => {this.setState({isRecorded: false})}}>
+                        Discard
+                    </div>
+                </div>
+            )
+        }
+
+    }
+
     changeSoundcastId (e) {
         this.currentSoundcastId = e.target.value;
     }
@@ -166,7 +274,7 @@ export default class CreateEpisode extends Component {
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
         const { userInfo } = this.props;
         console.log('>>>>>>>>>>', isRecorded);
-        
+
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
             const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -176,91 +284,27 @@ export default class CreateEpisode extends Component {
             }
         }
         this.currentSoundcastId = this.currentSoundcastId || _soundcasts_managed.length && _soundcasts_managed[0].id || null;
-        
+
         return (
-            <div>
-                <span style={styles.titleText}>
-                    Add New Episode
-                </span>
+            <div className='padding-30px-tb'>
+                <div className='padding-bottom-20px'>
+                    <span className='title-medium '>
+                        Add New Episode
+                    </span>
+                </div>
                 <div className="row">
-                    <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
                         <div style={styles.recorder}>
                             <div style={styles.recordTitleText}>Record</div>
-							{
-								!isRecording
-								&&
-								<div style={styles.recordButton} onClick={(e) => this.record(e)}>
-									<i
-										className={'fa fa-microphone'}
-										style={styles.recordIcon}
-									></i>
-								</div>
-								||
-								<div style={styles.recordButton} onClick={(e) => this.stop(e)}>
-									<i
-										className={`fa fa-stop`}
-										style={styles.recordIcon}
-									></i>
-								</div>
-							}
-                            <div style={styles.micWrapper}>
-                                <ReactMic
-                                    record={isRecording}
-                                    className="sound-wave"
-									onStart={this.record.bind(this)}
-                                    onStop={this.stop.bind(this)}
-                                    strokeColor={Colors.mainWhite}
-                                    backgroundColor={Colors.lightGrey}
-									audioBitsPerSecond={192000}
-                                />
-                            </div>
-                            {
-                                !isPlaying
-                                &&
-                                <div style={styles.playButtonWrapper} onClick={this.play.bind(this)}>
-                                    {
-                                        !isLoading
-                                        &&
-                                        <i
-                                            className="fa fa-play-circle-o"
-                                            style={{
-                                                ...styles.playIcon,
-                                                color: isRecorded && Colors.mainOrange || Colors.fontGrey
-                                            }}
-                                        ></i>
-                                        ||
-                                        <Loader loaded={!isLoading} options={loaderOptions}></Loader>
-                                    }
-                                </div>
-                                ||
-                                <div style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
-                                    <i
-                                        className="fa fa-pause-circle-o"
-                                        style={{
-                                            ...styles.playIcon,
-                                            color: isRecorded && Colors.mainOrange || Colors.fontGrey
-                                        }}
-                                    ></i>
-                                </div>
-                            }
-                            <div style={styles.saveText} onClick={this.save.bind(this)}>Save</div>
-                            <div style={styles.trashWrapper} onClick={() => {this.setState({isRecorded: false})}}>
-                                <i
-                                    className="fa fa-trash"
-                                    style={{...styles.trashIcon, color: isRecorded && Colors.mainOrange || Colors.fontGrey}}
-                                ></i>
-                            </div>
-							<div style={{width: 0, height: 0, overflow: 'hidden'}}>
-								<audio ref={player => this.player = player} controls="controls" src={this.state.blob.blobURL}></audio>
-							</div>
+                            {this.renderRecorder()}
                         </div>
                     </div>
-                    <div className="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                    <div className="col-lg-1 col-md-1 col-sm-12 col-xs-12 text-extra-large  text-center padding-nine-top">
                         OR
                     </div>
                     <div className="col-lg-5 col-md-5 col-sm-12 col-xs-12">
                         <div style={styles.recorder}>
-                            <span>Upload</span>
+                            <div style={styles.recordTitleText}>Upload</div>
                             <div style={styles.inputFileWrapper}>
                                 <input
                                     type="file"
@@ -289,7 +333,7 @@ export default class CreateEpisode extends Component {
                                     ||
                                     null
                                 }
-                                
+
                             </div>
                         </div>
                     </div>
@@ -320,7 +364,7 @@ export default class CreateEpisode extends Component {
                         >
                         </textarea>
                         <div style={styles.notes}>
-                            <span style={styles.notesLabel}>Notes</span>
+                            <div style={styles.notesLabel}>Notes</div>
                             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
                                 <input
                                     type="file"
@@ -352,9 +396,9 @@ export default class CreateEpisode extends Component {
                             </div>
                             <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                         </div>
-                        <div style={styles.souncastSelectWrapper}>
-                            <span style={styles.notesLabel}>Publish in</span>
-                            <select style={styles.souncastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
+                        <div style={styles.soundcastSelectWrapper}>
+                            <div style={styles.notesLabel}>Publish in</div>
+                            <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
                                 {
                                     _soundcasts_managed.map((souncast, i) => {
                                         return (
@@ -366,20 +410,22 @@ export default class CreateEpisode extends Component {
                         </div>
                     </div>
                     <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6">
-                            <div
+                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                            style={{textAlign: 'center'}}>
+                            <div className='btn'
                                 style={styles.draftButton}
                                 onClick={this.saveEpisode.bind(this, false)}
                             >
-                                Save draft
+                                <span>Save draft</span>
                             </div>
                         </div>
-                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6">
-                            <div
+                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                            style={{textAlign: 'center'}} >
+                            <div className='btn btn-default'
                                 style={{...styles.draftButton, ...styles.publishButton}}
                                 onClick={this.saveEpisode.bind(this, true)}
                             >
-                                Publish
+                                <span>Publish</span>
                             </div>
                         </div>
                     </div>
@@ -418,12 +464,12 @@ const loaderOptions = {
 
 const styles = {
     titleText: {
-        fontSize: 12,
+        fontSize: 16,
     },
     recorder: {
         boxShadow: '0 0 8px rgba(0, 0, 0, 0.5)',
         borderRadius: 8,
-        height: 79,
+        height: 120,
         marginTop: 20,
         paddingTop: 5,
         paddingRight: 10,
@@ -431,42 +477,53 @@ const styles = {
         paddingLeft: 10,
     },
     recordTitleText: {
-        fontSize: 12,
-        textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)',
+        fontSize: 18,
+        // textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)',
         color: Colors.black,
         width: '100%',
+        paddingTop: 10,
+        paddingBottom: 10
     },
     recordButton: {
-        backgroundColor: Colors.mainRed,
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+        // backgroundColor: Colors.mainOrange,
+        // width: 45,
+        // height: 45,
+        // borderRadius: '50%',
         overflow: 'hidden',
         float: 'left',
         cursor: 'pointer',
+
     },
     recordIcon: {
         color: Colors.mainWhite,
-        fontSize: 14,
-        paddingTop: 11,
-        paddingRight: 13,
-        paddingBottom: 11,
-        paddingLeft: 13,
+        fontSize: 20,
+        lineHeight: 'inherit'
+        // paddingTop: 14,
+        // paddingRight: 17,
+        // paddingBottom: 11,
+        // paddingLeft: 15,
     },
     micWrapper: {
         width: 138,
-        height: 20,
+        height: 30,
         position: 'relative',
-        top: 8,
+        top: 10,
         overflow: 'hidden',
         float: 'left',
         borderRadius: 10,
-        marginLeft: 15,
+        marginLeft: 10,
+    },
+    time: {
+        float: 'left',
+        marginLeft: 10,
+        marginRight: 10,
+        marginTop: 15,
+        fontSize: 16,
     },
     playButtonWrapper: {
         backgroundColor: 'transparent',
-        width: 36,
-        height: 36,
+        width: 45,
+        height: 45,
         overflow: 'hidden',
         float: 'left',
         marginLeft: 15,
@@ -474,27 +531,32 @@ const styles = {
 		cursor: 'pointer',
     },
     playIcon: {
-        fontSize: 40,
+        fontSize: 50,
         position: 'relative',
         bottom: 1,
     },
     saveText: {
         color: Colors.link,
         fontWeight: 'bold',
-        fontSize: 12,
+        fontSize: 20,
         float: 'left',
-        width: 30,
+        width: 70,
         position: 'relative',
         top: 10,
         marginLeft: 15,
+        marginright: 15,
 		cursor: 'pointer',
     },
     trashWrapper: {
         float: 'left',
         width: 15,
+        fontSize: 16,
         position: 'relative',
         top: 9,
+        marginLeft: 15,
+        marginright: 15,
 		cursor: 'pointer',
+
     },
     trashIcon: {
         fontSize: 20,
@@ -505,7 +567,7 @@ const styles = {
     inputFileWrapper: {
         margin: 10,
         width: 'calc(100% - 20px)',
-        height: 25,
+        height: 35,
         backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,
@@ -521,65 +583,73 @@ const styles = {
     },
     inputFileVisible: {
         backgroundColor: 'transparent',
-        width: 'calc(100% - 50px)',
-        height: 25,
+        width: 'calc(100% - 70px)',
+        height: 35,
+        fontSize: 14,
         float: 'left',
     },
     uploadButton: {
         backgroundColor: Colors.mainOrange,
-        width: 50,
-        height: 25,
+        width: 70,
+        height: 40,
         float: 'left',
         color: Colors.mainWhite,
-        fontSize: 9,
+        fontSize: 14,
         border: 0,
 		cursor: 'pointer',
     },
-    
+
     inputTitleWrapper: {
         width: '100%',
         marginTop: 20,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     inputTitle: {
-        height: 25,
+        height: 40,
         backgroundColor: Colors.mainWhite,
         width: '100%',
-        fontSize: 12,
+        fontSize: 16,
         borderRadius: 4,
-        marginBottom: 0,
+        marginBottom: 10,
     },
     inputDescription: {
-        height: 80,
-        fontSize: 12,
+        height: 120,
+        fontSize: 16,
         borderRadius: 4,
-        marginTop: 16,
+        marginTop: 0,
+        marginBottom: 10
     },
     inputActions: {
         height: 58,
-        fontSize: 12,
+        fontSize: 16,
         borderRadius: 4,
-        marginTop: '-20px',
+        marginTop: 0,
+        marginBottom: 10
     },
     notes: {
-        height: 72,
+        height: 102,
         backgroundColor: Colors.mainWhite,
     },
     notesLabel: {
         marginLeft: 10,
+        paddingTop: 12,
+        paddingBottom: 6,
+        fontSize: 16
     },
     fileTypesLabel: {
-        fontSize: 9,
+        fontSize: 11,
         marginLeft: 10,
+        marginTop: 10
     },
-    souncastSelectWrapper: {
-        height: 72,
+    soundcastSelectWrapper: {
+        height: 92,
         backgroundColor: Colors.mainWhite,
         marginTop: 15,
     },
-    souncastSelect: {
+    soundcastSelect: {
         backgroundColor: 'transparent',
         width: 'calc(100% - 20px)',
+        height: 35,
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,
@@ -588,13 +658,14 @@ const styles = {
     draftButton: {
         backgroundColor: Colors.link,
         color: Colors.fontBlack,
-        fontSize: 12,
-        width: 110,
-        height: 30,
-        borderRadius: 15,
+        fontSize: 16,
+        width: '160px',
+        height: '40px',
+        lineHeight: '40px',
+        borderRadius: 10,
         marginTop: 30,
         marginRight: 'auto',
-        marginBottom: 30,
+        marginBottom: 0,
         marginLeft: 'auto',
         textAlign: 'center',
         paddingTop: 5,
