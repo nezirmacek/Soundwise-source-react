@@ -1,6 +1,3 @@
-/**
- * Created by developer on 10.08.17.
- */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -13,7 +10,7 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
-export default class AddSoundcast extends Component {
+export default class EditSoundcast extends Component {
     constructor (props) {
         super(props);
 
@@ -21,10 +18,26 @@ export default class AddSoundcast extends Component {
             title: '',
             subscribers: '',
             imageURL: '',
+            short_description: '',
+            long_description: '',
+            subscribed: {},
             fileUploaded: false,
         };
 
-        this.soundcastId = `${moment().format('x')}s`;
+        this.fileInputRef = null;
+    }
+
+    componentDidMount() {
+
+      const { id, soundcast } = this.props;
+      this.setState({
+        title: soundcast.title,
+        subscribed: soundcast.subscribed,
+        imageURL: soundcast.imageURL,
+        short_description: soundcast.short_description,
+        long_description: soundcast.long_description
+      })
+
     }
 
     _uploadToAws (file) {
@@ -32,7 +45,7 @@ export default class AddSoundcast extends Component {
         let data = new FormData();
         const splittedFileName = file.name.split('.');
         const ext = (splittedFileName)[splittedFileName.length - 1];
-        data.append('file', file, `${this.soundcastId}.${ext}`);
+        data.append('file', file, `${this.props.id}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
         axios.post('http://localhost:3000/api/fileUploads/upload', data)
             .then(function (res) {
@@ -47,93 +60,61 @@ export default class AddSoundcast extends Component {
     }
 
     setFileName (e) {
-        if (e.target.value) {
+
+        // document.getElementById('file').value = e.target.value;
+        // this._uploadToAws(document.getElementById('upload_hidden_cover').files[0]);
+        this._uploadToAws(this.fileInputRef.files[0])
+        if (this.fileInputRef.files[0]) {
             this.setState({fileUploaded: true});
         }
-        document.getElementById('file').value = e.target.value;
     }
 
     submit () {
-        const { title, imageURL, subscribers } = this.state;
+        const { title, imageURL, subscribed, short_description, long_description } = this.state;
         const { userInfo, history } = this.props;
-
-        const subscribersArr = subscribers.split(',');
-        const subscribed = {};
-        subscribersArr.map(email => {
-            const _email = email.replace(/\./g, "(dot)");
-            subscribed[_email] = true;
-        });
 
         const creatorID = firebase.auth().currentUser.uid;
 
-        const newSoundcast = {
+        const editedSoundcast = {
             title,
+            short_description,
+            long_description,
             imageURL,
             creatorID,
             publisherID: userInfo.publisherID,
             subscribed,
         };
 
-        let _promises = [
-        // add soundcast
-            firebase.database().ref(`soundcasts/${this.soundcastId}`).set(newSoundcast).then(
+        // edit soundcast in database
+            firebase.database().ref(`soundcasts/${this.props.id}`).set(editedSoundcast).then(
                 res => {
-                    console.log('success add soundcast: ', res);
-                    return res;
+                    console.log('successfully added soundcast: ', res);
+                    this.props.shiftEditState();
+                    history.goBack();
                 },
                 err => {
                     console.log('ERROR add soundcast: ', err);
-                    Promise.reject(err);
                 }
-            ),
-            // add soundcast to publisher
-            firebase.database().ref(`publishers/${userInfo.publisherID}/soundcasts/${this.soundcastId}`).set(true).then(
-                res => {
-                    console.log('success add soundcast to publisher: ', res);
-                    return res;
-                },
-                err => {
-                    console.log('ERROR add soundcast to publisher: ', err);
-                    Promise.reject(err);
-                }
-            ),
-            // add soundcast to admin
-            firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
-                res => {
-                    console.log('success add soundcast to admin.soundcasts_managed: ', res);
-                    return res;
-                },
-                err => {
-                    console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-                    Promise.reject(err);
-                }
-            ),
-        ];
-
-        Promise.all(_promises).then(
-            res => {
-                console.log('completed adding soundcast');
-                history.goBack();
-            },
-            err => {
-                console.log('failed to complete adding soundcast');
-            }
-        );
+            )
     }
 
     render() {
         const { imageURL, title, subscribers, fileUploaded } = this.state;
         const { userInfo, history } = this.props;
+        const that = this;
 
         return (
             <div className='padding-30px-tb'>
               <div className='padding-bottom-20px'>
                   <span className='title-medium '>
-                      Add A Soundcast
+                      Edit Soundcast
                   </span>
               </div>
                 <div className="row">
                     <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                        <span style={styles.titleText}>
+                            Title*
+                        </span>
                         <ValidatedInput
                             type="text"
                             styles={styles.inputTitle}
@@ -144,17 +125,31 @@ export default class AddSoundcast extends Component {
                             validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 40)]}
                         />
                         <span style={styles.titleText}>
-                            Add Subscribers
+                            Short Description
+                        </span>
+                        <div styles={styles.inputTitleWrapper}>
+                          <input
+                              type="text"
+                              styles={styles.inputTitle}
+                              placeholder={'A short description of this soundcast (300 characters max)'}
+                              onChange={(e) => {this.setState({short_description: e.target.value})}}
+                              value={this.state.short_description}
+                          />
+                        </div>
+                        <span style={styles.titleText}>
+                            Long Description
                         </span>
                         <textarea
                             style={styles.inputDescription}
-                            placeholder={'Enter subscriber email addresses, separated by commas'}
-                            onChange={(e) => {this.setState({subscribers: e.target.value})}}
-                            value={this.state.subscribers}
+                            placeholder={'A longer description of the soundcast'}
+                            onChange={(e) => {this.setState({long_description: e.target.value})}}
+                            value={this.state.long_description}
                         >
                         </textarea>
                         <div>
-                            <div style={styles.image}></div>
+                            <div style={styles.image}>
+                              <img src={imageURL} />
+                            </div>
                             <div style={styles.loaderWrapper}>
                                 <span style={{...styles.titleText, marginLeft: 10}}>
                                     Soundcast cover art (square image)
@@ -166,42 +161,44 @@ export default class AddSoundcast extends Component {
                                         id="upload_hidden_cover"
                                         onChange={this.setFileName.bind(this)}
                                         style={styles.inputFileHidden}
-                                    />
-                                    <input
-                                        type="text"
-                                        readOnly="1"
-                                        id="file"
-                                        style={styles.inputFileVisible}
-                                        placeholder={'No File Selected'}
-                                        onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                        ref={input => this.fileInputRef = input}
                                     />
                                     {
-                                        !imageURL
-                                        &&
+                                      fileUploaded &&
+                                      <div>
+                                        <span>{this.fileInputRef.files[0].name}</span>
+                                        <span style={styles.cancelImg}
+                                          onClick={() => that.setState({fileUploaded: false, imageURL: ''})}>Cancel</span>
+                                      </div>
+                                      ||
+                                      !fileUploaded &&
+                                      <div>
                                         <button
-                                            onClick={() => {fileUploaded && this._uploadToAws(document.getElementById('upload_hidden_cover').files[0]);}}
-                                            style={{...styles.uploadButton, backgroundColor: fileUploaded && Colors.mainOrange || Colors.lightGrey}}
+                                            onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                            style={{...styles.uploadButton, backgroundColor:  Colors.link}}
                                         >
                                             Upload
                                         </button>
-                                        ||
-                                        null
+                                        <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                                      </div>
                                     }
                                 </div>
-                                <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                             </div>
                         </div>
 
                         <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
-                                label="Add New Soundcast"
+                                label="Save"
                                 onClick={this.submit.bind(this)}
                             />
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <TransparentShortSubmitButton
                                 label="Cancel"
-                                onClick={() => history.goBack()}
+                                onClick={() => {
+                                  that.props.shiftEditState();
+                                  history.goBack();
+                                }}
                             />
                         </div>
                     </div>
@@ -211,7 +208,7 @@ export default class AddSoundcast extends Component {
     }
 };
 
-AddSoundcast.propTypes = {
+EditSoundcast.propTypes = {
     userInfo: PropTypes.object,
     history: PropTypes.object,
 };
@@ -235,8 +232,12 @@ const styles = {
     },
     inputDescription: {
         height: 80,
+        backgroundColor: Colors.mainWhite,
+        width: '100%',
         fontSize: 16,
         borderRadius: 4,
+        marginTop: 5,
+        marginBottom: 20
     },
     image: {
         width: 133,
@@ -261,8 +262,8 @@ const styles = {
     inputFileWrapper: {
         margin: 10,
         width: 'calc(100% - 20px)',
-        height: 40,
-        backgroundColor: Colors.mainWhite,
+        height: 60,
+        // backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,
         float: 'left',
@@ -283,18 +284,25 @@ const styles = {
         float: 'left',
     },
     uploadButton: {
-        backgroundColor: Colors.mainOrange,
-        width: 70,
-        height: 40,
-        float: 'left',
+        backgroundColor: Colors.link,
+        width: 80,
+        height: 30,
+        // float: 'left',
         color: Colors.mainWhite,
         fontSize: 14,
         border: 0,
-    },
+        marginTop: 5
 
+    },
+    cancelImg: {
+      color: Colors.link,
+      marginLeft: 20,
+      fontSize: 14,
+      cursor: 'pointer'
+    },
     fileTypesLabel: {
         fontSize: 11,
-        marginLeft: 10,
+        marginLeft: 0,
         display: 'block',
     },
 };

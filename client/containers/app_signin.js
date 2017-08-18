@@ -21,7 +21,7 @@ var provider = new firebase.auth.FacebookAuthProvider();
 class _AppSignin extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             firstName: '',
             lastName: '',
@@ -33,15 +33,15 @@ class _AppSignin extends Component {
             redirectToReferrer: false
         };
     }
-    
+
     async signIn() {
         const { firstName, lastName, email, password, pic_url, courses } = this.state;
         const { signinUser, history, userInfo } = this.props;
         const that = this;
-        
+
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password);
-            
+
             const userId = firebase.auth().currentUser.uid;
             firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
                 if (snapshot.val()) {
@@ -52,7 +52,7 @@ class _AppSignin extends Component {
                     } else {
                         history.push('/myprograms');
                     }
-                    
+
                     if (_user.soundcasts_managed && _user.admin) {
                         if (_user.publisherID) {
                             // add publisher with admins (without watching)
@@ -61,7 +61,7 @@ class _AppSignin extends Component {
                                     const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
                                     _publisher.id = _user.publisherID;
                                     _user.publisher = _publisher;
-                
+
                                     if (_user.publisher.administrators) {
                                         for (let adminId in _user.publisher.administrators) {
                                             firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
@@ -75,7 +75,7 @@ class _AppSignin extends Component {
                                 }
                             });
                         }
-                        
+
                         for (let key in _user.soundcasts_managed) {
                             firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
                                 if (snapshot.val()) {
@@ -98,7 +98,7 @@ class _AppSignin extends Component {
                             });
                         }
                     }
-                    
+
                     if (_user.subscriptions) {
                         for (let key in _user.subscriptions) {
                             firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
@@ -124,7 +124,7 @@ class _AppSignin extends Component {
                     }
                 }
             });
-            
+
         } catch (error) {
             this.setState({
                 message: error.toString()
@@ -132,13 +132,13 @@ class _AppSignin extends Component {
             console.log(error.toString());
         }
     }
-    
+
     handleChange(field, e) {
         this.setState({
             [field]: e.target.value
         })
     }
-    
+
     componentWillMount() {
         // const that = this
         // firebase.auth().getRedirectResult().then(function(result) {
@@ -162,27 +162,27 @@ class _AppSignin extends Component {
         //       const firstName = name[0]
         //       const lastName = name[1]
         //       const courses = {}
-        
+
         //       firebase.database().ref('users/' + userId).set({
         //         firstName,
         //         lastName,
         //         email,
         //         courses
         //       })
-        
+
         //       that.props.signinUser({firstName, lastName, email, courses})
         //       that.props.history.push('/myprograms')
         //     }
-        
+
         //   })
         // })
     }
-    
+
     handleFBAuth() {
         const that = this;
         const { history, userInfo, signinUser } = this.props;
         // firebase.auth().signInWithRedirect(provider)
-        
+
         firebase.auth().signInWithPopup(provider).then(function(result) {
             // This gives you a Facebook Access Token. You can use it to access the Facebook API.
             // The signed-in user info.
@@ -194,19 +194,19 @@ class _AppSignin extends Component {
                         let updates = {};
                         updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
                         firebase.database().ref().update(updates);
-                        
+
                         let _user = snapshot.val();
                         _user.pic_url = _user.photoURL;
                         delete _user.photoURL;
                         signinUser(_user);
-                        
+
                         if (_user.admin) {
                             history.push('/dashboard/add_episode');
                         } else {
                             history.push('/myprograms');
                         }
                     } else {  //if it's a new user
-    
+
                         // const { email, photoURL: pic_url, displayName } = result.user;
                         // const name = displayName.split(' ');
                         // const _userToRegister = {
@@ -220,7 +220,7 @@ class _AppSignin extends Component {
                         // signinUser(_userToRegister);
                         // // from login page now register subscribers by default
                         // history.push('/myprograms');
-                        
+
                         alert('You don’t have a Soundwise account. Please create or sign up for a soundcast to get started.');
                         history.push('/signup');
                     }
@@ -264,22 +264,22 @@ class _AppSignin extends Component {
                                     //   })
                                     // }
                                     that.props.signinUser({firstName, lastName, email, pic_url, courses});
-                                    
+
                                     that.props.history.push('/myprograms');
                                 })
                         })
                     }
-                    
+
                 })
             }
         })
     }
-    
-    
+
+
     render() {
         const { firstName, lastName, email, password, redirectToReferrer } = this.state
         const { from } = this.props.location.state || { from: { pathname: '/courses' } }
-        
+
         if(redirectToReferrer) {
             return (
                 <Redirect to={from} />
@@ -369,10 +369,10 @@ class _AppSignin extends Component {
                         {/*</div>*/}
                     {/*</div>*/}
                 {/*</section>*/}
-	
-	
-	
-	
+
+
+
+
 				<div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
 					<img alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
 					<div style={styles.containerWrapper}>
@@ -452,13 +452,14 @@ const styles = {
 	},
 	title: {
 		paddingTop: 20,
-		fontSize: 19,
+		fontSize: 32,
 		color: Colors.fontBlack,
 	},
 	fb: {
 		width: 212,
 		height: 44,
-		marginTop: 16,
+		marginTop: 22,
+        marginBottom: 16
 	},
 	fbIcon: {
 		marginLeft: 0,
@@ -468,7 +469,7 @@ const styles = {
 		right: '10%',
 	},
 	withEmailText: {
-		fontSize: 11,
+		fontSize: 14,
 		display: 'inline-block',
 		paddingLeft: 20,
 		paddingRight: 20,
@@ -499,16 +500,16 @@ const styles = {
 		height: 11,
 		lineHeight: '11px',
 	},
-	
+
 	inputLabel: {
-		fontSize: 12,
+		fontSize: 14,
 		marginBottom: 0,
 		marginTop: 0,
 		position: 'relative',
 		top: 10,
 	},
 	greyInputText: {
-		fontSize: 12,
+		fontSize: 14,
 	},
 };
 

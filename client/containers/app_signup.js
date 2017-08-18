@@ -26,7 +26,7 @@ var provider = new firebase.auth.FacebookAuthProvider();
 class _AppSignup extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             firstName: '',
             lastName: '',
@@ -40,41 +40,46 @@ class _AppSignup extends Component {
             isPublisherFormShown: false,
             isFBauth: false,
         };
-        
+
         this.publisherID = moment().format('x') + 'p';
+
+        this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
     }
-    
+
     signUp() {
         const {firstName, lastName, email, password, pic_url} = this.state;
-    
+
         this.setState({ isFBauth: false });
         if (!this._validateForm(firstName, lastName, email, password)) return;
-        
+
         if (this.props.match.params.mode !== 'admin') { // user case
             this._signUp();
         } else { // admin case
             this.setState({isPublisherFormShown: true});
         }
     }
-    
+
     getUrl (url) {
         this.setState({publisherImage: url});
     }
-    
+
     signUpAdmin () {
+        const that = this
         const { match, history } = this.props;
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
+        console.log('the admin: ', this.state)
+
         this.setState({ isFBauth: true });
         if(publisher_name.length < 1) {
             alert('Please enter your name!');
             return;
         }
         if (!this._validateForm(firstName, lastName, email, password, isFBauth)) return;
-    
+
         this._signUp().then(
             res => {
                 if (this.props.match.params.mode === 'admin') { // admin case
-                    
+
                     let _newPublisher = {
                         name: publisher_name,
                         imageUrl: publisherImage,
@@ -82,11 +87,11 @@ class _AppSignup extends Component {
                             [firebase.auth().currentUser.uid]: true,
                         },
                     };
-        
+
                     firebase.database().ref(`publishers/${this.publisherID}`).set(_newPublisher).then(
                         res => {
                             console.log('success add publisher: ', res);
-                            history.push('/dashboard/add_episode');
+                            that.addDefaultSoundcast()
                         },
                         err => {
                             console.log('ERROR add publisher: ', err);
@@ -96,7 +101,73 @@ class _AppSignup extends Component {
             }
         );
     }
-    
+
+    addDefaultSoundcast() {
+        const { history } = this.props;
+
+        const creatorID = firebase.auth().currentUser.uid;
+        const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
+        const subscribed = {};
+        const _email = email.replace(/\./g, "(dot)");
+        subscribed[_email] = true;
+
+        const soundcastId = `${moment().format('x')}s`;
+
+        const newSoundcast = {
+            title: publisher_name,
+            imageURL: publisherImage,
+            creatorID,
+            publisherID: this.publisherID,
+            subscribed
+        };
+
+        let _promises = [
+        // add soundcast
+            firebase.database().ref(`soundcasts/${soundcastId}`).set(newSoundcast).then(
+                res => {
+                    console.log('success add soundcast: ', res);
+                    return res;
+                },
+                err => {
+                    console.log('ERROR add soundcast: ', err);
+                    Promise.reject(err);
+                }
+            ),
+            // add soundcast to publisher
+            firebase.database().ref(`publishers/${this.publisherID}/soundcasts/${soundcastId}`).set(true).then(
+                res => {
+                    console.log('success add soundcast to publisher: ', res);
+                    return res;
+                },
+                err => {
+                    console.log('ERROR add soundcast to publisher: ', err);
+                    Promise.reject(err);
+                }
+            ),
+            // add soundcast to admin
+            firebase.database().ref(`users/${creatorID}/soundcasts_managed/${soundcastId}`).set(true).then(
+                res => {
+                    console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                    return res;
+                },
+                err => {
+                    console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+                    Promise.reject(err);
+                }
+            ),
+        ];
+
+        Promise.all(_promises).then(
+            res => {
+                console.log('completed adding soundcast');
+                history.push('/dashboard/soundcasts');
+            },
+            err => {
+                console.log('failed to complete adding soundcast');
+            }
+        );
+    }
+
     _validateForm (firstName, lastName, email, password, isFBauth) {
         if(firstName.length < 1 || lastName.length < 1) {
             alert('Please enter your name!');
@@ -111,7 +182,7 @@ class _AppSignup extends Component {
             return true;
         }
     }
-    
+
     async _signUp () {
         const { match, history, signupUser } = this.props;
         const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
@@ -130,11 +201,11 @@ class _AppSignup extends Component {
             Promise.reject(error);
         }
     }
-    
+
     signUpUser () {
         const { match, history, signupUser } = this.props;
         const {firstName, lastName, email, pic_url} = this.state;
-        
+
         const userId = firebase.auth().currentUser.uid;
         const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
 		// add admin fields
@@ -142,34 +213,34 @@ class _AppSignup extends Component {
 			userToSave.admin = true;
 			userToSave.publisherID = this.publisherID;
 		}
-		
+
         firebase.database().ref('users/' + userId).set(userToSave);
-		
+
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin') {
             history.push('/myprograms');
         }
     }
-    
+
     handleChange(prop, e) {
         this.setState({
             [prop]: e.target.value
         })
     }
-    
+
     handleFBAuth() {
         const { match, history, signupUser } = this.props;
         const that = this;
         this.setState({ isFBauth: true });
-        
+
         firebase.auth().signInWithPopup(provider)
             .then(function(result) {
                 // This gives you a Facebook Access Token. You can use it to access the Facebook API.
                 // The signed-in user info.
                 const { email, photoURL, displayName } = result.user;
                 const name = displayName.split(' ');
-                
+
                 if (match.params.mode === 'admin') {
                     that.setState({
                         firstName: name[0],
@@ -229,12 +300,12 @@ class _AppSignup extends Component {
                 }
             });
     }
-    
+
     render() {
         const { match } = this.props;
         const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name } = this.state;
         const { from } = this.props.location.state || { from: { pathname: '/courses' } };
-        
+
         if(redirectToReferrer) {
             return (
                 <Redirect to={from} />
@@ -313,7 +384,7 @@ class _AppSignup extends Component {
                                         {/*style={styles.checkbox}*/}
                                     {/*/>*/}
                                     <span style={styles.acceptText}>
-                                        By signing up I accept the terms of use and privacy policy
+                                        By signing up I accept the terms of use and privacy policy.
                                     </span>
                                 </div>
                                 {
@@ -360,10 +431,11 @@ class _AppSignup extends Component {
                                     validators={[minLengthValidator.bind(null, 1)]}
                                 />
                                 <div style={styles.inputLabel}>Upload a publisher picture</div>
-                                <div style={styles.italicText}>(i.e. your company logo)</div>
+                                <div style={styles.italicText}>(i.e. your company logo, at least 133px by 133px)</div>
                                 <ImageS3Uploader
                                     cb={this.getUrl.bind(this)}
                                     fileName={this.publisherID}
+                                    title={'Publisher picture (square image)'}
                                 />
                                 <OrangeSubmitButton
                                     label="CREATE ACCOUNT"
@@ -405,13 +477,15 @@ const styles = {
     },
     title: {
         paddingTop: 20,
-        fontSize: 19,
+        paddingBottom: 20,
+        fontSize: 26,
         color: Colors.fontBlack,
     },
     fb: {
         width: 212,
         height: 44,
-        marginTop: 16,
+        marginTop: 22,
+        marginBottom: 16
     },
     fbIcon: {
         marginLeft: 0,
@@ -421,7 +495,7 @@ const styles = {
         right: '10%',
     },
     withEmailText: {
-        fontSize: 11,
+        fontSize: 14,
         display: 'inline-block',
         paddingLeft: 20,
         paddingRight: 20,
@@ -452,16 +526,16 @@ const styles = {
         height: 11,
         lineHeight: '11px',
     },
-    
+
     inputLabel: {
-        fontSize: 12,
-        marginBottom: 0,
+        fontSize: 16,
+        marginBottom: 3,
         marginTop: 0,
         position: 'relative',
         top: 10,
     },
     greyInputText: {
-        fontSize: 12,
+        fontSize: 16,
     },
 };
 

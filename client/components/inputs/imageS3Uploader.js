@@ -10,23 +10,23 @@ import Colors from '../../styles/colors';
 export default class ImageS3Uploader extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             imageURL: '',
             fileUploaded: false,
         };
-        
+
         this.fileInputRef = null;
         this.visibleFileInputRef = null;
     }
-    
+
     componentDidMount () {
         // const _input = document.getElementById('upload_hidden_cover');
         // _input.addEventListener('change', (e) => {
         //     console.log('>>>>>>>>>>PATH', e);
         // });
     }
-    
+
     _uploadToAws (file) {
         const { cb, fileName } = this.props;
         const _self = this;
@@ -47,14 +47,14 @@ export default class ImageS3Uploader extends Component {
                 console.log('ERROR upload to aws s3: ', err);
             });
     }
-    
+
     setFileName (e) {
         if (e.target.value) {
             this.setState({fileUploaded: true});
         }
         this.visibleFileInputRef.value = e.target.files[0].name;
     }
-    
+
     render () {
         const { imageURL, fileUploaded } = this.state;
         return (
@@ -70,7 +70,7 @@ export default class ImageS3Uploader extends Component {
                 </div>
                 <div style={_styles.loaderWrapper}>
                     <span style={{..._styles.titleText, marginLeft: 10}}>
-                        Soundcast cover art (square image)
+                        {this.props.title}
                     </span>
                     <div style={{..._styles.inputFileWrapper, marginTop: 0}}>
                         <input
@@ -129,7 +129,7 @@ const _styles = {
         borderColor: Colors.lightGrey,
     },
     loaderWrapper: {
-        height: 133,
+        height: 143,
         paddingTop: 20,
         paddingRight: 0,
         paddingBottom: 0,
@@ -138,12 +138,12 @@ const _styles = {
         float: 'left',
     },
     titleText: {
-        fontSize: 12,
+        fontSize: 14,
     },
     inputFileWrapper: {
         margin: 10,
         width: 'calc(100% - 20px)',
-        height: 25,
+        height: 33,
         backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,
@@ -160,21 +160,21 @@ const _styles = {
     },
     inputFileVisible: {
         backgroundColor: 'transparent',
-        width: 'calc(100% - 50px)',
-        height: 25,
+        width: 'calc(100% - 70px)',
+        height: 32,
         float: 'left',
     },
     uploadButton: {
         backgroundColor: Colors.mainOrange,
-        width: 50,
-        height: 25,
+        width: 70,
+        height: 32,
         float: 'left',
         color: Colors.mainWhite,
-        fontSize: 9,
+        fontSize: 12,
         border: 0,
     },
     fileTypesLabel: {
-        fontSize: 9,
+        fontSize: 11,
         marginLeft: 10,
         display: 'block',
     },

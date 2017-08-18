@@ -5,15 +5,42 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import EditSoundcast from './edit_soundcast'
 
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 
 export default class SoundcastsManaged extends Component {
-    render() {
-        const { userInfo, history, id } = this.props;
+  constructor(props) {
+    super(props)
 
-        if (!id) {
+    this.state = {
+      editing: false
+    }
+
+    this.editSoundcast = this.editSoundcast.bind(this)
+    this.shiftEditState = this.shiftEditState.bind(this)
+  }
+
+  editSoundcast(soundcastId) {
+    const { userInfo, history, id } = this.props;
+    this.shiftEditState();
+    history.push(`/dashboard/soundcasts/${soundcastId}`)
+
+  }
+
+  shiftEditState() {
+    const editing = this.state.editing;
+    this.setState({
+      editing: !editing
+    })
+  }
+
+  render() {
+        const { userInfo, history, id } = this.props;
+        const { editing } = this.state;
+
+    if (!id) {
 			const _soundcasts_managed = [];
 			for (let id in userInfo.soundcasts_managed) {
 				const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -67,6 +94,11 @@ export default class SoundcastsManaged extends Component {
 										<div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcasts/${soundcast.id}`)}>Episodes</div>
 										<div style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
 										<div style={{...styles.button, borderColor: Colors.mainGrey}}>Add new episode</div>
+                    <div style={styles.edit}>
+                      <span style={styles.editLink} onClick={() => this.editSoundcast(soundcast.id)}>
+                        Edit
+                      </span>
+                    </div>
 									</div>
 								</div>
 							);
@@ -82,59 +114,68 @@ export default class SoundcastsManaged extends Component {
 					</div>
 				</div>
 			);
-		} else {
+		} else if(id && !editing) {
         	const _soundcast = userInfo.soundcasts_managed[id];
         	const _episodes = [];
         	for (let id in _soundcast.episodes) {
         		const _episode = _soundcast.episodes[id];
-				if (typeof(_episode)==='object') {
-					_episode.id = id;
-					_episodes.push(_episode);
-				}
-			}
+    				if (typeof(_episode)==='object') {
+    					_episode.id = id;
+    					_episodes.push(_episode);
+    				}
+          }
+
   			return (
   				<div style={styles.itemContainer}>
-					<div style={styles.itemHeader}>
-						<div style={styles.itemTitle}>{_soundcast.title}</div>
-						<div style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add</div>
-					</div>
-					<table>
-						<tr style={styles.tr}>
-							<th style={{...styles.th, width: 37}}></th>
-							<th style={{...styles.th, width: 150}}>TITLE</th>
-							<th style={{...styles.th, width: 60}}>DATE</th>
-							<th style={{...styles.th, width: 60}}>LENGTH</th>
-							<th style={{...styles.th, width: 120}}>CREATOR</th>
-							<th style={{...styles.th, width: 58}}>ANALYTICS</th>
-							<th style={{...styles.th, width: 80}}>TOTAL LISTENS</th>
-						</tr>
-						{
-							_episodes.map((episode, i) => {
-								episode.creator = userInfo.publisher.administrators[episode.creatorID];
+  					<div style={styles.itemHeader}>
+  						<div style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
+  						<div style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add episode</div>
+  					</div>
+  					<table>
+  						<tr style={styles.tr}>
+  							<th style={{...styles.th, width: 37}}></th>
+  							<th style={{...styles.th, width: 250}}>TITLE</th>
+  							<th style={{...styles.th, width: 160}}>DATE</th>
+  							<th style={{...styles.th, width: 160}}>LENGTH</th>
+  							<th style={{...styles.th, width: 160}}>CREATOR</th>
+  							<th style={{...styles.th, width: 160}}>ANALYTICS</th>
+  							<th style={{...styles.th, width: 160}}>TOTAL LISTENS</th>
+  						</tr>
+  						{
+  							_episodes.map((episode, i) => {
+  								episode.creator = userInfo.publisher.administrators[episode.creatorID];
 
-								return (
-									<tr key={i} style={styles.tr}>
-										<td style={styles.td}>
-											<input type="checkbox" style={styles.itemCheckbox} />
-										</td>
-										<td style={styles.td}>{episode.title}</td>
-										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
-										<td style={styles.td}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-										<td style={styles.td}>{episode.creator.firstName} {episode.creator.lastName}</td>
-										<td style={styles.td}>
-											<i className="fa fa-line-chart" style={styles.itemChartIcon}></i>
-										</td>
-										<td style={styles.td}>{episode.totalListens || 0}</td>
-									</tr>
-								);
-							})
-						}
-					</table>
-				</div>
+  								return (
+  									<tr key={i} style={styles.tr}>
+  										<td style={styles.td}>
+  											<input type="checkbox" style={styles.itemCheckbox} />
+  										</td>
+  										<td style={styles.td}>{episode.title}</td>
+  										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
+  										<td style={styles.td}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
+  										<td style={styles.td}>{episode.creator.firstName} {episode.creator.lastName}</td>
+  										<td style={styles.td}>
+  											<i className="fa fa-line-chart" style={styles.itemChartIcon}></i>
+  										</td>
+  										<td style={styles.td}>{episode.totalListens || 0}</td>
+  									</tr>
+  								);
+  							})
+  						}
+  					</table>
+				  </div>
 			);
-		}
-
+		} else if(id && editing) {
+      return (
+        <EditSoundcast
+          shiftEditState={this.shiftEditState}
+          history={history}
+          id={id}
+          userInfo={userInfo}
+          soundcast={userInfo.soundcasts_managed[id]}/>
+      )
     }
+  }
 };
 
 SoundcastsManaged.propTypes = {
@@ -154,14 +195,14 @@ const styles = {
         marginLeft: 0,
     },
     soundcastInfo: {
-        height: 76,
+        height: 86,
         backgroundColor: Colors.mainWhite,
         paddingTop: 15,
         paddingBottom: 15,
     },
     soundcastImage: {
-        width: 46,
-        height: 46,
+        width: 52,
+        height: 52,
         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
         marginRight: 30,
         float: 'left',
@@ -171,21 +212,34 @@ const styles = {
         float: 'left',
     },
     soundcastTitle: {
-        fontSize: 12,
+        fontSize: 18,
         fontWeight: 'bold',
         display: 'block',
     },
     soundcastUpdated: {
-        fontSize: 10,
+        fontSize: 16,
+    },
+    edit: {
+      height: 30,
+      display: 'inline-block'
+    },
+    editLink: {
+      paddingTop: 15,
+      paddingLeft: 20,
+      fontSize: 16,
+      color: Colors.link,
+      float: 'right',
+      cursor: 'pointer'
+      // display: 'block'
     },
     subscribers: {
         paddingTop: 10,
         float: 'right',
-        fontSize: 9,
+        fontSize: 14,
     },
     addLink: {
         color: Colors.link,
-        fontSize: 9,
+        fontSize: 14,
         display: 'block',
         float: 'none',
         height: 11,
@@ -194,11 +248,13 @@ const styles = {
         bottom: 5,
         width: 16,
         margin: '0 auto',
+        paddingTop: 6,
+        cursor: 'pointer'
     },
     button: {
-        height: 22,
-        borderRadius: 11,
-        fontSize: 9,
+        height: 30,
+        borderRadius: 14,
+        fontSize: 12,
         letterSpacing: 2,
         wordSpacing: 4,
         display: 'inline-block',
@@ -206,7 +262,7 @@ const styles = {
         paddingRight: 15,
         paddingBottom: 5,
         paddingLeft: 15,
-        borderWidth: 1,
+        borderWidth: 3,
         marginTop: 10,
         marginRight: 15,
         borderStyle: 'solid',
@@ -225,22 +281,25 @@ const styles = {
 		paddingLeft: 0,
 	},
 	itemHeader: {
-		height: 15,
-		marginLeft: 10,
+		height: 22,
+		marginLeft: 15,
+    marginTop: 10,
+    marginBottom: 25
+
 	},
 	itemTitle: {
-    	fontSize: 13,
+    fontSize: 22,
 		float: 'left',
-		height: 15,
-		lineHeight: '15px',
+		height: 22,
+		lineHeight: '22px',
 	},
 	addEpisodeLink: {
     	float: 'left',
-		fontSize: 13,
+		fontSize: 16,
 		color: Colors.mainOrange,
 		marginLeft: 20,
-		height: 15,
-		lineHeight: '15px',
+		height: 22,
+		lineHeight: '22px',
 		cursor: 'pointer',
 	},
 	tr: {
@@ -249,7 +308,7 @@ const styles = {
 		borderBottomStyle: 'solid',
 	},
 	th: {
-    	fontSize: 9,
+    fontSize: 14,
 		color: Colors.fontGrey,
 		height: 35,
 		fontWeight: 'regular',
@@ -257,7 +316,7 @@ const styles = {
 	},
 	td: {
     	color: Colors.fontDarkGrey,
-		fontSize: 9,
+		fontSize: 14,
 		height: 40,
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
