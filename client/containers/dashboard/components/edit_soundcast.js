@@ -127,6 +127,7 @@ export default class EditSoundcast extends Component {
                         <span style={styles.titleText}>
                             Short Description
                         </span>
+
                         <div styles={styles.inputTitleWrapper}>
                           <input
                               type="text"

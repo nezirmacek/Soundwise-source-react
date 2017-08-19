@@ -165,7 +165,7 @@ export default class SoundcastsManaged extends Component {
   					</table>
 				  </div>
 			);
-		} else if(id && editing) {
+		} else if(id && editing) {   //editing soundcast title, descrptions, etc
       return (
         <EditSoundcast
           shiftEditState={this.shiftEditState}

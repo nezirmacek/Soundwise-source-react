@@ -49,21 +49,27 @@ export default class ImageS3Uploader extends Component {
     }
 
     setFileName (e) {
-        if (e.target.value) {
+        // if (e.target.value) {
+        //     this.setState({fileUploaded: true});
+        // }
+        // this.visibleFileInputRef.value = e.target.files[0].name;
+        this._uploadToAws(this.fileInputRef.files[0])
+        if (this.fileInputRef.files[0]) {
             this.setState({fileUploaded: true});
         }
-        this.visibleFileInputRef.value = e.target.files[0].name;
     }
 
     render () {
         const { imageURL, fileUploaded } = this.state;
+        const that = this;
+
         return (
             <div style={_styles.fileUploader}>
                 <div style={_styles.image}>
                     {
                         this.fileInputRef && this.fileInputRef.files && this.fileInputRef.files[0]
                         &&
-                        <img src={URL.createObjectURL(this.fileInputRef.files[0])} />
+                        <img src={imageURL} />
                         ||
                         null
                     }
@@ -81,29 +87,26 @@ export default class ImageS3Uploader extends Component {
                             style={_styles.inputFileHidden}
                             ref={input => this.fileInputRef = input}
                         />
-                        <input
-                            type="text"
-                            readOnly="1"
-                            id="file"
-                            style={_styles.inputFileVisible}
-                            placeholder={'No File Selected'}
-                            onClick={() => {this.fileInputRef.click();}}
-                            ref={input => this.visibleFileInputRef = input}
-                        />
                         {
-                            !imageURL
-                            &&
+                          fileUploaded &&
+                          <div>
+                            <span>{this.fileInputRef.files[0].name}</span>
+                            <span style={_styles.cancelImg}
+                              onClick={() => that.setState({fileUploaded: false, imageURL: ''})}>Cancel</span>
+                          </div>
+                          ||
+                          !fileUploaded &&
+                          <div>
                             <button
-                                onClick={() => {fileUploaded && this._uploadToAws(this.fileInputRef.files[0]);}}
-                                style={{..._styles.uploadButton, backgroundColor: fileUploaded && Colors.mainOrange || Colors.lightGrey}}
+                                onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                style={{..._styles.uploadButton, backgroundColor:  Colors.mainOrange}}
                             >
                                 Upload
                             </button>
-                            ||
-                            null
+                            <span style={_styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                          </div>
                         }
                     </div>
-                    <span style={_styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                 </div>
             </div>
         );
@@ -143,7 +146,7 @@ const _styles = {
     inputFileWrapper: {
         margin: 10,
         width: 'calc(100% - 20px)',
-        height: 33,
+        height: 53,
         backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,
@@ -168,14 +171,19 @@ const _styles = {
         backgroundColor: Colors.mainOrange,
         width: 70,
         height: 32,
-        float: 'left',
         color: Colors.mainWhite,
         fontSize: 12,
         border: 0,
     },
+    cancelImg: {
+      color: Colors.link,
+      marginLeft: 20,
+      fontSize: 14,
+      cursor: 'pointer'
+    },
     fileTypesLabel: {
         fontSize: 11,
-        marginLeft: 10,
+        marginLeft: 0,
         display: 'block',
     },
 };

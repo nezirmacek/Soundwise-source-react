@@ -10,6 +10,8 @@ import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
 import SoundcastsManaged from './components/soundcasts_managed';
 import AddSoundcast from "./components/add_soundcast";
+import Subscribers from "./components/subscribers";
+
 
 const verticalMenuItems = [
     {
@@ -39,11 +41,11 @@ const verticalMenuItems = [
         Component: SoundcastsManaged,
     },
     {
-        path: '',
+        path: 'subscribers',
         label: 'Subscribers',
         iconClass: 'users',
         isMenuItemVisible: true,
-        Component: SoundcastsManaged,
+        Component: Subscribers,
     },
     {
         path: '',

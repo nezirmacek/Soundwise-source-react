@@ -25,6 +25,7 @@ export default class AddSoundcast extends Component {
         };
 
         this.soundcastId = `${moment().format('x')}s`;
+        this.fileInputRef = null;
     }
 
     _uploadToAws (file) {
@@ -47,10 +48,14 @@ export default class AddSoundcast extends Component {
     }
 
     setFileName (e) {
-        if (e.target.value) {
+        // if (e.target.value) {
+        //     this.setState({fileUploaded: true});
+        // }
+        // document.getElementById('file').value = e.target.value;
+        this._uploadToAws(this.fileInputRef.files[0])
+        if (this.fileInputRef.files[0]) {
             this.setState({fileUploaded: true});
         }
-        document.getElementById('file').value = e.target.value;
     }
 
     submit () {
@@ -58,10 +63,10 @@ export default class AddSoundcast extends Component {
         const { userInfo, history } = this.props;
 
         const subscribersArr = subscribers.split(',');
-        const subscribed = {};
+        const invited = {};
         subscribersArr.map(email => {
             const _email = email.replace(/\./g, "(dot)");
-            subscribed[_email] = true;
+            invited[_email] = true;
         });
 
         const creatorID = firebase.auth().currentUser.uid;
@@ -71,7 +76,7 @@ export default class AddSoundcast extends Component {
             imageURL,
             creatorID,
             publisherID: userInfo.publisherID,
-            subscribed,
+            invited,
         };
 
         let _promises = [
@@ -124,6 +129,7 @@ export default class AddSoundcast extends Component {
     render() {
         const { imageURL, title, subscribers, fileUploaded } = this.state;
         const { userInfo, history } = this.props;
+        const that = this;
 
         return (
             <div className='padding-30px-tb'>
@@ -134,27 +140,55 @@ export default class AddSoundcast extends Component {
               </div>
                 <div className="row">
                     <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                        <span style={styles.titleText}>
+                            Title*
+                        </span>
                         <ValidatedInput
                             type="text"
                             styles={styles.inputTitle}
                             wrapperStyles={styles.inputTitleWrapper}
-                            placeholder={'Soundcast title*'}
+                            placeholder={'Soundcast title'}
                             onChange={(e) => {this.setState({title: e.target.value})}}
                             value={this.state.title}
                             validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 40)]}
                         />
                         <span style={styles.titleText}>
-                            Add Subscribers
+                            Short Description
+                        </span>
+
+                        <div style={styles.inputTitleWrapper}>
+                          <input
+                              type="text"
+                              style={styles.inputTitle}
+                              placeholder={'A short description of this soundcast (300 characters max)'}
+                              onChange={(e) => {this.setState({short_description: e.target.value})}}
+                              value={this.state.short_description}
+                          />
+                        </div>
+                        <span style={styles.titleText}>
+                            Long Description
                         </span>
                         <textarea
                             style={styles.inputDescription}
-                            placeholder={'Enter subscriber email addresses, separated by commas'}
+                            placeholder={'A longer description of the soundcast'}
+                            onChange={(e) => {this.setState({long_description: e.target.value})}}
+                            value={this.state.long_description}
+                        >
+                        </textarea>
+                        <span style={styles.titleText}>
+                            Invite subscribers
+                        </span>
+                        <textarea
+                            style={styles.inputDescription}
+                            placeholder={'Enter listener email addresses, separated by commas'}
                             onChange={(e) => {this.setState({subscribers: e.target.value})}}
                             value={this.state.subscribers}
                         >
                         </textarea>
                         <div>
-                            <div style={styles.image}></div>
+                            <div style={styles.image}>
+                                <img src={imageURL} />
+                            </div>
                             <div style={styles.loaderWrapper}>
                                 <span style={{...styles.titleText, marginLeft: 10}}>
                                     Soundcast cover art (square image)
@@ -166,29 +200,28 @@ export default class AddSoundcast extends Component {
                                         id="upload_hidden_cover"
                                         onChange={this.setFileName.bind(this)}
                                         style={styles.inputFileHidden}
-                                    />
-                                    <input
-                                        type="text"
-                                        readOnly="1"
-                                        id="file"
-                                        style={styles.inputFileVisible}
-                                        placeholder={'No File Selected'}
-                                        onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                        ref={input => this.fileInputRef = input}
                                     />
                                     {
-                                        !imageURL
-                                        &&
+                                      fileUploaded &&
+                                      <div>
+                                        <span>{this.fileInputRef.files[0].name}</span>
+                                        <span style={styles.cancelImg}
+                                          onClick={() => that.setState({fileUploaded: false, imageURL: ''})}>Cancel</span>
+                                      </div>
+                                      ||
+                                      !fileUploaded &&
+                                      <div>
                                         <button
-                                            onClick={() => {fileUploaded && this._uploadToAws(document.getElementById('upload_hidden_cover').files[0]);}}
-                                            style={{...styles.uploadButton, backgroundColor: fileUploaded && Colors.mainOrange || Colors.lightGrey}}
+                                            onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                            style={{...styles.uploadButton, backgroundColor:  Colors.link}}
                                         >
                                             Upload
                                         </button>
-                                        ||
-                                        null
+                                        <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                                      </div>
                                     }
                                 </div>
-                                <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                             </div>
                         </div>
 
@@ -261,8 +294,8 @@ const styles = {
     inputFileWrapper: {
         margin: 10,
         width: 'calc(100% - 20px)',
-        height: 40,
-        backgroundColor: Colors.mainWhite,
+        height: 60,
+        // backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,
         float: 'left',
@@ -283,18 +316,24 @@ const styles = {
         float: 'left',
     },
     uploadButton: {
-        backgroundColor: Colors.mainOrange,
-        width: 70,
-        height: 40,
-        float: 'left',
+        backgroundColor: Colors.link,
+        width: 80,
+        height: 30,
+        // float: 'left',
         color: Colors.mainWhite,
         fontSize: 14,
         border: 0,
+        marginTop: 5
     },
-
+    cancelImg: {
+      color: Colors.link,
+      marginLeft: 20,
+      fontSize: 14,
+      cursor: 'pointer'
+    },
     fileTypesLabel: {
         fontSize: 11,
-        marginLeft: 10,
+        marginLeft: 0,
         display: 'block',
     },
 };

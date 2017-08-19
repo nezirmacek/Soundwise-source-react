@@ -52,7 +52,7 @@ firebase.initializeApp(config)
 //     "natasha@natashache(dot)com": true
 //   },
 //   "subscribed": {
-//     "ilovewordsworth@gmail(dot)com": "xD5tW78sX6M96C4xpd7iOIN5Qth1"
+//     "xD5tW78sX6M96C4xpd7iOIN5Qth1": true
 //   }
 // }
 
