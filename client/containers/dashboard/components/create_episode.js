@@ -14,6 +14,7 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 
+
 export default class CreateEpisode extends Component {
     constructor(props) {
         super(props);
@@ -24,6 +25,11 @@ export default class CreateEpisode extends Component {
             isPlaying: false,
             isLoading: false,
             isSaved: false,
+
+            recordingStartTime: null,
+            currentRecordingDuration: 0,
+            playingStartTime: null,
+            currentPlayingDuration: 0,
 
             audioUploaded: false,
             notesUploaded: false,
@@ -40,6 +46,8 @@ export default class CreateEpisode extends Component {
         this.audio = null;
         this.notes = null;
 		this.player = null;
+        this.recordingInterval = null;
+        this.playingInterval = null;
 
         this.currentSoundcastId = null;
 
@@ -60,30 +68,73 @@ export default class CreateEpisode extends Component {
 	}
 
     record () {
+        const that = this;
+
 		this.setState({
 			isRecording: true,
+            recordingStartTime: moment()
 		});
+
+        this.recordingInterval = setInterval(() => {
+            const { recordingStartTime } = that.state
+
+            if(!that.state.isRecording && that.state.isRecorded) {
+                clearInterval(that.recordingInterval)
+            }
+
+            that.setState({
+                currentRecordingDuration: moment().diff(recordingStartTime) //recording duration in millliseconds
+            })
+
+        }, 1000);
 	}
 
     stop (blobObject) {
+        const that = this;
 		this.setState({
 			blob : blobObject,
 			isRecorded: true,
 			isLoading: false,
 			isRecording: false,
 		});
+
+        // clearInterval(recordingInterval);
+        // console.log('interval cleared')
     }
 
+
+
     play () {
+        const that = this;
+
 		this.player.play();
         if (this.state.isRecorded) {
-            this.setState({isPlaying: true});
+            this.setState({
+                isPlaying: true,
+                playingStartTime: moment()
+            });
         }
+
+        this.playingInterval = setInterval(() => {
+            const { playingStartTime } = that.state
+
+            if(!that.state.isPlaying) {
+                clearInterval(that.playingInterval)
+            }
+
+            that.setState({
+                currentPlayingDuration: moment().diff(playingStartTime) //recording duration in millliseconds
+            })
+        }, 1000);
     }
 
     pause () {
 		this.player.pause();
-        this.setState({isPlaying: false});
+        this.setState({
+            isPlaying: false,
+            currentPlayingDuration: 0
+        });
+        this.player.currentTime = 0;
     }
 
     save () {
@@ -127,7 +178,7 @@ export default class CreateEpisode extends Component {
     }
 
     saveEpisode (isPublished) {
-        const { title, description, actions, audioUrl, notesUrl } = this.state;
+        const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration } = this.state;
         const { userInfo } = this.props;
 
         if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
@@ -138,6 +189,7 @@ export default class CreateEpisode extends Component {
                 date_created: moment().format('X'),
                 creatorID: firebase.auth().currentUser.uid,
                 url: audioUrl,
+                duration: currentRecordingDuration / 1000,  //convert duration to seconds
                 notes: notesUrl,
                 soundcastID: this.currentSoundcastId,
                 isPublished: isPublished,
@@ -164,7 +216,7 @@ export default class CreateEpisode extends Component {
     }
 
     renderRecorder() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl, isSaved } = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl, isSaved, currentRecordingDuration, currentPlayingDuration } = this.state;
         if(isSaved) {
             return (
                 <div style={{textAlign: 'center'}}>
@@ -191,9 +243,9 @@ export default class CreateEpisode extends Component {
                         ||
                         <div style={styles.recordButton} onClick={(e) => this.stop(e)}>
                             <span className="fa-stack fa-2x">
-                              <i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i>
-                              <i className="fa fa-square fa-stack-1x fa-inverse"></i>
-                            </span>                             </div>
+                              <i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i>
+                            </span>
+                        </div>
                     }
                     <div style={styles.micWrapper}>
                         <ReactMic
@@ -207,7 +259,7 @@ export default class CreateEpisode extends Component {
                         />
                     </div>
                     <div style={styles.time}>
-                        <span>00:00</span>
+                        <span>{isRecording && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss')}</span>
                     </div>
                     {this.renderPlayAndSave()}
                     <div style={{width: 0, height: 0, overflow: 'hidden'}}>
@@ -248,7 +300,7 @@ export default class CreateEpisode extends Component {
                         ||
                         <div style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
                             <i
-                                className="fa fa-pause-circle-o"
+                                className="fa fa-stop-circle-o"
                                 style={{
                                     ...styles.playIcon,
                                     color: isRecorded && Colors.mainOrange || Colors.fontGrey
@@ -257,7 +309,7 @@ export default class CreateEpisode extends Component {
                         </div>
                     }
                     <div style={styles.saveText} onClick={this.save.bind(this)}>Save</div>
-                    <div style={styles.trashWrapper} onClick={() => {this.setState({isRecorded: false})}}>
+                    <div style={styles.trashWrapper} onClick={() => {this.setState({isRecorded: false, currentPlayingDuration: 0, currentRecordingDuration: 0, playingStartTime: null, recordingStartTime: null})}}>
                         Discard
                     </div>
                 </div>
@@ -653,6 +705,7 @@ const styles = {
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,
+        fontSize: 16
     },
 
     draftButton: {

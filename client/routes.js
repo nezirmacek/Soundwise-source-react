@@ -42,7 +42,7 @@ class _Routes extends Component {
 
     props.subscribeToCategories();
   }
-    
+
     componentDidMount() {
         const that = this
         firebase.auth().onAuthStateChanged(function(user) {
@@ -53,7 +53,7 @@ class _Routes extends Component {
                     if (snapshot.val()) {
                         let _user = JSON.parse(JSON.stringify(snapshot.val()));
                         that.props.signinUser(_user);
-    
+
                         if (_user.soundcasts_managed && _user.admin) {
                             if (_user.publisherID) {
 								// add publisher with admins (without watching)
@@ -62,7 +62,7 @@ class _Routes extends Component {
 										const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
 										_publisher.id = _user.publisherID;
 										_user.publisher = _publisher;
-										
+
 										if (_user.publisher.administrators) {
 										    for (let adminId in _user.publisher.administrators) {
 												firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
@@ -76,7 +76,7 @@ class _Routes extends Component {
 									}
 								});
 							}
-                            
+
                             for (let key in _user.soundcasts_managed) {
                                 // watch managed soundcasts
                                 firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
@@ -103,7 +103,7 @@ class _Routes extends Component {
                                 });
                             }
                         }
-                        
+
                         if (_user.subscriptions) {
                             for (let key in _user.subscriptions) {
                                 // watch soundcasts subscriptions
@@ -135,21 +135,21 @@ class _Routes extends Component {
                 });
             }
         });
-        
+
         firebase.database().ref('courses').on('value', snapshot => {
             this.props.loadCourses(snapshot.val());
         });
-        
-        butter.post.list({page: 1, page_size: 10}).then(function(response) {
-            console.log(response)
-        })
-        
-        butter.content.retrieve(['homepage_headline']).then(function(response) {
-            console.log(response)
-        })
-        
+
+        // butter.post.list({page: 1, page_size: 10}).then(function(response) {
+        //     console.log(response)
+        // })
+
+        // butter.content.retrieve(['homepage_headline']).then(function(response) {
+        //     console.log(response)
+        // })
+
         // new AWS.Credentials(awsConfig);
-        
+
     }
 
   render() {

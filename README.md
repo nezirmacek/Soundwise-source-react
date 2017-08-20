@@ -72,10 +72,4 @@ file.name = uid + ext;
 ```
 comment these 3 strings
 
-## To-dos:
-- [ ] Fix audio player bug (for chrome)
-- [ ] Fix potential Facebook log in error (no redirect after log in)
-- [ ] Add loading indicator between when "play" button is clicked and a lesson is ready to play
-- [ ] Add loading indicator before images are loaded in "cheat sheet"
-- [ ] Add course catalog page
-- [ ] Add course file uploader
+

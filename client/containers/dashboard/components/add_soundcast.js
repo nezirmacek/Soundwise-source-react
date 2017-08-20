@@ -66,7 +66,7 @@ export default class AddSoundcast extends Component {
         const invited = {};
         subscribersArr.map(email => {
             const _email = email.replace(/\./g, "(dot)");
-            invited[_email] = true;
+            invited[_email] = true;  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
         });
 
         const creatorID = firebase.auth().currentUser.uid;
@@ -75,6 +75,7 @@ export default class AddSoundcast extends Component {
             title,
             imageURL,
             creatorID,
+            date_created: moment().format('X'),
             publisherID: userInfo.publisherID,
             invited,
         };

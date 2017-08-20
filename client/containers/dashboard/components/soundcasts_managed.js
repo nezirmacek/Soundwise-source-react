@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import EditSoundcast from './edit_soundcast'
+import InviteSubscribersModal from './invite_subscribers_modal'
 
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton } from '../../../components/buttons/buttons';
@@ -15,11 +16,15 @@ export default class SoundcastsManaged extends Component {
     super(props)
 
     this.state = {
-      editing: false
+      editing: false,
+      showModal: false,
+      currentSoundcastID: '',
+      currentSoundcast: null
     }
 
     this.editSoundcast = this.editSoundcast.bind(this)
     this.shiftEditState = this.shiftEditState.bind(this)
+    this.handleModal = this.handleModal.bind(this)
   }
 
   editSoundcast(soundcastId) {
@@ -34,6 +39,20 @@ export default class SoundcastsManaged extends Component {
     this.setState({
       editing: !editing
     })
+  }
+
+  handleModal(soundcast) {
+    if(!this.state.showModal) {
+      this.setState({
+        showModal: true,
+        currentSoundcastID: soundcast.id,
+        currentSoundcast: soundcast
+      })
+    } else {
+      this.setState({
+        showModal: false
+      })
+    }
   }
 
   render() {
@@ -60,6 +79,11 @@ export default class SoundcastsManaged extends Component {
 
 			return (
 				<div className='padding-30px-tb'>
+          <InviteSubscribersModal
+            isShown={this.state.showModal}
+            soundcast={this.state.currentSoundcast}
+            onClose={this.handleModal}
+          />
           <div className='padding-bottom-20px'>
               <span className='title-medium '>
                   Soundcasts
@@ -85,9 +109,13 @@ export default class SoundcastsManaged extends Component {
 										</div>
 										<div style={styles.subscribers}>
                                         <span style={styles.soundcastUpdated}>
-                                            {soundcast.subscribers && Object.keys(soundcast.subscribers).length || 0} subscribers
+                                            {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
                                         </span>
-											<span style={styles.addLink}>Add</span>
+											<span
+                        onClick={() => this.handleModal(soundcast)}
+                        style={styles.addLink}>
+                        Add
+                      </span>
 										</div>
 									</div>
 									<div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
