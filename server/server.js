@@ -7,7 +7,7 @@ var boot = require('loopback-boot');
 var mutilpart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
-var { awsConfig } = require('../config');
+var {awsConfig} = require('../config');
 var bodyParser = require('body-parser');
 var path = require('path');
 
@@ -15,6 +15,7 @@ var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
+var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerInvites;
 
 var app = module.exports = loopback();
 
@@ -53,6 +54,7 @@ app.post('/api/charge', handlePayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);
+app.post('/api/send_email_invites', sendListenerInvites);
 
 // // WORKS
 // app.post('/upload/images', function(req, res, next) {
@@ -92,31 +94,3 @@ boot(app, __dirname, function(err) {
     app.start();
 });
 
-// const options = {
-//   method: 'POST',
-//   uri: 'https://us7.api.mailchimp.com/3.0/lists/027913fec2/members',
-//   auth: {
-//     user: 'soundwise',
-//     pass: '8ef33347b5ca183fa94a22e6b7302842-us7'
-//   },
-//   body: {
-//     "email_address": "natasha@natashache.com",
-//     "status": "subscribed",
-//     "merge_fields": {
-//         "FNAME": "Natasha",
-//         "LNAME": "Che",
-//         "MMERGE3": 116
-//     }
-//   },
-//   json: true
-// }
-
-// request(options)
-//   .then(function (res) {
-//     console.log('mailchimp success: ')
-//   })
-//   .catch(function (err) {
-//     console.log('mailchimp failed: ', err)
-//   })
-
-// some random comment to see if git updates

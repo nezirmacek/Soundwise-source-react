@@ -5,6 +5,8 @@ import axios from 'axios';
 import firebase from 'firebase';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
+import {inviteListeners} from '../../../helpers/invite_listeners';
+
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
@@ -23,6 +25,17 @@ export default class InviteSubscribersModal extends Component {
 
   inviteListeners() {
     const inviteeArr = this.state.inviteeList.split(',');
+
+    const { soundcast, userInfo } = this.props;
+
+    for(var i = inviteeArr.length -1; i >= 0; i--) {
+        if (inviteeArr[i].indexOf('@') == -1) {
+            inviteeArr.splice(i, 1);
+        }
+    }
+
+    // send email invitations to invited listeners
+    inviteListeners(inviteeArr, soundcast.title, userInfo.firstName, userInfo.lastName);
 
     inviteeArr.forEach(email => {
         const _email = email.replace(/\./g, "(dot)");
@@ -45,7 +58,7 @@ export default class InviteSubscribersModal extends Component {
   }
 
   render() {
-    const { soundcast } = this.props;
+    const { soundcast, userInfo } = this.props;
 
     if(!this.props.isShown) {
       return null;

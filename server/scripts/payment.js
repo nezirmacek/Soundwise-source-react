@@ -1,6 +1,6 @@
-var stripe_key =  require('../../config').stripe_key
+var stripe_key =  require('../../config').stripe_key;
 
-var stripe = require('stripe')(stripe_key)
+var stripe = require('stripe')(stripe_key);
 
 module.exports.handlePayment = (req, res) => {
 // create customer: to be used in real version

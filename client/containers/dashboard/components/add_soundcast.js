@@ -5,10 +5,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactCrop from 'react-image-crop';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
+import {inviteListeners} from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
@@ -35,7 +36,7 @@ export default class AddSoundcast extends Component {
         const ext = (splittedFileName)[splittedFileName.length - 1];
         data.append('file', file, `${this.soundcastId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
-        axios.post('http://localhost:3000/api/fileUploads/upload', data)
+        Axios.post('/api/fileUploads/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
@@ -63,6 +64,15 @@ export default class AddSoundcast extends Component {
         const { userInfo, history } = this.props;
 
         const subscribersArr = subscribers.split(',');
+        for(var i = subscribersArr.length -1; i >= 0; i--) {
+            if (subscribersArr[i].indexOf('@') == -1) {
+                subscribersArr.splice(i, 1);
+            }
+        }
+
+        // send email invitations to invited listeners
+        inviteListeners(subscribersArr, title, userInfo.firstName, userInfo.lastName);
+
         const invited = {};
         subscribersArr.map(email => {
             const _email = email.replace(/\./g, "(dot)");

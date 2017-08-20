@@ -83,6 +83,7 @@ export default class SoundcastsManaged extends Component {
             isShown={this.state.showModal}
             soundcast={this.state.currentSoundcast}
             onClose={this.handleModal}
+            userInfo={userInfo}
           />
           <div className='padding-bottom-20px'>
               <span className='title-medium '>

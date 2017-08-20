@@ -158,6 +158,7 @@ export default class Subscribers extends Component {
           isShown={this.state.showModal}
           soundcast={this.state.currentSoundcast}
           onClose={this.handleModal}
+          userInfo={this.props.userInfo}
         />
         <div className='padding-bottom-20px'>
             <div style={styles.titleRow}>
