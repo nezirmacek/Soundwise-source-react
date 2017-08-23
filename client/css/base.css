@@ -40,7 +40,7 @@ Table of contents
 html {
     overflow-x: hidden;
 }
-body{ font-family: 'Open Sans', sans-serif; -webkit-font-smoothing: antialiased; font-smoothing: antialiased; font-size:13px; color:#707070; line-height:22px; letter-spacing: 0.01em; overflow-x: hidden; }
+body{ font-family: 'Open Sans', sans-serif; -webkit-font-smoothing: antialiased; font-smoothing: antialiased; font-size:13px; color:#474747; line-height:22px; letter-spacing: 0.01em; overflow-x: hidden; }
 #root {
     height: 100%; width: 100%;
 }

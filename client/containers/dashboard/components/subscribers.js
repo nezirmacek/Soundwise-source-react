@@ -160,8 +160,8 @@ export default class Subscribers extends Component {
           onClose={this.handleModal}
           userInfo={this.props.userInfo}
         />
-        <div className='padding-bottom-20px'>
-            <div style={styles.titleRow}>
+        <div >
+            <div className='padding-bottom-20px'>
               <span className='title-medium '>
                   Subscribers
               </span>
@@ -256,7 +256,7 @@ const styles = {
       height: 40,
       width: 300,
       // backgroundColor: Colors.mainWhite,
-      marginTop: 15,
+      marginTop: 0,
       marginLeft: 30,
       marginRight: 30,
       display: 'inline-block'
@@ -267,7 +267,7 @@ const styles = {
       height: 35,
       marginLeft: 10,
       marginRight: 10,
-      marginTop: 5,
+      marginTop: 0,
       fontSize: 16
   },
   invite: {
@@ -284,7 +284,7 @@ const styles = {
     position: 'absolute',
     float: 'right',
     display: 'inline-block',
-    marginTop: 15,
+    marginTop: 0,
   },
   search: {
     width: '100%',

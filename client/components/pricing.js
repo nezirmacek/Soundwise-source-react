@@ -16,7 +16,7 @@ const Pricing = () => (
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                 <h3 className="alt-font text-large text-dark-gray tz-text">PLANS START AT</h3>
                 <div className="pricing-price bg-white builder-bg">
-                    <h4 className="title-extra-large-2 sm-title-extra-large-2 alt-font text-fast-blue tz-text">$89</h4>
+                    <h4 className="title-extra-large-2 sm-title-extra-large-2 alt-font text-fast-blue tz-text">$49</h4>
                     <div className="text-small2 alt-font tz-text no-margin-bottom"> <p>PER MONTH</p> </div>
                 </div>
               </div>
@@ -24,7 +24,7 @@ const Pricing = () => (
           <div className="row margin-five-bottom xs-margin-five-bottom">
               <div className="col-md-4 col-sm-4 col-xs-12">
                   <ul className="list-style-none ">
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Up to 20 agents</span></li>
+                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Up to 50 agents</span></li>
                       <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Supplementary material uploading & storage</span></li>
 
                   </ul>

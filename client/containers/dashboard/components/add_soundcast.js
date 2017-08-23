@@ -88,6 +88,7 @@ export default class AddSoundcast extends Component {
             date_created: moment().format('X'),
             publisherID: userInfo.publisherID,
             invited,
+            price: 0
         };
 
         let _promises = [

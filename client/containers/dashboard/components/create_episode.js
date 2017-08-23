@@ -188,6 +188,7 @@ export default class CreateEpisode extends Component {
                 actionstep: actions,
                 date_created: moment().format('X'),
                 creatorID: firebase.auth().currentUser.uid,
+                publisherID: userInfo.publisherID,
                 url: audioUrl,
                 duration: currentRecordingDuration / 1000,  //convert duration to seconds
                 notes: notesUrl,
