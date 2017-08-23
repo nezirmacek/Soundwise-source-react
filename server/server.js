@@ -7,7 +7,7 @@ var boot = require('loopback-boot');
 var mutilpart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
-var {awsConfig} = require('../config');
+var awsConfig = require('../config').awsConfig;
 var bodyParser = require('body-parser');
 var path = require('path');
 
