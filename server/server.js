@@ -67,9 +67,9 @@ app.post('/api/send_email_invites', sendListenerInvites);
 // });
 
 // the last use case - receive frontent files
-app.use(express.static('./client'));
+app.use(express.static('../client'));
 app.get('*', function (request, response){
-  response.sendFile(path.resolve('./client/index.html'))
+  response.sendFile(path.resolve('../client/index.html'))
 });
 
 // var prerendercloud = require('prerendercloud')
