@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import Checkbox from 'material-ui/Checkbox';
 import firebase from 'firebase';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
@@ -23,6 +25,8 @@ export default class AddSoundcast extends Component {
             subscribers: '',
             imageURL: '',
             fileUploaded: false,
+            landingPage: false,
+            features: [],
         };
 
         this.soundcastId = `${moment().format('x')}s`;
@@ -138,6 +142,72 @@ export default class AddSoundcast extends Component {
         );
     }
 
+    handleCheck() {
+        const {landingPage} = this.state;
+        this.setState({
+            landingPage: !landingPage,
+        })
+    }
+
+    addFeatures(e) {
+        const {features} = this.state;
+        features.push(e.target.value);
+        this.setState({
+            features
+        })
+    }
+
+    renderAdditionalInputs() {
+        const featureNum = this.state.features.length + 1;
+
+        if(this.state.landingPage) {
+            return (
+                <div style={{marginTop: 15}}>
+                    <div>
+                        <span>The landing page will be published at </span>
+                        <span>
+                          <a href={`https://mysoundwise.com/soundcasts/${this.soundcastId}`}>
+                            {`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
+                          </a>
+                        </span>
+                    </div>
+                    <span style={{...styles.titleText, marginBottom: 5}}>
+                        Long Description
+                    </span>
+                    <textarea
+                        style={styles.inputDescription}
+                        placeholder={'A longer description of the soundcast'}
+                        onChange={(e) => {this.setState({long_description: e.target.value})}}
+                        value={this.state.long_description}
+                    >
+                    </textarea>
+                    <span style={{...styles.titleText, marginBottom: 5}}>
+                      What Listeners Will Get
+                    </span>
+                    <span>
+                      <i>
+                        (list the main benefits of subscribing to this soundcast)
+                      </i>
+                    </span>
+                    <div style={{width: '100%'}}>
+                      <span style={styles.titleText}>{`1. `}</span>
+                      <input
+                          type="text"
+                          style={{...styles.inputTitle, width: '90%'}}
+                          placeholder={'e.g. '}
+                          onChange={this.addFeatures}
+                          value={this.state.features[0]}
+                      />
+                      <span style={{...styles.titleText, marginLeft: 5, color: Colors.link}}>
+                        Add
+                      </span>
+                    </div>
+                </div>
+
+            )
+        }
+    }
+
     render() {
         const { imageURL, title, subscribers, fileUploaded } = this.state;
         const { userInfo, history } = this.props;
@@ -152,9 +222,9 @@ export default class AddSoundcast extends Component {
               </div>
                 <div className="row">
                     <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                        <span style={styles.titleText}>
-                            Title*
-                        </span>
+                        <span style={styles.titleText}>Title</span>
+                        <span style={{...styles.titleText, color: 'red'}}>*</span>
+                        <span style={{fontSize: 14}}><i> (60 characters max)</i></span>
                         <ValidatedInput
                             type="text"
                             styles={styles.inputTitle}
@@ -162,33 +232,27 @@ export default class AddSoundcast extends Component {
                             placeholder={'Soundcast title'}
                             onChange={(e) => {this.setState({title: e.target.value})}}
                             value={this.state.title}
-                            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 40)]}
+                            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
                         />
                         <span style={styles.titleText}>
                             Short Description
+                        </span>
+                        <span style={{...styles.titleText, color: 'red'}}>*</span>
+                        <span style={{fontSize: 14}}>
+                            <i> (300 characters max)</i>
                         </span>
 
                         <div style={styles.inputTitleWrapper}>
                           <input
                               type="text"
                               style={styles.inputTitle}
-                              placeholder={'A short description of this soundcast (300 characters max)'}
+                              placeholder={'A short description of this soundcast'}
                               onChange={(e) => {this.setState({short_description: e.target.value})}}
                               value={this.state.short_description}
                           />
                         </div>
                         <span style={styles.titleText}>
-                            Long Description
-                        </span>
-                        <textarea
-                            style={styles.inputDescription}
-                            placeholder={'A longer description of the soundcast'}
-                            onChange={(e) => {this.setState({long_description: e.target.value})}}
-                            value={this.state.long_description}
-                        >
-                        </textarea>
-                        <span style={styles.titleText}>
-                            Invite subscribers
+                            Invite listeners to subscribe
                         </span>
                         <textarea
                             style={styles.inputDescription}
@@ -197,7 +261,7 @@ export default class AddSoundcast extends Component {
                             value={this.state.subscribers}
                         >
                         </textarea>
-                        <div>
+                        <div style={{height: 150, width: '100%'}}>
                             <div style={styles.image}>
                                 <img src={imageURL} />
                             </div>
@@ -236,7 +300,17 @@ export default class AddSoundcast extends Component {
                                 </div>
                             </div>
                         </div>
+                        <div style={{marginTop: 15, marginBottom: 15,}}>
+                          <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>Add a public landing page for this soundcast</span>
+                          <input
+                            type='checkbox'
+                            style={styles.checkbox}
+                            checked={this.state.landingPage}
+                            onClick={this.handleCheck.bind(this)}
 
+                          />
+                        </div>
+                        {this.renderAdditionalInputs()}
                         <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
                                 label="Add New Soundcast"
@@ -301,7 +375,19 @@ const styles = {
         width: 'calc(100% - 133px)',
         float: 'left',
     },
-
+    checkbox: {
+        display: 'inline-block',
+        width: '20px',
+        height: '20px',
+        verticalAlign: 'middle',
+        // WebkitAppearance: 'none',
+        // appearance: 'none',
+        borderRadius: '1px',
+        borderColor: 'black',
+        borderWidth: 1,
+        boxSizing: 'border-box',
+        marginLeft: 10,
+    },
     // TODO: move to separate component if functions are the same as in create_episode
     inputFileWrapper: {
         margin: 10,

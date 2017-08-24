@@ -33,20 +33,21 @@ app.start = function() {
 };
 
 app.use(bodyParser.json());
-app.use(require('prerender-node').set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'))
+app.use(require('prerender-node').set('prerenderToken',
+        'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
 app.use('/api/fileUploads/upload', mutilpart());
 // app.use('/upload/images', mutilpart()); // WORKS
 
 uploader.use(new S3Strategy({
   uploadPath: 'demo/',
   headers: {
-    'x-amz-acl': 'public-read'
+    'x-amz-acl': 'public-read',
   },
   options: {
     key: awsConfig.accessKeyId,
     secret: awsConfig.secretAccessKey,
-    bucket: 'soundwiseinc'
-  }
+    bucket: 'soundwiseinc',
+  },
 }));
 
 // use part
@@ -67,9 +68,9 @@ app.post('/api/send_email_invites', sendListenerInvites);
 // });
 
 // the last use case - receive frontent files
-app.use(express.static('../client'));
-app.get('*', function (request, response){
-  response.sendFile(path.resolve('../client/index.html'))
+app.use(express.static('./client'));
+app.get('*', function(request, response) {
+  response.sendFile(path.resolve('./client/index.html'));
 });
 
 // var prerendercloud = require('prerendercloud')
