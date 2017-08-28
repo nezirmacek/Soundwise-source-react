@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 
 const HowItWorks = (props) => (
       <section className="padding-50px-tb feature-style4 bg-white builder-bg xs-padding-50px-tb border-none" id="feature-section6">
-          <div className="container">
+          <div className="">
               <div className="row">
                   <div className="col-md-12 col-sm-12 col-xs-12 text-center padding-50px-tb">
-                      <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-seven-bottom xs-margin-fifteen-bottom tz-text">HOW IT WORKS</h2>
+                      <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">HOW IT WORKS</h2>
                   </div>
               </div>
               <div className="row">

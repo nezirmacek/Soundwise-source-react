@@ -14,7 +14,7 @@ import Footer from '../../components/footer'
 
 import SoundcastBody  from './components/soundcast_body'
 import SoundcastFooter from './components/soundcast_footer'
-
+import PricingModal from './components/pricing_modal'
 
 import  PageHeader  from './components/page_header'
 // import {CourseSignup} from './course_signup'
@@ -29,6 +29,8 @@ class _SoundcastPage extends Component {
         short_description: '',
         imageURL: '',
         long_description: '',
+        prices: [],
+        modalOpen: false
       },
       cardHeight: 0,
     }
@@ -52,10 +54,15 @@ class _SoundcastPage extends Component {
     }
   };
 
-
+  handleModal() {
+    const {modalOpen} = this.state;
+    this.setState({
+      modalOpen: !modalOpen
+    })
+  }
 
   render() {
-    const {soundcast, soundcastID} = this.state;
+    const {soundcast, soundcastID, modalOpen} = this.state;
 
     return (
       <div>
@@ -69,21 +76,30 @@ class _SoundcastPage extends Component {
           <meta name="description" content={soundcast.short_description} />
           <meta name="keywords" content={soundcast.keywords} />
         </Helmet>
-        <PageHeader />
-        <SoundcastHeader soundcast={soundcast} soundcastID={soundcastID}/>
-
         <MuiThemeProvider >
-          <SoundcastBody
+          <div>
+            <PageHeader />
+            <PricingModal
               soundcast={soundcast}
               soundcastID={soundcastID}
-              // relatedsoundcasts={_relatedsoundcasts}
-              cb={this.setMaxCardHeight.bind(this)}
-              userInfo={this.props.userInfo}
-              history={this.props.history}
-          />
+              open={modalOpen}
+              handleModal={this.handleModal.bind(this)}/>
+            <SoundcastHeader
+              soundcast={soundcast}
+              soundcastID={soundcastID}
+              openModal={this.handleModal.bind(this)}/>
+            <SoundcastBody
+                  soundcast={soundcast}
+                  soundcastID={soundcastID}
+                  // relatedsoundcasts={_relatedsoundcasts}
+                  cb={this.setMaxCardHeight.bind(this)}
+                  userInfo={this.props.userInfo}
+                  history={this.props.history}
+              />
+            <SoundcastFooter soundcast={soundcast} soundcastID={soundcastID}/>
+            <Footer />
+          </div>
         </MuiThemeProvider>
-        <SoundcastFooter soundcast={soundcast} soundcastID={soundcastID}/>
-        <Footer />
       </div>
     )
   }

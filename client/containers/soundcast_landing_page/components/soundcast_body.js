@@ -46,12 +46,15 @@ export default class SoundcastBody extends Component {
     /*RENDER*/
 
     renderDescription() {
-        if(this.state.soundcast.long_description) {
+        const {long_description} = this.state.soundcast;
+
+        if(long_description && Array.isArray(long_description)) {
             return (
                 <div className="row padding-40px-tb" style={{backgroundColor: '#FFF3E0'}}>
                     <div className="col-md-12 col-sm-12 col-xs-12">
                         <div>
-                            {this.state.soundcast.long_description.map((paragraph, i) => {
+                            {Array.isArray(long_description) &&
+                                long_description.map((paragraph, i) => {
                                 return (
                                     <p key={i} className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
                                         {paragraph}
@@ -62,14 +65,26 @@ export default class SoundcastBody extends Component {
                     </div>
                 </div>
             )
+        } else if(long_description && typeof long_description == 'string') {
+            return (
+                <div className="row padding-40px-tb" style={{backgroundColor: '#FFF3E0'}}>
+                    <div className="col-md-12 col-sm-12 col-xs-12">
+                        <div className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
+                            {long_description}
+                        </div>
+                    </div>
+                </div>
+            )
         }
     }
 
     renderFeatures() {
-        if(this.state.soundcast.features) {
+        const {features} = this.state.soundcast;
+
+        if(features) {
             return (
                 <ul>
-                    {this.state.soundcast.features.map((feature, i) => {
+                    {features.map((feature, i) => {
                         return (
                             <li key={i} className="text-dark-gray text-extra-large  margin-lr-auto col-md-6 tz-text" style={{paddingLeft: '1em', paddingRight: '2em', paddingTop: '1em', listStyleType: 'none'}}>
                                 <strong><i className="material-icons" style={{paddingRight: '1em', color: 'green'}}>check</i></strong>{feature}
@@ -85,13 +100,12 @@ export default class SoundcastBody extends Component {
         const {soundcast} = this.state;
         return (
             <div>
-                <section className="padding-40px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
+                <section className="padding-20px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
                     <div className="container">
-                        <div className="row padding-70px-tb" >
+                        <div className="row padding-40px-tb" >
                             {soundcast.features &&
                                 <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                                <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
-                                    WHAT YOU WILL GET
+                                <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">WHAT YOU WILL GET
                                 </h2>
                             </div>}
                             <div className="col-md-12 col-sm-12 col-xs-12">

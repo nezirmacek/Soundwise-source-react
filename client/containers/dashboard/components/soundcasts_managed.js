@@ -200,8 +200,8 @@ export default class SoundcastsManaged extends Component {
           shiftEditState={this.shiftEditState}
           history={history}
           id={id}
-          userInfo={userInfo}
-          soundcast={userInfo.soundcasts_managed[id]}/>
+          userInfo={Object.assign({}, userInfo)}
+          soundcast={Object.assign({}, userInfo.soundcasts_managed[id])}/>
       )
     }
   }

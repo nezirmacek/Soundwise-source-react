@@ -187,45 +187,31 @@ class _SoundcastHeader extends Component {
   // }
 
   render() {
-    // console.log('Soundcast in header: ', this.props.Soundcast)
 
-    // const timerStyle = {
-    //   position: 'absolute',
-    //   left: 0,
-    //   right: 0,
-    //   textAlign: 'right',
-    //   top: '90%',
-    //   paddingRight: '1em',
-    //   paddingBottom: '1em',
-    //   fontSize: '20px',
-    //   display: this.state.displayTimer
-    // }
+    const soundcastName = this.props.soundcast.title.split(' ').join('%20');
+    let displayedPrice = 'Free';
+    let {prices} = this.props.soundcast;
 
-    // let remainingTime = this.state.duration - this.state.currentTime
-    // let remainingMin = remainingTime > 0 ? Math.floor(remainingTime / 60) : '00'
-    // let remaingingSec = remainingTime > 0 ? Math.floor(remainingTime % 60) : '00'
+    if(prices && prices.length > 0) {
 
-    // let run_time = ''
-    // if(this.props.Soundcast.run_time) {
-    //   const rt_hour = Math.floor(this.props.Soundcast.run_time/3600)
-    //   const rt_min = Math.floor(this.props.Soundcast.run_time/60 - rt_hour*60)
-    //   const rt_sec = this.props.Soundcast.run_time % 60
-    //   run_time = rt_hour > 0 ? `${rt_hour}h ${rt_min}m` : `${rt_min}m ${rt_sec}s`
-    // }
-
-    // let average_rating = 0, ratings = []
-
-    // const reviews = []
-    // for(var key in this.props.Soundcast.reviews) {
-    //   reviews.push(this.props.Soundcast.reviews[key])
-    // }
-
-    // ratings = reviews.map(review => review.rating)
-    // const total = ratings.reduce((sum, cur) => (sum + cur), 0)
-    // average_rating = Math.floor(total / ratings.length * 10) / 10
-
-    const soundcastName = this.props.soundcast.title.split(' ').join('%20')
-    const price = this.props.soundcast.price ? `$${this.props.soundcast.price}` : 'Free';
+        prices = prices.map(price => {
+            if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
+                price.measure = price.price;
+            } else if(price.billingCycle == 'quarterly') {
+                price.measure = Math.floor(price.price / 3 *100) / 100;
+            } else if(price.billingCycle == 'annual') {
+                price.measure = Math.floor(price.price / 12 *100) / 100;
+            }
+            return price;
+        });
+        prices.sort((a, b) => (
+            a.measure - b.measure
+        ));
+        console.log('prices: ', prices);
+        displayedPrice = prices[0].billingCycle == 'one time' ?
+                            `$${prices[0].measure}` :
+                            `$${prices[0].measure} / month`
+    }
 
     return (
       <div>
@@ -262,11 +248,11 @@ class _SoundcastHeader extends Component {
                                 </div>
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
-                                <div className="col-md-5 col-sm-5 col-xs-5 feature-box-details-second">
-                                  <span className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{price}</span>
+                                <div className="col-md-6 col-sm-6 col-xs-6 feature-box-details-second">
+                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{displayedPrice}</span>
                                 </div>
-                                <div className="col-md-6 col-sm-7 col-xs-7">
-                                  <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.checkOut} style={{backgroundColor: '#F76B1C'}}
+                                <div className="col-md-5 col-sm-6 col-xs-6">
+                                  <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#F76B1C'}}
                                   >
                                     <span className="text-extra-large sm-text-extra-large tz-text">SUBSCRIBE</span>
                                     {this.renderProgressBar()}
