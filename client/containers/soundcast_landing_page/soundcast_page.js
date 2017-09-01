@@ -14,7 +14,7 @@ import Footer from '../../components/footer'
 
 import SoundcastBody  from './components/soundcast_body'
 import SoundcastFooter from './components/soundcast_footer'
-import PricingModal from './components/pricing_modal'
+import {PricingModal} from './components/pricing_modal'
 
 import  PageHeader  from './components/page_header'
 // import {CourseSignup} from './course_signup'
@@ -96,7 +96,10 @@ class _SoundcastPage extends Component {
                   userInfo={this.props.userInfo}
                   history={this.props.history}
               />
-            <SoundcastFooter soundcast={soundcast} soundcastID={soundcastID}/>
+            <SoundcastFooter
+              soundcast={soundcast}
+              soundcastID={soundcastID}
+              openModal={this.handleModal.bind(this)}/>
             <Footer />
           </div>
         </MuiThemeProvider>

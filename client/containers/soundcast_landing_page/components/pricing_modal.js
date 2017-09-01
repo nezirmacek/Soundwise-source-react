@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
+import { Link } from 'react-router-dom'
+import * as firebase from 'firebase';
 import {Card, CardHeader} from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router'
 
-export default class PricingModal extends Component {
+class _PricingModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,17 +26,31 @@ export default class PricingModal extends Component {
 
   }
 
+  handleCheckout() {
+    const {history, soundcast, soundcastID} = this.props;
+    const {checked, sumTotal} = this.state;
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if(user) {
+        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+      } else {
+        history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
+      }
+    })
+  }
+
   render() {
-    const {open, handleModal, soundcast} = this.props;
+    const {open, handleModal, soundcast, soundcastID} = this.props;
     const {prices} = soundcast;
     const {checked, sumTotal} = this.state;
 
     const actions = [
-      <FlatButton
-        label="Checkout"
-        primary={true}
-        onClick={handleModal}
-      />,
+        <FlatButton
+          label="Checkout"
+          primary={true}
+          onClick={this.handleCheckout.bind(this)}
+        />
+      ,
       <FlatButton
         label="Cancel"
         primary={false}
@@ -69,6 +86,7 @@ export default class PricingModal extends Component {
 
             return (
               <Card key={i} style={styles.card}>
+                <a onClick={this.handleCheck.bind(this, i)}>
                 <div style={{marginTop: 15, marginBottom: 15,}}>
                   <div
                     className='title-small'
@@ -91,6 +109,7 @@ export default class PricingModal extends Component {
                     </div>
                   </div>
                 </div>
+                </a>
               </Card>
             )
           })
@@ -134,3 +153,5 @@ const styles = {
     fontSize: 16,
   }
 }
+
+export const PricingModal = withRouter(_PricingModal);

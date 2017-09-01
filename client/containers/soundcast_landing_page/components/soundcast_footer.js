@@ -71,14 +71,40 @@ export default class SoundcastFooter extends Component {
 
   render() {
     const {soundcast} = this.props;
-    const price = soundcast.price ? `$${soundcast.price}` : 'free';
+    let displayedPrice = 'Free';
+    let {prices} = soundcast;
+
+    if(prices && prices.length > 0) {
+
+        prices = prices.map(price => {
+            if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
+                price.measure = price.price;
+            } else if(price.billingCycle == 'quarterly') {
+                price.measure = Math.floor(price.price / 3 *100) / 100;
+            } else if(price.billingCycle == 'annual') {
+                price.measure = Math.floor(price.price / 12 *100) / 100;
+            }
+            return price;
+        });
+        prices.sort((a, b) => (
+            a.measure - b.measure
+        ));
+        // console.log('prices: ', prices);
+        displayedPrice = prices[0].billingCycle == 'one time' ?
+                            `$${prices[0].measure}` :
+                            `$${prices[0].measure} / month`;
+        if(prices[0].measure == 0) {
+            displayedPrice = 'Free';
+        }
+    }
+
     return (
             <section className=" builder-bg border-none" id="callto-action2" style={{backgroundColor: '#F76B1C', paddingBottom: '90px', paddingTop: '90px'}}>
                 <div className="container">
                     <div className="row equalize">
                         <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{height: "46px"}}>
-                            <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">{`Subscribe to this soundcast for ${price}`}</div>
-                            <a onClick={this.checkOut} className="btn-large btn text-white highlight-button-white-border btn-circle"><span className="tz-text" >SUBSCRIBE</span></a>
+                            <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">{`Subscribe to This Soundcast for ${displayedPrice}`}</div>
+                            <a onClick={this.props.openModal} className="btn-large btn text-white highlight-button-white-border btn-circle"><span className="tz-text" >SUBSCRIBE</span></a>
                         </div>
                     </div>
                 </div>

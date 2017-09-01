@@ -42,6 +42,7 @@ export default class InviteSubscribersModal extends Component {
         if(_email) {
           firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(true);
           //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+          firebase.database().ref(`invitations/${_email}/${this.props.soundcast.id}`).set(true);
         }
     });
     this.setState({

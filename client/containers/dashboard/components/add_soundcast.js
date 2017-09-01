@@ -91,6 +91,7 @@ export default class AddSoundcast extends Component {
                 forSale, prices} = this.state;
         const { userInfo, history } = this.props;
         // const host = [{hostName, hostBio, hostImageURL}];
+        const that = this;
 
         const subscribersArr = subscribers.split(',');
         for(var i = subscribersArr.length -1; i >= 0; i--) {
@@ -103,9 +104,11 @@ export default class AddSoundcast extends Component {
         inviteListeners(subscribersArr, title, userInfo.firstName, userInfo.lastName);
 
         const invited = {};
-        subscribersArr.map(email => {
+        const inviteeArr = [];
+        subscribersArr.map((email, i) => {
             const _email = email.replace(/\./g, "(dot)");
             invited[_email] = true;  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+            inviteeArr[i] = _email;
         });
 
         const creatorID = firebase.auth().currentUser.uid;
@@ -126,7 +129,7 @@ export default class AddSoundcast extends Component {
             prices
         };
 
-        let _promises = [
+        let _promises_1 = [
         // add soundcast
             firebase.database().ref(`soundcasts/${this.soundcastId}`).set(newSoundcast).then(
                 res => {
@@ -161,6 +164,21 @@ export default class AddSoundcast extends Component {
                 }
             ),
         ];
+
+        let _promises_2 = inviteeArr.map(invitee => {
+            return firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true).then(
+                    res => {
+                        console.log('success adding invitee to invitations node: ', res);
+                        return res;
+                    },
+                    err => {
+                        console.log('ERROR adding invitee to invitations node: ', err);
+                        Promise.reject(err);
+                    }
+                )
+        });
+
+        let _promises = _promises_1.concat(_promises_2);
 
         Promise.all(_promises).then(
             res => {

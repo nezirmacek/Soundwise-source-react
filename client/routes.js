@@ -33,6 +33,7 @@ import {Checkout} from './containers/checkout';
 import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import {Dashboard} from './containers/dashboard/dashboard';
 import {SoundcastPage} from './containers/soundcast_landing_page/soundcast_page';
+import {SoundcastCheckout} from './containers/soundcast_landing_page/soundcast_checkout';
 import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
@@ -189,6 +190,7 @@ class _Routes extends Component {
                 <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
                 <Route path="/dashboard/:tab/:id" component={Dashboard} />
                 <Route path="/soundcasts/:id" component={SoundcastPage} />
+                <Route path="/soundcast_checkout" component={SoundcastCheckout} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>

@@ -50,8 +50,8 @@ export default class SoundcastBody extends Component {
 
         if(long_description && Array.isArray(long_description)) {
             return (
-                <div className="row padding-40px-tb" style={{backgroundColor: '#FFF3E0'}}>
-                    <div className="col-md-12 col-sm-12 col-xs-12">
+                <div className="row " >
+                    <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '8%'}}>
                         <div>
                             {Array.isArray(long_description) &&
                                 long_description.map((paragraph, i) => {
@@ -67,10 +67,12 @@ export default class SoundcastBody extends Component {
             )
         } else if(long_description && typeof long_description == 'string') {
             return (
-                <div className="row padding-40px-tb" style={{backgroundColor: '#FFF3E0'}}>
-                    <div className="col-md-12 col-sm-12 col-xs-12">
-                        <div className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
-                            {long_description}
+                <div className='container'>
+                    <div className="row " >
+                        <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '8%'}}>
+                            <div className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
+                                {long_description}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,10 +115,10 @@ export default class SoundcastBody extends Component {
                             </div>
                         </div>
                         {this.renderDescription()}
+                        {soundcast.hostName && <Instructor soundcast={soundcast}/>}
                         <HowItWorks />
                     </div>
                 </section>
-                {soundcast.Instructor && <Instructor soundcast={soundcast}/>}
                 <section className="padding-80px-tb xs-padding-60px-tb bg-white  border-none" id="title-section1" style={{backgroundColor: '#FFF3E0'}}>
                     <div className="container">
                         <div className=" padding-40px-tb" >

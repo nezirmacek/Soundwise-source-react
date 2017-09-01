@@ -12,6 +12,7 @@ var bodyParser = require('body-parser');
 var path = require('path');
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
+var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
@@ -52,6 +53,7 @@ uploader.use(new S3Strategy({
 
 // use part
 app.post('/api/charge', handlePayment);
+app.post('/api/recurring_charge', handleRecurringPayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);

@@ -37,6 +37,12 @@ class _AppSignin extends Component {
     async signIn() {
         const { firstName, lastName, email, password, pic_url, courses } = this.state;
         const { signinUser, history, userInfo } = this.props;
+        let soundcast, checked, sumTotal;
+
+        if(history.location.state) {
+            let {soundcast, checked, sumTotal} = history.location.state;
+        }
+
         const that = this;
 
         try {
@@ -47,8 +53,10 @@ class _AppSignin extends Component {
                 if (snapshot.val()) {
                     let _user = JSON.parse(JSON.stringify(snapshot.val()));
                     signinUser(_user);
-                    if (_user.admin) {
-                        history.push('/dashboard/add_episode');
+                    if (soundcast) {
+                        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                    } else if (_user.admin) {
+                        history.push('/dashboard/soundcasts');
                     } else {
                         history.push('/myprograms');
                     }
@@ -181,6 +189,7 @@ class _AppSignin extends Component {
     handleFBAuth() {
         const that = this;
         const { history, userInfo, signinUser } = this.props;
+        const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         // firebase.auth().signInWithRedirect(provider)
 
         firebase.auth().signInWithPopup(provider).then(function(result) {
@@ -200,8 +209,10 @@ class _AppSignin extends Component {
                         delete _user.photoURL;
                         signinUser(_user);
 
-                        if (_user.admin) {
-                            history.push('/dashboard/add_episode');
+                        if (soundcast) {
+                            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                        } else if (_user.admin) {
+                            history.push('/dashboard/soundcasts');
                         } else {
                             history.push('/myprograms');
                         }
@@ -257,15 +268,22 @@ class _AppSignin extends Component {
                                     const lastName = snapshot.val().lastName;
                                     const email = snapshot.val().email;
                                     const courses = snapshot.val().courses;
+                                    const soundcasts = snapshot.val().soundcasts;
                                     const pic_url = snapshot.val().pic_url;
                                     // if(courses == undefined) {
                                     //   firebase.database().ref('users/' + userId).set({
                                     //     courses: {}
                                     //   })
                                     // }
-                                    that.props.signinUser({firstName, lastName, email, pic_url, courses});
+                                    that.props.signinUser({firstName, lastName, email, pic_url, courses, soundcasts});
 
-                                    that.props.history.push('/myprograms');
+                                    if (soundcast) {
+                                        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                                    } else if (_user.admin) {
+                                        history.push('/dashboard/soundcasts');
+                                    } else {
+                                        history.push('/myprograms');
+                                    }
                                 })
                         })
                     }

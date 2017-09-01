@@ -207,10 +207,13 @@ class _SoundcastHeader extends Component {
         prices.sort((a, b) => (
             a.measure - b.measure
         ));
-        console.log('prices: ', prices);
+        // console.log('prices: ', prices);
         displayedPrice = prices[0].billingCycle == 'one time' ?
                             `$${prices[0].measure}` :
-                            `$${prices[0].measure} / month`
+                            `$${prices[0].measure} / month`;
+        if(prices[0].measure == 0) {
+            displayedPrice = 'Free';
+        }
     }
 
     return (

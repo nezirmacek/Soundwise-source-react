@@ -204,6 +204,7 @@ class _AppSignup extends Component {
 
     signUpUser () {
         const { match, history, signupUser } = this.props;
+        const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         const {firstName, lastName, email, pic_url} = this.state;
 
         const userId = firebase.auth().currentUser.uid;
@@ -218,8 +219,10 @@ class _AppSignup extends Component {
 
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
-        if (match.params.mode !== 'admin') {
+        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
             history.push('/myprograms');
+        } else if(match.params.mode == 'soundcast_user') {
+            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
         }
     }
 
@@ -302,7 +305,8 @@ class _AppSignup extends Component {
     }
 
     render() {
-        const { match } = this.props;
+        const { match, history } = this.props;
+        const {soundcast, checked, sumTotal} = history.location.state;
         const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name } = this.state;
         const { from } = this.props.location.state || { from: { pathname: '/courses' } };
 
@@ -404,7 +408,12 @@ class _AppSignup extends Component {
                                 <hr />
                                 <div>
                                     <span style={styles.italicText}>Already have an account? </span>
-                                    <Link to="/signin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in ></Link>
+                                    <Link
+                                      to={{
+                                        pathname: '/signin',
+                                        state: {soundcast, checked, sumTotal}
+                                      }}
+                                      style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in ></Link>
                                 </div>
                             </div>
                         </div>
