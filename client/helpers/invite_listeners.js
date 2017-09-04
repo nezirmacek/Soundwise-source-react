@@ -1,10 +1,10 @@
 import Axios from 'axios';
 
-export function inviteListeners (invitees, soundcastTitle, adminFirstName, adminLastName) {
+export function inviteListeners (invitees, subject, content) {
   Axios.post('/api/send_email_invites', {
     invitees,
-    soundcastTitle,
-    adminName: `${adminFirstName} ${adminLastName}`,
+    subject,
+    content,
   })
     .then(res => {
       console.log(res);

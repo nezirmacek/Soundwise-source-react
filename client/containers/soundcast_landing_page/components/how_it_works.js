@@ -11,24 +11,24 @@ const HowItWorks = (props) => (
               <div className="row">
                   <div className="col-md-12 col-sm-12 col-xs-12n four-column">
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nine-bottom">
-                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-clock-o" aria-hidden="true"></i></div>
-                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">LEARN AT YOUR OWN PACE</h3>
-                          <div className="text-large text-dark-gray center-col tz-text"> <p>You can always access the course from your account. Your course progress is saved. Come back to it whenever you want.</p></div>
+                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bicycle" aria-hidden="true"></i></div>
+                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">LEARN EFFICIENTLY</h3>
+                          <div className="text-large text-dark-gray center-col tz-text"> <p>Once you subscribe, you can access your soundcast from the Soundwise mobile app anytime. Download the audios and listen when driving, exercising, running errands...Learning doesn't have to take up extra time.</p></div>
                       </div>
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nineteen-bottom">
-                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bicycle" aria-hidden="true"></i></div>
-                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">LEARN ON THE GO</h3>
-                          <div className="text-large center-col tz-text text-dark-gray"> <p>Audio lessons are perfect for listening on your phone. You can also preload the lessons and access them offline, without using your data plan.</p></div>
+                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-clock-o " aria-hidden="true"></i></div>
+                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">AUTOMATIC UPDATES</h3>
+                          <div className="text-large center-col tz-text text-dark-gray"> <p>If the soundcast you subscribe to is being regularly updated, you will automatically receive the new materials on your phone. Enable push notification for the Soundwise app and you'll know when your instructor publishes new content in real time.</p></div>
                       </div>
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center xs-margin-nineteen-bottom">
-                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-file-pdf-o" aria-hidden="true"></i></div>
-                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">COMPLEMENTARY MATERIALS</h3>
-                          <div className="text-large center-col tz-text text-dark-gray"><p>The courses come with transcripts, notes, and/or additional resources to help you learn better.</p></div>
+                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bolt" aria-hidden="true"></i></div>
+                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">RICH INTERACTIONS</h3>
+                          <div className="text-large center-col tz-text text-dark-gray"><p>With the Soundwise app you can ask the instructor questions and interact with other subscribers through comments on the audio materials. You can also interact with the instructor by replying to his/her broadcast messages.</p></div>
                       </div>
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center">
-                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bolt" aria-hidden="true"></i></div>
-                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">ACTION ORIENTED</h3>
-                          <div className="text-large center-col tz-text text-dark-gray"> <p>Every course includes exercises and action steps to help you implement the ideas you learned.</p></div>
+                          <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-file-pdf-o " aria-hidden="true"></i></div>
+                          <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">SUPPLEMENTARY MATERIALS</h3>
+                          <div className="text-large center-col tz-text text-dark-gray"> <p>Many soundcasts have accompanying notes, worksheets, assignments/action steps. You can view them directly within the Soundwise app and track your learning progress.</p></div>
                       </div>
                   </div>
               </div>

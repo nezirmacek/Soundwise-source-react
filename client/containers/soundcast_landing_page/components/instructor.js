@@ -22,7 +22,8 @@ const Instructor = (props) => (
             <div className="item">
                 <div className="col-md-12 col-sm-12 bg-cream text-left tz-background-color" id="tz-bg-color-7" style={{padding: '8%'}}>
                   <div className='col-md-4 col-sm-6 col-xs-12'>
-                      <img alt="" src={`${props.soundcast.hostImageURL}`} data-img-size="(W)600px X (H)600px" className="img-round"/>
+                      <img alt={`${props.soundcast.hostName}`} src={`${props.soundcast.hostImageURL}`}
+                           className="img-round"/>
                   </div>
                    <div className="should-have-a-children scroll-me col-md-8 col-sm-6 col-xs-12" >
                       <span className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500" id="tz-slider-text127">{props.soundcast.hostName}</span>

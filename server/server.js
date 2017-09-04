@@ -10,6 +10,8 @@ var S3Strategy = require('express-fileuploader-s3');
 var awsConfig = require('../config').awsConfig;
 var bodyParser = require('body-parser');
 var path = require('path');
+var admin = require("firebase-admin");
+var serviceAccount = require("../serviceAccountKey.json");
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
@@ -17,6 +19,13 @@ var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
 var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerInvites;
+var sendNotification = require('./scripts/messaging.js').sendNotification;
+var subscriptionRenewal = require('./scripts/subscriptionRenewal.js').subscriptionRenewal;
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://soundwise-a8e6f.firebaseio.com",
+});
 
 var app = module.exports = loopback();
 
@@ -58,7 +67,8 @@ app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);
 app.post('/api/send_email_invites', sendListenerInvites);
-
+app.post('/api/send_notification', sendNotification);
+app.post('/api/subscription_renewal', subscriptionRenewal);
 // // WORKS
 // app.post('/upload/images', function(req, res, next) {
 //   uploader.upload('s3', req.files.file, function(err, files) {

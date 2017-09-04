@@ -128,19 +128,19 @@ export default class SoundcastBody extends Component {
                                 </h2>
                             </div>
                             <div className="col-md-12 col-sm-12 col-xs-12 container" style={{}}>
-                                <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">How long do I have access to the content?</h2>
-                                <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>As long as the Internet is still a thing.</h5>
+                                <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">How long do I have access to the soundcast?</h2>
+                                <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>It depends on the subscription plan you signed up for. You'll have access to a soundcast as long as your subscription is current. If the soundcast charges a one-time fee, you will have access as long as your instructor is still a member of Soundwise.</h5>
                                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">How do I access the audio files offline?</h2>
                                 <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left" style={{ lineHeight: '30px'}}>
-                                    Once you sign up for the program, you'll see an "enable offline" button on the right hand side of every audio section. Click on that, and voila! Now you can play the section even when you don't have internet or you don't want to use your cellphone data plan for streaming. The offline function works best on computer and android phone in a Chrome browser. Sadly, if you have an iPhone you can't use the offline function. But we're working on an iOS app. Stay tuned :)
+                                    Once you install the Soundwise mobile app on your phone and sign in, the soundcasts you subscribe to will be automatically loaded. Tap on the download icon next to each episode/section will download the audio to your phone. Simply download the files when you have wifi and you can access them anywhere you go.
                                 </h5>
                                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What should I do if I have technical issues?</h2>
                                 <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{lineHeight: '30px'}}>
                                     Shoot us an email at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a>.
                                 </h5>
-                                <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What if I'm not happy with the content?</h2>
+                                <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What if I'm not happy with the soundcast?</h2>
                                 <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>
-                                    We want you to be happy! If you are unsatisfied with the course, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your purchase and we will give you a full refund.
+                                    We want you to be happy! If you are unsatisfied with the soundcast, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your subscription and we will give you a full refund.
                                 </h5>
                             </div>
                         </div>

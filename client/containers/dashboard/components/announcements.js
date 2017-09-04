@@ -7,6 +7,7 @@ import firebase from 'firebase';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import {sendNotifications} from '../../../helpers/send_notifications';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
@@ -99,6 +100,7 @@ export default class Announcements extends Component {
   handlePublish() {
     const that = this;
     const {currentSoundcastID, message} = this.state;
+    const {userInfo} = this.props;
     const announcementID = `${moment().format('x')}a`;
 
     const newAnnouncement = {
@@ -114,9 +116,25 @@ export default class Announcements extends Component {
     firebase.database().ref(`soundcasts/${currentSoundcastID}/announcements/${announcementID}`)
     .set(newAnnouncement).then(
       res => {
-          console.log('added announcement: ', res);
           that.setState({
             message: ''
+          });
+          firebase.database().ref(`soundcasts/${currentSoundcastID}/subscribed`)
+          .on('value', snapshot => {
+            let registrationTokens = [];
+            // get an array of device tokens
+            Object.keys(snapshot.val()).forEach(user => {
+              if(typeof snapshot.val()[user] == 'object') {
+                  registrationTokens.push(snapshot.val()[user][0]) //basic version: only allow one devise per user
+              }
+            });
+            const payload = {
+              notification: {
+                title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                body: `${message.slice(0, 50)}...`
+              }
+            };
+            sendNotifications(registrationTokens, payload); //sent push notificaiton
           })
       },
       err => {
