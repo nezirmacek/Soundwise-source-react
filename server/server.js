@@ -22,6 +22,8 @@ var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerI
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/subscriptionRenewal.js').subscriptionRenewal;
 
+var database = require('../database');
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://soundwise-a8e6f.firebaseio.com",
@@ -79,6 +81,9 @@ app.post('/api/subscription_renewal', subscriptionRenewal);
 //   });
 // });
 
+//database API routes:
+require('../database/routes.js')(app);
+
 // the last use case - receive frontent files
 app.use(express.static('./client'));
 app.get('*', function(request, response) {
@@ -103,7 +108,10 @@ boot(app, __dirname, function(err) {
   if (err) throw err;
 
   // start the server if `$ node server.js`
-  if (require.main === module)
-    app.start();
+  if (require.main === module) {
+    database.db.sync().then(() => {
+      app.start();
+    });
+  }
 });
 

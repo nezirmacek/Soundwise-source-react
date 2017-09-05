@@ -12,6 +12,28 @@ From within the root directory:
 npm install
 ```
 
+### Configure Postgres database (locally)
+1. install postgres
+     `brew install postgresql`
+2. initialize postgres and restart everytime computer starts
+     `pg_ctl -D /usr/local/var/postgres start && brew services start postgresql`
+3. (for restart postgres server:)
+     `postgres -D /usr/local/var/postgres`
+4. create a user called root
+     `createuser --pwprompt root`
+   (when prompted for password, just hit n, and then enter)
+5. create a database called soundwise
+     createdb -Oroot -Eutf8 soundwise
+
+To connect to database:
+    `psql soundwise`
+See all tables:
+    `\dt`
+Drop the table called 'Soundcasts':
+    `drop table "Soundcasts";`
+See table content of table 'Users':
+    `select * from "Users";`
+
 #### Issues
 
 #####- wrong buffer length:
