@@ -119,6 +119,7 @@ export default class Announcements extends Component {
           that.setState({
             message: ''
           });
+
           firebase.database().ref(`soundcasts/${currentSoundcastID}/subscribed`)
           .on('value', snapshot => {
             let registrationTokens = [];

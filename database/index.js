@@ -1,23 +1,23 @@
 var Sequelize = require('sequelize');
 var db;
 
-if(process.env.DATABASE_URL) {
+if (process.env.DATABASE_URL) {
   var match = process.env.DATABASE_URL.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/)
   db = new Sequelize(match[5], match[1], match[2], {
-    dialect:  'postgres',
+    dialect: 'postgres',
     protocol: 'postgres',
-    port:     match[4],
-    host:     match[3],
+    port: match[4],
+    host: match[3],
     logging: true,
     dialectOptions: {
-        ssl: true
-    }
+      ssl: true,
+    },
   });
 } else {
   db = new Sequelize('soundwise', 'root', '', {
     dialect: 'postgres',
     port: 5432,
-    logging: false
+    logging: false,
   });
 }
 

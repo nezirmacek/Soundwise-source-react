@@ -13,7 +13,7 @@ import moment from 'moment';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
-
+import {sendNotifications} from '../../../helpers/send_notifications';
 
 export default class CreateEpisode extends Component {
     constructor(props) {
@@ -53,6 +53,7 @@ export default class CreateEpisode extends Component {
 
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
         this.renderRecorder = this.renderRecorder.bind(this)
+        this.notifySubscribers = this.notifySubscribers.bind(this);
 
         // if (props.userInfo.soundcasts_managed && props.userInfo.soundcasts_managed[props.currentSoundcastId]) {
         //     const _titleArray = props.userInfo.soundcasts_managed[props.currentSoundcastId].title.split(' ');
@@ -208,12 +209,33 @@ export default class CreateEpisode extends Component {
             firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
                 res => {
                     console.log('success add episodeID to soundcast: ', res);
+                    this.notifySubscribers();
                 },
                 err => {
                     console.log('ERROR add episodeID to soundcast: ', err);
                 }
             );
         }
+    }
+
+    notifySubscribers() {
+          firebase.database().ref(`soundcasts/${this.currentSoundcastID}`)
+          .on('value', snapshot => {
+            let registrationTokens = [];
+            // get an array of device tokens
+            Object.keys(snapshot.val().subscribed).forEach(user => {
+              if(typeof snapshot.val().subscribed[user] == 'object') {
+                  registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
+              }
+            });
+            const payload = {
+              notification: {
+                title: `Just published on ${snapshot.val()[title]}:`,
+                body: `${this.state.title}`
+              }
+            };
+            sendNotifications(registrationTokens, payload); //sent push notificaiton
+          })
     }
 
     renderRecorder() {
