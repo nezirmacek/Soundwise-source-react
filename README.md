@@ -14,19 +14,19 @@ npm install
 
 ### Configure Postgres database (locally)
 1. install postgres
-     `brew install postgresql`
+     ```brew install postgresql```
 2. initialize postgres and restart everytime computer starts
-     `pg_ctl -D /usr/local/var/postgres start && brew services start postgresql`
+     ```pg_ctl -D /usr/local/var/postgres start && brew services start postgresql```
 3. (for restart postgres server:)
-     `postgres -D /usr/local/var/postgres`
+     ```postgres -D /usr/local/var/postgres```
 4. create a user called root
-     `createuser --pwprompt root`
+     ```createuser --pwprompt root```
    (when prompted for password, just hit n, and then enter)
 5. create a database called soundwise
-     createdb -Oroot -Eutf8 soundwise
+     ```createdb -Oroot -Eutf8 soundwise```
 
 To connect to database:
-    `psql soundwise`
+    ```psql soundwise```
 See all tables:
     `\dt`
 Drop the table called 'Soundcasts':
