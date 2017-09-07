@@ -85,4 +85,17 @@ module.exports = (app) => {
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
   });
+
+  app.get('/api/stats_by_user_episode', (req, res) => {
+    database.ListeningSession.findAll({where: {
+      userId: req.query.userId,
+      episodeId: req.query.episodeId,
+      date: {
+        $gte: new Date(req.query.startDate),
+        $lte: new Date(req.query.endDate),
+      },
+    }})
+    .then(data => res.send(data))
+    .catch(err => { res.status(500).send(err); });
+  });
 };
