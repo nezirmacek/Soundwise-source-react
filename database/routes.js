@@ -53,11 +53,10 @@ module.exports = (app) => {
       userId: req.query.userId,
       date: {
         $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate)
+        $lte: new Date(req.query.endDate),
       },
     }})
     .then(data => {
-      console.log('response: ', data);
       res.send(data);
     })
     .catch(err => { res.status(500).send(err); });
@@ -65,8 +64,11 @@ module.exports = (app) => {
 
   app.get('/api/stats_by_episode', (req, res) => {
     database.ListeningSession.findAll({where: {
-      episodeId: req.body.episodeId,
-      date: {$between: [new Date(req.body.startDate), new Date(req.body.endDate)]},
+      episodeId: req.query.episodeId,
+      date: {
+        $gte: new Date(req.query.startDate),
+        $lte: new Date(req.query.endDate),
+      },
     }})
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
@@ -74,8 +76,11 @@ module.exports = (app) => {
 
   app.get('/api/stats_by_soundcast', (req, res) => {
     database.ListeningSession.findAll({where: {
-      soundcastId: req.body.soundcastId,
-      date: {$between: [req.body.startDate, req.body.endDate]},
+      soundcastId: req.query.soundcastId,
+      date: {
+        $gte: new Date(req.query.startDate),
+        $lte: new Date(req.query.endDate),
+      },
     }})
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
