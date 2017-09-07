@@ -40,25 +40,33 @@ module.exports = (app) => {
     .catch(err => { res.status(500).send(err); });
   });
 
-  app.post('/api/listeningSession', (req, res) => {
+  app.post('/api/listening_session', (req, res) => {
+    const data = Object.assign({}, req.body, {date: new Date(req.body.date)});
     database.ListeningSession.create(req.body)
     .then(data => { res.send(data); })
     .catch(err => { res.status(500).send(err); });
   });
 
   app.get('/api/stats_by_user', (req, res) => {
+    console.log('req.query: ', req.query);
     database.ListeningSession.findAll({where: {
-      userId: req.body.userId,
-      date: {$between: [req.body.startDate, req.body.endDate]},
+      userId: req.query.userId,
+      date: {
+        $gte: new Date(req.query.startDate),
+        $lte: new Date(req.query.endDate)
+      },
     }})
-    .then(data => res.send(data))
+    .then(data => {
+      console.log('response: ', data);
+      res.send(data);
+    })
     .catch(err => { res.status(500).send(err); });
   });
 
   app.get('/api/stats_by_episode', (req, res) => {
     database.ListeningSession.findAll({where: {
       episodeId: req.body.episodeId,
-      date: {$between: [req.body.startDate, req.body.endDate]},
+      date: {$between: [new Date(req.body.startDate), new Date(req.body.endDate)]},
     }})
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
