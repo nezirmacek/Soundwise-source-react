@@ -14,7 +14,7 @@ if (process.env.DATABASE_URL) {
     },
   });
 } else {
-  db = new Sequelize('soundwise', 'root', '', {
+  db = new Sequelize('soundwise', 'root', '111', {
     dialect: 'postgres',
     port: 5432,
     logging: false,
