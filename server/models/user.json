@@ -1,0 +1,43 @@
+{
+  "name": "user",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "userId": {
+      "type": "string",
+      "required": true
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "picURL": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "soundcasts": {
+      "type": "hasAndBelongsToMany",
+      "model": "soundcast",
+      "foreignKey": "userId"
+    },
+    "episodes": {
+      "type": "hasAndBelongsToMany",
+      "model": "episode",
+      "foreignKey": "UserId"
+    },
+    "listeningSessions": {
+      "type": "hasMany",
+      "model": "listening_session",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

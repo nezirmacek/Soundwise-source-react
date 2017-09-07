@@ -1,0 +1,39 @@
+{
+  "name": "episode",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "episodeId": {
+      "type": "string",
+      "required": true
+    },
+    "soundcastId": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "soundcastTitle": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "soundcast": {
+      "type": "belongsTo",
+      "model": "soundcast",
+      "foreignKey": "soundcastId"
+    },
+    "listeningSessions": {
+      "type": "hasMany",
+      "model": "listening_session",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

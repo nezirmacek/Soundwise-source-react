@@ -38,5 +38,21 @@
   "fileUpload": {
     "dataSource": "db",
     "public": true
+  },
+  "user": {
+    "dataSource": "db",
+    "public": true
+  },
+  "episode": {
+    "dataSource": "db",
+    "public": true
+  },
+  "soundcast": {
+    "dataSource": "db",
+    "public": true
+  },
+  "listening_session": {
+    "dataSource": "db",
+    "public": true
   }
 }

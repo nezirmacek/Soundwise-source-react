@@ -1,0 +1,32 @@
+{
+  "name": "soundcast",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "soundcastId": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "episodes": {
+      "type": "hasMany",
+      "model": "episode",
+      "foreignKey": "soundcastId"
+    },
+    "listeningSessions": {
+      "type": "hasMany",
+      "model": "listening_session",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

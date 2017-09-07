@@ -1,0 +1,66 @@
+{
+  "name": "listening_session",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "sessionId": {
+      "type": "number",
+      "required": true
+    },
+    "soundcastId": {
+      "type": "string",
+      "required": true
+    },
+    "episodeId": {
+      "type": "string",
+      "required": true
+    },
+    "userId": {
+      "type": "string",
+      "required": true
+    },
+    "date": {
+      "type": "string",
+      "required": true
+    },
+    "startPosition": {
+      "type": "number",
+      "required": true
+    },
+    "endPosition": {
+      "type": "number",
+      "required": true
+    },
+    "sessionDuration": {
+      "type": "number",
+      "required": true
+    },
+    "percentCompleted": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "soundcast": {
+      "type": "belongsTo",
+      "model": "soundcast",
+      "foreignKey": "soundcastId"
+    },
+    "episode": {
+      "type": "belongsTo",
+      "model": "episode",
+      "foreignKey": "episodeId"
+    },
+    "user": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
