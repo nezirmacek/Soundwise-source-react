@@ -84,12 +84,6 @@ app.post('/api/subscription_renewal', subscriptionRenewal);
 //database API routes:
 require('../database/routes.js')(app);
 
-// the last use case - receive frontent files
-app.use(express.static('./client'));
-app.get('*', function(request, response) {
-  response.sendFile(path.resolve('./client/index.html'));
-});
-
 // var prerendercloud = require('prerendercloud')
 //************* prerender.cloud *****************
 // prerendercloud.set('prerenderToken', 'dXMtd2VzdC0yOjE2MDE0OTIyLTk5MTgtNGY1Yi1hOTQwLTY1MDI2MzYyYTRlNQ.dE2HiZLJmqwNG0aJsAcWqmZHt_iAsV2tcIQQbvs2zPI')
@@ -115,3 +109,30 @@ boot(app, __dirname, function(err) {
   }
 });
 
+// the last use case - receive frontent files
+// let _clientRoutes = [
+// 	'/',
+// 	'/about',
+// 	'/signup/*',
+// 	'/signin',
+// 	'/trial_request',
+// 	'/gift',
+// 	'/creator_terms',
+// 	'/terms_free_content_May2017',
+// 	'/myprograms',
+// 	'/myprograms/*',
+// 	'/cart',
+// 	'/confirmation',
+// 	'/courses/*',
+// 	'/staging/*',
+// 	'/password_reset',
+// 	'/courses',
+// 	'/dashboard/*',
+// 	'/soundcasts/*',
+// 	'/soundcast_checkout',
+// 	'/notfound',
+// ];
+app.use(express.static('./client'));
+app.all(/^\/[^(api)(explorer)]/, function(request, response) {
+	response.sendFile(path.resolve('./client/index.html'));
+});
