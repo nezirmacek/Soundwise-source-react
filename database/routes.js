@@ -49,13 +49,18 @@ module.exports = (app) => {
 
   app.get('/api/stats_by_user', (req, res) => {
     console.log('req.query: ', req.query);
-    database.ListeningSession.findAll({where: {
-      userId: req.query.userId,
-      date: {
-        $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate),
+    database.ListeningSession.findAll({
+      where: {
+        userId: req.query.userId,
+        date: {
+          $gte: new Date(req.query.startDate),
+          $lte: new Date(req.query.endDate),
+        },
       },
-    }})
+      order: [
+        ['date', 'ASC'],
+      ],
+    })
     .then(data => {
       res.send(data);
     })
@@ -63,38 +68,54 @@ module.exports = (app) => {
   });
 
   app.get('/api/stats_by_episode', (req, res) => {
-    database.ListeningSession.findAll({where: {
-      episodeId: req.query.episodeId,
-      date: {
-        $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate),
+    database.ListeningSession.findAll({
+      where: {
+        episodeId: req.query.episodeId,
+        date: {
+          $gte: new Date(req.query.startDate),
+          $lte: new Date(req.query.endDate),
+        },
       },
-    }})
+      order: [
+        ['date', 'ASC'],
+      ],
+    })
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
   });
 
   app.get('/api/stats_by_soundcast', (req, res) => {
-    database.ListeningSession.findAll({where: {
-      soundcastId: req.query.soundcastId,
-      date: {
-        $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate),
+    console.log('req: ', req);
+    database.ListeningSession.findAll({
+      where: {
+        soundcastId: req.query.soundcastId,
+        date: {
+          $gte: new Date(req.query.startDate),
+          $lte: new Date(req.query.endDate),
+        },
       },
-    }})
+      order: [
+        ['date', 'ASC'],
+      ],
+    })
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
   });
 
   app.get('/api/stats_by_user_episode', (req, res) => {
-    database.ListeningSession.findAll({where: {
-      userId: req.query.userId,
-      episodeId: req.query.episodeId,
-      date: {
-        $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate),
+    database.ListeningSession.findAll({
+      where: {
+        userId: req.query.userId,
+        episodeId: req.query.episodeId,
+        date: {
+          $gte: new Date(req.query.startDate),
+          $lte: new Date(req.query.endDate),
+        },
       },
-    }})
+      order: [
+        ['date', 'ASC'],
+      ],
+    })
     .then(data => res.send(data))
     .catch(err => { res.status(500).send(err); });
   });

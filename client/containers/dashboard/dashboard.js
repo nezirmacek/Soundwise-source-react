@@ -12,6 +12,7 @@ import SoundcastsManaged from './components/soundcasts_managed';
 import AddSoundcast from "./components/add_soundcast";
 import Subscribers from "./components/subscribers";
 import Announcements from "./components/announcements";
+import Analytics from "./components/analytics";
 
 
 const verticalMenuItems = [
@@ -39,7 +40,7 @@ const verticalMenuItems = [
         label: 'Analytics',
         iconClass: 'bar-chart',
         isMenuItemVisible: true,
-        Component: SoundcastsManaged,
+        Component: Analytics,
     },
     {
         path: 'subscribers',
