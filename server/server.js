@@ -85,10 +85,10 @@ app.post('/api/subscription_renewal', subscriptionRenewal);
 require('../database/routes.js')(app);
 
 // the last use case - receive frontent files
-// app.use(express.static('./client'));
-// app.get('*', function(request, response) {
-//   response.sendFile(path.resolve('./client/index.html'));
-// });
+app.use(express.static('./client'));
+app.get('*', function(request, response) {
+  response.sendFile(path.resolve('./client/index.html'));
+});
 
 // var prerendercloud = require('prerendercloud')
 //************* prerender.cloud *****************
