@@ -2,7 +2,6 @@
   "db": {
     "host": "localhost",
     "port": 5432,
-    "url": "",
     "database": "soundwise",
     "password": "root",
     "name": "db",

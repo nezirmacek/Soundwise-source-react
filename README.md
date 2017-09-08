@@ -34,6 +34,12 @@ Drop the table called 'Soundcasts':
 See table content of table 'Users':
     `select * from "Users";`
 
+### setup strongloop api
+```
+node server/bin/create-lb-tables.js
+node server/bin/automigrate.js
+```
+
 #### Issues
 
 #####- wrong buffer length:
@@ -65,6 +71,12 @@ npm run-script start
 
 ```
 npm run-script build
+```
+
+### Start loppback api
+
+```
+PORT=4800 node .
 ```
 
 ### Directories
