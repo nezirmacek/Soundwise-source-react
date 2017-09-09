@@ -31,12 +31,14 @@ var User = db.define('User', {
 var Episode = db.define('Episode', {
   episodeId: { type: Sequelize.STRING, primaryKey: true },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
   title: Sequelize.STRING,
   souncastTitle: Sequelize.STRING
 });
 
 var Soundcast = db.define('Soundcast', {
   soundcastId: { type: Sequelize.STRING, primaryKey: true },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
   title: { type: Sequelize.STRING}
 });
 
@@ -54,6 +56,7 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   episodeId: { type: Sequelize.STRING, allowNull: false },
   userId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
   date: { type: Sequelize.DATEONLY, allowNull: false },
   startPosition: { type: Sequelize.INTEGER, allowNull: false }, //in seconds, where in the audio file the session started
   endPosition: { type: Sequelize.INTEGER, allowNull: false }, //in seconds, where in the audio file the session ended

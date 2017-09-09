@@ -85,7 +85,6 @@ module.exports = (app) => {
   });
 
   app.get('/api/stats_by_soundcast', (req, res) => {
-    console.log('req: ', req);
     database.ListeningSession.findAll({
       where: {
         soundcastId: req.query.soundcastId,
