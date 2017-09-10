@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactCrop from 'react-image-crop';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 import {Bar} from 'react-chartjs-2';
 
@@ -38,7 +38,7 @@ export default class Subscriber extends Component {
   }
 
   componentDidMount() {
-    const {subscriber, soundcast} = this.props.location.state;
+    const {subscriber, soundcast} = this.props.history.location.state;
     this.getListeningStats(subscriber.id, soundcast.publisherId);
   }
 

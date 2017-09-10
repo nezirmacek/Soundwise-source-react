@@ -35,6 +35,7 @@ export default class Subscribers extends Component {
   }
 
   componentDidMount() {
+    const that = this;
     const { userInfo } = this.props;
     const _subscribers = [];
     const _soundcasts_managed = [];
@@ -46,16 +47,24 @@ export default class Subscribers extends Component {
         }
     }
 
+    const promises = [];
+
     for(let userId in _soundcasts_managed[0].subscribed) {
-      this.retrieveSubscriberInfo(userId);
+      promises.push(this.retrieveSubscriberInfo(userId));
     }
 
-    this.setState({
-      soundcasts_managed: _soundcasts_managed,
-      currentSoundcastID: _soundcasts_managed[0].id,
-      currentSoundcast: _soundcasts_managed[0],
-      subscribers: this.subscribers
+    Promise.all(promises)
+    .then(res => {
+      that.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID: _soundcasts_managed[0].id,
+        currentSoundcast: _soundcasts_managed[0],
+        subscribers: that.subscribers,
+      })
+    }, err => {
+      console.log('promise error: ', err);
     })
+
   }
 
   handleModal() {
@@ -70,15 +79,18 @@ export default class Subscribers extends Component {
     }
   }
 
-  retrieveSubscriberInfo(userId) {
+ retrieveSubscriberInfo(userId) {
     const that = this;
     return firebase.database().ref('users/'+userId)
-            .on('value', snapshot => {
+            .once('value')
+            .then(snapshot => {
               that.subscribers.push({...JSON.parse(JSON.stringify(snapshot.val())), id: userId});
             })
+            .then(res => res, err => console.log(err));
   }
 
   changeSoundcastId (e) {
+    const that = this;
     this.setState({
       currentSoundcastID: e.target.value
     });
@@ -93,13 +105,19 @@ export default class Subscribers extends Component {
       }
     })
 
+    const promises = [];
     for(let userId in currentSoundcast.subscribed) {
-      this.retrieveSubscriberInfo(userId);
+      promises.push(this.retrieveSubscriberInfo(userId));
     }
 
-    this.setState({
-      subscribers: this.subscribers,
-      currentSoundcast
+    Promise.all(promises)
+    .then(res => {
+      that.setState({
+        subscribers: that.subscribers,
+        currentSoundcast
+      })
+    }, err => {
+      console.log('promise error: ', err);
     })
   }
 
