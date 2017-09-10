@@ -128,7 +128,7 @@ export default class Subscribers extends Component {
           //   console.log("Remove failed: " + error.message)
           // });
 
-        firebase.database().ref('users/' + listenerID + '/subscriptions/' + this.state.currentSoundcastID).remove();
+        firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID).remove();
 
         for(var i = this.subscribers.length - 1; i>=0; i-=1) {
           if(this.subscribers[i].id == listenerID) {
@@ -145,7 +145,7 @@ export default class Subscribers extends Component {
   }
 
   render() {
-    const { soundcasts_managed, subscribers, checked } = this.state;
+    const { soundcasts_managed, subscribers, checked, currentSoundcast } = this.state;
     const { history } = this.props;
     // const _subscribers = [];
     // for (let id in _soundcast.subscribed) {
@@ -229,7 +229,10 @@ export default class Subscribers extends Component {
                         <td style={{...styles.td, width: 170}}>
                           <i onClick={() => history.push({
                               pathname: `/dashboard/subscriber/${subscriber.id}`,
-                              state: {subscriber}
+                              state: {
+                                subscriber,
+                                soundcast: currentSoundcast,
+                              }
                             })}
                             className="fa fa-line-chart" style={styles.itemChartIcon}></i>
                         </td>

@@ -67,6 +67,26 @@ module.exports = (app) => {
     .catch(err => { res.status(500).send(err); });
   });
 
+  app.get('/api/stats_by_user_publisher', (req, res) => {
+    database.ListeningSession.findAll({
+      where: {
+        userId: req.query.userId,
+        publisherId: req.query.publisherId,
+        date: {
+          $gte: new Date(req.query.startDate),
+          $lte: new Date(req.query.endDate),
+        },
+      },
+      order: [
+        ['date', 'ASC'],
+      ],
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => { res.status(500).send(err); });
+  });
+
   app.get('/api/stats_by_episode', (req, res) => {
     database.ListeningSession.findAll({
       where: {
