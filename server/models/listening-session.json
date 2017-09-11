@@ -1,24 +1,15 @@
 {
-  "name": "listening_session",
+  "name": "listeningSession",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
-    "validateUpsert": true
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "ListeningSessions"
+    }
   },
   "properties": {
-    "sessionId": {
-      "type": "number",
-      "required": true
-    },
-    "soundcastId": {
-      "type": "string",
-      "required": true
-    },
-    "episodeId": {
-      "type": "string",
-      "required": true
-    },
-    "userId": {
+    "publisherId": {
       "type": "string",
       "required": true
     },
@@ -48,17 +39,17 @@
     "soundcast": {
       "type": "belongsTo",
       "model": "soundcast",
-      "foreignKey": "soundcastId"
+      "foreignKey": "soundcastsId"
     },
     "episode": {
       "type": "belongsTo",
       "model": "episode",
-      "foreignKey": "episodeId"
+      "foreignKey": "episodesId"
     },
     "user": {
       "type": "belongsTo",
-      "model": "user",
-      "foreignKey": "userId"
+      "model": "listener",
+      "foreignKey": "usersId"
     }
   },
   "acls": [],

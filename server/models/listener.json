@@ -1,14 +1,18 @@
 {
-  "name": "user",
+  "name": "listener",
   "base": "PersistedModel",
-  "idInjection": true,
+  "idInjection": false,
   "options": {
-    "validateUpsert": true
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "Users"
+    }
   },
   "properties": {
     "userId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "id": true
     },
     "firstName": {
       "type": "string"
@@ -23,18 +27,20 @@
   "validations": [],
   "relations": {
     "soundcasts": {
-      "type": "hasAndBelongsToMany",
+      "type": "hasMany",
       "model": "soundcast",
-      "foreignKey": "userId"
+      "foreignKey": "soundcastsId",
+      "through": "userSoundcast"
     },
     "episodes": {
-      "type": "hasAndBelongsToMany",
+      "type": "hasMany",
       "model": "episode",
-      "foreignKey": "UserId"
+      "foreignKey": "episodesId",
+      "through": "userEpisode"
     },
     "listeningSessions": {
       "type": "hasMany",
-      "model": "listening_session",
+      "model": "listeningSession",
       "foreignKey": ""
     }
   },

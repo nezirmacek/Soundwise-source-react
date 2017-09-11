@@ -3,7 +3,7 @@
  */
 var app = require('../server');
 var ds = app.datasources.db;
-ds.automigrate('user');
-ds.automigrate('soundcast');
-ds.automigrate('episode');
-ds.automigrate('listening_session');
+ds.automigrate('listener');
+// ds.automigrate('soundcast');
+// ds.automigrate('episode');
+// ds.automigrate('listeningSession');

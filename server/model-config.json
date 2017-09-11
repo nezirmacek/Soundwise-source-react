@@ -35,11 +35,7 @@
     "dataSource": "db",
     "public": false
   },
-  "fileUpload": {
-    "dataSource": "db",
-    "public": true
-  },
-  "user": {
+  "listener": {
     "dataSource": "db",
     "public": true
   },
@@ -51,7 +47,7 @@
     "dataSource": "db",
     "public": true
   },
-  "listening_session": {
+  "listeningSession": {
     "dataSource": "db",
     "public": true
   }

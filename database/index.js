@@ -42,15 +42,6 @@ var Soundcast = db.define('Soundcast', {
   title: { type: Sequelize.STRING}
 });
 
-Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-Soundcast.hasMany(Episode, {as: 'Episodes'});
-
-User.belongsToMany(Soundcast, {through: 'UserSoundcast', foreignKey: 'userId', otherKey: 'soundcastId'});
-Soundcast.belongsToMany(User, {through: 'UserSoundcast', foreignKey: 'soundcastId', otherKey: 'userId'});
-
-User.belongsToMany(Episode, {through: 'UserEpisode', foreignKey: 'userId', otherKey: 'episodeId'});
-Episode.belongsToMany(User, {through: 'UserEpisode', foreignKey: 'episodeId', otherKey: 'userId'});
-
 var ListeningSession = db.define('ListeningSession', { //<------ a session is the period between user starting to play an audio and the audio being paused
   sessionId: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
@@ -63,6 +54,15 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
   sessionDuration: { type: Sequelize.INTEGER, allowNull: false }, //in seconds
   percentCompleted: { type: Sequelize.INTEGER, allowNull: false }, //0 - 100, equal to endPosition / total audio file length * 100
 });
+
+Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+Soundcast.hasMany(Episode, {as: 'Episodes'});
+
+User.belongsToMany(Soundcast, {through: 'UserSoundcast', foreignKey: 'userId', otherKey: 'soundcastId'});
+Soundcast.belongsToMany(User, {through: 'UserSoundcast', foreignKey: 'soundcastId', otherKey: 'userId'});
+
+User.belongsToMany(Episode, {through: 'UserEpisode', foreignKey: 'userId', otherKey: 'episodeId'});
+Episode.belongsToMany(User, {through: 'UserEpisode', foreignKey: 'episodeId', otherKey: 'userId'});
 
 ListeningSession.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 Soundcast.hasMany(ListeningSession, {as: 'ListeningSessions'});

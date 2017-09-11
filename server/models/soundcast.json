@@ -1,17 +1,26 @@
 {
   "name": "soundcast",
   "base": "PersistedModel",
-  "idInjection": true,
+  "idInjection": false,
   "options": {
-    "validateUpsert": true
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "Soundcasts"
+    }
   },
   "properties": {
     "soundcastId": {
       "type": "string",
+      "required": true,
+      "id": true
+    },
+    "publisherId": {
+      "type": "string",
       "required": true
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],
@@ -19,11 +28,17 @@
     "episodes": {
       "type": "hasMany",
       "model": "episode",
-      "foreignKey": "soundcastId"
+      "foreignKey": ""
+    },
+    "users": {
+      "type": "hasMany",
+      "model": "listener",
+      "foreignKey": "usersId",
+      "through": "userSoundcast"
     },
     "listeningSessions": {
       "type": "hasMany",
-      "model": "listening_session",
+      "model": "listeningSession",
       "foreignKey": ""
     }
   },

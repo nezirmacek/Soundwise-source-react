@@ -1,5 +1,5 @@
 'use strict';
 
-module.exports = function(Listeningsession) {
+module.exports = function(ListeningSession) {
 
 };
