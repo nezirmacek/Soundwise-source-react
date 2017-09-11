@@ -76,7 +76,7 @@ npm run-script build
 ### Start loppback api
 
 ```
-PORT=4800 node .
+node .
 ```
 
 ### Directories

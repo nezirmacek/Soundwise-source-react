@@ -72,6 +72,43 @@ api:
         key to AWS before making request to AWS
     3.  DB:
         - let's set up DB locally first. Let's use Postgres
+    4. db data
+        User:
+        {
+          "userId": "VDEGSpUQeJTs8nN3BI1ZdeT6Ek22",
+          "firstName": "Denis",
+          "lastName": "Yakovenko",
+          "picURL": "https://scontent.xx.fbcdn.net/v/t1.0-1/c15.0.50.50/p50x50/10354686_10150004552801856_220367501106153455_n.jpg?oh=b7a22416832612429f32d3e7cd356fd5&oe=5A262F2F"
+        }
+
+        Soundcast:
+        {
+          "soundcastId": "1503691618714s",
+          "publisherId": "1503002103690p",
+          "title": "Founders Nextdoor"
+        }
+
+        Episode:
+        {
+          "soundcastId": "1503691618714s",
+          "publisherId": "1503002103690p",
+          "episodeId": "1504539599105e",
+          "title": "test episode title 1",
+          "soundcastTitle": "Founders Nextdoor"
+        }
+
+        listeningSession:
+        {
+          "soundcastId": "1503691618714s",
+          "publisherId": "1503002103690p",
+          "episodeId": "1504539894085e",
+          "userId": "VDEGSpUQeJTs8nN3BI1ZdeT6Ek22",
+          "date": "2017-09-03",
+          "startPosition": 1301,
+          "endPosition": 2200,
+          "sessionDuration": 899,
+          "percentCompleted":94
+        }
 firebase:
     0. common:
         - added three new nodes in firebase DB: soundcasts, episodes, and comments
