@@ -11,7 +11,10 @@
   "properties": {
     "publisherId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "publisherId"
+      }
     },
     "date": {
       "type": "string",
@@ -19,19 +22,31 @@
     },
     "startPosition": {
       "type": "number",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "startPosition"
+      }
     },
     "endPosition": {
       "type": "number",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "endPosition"
+      }
     },
     "sessionDuration": {
       "type": "number",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "sessionDuration"
+      }
     },
     "percentCompleted": {
       "type": "number",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "percentCompleted"
+      }
     }
   },
   "validations": [],

@@ -12,16 +12,28 @@
     "userId": {
       "type": "string",
       "required": true,
-      "id": true
+      "id": true,
+      "postgresql": {
+        "column": "userId"
+      }
     },
     "firstName": {
-      "type": "string"
+      "type": "string",
+      "postgresql": {
+        "column": "firstName"
+      }
     },
     "lastName": {
-      "type": "string"
+      "type": "string",
+      "postgresql": {
+        "column": "lastName"
+      }
     },
     "picURL": {
-      "type": "string"
+      "type": "string",
+      "postgresql": {
+        "column": "picURL"
+      }
     }
   },
   "validations": [],

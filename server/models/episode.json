@@ -11,12 +11,18 @@
   "properties": {
     "publisherId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "publisherId"
+      }
     },
     "episodeId": {
       "type": "string",
       "required": true,
-      "id": true
+      "id": true,
+      "postgresql": {
+        "column": "episodeId"
+      }
     },
     "title": {
       "type": "string",
@@ -24,7 +30,10 @@
     },
     "soundcastTitle": {
       "type": "string",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "soundcastTitle"
+      }
     }
   },
   "validations": [],

@@ -4,6 +4,6 @@
 var app = require('../server');
 var ds = app.datasources.db;
 ds.automigrate('listener');
-// ds.automigrate('soundcast');
-// ds.automigrate('episode');
-// ds.automigrate('listeningSession');
+ds.automigrate('soundcast');
+ds.automigrate('episode');
+ds.automigrate('listeningSession');

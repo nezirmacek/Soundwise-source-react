@@ -12,11 +12,17 @@
     "soundcastId": {
       "type": "string",
       "required": true,
-      "id": true
+      "id": true,
+      "postgresql": {
+        "column": "soundcastId"
+      }
     },
     "publisherId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "publisherId"
+      }
     },
     "title": {
       "type": "string",
@@ -34,7 +40,7 @@
       "type": "hasMany",
       "model": "listener",
       "foreignKey": "usersId",
-      "through": "userSoundcast"
+      "through": "userSoundcasts"
     },
     "listeningSessions": {
       "type": "hasMany",
