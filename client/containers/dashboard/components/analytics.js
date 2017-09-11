@@ -54,18 +54,29 @@ export default class Analytics extends Component {
             _soundcasts_managed.push(_soundcast);
         }
     }
+    const selectedSoundcastId = this.props.history.location.state.soundcastId;
+    if(selectedSoundcastId) {
+      this.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID: selectedSoundcastId,
+        currentSoundcast: userInfo.soundcasts_managed[selectedSoundcastId],
+      });
+      this.getListeningStats(selectedSoundcastId);
 
-    this.setState({
-      soundcasts_managed: _soundcasts_managed,
-      currentSoundcastID: _soundcasts_managed[0].id,
-      currentSoundcast: _soundcasts_managed[0],
+    } else {
+      this.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID: _soundcasts_managed[0].id,
+        currentSoundcast: _soundcasts_managed[0],
+      });
+      this.getListeningStats(_soundcasts_managed[0].id);
 
-    });
+    }
 
-    this.getListeningStats(_soundcasts_managed[0].id);
   }
 
   getListeningStats(soundcastId) {
+    // console.log('soundcastId: ', soundcastId);
     Axios.get('https://mysoundwise.com/api/stats_by_soundcast', {
       params: {
         soundcastId,
@@ -237,7 +248,7 @@ export default class Analytics extends Component {
   }
 
   render() {
-    const { soundcasts_managed, data } = this.state;
+    const { soundcasts_managed, data, currentSoundcastID } = this.state;
 
     return (
       <div className='padding-30px-tb'>
@@ -246,7 +257,11 @@ export default class Analytics extends Component {
               Analytics
           </span>
           <div style={styles.soundcastSelectWrapper}>
-              <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
+              <select
+                style={styles.soundcastSelect}
+                onChange={(e) => {this.changeSoundcastId(e);}}
+                value={currentSoundcastID}
+              >
                   <optgroup>
                     {
                         soundcasts_managed.map((souncast, i) => {
@@ -402,18 +417,18 @@ const styles = {
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-    userImage: {
-        width: 26,
-        height: 26,
-        float: 'left',
-        marginLeft: 10,
-        borderRadius: '50%',
-        backgroundColor: Colors.mainWhite,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: Colors.lightGrey,
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center center',
-        backgroundSize: 'cover',
-    },
+  userImage: {
+      width: 26,
+      height: 26,
+      float: 'left',
+      marginLeft: 10,
+      borderRadius: '50%',
+      backgroundColor: Colors.mainWhite,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: Colors.lightGrey,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center center',
+      backgroundSize: 'cover',
+  },
 };

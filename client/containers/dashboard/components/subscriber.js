@@ -5,7 +5,8 @@ import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
 import firebase from 'firebase';
 import {Bar} from 'react-chartjs-2';
-
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {getDateArray} from '../../../helpers/get_date_array';
 
@@ -19,6 +20,11 @@ export default class Subscriber extends Component {
     this.state = {
       startDate: '2017-01-01',
       endDate: new Date().toISOString().slice(0, 10),
+      episodes: {},
+      soundcastArr: [],
+      minutesToday: 0,
+      minutesThisMonth: 0,
+      minutesAllTime: 0,
       data: {
         labels: [],
         datasets: [
@@ -39,7 +45,7 @@ export default class Subscriber extends Component {
 
   componentDidMount() {
     const {subscriber, soundcast} = this.props.history.location.state;
-    this.getListeningStats(subscriber.id, soundcast.publisherId);
+    this.getListeningStats(subscriber.id, soundcast.publisherID);
   }
 
   getListeningStats(userId, publisherId) {
@@ -64,16 +70,17 @@ export default class Subscriber extends Component {
         length: 0
       });
       rawDataArr.forEach(session => {
-
         //calculate episodes
         if(!episodes[session.episodeId]) {
           episodes[session.episodeId] = {
+            soundcastId: session.soundcastId,
             date: session.date,
             percentCompleted: session.percentCompleted
           }
         } else if(episodes[session.episodeId]) {
           const {date, percentCompleted} = episodes[session.episodeId];
           episodes[session.episodeId] = {
+            soundcastId: session.soundcastId,
             date: date >= session.date ? date : session.date,
             percentCompleted: Math.max(percentCompleted, session.percentCompleted)
           }
@@ -87,22 +94,32 @@ export default class Subscriber extends Component {
         };
       });
 
-      const statsByDate_length = statsByDate.map(obj => {
+      let minutesAllTime = 0;
+      let minutesThisMonth = 0;
+      const dayOfMonth = new Date().getDate();
+
+      let statsByDate_length = statsByDate.map((obj, i) => {
         if(obj.listens == undefined) {
           return obj;
         } else {
-          return obj.length;
+          minutesAllTime += Math.floor(obj.length / 60);
+          return obj.length / 60;
+          if(i > statsByDate.length - 1 - dayOfMonth) {
+            minutesThisMonth += Math.floor(obj.length / 60);
+          }
         }
       });
 
-      this.compileEpisodeList(episodes);
-
       this.setState({
+        minutesToday: statsByDate_length[statsByDate_length.length - 1],
+        minutesAllTime,
+        minutesThisMonth,
+        episodes,
         data: {
           labels,
           datasets: [
             {
-              label: 'Total # of listens',
+              label: 'Total minutes listened',
               backgroundColor: 'rgba(97, 225, 251, 0.2)',
               borderColor: 'rgba(97, 225, 251, 1)',
               borderWidth: 1,
@@ -113,14 +130,81 @@ export default class Subscriber extends Component {
           ]
         },
       });
+
+      this.compileEpisodeList(this.state.episodes);
   }
 
   compileEpisodeList(episodes) {
 
+    const that = this;
+    const {subscriber} = this.props.history.location.state;
+    const soundcastIDs =Object.keys(subscriber.soundcasts);
+    let soundcastObj = {};
+    let episodeArr = [];
+
+    const promises1 = soundcastIDs.map(id => {
+      return firebase.database().ref(`soundcasts/${id}`)
+            .once('value')
+            .then(snapshot => {
+              soundcastObj[id] = {
+                title: snapshot.val().title,
+                episodes: {},
+              };
+              const episodeIds = Object.keys(snapshot.val().episodes);
+              episodeArr = episodeArr.concat(episodeIds);
+            })
+            .then(res => console.log('res: ', res), err => console.log(err));
+    });
+    promises1.push(124);
+    Promise.all(promises1)
+    .then(res => {
+      const promises2 = episodeArr.map(episodeId => {
+        return firebase.database().ref(`episodes/${episodeId}`)
+              .once('value')
+              .then(snapshot => {
+                const soundcastId = snapshot.val().soundcastID;
+                console.log('soundcastID: ', soundcastId);
+                soundcastObj[soundcastId].episodes[episodeId] = {
+                  title: snapshot.val().title,
+                  date_created: snapshot.val().date_created,
+                  percentCompleted: 0,
+                  lastListen: '',
+                  episodeId,
+                };
+              })
+              .then(res => res, err => console.log(err));
+      });
+      Promise.all(promises2)
+      .then(res => {
+        that.matchEpisodes(soundcastObj, episodes);
+      }, err => {
+        console.log('promise error: ', err);
+      });
+    }, err => {
+      console.log('promise error: ', err);
+    });
+  }
+
+  matchEpisodes(soundcastObj, episodes) {
+    console.log('soundcastObj: ', soundcastObj);
+    console.log('episodes: ', episodes);
+    for(var id in episodes) {
+                soundcastObj[episodes[id].soundcastId].episodes[id].percentCompleted = episodes[id].percentCompleted;
+                soundcastObj[episodes[id].soundcastId].episodes[id].lastListen = episodes[id].date;
+    }
+    for(var id in soundcastObj) {
+      soundcastObj[id].episodeArr = Object.values(soundcastObj[id].episodes);
+    }
+    const soundcastArr = Object.values(soundcastObj);
+
+    this.setState({
+      soundcastArr,
+    })
   }
 
   render() {
-    const {data} = this.state;
+    const {data, soundcastArr, minutesToday, minutesThisMonth, minutesAllTime} = this.state;
+    const {subscriber} = this.props.history.location.state;
 
     return (
       <div className='padding-30px-tb'>
@@ -129,6 +213,31 @@ export default class Subscriber extends Component {
               <span className='title-medium '>
                   Subscriber Stats
               </span>
+            </div>
+            <div style={styles.userWrapper}>
+              <div style={{...styles.userImage, backgroundImage: `url(${subscriber.pic_url})`}}>
+              </div>
+              <div style={{fontSize: 18, fontWeight: 600,}}>
+                {`${subscriber.firstName} ${subscriber.lastName}`}
+              </div>
+            </div>
+            <div style={{marginTop: 20, marginBottom: 20, display: 'flex', alignItems: 'center',}}>
+              <div style={{marginBottom: 10, display: 'inline-block'}}>
+                <span style={styles.statsTitle}>Today: </span>
+                <span style={styles.statsText}>{`${minutesToday} minutes`}</span>
+              </div>
+              <div style={styles.verticalLine} >
+              </div>
+              <div style={{marginBottom: 10, display: 'inline-block'}}>
+                <span style={styles.statsTitle}>This month: </span>
+                <span style={styles.statsText}>{`${minutesThisMonth} minutes`}</span>
+              </div>
+              <div style={styles.verticalLine}>
+              </div>
+              <div style={{marginBottom: 10, display: 'inline-block'}}>
+                <span style={styles.statsTitle}>All time: </span>
+                <span style={styles.statsText}>{`${minutesAllTime} minutes`}</span>
+              </div>
             </div>
             <div style={styles.chartWrapper}>
               <Bar
@@ -149,6 +258,44 @@ export default class Subscriber extends Component {
                 }}
               />
             </div>
+            <div>
+              <div style={{marginTop: 25, marginBottom: 15,}}>
+                <span className='title-small'>Subscriptions</span>
+              </div>
+              {soundcastArr.map((soundcast, i) => {
+                return (
+                  <MuiThemeProvider>
+                    <Card key={i}>
+                      <CardHeader
+                        title={soundcast.title}
+                        actAsExpander={true}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
+                        <div style={{marginLeft: 30, marginRight: 30,}}>
+                          <table>
+                           <tr style={styles.tr}>
+                              <th style={{...styles.th, width: 500}}>EPISODE</th>
+                              <th style={{...styles.th, width: 350}}>% COMPLETED</th>
+                              <th style={{...styles.th, width: 300}}>LAST LISTENED ON</th>
+                            </tr>
+                          {soundcast.episodeArr.map((episode, i) => {
+                            return (
+                              <tr key={i} style={styles.tr}>
+                                <td style={{...styles.td, width: 500}}>{episode.title}</td>
+                                <td style={{...styles.td, width: 350}}>{episode.percentCompleted}</td>
+                                <td style={{...styles.td, width: 300}}>{episode.lastListen}</td>
+                              </tr>
+                            )
+                          })}
+                          </table>
+                        </div>
+                      </CardText>
+                    </Card>
+                  </MuiThemeProvider>
+                )
+              })}
+            </div>
         </div>
       </div>
     )
@@ -156,9 +303,66 @@ export default class Subscriber extends Component {
 }
 
 const styles = {
+  userWrapper: {
+    height: 48,
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   chartWrapper: {
     backgroundColor: Colors.mainWhite,
     // marginTop: 20,
     padding: 20,
+  },
+  userImage: {
+      width: 45,
+      height: 45,
+      float: 'left',
+      marginRight: 10,
+      borderRadius: '50%',
+      backgroundColor: Colors.mainWhite,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: Colors.lightGrey,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center center',
+      backgroundSize: 'cover',
+  },
+  verticalLine: {
+    width:1,
+    backgroundColor: 'black',
+    // position: 'absolute',
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 10,
+    height: 25,
+    display: 'inline-block'
+  },
+  statsTitle: {
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  statsText: {
+    fontSize: 16,
+  },
+  tr: {
+      borderBottomWidth: 1,
+    borderBottomColor: Colors.lightBorder,
+    borderBottomStyle: 'solid',
+  },
+  th: {
+    fontSize: 14,
+    color: Colors.fontGrey,
+    height: 35,
+    fontWeight: 'regular',
+    vAlign: 'middle',
+  },
+  td: {
+      color: Colors.fontDarkGrey,
+    fontSize: 14,
+    height: 40,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
 }
