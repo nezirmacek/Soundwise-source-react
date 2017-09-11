@@ -143,7 +143,12 @@ export default class SoundcastsManaged extends Component {
 									</div>
 									<div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
 										<div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcasts/${soundcast.id}`)}>Episodes</div>
-										<div style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
+										<div onClick={() => history.push({
+                      pathname: '/dashboard/analytics',
+                      state: {
+                        soundcastId: soundcast.id,
+                      }
+                    })} style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
 										<div style={{...styles.button, borderColor: Colors.mainGrey}}>Add new episode</div>
                     <div style={styles.edit}>
                       <span style={styles.editLink} onClick={() => this.editSoundcast(soundcast.id)}>
