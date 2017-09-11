@@ -39,6 +39,7 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^4.0.0",
     "loopback-connector-postgresql": "^3.0.2",
+    "loopback-ds-timestamp-mixin": "^3.4.1",
     "material-ui": "^0.17.1",
     "moment": "^2.18.1",
     "net": "^1.0.2",

@@ -34,6 +34,20 @@
       "postgresql": {
         "column": "soundcastTitle"
       }
+    },
+    "createdAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "createdAt"
+      }
+    },
+    "updatedAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "updatedAt"
+      }
     }
   },
   "validations": [],
