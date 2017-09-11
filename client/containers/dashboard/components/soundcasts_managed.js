@@ -5,9 +5,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import EditSoundcast from './edit_soundcast'
-import InviteSubscribersModal from './invite_subscribers_modal'
-
+import EditSoundcast from './edit_soundcast';
+import InviteSubscribersModal from './invite_subscribers_modal';
+import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 
@@ -19,19 +19,21 @@ export default class SoundcastsManaged extends Component {
       editing: false,
       showModal: false,
       currentSoundcastID: '',
-      currentSoundcast: null
+      currentSoundcast: null,
+      showStatsModal: false,
+      currentEpisode: null,
     }
 
-    this.editSoundcast = this.editSoundcast.bind(this)
-    this.shiftEditState = this.shiftEditState.bind(this)
-    this.handleModal = this.handleModal.bind(this)
+    this.editSoundcast = this.editSoundcast.bind(this);
+    this.shiftEditState = this.shiftEditState.bind(this);
+    this.handleModal = this.handleModal.bind(this);
+    this.handleStatsModal = this.handleStatsModal.bind(this);
   }
 
   editSoundcast(soundcastId) {
     const { userInfo, history, id } = this.props;
     this.shiftEditState();
     history.push(`/dashboard/soundcasts/${soundcastId}`)
-
   }
 
   shiftEditState() {
@@ -42,6 +44,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   handleModal(soundcast) {
+    // console.log('handleModal called');
     if(!this.state.showModal) {
       this.setState({
         showModal: true,
@@ -53,6 +56,25 @@ export default class SoundcastsManaged extends Component {
         showModal: false
       })
     }
+  }
+
+  handleStatsModal() {
+    if(!this.state.showStatsModal) {
+      this.setState({
+        showStatsModal: true,
+      })
+    } else {
+      this.setState({
+        showStatsModal: false
+      })
+    }
+  }
+
+  setCurrentEpisode(episode) {
+    this.setState({
+      currentEpisode: episode,
+    });
+    this.handleStatsModal();
   }
 
   render() {
@@ -156,42 +178,52 @@ export default class SoundcastsManaged extends Component {
 
   			return (
   				<div style={styles.itemContainer}>
+            <EpisodeStatsModal
+              isShown={this.state.showStatsModal}
+              episode={this.state.currentEpisode}
+              onClose={this.handleStatsModal}
+              userInfo={this.props.userInfo}
+            />
   					<div style={styles.itemHeader}>
   						<div style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
   						<div style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add episode</div>
   					</div>
-  					<table>
-  						<tr style={styles.tr}>
-  							<th style={{...styles.th, width: 37}}></th>
-  							<th style={{...styles.th, width: 250}}>TITLE</th>
-  							<th style={{...styles.th, width: 160}}>DATE</th>
-  							<th style={{...styles.th, width: 160}}>LENGTH</th>
-  							<th style={{...styles.th, width: 160}}>CREATOR</th>
-  							<th style={{...styles.th, width: 160}}>ANALYTICS</th>
-  							<th style={{...styles.th, width: 160}}>TOTAL LISTENS</th>
-  						</tr>
-  						{
-  							_episodes.map((episode, i) => {
-  								episode.creator = userInfo.publisher.administrators[episode.creatorID];
+            <div style={styles.tableWrapper}>
+    					<table>
+    						<tr style={styles.tr}>
+    							<th style={{...styles.th, width: 387}}>
+                    TITLE
+                  </th>
+    							<th style={{...styles.th, width: 175}}>PUBLISHED ON</th>
+    							<th style={{...styles.th, width: 175}}>LENGTH</th>
+    							<th style={{...styles.th, width: 175}}>CREATOR</th>
+    							<th style={{...styles.th, width: 175}}>ANALYTICS</th>
+    						</tr>
+    						{
+    							_episodes.map((episode, i) => {
+    								episode.creator = userInfo.publisher.administrators[episode.creatorID];
 
-  								return (
-  									<tr key={i} style={styles.tr}>
-  										<td style={styles.td}>
-  											<input type="checkbox" style={styles.itemCheckbox} />
-  										</td>
-  										<td style={styles.td}>{episode.title}</td>
-  										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
-  										<td style={styles.td}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-  										<td style={styles.td}>{episode.creator.firstName} {episode.creator.lastName}</td>
-  										<td style={styles.td}>
-  											<i className="fa fa-line-chart" style={styles.itemChartIcon}></i>
-  										</td>
-  										<td style={styles.td}>{episode.totalListens || 0}</td>
-  									</tr>
-  								);
-  							})
-  						}
-  					</table>
+    								return (
+    									<tr key={i} style={styles.tr}>
+    										<td style={styles.td}>
+                          <div style={{marginTop: 24}}>{episode.title}</div>
+                          <div style={{marginBottom: 5}}>
+                            <span style={{marginRight: 10, cursor: 'pointer', fontSize: 13}}>delete</span>
+                            <span style={{cursor: 'pointer', fontSize: 13}}>edit</span>
+                          </div>
+                        </td>
+    										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
+    										<td style={styles.td}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
+    										<td style={styles.td}>{episode.creator.firstName} {episode.creator.lastName}</td>
+    										<td style={styles.td}>
+    											<i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-line-chart" style={styles.itemChartIcon}></i>
+    										</td>
+    									</tr>
+    								);
+    							})
+    						}
+    					</table>
+            </div>
 				  </div>
 			);
 		} else if(id && editing) {   //editing soundcast title, descrptions, etc
@@ -331,13 +363,16 @@ const styles = {
 		lineHeight: '22px',
 		cursor: 'pointer',
 	},
+  tableWrapper: {
+    padding: 20,
+  },
 	tr: {
     	borderBottomWidth: 1,
 		borderBottomColor: Colors.lightBorder,
 		borderBottomStyle: 'solid',
 	},
 	th: {
-    fontSize: 14,
+    fontSize: 15,
 		color: Colors.fontGrey,
 		height: 35,
 		fontWeight: 'regular',
@@ -345,7 +380,7 @@ const styles = {
 	},
 	td: {
     	color: Colors.fontDarkGrey,
-		fontSize: 14,
+		fontSize: 15,
 		height: 40,
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',

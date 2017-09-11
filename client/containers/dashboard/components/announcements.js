@@ -31,7 +31,6 @@ export default class Announcements extends Component {
     const { userInfo } = this.props;
     const _subscribers = [];
     const _soundcasts_managed = [];
-    console.log('userInfo: ', userInfo);
 
     for (let id in userInfo.soundcasts_managed) {
         const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -71,7 +70,6 @@ export default class Announcements extends Component {
   }
 
   changeSoundcastId (e) {
-    console.log('currentSoundcastID: ', e.target.value);
     this.setState({
       currentSoundcastID: e.target.value
     });

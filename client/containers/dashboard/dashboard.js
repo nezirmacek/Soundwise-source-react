@@ -11,7 +11,9 @@ import CreateEpisode from './components/create_episode';
 import SoundcastsManaged from './components/soundcasts_managed';
 import AddSoundcast from "./components/add_soundcast";
 import Subscribers from "./components/subscribers";
+import Subscriber from "./components/subscriber";
 import Announcements from "./components/announcements";
+import Analytics from "./components/analytics";
 
 
 const verticalMenuItems = [
@@ -39,7 +41,7 @@ const verticalMenuItems = [
         label: 'Analytics',
         iconClass: 'bar-chart',
         isMenuItemVisible: true,
-        Component: SoundcastsManaged,
+        Component: Analytics,
     },
     {
         path: 'subscribers',
@@ -47,6 +49,11 @@ const verticalMenuItems = [
         iconClass: 'users',
         isMenuItemVisible: true,
         Component: Subscribers,
+    },
+    {
+        path: 'subscriber',
+        isMenuItemVisible: false,
+        Component: Subscriber,
     },
     {
         path: 'announcements',

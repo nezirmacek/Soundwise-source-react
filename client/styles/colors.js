@@ -16,6 +16,7 @@ const Colors = {
     window: '#eee',
     mainGreen: '#88d68f',
 	lightBorder: 'rgba(151, 151, 151, 0.3)',
+    darkBorder: 'rgba(151, 151, 151, 0.8)',
 };
 
 export default Colors;
