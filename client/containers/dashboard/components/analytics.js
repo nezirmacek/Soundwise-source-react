@@ -54,7 +54,10 @@ export default class Analytics extends Component {
             _soundcasts_managed.push(_soundcast);
         }
     }
-    const selectedSoundcastId = this.props.history.location.state.soundcastId;
+
+    const selectedSoundcastId = this.props.history.location.state ? this.props.history.location.state.soundcastId : null;
+
+
     if(selectedSoundcastId) {
       this.setState({
         soundcasts_managed: _soundcasts_managed,
@@ -77,7 +80,7 @@ export default class Analytics extends Component {
 
   getListeningStats(soundcastId) {
     // console.log('soundcastId: ', soundcastId);
-    Axios.get('https://mysoundwise.com/api/stats_by_soundcast', {
+    Axios.get('/api/stats_by_soundcast', {
       params: {
         soundcastId,
         startDate: this.state.startDate,
