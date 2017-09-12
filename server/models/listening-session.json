@@ -1,0 +1,86 @@
+{
+  "name": "listeningSession",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "ListeningSessions"
+    }
+  },
+  "properties": {
+    "publisherId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "publisherId"
+      }
+    },
+    "date": {
+      "type": "string",
+      "required": true
+    },
+    "startPosition": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "startPosition"
+      }
+    },
+    "endPosition": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "endPosition"
+      }
+    },
+    "sessionDuration": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "sessionDuration"
+      }
+    },
+    "percentCompleted": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "percentCompleted"
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "createdAt"
+      }
+    },
+    "updatedAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "updatedAt"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "soundcast": {
+      "type": "belongsTo",
+      "model": "soundcast",
+      "foreignKey": "soundcastsId"
+    },
+    "episode": {
+      "type": "belongsTo",
+      "model": "episode",
+      "foreignKey": "episodesId"
+    },
+    "user": {
+      "type": "belongsTo",
+      "model": "listener",
+      "foreignKey": "usersId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

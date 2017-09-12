@@ -1,0 +1,74 @@
+{
+  "name": "episode",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "Episodes"
+    }
+  },
+  "properties": {
+    "publisherId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "publisherId"
+      }
+    },
+    "episodeId": {
+      "type": "string",
+      "required": true,
+      "id": true,
+      "postgresql": {
+        "column": "episodeId"
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "soundcastTitle": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "soundcastTitle"
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "createdAt"
+      }
+    },
+    "updatedAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "updatedAt"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "soundcast": {
+      "type": "belongsTo",
+      "model": "soundcast",
+      "foreignKey": "soundcastsId"
+    },
+    "users": {
+      "type": "hasMany",
+      "model": "listener",
+      "foreignKey": "usersId",
+      "through": "userEpisode"
+    },
+    "listeningSessions": {
+      "type": "hasMany",
+      "model": "listeningSession",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

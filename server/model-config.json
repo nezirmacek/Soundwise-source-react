@@ -9,6 +9,7 @@
     "mixins": [
       "loopback/common/mixins",
       "loopback/server/mixins",
+      "../node_modules/loopback-ds-timestamp-mixin",
       "../common/mixins",
       "./mixins"
     ]
@@ -35,7 +36,19 @@
     "dataSource": "db",
     "public": false
   },
-  "fileUpload": {
+  "listener": {
+    "dataSource": "db",
+    "public": true
+  },
+  "episode": {
+    "dataSource": "db",
+    "public": true
+  },
+  "soundcast": {
+    "dataSource": "db",
+    "public": true
+  },
+  "listeningSession": {
     "dataSource": "db",
     "public": true
   }

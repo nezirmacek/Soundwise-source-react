@@ -63,6 +63,7 @@ export default class Analytics extends Component {
       });
       this.getListeningStats(selectedSoundcastId);
 
+<<<<<<< HEAD
     } else {
       this.setState({
         soundcasts_managed: _soundcasts_managed,
@@ -73,11 +74,38 @@ export default class Analytics extends Component {
 
     }
 
+=======
+    const selectedSoundcastId = this.props.history.location.state ? this.props.history.location.state.soundcastId : null;
+
+
+    if(selectedSoundcastId) {
+      this.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID: selectedSoundcastId,
+        currentSoundcast: userInfo.soundcasts_managed[selectedSoundcastId],
+      });
+      this.getListeningStats(selectedSoundcastId);
+
+    } else {
+      this.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID: _soundcasts_managed[0].id,
+        currentSoundcast: _soundcasts_managed[0],
+      });
+      this.getListeningStats(_soundcasts_managed[0].id);
+
+    }
+
+>>>>>>> feature/api-integration
   }
 
   getListeningStats(soundcastId) {
     // console.log('soundcastId: ', soundcastId);
+<<<<<<< HEAD
     Axios.get('https://mysoundwise.com/api/stats_by_soundcast', {
+=======
+    Axios.get('/api/stats_by_soundcast', {
+>>>>>>> feature/api-integration
       params: {
         soundcastId,
         startDate: this.state.startDate,

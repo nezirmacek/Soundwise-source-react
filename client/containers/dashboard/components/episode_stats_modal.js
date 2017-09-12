@@ -63,7 +63,7 @@ export default class EpisodeStatsModal extends Component {
 
   getListeningStats(episodeId) {
 
-    Axios.get('https://mysoundwise.com/api/stats_by_episode', {
+    Axios.get('/api/stats_by_episode', {
       params: {
         episodeId,
         startDate: this.state.startDate,
