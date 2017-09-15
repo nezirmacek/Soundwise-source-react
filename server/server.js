@@ -20,7 +20,8 @@ var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
 var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerInvites;
 var sendNotification = require('./scripts/messaging.js').sendNotification;
-var subscriptionRenewal = require('./scripts/subscriptionRenewal.js').subscriptionRenewal;
+var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
+var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 
 var database = require('../database');
 
@@ -71,6 +72,8 @@ app.post('/api/trial_request', handleTrialRequest);
 app.post('/api/send_email_invites', sendListenerInvites);
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
+app.post('/api/unsubscribe', unsubscribe);
+
 // // WORKS
 // app.post('/upload/images', function(req, res, next) {
 //   uploader.upload('s3', req.files.file, function(err, files) {

@@ -103,6 +103,7 @@ module.exports.handleRecurringPayment = (req, res) => {
              }
         });
       }
+
       if(req.body.customer) { // if customer's stripe id already exists, sign this customer up for the plan
         stripe.subscriptions.create({
           customer: req.body.customer,

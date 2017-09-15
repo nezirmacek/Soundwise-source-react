@@ -57,8 +57,10 @@ class _AppSignin extends Component {
                         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
                     } else if (_user.admin) {
                         history.push('/dashboard/soundcasts');
-                    } else {
+                    } else if (_user.courses) {
                         history.push('/myprograms');
+                    } else {
+                        history.push('/mysoundcasts');
                     }
 
                     if (_user.soundcasts_managed && _user.admin) {
