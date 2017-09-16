@@ -5,6 +5,8 @@ import moment from 'moment';
 import ReactCrop from 'react-image-crop';
 import axios from 'axios';
 import firebase from 'firebase';
+import { Editor } from 'react-draft-wysiwyg';
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -19,7 +21,7 @@ export default class EditSoundcast extends Component {
             title: '',
             imageURL: '',
             short_description: '',
-            long_description: '',
+            long_description: EditorState.createEmpty(),
             subscribed: {},
             fileUploaded: false,
             landingPage: false,
@@ -35,22 +37,31 @@ export default class EditSoundcast extends Component {
         this.fileInputRef = null;
         this.hostImgInputRef = null;
         this.addFeature = this.addFeature.bind(this);
+        this.onEditorStateChange = this.onEditorStateChange.bind(this);
     }
 
     componentDidMount() {
-
-      const { id, soundcast } = this.props;
+      let editorState;
+      const { id, soundcast } = this.props.history.location.state;
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
              forSale, prices} = soundcast;
+      if(long_description) {
+        let contentState = convertFromRaw(JSON.parse(long_description));
+        editorState = EditorState.createWithContent(contentState);
+      } else {
+        editorState = EditorState.createEmpty();
+      }
+
       this.setState({
         title,
         imageURL,
         short_description,
-        long_description,landingPage,
+        landingPage,
         hostName, hostBio, hostImageURL,
-        forSale
+        forSale,
+        long_description: editorState,
       })
       if(subscribed) {
         this.setState({
@@ -118,7 +129,7 @@ export default class EditSoundcast extends Component {
         const editedSoundcast = {
             title,
             short_description,
-            long_description,
+            long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
             imageURL,
             creatorID,
             publisherID: userInfo.publisherID,
@@ -133,10 +144,9 @@ export default class EditSoundcast extends Component {
         };
 
         // edit soundcast in database
-            firebase.database().ref(`soundcasts/${this.props.id}`).set(editedSoundcast).then(
+            firebase.database().ref(`soundcasts/${this.props.history.location.state.id}`).set(editedSoundcast).then(
                 res => {
                     console.log('successfully added soundcast: ', res);
-                    this.props.shiftEditState();
                     history.goBack();
                 },
                 err => {
@@ -195,22 +205,29 @@ export default class EditSoundcast extends Component {
         }
     }
 
+    onEditorStateChange(editorState) {
+        this.setState({
+            long_description: editorState,
+        })
+    }
+
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
-        const {hostImageURL, hostImgUploaded, landingPage, forSale, prices} = this.state;
+        const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices} = this.state;
         const that = this;
         return (
             <div style={{marginTop: 25}}>
                 <span style={{...styles.titleText, marginBottom: 5}}>
                     Long Description
                 </span>
-                <textarea
-                    style={styles.inputDescription}
-                    placeholder={'A longer description of the soundcast'}
-                    onChange={(e) => {this.setState({long_description: e.target.value})}}
-                    value={this.state.long_description}
-                >
-                </textarea>
+                <div>
+                    <Editor
+                      editorState = {long_description}
+                      editorStyle={styles.editorStyle}
+                      wrapperStyle={styles.wrapperStyle}
+                      onEditorStateChange={this.onEditorStateChange}
+                    />
+                </div>
                 <span style={{...styles.titleText, marginBottom: 5}}>
                   What Listeners Will Get
                 </span>
@@ -237,14 +254,15 @@ export default class EditSoundcast extends Component {
                                       onClick={this.deleteFeature.bind(this, i)}>
                                     <i className="fa fa-times " aria-hidden="true"></i>
                                   </span>
-                                  {i == featureNum -1 &&
-                                    <span style={styles.addFeature} onClick={this.addFeature}>
-                                      Add
-                                    </span>}
                                 </div>
                             )
                         })
                     }
+                    <div>
+                      <span style={styles.addFeature} onClick={this.addFeature}>
+                        Add
+                      </span>
+                    </div>
                 </div>
                 <div>
                     <span style={styles.titleText}>
@@ -464,6 +482,7 @@ export default class EditSoundcast extends Component {
                     <span>The landing page will be published at </span>
                     <span >
                       <a
+                        target="_blank"
                         style={{color: Colors.mainOrange}}
                         href={`https://mysoundwise.com/soundcasts/${id}`}>
                         {`https://mysoundwise.com/soundcasts/${id}`}
@@ -472,9 +491,11 @@ export default class EditSoundcast extends Component {
                 </div>}
                 <div className="row">
                     <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                        <span style={styles.titleText}>Title</span>
-                        <span style={{...styles.titleText, color: 'red'}}>*</span>
-                        <span style={{fontSize: 14}}><i> (60 characters max)</i></span>
+                        <div style={{marginBottom: 15}}>
+                          <span style={styles.titleText}>Title</span>
+                          <span style={{...styles.titleText, color: 'red'}}>*</span>
+                          <span style={{fontSize: 14, marginBottom: 15,}}><i> (60 characters max)</i></span>
+                        </div>
                         <ValidatedInput
                             type="text"
                             styles={styles.inputTitle}
@@ -484,13 +505,15 @@ export default class EditSoundcast extends Component {
                             value={this.state.title}
                             validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 40)]}
                         />
-                        <span style={styles.titleText}>
-                            Short Description
-                        </span>
-                        <span style={{...styles.titleText, color: 'red'}}>*</span>
-                        <span style={{fontSize: 14}}>
-                            <i> (300 characters max)</i>
-                        </span>
+                        <div style={{marginTop: 20,}}>
+                          <span style={{...styles.titleText, marginTop: 20,}}>
+                              Short Description
+                          </span>
+                          <span style={{...styles.titleText, color: 'red'}}>*</span>
+                          <span style={{fontSize: 14}}>
+                              <i> (300 characters max)</i>
+                          </span>
+                        </div>
                         <div style={styles.inputTitleWrapper}>
                           <input
                               type="text"
@@ -595,6 +618,18 @@ const styles = {
         borderRadius: 4,
         marginTop: 10,
         marginBottom: 20
+    },
+    editorStyle: {
+        padding: '5px',
+        borderRadius: 4,
+        height: '300px',
+        width: '100%',
+        backgroundColor: Colors.mainWhite,
+      },
+    wrapperStyle: {
+        borderRadius: 4,
+        marginBottom: 25,
+        marginTop: 15,
     },
     image: {
         width: 133,

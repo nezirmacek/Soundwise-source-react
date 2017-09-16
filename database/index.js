@@ -33,7 +33,7 @@ var Episode = db.define('Episode', {
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
   title: Sequelize.STRING,
-  souncastTitle: Sequelize.STRING
+  soundcastTitle: Sequelize.STRING
 });
 
 var Soundcast = db.define('Soundcast', {

@@ -37,7 +37,7 @@ class _AppSignin extends Component {
     async signIn() {
         const { firstName, lastName, email, password, pic_url, courses } = this.state;
         const { signinUser, history, userInfo } = this.props;
-        let soundcast, checked, sumTotal;
+        // let soundcast, checked, sumTotal;
 
         if(history.location.state) {
             let {soundcast, checked, sumTotal} = history.location.state;

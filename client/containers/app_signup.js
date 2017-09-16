@@ -67,7 +67,6 @@ class _AppSignup extends Component {
         const that = this
         const { match, history } = this.props;
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
-        console.log('the admin: ', this.state)
 
         this.setState({ isFBauth: true });
         if(publisher_name.length < 1) {
@@ -306,7 +305,10 @@ class _AppSignup extends Component {
 
     render() {
         const { match, history } = this.props;
-        const {soundcast, checked, sumTotal} = history.location.state;
+        if(history.location.state) {
+            let {soundcast, checked, sumTotal} = history.location.state;
+        }
+
         const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name } = this.state;
         const { from } = this.props.location.state || { from: { pathname: '/courses' } };
 
@@ -408,12 +410,21 @@ class _AppSignup extends Component {
                                 <hr />
                                 <div>
                                     <span style={styles.italicText}>Already have an account? </span>
-                                    <Link
-                                      to={{
-                                        pathname: '/signin',
-                                        state: {soundcast, checked, sumTotal}
-                                      }}
-                                      style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in ></Link>
+                                    {
+                                        !history.location.state &&
+                                        <Link
+                                          to='/signin'
+                                          style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in >
+                                        </Link>
+                                        ||
+                                        <Link
+                                          to={{
+                                            pathname: '/signin',
+                                            state: {soundcast, checked, sumTotal}
+                                          }}
+                                          style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in >
+                                        </Link>
+                                    }
                                 </div>
                             </div>
                         </div>

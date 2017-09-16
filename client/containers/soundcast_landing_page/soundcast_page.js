@@ -8,6 +8,7 @@ import { withRouter } from 'react-router'
 import { Redirect } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import { EditorState, convertToRaw } from 'draft-js';
 
 import { SoundcastHeader } from './components/soundcast_header'
 import Footer from '../../components/footer'
@@ -28,7 +29,7 @@ class _SoundcastPage extends Component {
         title: '',
         short_description: '',
         imageURL: '',
-        long_description: '',
+        long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
         prices: [],
         modalOpen: false
       },

@@ -14,7 +14,7 @@ import Subscribers from "./components/subscribers";
 import Subscriber from "./components/subscriber";
 import Announcements from "./components/announcements";
 import Analytics from "./components/analytics";
-
+import EditSoundcast from './components/edit_soundcast';
 
 const verticalMenuItems = [
     {
@@ -23,6 +23,12 @@ const verticalMenuItems = [
         iconClass: 'headphones',
         isMenuItemVisible: true,
         Component: SoundcastsManaged,
+    },
+    {
+        path: 'edit',
+        label: 'edit',
+        isMenuItemVisible: false,
+        Component: EditSoundcast,
     },
     {
         path: 'add_episode',
