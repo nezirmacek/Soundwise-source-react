@@ -176,7 +176,6 @@ export default class CreateEpisode extends Component {
             this[type] = [e.target.files[0]];
             this._uploadToAws(document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0], type);
         }
-        document.getElementById(type).value = e.target.value;
     }
 
     saveEpisode (isPublished) {
@@ -393,7 +392,7 @@ export default class CreateEpisode extends Component {
                                   <div style={{textAlign: 'center',}}>
                                     <span>{this.audio.name}</span>
                                     <span style={styles.cancelImg}
-                                      onClick={() => that.setState({audioUploaded: false, audioUrl: ''})}>Cancel</span>
+                                      onClick={() => this.setState({audioUploaded: false, audioUrl: ''})}>Cancel</span>
                                   </div>
                                   ||
                                   !audioUrl &&
@@ -454,9 +453,9 @@ export default class CreateEpisode extends Component {
                                 {
                                   notesUrl &&
                                   <div style={{}}>
-                                    <span>{this.audio.name}</span>
+                                    <span>{this.notes.name}</span>
                                     <span style={styles.cancelImg}
-                                      onClick={() => that.setState({notesUploaded: false, notesUrl: ''})}>Cancel</span>
+                                      onClick={() => this.setState({notesUploaded: false, notesUrl: ''})}>Cancel</span>
                                   </div>
                                   ||
                                   !notesUrl &&
