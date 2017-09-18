@@ -34,13 +34,12 @@ export default class ImageS3Uploader extends Component {
         const splittedFileName = file.name.split('.');
         const ext = (splittedFileName)[splittedFileName.length - 1];
         data.append('file', file, `${fileName}.${ext}`);
-        // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
-        axios.post('http://localhost:3000/api/fileUploads/upload', data)
+        axios.post('http://localhost:3000/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
-                _self.setState({imageURL: (JSON.parse(res.data))[0].url});
-                cb((JSON.parse(res.data))[0].url);
+                _self.setState({imageURL: res.data[0].url});
+                cb(res.data[0].url);
             })
             .catch(function (err) {
                 // POST failed...

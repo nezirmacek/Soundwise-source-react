@@ -47,8 +47,6 @@ app.start = function() {
 app.use(bodyParser.json());
 app.use(require('prerender-node').set('prerenderToken',
         'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
-app.use('/api/fileUploads/upload', mutilpart());
-// app.use('/upload/images', mutilpart()); // WORKS
 
 uploader.use(new S3Strategy({
   uploadPath: 'demo/',
@@ -71,12 +69,13 @@ app.post('/api/trial_request', handleTrialRequest);
 app.post('/api/send_email_invites', sendListenerInvites);
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
+app.use('/api/upload', mutilpart());
 app.post('/api/upload', function(req, res, next) {
   uploader.upload('s3', req.files.file, function(err, files) {
     if (err) {
       return next(err);
     }
-    res.send(JSON.stringify(files));
+    res.send(files);
   });
 });
 

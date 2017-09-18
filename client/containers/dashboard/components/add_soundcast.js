@@ -50,14 +50,14 @@ export default class AddSoundcast extends Component {
         const ext = (splittedFileName)[splittedFileName.length - 1];
         data.append('file', file, `${this.soundcastId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
-        Axios.post('/api/fileUploads/upload', data)
+        Axios.post('/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
                 if(hostImg) {
-                    _self.setState({hostImageURL: (JSON.parse(res.data))[0].url});
+                    _self.setState({hostImageURL: res.data[0].url});
                 } else {
-                    _self.setState({imageURL: (JSON.parse(res.data))[0].url});
+                    _self.setState({imageURL: res.data[0].url});
                 }
             })
             .catch(function (err) {

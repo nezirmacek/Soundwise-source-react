@@ -158,11 +158,11 @@ export default class CreateEpisode extends Component {
         }
         data.append('file', file, `${this.episodeId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
-        axios.post('http://localhost:3000/api/fileUploads/upload', data)
+        axios.post('http://localhost:3000/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
-                _self.setState({[`${type}Url`]: (JSON.parse(res.data))[0].url});
+                _self.setState({[`${type}Url`]: res.data[0].url});
             })
             .catch(function (err) {
                 // POST failed...
