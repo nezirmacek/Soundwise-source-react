@@ -67,7 +67,7 @@
     "listeningSessions": {
       "type": "hasMany",
       "model": "listeningSession",
-      "foreignKey": ""
+      "foreignKey": "userId"
     }
   },
   "acls": [],
