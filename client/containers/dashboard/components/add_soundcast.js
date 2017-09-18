@@ -171,6 +171,17 @@ export default class AddSoundcast extends Component {
                     Promise.reject(err);
                 }
             ),
+            Axios.post('/api/soundcast', {
+                soundcastId: this.soundcastId,
+                publisherId: userInfo.publisherID,
+                title
+            }).then(
+                res => {
+                    return res;
+                }
+            ).catch(
+                err => Promise.reject(err)
+            )
         ];
 
         let _promises_2 = inviteeArr.map(invitee => {

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactCrop from 'react-image-crop';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
@@ -81,6 +81,7 @@ export default class EditSoundcast extends Component {
     }
 
     _uploadToAws (file, hostImg) {
+        console.log('file: ', file);
         const _self = this;
         let data = new FormData();
         const splittedFileName = file.name.split('.');
@@ -104,6 +105,7 @@ export default class EditSoundcast extends Component {
     }
 
     setFileName (hostImg, e) {
+        // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
         if(hostImg) {
             this._uploadToAws(this.hostImgInputRef.files[0], true);
             if(this.hostImgInputRef.files[0]) {
@@ -536,7 +538,7 @@ export default class EditSoundcast extends Component {
                                         type="file"
                                         name="upload"
                                         id="upload_hidden_cover"
-                                        onChange={this.setFileName.bind(this)}
+                                        onChange={this.setFileName.bind(this, null)}
                                         style={styles.inputFileHidden}
                                         ref={input => this.fileInputRef = input}
                                     />

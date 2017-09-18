@@ -7,7 +7,7 @@ import firebase from 'firebase';
 import { ReactMic } from 'react-mic';
 import Loader from 'react-loader';
 import rp from 'request-promise';
-import axios from 'axios';
+import Axios from 'axios';
 import moment from 'moment';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
@@ -26,9 +26,9 @@ export default class CreateEpisode extends Component {
             isLoading: false,
             isSaved: false,
 
-            recordingStartTime: null,
+            recordingStartTime: 0,
             currentRecordingDuration: 0,
-            playingStartTime: null,
+            playingStartTime: 0,
             currentPlayingDuration: 0,
 
             audioUploaded: false,
@@ -79,8 +79,9 @@ export default class CreateEpisode extends Component {
         this.recordingInterval = setInterval(() => {
             const { recordingStartTime } = that.state
 
-            if(!that.state.isRecording && that.state.isRecorded) {
-                clearInterval(that.recordingInterval)
+            if(that.state.isRecording == false) {
+                clearInterval(that.recordingInterval);
+                return;
             }
 
             that.setState({
@@ -158,7 +159,7 @@ export default class CreateEpisode extends Component {
         }
         data.append('file', file, `${this.episodeId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
-        axios.post('http://localhost:3000/api/upload', data)
+        Axios.post('http://localhost:3000/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
@@ -216,6 +217,18 @@ export default class CreateEpisode extends Component {
                 err => {
                     console.log('ERROR add episodeID to soundcast: ', err);
                 }
+            );
+
+            Axios.post('/api/episode', {
+                episodeId: this.episodeId,
+                soundcastId: this.currentSoundcastId,
+                publisherId: userInfo.publisherID,
+                title,
+                soundcastTitle: userInfo.soundcasts_managed[this.currentSoundcastId].title,
+            }).then(
+                res => console.log(res)
+            ).catch(
+                err => console.log(err)
             );
         }
     }
@@ -284,7 +297,7 @@ export default class CreateEpisode extends Component {
                         />
                     </div>
                     <div style={styles.time}>
-                        <span>{isRecording && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss')}</span>
+                        <span>{!isPlaying && currentRecordingDuration && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss') || moment.utc(0).format('HH:mm:ss')}</span>
                     </div>
                     {this.renderPlayAndSave()}
                     <div style={{width: 0, height: 0, overflow: 'hidden'}}>
@@ -296,6 +309,7 @@ export default class CreateEpisode extends Component {
     }
 
     renderPlayAndSave() {
+        const that = this;
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
         if(!isRecorded) {
             return (
@@ -334,7 +348,14 @@ export default class CreateEpisode extends Component {
                         </div>
                     }
                     <div style={styles.saveText} onClick={this.save.bind(this)}>Save</div>
-                    <div style={styles.trashWrapper} onClick={() => {this.setState({isRecorded: false, currentPlayingDuration: 0, currentRecordingDuration: 0, playingStartTime: null, recordingStartTime: null})}}>
+                    <div style={styles.trashWrapper}
+                        onClick={() => {
+                            that.setState({isRecorded: false, currentPlayingDuration: 0, currentRecordingDuration: 0,
+                                playingStartTime: null, recordingStartTime: null, isPlaying: false,});
+                            clearInterval(that.recordingInterval);
+                            clearInterval(that.playingInterval);
+                            return;
+                        }}>
                         Discard
                     </div>
                 </div>
