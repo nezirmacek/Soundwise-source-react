@@ -71,7 +71,7 @@ app.post('/api/trial_request', handleTrialRequest);
 app.post('/api/send_email_invites', sendListenerInvites);
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
-app.post('/upload/images', function(req, res, next) {
+app.post('/api/upload', function(req, res, next) {
   uploader.upload('s3', req.files.file, function(err, files) {
     if (err) {
       return next(err);
