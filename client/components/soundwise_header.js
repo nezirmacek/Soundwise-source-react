@@ -70,9 +70,19 @@ class _SoundwiseHeader extends Component {
                                 <span className="caret"></span>
                             </a>
                             <ul className="dropdown-menu">
+                                {this.props.userInfo.soundcasts &&
+                                <li>
+                                    <Link to='/mysoundcasts'>My Soundcasts</Link>
+                                </li>
+                                }
+                                {this.props.userInfo.courses &&
+                                <li>
+                                    <Link to='/myprograms'>My Courses</Link>
+                                </li>
+                                }
                                 <li>
                                     <a onClick={() => this.signoutUser()}>
-                                        <font style={{color: 'black'}}>LOG OUT</font>
+                                        <font style={{color: 'black'}}>Log Out</font>
                                     </a>
                                 </li>
                             </ul>

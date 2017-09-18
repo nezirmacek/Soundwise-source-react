@@ -3,6 +3,9 @@ import {Card, CardHeader} from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
+import draftToHtml from 'draftjs-to-html';
+import renderHTML from 'react-render-html';
+import { EditorState, convertToRaw } from 'draft-js';
 
 import HowItWorks from './how_it_works';
 import Instructor from './instructor';
@@ -20,7 +23,7 @@ export default class SoundcastBody extends Component {
             title: '',
             short_description: '',
             imageURL: '',
-            long_description: [],
+            long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
           },
         };
         this.renderDescription = this.renderDescription.bind(this);
@@ -47,37 +50,18 @@ export default class SoundcastBody extends Component {
 
     renderDescription() {
         const {long_description} = this.state.soundcast;
+        const editorState = JSON.parse(long_description);
+        const longDescriptionHTML = draftToHtml(editorState);
 
-        if(long_description && Array.isArray(long_description)) {
-            return (
-                <div className="row " >
-                    <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '8%'}}>
-                        <div>
-                            {Array.isArray(long_description) &&
-                                long_description.map((paragraph, i) => {
-                                return (
-                                    <p key={i} className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
-                                        {paragraph}
-                                    </p>
-                                )
-                            })}
-                        </div>
+        return (
+            <div className="row " >
+                <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '4%'}}>
+                    <div>
+                        {renderHTML(longDescriptionHTML)}
                     </div>
                 </div>
-            )
-        } else if(long_description && typeof long_description == 'string') {
-            return (
-                <div className='container'>
-                    <div className="row " >
-                        <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '8%'}}>
-                            <div className="text-dark-gray text-extra-large  margin-lr-auto width-100 sm-width-100 tz-text">
-                                {long_description}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        }
+            </div>
+        )
     }
 
     renderFeatures() {

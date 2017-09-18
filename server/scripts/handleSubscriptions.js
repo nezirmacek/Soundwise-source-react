@@ -2,6 +2,10 @@
 
 var admin = require("firebase-admin");
 
+var stripe_key =  require('../../config').stripe_key;
+
+var stripe = require('stripe')(stripe_key);
+
 module.exports.subscriptionRenewal = (req, res) => {
   // console.log('req.body: ', req.data);
 
@@ -19,6 +23,22 @@ module.exports.subscriptionRenewal = (req, res) => {
               .set(req.body.data.object.lines.data[0].period.end);
           });
       });
+    res.status(200).send({});
+  }
+};
+
+module.exports.unsubscribe = (req, res) => {
+  if (req.body.paymentID.slice(0, 3) == 'sub') {
+    stripe.subscriptions.del(
+      req.body.paymentID,
+      function(err, confirmation) {
+        if (err) {
+          res.status(500).send(err);
+        }
+        res.send(confirmation);
+      }
+    );
+  } else {
     res.status(200).send({});
   }
 };

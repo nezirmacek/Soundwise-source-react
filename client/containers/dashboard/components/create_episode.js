@@ -174,6 +174,8 @@ export default class CreateEpisode extends Component {
         if (e.target.value) {
             this.setState({[`${type}Uploaded`]: true});
             this[type] = [e.target.files[0]];
+            console.log('this.type: ', this[type]);
+            this._uploadToAws(this[type], type);
         }
         document.getElementById(type).value = e.target.value;
     }
@@ -368,7 +370,7 @@ export default class CreateEpisode extends Component {
                     </span>
                 </div>
                 <div className="row">
-                    <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+                    <div className="col-lg-7 col-md-7 col-sm-12 col-xs-12 ">
                         <div style={styles.recorder}>
                             <div style={styles.recordTitleText}>Record</div>
                             {this.renderRecorder()}
@@ -377,7 +379,7 @@ export default class CreateEpisode extends Component {
                     <div className="col-lg-1 col-md-1 col-sm-12 col-xs-12 text-extra-large  text-center padding-nine-top">
                         OR
                     </div>
-                    <div className="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                    <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <div style={styles.recorder}>
                             <div style={styles.recordTitleText}>Upload</div>
                             <div style={styles.inputFileWrapper}>
@@ -388,25 +390,28 @@ export default class CreateEpisode extends Component {
                                     onChange={this.setFileName.bind(this, 'audio')}
                                     style={styles.inputFileHidden}
                                 />
-                                <input
-                                    type="text"
-                                    readOnly="1"
-                                    id="audio"
-                                    style={styles.inputFileVisible}
-                                    placeholder={'No Audio File Selected'}
-                                    onClick={() => {document.getElementById('upload_hidden_audio').click();}}
-                                />
                                 {
-                                    !audioUrl
-                                    &&
-                                    <button
-                                        onClick={() => {audioUploaded && this._uploadToAws(document.getElementById('upload_hidden_audio').files[0], 'audio');}}
-                                        style={{...styles.uploadButton, backgroundColor: audioUploaded && Colors.mainOrange || Colors.lightGrey}}
-                                    >
-                                        Upload
-                                    </button>
-                                    ||
-                                    null
+                                  audioUrl &&
+                                  <div style={{textAlign: 'center',}}>
+                                    <span>{this.audio.name}</span>
+                                    <span style={styles.cancelImg}
+                                      onClick={() => that.setState({audioUploaded: false, audioUrl: ''})}>Cancel</span>
+                                  </div>
+                                  ||
+                                  !audioUrl &&
+                                  <div style={{textAlign: 'center',}}>
+                                    <div>
+                                        <button
+                                            onClick={() => {document.getElementById('upload_hidden_audio').click();}}
+                                            style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                                        >
+                                            <span style={{paddingLeft: 5, paddingRight: 5}}>Upload Audio File</span>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <span style={styles.fileTypesLabel}>.mp3 files accepted</span>
+                                    </div>
+                                  </div>
                                 }
 
                             </div>
@@ -448,28 +453,30 @@ export default class CreateEpisode extends Component {
                                     onChange={this.setFileName.bind(this, 'notes')}
                                     style={styles.inputFileHidden}
                                 />
-                                <input
-                                    type="text"
-                                    readOnly="1"
-                                    id="notes"
-                                    style={styles.inputFileVisible}
-                                    placeholder={'No File Selected'}
-                                    onClick={() => {document.getElementById('upload_hidden_notes').click();}}
-                                />
                                 {
-                                    !notesUrl
-                                    &&
-                                    <button
-                                        onClick={() => {notesUploaded && this._uploadToAws(document.getElementById('upload_hidden_notes').files[0], 'notes');}}
-                                        style={{...styles.uploadButton, backgroundColor: notesUploaded && Colors.mainOrange || Colors.lightGrey}}
-                                    >
-                                        Upload
-                                    </button>
-                                    ||
-                                    null
+                                  notesUrl &&
+                                  <div style={{}}>
+                                    <span>{this.audio.name}</span>
+                                    <span style={styles.cancelImg}
+                                      onClick={() => that.setState({notesUploaded: false, notesUrl: ''})}>Cancel</span>
+                                  </div>
+                                  ||
+                                  !notesUrl &&
+                                  <div style={{}}>
+                                    <div>
+                                        <button
+                                            onClick={() => {document.getElementById('upload_hidden_notes').click();}}
+                                            style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                                        >
+                                            <span style={{paddingLeft: 5, paddingRight: 5}}>Upload Notes </span>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                                    </div>
+                                  </div>
                                 }
                             </div>
-                            <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={styles.notesLabel}>Publish in</div>
@@ -638,14 +645,14 @@ const styles = {
         color: Colors.mainOrange,
         marginLeft: 10,
     },
-
     inputFileWrapper: {
-        margin: 10,
+        margin: 1,
         width: 'calc(100% - 20px)',
-        height: 35,
-        backgroundColor: Colors.mainWhite,
+        height: 60,
+        // backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,
+        float: 'left',
     },
     inputFileHidden: {
         position: 'absolute',
@@ -662,16 +669,6 @@ const styles = {
         height: 35,
         fontSize: 14,
         float: 'left',
-    },
-    uploadButton: {
-        backgroundColor: Colors.mainOrange,
-        width: 70,
-        height: 40,
-        float: 'left',
-        color: Colors.mainWhite,
-        fontSize: 14,
-        border: 0,
-		cursor: 'pointer',
     },
 
     inputTitleWrapper: {
@@ -703,18 +700,14 @@ const styles = {
     },
     notes: {
         height: 102,
-        backgroundColor: Colors.mainWhite,
+        marginLeft: 10,
+        // backgroundColor: Colors.mainWhite,
     },
     notesLabel: {
-        marginLeft: 10,
+        // marginLeft: 10,
         paddingTop: 12,
         paddingBottom: 6,
         fontSize: 16
-    },
-    fileTypesLabel: {
-        fontSize: 11,
-        marginLeft: 10,
-        marginTop: 10
     },
     soundcastSelectWrapper: {
         height: 92,
@@ -750,5 +743,27 @@ const styles = {
     publishButton: {
         backgroundColor: Colors.mainOrange,
         color: Colors.mainWhite,
+    },
+    uploadButton: {
+        backgroundColor: Colors.link,
+        // width: 80,
+        height: 35,
+        // float: 'left',
+        color: Colors.mainWhite,
+        fontSize: 14,
+        border: 0,
+        marginTop: 5
+
+    },
+    cancelImg: {
+      color: Colors.link,
+      marginLeft: 20,
+      fontSize: 14,
+      cursor: 'pointer'
+    },
+    fileTypesLabel: {
+        fontSize: 11,
+        marginLeft: 0,
+        display: 'block',
     },
 };

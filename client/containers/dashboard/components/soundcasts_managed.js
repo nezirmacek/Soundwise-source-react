@@ -16,7 +16,6 @@ export default class SoundcastsManaged extends Component {
     super(props)
 
     this.state = {
-      editing: false,
       showModal: false,
       currentSoundcastID: '',
       currentSoundcast: null,
@@ -25,21 +24,18 @@ export default class SoundcastsManaged extends Component {
     }
 
     this.editSoundcast = this.editSoundcast.bind(this);
-    this.shiftEditState = this.shiftEditState.bind(this);
     this.handleModal = this.handleModal.bind(this);
     this.handleStatsModal = this.handleStatsModal.bind(this);
   }
 
-  editSoundcast(soundcastId) {
+  editSoundcast(soundcastId, soundcast) {
     const { userInfo, history, id } = this.props;
-    this.shiftEditState();
-    history.push(`/dashboard/soundcasts/${soundcastId}`)
-  }
-
-  shiftEditState() {
-    const editing = this.state.editing;
-    this.setState({
-      editing: !editing
+    history.push({
+      pathname: `/dashboard/edit/${soundcastId}`,
+      state: {
+        id: soundcastId,
+        soundcast
+      }
     })
   }
 
@@ -79,7 +75,6 @@ export default class SoundcastsManaged extends Component {
 
   render() {
         const { userInfo, history, id } = this.props;
-        const { editing } = this.state;
 
     if (!id) {
 			const _soundcasts_managed = [];
@@ -149,9 +144,14 @@ export default class SoundcastsManaged extends Component {
                         soundcastId: soundcast.id,
                       }
                     })} style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
-										<div style={{...styles.button, borderColor: Colors.mainGrey}}>Add new episode</div>
+										<div
+                      style={{...styles.button, borderColor: Colors.mainGrey}}
+                      onClick={() => history.push('/dashboard/add_episode')}
+                    >
+                      Add new episode
+                    </div>
                     <div style={styles.edit}>
-                      <span style={styles.editLink} onClick={() => this.editSoundcast(soundcast.id)}>
+                      <span style={styles.editLink} onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
                         Edit
                       </span>
                     </div>
@@ -170,7 +170,7 @@ export default class SoundcastsManaged extends Component {
 					</div>
 				</div>
 			);
-		} else if(id && !editing) {
+		} else if(id) {
         	const _soundcast = userInfo.soundcasts_managed[id];
         	const _episodes = [];
         	for (let id in _soundcast.episodes) {
@@ -231,16 +231,7 @@ export default class SoundcastsManaged extends Component {
             </div>
 				  </div>
 			);
-		} else if(id && editing) {   //editing soundcast title, descrptions, etc
-      return (
-        <EditSoundcast
-          shiftEditState={this.shiftEditState}
-          history={history}
-          id={id}
-          userInfo={Object.assign({}, userInfo)}
-          soundcast={Object.assign({}, userInfo.soundcasts_managed[id])}/>
-      )
-    }
+		}
   }
 };
 

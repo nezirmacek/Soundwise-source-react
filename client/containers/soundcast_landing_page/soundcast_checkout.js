@@ -25,7 +25,8 @@ class _SoundcastCheckout extends Component {
   handlePaymentSuccess() {
     this.setState({
       success: true,
-    })
+    });
+    this.props.history.push('/mysoundcasts');
   }
 
   render() {

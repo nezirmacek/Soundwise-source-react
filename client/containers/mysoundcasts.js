@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
+import moment from 'moment';
+import Axios from 'axios';
 
 import Footer from '../components/footer';
 import {SoundwiseHeader} from '../components/soundwise_header';
@@ -16,46 +18,61 @@ class _MySoundcasts extends Component {
         this.state = {
             cardHeight: 0,
             userSoundcasts: [],
+            userId: '',
+            paymentError: '',
         };
+
+        this.handleSubscription = this.handleSubscription.bind(this);
+        this.retrieveSoundcasts = this.retrieveSoundcasts.bind(this);
+        this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
     }
 
     componentWillMount () {
-        let userSoundcasts = [];
         const that = this;
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
                 const userId = firebase.auth().currentUser.uid;
-                let userSoundcasts = [];
-                firebase.database().ref('users/' + userId + '/soundcasts')
-                .once('value')
-                .then(snapshot => {
-                    if (snapshot.val()) {
-                        const soundcastIDs = Object.keys(snapshot.val());
-                        const promises = soundcastIDs.map((id, i) => {
-                            firebase.database().ref('soundcasts/' + id)
-                                .once('value')
-                                .then(snapshot => {
-                                    userSoundcasts[i] = {
-                                        soundcastId: id,
-                                        title: snapshot.val().title,
-                                        hostName: snapshot.val().hostName,
-                                        imageURL: snapshot.val().imageURL,
-                                    };
-                                 } )
-                                .then(res => console.log('res: ', res), err => console.log(err));
-                        });
+                that.retrieveSoundcasts(userId);
+            }
+        })
+    }
 
-                        Promise.all(promises)
-                        .then(res => {
-                            that.setState({
-                                userSoundcasts,
-                            });
-                        }, err => {
-                            console.log('promise error: ', err);
-                        })
+    retrieveSoundcasts(userId) {
+        let userSoundcasts = [];
+        const that = this;
+        firebase.database().ref('users/' + userId + '/soundcasts')
+        .once('value')
+        .then(snapshot => {
+            if (snapshot.val()) {
+                const soundcastIDs = Object.keys(snapshot.val());
+                const soundcasts = snapshot.val();
+                const promises = soundcastIDs.map((id, i) => {
+                    return firebase.database().ref('soundcasts/' + id)
+                        .on('value', snapshot => {
+                            userSoundcasts[i] = {
+                                soundcastId: id,
+                                title: snapshot.val().title,
+                                hostName: snapshot.val().hostName,
+                                imageURL: snapshot.val().imageURL,
+                                subscribed: soundcasts[id].subscribed,
+                                paymentID: soundcasts[id].paymentID,
+                                current_period_end: soundcasts[id].current_period_end,
+                                planID: soundcasts[id].planID,
+                                billingCycle: soundcasts[id].billingCycle,
+                            };
+                         })
+                });
 
-                    }
+                Promise.all(promises)
+                .then(res => {
+                    that.setState({
+                        userSoundcasts,
+                        userId,
+                    });
+                }, err => {
+                    console.log('promise error: ', err);
                 })
+
             }
         })
     }
@@ -64,6 +81,91 @@ class _MySoundcasts extends Component {
         if (this.state.cardHeight < height) {
             this.setState({ cardHeight: height });
         }
+    }
+
+    handleSubscription(soundcast) {
+        const that = this;
+        const {userId} = this.state;
+        const {soundcastId, paymentID, subscribed} = soundcast;
+
+        //if subsubscribed == true, unsubscribe; if subscribed == false, re-subscribe
+        if(subscribed) {
+            const confirmUnsubscribe = confirm('Are you sure you want to unsubscribe this soundcast?');
+            if(confirmUnsubscribe) {
+                firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/subscribed`)
+                .set(false);
+
+                firebase.database().ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+                .remove();
+
+                that.retrieveSoundcasts(userId);
+
+                if(paymentID) {
+                    Axios.post('/api/unsubscribe', {
+                        paymentID,
+                    })
+                    .then(response => {
+                        alert('You have been successfully unsubscribed.');
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+                }
+            }
+        } else {
+                Axios.post('/api/recurring_charge', {
+                    currency: 'usd',
+                    receipt_email: that.props.userInfo.email[0],
+                    customer: that.props.userInfo.stripe_id,
+                    billingCycle: soundcast.billingCycle,
+                    planID: soundcast.planID,
+                    description: `${soundcast.title}: ${soundcast.planID}`,
+                    statement_descriptor: `${soundcast.title}: ${soundcast.planID}`,
+                })
+                .then(response => {
+                    const subscription = response.data; //boolean
+                    const customer = response.data.customer;
+
+                    if(subscription.plan) {  // if payment made, push course to user data
+                        that.setState({
+                            paid: true,
+                            startPaymentSubmission: false
+                        });
+
+                        that.addSoundcastToUser(subscription, soundcast); //add soundcast to user database
+                        that.retrieveSoundcasts(userId);
+                    }
+                })
+                .catch(error => {
+                    console.log('error from stripe: ', error)
+                    that.setState({
+                        paymentError: 'Your payment is declined :( Please check your credit card information.',
+                    })
+                });
+        }
+    }
+
+    addSoundcastToUser(subscription, soundcast) {
+        const paymentID = charge.id ? charge.id : null;
+        const planID = charge.plan ? charge.plan.id : null;
+        const current_period_end = charge.current_period_end ? charge.current_period_end : 4638902400; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+
+        const userId = this.state.userId;
+        // add soundcast to user
+        firebase.database().ref(`users/${userId}/soundcasts/${soundcast.soundcastId}`)
+        .set({
+            subscribed: true,
+            paymentID,
+            current_period_end, //this will be null if one time payment
+            billingCycle: soundcast.billingCycle,
+            planID,
+        });
+
+        //add user to soundcast
+        firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
+        .set(true);
+
+        alert("You're re-subscribed to this soundcast.");
     }
 
     render () {
@@ -104,14 +206,27 @@ class _MySoundcasts extends Component {
                             <div>
                                 {userSoundcasts.map((soundcast, i) => (
                                     <div className="row" key={i} style={styles.row}>
-                                        <div className="col-lg-7 col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+                                        <div className="col-lg-7 col-md-7 col-sm-7 col-xs-12" style={styles.soundcastInfo}>
                                             <img src={soundcast.imageURL} style={styles.soundcastImage} />
                                             <div style={styles.soundcastDescription}>
                                                 <label style={styles.soundcastTitle}>{soundcast.title}</label>
+                                                <label >{`Current subscription is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
+                                                </label>
                                             </div>
                                         </div>
-                                        <div className="col-lg-5 col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-                                            <div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcasts/${soundcast.soundcastId}`)}>Unsubscribe</div>
+                                        <div className="col-lg-2 col-md-2 col-sm-2 col-xs-12" style={styles.soundcastInfo}>
+                                            {soundcast.subscribed && <span style={{...styles.statusText}}>Active</span> ||
+                                                <span style={{...styles.statusText, color: 'red'}}>Inactive</span>}
+                                        </div>
+                                        <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12" style={{...styles.soundcastInfo, justifyContent: 'flex-start'}}>
+                                            <div style={{...styles.button, borderColor: Colors.link, display: 'block'}} onClick={() => this.handleSubscription(soundcast)}>
+                                                {
+                                                    soundcast.subscribed && 'Unsubscribe' || 'Re-subscribe'
+                                                }
+                                            </div>
+                                            <div style={{color: 'red'}}>
+                                                {this.state.paymentError}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -145,6 +260,9 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    statusText: {
+        fontSize: 16,
     },
     soundcastImage: {
         width: 75,

@@ -9,6 +9,8 @@ import Axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
 import firebase from 'firebase';
+import { Editor } from 'react-draft-wysiwyg';
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -24,7 +26,7 @@ export default class AddSoundcast extends Component {
             title: '',
             subscribers: '',
             short_description: '',
-            long_description: '',
+            long_description: EditorState.createEmpty(),
             imageURL: '',
             fileUploaded: false,
             landingPage: false,
@@ -41,6 +43,7 @@ export default class AddSoundcast extends Component {
         this.fileInputRef = null;
         this.hostImgInputRef = null;
         this.addFeature = this.addFeature.bind(this);
+        this.onEditorStateChange = this.onEditorStateChange.bind(this);
     }
 
     _uploadToAws (file, hostImg) {
@@ -119,6 +122,9 @@ export default class AddSoundcast extends Component {
             title,
             imageURL,
             creatorID,
+            short_description,
+            long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+            imageURL,
             date_created: moment().format('X'),
             publisherID: userInfo.publisherID,
             invited,
@@ -243,22 +249,29 @@ export default class AddSoundcast extends Component {
         }
     }
 
+    onEditorStateChange(editorState) {
+        this.setState({
+            long_description: editorState,
+        })
+    }
+
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
-        const {hostImageURL, hostImgUploaded, landingPage, forSale, prices} = this.state;
+        const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices} = this.state;
         const that = this;
         return (
             <div style={{marginTop: 15}}>
                 <span style={{...styles.titleText, marginBottom: 5}}>
                     Long Description
                 </span>
-                <textarea
-                    style={styles.inputDescription}
-                    placeholder={'A longer description of the soundcast'}
-                    onChange={(e) => {this.setState({long_description: e.target.value})}}
-                    value={this.state.long_description}
-                >
-                </textarea>
+                <div>
+                    <Editor
+                      editorState = {long_description}
+                      editorStyle={styles.editorStyle}
+                      wrapperStyle={styles.wrapperStyle}
+                      onEditorStateChange={this.onEditorStateChange}
+                    />
+                </div>
                 <span style={{...styles.titleText, marginBottom: 5}}>
                   What Listeners Will Get
                 </span>
@@ -512,6 +525,7 @@ export default class AddSoundcast extends Component {
                     <span>The landing page will be published at </span>
                     <span >
                       <a
+                        target="_blank"
                         style={{color: Colors.mainOrange}}
                         href={`https://mysoundwise.com/soundcasts/${this.soundcastId}`}>
                         {`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
@@ -623,6 +637,8 @@ AddSoundcast.propTypes = {
     history: PropTypes.object,
 };
 
+
+
 const styles = {
     titleText: {
         fontSize: 16,
@@ -647,6 +663,18 @@ const styles = {
         borderRadius: 4,
         marginTop: 10,
         marginBottom: 20,
+    },
+    editorStyle: {
+        padding: '5px',
+        borderRadius: 4,
+        height: '300px',
+        width: '100%',
+        backgroundColor: Colors.mainWhite,
+      },
+    wrapperStyle: {
+        borderRadius: 4,
+        marginBottom: 25,
+        marginTop: 15,
     },
     image: {
         width: 133,
