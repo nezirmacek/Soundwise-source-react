@@ -174,8 +174,7 @@ export default class CreateEpisode extends Component {
         if (e.target.value) {
             this.setState({[`${type}Uploaded`]: true});
             this[type] = [e.target.files[0]];
-            console.log('this.type: ', this[type]);
-            this._uploadToAws(this[type], type);
+            this._uploadToAws(document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0], type);
         }
         document.getElementById(type).value = e.target.value;
     }
@@ -350,7 +349,6 @@ export default class CreateEpisode extends Component {
     render() {
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
         const { userInfo } = this.props;
-        console.log('>>>>>>>>>>', isRecorded);
 
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
