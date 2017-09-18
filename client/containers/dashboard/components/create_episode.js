@@ -159,7 +159,7 @@ export default class CreateEpisode extends Component {
         }
         data.append('file', file, `${this.episodeId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
-        Axios.post('http://localhost:3000/api/upload', data)
+        Axios.post('/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
@@ -175,10 +175,10 @@ export default class CreateEpisode extends Component {
         if (e.target.value) {
             this.setState({[`${type}Uploaded`]: true});
             this[type] = [e.target.files[0]];
-            console.log('this.type: ', this[type]);
-            this._uploadToAws(this[type], type);
+            // this._uploadToAws(this[type], type);
+            this._uploadToAws(document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0], type);
         }
-        document.getElementById(type).value = e.target.value;
+        // document.getElementById(type).value = e.target.value;
     }
 
     saveEpisode (isPublished) {
@@ -414,9 +414,11 @@ export default class CreateEpisode extends Component {
                                 {
                                   audioUrl &&
                                   <div style={{textAlign: 'center',}}>
-                                    <span>{this.audio.name}</span>
-                                    <span style={styles.cancelImg}
-                                      onClick={() => that.setState({audioUploaded: false, audioUrl: ''})}>Cancel</span>
+                                    <div className='title-small'>
+                                        {`Audio file saved`}
+                                    </div>
+                                    <div style={styles.cancelImg}
+                                      onClick={() => this.setState({audioUploaded: false, audioUrl: ''})}>Cancel</div>
                                   </div>
                                   ||
                                   !audioUrl &&
@@ -476,11 +478,16 @@ export default class CreateEpisode extends Component {
                                 />
                                 {
                                   notesUrl &&
-                                  <div style={{}}>
-                                    <span>{this.audio.name}</span>
-                                    <span style={styles.cancelImg}
-                                      onClick={() => that.setState({notesUploaded: false, notesUrl: ''})}>Cancel</span>
-                                  </div>
+                                    <div style={{}}>
+                                        <div className='title-small'>
+                                            Notes saved
+                                        </div>
+                                        <div
+                                          style={styles.cancelImg}
+                                          onClick={() => this.setState({notesUploaded: false, notesUrl: ''})}>
+                                          Cancel
+                                        </div>
+                                    </div>
                                   ||
                                   !notesUrl &&
                                   <div style={{}}>

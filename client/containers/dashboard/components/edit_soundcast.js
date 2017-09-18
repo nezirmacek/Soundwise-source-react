@@ -125,7 +125,7 @@ export default class EditSoundcast extends Component {
                 features, hostName, hostBio, hostImageURL,
                 forSale, prices} = this.state;
         const { userInfo, history } = this.props;
-
+        const that = this;
         const creatorID = firebase.auth().currentUser.uid;
 
         const editedSoundcast = {
@@ -146,15 +146,21 @@ export default class EditSoundcast extends Component {
         };
 
         // edit soundcast in database
-            firebase.database().ref(`soundcasts/${this.props.history.location.state.id}`).set(editedSoundcast).then(
+            firebase.database().ref(`soundcasts/${this.props.history.location.state.id}`)
+            .once('value')
+            .then(snapshot => {
+              const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
+
+              firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+              .set(editedSoundcast).then(
                 res => {
-                    console.log('successfully added soundcast: ', res);
                     history.goBack();
                 },
                 err => {
                     console.log('ERROR add soundcast: ', err);
                 }
-            )
+              );
+            });
     }
 
     handleCheck() {
@@ -577,7 +583,6 @@ export default class EditSoundcast extends Component {
                             <TransparentShortSubmitButton
                                 label="Cancel"
                                 onClick={() => {
-                                  that.props.shiftEditState();
                                   history.goBack();
                                 }}
                             />
