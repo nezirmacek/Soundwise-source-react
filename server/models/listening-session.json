@@ -9,6 +9,14 @@
     }
   },
   "properties": {
+    "sessionId": {
+      "type": "number",
+      "required": true,
+      "id": true,
+      "postgresql": {
+        "column": "sessionId"
+      }
+    },
     "publisherId": {
       "type": "string",
       "required": true,
@@ -61,6 +69,27 @@
       "postgresql": {
         "column": "updatedAt"
       }
+    },
+    "soundcastId": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "soundcastId"
+      }
+    },
+    "episodeId": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "episodeId"
+      }
+    },
+    "userId": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "userId"
+      }
     }
   },
   "validations": [],
@@ -68,17 +97,17 @@
     "soundcast": {
       "type": "belongsTo",
       "model": "soundcast",
-      "foreignKey": "soundcastsId"
+      "foreignKey": "soundcastId"
     },
     "episode": {
       "type": "belongsTo",
       "model": "episode",
-      "foreignKey": "episodesId"
+      "foreignKey": "episodeId"
     },
     "user": {
       "type": "belongsTo",
       "model": "listener",
-      "foreignKey": "usersId"
+      "foreignKey": "userId"
     }
   },
   "acls": [],

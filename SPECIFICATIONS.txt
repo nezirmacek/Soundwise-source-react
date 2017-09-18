@@ -128,13 +128,14 @@ firebase:
                 "ilovewordsworth@gmail(dot)com": "xD5tW78sX6M96C4xpd7iOIN5Qth1"
             }
             publisherID: "xD5tW78sX6M96C4xpd7iOIN5Qth1"
+            last_update: 1504533216
         }
 
         episode: {
             "title": "Example Episode",
             "date_created": 1501556215,
             "creatorID": "xD5tW78sX6M96C4xpd7iOIN5Qth1",
-            "description": "This is an example episode.",
+            "description": "This is an example episode.", // resources
             "url": "https://s3.amazonaws.com/soundwiseinc/demo/7+Instant+Gratification.mp3",
             "actionstep": "This is an example action step.",
             "notes": "https://s3.amazonaws.com/soundwiseinc/demo/Thiscouldbegood.Thiscouldbebad.Factisyouarefreetochoose.pdf",

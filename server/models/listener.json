@@ -55,13 +55,13 @@
     "soundcasts": {
       "type": "hasMany",
       "model": "soundcast",
-      "foreignKey": "soundcastsId",
+      "foreignKey": "soundcastId",
       "through": "userSoundcast"
     },
     "episodes": {
       "type": "hasMany",
       "model": "episode",
-      "foreignKey": "episodesId",
+      "foreignKey": "episodeId",
       "through": "userEpisode"
     },
     "listeningSessions": {

@@ -53,7 +53,7 @@
     "users": {
       "type": "hasMany",
       "model": "listener",
-      "foreignKey": "usersId",
+      "foreignKey": "userId",
       "through": "userSoundcasts"
     },
     "listeningSessions": {

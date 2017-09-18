@@ -28,6 +28,13 @@
       "type": "string",
       "required": true
     },
+    "soundcastId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "soundcastId"
+      }
+    },
     "soundcastTitle": {
       "type": "string",
       "required": true,
@@ -55,12 +62,12 @@
     "soundcast": {
       "type": "belongsTo",
       "model": "soundcast",
-      "foreignKey": "soundcastsId"
+      "foreignKey": "soundcastId"
     },
     "users": {
       "type": "hasMany",
       "model": "listener",
-      "foreignKey": "usersId",
+      "foreignKey": "userId",
       "through": "userEpisode"
     },
     "listeningSessions": {

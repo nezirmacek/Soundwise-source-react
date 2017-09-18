@@ -71,15 +71,14 @@ app.post('/api/trial_request', handleTrialRequest);
 app.post('/api/send_email_invites', sendListenerInvites);
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
-// // WORKS
-// app.post('/upload/images', function(req, res, next) {
-//   uploader.upload('s3', req.files.file, function(err, files) {
-//     if (err) {
-//       return next(err);
-//     }
-//     res.send(JSON.stringify(files));
-//   });
-// });
+app.post('/upload/images', function(req, res, next) {
+  uploader.upload('s3', req.files.file, function(err, files) {
+    if (err) {
+      return next(err);
+    }
+    res.send(JSON.stringify(files));
+  });
+});
 
 //database API routes:
 require('../database/routes.js')(app);
