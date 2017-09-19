@@ -42,7 +42,9 @@ export default class SoundcastBody extends Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             soundcast: nextProps.soundcast
-        })
+        });
+
+        window.prerenderReady = true;
     }
 
 
