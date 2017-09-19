@@ -40,10 +40,10 @@ class _SoundcastPage extends Component {
   componentDidMount() {
     const that = this;
     const soundcastID = this.props.match.params.id;
-    console.log('soundcastID: ', soundcastID);
+    // console.log('soundcastID: ', soundcastID);
     firebase.database().ref('soundcasts/' + soundcastID)
       .on('value', snapshot => {
-        console.log('soundcast: ', snapshot.val());
+        // console.log('soundcast: ', snapshot.val());
         that.setState({
           soundcast: snapshot.val(),
           soundcastID

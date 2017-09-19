@@ -41,8 +41,8 @@ export default class Payment extends Component {
         this.setState({
             totalPay: this.props.total
         });
-        if(this.props.total == 0) {
-            this.addSoundcastToUser(this.props.userInfo);
+        if(this.props.total == 0 || this.props.total == 'free') {
+            this.addSoundcastToUser();
         }
     }
 
@@ -68,9 +68,12 @@ export default class Payment extends Component {
         const _email = userInfo.email[0].replace(/\./g, "(dot)");
         const {soundcast, checked} = this.props;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
-        const paymentID = charge.id ? charge.id : null;
-        const planID = charge.plan ? charge.plan.id : null;
-        const current_period_end = charge.current_period_end ? charge.current_period_end : 4638902400; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+        let current_period_end = 4638902400;
+
+        const paymentID = charge && charge.id ? charge.id : null;
+        const planID = charge && charge.plan ? charge.plan.id : null;
+        current_period_end = charge && charge.current_period_end ? charge.current_period_end : current_period_end ; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+
         // send email invitations to subscribers
         const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
         const content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app <a href="https://mysoundwise.com">here</a>, and sign in with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already instaled the app, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
@@ -83,15 +86,17 @@ export default class Payment extends Component {
                 firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
                 .set({
                     subscribed: true,
-                    paymentID,
+                    paymentID: paymentID ? paymentID : '',
                     current_period_end, //this will be null if one time payment
-                    billingCycle,
-                    planID,
+                    billingCycle: billingCycle ? billingCycle : '',
+                    planID: planID ? planID : '',
                 });
                 // add stripe_id to user data if not already exists
-                if(!userInfo.stripe_id && charge.customer && charge.customer.length > 0) {
-                    firebase.database().ref(`users/${userId}/stripe_id`)
-                    .set(charge.customer);
+                if(charge) {
+                    if(!userInfo.stripe_id && charge.customer && charge.customer.length > 0) {
+                        firebase.database().ref(`users/${userId}/stripe_id`)
+                        .set(charge.customer);
+                    }
                 }
                 //add user to soundcast
                 firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)

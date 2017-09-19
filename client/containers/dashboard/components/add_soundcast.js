@@ -90,10 +90,13 @@ export default class AddSoundcast extends Component {
     }
 
     submit () {
-        const { title, imageURL, subscribers, short_description,
+        let { title, imageURL, subscribers, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
                 forSale, prices} = this.state;
+        if(prices.length == 0) { //if pricing isn't specified, then this is a free soundcast
+            prices = [{price: 'free'}];
+        }
         const { userInfo, history } = this.props;
         // const host = [{hostName, hostBio, hostImageURL}];
         const that = this;
@@ -106,8 +109,8 @@ export default class AddSoundcast extends Component {
         }
 
         // send email invitations to invited listeners
-        const subject = `${userInfo.firstName} ${userInfo.lastName} invited you to join ${title} soundcast`;
-        const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to join the ${title} soundcast. Start by downloading the Soundwise app <a href="https://mysoundwise.com">here</a>.</p><p></p><p>If you've already instaled the app on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+        const subject = `${userInfo.firstName} ${userInfo.lastName} invited you to subscribe to ${title}`;
+        const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${title} on Soundwise. Start by downloading the Soundwise app <a href="https://mysoundwise.com">here</a>.</p><p></p><p>If you've already installed the app on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
         inviteListeners(subscribersArr, subject, content);
 
         const invited = {};
@@ -257,7 +260,7 @@ export default class AddSoundcast extends Component {
         } else {
             this.setState({
                 forSale: !forSale,
-                prices: []
+                prices: [{price: 'free'}],
             })
         }
     }

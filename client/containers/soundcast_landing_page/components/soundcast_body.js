@@ -24,6 +24,7 @@ export default class SoundcastBody extends Component {
             short_description: '',
             imageURL: '',
             long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
+            prices: [],
           },
         };
         this.renderDescription = this.renderDescription.bind(this);
@@ -34,17 +35,23 @@ export default class SoundcastBody extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            soundcast: this.props.soundcast
-        })
+        if(this.props.soundcast) {
+            this.setState({
+                soundcast: this.props.soundcast
+            });
+
+            window.prerenderReady = true;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            soundcast: nextProps.soundcast
-        });
+        if(nextProps.soundcast) {
+            this.setState({
+                soundcast: nextProps.soundcast
+            });
 
-        window.prerenderReady = true;
+            window.prerenderReady = true;
+        }
     }
 
 

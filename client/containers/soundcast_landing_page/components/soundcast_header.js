@@ -192,8 +192,7 @@ class _SoundcastHeader extends Component {
     let displayedPrice = 'Free';
     let {prices} = this.props.soundcast;
 
-    if(prices && prices.length > 0) {
-
+    if(prices.length > 0 && prices[0].price != 'free' ) {
         prices = prices.map(price => {
             if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
                 price.measure = price.price;
@@ -204,6 +203,7 @@ class _SoundcastHeader extends Component {
             }
             return price;
         });
+
         prices.sort((a, b) => (
             a.measure - b.measure
         ));
@@ -211,10 +211,8 @@ class _SoundcastHeader extends Component {
         displayedPrice = prices[0].billingCycle == 'one time' ?
                             `$${prices[0].measure}` :
                             `$${prices[0].measure} / month`;
-        if(prices[0].measure == 0) {
-            displayedPrice = 'Free';
-        }
     }
+
 
     return (
       <div>
@@ -225,8 +223,8 @@ class _SoundcastHeader extends Component {
                         <div className="display-table-cell-vertical-middle">
                             <div className="row" style={{height: '80%'}}>
                                 <div className="col-md-12 col-sm-12 col-xs-12">
-                                    <div style={{height: 80}}>
-                                      <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{this.props.soundcast.title}</h2>
+                                    <div style={{height: 80, display: 'flex', alignItems: 'center',}}>
+                                      <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text">{this.props.soundcast.title}</h2>
                                     </div>
                                     <div style={{height: 160}}>
                                       <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.soundcast.short_description}`}</span>
