@@ -324,7 +324,10 @@ export default class EditSoundcast extends Component {
                               <div>
                                 <span>{this.hostImgInputRef.files[0].name}</span>
                                 <span style={styles.cancelImg}
-                                  onClick={() => that.setState({hostImgUploaded: false, hostImageURL: ''})}>Cancel</span>
+                                  onClick={() => {
+                                    that.setState({hostImgUploaded: false, hostImageURL: ''});
+                                    document.getElementById('upload_hidden_cover_2').value = null;
+                                  }}>Cancel</span>
                               </div>
                               ||
                               !hostImgUploaded &&
@@ -553,7 +556,10 @@ export default class EditSoundcast extends Component {
                                       <div>
                                         <span>{this.fileInputRef.files[0].name}</span>
                                         <span style={styles.cancelImg}
-                                          onClick={() => that.setState({fileUploaded: false, imageURL: ''})}>Cancel</span>
+                                          onClick={() => {
+                                            that.setState({fileUploaded: false, imageURL: ''});
+                                            document.getElementById('upload_hidden_cover').value = null;
+                                          }}>Cancel</span>
                                       </div>
                                       ||
                                       !fileUploaded &&

@@ -74,7 +74,9 @@ export default class AddSoundcast extends Component {
         //     this.setState({fileUploaded: true});
         // }
         // document.getElementById('file').value = e.target.value;
+        console.log('hostImage: ', hostImg, 'this.hostImgInputRef.files[0]: ', this.hostImgInputRef.files[0]);
         if(hostImg) {
+            console.log('this.hostImgInputRef.files[0]: ', this.hostImgInputRef.files[0]);
             this._uploadToAws(this.hostImgInputRef.files[0], true);
             if(this.hostImgInputRef.files[0]) {
                 this.setState({hostImgUploaded: true});
@@ -370,7 +372,11 @@ export default class AddSoundcast extends Component {
                               <div>
                                 <span>{this.hostImgInputRef.files[0].name}</span>
                                 <span style={styles.cancelImg}
-                                  onClick={() => that.setState({hostImgUploaded: false, hostImageURL: ''})}>Cancel</span>
+                                  onClick={() => {
+                                    that.setState({hostImgUploaded: false, hostImageURL: ''});
+                                    that.hostImgInputRef = null;
+                                    document.getElementById('upload_hidden_cover_2').value = null;
+                                  }}>Cancel</span>
                               </div>
                               ||
                               !hostImgUploaded &&
@@ -606,7 +612,10 @@ export default class AddSoundcast extends Component {
                                   <div>
                                     <span>{this.fileInputRef.files[0].name}</span>
                                     <span style={styles.cancelImg}
-                                      onClick={() => that.setState({fileUploaded: false, imageURL: ''})}>Cancel</span>
+                                      onClick={() => {
+                                        that.setState({fileUploaded: false, imageURL: ''});
+                                        document.getElementById('upload_hidden_cover').value = null;
+                                      }}>Cancel</span>
                                   </div>
                                   ||
                                   !fileUploaded &&
