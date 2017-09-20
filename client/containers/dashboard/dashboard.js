@@ -80,13 +80,13 @@ class _Dashboard extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        if (!nextProps.userInfo.admin) {
+        if (!nextProps.userInfo.admin || !nextProps.isLoggedIn) {
             nextProps.history.push('/signin');
         }
     }
 
     render() {
-        const { userInfo, history, match } = this.props;
+        const { userInfo, history, match, isLoggedIn } = this.props;
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
 
         return (
@@ -167,7 +167,7 @@ const styles = {
     },
     contentWrapper: {
         backgroundColor: '#f5f5f5',
-        minHeight: '650',
+        minHeight: '950',
         paddingTop: 10,
         paddingRight: 20,
         paddingBottom: 10,

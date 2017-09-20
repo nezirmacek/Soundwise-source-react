@@ -40,8 +40,10 @@ class _SoundcastPage extends Component {
   componentDidMount() {
     const that = this;
     const soundcastID = this.props.match.params.id;
+    // console.log('soundcastID: ', soundcastID);
     firebase.database().ref('soundcasts/' + soundcastID)
       .on('value', snapshot => {
+        // console.log('soundcast: ', snapshot.val());
         that.setState({
           soundcast: snapshot.val(),
           soundcastID
@@ -76,6 +78,10 @@ class _SoundcastPage extends Component {
           <meta property="og:image" content={soundcast.imageURL} />
           <meta name="description" content={soundcast.short_description} />
           <meta name="keywords" content={soundcast.keywords} />
+          <meta name="twitter:title" content={soundcast.title}/>
+          <meta name="twitter:description" content={soundcast.short_description}/>
+          <meta name="twitter:image" content={soundcast.imageURL}/>
+          <meta name="twitter:card" content={soundcast.imageURL} />
         </Helmet>
         <MuiThemeProvider >
           <div>

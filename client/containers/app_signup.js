@@ -14,7 +14,7 @@ import { withRouter } from 'react-router';
 import moment from 'moment';
 
 import {SoundwiseHeader} from '../components/soundwise_header';
-import { signupUser } from '../actions/index';
+import { signupUser, signinUser } from '../actions/index';
 import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
@@ -34,7 +34,7 @@ class _AppSignup extends Component {
             password: '',
             message: '',
             publisher_name: '',
-            pic_url: props.match.params.mode === 'admin' && '../images/publisher_image.png' || '../images/smiley_face.jpg',
+            pic_url: props.match.params.mode === '../images/smiley_face.jpg',
             publisherImage: null,
             redirectToReferrer: false,
             isPublisherFormShown: false,
@@ -48,9 +48,20 @@ class _AppSignup extends Component {
 
     signUp() {
         const {firstName, lastName, email, password, pic_url} = this.state;
+        const {history} = this.props;
 
         this.setState({ isFBauth: false });
         if (!this._validateForm(firstName, lastName, email, password)) return;
+
+        const userRef = firebase.database().ref('users');
+        userRef.orderByChild('email/0').equalTo(email)
+        .once('value')
+        .then(snapshot => {
+            if(snapshot.val() !== null) {
+                history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+            }
+        })
+        .catch(err => console.log('error: ', err));
 
         if (this.props.match.params.mode !== 'admin') { // user case
             this._signUp();
@@ -115,6 +126,7 @@ class _AppSignup extends Component {
         const newSoundcast = {
             title: publisher_name,
             imageURL: publisherImage,
+            short_description: 'First soundcast',
             creatorID,
             publisherID: this.publisherID,
             subscribed
@@ -207,6 +219,16 @@ class _AppSignup extends Component {
         const {firstName, lastName, email, pic_url} = this.state;
 
         const userId = firebase.auth().currentUser.uid;
+
+        //if user exists, redirect to sign in page
+        firebase.database().ref('users/' + userId)
+        .once(value)
+        .then(snapshot => {
+            if(snapshot.val() !== null) {
+                history.push('/login', {text: 'This account already exists. Please sign in instead'});
+            }
+        })
+
         const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
 		// add admin fields
 		if (match.params.mode === 'admin') {
@@ -216,13 +238,31 @@ class _AppSignup extends Component {
 
         firebase.database().ref('users/' + userId).set(userToSave);
 
-        signupUser(userToSave);
-        // for user -> goTo myPrograms, for admin need to register publisher first
-        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-            history.push('/myprograms');
-        } else if(match.params.mode == 'soundcast_user') {
-            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-        }
+        Axios.post('/api/user', {  //save user to postgres DB
+            userId,
+            firstName,
+            lastName,
+            picURL: pic_url,
+
+        }).then(res => {
+            signupUser(userToSave);
+            // for user -> goTo myPrograms, for admin need to register publisher first
+            if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+                history.push('/myprograms');
+            } else if(match.params.mode == 'soundcast_user') {
+                history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+            }
+        }).catch(err => {
+            console.log('user saving failed: ', err);
+            signupUser(userToSave);
+            // for user -> goTo myPrograms, for admin need to register publisher first
+            if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+                history.push('/myprograms');
+            } else if(match.params.mode == 'soundcast_user') {
+                history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+            }
+        })
+
     }
 
     handleChange(prop, e) {
@@ -232,7 +272,7 @@ class _AppSignup extends Component {
     }
 
     handleFBAuth() {
-        const { match, history, signupUser } = this.props;
+        const { match, history, signupUser, signinUser } = this.props;
         const that = this;
         this.setState({ isFBauth: true });
 
@@ -240,26 +280,51 @@ class _AppSignup extends Component {
             .then(function(result) {
                 // This gives you a Facebook Access Token. You can use it to access the Facebook API.
                 // The signed-in user info.
-                const { email, photoURL, displayName } = result.user;
-                const name = displayName.split(' ');
+              const userId = firebase.auth().currentUser.uid;
+              firebase.database().ref('users/' + userId)
+                .once('value')
+                .then(snapshot => {
+                    if(snapshot.val() && typeof(snapshot.val().firstName) !== 'undefined') { // if user already exists
+                        let updates = {};
+                        updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
+                        firebase.database().ref().update(updates);
 
-                if (match.params.mode === 'admin') {
-                    that.setState({
-                        firstName: name[0],
-                        lastName: name[1],
-                        email,
-                        pic_url: photoURL,
-                        isPublisherFormShown: true,
-                    });
-                } else {
-                    that.setState({
-                        firstName: name[0],
-                        lastName: name[1],
-                        email,
-                        pic_url: photoURL,
-                    });
-                    that.signUpUser();
-                }
+                        let _user = snapshot.val();
+                        _user.pic_url = _user.photoURL;
+                        delete _user.photoURL;
+                        signinUser(_user);
+
+                        if (_user.admin) {
+                            history.push('/dashboard/soundcasts');
+                        } else  if (_user.soundcasts) {
+                            history.push('/mysoundcasts');
+                        } else  {
+                            history.push('/myprograms');
+                        }
+                    } else {  //if it's a new user
+                        const { email, photoURL, displayName } = result.user;
+                        const name = displayName.split(' ');
+
+                        if (match.params.mode === 'admin') {
+                            that.setState({
+                                firstName: name[0],
+                                lastName: name[1],
+                                email,
+                                pic_url: photoURL,
+                                isPublisherFormShown: true,
+                            });
+                        } else {
+                            that.setState({
+                                firstName: name[0],
+                                lastName: name[1],
+                                email,
+                                pic_url: photoURL,
+                            });
+                            that.signUpUser();
+                        }
+
+                    }
+                })
             })
             .catch(function(error) {
                 // Handle Errors here.
@@ -560,7 +625,7 @@ const styles = {
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ signupUser }, dispatch)
+    return bindActionCreators({ signupUser, signinUser }, dispatch)
 }
 
 const mapStateToProps = state => {

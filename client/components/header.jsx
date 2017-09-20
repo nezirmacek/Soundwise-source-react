@@ -20,7 +20,13 @@ const styles = {
   },
   navItem: {
     display: 'inline'
-  }
+  },
+  navButton: {
+    borderColor: 'white',
+    borderWidth: 2,
+    padding: '10px 15px',
+    marginBottom: 10,
+  },
 }
 
 class _Header extends Component {
@@ -81,6 +87,7 @@ class _Header extends Component {
                                   <ul className="nav navbar-nav">
                                       <li className="propClone"><a className="inner-link" href="#"></a></li>
                                       <li className="propClone"><a className="inner-link" href="#"></a></li>
+                                      <li className="display-inline-block margin-one no-margin-tb xs-margin-nine-bottom xs-no-margin xs-width-100"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>GET STARTED</span></Link></li>
                                   </ul>
                               </div>
                           </div>
@@ -113,6 +120,8 @@ class _Header extends Component {
     )
   }
 }
+
+
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ signoutUser }, dispatch)

@@ -6,7 +6,7 @@ export function sendNotifications (registrationTokens, payload) {
     payload
   })
     .then(res => {
-      console.log(res);
+      console.log('notification response: ', res);
     })
     .catch(err => {
       console.log(err);

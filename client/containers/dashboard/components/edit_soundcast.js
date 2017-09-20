@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactCrop from 'react-image-crop';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
@@ -81,6 +81,7 @@ export default class EditSoundcast extends Component {
     }
 
     _uploadToAws (file, hostImg) {
+        console.log('file: ', file);
         const _self = this;
         let data = new FormData();
         const splittedFileName = file.name.split('.');
@@ -104,6 +105,7 @@ export default class EditSoundcast extends Component {
     }
 
     setFileName (hostImg, e) {
+        // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
         if(hostImg) {
             this._uploadToAws(this.hostImgInputRef.files[0], true);
             if(this.hostImgInputRef.files[0]) {
@@ -123,7 +125,7 @@ export default class EditSoundcast extends Component {
                 features, hostName, hostBio, hostImageURL,
                 forSale, prices} = this.state;
         const { userInfo, history } = this.props;
-
+        const that = this;
         const creatorID = firebase.auth().currentUser.uid;
 
         const editedSoundcast = {
@@ -144,15 +146,21 @@ export default class EditSoundcast extends Component {
         };
 
         // edit soundcast in database
-            firebase.database().ref(`soundcasts/${this.props.history.location.state.id}`).set(editedSoundcast).then(
+            firebase.database().ref(`soundcasts/${this.props.history.location.state.id}`)
+            .once('value')
+            .then(snapshot => {
+              const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
+
+              firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+              .set(editedSoundcast).then(
                 res => {
-                    console.log('successfully added soundcast: ', res);
                     history.goBack();
                 },
                 err => {
                     console.log('ERROR add soundcast: ', err);
                 }
-            )
+              );
+            });
     }
 
     handleCheck() {
@@ -316,7 +324,10 @@ export default class EditSoundcast extends Component {
                               <div>
                                 <span>{this.hostImgInputRef.files[0].name}</span>
                                 <span style={styles.cancelImg}
-                                  onClick={() => that.setState({hostImgUploaded: false, hostImageURL: ''})}>Cancel</span>
+                                  onClick={() => {
+                                    that.setState({hostImgUploaded: false, hostImageURL: ''});
+                                    document.getElementById('upload_hidden_cover_2').value = null;
+                                  }}>Cancel</span>
                               </div>
                               ||
                               !hostImgUploaded &&
@@ -536,7 +547,7 @@ export default class EditSoundcast extends Component {
                                         type="file"
                                         name="upload"
                                         id="upload_hidden_cover"
-                                        onChange={this.setFileName.bind(this)}
+                                        onChange={this.setFileName.bind(this, null)}
                                         style={styles.inputFileHidden}
                                         ref={input => this.fileInputRef = input}
                                     />
@@ -545,7 +556,10 @@ export default class EditSoundcast extends Component {
                                       <div>
                                         <span>{this.fileInputRef.files[0].name}</span>
                                         <span style={styles.cancelImg}
-                                          onClick={() => that.setState({fileUploaded: false, imageURL: ''})}>Cancel</span>
+                                          onClick={() => {
+                                            that.setState({fileUploaded: false, imageURL: ''});
+                                            document.getElementById('upload_hidden_cover').value = null;
+                                          }}>Cancel</span>
                                       </div>
                                       ||
                                       !fileUploaded &&
@@ -575,7 +589,6 @@ export default class EditSoundcast extends Component {
                             <TransparentShortSubmitButton
                                 label="Cancel"
                                 onClick={() => {
-                                  that.props.shiftEditState();
                                   history.goBack();
                                 }}
                             />

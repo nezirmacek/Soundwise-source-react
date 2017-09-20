@@ -53,7 +53,7 @@ class _AppSignin extends Component {
                 if (snapshot.val()) {
                     let _user = JSON.parse(JSON.stringify(snapshot.val()));
                     signinUser(_user);
-                    if (soundcast) {
+                    if (history.location.state) {
                         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
                     } else if (_user.admin) {
                         history.push('/dashboard/soundcasts');
@@ -191,7 +191,9 @@ class _AppSignin extends Component {
     handleFBAuth() {
         const that = this;
         const { history, userInfo, signinUser } = this.props;
-        const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
+        if(history.location.state) {
+            let {soundcast, soundcastID, checked, sumTotal} = history.location.state;
+        }
         // firebase.auth().signInWithRedirect(provider)
 
         firebase.auth().signInWithPopup(provider).then(function(result) {
@@ -211,7 +213,7 @@ class _AppSignin extends Component {
                         delete _user.photoURL;
                         signinUser(_user);
 
-                        if (soundcast) {
+                        if (history.location.state) {
                             history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
                         } else if (_user.admin) {
                             history.push('/dashboard/soundcasts');
@@ -299,6 +301,7 @@ class _AppSignin extends Component {
     render() {
         const { firstName, lastName, email, password, redirectToReferrer } = this.state
         const { from } = this.props.location.state || { from: { pathname: '/courses' } }
+        const {history} = this.props;
 
         if(redirectToReferrer) {
             return (
@@ -397,7 +400,9 @@ class _AppSignin extends Component {
 					<img alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
 					<div style={styles.containerWrapper}>
 						<div style={styles.container} className="center-col text-center">
-							<div style={styles.title}>Hello!</div>
+							<div style={{...styles.title, lineHeight: 'normal'}}>
+                              {history.location.state && history.location.state.text || 'Hello!'}
+                            </div>
 							<button
 								onClick={() => this.handleFBAuth()}
 								className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"

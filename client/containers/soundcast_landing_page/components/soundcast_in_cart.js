@@ -20,7 +20,7 @@ export default class SoundcastInCart extends Component {
 
     render () {
         const { soundcast, sumTotal, checked } = this.props;
-        const fee = Math.floor(soundcast.prices[checked].price * 0.03 *100) / 100;
+        const fee = soundcast.prices[checked].price == 'free' ? 0 : Math.floor(soundcast.prices[checked].price * 0.03 *100) / 100;
         return (
             <div className="row" style={styles.course}>
                 <div className="col-md-12 col-sm-12 col-xs-12">
@@ -42,7 +42,7 @@ export default class SoundcastInCart extends Component {
                                         className="margin-five-bottom"
                                         style={styles.price}
                                     >
-                                        {`$${soundcast.prices[checked].price}`}
+                                        {soundcast.prices[checked].price == 'free' ? 0 : `$${soundcast.prices[checked].price}`}
                                     </span>
                                 </div>
                             </div>

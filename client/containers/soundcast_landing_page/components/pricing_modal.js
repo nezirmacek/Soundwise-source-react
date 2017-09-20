@@ -21,7 +21,7 @@ class _PricingModal extends Component {
 
     this.setState({
       checked: i,
-      sumTotal: `Payment today: $${prices[i].price}`
+      sumTotal: prices[i].price == 'free' ? '' : `Total today: $${prices[i].price}`
     })
 
   }
@@ -41,8 +41,8 @@ class _PricingModal extends Component {
 
   render() {
     const {open, handleModal, soundcast, soundcastID} = this.props;
-    const {prices} = soundcast;
     const {checked, sumTotal} = this.state;
+    const {prices} = soundcast;
 
     const actions = [
         <FlatButton
@@ -82,6 +82,11 @@ class _PricingModal extends Component {
             } else if(price.billingCycle == 'one time') {
               currentPrice = `USD $${price.price}`
               billing = 'one time charge'
+            }
+
+            if(price.price == 'free') {
+              currentPrice = 'Free';
+              billing = '';
             }
 
             return (

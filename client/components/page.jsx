@@ -27,7 +27,7 @@ class Page extends Component {
     }
 
     componentDidMount() {
-
+        window.prerenderReady = true;
     }
 
 

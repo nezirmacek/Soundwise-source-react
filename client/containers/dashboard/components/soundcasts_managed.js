@@ -83,10 +83,10 @@ export default class SoundcastsManaged extends Component {
 				if (_soundcast.title) {
 					_soundcast.id = id;
 					if (_soundcast.episodes) {
-						_soundcast.last_updated = 0;
+						_soundcast.last_update = 0;
 						for (let episodeId in _soundcast.episodes) {
-							if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_updated) {
-								_soundcast.last_updated = +_soundcast.episodes[episodeId].date_created;
+							if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
+								_soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
 							}
 						}
 					}
@@ -116,10 +116,10 @@ export default class SoundcastsManaged extends Component {
 										<div style={styles.soundcastDescription}>
 											<label style={styles.soundcastTitle}>{soundcast.title}</label>
 											{
-												soundcast.last_updated
+												soundcast.last_update
 												&&
 												<span style={styles.soundcastUpdated}>
-                                                Last updated: {moment(soundcast.last_updated).format('MMMM DD, YYYY')}
+                                                Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
                                             </span>
 												||
 												null

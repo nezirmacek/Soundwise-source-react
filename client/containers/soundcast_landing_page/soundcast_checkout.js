@@ -32,7 +32,13 @@ class _SoundcastCheckout extends Component {
   render() {
 
     const {soundcast, soundcastID, checked, sumTotal} = this.props.location.state;
-    const totalPrice = Math.floor(soundcast.prices[checked].price * 1.03 * 100) / 100;
+    let totalPrice;
+    if(soundcast.prices[checked].price == 'free') {
+      totalPrice = 0;
+    } else {
+      totalPrice = Math.floor(soundcast.prices[checked].price * 1.03 * 100) / 100;
+    }
+
 
     if(!soundcast) {
       return (

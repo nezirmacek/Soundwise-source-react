@@ -65,6 +65,10 @@ export default class Announcements extends Component {
           that.setState({
             announcementsArr
           })
+        } else {
+          that.setState({
+            announcementsArr: [],
+          })
         }
       })
   }
