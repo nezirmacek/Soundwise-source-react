@@ -22,6 +22,12 @@ Soundcast:
   "title": "Founders Nextdoor"
 }
 
+{
+  "soundcastId": "1505855025645s",
+  "publisherId": "1503002103690p",
+  "title": "A Soundcast On Inner Mastery"
+}
+
 Episode:
 
 {
