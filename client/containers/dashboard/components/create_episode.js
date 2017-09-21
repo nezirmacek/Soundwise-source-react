@@ -190,8 +190,8 @@ class _CreateEpisode extends Component {
         if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
             const newEpisode = {
                 title,
-                description,
-                actionstep: actions,
+                description: description.length > 0 ? description : null,
+                actionstep: actions.length > 0 ? actions : null,
                 date_created: moment().format('X'),
                 creatorID: firebase.auth().currentUser.uid,
                 publisherID: userInfo.publisherID,

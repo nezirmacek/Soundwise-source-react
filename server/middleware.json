@@ -36,13 +36,13 @@
     "body-parser#json": {
       "params": {
         "strict": false,
-        "limit": "50mb"
+        "limit": "250mb"
       }
     },
     "body-parser#urlencoded": {
       "params": {
         "extended": true,
-        "limit": "50mb"
+        "limit": "250mb"
       }
     }
   },
