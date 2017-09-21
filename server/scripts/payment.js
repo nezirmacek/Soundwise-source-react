@@ -84,6 +84,9 @@ module.exports.handleRecurringPayment = (req, res) => {
                     email: req.body.receipt_email,
                     source: req.body.source,
                   }, (err, customer) => {
+                        if(err) {
+                          console.log('customer creation error: ', err);
+                        }
                         stripe.subscriptions.create({
                           customer: customer.id,
                           items: [
@@ -102,48 +105,48 @@ module.exports.handleRecurringPayment = (req, res) => {
               }
              }
         });
-      }
-
-      if(req.body.customer) { // if customer's stripe id already exists, sign this customer up for the plan
-        stripe.subscriptions.create({
-          customer: req.body.customer,
-          items: [
-            {
-              plan: plan.id,
-            },
-          ],
-        }, (err, subscription) => {
-          if (err) {
-            console.log(err);
-            return res.status(err.raw.statusCode).send(err.raw.message);
-          }
-          res.send(subscription);
-        });
-      } else { // if customer doesn't exist, create customer and then charge
-        console.log('email from frontend: ', req.body.receipt_email);
-        stripe.customers.create({
-            email: req.body.receipt_email,
-            source: req.body.source,
-          }, (err, customer) => {
-                if(err) {
-                  console.log('error: ', err);
-                }
-                console.log('customer: ', customer);
-                stripe.subscriptions.create({
-                  customer: customer.id,
-                  items: [
-                    {
-                      plan: plan.id,
-                    },
-                  ],
-                }, (err, subscription) => {
-                  if (err) {
-                    console.log(err);
-                    return res.status(err.raw.statusCode).send(err.raw.message);
+      } else {
+        if(req.body.customer) { // if customer's stripe id already exists, sign this customer up for the plan
+          stripe.subscriptions.create({
+            customer: req.body.customer,
+            items: [
+              {
+                plan: plan.id,
+              },
+            ],
+          }, (err, subscription) => {
+            if (err) {
+              console.log(err);
+              return res.status(err.raw.statusCode).send(err.raw.message);
+            }
+            res.send(subscription);
+          });
+        } else { // if customer doesn't exist, create customer and then charge
+          console.log('email from frontend: ', req.body.receipt_email);
+          stripe.customers.create({
+              email: req.body.receipt_email,
+              source: req.body.source,
+            }, (err, customer) => {
+                  if(err) {
+                    console.log('error: ', err);
                   }
-                  res.send(subscription);
-                });
-        });
+                  console.log('customer: ', customer);
+                  stripe.subscriptions.create({
+                    customer: customer.id,
+                    items: [
+                      {
+                        plan: plan.id,
+                      },
+                    ],
+                  }, (err, subscription) => {
+                    if (err) {
+                      console.log(err);
+                      return res.status(err.raw.statusCode).send(err.raw.message);
+                    }
+                    res.send(subscription);
+                  });
+          });
+        }
       }
     }
   );

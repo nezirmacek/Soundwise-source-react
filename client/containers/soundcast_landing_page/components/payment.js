@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
-import { withRouter } from 'react-router';
+
 import * as firebase from 'firebase';
 import moment from 'moment';
 
@@ -62,7 +62,7 @@ export default class Payment extends Component {
     }
 
     addSoundcastToUser(charge) {
-        console.log('charge: ', charge);
+        // console.log('charge: ', charge);
         const that = this;
         const {soundcastID, userInfo} = this.props;
         const _email = userInfo.email[0].replace(/\./g, "(dot)");
@@ -86,10 +86,10 @@ export default class Payment extends Component {
                 firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
                 .set({
                     subscribed: true,
-                    paymentID: paymentID ? paymentID : '',
+                    paymentID: paymentID ? paymentID : null,
                     current_period_end, //this will be null if one time payment
-                    billingCycle: billingCycle ? billingCycle : '',
-                    planID: planID ? planID : '',
+                    billingCycle: billingCycle ? billingCycle : null,
+                    planID: planID ? planID : null,
                 });
                 // add stripe_id to user data if not already exists
                 if(charge) {
@@ -186,7 +186,7 @@ export default class Payment extends Component {
 
                     const subscription = response.data; //boolean
                     const customer = response.data.customer;
-                    console.log('subscription: ', subscription);
+                    // console.log('subscription: ', subscription);
 
                     if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
                         that.setState({

@@ -34,6 +34,7 @@ class _PricingModal extends Component {
       if(user) {
         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
       } else {
+        // console.log('soundcast: ', soundcast);
         history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
       }
     })

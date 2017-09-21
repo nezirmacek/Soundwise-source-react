@@ -9,13 +9,14 @@ import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
 import moment from 'moment';
+import { withRouter } from 'react-router';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import {sendNotifications} from '../../../helpers/send_notifications';
 
-export default class CreateEpisode extends Component {
+class _CreateEpisode extends Component {
     constructor(props) {
         super(props);
 
@@ -54,6 +55,7 @@ export default class CreateEpisode extends Component {
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
         this.renderRecorder = this.renderRecorder.bind(this)
         this.notifySubscribers = this.notifySubscribers.bind(this);
+        this.saveEpisode = this.saveEpisode.bind(this);
 
         // if (props.userInfo.soundcasts_managed && props.userInfo.soundcasts_managed[props.currentSoundcastId]) {
         //     const _titleArray = props.userInfo.soundcasts_managed[props.currentSoundcastId].title.split(' ');
@@ -183,13 +185,13 @@ export default class CreateEpisode extends Component {
 
     saveEpisode (isPublished) {
         const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration } = this.state;
-        const { userInfo } = this.props;
+        const { userInfo, history } = this.props;
 
         if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
             const newEpisode = {
                 title,
-                description,
-                actionstep: actions,
+                description: description.length > 0 ? description : null,
+                actionstep: actions.length > 0 ? actions : null,
                 date_created: moment().format('X'),
                 creatorID: firebase.auth().currentUser.uid,
                 publisherID: userInfo.publisherID,
@@ -226,18 +228,25 @@ export default class CreateEpisode extends Component {
                 title,
                 soundcastTitle: userInfo.soundcasts_managed[this.currentSoundcastId].title,
             }).then(
-                res => console.log(res)
+                res => {
+                    console.log(res);
+                    history.goBack();
+                }
             ).catch(
-                err => console.log(err)
+                err => {
+                    console.log(err);
+                    history.goBack();
+                }
             );
         }
     }
 
     notifySubscribers() {
-          firebase.database().ref(`soundcasts/${this.currentSoundcastID}`)
+          firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
           .on('value', snapshot => {
             let registrationTokens = [];
             // get an array of device tokens
+            // console.log('snapshot.val(): ', snapshot.val());
             Object.keys(snapshot.val().subscribed).forEach(user => {
               if(typeof snapshot.val().subscribed[user] == 'object') {
                   registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
@@ -245,7 +254,7 @@ export default class CreateEpisode extends Component {
             });
             const payload = {
               notification: {
-                title: `Just published on ${snapshot.val()[title]}:`,
+                title: `Just published on ${snapshot.val().title}:`,
                 body: `${this.state.title}`
               }
             };
@@ -544,7 +553,7 @@ export default class CreateEpisode extends Component {
     }
 };
 
-CreateEpisode.propTypes = {
+_CreateEpisode.propTypes = {
     userInfo: PropTypes.object,
     history: PropTypes.object,
 };
@@ -794,3 +803,6 @@ const styles = {
         display: 'block',
     },
 };
+
+const CreateEpisode = withRouter(_CreateEpisode);
+export default CreateEpisode;

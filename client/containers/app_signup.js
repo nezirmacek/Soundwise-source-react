@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as firebase from "firebase";
+import Axios from 'axios';
 import PropTypes from 'prop-types';
 import {orange500, blue500} from 'material-ui/styles/colors';
 import {
@@ -100,7 +101,7 @@ class _AppSignup extends Component {
 
                     firebase.database().ref(`publishers/${this.publisherID}`).set(_newPublisher).then(
                         res => {
-                            console.log('success add publisher: ', res);
+                            // console.log('success add publisher: ', res);
                             that.addDefaultSoundcast()
                         },
                         err => {
@@ -136,7 +137,7 @@ class _AppSignup extends Component {
         // add soundcast
             firebase.database().ref(`soundcasts/${soundcastId}`).set(newSoundcast).then(
                 res => {
-                    console.log('success add soundcast: ', res);
+                    // console.log('success add soundcast: ', res);
                     return res;
                 },
                 err => {
@@ -147,7 +148,7 @@ class _AppSignup extends Component {
             // add soundcast to publisher
             firebase.database().ref(`publishers/${this.publisherID}/soundcasts/${soundcastId}`).set(true).then(
                 res => {
-                    console.log('success add soundcast to publisher: ', res);
+                    // console.log('success add soundcast to publisher: ', res);
                     return res;
                 },
                 err => {
@@ -158,7 +159,7 @@ class _AppSignup extends Component {
             // add soundcast to admin
             firebase.database().ref(`users/${creatorID}/soundcasts_managed/${soundcastId}`).set(true).then(
                 res => {
-                    console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                    // console.log('success add soundcast to admin.soundcasts_managed: ', res);
                     return res;
                 },
                 err => {
@@ -218,51 +219,56 @@ class _AppSignup extends Component {
         const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         const {firstName, lastName, email, pic_url} = this.state;
 
-        const userId = firebase.auth().currentUser.uid;
+        let userId;
 
-        //if user exists, redirect to sign in page
-        firebase.database().ref('users/' + userId)
-        .once(value)
-        .then(snapshot => {
-            if(snapshot.val() !== null) {
-                history.push('/login', {text: 'This account already exists. Please sign in instead'});
+        firebase.auth().onAuthStateChanged(user => {
+            userId = user.uid;
+
+            //if user exists, redirect to sign in page
+            firebase.database().ref('users/' + userId)
+            .once('value')
+            .then(snapshot => {
+                if(snapshot.val() !== null) {
+                    history.push('/login', {text: 'This account already exists. Please sign in instead'});
+                }
+            });
+
+            const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
+            // add admin fields
+            if (match.params.mode === 'admin') {
+                userToSave.admin = true;
+                userToSave.publisherID = this.publisherID;
             }
+
+            firebase.database().ref('users/' + userId).set(userToSave);
+
+            Axios.post('/api/user', {  //save user to postgres DB
+                userId,
+                firstName,
+                lastName,
+                picURL: pic_url,
+
+            }).then(res => {
+                // console.log('userToSave: ', userToSave);
+                signupUser(userToSave);
+                // for user -> goTo myPrograms, for admin need to register publisher first
+                if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+                    history.push('/myprograms');
+                } else if(match.params.mode == 'soundcast_user') {
+                    history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                }
+            }).catch(err => {
+                console.log('user saving failed: ', err);
+                signupUser(userToSave);
+                // for user -> goTo myPrograms, for admin need to register publisher first
+                if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+                    history.push('/myprograms');
+                } else if(match.params.mode == 'soundcast_user') {
+                    history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                }
+            })
+
         })
-
-        const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
-		// add admin fields
-		if (match.params.mode === 'admin') {
-			userToSave.admin = true;
-			userToSave.publisherID = this.publisherID;
-		}
-
-        firebase.database().ref('users/' + userId).set(userToSave);
-
-        Axios.post('/api/user', {  //save user to postgres DB
-            userId,
-            firstName,
-            lastName,
-            picURL: pic_url,
-
-        }).then(res => {
-            signupUser(userToSave);
-            // for user -> goTo myPrograms, for admin need to register publisher first
-            if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-                history.push('/myprograms');
-            } else if(match.params.mode == 'soundcast_user') {
-                history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-            }
-        }).catch(err => {
-            console.log('user saving failed: ', err);
-            signupUser(userToSave);
-            // for user -> goTo myPrograms, for admin need to register publisher first
-            if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-                history.push('/myprograms');
-            } else if(match.params.mode == 'soundcast_user') {
-                history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-            }
-        })
-
     }
 
     handleChange(prop, e) {
@@ -370,8 +376,11 @@ class _AppSignup extends Component {
 
     render() {
         const { match, history } = this.props;
+        // console.log('history.location.state: ', history.location.state);
+
         if(history.location.state) {
             let {soundcast, checked, sumTotal} = history.location.state;
+            // console.log('soundcast: ', soundcast);
         }
 
         const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name } = this.state;
@@ -485,7 +494,11 @@ class _AppSignup extends Component {
                                         <Link
                                           to={{
                                             pathname: '/signin',
-                                            state: {soundcast, checked, sumTotal}
+                                            state: {
+                                                soundcast: history.location.state.soundcast,
+                                                checked: history.location.state.checked,
+                                                sumTotal: history.location.state.sumTotal
+                                            }
                                           }}
                                           style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in >
                                         </Link>

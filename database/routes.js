@@ -16,9 +16,10 @@ module.exports = (app) => {
 	});
 
 	app.post('/api/episode', (req, res) => {
+		console.log('req.body: ', req.body);
 		database.Episode.findOrCreate({
 			where: {episodeId: req.body.episodeId},
-			defaults: req.body,
+			defaults: req.body
 		})
 			.then(data => {
 				console.log('response: ', data);
@@ -33,7 +34,7 @@ module.exports = (app) => {
 	app.post('/api/soundcast', (req, res) => {
 		database.Soundcast.findOrCreate({
 			where: {soundcastId: req.body.soundcastId},
-			defaults: req.body,
+			defaults: req.body
 		})
 			.then(data => res.send(data))
 			.catch(err => { res.status(500).send(err); });
