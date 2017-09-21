@@ -141,8 +141,8 @@ firebase:
             "notes": "https://s3.amazonaws.com/soundwiseinc/demo/Thiscouldbegood.Thiscouldbebad.Factisyouarefreetochoose.pdf",
             "soundcastID": "5a83201c-76bd-11e7-b5a5-be2e44b06b34",
             "likes": {
-                "keeq4re9p0v4ws": true,
-                "vcarieemgridos": true
+                "keeq4re9p0v4ws": 1231231234,
+                "vcarieemgridos": 1231231234
             },
             "comments": {
                 "voesfmvioedkht": true,
@@ -217,4 +217,25 @@ firebase:
                 1231231231234s: true,
                 1502366385413s: true,
             },
+        }
+    4. Announcements:
+        - under the soundcast node
+        announcements: {
+            1231231234a: {
+                content: "woeirughweio werinf eirunw",
+                creatorID: "VDEG....",
+                date_created: "1231231234",
+                id: "1231231234a",
+                isPublished: true,
+                publisherID: "2342342345p",
+                soundcastID: "3453453456s",
+                "comments": {
+                    "voesfmvioedkht": true,
+                    "4fionviutrmrem": true
+                },
+                "likes": {
+                    "keeq4re9p0v4ws": 1231231234,
+                    "vcarieemgridos": 1231231234
+                },
+            }
         }

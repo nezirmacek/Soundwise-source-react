@@ -380,7 +380,6 @@ class _CreateEpisode extends Component {
     render() {
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
         const { userInfo } = this.props;
-        console.log('>>>>>>>>>>', isRecorded);
 
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
