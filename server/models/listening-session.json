@@ -11,7 +11,8 @@
   "properties": {
     "sessionId": {
       "type": "number",
-      "required": true,
+      "generated": true,
+      "required": false,
       "id": true,
       "postgresql": {
         "column": "sessionId"
