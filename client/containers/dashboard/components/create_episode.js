@@ -1,6 +1,3 @@
-/**
- * Created by developer on 01.08.17.
- */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
@@ -9,6 +6,7 @@ import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
 import moment from 'moment';
+import Dots from 'react-activity/lib/Dots';
 import { withRouter } from 'react-router';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
@@ -42,6 +40,9 @@ class _CreateEpisode extends Component {
             audioUrl: '', // linkto uploaded file aws s3
 			blob: {}, // to play audio from react-mic
             notesUrl: '', // linkto uploaded file aws s3
+
+            audioUploading: false,
+            notesUploading: false,
         };
 
         this.audio = null;
@@ -165,7 +166,10 @@ class _CreateEpisode extends Component {
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
-                _self.setState({[`${type}Url`]: res.data[0].url});
+                _self.setState({
+                    [`${type}Url`]: res.data[0].url,
+                    [`${type}Uploading`]: false,
+                });
             })
             .catch(function (err) {
                 // POST failed...
@@ -175,7 +179,10 @@ class _CreateEpisode extends Component {
 
     setFileName (type, e) {
         if (e.target.value) {
-            this.setState({[`${type}Uploaded`]: true});
+            this.setState({
+                [`${type}Uploaded`]: true,
+                [`${type}Uploading`]: true,
+            });
             this[type] = [e.target.files[0]];
             // this._uploadToAws(this[type], type);
             this._uploadToAws(document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0], type);
@@ -210,6 +217,8 @@ class _CreateEpisode extends Component {
                     console.log('ERROR add episode: ', err);
                 }
             );
+
+            firebase.database().ref(`soundcasts/${this.currentSoundcastId}/last_update`).set(newEpisode.date_created);
 
             firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
                 res => {
@@ -254,8 +263,10 @@ class _CreateEpisode extends Component {
             });
             const payload = {
               notification: {
-                title: `Just published on ${snapshot.val().title}:`,
-                body: `${this.state.title}`
+                title: `${snapshot.val().title} just published:`,
+                body: `${this.state.title}`,
+                sound: 'default',
+                badge: '1'
               }
             };
             sendNotifications(registrationTokens, payload); //sent push notificaiton
@@ -378,7 +389,7 @@ class _CreateEpisode extends Component {
     }
 
     render() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl, audioUploading, notesUploading } = this.state;
         const { userInfo } = this.props;
 
         const _soundcasts_managed = [];
@@ -420,6 +431,16 @@ class _CreateEpisode extends Component {
                                     style={styles.inputFileHidden}
                                 />
                                 {
+                                  audioUploading &&
+                                  <div style={{textAlign: 'center'}}>
+                                    <div className='title-small' style={{marginBottom: 5,}}>
+                                        {`Uploading audio file`}
+                                    </div>
+                                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                        <Dots style={{}} color="#727981" size={22} speed={1}/>
+                                    </div>
+                                  </div>
+                                  ||
                                   audioUrl &&
                                   <div style={{textAlign: 'center',}}>
                                     <div className='title-small'>
@@ -485,6 +506,16 @@ class _CreateEpisode extends Component {
                                     style={styles.inputFileHidden}
                                 />
                                 {
+                                  notesUploading &&
+                                  <div style={{textAlign: 'left'}}>
+                                    <div className='title-small' style={{marginBottom: 5,}}>
+                                        {`Uploading notes`}
+                                    </div>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <Dots style={{}} color="#727981" size={22} speed={1}/>
+                                    </div>
+                                  </div>
+                                  ||
                                   notesUrl &&
                                     <div style={{}}>
                                         <div className='title-small'>
@@ -515,7 +546,7 @@ class _CreateEpisode extends Component {
                             </div>
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
-                            <div style={styles.notesLabel}>Publish in</div>
+                            <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
                             <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
                                 {
                                     _soundcasts_managed.map((souncast, i) => {
@@ -737,6 +768,7 @@ const styles = {
     notes: {
         height: 102,
         marginLeft: 10,
+        width: '50%',
         // backgroundColor: Colors.mainWhite,
     },
     notesLabel: {
