@@ -14,6 +14,8 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import {sendNotifications} from '../../../helpers/send_notifications';
 
+window.URL = window.URL || window.webkitURL;
+
 class _CreateEpisode extends Component {
     constructor(props) {
         super(props);
@@ -40,9 +42,11 @@ class _CreateEpisode extends Component {
             audioUrl: '', // linkto uploaded file aws s3
 			blob: {}, // to play audio from react-mic
             notesUrl: '', // linkto uploaded file aws s3
+            audioDuration: 0,
 
             audioUploading: false,
             notesUploading: false,
+            wrongFileTypeFor: null,
         };
 
         this.audio = null;
@@ -151,6 +155,8 @@ class _CreateEpisode extends Component {
     }
 
     _uploadToAws (file, type) {
+        this.setAudioDuration(file);
+
         const _self = this;
         let data = new FormData();
         let ext = '';
@@ -169,6 +175,7 @@ class _CreateEpisode extends Component {
                 _self.setState({
                     [`${type}Url`]: res.data[0].url,
                     [`${type}Uploading`]: false,
+                    wrongFileTypeFor: null,
                 });
             })
             .catch(function (err) {
@@ -177,21 +184,52 @@ class _CreateEpisode extends Component {
             });
     }
 
+    setAudioDuration(file) {
+        let audio = document.createElement('audio');
+        const that = this;
+        audio.preload = 'metadata';
+        audio.onloadedmetadata = function() {
+            window.URL.revokeObjectURL(this.src);
+            let duration = audio.duration;
+            that.setState({
+                audioDuration: duration,
+            });
+            // console.log('duration of audio: ', duration);
+        };
+        audio.src = URL.createObjectURL(file);
+    }
+
     setFileName (type, e) {
         if (e.target.value) {
-            this.setState({
-                [`${type}Uploaded`]: true,
-                [`${type}Uploading`]: true,
-            });
             this[type] = [e.target.files[0]];
-            // this._uploadToAws(this[type], type);
-            this._uploadToAws(document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0], type);
+            let ext = '';
+            let file = document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0];
+
+            if (file.name) {
+
+                const splittedFileName = file.name.split('.');
+                ext = (splittedFileName)[splittedFileName.length - 1];
+                if((type == 'audio' && ext == 'mp3') || type == 'notes' && (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) {
+                    this.setState({
+                        [`${type}Uploaded`]: true,
+                        [`${type}Uploading`]: true,
+                        [`${type}Name`]: file.name,
+                    });
+
+                    this._uploadToAws(file, type);
+                } else {
+                    this.setState({
+                        wrongFileTypeFor: type
+                    })
+                }
+            }
+
         }
         // document.getElementById(type).value = e.target.value;
     }
 
     saveEpisode (isPublished) {
-        const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration } = this.state;
+        const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration, audioDuration } = this.state;
         const { userInfo, history } = this.props;
 
         if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
@@ -203,7 +241,7 @@ class _CreateEpisode extends Component {
                 creatorID: firebase.auth().currentUser.uid,
                 publisherID: userInfo.publisherID,
                 url: audioUrl,
-                duration: currentRecordingDuration / 1000,  //convert duration to seconds
+                duration: audioDuration,  // duration is in seconds
                 notes: notesUrl,
                 soundcastID: this.currentSoundcastId,
                 isPublished: isPublished,
@@ -389,7 +427,7 @@ class _CreateEpisode extends Component {
     }
 
     render() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl, audioUploading, notesUploading } = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, wrongFileTypeFor } = this.state;
         const { userInfo } = this.props;
 
         const _soundcasts_managed = [];
@@ -421,7 +459,7 @@ class _CreateEpisode extends Component {
                     </div>
                     <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <div style={styles.recorder}>
-                            <div style={styles.recordTitleText}>Upload</div>
+                            <div style={{...styles.recordTitleText, paddingBottom: 0,}}>Upload</div>
                             <div style={styles.inputFileWrapper}>
                                 <input
                                     type="file"
@@ -443,8 +481,8 @@ class _CreateEpisode extends Component {
                                   ||
                                   audioUrl &&
                                   <div style={{textAlign: 'center',}}>
-                                    <div className='title-small'>
-                                        {`Audio file saved`}
+                                    <div className='text-medium'>
+                                        {`${audioName} saved`}
                                     </div>
                                     <div style={styles.cancelImg}
                                       onClick={() => this.setState({audioUploaded: false, audioUrl: ''})}>Cancel</div>
@@ -461,7 +499,8 @@ class _CreateEpisode extends Component {
                                         </button>
                                     </div>
                                     <div>
-                                        <span style={styles.fileTypesLabel}>.mp3 files accepted</span>
+                                        <div style={styles.fileTypesLabel}>.mp3 files accepted</div>
+                                        {wrongFileTypeFor == 'audio' && <div style={{...styles.fileTypesLabel, color: 'red'}}>Wrong file type. Please try again.</div>}
                                     </div>
                                   </div>
                                 }
@@ -518,8 +557,8 @@ class _CreateEpisode extends Component {
                                   ||
                                   notesUrl &&
                                     <div style={{}}>
-                                        <div className='title-small'>
-                                            Notes saved
+                                        <div className='text-medium'>
+                                            {`${notesName} saved`}
                                         </div>
                                         <div
                                           style={styles.cancelImg}
@@ -539,7 +578,8 @@ class _CreateEpisode extends Component {
                                         </button>
                                     </div>
                                     <div>
-                                        <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                                        <div style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</div>
+                                        {wrongFileTypeFor == 'notes' && <div style={{...styles.fileTypesLabel, color: 'red'}}>Wrong file type. Please try again.</div>}
                                     </div>
                                   </div>
                                 }
@@ -631,7 +671,7 @@ const styles = {
         color: Colors.black,
         width: '100%',
         paddingTop: 10,
-        paddingBottom: 10
+        paddingBottom: 10,
     },
     recordButton: {
         // backgroundColor: Colors.mainOrange,
@@ -715,7 +755,7 @@ const styles = {
     inputFileWrapper: {
         margin: 1,
         width: 'calc(100% - 20px)',
-        height: 60,
+        height: 80,
         // backgroundColor: Colors.mainWhite,
         overflow: 'hidden',
         marginBottom: 0,

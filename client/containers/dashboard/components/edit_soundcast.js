@@ -570,7 +570,7 @@ export default class EditSoundcast extends Component {
                                         >
                                             Upload
                                         </button>
-                                        <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                                        <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                                       </div>
                                     }
                                 </div>

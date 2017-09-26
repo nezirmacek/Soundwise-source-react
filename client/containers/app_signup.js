@@ -82,7 +82,7 @@ class _AppSignup extends Component {
 
         this.setState({ isFBauth: true });
         if(publisher_name.length < 1) {
-            alert('Please enter your name!');
+            alert('Please enter a publisher name!');
             return;
         }
         if (!this._validateForm(firstName, lastName, email, password, isFBauth)) return;
@@ -216,7 +216,9 @@ class _AppSignup extends Component {
 
     signUpUser () {
         const { match, history, signupUser } = this.props;
-        const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
+        if(history.location.state) {
+          const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
+        }
         const {firstName, lastName, email, pic_url} = this.state;
 
         let userId;
