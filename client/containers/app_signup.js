@@ -54,15 +54,24 @@ class _AppSignup extends Component {
         this.setState({ isFBauth: false });
         if (!this._validateForm(firstName, lastName, email, password)) return;
 
-        const userRef = firebase.database().ref('users');
-        userRef.orderByChild('email/0').equalTo(email)
-        .once('value')
-        .then(snapshot => {
-            if(snapshot.val() !== null) {
+        firebase.auth().fetchProvidersForEmail(email)
+        .then(authArr => {
+            console.log('authArr: ', authArr);
+            if(authArr.length > 0) {
                 history.push('/signin', {text: 'This account already exists. Please sign in instead'});
             }
         })
         .catch(err => console.log('error: ', err));
+
+        // const userRef = firebase.database().ref('users');
+        // userRef.orderByChild('email/0').equalTo(email)
+        // .once('value')
+        // .then(snapshot => {
+        //     if(snapshot.val() !== null) {
+        //         history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+        //     }
+        // })
+        // .catch(err => console.log('error: ', err));
 
         if (this.props.match.params.mode !== 'admin') { // user case
             this._signUp();
@@ -116,7 +125,9 @@ class _AppSignup extends Component {
     addDefaultSoundcast() {
         const { history } = this.props;
 
-        const creatorID = firebase.auth().currentUser.uid;
+        let creatorID = firebase.auth().currentUser.uid;
+        console.log('creatorID: ', creatorID);
+
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
         const subscribed = {};
         const _email = email.replace(/\./g, "(dot)");
@@ -125,7 +136,7 @@ class _AppSignup extends Component {
         const soundcastId = `${moment().format('x')}s`;
 
         const newSoundcast = {
-            title: publisher_name,
+            title: 'Default Soundcast',
             imageURL: publisherImage,
             short_description: 'First soundcast',
             creatorID,
@@ -137,7 +148,7 @@ class _AppSignup extends Component {
         // add soundcast
             firebase.database().ref(`soundcasts/${soundcastId}`).set(newSoundcast).then(
                 res => {
-                    // console.log('success add soundcast: ', res);
+                    console.log('success add soundcast: ', res);
                     return res;
                 },
                 err => {
@@ -148,7 +159,7 @@ class _AppSignup extends Component {
             // add soundcast to publisher
             firebase.database().ref(`publishers/${this.publisherID}/soundcasts/${soundcastId}`).set(true).then(
                 res => {
-                    // console.log('success add soundcast to publisher: ', res);
+                    console.log('success add soundcast to publisher: ', res);
                     return res;
                 },
                 err => {
@@ -159,7 +170,7 @@ class _AppSignup extends Component {
             // add soundcast to admin
             firebase.database().ref(`users/${creatorID}/soundcasts_managed/${soundcastId}`).set(true).then(
                 res => {
-                    // console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                    console.log('success add soundcast to admin.soundcasts_managed: ', res);
                     return res;
                 },
                 err => {
@@ -198,6 +209,19 @@ class _AppSignup extends Component {
     async _signUp () {
         const { match, history, signupUser } = this.props;
         const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
+        let authArr = [];
+        try {
+            authArr = await firebase.auth().fetchProvidersForEmail(email);
+        } catch(err) {
+            console.log(err);
+        }
+
+        console.log('authArr: ', authArr);
+
+        if(authArr.length > 0) {
+            history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+        }
+
         try {
             if (!isFBauth) {
                 await firebase.auth().createUserWithEmailAndPassword(email, password);
@@ -227,13 +251,13 @@ class _AppSignup extends Component {
             userId = user.uid;
 
             //if user exists, redirect to sign in page
-            firebase.database().ref('users/' + userId)
-            .once('value')
-            .then(snapshot => {
-                if(snapshot.val() !== null) {
-                    history.push('/login', {text: 'This account already exists. Please sign in instead'});
-                }
-            });
+            // firebase.database().ref('users/' + userId)
+            // .once('value')
+            // .then(snapshot => {
+            //     if(snapshot.val() !== null) {
+            //         history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+            //     }
+            // });
 
             const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
             // add admin fields

@@ -75,6 +75,11 @@ class _SoundwiseHeader extends Component {
                                     <Link to='/mysoundcasts'>My Soundcasts</Link>
                                 </li>
                                 }
+                                {this.props.userInfo.admin &&
+                                <li>
+                                    <Link to='/dashboard/soundcasts'>Admin Dashboard</Link>
+                                </li>
+                                }
                                 {this.props.userInfo.courses &&
                                 <li>
                                     <Link to='/myprograms'>My Courses</Link>
@@ -92,18 +97,34 @@ class _SoundwiseHeader extends Component {
             } else {
                 return (
                     <ul className="nav navbar-nav">
-                        <li className="propClone sm-no-border">
-                            <Link to='/courses' className="inner-link">COURSES</Link>
-                        </li>
-                        <li>
-                            <Link to='/myprograms'>My Library</Link>
-                        </li>
+                        {
+                            this.props.userInfo.courses &&
+                            <li className="propClone sm-no-border">
+                                <Link to='/courses' className="inner-link">COURSES</Link>
+                            </li>
+                        }
+                        {
+                            this.props.userInfo.courses &&
+                            <li>
+                                <Link to='/myprograms'>My Library</Link>
+                            </li>
+                        }
                         <li className="propClone sm-no-border" >
                             <a className='dropdown-toggle' data-toggle="dropdown">
                                 {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                                 <span className="caret"></span>
                             </a>
                             <ul className="dropdown-menu">
+                                {this.props.userInfo.soundcasts &&
+                                <li>
+                                    <Link to='/mysoundcasts'>My Soundcasts</Link>
+                                </li>
+                                }
+                                {this.props.userInfo.courses &&
+                                <li>
+                                    <Link to='/myprograms'>My Courses</Link>
+                                </li>
+                                }
                                 <li>
                                     <a onClick={() => this.signoutUser()}>
                                         <font style={{color: 'black'}}>LOG OUT</font>

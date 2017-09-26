@@ -107,15 +107,15 @@ class _Routes extends Component {
                             }
                         }
 
-                        if (_user.subscriptions) {
-                            for (let key in _user.subscriptions) {
+                        if (_user.soundcast) {
+                            for (let key in _user.soundcasts) {
                                 // watch soundcasts subscriptions
                                 firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
                                 firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
                                     if (snapshot.val()) {
                                         _user = JSON.parse(JSON.stringify(_user));
                                         const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                                        _user.subscriptions[key] = _soundcast;
+                                        _user.soundcasts[key] = _soundcast;
                                         that.props.signinUser(_user);
                                         if (_soundcast.episodes) {
                                             for (let epkey in _soundcast.episodes) {
@@ -124,7 +124,7 @@ class _Routes extends Component {
                                                 firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
                                                     if (snapshot.val()) {
                                                         _user = JSON.parse(JSON.stringify(_user));
-                                                        _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                        _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
                                                         that.props.signinUser(_user);
                                                     }
                                                 });
