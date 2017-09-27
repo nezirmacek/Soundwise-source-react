@@ -276,12 +276,12 @@ class _CreateEpisode extends Component {
                 soundcastTitle: userInfo.soundcasts_managed[this.currentSoundcastId].title,
             }).then(
                 res => {
-                    console.log(res);
+                    console.log('episode saved to db', res);
                     history.goBack();
                 }
             ).catch(
                 err => {
-                    console.log(err);
+                    console.log('episode failed to save to db', err);
                     history.goBack();
                 }
             );

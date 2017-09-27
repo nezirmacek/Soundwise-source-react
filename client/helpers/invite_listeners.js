@@ -7,7 +7,8 @@ export function inviteListeners (invitees, subject, content) {
     content,
   })
     .then(res => {
-      console.log(res);
+      // console.log(res);
+      // return res;
     })
     .catch(err => {
       console.log(err);

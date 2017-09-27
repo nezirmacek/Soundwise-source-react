@@ -5,7 +5,7 @@ import Axios from 'axios';
 import firebase from 'firebase';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
-import {getDateArray} from '../../../helpers/get_date_array';
+import {inviteListeners} from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -18,6 +18,12 @@ export default class Settings extends Component {
       publisherName: '',
       publisherImg: '',
       fileUploaded: false,
+      admins: [],
+      adminFormShow: false,
+      inviteSent: false,
+      inviteeEmail: '',
+      inviteeFirstName: '',
+      inviteeLastName: '',
     };
     this.loadFromProp = this.loadFromProp.bind(this);
     this._uploadToAws = this._uploadToAws.bind(this);
@@ -25,6 +31,35 @@ export default class Settings extends Component {
 
   componentDidMount() {
     this.loadFromProp();
+    const that = this;
+    const publisherId = this.props.userInfo.publisherID;
+    let admins = [];
+    firebase.database().ref(`publishers/${publisherId}/administrators`)
+    .on('value', snapshot => {
+        const adminArr = Object.keys(snapshot.val());
+        const promises = adminArr.map(adminId => {
+            return firebase.database().ref(`users/${adminId}`)
+                    .once('value')
+                    .then(snapshot => {
+                        admins.push({
+                            firstName: snapshot.val().firstName,
+                            lastName: snapshot.val().lastName,
+                            email: snapshot.val().email[0],
+                        })
+                    })
+                    .then(res => res, err => console.log(err));
+        });
+
+        Promise.all(promises)
+        .then(res => {
+            that.setState({
+                admins
+            })
+        }, err => {
+             console.log('promise error: ', err);
+        });
+
+    })
   }
 
   loadFromProp() {
@@ -78,14 +113,39 @@ export default class Settings extends Component {
     });
   }
 
+  handleInvite(e) {
+    this.setState({
+        [e.target.name]: e.target.value
+    })
+  }
+
+  inviteAdmin() {
+    const publisherId = this.props.userInfo.publisherID;
+    const userInfo = this.props.userInfo;
+    const { inviteeEmail, inviteeFirstName, inviteeLastName, publisherName } = this.state;
+    const inviteeArr = [inviteeEmail];
+    const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to become an admin for ${publisherName}`;
+    const content = `<p>Hi ${inviteeFirstName}!</p><p></p><p>This is an invitation for you to join the admin team of ${publisherName} on Soundwise. You can sign up for your admin account <a href="https://mysoundwise.com/signup/admin/${publisherId}">here</a>.</p><p></p><p>If you already have an account on Soundwise, you can log in and join your team <a href="https://mysoundwise.com/signin/admin/${publisherId}">here</a>.</p><p>These links are unique for you. Please do not share.</p>`;
+
+    inviteListeners(inviteeArr, subject, content);
+
+    const email = inviteeEmail.replace(/\./g, "(dot)");
+    firebase.database().ref(`publishers/${publisherId}/invitedAdmins/${email}`)
+    .set(true);
+
+    this.setState({
+        inviteSent: true,
+    });
+  }
+
   render() {
-    const { publisherImg, publisherName, fileUploaded } = this.state;
+    const { publisherImg, publisherName, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent } = this.state;
     const that = this;
     return (
             <div className='padding-30px-tb'>
                 <div className='padding-bottom-20px'>
                     <span className='title-medium '>
-                        Settings
+                        Publisher Settings
                     </span>
                 </div>
                 <div className="row">
@@ -157,8 +217,79 @@ export default class Settings extends Component {
                                 onClick={this.loadFromProp.bind(this)}
                             />
                         </div>
+                        <div style={{marginTop: 20,}}>
+                          <span style={{...styles.titleText, marginTop: 20,}}>
+                              Admins
+                          </span>
+                        </div>
+                        <div style={{marginTop: 10, marginBottom: 20,}}>
+                            <ul style={{listStyle: 'none', paddingLeft: 0,}}>
+                                {
+                                    admins.map((admin, i) => (
+                                        <li key={i}>
+                                            <span className='text-large'>{`${admin.firstName} ${admin.lastName} (${admin.email})`}</span>
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                        <div>
+                          <span style={styles.addAdmin} onClick={() => {that.setState({adminFormShow: true, inviteSent: false, inviteeEmail: '', inviteeFirstName: '', inviteeLastName: '',})}}>
+                            Add Another Admin
+                          </span>
+                        </div>
+                        {
+                            adminFormShow && !inviteSent &&
+                            <div className='row' style={{marginBottom: 10, marginLeft: 5,}}>
+                              <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                                <span>First Name</span>
+                                <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  name="inviteeFirstName"
+                                  onChange={this.handleInvite.bind(this)}
+                                  value={inviteeFirstName}
+                                />
+                              </div>
+                              <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                                <span>Last Name</span>
+                                <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  name="inviteeLastName"
+                                  onChange={this.handleInvite.bind(this)}
+                                  value={inviteeLastName}
+                                />
+                              </div>
+                              <div style={{width: '40%', display: 'inline-block', marginRight: 10,}}>
+                                <span>Email</span>
+                                <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  name="inviteeEmail"
+                                  onChange={this.handleInvite.bind(this)}
+                                  value={inviteeEmail}
+                                />
+                              </div>
+                              <div>
+                                    <button
+                                        onClick={this.inviteAdmin.bind(this)}
+                                        style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                                    >
+                                        Confirm
+                                    </button>
+                              </div>
+                            </div>
+                        }
+                        {
+                            adminFormShow && inviteSent &&
+                            <div style={{marginTop: 10,}}>
+                                <span className='text-large'><i>{`An email invitation has been sent to ${inviteeEmail}.`}</i></span>
+                            </div>
+                        }
                   </div>
                 </div>
+
             </div>
     )
   }
@@ -261,5 +392,12 @@ const styles = {
         marginLeft: 0,
         display: 'block',
     },
-
+    addAdmin: {
+        fontSize: 16,
+        // marginLeft: 10,
+        marginTop: 20,
+        marginBottom: 10,
+        color: Colors.link,
+        cursor: 'pointer',
+    },
 }

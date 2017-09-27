@@ -47,9 +47,16 @@ class _AppSignup extends Component {
         this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
     }
 
+    componentDidMount() {
+        // console.log('params: ', this.props.match.params);
+        if(this.props.match.params) {
+            this.publisherID = this.props.match.params.id;
+        }
+    }
+
     signUp() {
         const {firstName, lastName, email, password, pic_url} = this.state;
-        const {history} = this.props;
+        const {history, match} = this.props;
 
         this.setState({ isFBauth: false });
         if (!this._validateForm(firstName, lastName, email, password)) return;
@@ -58,7 +65,12 @@ class _AppSignup extends Component {
         .then(authArr => {
             console.log('authArr: ', authArr);
             if(authArr.length > 0) {
-                history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+                if(match.params.id) {
+                  history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
+                  return;
+                } else {
+                  history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+                }
             }
         })
         .catch(err => console.log('error: ', err));
@@ -73,15 +85,71 @@ class _AppSignup extends Component {
         // })
         // .catch(err => console.log('error: ', err));
 
-        if (this.props.match.params.mode !== 'admin') { // user case
+        if (match.params.mode !== 'admin') { // user case
             this._signUp();
-        } else { // admin case
+        } else if (match.params.id) { // admin from invitation with publisher id
+            this.signUpInvitedAdmin();
+        } else {
             this.setState({isPublisherFormShown: true});
         }
     }
 
     getUrl (url) {
         this.setState({publisherImage: url});
+    }
+
+    signUpInvitedAdmin() {
+        const that = this;
+        const { match, history } = this.props;
+        const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
+
+        if(!isFBauth) {
+            this._signUp().then(
+                res => {
+                    let creatorID = firebase.auth().currentUser.uid;
+                    firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`).set(true);
+
+                    firebase.database().ref(`publishers/${that.publisherID}/soundcasts`)
+                    .once('value')
+                    .then(snapshot => {
+                        firebase.database().ref(`users/${creatorID}/soundcasts_managed`)
+                        .set(snapshot.val());
+
+                        firebase.database().ref(`users/${creatorID}/admin`).set(true);
+
+                        console.log('completed adding publisher to invited admin');
+                    })
+                    .then(() => {
+                        that.compileUser();
+                    })
+                    .then(() => {
+                        history.push('/dashboard/soundcasts');
+                    })
+                }
+            );
+        } else {
+            this.signUpUser();
+            let creatorID = firebase.auth().currentUser.uid;
+            firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`).set(true);
+
+            firebase.database().ref(`publishers/${that.publisherID}/soundcasts`)
+            .once('value')
+            .then(snapshot => {
+                firebase.database().ref(`users/${creatorID}/soundcasts_managed`)
+                .set(snapshot.val());
+
+                firebase.database().ref(`users/${creatorID}/admin`).set(true);
+
+                console.log('completed adding publisher to invited admin');
+            })
+            .then(() => {
+                that.compileUser();
+            })
+            .then(() => {
+                history.push('/dashboard/soundcasts');
+            });
+        }
+
     }
 
     signUpAdmin () {
@@ -122,8 +190,89 @@ class _AppSignup extends Component {
         );
     }
 
+    compileUser() {
+        const { signinUser, history, userInfo, match } = this.props;
+        let creatorID = firebase.auth().currentUser.uid;
+
+        firebase.database().ref(`users/${creatorID}`)
+        .on('value', snapshot => {
+            let _user = snapshot.val();
+
+            if (_user.soundcasts_managed && _user.admin) {
+                if (_user.publisherID) {
+                    // add publisher with admins (without watching)
+                    firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
+                        if (snapshot.val()) {
+                            const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
+                            _publisher.id = _user.publisherID;
+                            _user.publisher = _publisher;
+
+                            if (_user.publisher.administrators) {
+                                for (let adminId in _user.publisher.administrators) {
+                                    firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
+                                        if (snapshot.val()) {
+                                            const _admin = JSON.parse(JSON.stringify(snapshot.val()));
+                                            _user.publisher.administrators[adminId] = _admin;
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+
+                for (let key in _user.soundcasts_managed) {
+                    firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
+                        if (snapshot.val()) {
+                            _user = JSON.parse(JSON.stringify(_user));
+                            const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                            _user.soundcasts_managed[key] = _soundcast;
+                            signinUser(_user);
+                            if (_soundcast.episodes) {
+                                for (let epkey in _soundcast.episodes) {
+                                    firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
+                                        if (snapshot.val()) {
+                                            _user = JSON.parse(JSON.stringify(_user));
+                                            _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                            signinUser(_user);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            if (_user.soundcasts) {
+                for (let key in _user.soundcasts) {
+                    firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
+                        if (snapshot.val()) {
+                            _user = JSON.parse(JSON.stringify(_user));
+                            const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                            _user.soundcasts[key] = _soundcast;
+                            signinUser(_user);
+                            if (_soundcast.episodes) {
+                                for (let epkey in _soundcast.episodes) {
+                                    firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
+                                        if (snapshot.val()) {
+                                            _user = JSON.parse(JSON.stringify(_user));
+                                            _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                            signinUser(_user);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     addDefaultSoundcast() {
         const { history } = this.props;
+        const that = this;
 
         let creatorID = firebase.auth().currentUser.uid;
         console.log('creatorID: ', creatorID);
@@ -180,15 +329,19 @@ class _AppSignup extends Component {
             ),
         ];
 
-        Promise.all(_promises).then(
+        Promise.all(_promises)
+        .then(
             res => {
                 console.log('completed adding soundcast');
-                history.push('/dashboard/soundcasts');
+                that.compileUser();
             },
             err => {
                 console.log('failed to complete adding soundcast');
             }
-        );
+        )
+        .then(() => {
+            history.push('/dashboard/soundcasts');
+        });
     }
 
     _validateForm (firstName, lastName, email, password, isFBauth) {
@@ -216,10 +369,15 @@ class _AppSignup extends Component {
             console.log(err);
         }
 
-        console.log('authArr: ', authArr);
+        // console.log('authArr: ', authArr);
 
         if(authArr.length > 0) {
-            history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+            if(match.params.id) {
+              history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
+              return;
+            } else {
+              history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+            }
         }
 
         try {
@@ -326,8 +484,17 @@ class _AppSignup extends Component {
                         delete _user.photoURL;
                         signinUser(_user);
 
-                        if (_user.admin) {
+                        that.setState({
+                            firstName: _user.firstName,
+                            lastName: _user.lastName,
+                            email: _user.email[0],
+                            pic_url: _user.pic_url,
+                        });
+
+                        if (_user.admin && !match.params.id) {
                             history.push('/dashboard/soundcasts');
+                        } else if (match.params.id) {
+                            that.signUpInvitedAdmin();
                         } else  if (_user.soundcasts) {
                             history.push('/mysoundcasts');
                         } else  {
@@ -337,7 +504,7 @@ class _AppSignup extends Component {
                         const { email, photoURL, displayName } = result.user;
                         const name = displayName.split(' ');
 
-                        if (match.params.mode === 'admin') {
+                        if (match.params.mode === 'admin' && !match.params.id) {
                             that.setState({
                                 firstName: name[0],
                                 lastName: name[1],
@@ -345,6 +512,14 @@ class _AppSignup extends Component {
                                 pic_url: photoURL,
                                 isPublisherFormShown: true,
                             });
+                        } else if(match.params.id) {
+                            that.setState({
+                                firstName: name[0],
+                                lastName: name[1],
+                                email,
+                                pic_url: photoURL,
+                            });
+                            that.signUpInvitedAdmin();
                         } else {
                             that.setState({
                                 firstName: name[0],
@@ -387,8 +562,10 @@ class _AppSignup extends Component {
                                     .then(snapshot => {
                                         const { firstName, lastName, email, pic_url } = snapshot.val();
                                         that.setState({ firstName, lastName, email, pic_url });
-                                        if (match.params.mode === 'admin') {
+                                        if (match.params.mode === 'admin' && !match.params.id) {
                                             that.setState({isPublisherFormShown: true});
+                                        } else if(match.params.id) {
+                                            that.signUpInvitedAdmin();
                                         } else {
                                             that.signUpUser();
                                         }
@@ -495,6 +672,7 @@ class _AppSignup extends Component {
                                 </div>
                                 {
                                     match.params.mode === 'admin'
+                                    && !match.params.id
                                     &&
                                     <OrangeSubmitButton
                                         label="NEXT"

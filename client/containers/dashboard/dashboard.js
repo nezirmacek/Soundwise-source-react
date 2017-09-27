@@ -71,7 +71,7 @@ const verticalMenuItems = [
     },
     {
         path: 'settings',
-        label: 'Settings',
+        label: 'Publisher Settings',
         iconClass: 'cog',
         isMenuItemVisible: true,
         Component: Settings,

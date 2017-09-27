@@ -174,8 +174,10 @@ class _Routes extends Component {
             <Switch>
                 <Route exact path="/" component={Page}/>
                 <Route path="/about" component={About}/>
-                <Route path='/signup/:mode' component={AppSignup} />
-                <Route path='/signin' component={AppSignin} />
+                <Route exact={true} path='/signup/:mode' component={AppSignup} />
+                <Route path='/signup/:mode/:id' component={AppSignup} />
+                <Route path='/signin/:mode/:id' component={AppSignin} />
+                <Route exact={true} path='/signin' component={AppSignin} />
                 <Route path='/trial_request' component={TrialRequest} />
                 <Route path="/gift" component={Referral} />
                 <Route path="/creator_terms" component={CreatorTerms} />

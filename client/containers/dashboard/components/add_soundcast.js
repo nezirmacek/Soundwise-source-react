@@ -109,7 +109,7 @@ export default class AddSoundcast extends Component {
         }
 
         // send email invitations to invited listeners
-        const subject = `${userInfo.firstName} ${userInfo.lastName} invited you to subscribe to ${title}`;
+        const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to subscribe to ${title}`;
         const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${title} on Soundwise. Start by downloading the Soundwise app <a href="https://mysoundwise.com">here</a>.</p><p></p><p>If you've already installed the app on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
         inviteListeners(subscribersArr, subject, content);
 
