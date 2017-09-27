@@ -172,8 +172,15 @@ class _CreateEpisode extends Component {
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
+
+                //replace 'http' with 'https'
+                let url = res.data[0].url;
+                if(url.slice(0, 5) !== 'https') {
+                    url = url.replace(/http/i, 'https');
+                }
+
                 _self.setState({
-                    [`${type}Url`]: res.data[0].url,
+                    [`${type}Url`]: url,
                     [`${type}Uploading`]: false,
                     wrongFileTypeFor: null,
                 });
