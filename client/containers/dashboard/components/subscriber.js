@@ -49,7 +49,7 @@ export default class Subscriber extends Component {
   }
 
   getListeningStats(userId, publisherId) {
-    Axios.get('/api/stats_by_user_publisher', {
+    Axios.get('https://mysoundwise.com/api/stats_by_user_publisher', {
       params: {
         userId,
         publisherId,
