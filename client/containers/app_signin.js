@@ -30,7 +30,7 @@ class _AppSignin extends Component {
             message: '',
             pic_url: '',
             courses: '',
-            redirectToReferrer: false
+            redirectToReferrer: false,
         };
 
         this.publisherID = null;
@@ -305,6 +305,10 @@ class _AppSignin extends Component {
                 // Step 2.
                 // User's email already exists.
                 // The pending Facebook credential.
+
+                // that.setState({
+                //     message: error.toString()
+                // })
                 console.log('facebook error');
                 var pendingCred = error.credential;
                 // The provider account's email address.
@@ -363,7 +367,7 @@ class _AppSignin extends Component {
 
 
     render() {
-        const { firstName, lastName, email, password, redirectToReferrer } = this.state
+        const { firstName, lastName, email, password, redirectToReferrer, message } = this.state
         const { from } = this.props.location.state || { from: { pathname: '/courses' } }
         const {history} = this.props;
 
@@ -500,6 +504,7 @@ class _AppSignin extends Component {
 								value={password}
 								validators={[minLengthValidator.bind(null, 1)]}
 							/>
+                            <div><span style={{color: 'red', fontSize: 16,}}>{message}</span></div>
 							<OrangeSubmitButton
 								label="SIGN IN"
 								onClick={this.signIn.bind(this)}
