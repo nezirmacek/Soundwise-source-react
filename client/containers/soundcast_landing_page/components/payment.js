@@ -90,6 +90,7 @@ export default class Payment extends Component {
                     current_period_end, //this will be null if one time payment
                     billingCycle: billingCycle ? billingCycle : null,
                     planID: planID ? planID : null,
+                    date_subscribed: moment().format('X')
                 });
                 // add stripe_id to user data if not already exists
                 if(charge) {
@@ -100,7 +101,7 @@ export default class Payment extends Component {
                 }
                 //add user to soundcast
                 firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
-                .set(true);
+                .set(moment().format('X'));
                 //remove from invited list
                 firebase.database().ref(`soundcasts/${soundcastID}/invited/${_email}`)
                 .remove();
