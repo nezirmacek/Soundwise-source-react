@@ -49,16 +49,8 @@ export default class Subscriber extends Component {
   }
 
   getListeningStats(userId, publisherId) {
-    Axios.get('https://mysoundwise.com/api/stats_by_user_publisher', {
-      params: {
-        userId,
-        publisherId,
-        startDate: this.state.startDate,
-        endDate: this.state.endDate
-      }
-    })
+    Axios.get(`https://mysoundwise.com/api/stats_by_user_publisher?userId=${userId}&publisherId=${publisherId}&startDate='${this.state.startDate}'&endDate='${this.state.endDate}'`)
     .then(res => {
-      console.log('res.data: ', res.data);
       this.countListenings(res.data);
     })
   }
@@ -164,7 +156,6 @@ export default class Subscriber extends Component {
               .once('value')
               .then(snapshot => {
                 const soundcastId = snapshot.val().soundcastID;
-                console.log('soundcastID: ', soundcastId);
                 soundcastObj[soundcastId].episodes[episodeId] = {
                   title: snapshot.val().title,
                   date_created: snapshot.val().date_created,
@@ -187,8 +178,6 @@ export default class Subscriber extends Component {
   }
 
   matchEpisodes(soundcastObj, episodes) {
-    console.log('soundcastObj: ', soundcastObj);
-    console.log('episodes: ', episodes);
     for(var id in episodes) {
                 soundcastObj[episodes[id].soundcastId].episodes[id].percentCompleted = episodes[id].percentCompleted;
                 soundcastObj[episodes[id].soundcastId].episodes[id].lastListen = episodes[id].date;

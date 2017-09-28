@@ -19,8 +19,8 @@ export default class Analytics extends Component {
       currentSoundcastID: null,
       currentSoundcast: null,
       soundcasts_managed: [],
-      startDate: '2017-01-01',
-      endDate: new Date().toISOString().slice(0, 10),
+      startDate: moment().subtract(3, 'months').format().slice(0, 10),
+      endDate: moment().format().slice(0, 10),
       data: {
         labels: [],
         datasets: [
@@ -80,13 +80,7 @@ export default class Analytics extends Component {
   getListeningStats(soundcastId) {
     // console.log('soundcastId: ', soundcastId);
     const that = this;
-    Axios.get('/api/stats_by_soundcast', {
-      params: {
-        soundcastId,
-        startDate: this.state.startDate,
-        endDate: this.state.endDate
-      }
-    })
+    Axios.get(`https://mysoundwise.com/api/stats_by_soundcast?soundcastId=${soundcastId}&startDate='${this.state.startDate}'&endDate='${this.state.endDate}'`)
     .then(res => {
       this.countListenings(res.data);
       // console.log(that.state.currentSoundcast.title, res.data);
