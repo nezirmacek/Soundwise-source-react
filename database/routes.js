@@ -82,6 +82,7 @@ module.exports = (app) => {
 			],
 		})
 			.then(data => {
+				console.log('data sent: ', data);
 				res.send(data);
 			})
 			.catch(err => { res.status(500).send(err); });

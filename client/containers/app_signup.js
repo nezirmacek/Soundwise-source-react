@@ -666,7 +666,7 @@ class _AppSignup extends Component {
                                         {/*style={styles.checkbox}*/}
                                     {/*/>*/}
                                     <span style={styles.acceptText}>
-                                        By signing up I accept the terms of use and privacy policy.
+                                        By signing up I accept the terms of use and <Link to="/privacy">privacy policy</Link>.
                                     </span>
                                 </div>
                                 {

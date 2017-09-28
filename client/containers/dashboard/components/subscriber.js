@@ -58,6 +58,7 @@ export default class Subscriber extends Component {
       }
     })
     .then(res => {
+      console.log('res.data: ', res.data);
       this.countListenings(res.data);
     })
   }
