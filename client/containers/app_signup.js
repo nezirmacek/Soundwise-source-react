@@ -48,8 +48,7 @@ class _AppSignup extends Component {
     }
 
     componentDidMount() {
-        // console.log('params: ', this.props.match.params);
-        if(this.props.match.params) {
+        if(this.props.match.params.id) {
             this.publisherID = this.props.match.params.id;
         }
     }
