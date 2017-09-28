@@ -19,6 +19,7 @@ import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
 import CreatorTerms from './components/creator_terms';
+import Privacy from './components/privacy';
 import TermsFreeContent from './components/terms_free_content_May2017';
 import { OrderConfirmation } from './components/order_confirmation';
 import {AppSignup} from './containers/app_signup';
@@ -181,6 +182,7 @@ class _Routes extends Component {
                 <Route path='/trial_request' component={TrialRequest} />
                 <Route path="/gift" component={Referral} />
                 <Route path="/creator_terms" component={CreatorTerms} />
+                <Route path="/privacy" component={Privacy} />
                 <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
                 <Route exact path="/myprograms" component={MyCourses}/>
                 <Route exact path="/mysoundcasts" component={MySoundcasts}/>

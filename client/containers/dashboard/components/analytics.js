@@ -79,6 +79,7 @@ export default class Analytics extends Component {
 
   getListeningStats(soundcastId) {
     // console.log('soundcastId: ', soundcastId);
+    const that = this;
     Axios.get('/api/stats_by_soundcast', {
       params: {
         soundcastId,
@@ -88,6 +89,7 @@ export default class Analytics extends Component {
     })
     .then(res => {
       this.countListenings(res.data);
+      // console.log(that.state.currentSoundcast.title, res.data);
     })
   }
 
