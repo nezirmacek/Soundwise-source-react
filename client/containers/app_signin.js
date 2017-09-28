@@ -32,11 +32,20 @@ class _AppSignin extends Component {
             courses: '',
             redirectToReferrer: false
         };
+
+        this.publisherID = null;
+    }
+
+    componentDidMount() {
+        // console.log('params in signin: ', this.props.match.params);
+        if(this.props.match.params.id) {
+            this.publisherID = this.props.match.params.id;
+        }
     }
 
     async signIn() {
         const { firstName, lastName, email, password, pic_url, courses } = this.state;
-        const { signinUser, history, userInfo } = this.props;
+        const { signinUser, history, userInfo, match } = this.props;
         // let soundcast, checked, sumTotal;
 
         if(history.location.state) {
@@ -53,85 +62,24 @@ class _AppSignin extends Component {
                 if (snapshot.val()) {
                     let _user = JSON.parse(JSON.stringify(snapshot.val()));
                     signinUser(_user);
+
                     if (history.location.state) {
+                        that.compileUser(_user);
                         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-                    } else if (_user.admin) {
+                    } else if (_user.admin && !match.params.id) {
+                        that.compileUser(_user);
                         history.push('/dashboard/soundcasts');
+                    } else if(match.params.id) {
+                        this.signInInvitedAdmin();
                     } else if (_user.courses) {
+                        that.compileUser(_user);
                         history.push('/myprograms');
                     } else {
+                        that.compileUser(_user);
                         history.push('/mysoundcasts');
                     }
 
-                    if (_user.soundcasts_managed && _user.admin) {
-                        if (_user.publisherID) {
-                            // add publisher with admins (without watching)
-                            firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
-                                if (snapshot.val()) {
-                                    const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
-                                    _publisher.id = _user.publisherID;
-                                    _user.publisher = _publisher;
 
-                                    if (_user.publisher.administrators) {
-                                        for (let adminId in _user.publisher.administrators) {
-                                            firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
-                                                if (snapshot.val()) {
-                                                    const _admin = JSON.parse(JSON.stringify(snapshot.val()));
-                                                    _user.publisher.administrators[adminId] = _admin;
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }
-
-                        for (let key in _user.soundcasts_managed) {
-                            firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
-                                if (snapshot.val()) {
-                                    _user = JSON.parse(JSON.stringify(_user));
-                                    const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                                    _user.soundcasts_managed[key] = _soundcast;
-                                    signinUser(_user);
-                                    if (_soundcast.episodes) {
-                                        for (let epkey in _soundcast.episodes) {
-                                            firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
-                                                if (snapshot.val()) {
-                                                    _user = JSON.parse(JSON.stringify(_user));
-                                                    _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-                                                    signinUser(_user);
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    if (_user.subscriptions) {
-                        for (let key in _user.subscriptions) {
-                            firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
-                                if (snapshot.val()) {
-                                    _user = JSON.parse(JSON.stringify(_user));
-                                    const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                                    _user.subscriptions[key] = _soundcast;
-                                    signinUser(_user);
-                                    if (_soundcast.episodes) {
-                                        for (let epkey in _soundcast.episodes) {
-                                            firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
-                                                if (snapshot.val()) {
-                                                    _user = JSON.parse(JSON.stringify(_user));
-                                                    _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-                                                    signinUser(_user);
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
                 }
             });
 
@@ -141,6 +89,109 @@ class _AppSignin extends Component {
             });
             console.log(error.toString());
         }
+    }
+
+    compileUser(_user) {
+        const { signinUser, history, userInfo, match } = this.props;
+
+        if (_user.soundcasts_managed && _user.admin) {
+            if (_user.publisherID) {
+                // add publisher with admins (without watching)
+                firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
+                    if (snapshot.val()) {
+                        const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
+                        _publisher.id = _user.publisherID;
+                        _user.publisher = _publisher;
+
+                        if (_user.publisher.administrators) {
+                            for (let adminId in _user.publisher.administrators) {
+                                firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
+                                    if (snapshot.val()) {
+                                        const _admin = JSON.parse(JSON.stringify(snapshot.val()));
+                                        _user.publisher.administrators[adminId] = _admin;
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
+            for (let key in _user.soundcasts_managed) {
+                firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
+                    if (snapshot.val()) {
+                        _user = JSON.parse(JSON.stringify(_user));
+                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                        _user.soundcasts_managed[key] = _soundcast;
+                        signinUser(_user);
+                        if (_soundcast.episodes) {
+                            for (let epkey in _soundcast.episodes) {
+                                firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
+                                    if (snapshot.val()) {
+                                        _user = JSON.parse(JSON.stringify(_user));
+                                        _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        signinUser(_user);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        if (_user.soundcasts) {
+            for (let key in _user.soundcasts) {
+                firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
+                    if (snapshot.val()) {
+                        _user = JSON.parse(JSON.stringify(_user));
+                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                        _user.soundcasts[key] = _soundcast;
+                        signinUser(_user);
+                        if (_soundcast.episodes) {
+                            for (let epkey in _soundcast.episodes) {
+                                firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
+                                    if (snapshot.val()) {
+                                        _user = JSON.parse(JSON.stringify(_user));
+                                        _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        signinUser(_user);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    signInInvitedAdmin() {
+        const userId = firebase.auth().currentUser.uid;
+        const { match, history } = this.props;
+        const that = this;
+
+        firebase.database().ref(`publishers/${match.params.id}/administrators/${userId}`).set(true);
+
+        firebase.database().ref(`publishers/${match.params.id}/soundcasts`)
+        .once('value')
+        .then(snapshot => {
+            firebase.database().ref(`users/${userId}/soundcasts_managed`)
+            .set(snapshot.val());
+
+            firebase.database().ref(`users/${userId}/admin`).set(true);
+
+            console.log('completed adding publisher to invited admin');
+        })
+        .then(() => {
+            firebase.database().ref(`users/${userId}`)
+            .on('value', snapshot => {
+                const _user = snapshot.val();
+                that.compileUser(_user);
+            });
+        })
+        .then(() => {
+            history.push('/dashboard/soundcasts');
+        })
     }
 
     handleChange(field, e) {
@@ -190,7 +241,7 @@ class _AppSignin extends Component {
 
     handleFBAuth() {
         const that = this;
-        const { history, userInfo, signinUser } = this.props;
+        const { history, userInfo, signinUser, match } = this.props;
         if(history.location.state) {
             let {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         }
@@ -214,9 +265,13 @@ class _AppSignin extends Component {
                         signinUser(_user);
 
                         if (history.location.state) {
+                            that.compileUser(_user);
                             history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
                         } else if (_user.admin) {
+                            that.compileUser(_user);
                             history.push('/dashboard/soundcasts');
+                        } else if(match.params.id) {
+                            that.signInInvitedAdmin();
                         } else {
                             history.push('/myprograms');
                         }
@@ -237,7 +292,11 @@ class _AppSignin extends Component {
                         // history.push('/myprograms');
 
                         alert('You don’t have a Soundwise account. Please create or sign up for a soundcast to get started.');
-                        history.push('/signup');
+                        if(match.params.id) {
+                            history.push(`/signup/admin/${match.params.id}`);
+                        } else {
+                            history.push('/signup');
+                        }
                     }
                 })
         }).catch(function(error) {
@@ -268,9 +327,10 @@ class _AppSignin extends Component {
                             firebase.database().ref('users/' + userId)
                                 .once('value')
                                 .then(snapshot => {
+                                    const _user = snapshot.val();
                                     const firstName = snapshot.val().firstName;
                                     const lastName = snapshot.val().lastName;
-                                    const email = snapshot.val().email;
+                                    const email = snapshot.val().email[0];
                                     const courses = snapshot.val().courses;
                                     const soundcasts = snapshot.val().soundcasts;
                                     const pic_url = snapshot.val().pic_url;
@@ -279,12 +339,16 @@ class _AppSignin extends Component {
                                     //     courses: {}
                                     //   })
                                     // }
-                                    that.props.signinUser({firstName, lastName, email, pic_url, courses, soundcasts});
+                                    that.props.signinUser(_user);
 
                                     if (soundcast) {
+                                        that.compileUser(_user);
                                         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-                                    } else if (_user.admin) {
+                                    } else if (_user.admin && !match.params.id) {
+                                        that.compileUser(_user);
                                         history.push('/dashboard/soundcasts');
+                                    } else if(match.params.id) {
+                                        that.signInInvitedAdmin();
                                     } else {
                                         history.push('/myprograms');
                                     }

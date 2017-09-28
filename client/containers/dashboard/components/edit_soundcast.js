@@ -92,10 +92,17 @@ export default class EditSoundcast extends Component {
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
+
+                //replace 'http' with 'https'
+                let url = res.data[0].url;
+                if(url.slice(0, 5) !== 'https') {
+                    url = url.replace(/http/i, 'https');
+                }
+
                 if(hostImg) {
-                    _self.setState({hostImageURL: res.data[0].url});
+                    _self.setState({hostImageURL: url});
                 } else {
-                    _self.setState({imageURL: res.data[0].url});
+                    _self.setState({imageURL: url});
                 }
             })
             .catch(function (err) {
@@ -570,7 +577,7 @@ export default class EditSoundcast extends Component {
                                         >
                                             Upload
                                         </button>
-                                        <span style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                                        <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                                       </div>
                                     }
                                 </div>

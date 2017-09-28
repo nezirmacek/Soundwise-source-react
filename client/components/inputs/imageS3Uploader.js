@@ -102,7 +102,7 @@ export default class ImageS3Uploader extends Component {
                             >
                                 Upload
                             </button>
-                            <span style={_styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</span>
+                            <span style={_styles.fileTypesLabel}>.jpg or .png files accepted</span>
                           </div>
                         }
                     </div>

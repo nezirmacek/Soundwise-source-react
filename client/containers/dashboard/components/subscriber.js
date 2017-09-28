@@ -18,8 +18,8 @@ export default class Subscriber extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: '2017-01-01',
-      endDate: new Date().toISOString().slice(0, 10),
+      startDate: moment().subtract(3, 'months').format().slice(0, 10),
+      endDate: moment().format().slice(0, 10),
       episodes: {},
       soundcastArr: [],
       minutesToday: 0,
@@ -103,10 +103,10 @@ export default class Subscriber extends Component {
           return obj;
         } else {
           minutesAllTime += Math.floor(obj.length / 60);
-          return obj.length / 60;
           if(i > statsByDate.length - 1 - dayOfMonth) {
             minutesThisMonth += Math.floor(obj.length / 60);
           }
+          return Math.floor(obj.length / 60);
         }
       });
 

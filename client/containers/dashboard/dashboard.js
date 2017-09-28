@@ -15,6 +15,7 @@ import Subscriber from "./components/subscriber";
 import Announcements from "./components/announcements";
 import Analytics from "./components/analytics";
 import EditSoundcast from './components/edit_soundcast';
+import Settings from './components/settings';
 
 const verticalMenuItems = [
     {
@@ -67,6 +68,13 @@ const verticalMenuItems = [
         iconClass: 'bullhorn',
         isMenuItemVisible: true,
         Component: Announcements,
+    },
+    {
+        path: 'settings',
+        label: 'Publisher Settings',
+        iconClass: 'cog',
+        isMenuItemVisible: true,
+        Component: Settings,
     },
 ];
 

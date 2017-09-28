@@ -35,7 +35,9 @@ export default class InviteSubscribersModal extends Component {
     }
 
     // send email invitations to invited listeners
-    inviteListeners(inviteeArr, soundcast.title, userInfo.firstName, userInfo.lastName);
+    const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to subscribe to ${soundcast.title}`;
+    const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${soundcast.title} on Soundwise. Start by downloading the Soundwise app <a href="https://mysoundwise.com">here</a>.</p><p></p><p>If you've already installed the app on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+    inviteListeners(inviteeArr, subject, content);
 
     inviteeArr.forEach(email => {
         const _email = email.replace(/\./g, "(dot)");

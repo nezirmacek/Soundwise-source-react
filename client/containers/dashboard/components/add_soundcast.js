@@ -57,10 +57,17 @@ export default class AddSoundcast extends Component {
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
+
+                //replace 'http' with 'https'
+                let url = res.data[0].url;
+                if(url.slice(0, 5) !== 'https') {
+                    url = url.replace(/http/i, 'https');
+                }
+
                 if(hostImg) {
-                    _self.setState({hostImageURL: res.data[0].url});
+                    _self.setState({hostImageURL: url});
                 } else {
-                    _self.setState({imageURL: res.data[0].url});
+                    _self.setState({imageURL: url});
                 }
             })
             .catch(function (err) {
@@ -109,7 +116,7 @@ export default class AddSoundcast extends Component {
         }
 
         // send email invitations to invited listeners
-        const subject = `${userInfo.firstName} ${userInfo.lastName} invited you to subscribe to ${title}`;
+        const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to subscribe to ${title}`;
         const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${title} on Soundwise. Start by downloading the Soundwise app <a href="https://mysoundwise.com">here</a>.</p><p></p><p>If you've already installed the app on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
         inviteListeners(subscribersArr, subject, content);
 
@@ -166,16 +173,16 @@ export default class AddSoundcast extends Component {
                 }
             ),
             // add soundcast to admin
-            firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
-                res => {
-                    console.log('success add soundcast to admin.soundcasts_managed: ', res);
-                    return res;
-                },
-                err => {
-                    console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-                    Promise.reject(err);
-                }
-            ),
+            // firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
+            //     res => {
+            //         console.log('success add soundcast to admin.soundcasts_managed: ', res);
+            //         return res;
+            //     },
+            //     err => {
+            //         console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+            //         Promise.reject(err);
+            //     }
+            // ),
             Axios.post('/api/soundcast', {
                 soundcastId: this.soundcastId,
                 publisherId: userInfo.publisherID,
@@ -189,7 +196,23 @@ export default class AddSoundcast extends Component {
             )
         ];
 
-        let _promises_2 = inviteeArr.map(invitee => {
+        //add soundcast to admins
+        let adminArr = Object.keys(userInfo.publisher.administrators);
+
+        let _promises_2 = adminArr.map(adminId => {
+            return firebase.database().ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`).set(true)
+                .then(
+                res => {
+                    console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                    return res;
+                },
+                err => {
+                    console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+                    Promise.reject(err);
+                })
+        });
+
+        let _promises_3 = inviteeArr.map(invitee => {
             return firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true).then(
                     res => {
                         console.log('success adding invitee to invitations node: ', res);
@@ -202,7 +225,7 @@ export default class AddSoundcast extends Component {
                 )
         });
 
-        let _promises = _promises_1.concat(_promises_2);
+        let _promises = _promises_1.concat(_promises_2, _promises_3);
 
         Promise.all(_promises).then(
             res => {

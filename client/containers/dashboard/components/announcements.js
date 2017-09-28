@@ -134,7 +134,9 @@ export default class Announcements extends Component {
             const payload = {
               notification: {
                 title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
-                body: `${message.slice(0, 50)}...`
+                body: message,
+                badge: '1',
+                sound: 'default'
               }
             };
             sendNotifications(registrationTokens, payload); //sent push notificaiton

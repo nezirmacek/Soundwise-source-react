@@ -21,11 +21,30 @@ export default class SoundcastsManaged extends Component {
       currentSoundcast: null,
       showStatsModal: false,
       currentEpisode: null,
+      userInfo: {},
     }
 
     this.editSoundcast = this.editSoundcast.bind(this);
     this.handleModal = this.handleModal.bind(this);
     this.handleStatsModal = this.handleStatsModal.bind(this);
+  }
+
+  componentDidMount() {
+    if(this.props.userInfo) {
+      const { userInfo } = this.props;
+      this.setState({
+        userInfo
+      })
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.userInfo) {
+      const { userInfo } = nextProps;
+      this.setState({
+        userInfo
+      })
+    }
   }
 
   editSoundcast(soundcastId, soundcast) {
@@ -74,7 +93,8 @@ export default class SoundcastsManaged extends Component {
   }
 
   render() {
-        const { userInfo, history, id } = this.props;
+    const { userInfo } = this.state;
+    const { history, id } = this.props;
 
     if (!id) {
 			const _soundcasts_managed = [];

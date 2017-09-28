@@ -19,6 +19,7 @@ import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
 import CreatorTerms from './components/creator_terms';
+import Privacy from './components/privacy';
 import TermsFreeContent from './components/terms_free_content_May2017';
 import { OrderConfirmation } from './components/order_confirmation';
 import {AppSignup} from './containers/app_signup';
@@ -107,15 +108,15 @@ class _Routes extends Component {
                             }
                         }
 
-                        if (_user.subscriptions) {
-                            for (let key in _user.subscriptions) {
+                        if (_user.soundcast) {
+                            for (let key in _user.soundcasts) {
                                 // watch soundcasts subscriptions
                                 firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
                                 firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
                                     if (snapshot.val()) {
                                         _user = JSON.parse(JSON.stringify(_user));
                                         const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                                        _user.subscriptions[key] = _soundcast;
+                                        _user.soundcasts[key] = _soundcast;
                                         that.props.signinUser(_user);
                                         if (_soundcast.episodes) {
                                             for (let epkey in _soundcast.episodes) {
@@ -124,7 +125,7 @@ class _Routes extends Component {
                                                 firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
                                                     if (snapshot.val()) {
                                                         _user = JSON.parse(JSON.stringify(_user));
-                                                        _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                        _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
                                                         that.props.signinUser(_user);
                                                     }
                                                 });
@@ -174,11 +175,14 @@ class _Routes extends Component {
             <Switch>
                 <Route exact path="/" component={Page}/>
                 <Route path="/about" component={About}/>
-                <Route path='/signup/:mode' component={AppSignup} />
-                <Route path='/signin' component={AppSignin} />
+                <Route exact={true} path='/signup/:mode' component={AppSignup} />
+                <Route path='/signup/:mode/:id' component={AppSignup} />
+                <Route path='/signin/:mode/:id' component={AppSignin} />
+                <Route exact={true} path='/signin' component={AppSignin} />
                 <Route path='/trial_request' component={TrialRequest} />
                 <Route path="/gift" component={Referral} />
                 <Route path="/creator_terms" component={CreatorTerms} />
+                <Route path="/privacy" component={Privacy} />
                 <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
                 <Route exact path="/myprograms" component={MyCourses}/>
                 <Route exact path="/mysoundcasts" component={MySoundcasts}/>

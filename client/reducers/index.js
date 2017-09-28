@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 function user(state= {
     userInfo: {
         soundcasts_managed: {},
-        subscriptions: {},
+        soundcasts: {},
     },
     isLoggedIn: ''
 }, action) {
@@ -19,9 +19,10 @@ function user(state= {
                 isLoggedIn: true
             }
         case types.SIGNIN:
+            const newUser = Object.assign({}, state.userInfo, action.payload);
             return {
                 ...state,
-                userInfo: action.payload,
+                userInfo: newUser,
                 isLoggedIn: true
             }
         case types.SIGNOUT:
