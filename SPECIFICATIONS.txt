@@ -75,10 +75,18 @@ api:
     4. db data
         User:
         {
-          "userId": "VDEGSpUQeJTs8nN3BI1ZdeT6Ek22",
-          "firstName": "Denis",
-          "lastName": "Yakovenko",
-          "picURL": "https://scontent.xx.fbcdn.net/v/t1.0-1/c15.0.50.50/p50x50/10354686_10150004552801856_220367501106153455_n.jpg?oh=b7a22416832612429f32d3e7cd356fd5&oe=5A262F2F"
+            "userId": "VDEGSpUQeJTs8nN3BI1ZdeT6Ek22",
+            "firstName": "Denis",
+            "lastName": "Yakovenko",
+            "picURL": "https://scontent.xx.fbcdn.net/v/t1.0-1/c15.0.50.50/p50x50/10354686_10150004552801856_220367501106153455_n.jpg?oh=b7a22416832612429f32d3e7cd356fd5&oe=5A262F2F",
+            "token": "reoehcnqerchqmbxmqiubr4q4brc9qu 4mruxqwbxri...",
+            soundcasts: {
+                "1231231234s": {
+                    subscribed: true,
+                    date_subscribed: "1231231234",
+                    current_period_end: "2342342345"
+                }
+            }
         }
 
         Soundcast:
