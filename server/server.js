@@ -135,6 +135,6 @@ boot(app, __dirname, function(err) {
 // 	'/notfound',
 // ];
 app.use(express.static('./client'));
-app.all(/^\/[^(api)(explorer)]/, function(request, response) {
+app.all(/^\/(?!api|explorer)/, function(request, response) {
 	response.sendFile(path.resolve('./client/index.html'));
 });
