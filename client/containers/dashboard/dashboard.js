@@ -82,11 +82,13 @@ class _Dashboard extends Component {
     constructor (props) {
         super(props);
 
-        if (!props.isLoggedIn || !props.userInfo.admin) {
-            this.props.history.push('/signin');
-        }
     }
 
+    componentDidMount() {
+        // if (!this.props.isLoggedIn || !this.props.userInfo.admin) {
+        //     this.props.history.push('/signin');
+        // }
+    }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.userInfo.admin || !nextProps.isLoggedIn) {
             nextProps.history.push('/signin');

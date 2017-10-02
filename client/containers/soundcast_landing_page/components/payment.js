@@ -76,7 +76,7 @@ export default class Payment extends Component {
 
         // send email invitations to subscribers
         const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
-        const content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app <a href="https://mysoundwise.com">here</a>, and sign in with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already instaled the app, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+        const content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app <a href="https://mysoundwise.com">here</a>, and sign in with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
         inviteListeners([userInfo.email[0]], subject, content);
 
         firebase.auth().onAuthStateChanged(function(user) {

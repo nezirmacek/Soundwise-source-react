@@ -153,7 +153,7 @@ class _AppSignin extends Component {
                                 firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
                                     if (snapshot.val()) {
                                         _user = JSON.parse(JSON.stringify(_user));
-                                        _user.subscriptions[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                        _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
                                         signinUser(_user);
                                     }
                                 });

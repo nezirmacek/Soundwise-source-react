@@ -38,8 +38,13 @@ export default class ImageS3Uploader extends Component {
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
-                _self.setState({imageURL: res.data[0].url});
-                cb(res.data[0].url);
+                //replace 'http' with 'https'
+                let url = res.data[0].url;
+                if(url.slice(0, 5) !== 'https') {
+                    url = url.replace(/http/i, 'https');
+                }
+                _self.setState({imageURL: url});
+                cb(url);
             })
             .catch(function (err) {
                 // POST failed...
