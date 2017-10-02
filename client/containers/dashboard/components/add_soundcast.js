@@ -124,7 +124,7 @@ export default class AddSoundcast extends Component {
         const inviteeArr = [];
         subscribersArr.map((email, i) => {
             const _email = email.replace(/\./g, "(dot)");
-            invited[_email] = true;  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+            invited[_email] = moment().format('X');  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
             inviteeArr[i] = _email;
         });
 

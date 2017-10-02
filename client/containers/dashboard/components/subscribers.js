@@ -81,6 +81,7 @@ export default class Subscribers extends Component {
 
  retrieveSubscriberInfo(userId) {
     const that = this;
+    const {currentSoundcastID} = this.state;
     return firebase.database().ref('users/'+userId)
             .once('value')
             .then(snapshot => {
@@ -146,7 +147,9 @@ export default class Subscribers extends Component {
           //   console.log("Remove failed: " + error.message)
           // });
 
-        firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID).remove();
+        firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/subscribed').set(false);
+
+        firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/current_period_end').set(moment().format('X'));
 
         for(var i = this.subscribers.length - 1; i>=0; i-=1) {
           if(this.subscribers[i].id == listenerID) {
@@ -163,7 +166,7 @@ export default class Subscribers extends Component {
   }
 
   render() {
-    const { soundcasts_managed, subscribers, checked, currentSoundcast } = this.state;
+    const { soundcasts_managed, subscribers, checked, currentSoundcast, currentSoundcastID } = this.state;
     const { history } = this.props;
     // const _subscribers = [];
     // for (let id in _soundcast.subscribed) {
@@ -227,10 +230,9 @@ export default class Subscribers extends Component {
               <table>
                 <tr style={styles.tr}>
                   <th style={{...styles.th, width: 37}}></th>
-                  <th style={{...styles.th, width: 250}}>NAME</th>
-                  <th style={{...styles.th, width: 250}}>EMAIL</th>
+                  <th style={{...styles.th, width: 320}}>NAME</th>
+                  <th style={{...styles.th, width: 350}}>EMAIL</th>
                   <th style={{...styles.th, width: 170}}>SUBSCRIBED ON</th>
-                  <th style={{...styles.th, width: 170}}>TOTAL LISTEN</th>
                   <th style={{...styles.th, width: 170}}>STATS</th>
                   <th style={{...styles.th, width: 100}}></th>
                 </tr>
@@ -240,10 +242,14 @@ export default class Subscribers extends Component {
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{...styles.td, width: 37}}></td>
-                        <td style={{...styles.td, width: 250}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
-                        <td style={{...styles.td, width: 250}}>{subscriber.email}</td>
-                        <td style={{...styles.td, width: 170}}>{'__'}</td>
-                        <td style={{...styles.td, width: 170}}>{0}</td>
+                        <td style={{...styles.td, width: 320}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
+                        <td style={{...styles.td, width: 350}}>{subscriber.email}</td>
+                        <td style={{...styles.td, width: 170}}>{
+                          subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
+                          moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')
+                          ||
+                          '__'
+                        }</td>
                         <td style={{...styles.td, width: 170}}>
                           <i onClick={() => history.push({
                               pathname: `/dashboard/subscriber/${subscriber.id}`,

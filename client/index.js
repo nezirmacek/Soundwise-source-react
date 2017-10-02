@@ -24,7 +24,7 @@ const store = createStore(
   compose(
     applyMiddleware(thunkMiddleware),
     // offline(offlineConfig)
-    autoRehydrate()
+    // autoRehydrate()
   )
 )
 
@@ -135,15 +135,15 @@ export default class App extends Component {
   }
 
   componentWillMount(){
-    const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']}, () => {
-      this.setState({ rehydrated: true })
-    })
+    // const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']}, () => {
+    //   this.setState({ rehydrated: true })
+    // })
   }
 
   render() {
-    if(!this.state.rehydrated) {
-      return <div>Loading...</div>
-    }
+    // if(!this.state.rehydrated) {
+    //   return <div>Loading...</div>
+    // }
     return (
       <Provider store = { store }>
         <Routes />

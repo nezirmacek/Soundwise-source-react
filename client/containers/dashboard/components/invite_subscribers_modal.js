@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ReactCrop from 'react-image-crop';
 import axios from 'axios';
 import firebase from 'firebase';
+import moment from 'moment';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -42,7 +43,7 @@ export default class InviteSubscribersModal extends Component {
     inviteeArr.forEach(email => {
         const _email = email.replace(/\./g, "(dot)");
         if(_email) {
-          firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(true);
+          firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(moment().format('X'));
           //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
           firebase.database().ref(`invitations/${_email}/${this.props.soundcast.id}`).set(true);
         }

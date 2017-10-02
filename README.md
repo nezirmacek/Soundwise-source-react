@@ -51,6 +51,13 @@ node server/bin/create-lb-tables.js
 node server/bin/automigrate.js
 ```
 
+### SSL certificate renewal
+- every three months, need to renew certificate (cron job set up for auto-renewal, but need to check regularly, just to make sure)
+```
+sudo certbot --nginx -d mysoundwise.com -d www.mysoundwise.com
+```
+For reference, see https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04
+
 #### Issues
 
 #####- wrong buffer length:

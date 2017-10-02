@@ -279,7 +279,7 @@ class _AppSignup extends Component {
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
         const subscribed = {};
         const _email = email.replace(/\./g, "(dot)");
-        subscribed[_email] = true;
+        subscribed[creatorID] = moment().format('X');
 
         const soundcastId = `${moment().format('x')}s`;
 
@@ -288,8 +288,7 @@ class _AppSignup extends Component {
             imageURL: publisherImage,
             short_description: 'First soundcast',
             creatorID,
-            publisherID: this.publisherID,
-            subscribed
+            publisherID: this.publisherID
         };
 
         let _promises = [

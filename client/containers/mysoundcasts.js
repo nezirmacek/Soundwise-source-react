@@ -110,6 +110,10 @@ class _MySoundcasts extends Component {
                     .catch(error => {
                         console.log(error);
                     })
+                } else {
+                    // if it's a free soundcast, end the current subscription period immediately
+                    firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+                    .set(moment().format('X'));
                 }
             }
         } else {
