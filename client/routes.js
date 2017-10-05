@@ -109,7 +109,7 @@ class _Routes extends Component {
                             }
                         }
 
-                        if (_user.soundcast) {
+                        if (_user.soundcasts) {
                             for (let key in _user.soundcasts) {
                                 // watch soundcasts subscriptions
                                 firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice

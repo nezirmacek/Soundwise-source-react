@@ -5,6 +5,7 @@ import { Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
+import Dots from 'react-activity/lib/Dots';
 
 import Footer from '../components/footer';
 import {SoundwiseHeader} from '../components/soundwise_header';
@@ -20,6 +21,8 @@ class _MySoundcasts extends Component {
             userSoundcasts: [],
             userId: '',
             paymentError: '',
+            currentSoundcast: '',
+            paymentProcessing: false,
         };
 
         this.handleSubscription = this.handleSubscription.bind(this);
@@ -27,14 +30,35 @@ class _MySoundcasts extends Component {
         this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
     }
 
-    componentWillMount () {
+    componentDidMount () {
         const that = this;
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                const userId = firebase.auth().currentUser.uid;
-                that.retrieveSoundcasts(userId);
-            }
-        })
+        // firebase.auth().onAuthStateChanged(function(user) {
+        //     if (user) {
+        //         const userId = firebase.auth().currentUser.uid;
+        //         that.retrieveSoundcasts(userId);
+        //     }
+        // })
+        // let userSoundcasts = [];
+        // for (var key in this.props.userInfo.soundcasts) {
+        //     userSoundcasts.push(this.props.userInfo.soundcasts[key]);
+        // }
+
+        // this.setState({
+        //     userSoundcasts
+        // });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const that = this;
+        let userSoundcasts = [];
+        if(nextProps.userInfo.soundcasts) {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const userId = firebase.auth().currentUser.uid;
+                    that.retrieveSoundcasts(userId);
+                }
+            })
+        }
     }
 
     retrieveSoundcasts(userId) {
@@ -48,7 +72,8 @@ class _MySoundcasts extends Component {
                 const soundcasts = snapshot.val();
                 const promises = soundcastIDs.map((id, i) => {
                     return firebase.database().ref('soundcasts/' + id)
-                        .on('value', snapshot => {
+                        .once('value')
+                        .then(snapshot => {
                             userSoundcasts[i] = {
                                 soundcastId: id,
                                 title: snapshot.val().title,
@@ -61,6 +86,7 @@ class _MySoundcasts extends Component {
                                 billingCycle: soundcasts[id].billingCycle,
                             };
                          })
+                        .then(res => res, err => console.log(err));
                 });
 
                 Promise.all(promises)
@@ -87,6 +113,10 @@ class _MySoundcasts extends Component {
         const that = this;
         const {userId} = this.state;
         const {soundcastId, paymentID, subscribed} = soundcast;
+
+        this.setState({
+            currentSoundcast: soundcastId
+        });
 
         //if subsubscribed == true, unsubscribe; if subscribed == false, re-subscribe
         if(subscribed) {
@@ -117,6 +147,11 @@ class _MySoundcasts extends Component {
                 }
             }
         } else {
+            if(soundcast.planID) { //if it's a paid soundcast
+                this.setState({
+                    paymentProcessing: true,
+                });
+
                 Axios.post('/api/recurring_charge', {
                     currency: 'usd',
                     receipt_email: that.props.userInfo.email[0],
@@ -133,7 +168,6 @@ class _MySoundcasts extends Component {
                     if(subscription.plan) {  // if payment made, push course to user data
                         that.setState({
                             paid: true,
-                            startPaymentSubmission: false
                         });
 
                         that.addSoundcastToUser(subscription, soundcast); //add soundcast to user database
@@ -146,12 +180,17 @@ class _MySoundcasts extends Component {
                         paymentError: 'Your payment is declined :( Please check your credit card information.',
                     })
                 });
+            } else { //if it's a free soundcast
+                that.addSoundcastToUser({}, soundcast);
+            }
+
         }
     }
 
-    addSoundcastToUser(subscription, soundcast) {
+    addSoundcastToUser(charge, soundcast) {
         const paymentID = charge.id ? charge.id : null;
         const planID = charge.plan ? charge.plan.id : null;
+        const billingCycle = soundcast.billingCycle ? soundcast.billingCycle : null;
         const current_period_end = charge.current_period_end ? charge.current_period_end : 4638902400; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
 
         const userId = this.state.userId;
@@ -160,14 +199,19 @@ class _MySoundcasts extends Component {
         .set({
             subscribed: true,
             paymentID,
+            date_subscribed: moment().format('X'),
             current_period_end, //this will be null if one time payment
-            billingCycle: soundcast.billingCycle,
+            billingCycle,
             planID,
         });
 
         //add user to soundcast
-        firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
-        .set(true);
+        firebase.database().ref(`soundcasts/${soundcast.soundcastId}/subscribed/${userId}`)
+        .set(moment().format('X'));
+
+        this.setState({
+            paymentProcessing: false
+        });
 
         alert("You're re-subscribed to this soundcast.");
     }
@@ -204,11 +248,11 @@ class _MySoundcasts extends Component {
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                                 <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
-                                    {userSoundcasts.length && 'MY SOUNDCASTS' || `YOU HAVEN'T SUBSCRIBED TO ANY SOUNDCASTS YET`}
+                                    {this.state.userSoundcasts.length && 'MY SOUNDCASTS' || `YOU HAVEN'T SUBSCRIBED TO ANY SOUNDCASTS YET`}
                                 </h2>
                             </div>
                             <div>
-                                {userSoundcasts.map((soundcast, i) => (
+                                {this.state.userSoundcasts.map((soundcast, i) => (
                                     <div className="row" key={i} style={styles.row}>
                                         <div className="col-lg-7 col-md-7 col-sm-7 col-xs-12" style={styles.soundcastInfo}>
                                             <img src={soundcast.imageURL} style={styles.soundcastImage} />
@@ -225,11 +269,14 @@ class _MySoundcasts extends Component {
                                         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12" style={{...styles.soundcastInfo, justifyContent: 'flex-start'}}>
                                             <div style={{...styles.button, borderColor: Colors.link, display: 'block'}} onClick={() => this.handleSubscription(soundcast)}>
                                                 {
-                                                    soundcast.subscribed && 'Unsubscribe' || 'Re-subscribe'
+                                                    soundcast.subscribed && 'Unsubscribe'
+                                                    || this.state.paymentProcessing && (this.state.currentSoundcast == soundcast.soundcastId) &&
+                                                        <Dots style={{display: 'flex'}} color="#727981" size={21} speed={1}/>
+                                                    || 'Re-subscribe'
                                                 }
                                             </div>
                                             <div style={{color: 'red'}}>
-                                                {this.state.paymentError}
+                                                { this.state.currentSoundcast == soundcast.soundcastId && this.state.paymentError}
                                             </div>
                                         </div>
                                     </div>

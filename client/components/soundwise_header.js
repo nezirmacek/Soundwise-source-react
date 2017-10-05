@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import * as firebase from 'firebase';
 import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
@@ -33,6 +34,7 @@ class _SoundwiseHeader extends Component {
         firebase.auth().signOut().then(
             function() {
                 that.props.signoutUser();
+                that.props.history.push('/signin')
             },
             function(error) {
                 console.error('Sign Out Error', error);
@@ -197,6 +199,6 @@ const mapStateToProps = state => {
   }
 };
 
-export const SoundwiseHeader = connect(mapStateToProps, mapDispatchToProps)(_SoundwiseHeader);
+const SoundwiseHeader_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundwiseHeader);
 
-
+export const SoundwiseHeader = withRouter(SoundwiseHeader_worouter);

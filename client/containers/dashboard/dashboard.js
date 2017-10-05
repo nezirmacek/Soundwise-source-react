@@ -81,22 +81,36 @@ const verticalMenuItems = [
 class _Dashboard extends Component {
     constructor (props) {
         super(props);
-
+        this.state = {
+            userInfo: {},
+        }
     }
 
     componentDidMount() {
         // if (!this.props.isLoggedIn || !this.props.userInfo.admin) {
         //     this.props.history.push('/signin');
         // }
+        if(this.props.userInfo.admin) {
+            this.setState({
+                userInfo: this.props.userInfo
+            });
+        }
     }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.userInfo.admin || !nextProps.isLoggedIn) {
             nextProps.history.push('/signin');
         }
+
+        if(nextProps.userInfo.admin) {
+            this.setState({
+                userInfo: nextProps.userInfo
+            });
+        }
     }
 
     render() {
-        const { userInfo, history, match, isLoggedIn } = this.props;
+        const { history, match, isLoggedIn } = this.props;
+        let userInfo = this.state.userInfo;
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
 
         return (
