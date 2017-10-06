@@ -3,6 +3,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import firebase from 'firebase';
 import moment from 'moment';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import EditSoundcast from './edit_soundcast';
@@ -21,12 +22,13 @@ export default class SoundcastsManaged extends Component {
       currentSoundcast: null,
       showStatsModal: false,
       currentEpisode: null,
-      userInfo: {},
+      userInfo: {soundcasts_managed: {}},
     }
 
     this.editSoundcast = this.editSoundcast.bind(this);
     this.handleModal = this.handleModal.bind(this);
     this.handleStatsModal = this.handleStatsModal.bind(this);
+    this.deleteEpisode = this.deleteEpisode.bind(this);
   }
 
   componentDidMount() {
@@ -54,6 +56,17 @@ export default class SoundcastsManaged extends Component {
       state: {
         id: soundcastId,
         soundcast
+      }
+    })
+  }
+
+  editEpisode(episode) {
+    const { userInfo, history, id } = this.props;
+    history.push({
+      pathname: `/dashboard/edit_episode/${episode.id}`,
+      state: {
+        id: episode.id,
+        episode
       }
     })
   }
@@ -90,6 +103,15 @@ export default class SoundcastsManaged extends Component {
       currentEpisode: episode,
     });
     this.handleStatsModal();
+  }
+
+  deleteEpisode(episode) {
+    const title = episode.title;
+    if(confirm(`Are you sure you want to delete ${title}? You won't be able to go back.`)) {
+      firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`).remove();
+      firebase.database().ref(`episodes/${episode.id}`).remove();
+      alert(`${title} has been deleted`);
+    }
   }
 
   render() {
@@ -191,14 +213,19 @@ export default class SoundcastsManaged extends Component {
 				</div>
 			);
 		} else if(id) {
-        	const _soundcast = userInfo.soundcasts_managed[id];
+        	let _soundcast = {};
+          if(userInfo.soundcasts_managed[id]) {
+            _soundcast = userInfo.soundcasts_managed[id];
+          };
         	const _episodes = [];
-        	for (let id in _soundcast.episodes) {
-        		const _episode = _soundcast.episodes[id];
-    				if (typeof(_episode)==='object') {
-    					_episode.id = id;
-    					_episodes.push(_episode);
-    				}
+          if(_soundcast.episodes) {
+            for (let id in _soundcast.episodes) {
+              const _episode = _soundcast.episodes[id];
+              if (typeof(_episode)==='object') {
+                _episode.id = id;
+                _episodes.push(_episode);
+              }
+            }
           }
 
   			return (
@@ -233,8 +260,16 @@ export default class SoundcastsManaged extends Component {
     										<td style={styles.td}>
                           <div style={{marginTop: 24}}>{episode.title}</div>
                           <div style={{marginBottom: 5}}>
-                            <span style={{marginRight: 10, cursor: 'pointer', fontSize: 13}}>delete</span>
-                            <span style={{cursor: 'pointer', fontSize: 13}}>edit</span>
+                            <span
+                              style={{marginRight: 10, cursor: 'pointer', fontSize: 13, color: 'red'}}
+                              onClick={() => this.deleteEpisode(episode)}>
+                                delete
+                            </span>
+                            <span
+                              style={{cursor: 'pointer', fontSize: 13, color: Colors.link}}
+                              onClick={() => this.editEpisode(episode)}>
+                              edit
+                            </span>
                           </div>
                         </td>
     										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>

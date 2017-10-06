@@ -5,6 +5,7 @@ import React, {Component} from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as _ from 'lodash';
+import firebase from 'firebase';
 
 import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
@@ -16,6 +17,7 @@ import Announcements from "./components/announcements";
 import Analytics from "./components/analytics";
 import EditSoundcast from './components/edit_soundcast';
 import Settings from './components/settings';
+import EditEpisode from './components/edit_episode';
 
 const verticalMenuItems = [
     {
@@ -76,6 +78,12 @@ const verticalMenuItems = [
         isMenuItemVisible: true,
         Component: Settings,
     },
+    {
+        path: 'edit_episode',
+        label: 'edit_episode',
+        isMenuItemVisible: false,
+        Component: EditEpisode,
+    },
 ];
 
 class _Dashboard extends Component {
@@ -87,14 +95,18 @@ class _Dashboard extends Component {
     }
 
     componentDidMount() {
-        // if (!this.props.isLoggedIn || !this.props.userInfo.admin) {
-        //     this.props.history.push('/signin');
-        // }
-        if(this.props.userInfo.admin) {
-            this.setState({
-                userInfo: this.props.userInfo
-            });
-        }
+        const that = this;
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                if(that.props.userInfo.admin) {
+                    that.setState({
+                        userInfo: that.props.userInfo
+                    });
+                }
+            } else {
+                that.props.history.push('/signin');
+            }
+        });
     }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.userInfo.admin || !nextProps.isLoggedIn) {

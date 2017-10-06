@@ -25,51 +25,92 @@ export default class Settings extends Component {
       inviteeFirstName: '',
       inviteeLastName: '',
     };
+    this.loadFromProp(props.userInfo);
     this.loadFromProp = this.loadFromProp.bind(this);
     this._uploadToAws = this._uploadToAws.bind(this);
   }
 
   componentDidMount() {
-    this.loadFromProp();
-    const that = this;
-    const publisherId = this.props.userInfo.publisherID;
-    let admins = [];
-    firebase.database().ref(`publishers/${publisherId}/administrators`)
-    .on('value', snapshot => {
-        const adminArr = Object.keys(snapshot.val());
-        const promises = adminArr.map(adminId => {
-            return firebase.database().ref(`users/${adminId}`)
-                    .once('value')
-                    .then(snapshot => {
-                        admins.push({
-                            firstName: snapshot.val().firstName,
-                            lastName: snapshot.val().lastName,
-                            email: snapshot.val().email[0],
-                        })
-                    })
-                    .then(res => res, err => console.log(err));
-        });
+    if(this.props.userInfo.publisher) {
+      const { userInfo } = this.props;
+      this.loadFromProp(userInfo);
+      const that = this;
+      const publisherId = userInfo.publisherID;
+      let admins = [];
+      firebase.database().ref(`publishers/${publisherId}/administrators`)
+      .on('value', snapshot => {
+          const adminArr = Object.keys(snapshot.val());
+          const promises = adminArr.map(adminId => {
+              return firebase.database().ref(`users/${adminId}`)
+                      .once('value')
+                      .then(snapshot => {
+                          admins.push({
+                              firstName: snapshot.val().firstName,
+                              lastName: snapshot.val().lastName,
+                              email: snapshot.val().email[0],
+                          })
+                      })
+                      .then(res => res, err => console.log(err));
+          });
 
-        Promise.all(promises)
-        .then(res => {
-            that.setState({
-                admins
-            })
-        }, err => {
-             console.log('promise error: ', err);
-        });
-
-    })
+          Promise.all(promises)
+          .then(res => {
+              that.setState({
+                  admins
+              })
+          }, err => {
+               console.log('promise error: ', err);
+          });
+      })
+    }
   }
 
-  loadFromProp() {
-    const publisherId = this.props.userInfo.publisherID;
-    const {name, imageUrl} = this.props.userInfo.publisher;
-    this.setState({
-      publisherName: name,
-      publisherImg: imageUrl,
-      publisherId,
-    })
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
+      const { userInfo } = nextProps;
+            console.log('userInfo: ', userInfo );
+      this.loadFromProp(userInfo);
+      const that = this;
+      const publisherId = userInfo.publisherID;
+      let admins = [];
+      firebase.database().ref(`publishers/${publisherId}/administrators`)
+      .on('value', snapshot => {
+          const adminArr = Object.keys(snapshot.val());
+          const promises = adminArr.map(adminId => {
+              return firebase.database().ref(`users/${adminId}`)
+                      .once('value')
+                      .then(snapshot => {
+                          admins.push({
+                              firstName: snapshot.val().firstName,
+                              lastName: snapshot.val().lastName,
+                              email: snapshot.val().email[0],
+                          })
+                      })
+                      .then(res => res, err => console.log(err));
+          });
+
+          Promise.all(promises)
+          .then(res => {
+              that.setState({
+                  admins
+              })
+          }, err => {
+               console.log('promise error: ', err);
+          });
+      })
+    }
+  }
+
+  loadFromProp(userInfo) {
+    if(userInfo.publisher) {
+      const publisherId = userInfo.publisherID;
+      const {name, imageUrl} = userInfo.publisher;
+      this.setState({
+        publisherName: name,
+        publisherImg: imageUrl,
+        publisherId,
+      })
+    }
   }
 
   _uploadToAws (file) {

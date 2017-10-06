@@ -86,6 +86,10 @@ export default class EditSoundcast extends Component {
         let data = new FormData();
         const splittedFileName = file.name.split('.');
         const ext = (splittedFileName)[splittedFileName.length - 1];
+        if(ext !== 'png' && ext !=='jpg' && ext !== 'jpeg') {
+          alert('Only .png or .jpg files are accepted. please upload a new file.');
+          return;
+        }
         data.append('file', file, `${this.soundcastId}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
         Axios.post('/api/upload', data)
@@ -159,7 +163,7 @@ export default class EditSoundcast extends Component {
               const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
 
               firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-              .set(editedSoundcast).then(
+              .set(changedSoundcast).then(
                 res => {
                     history.goBack();
                 },

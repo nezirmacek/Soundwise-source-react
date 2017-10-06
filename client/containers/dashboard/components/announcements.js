@@ -25,10 +25,27 @@ export default class Announcements extends Component {
 
     this.handlePublish = this.handlePublish.bind(this);
     this.sortAnnouncements = this.sortAnnouncements.bind(this);
+    this.loadUser = this.loadUser.bind(this);
   }
 
   componentDidMount() {
-    const { userInfo } = this.props;
+    if(this.props.userInfo.soundcasts_managed) {
+      const { userInfo } = this.props;
+      // console.log('userInfo: ', userInfo);
+      this.loadUser(userInfo);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.userInfo.soundcasts_managed) {
+      if(typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
+        const { userInfo } = nextProps;
+        this.loadUser(userInfo);
+      }
+    }
+  }
+
+  loadUser(userInfo) {
     const _subscribers = [];
     const _soundcasts_managed = [];
 
@@ -196,6 +213,8 @@ export default class Announcements extends Component {
           <div>
             {
               announcementsArr.map((announcement, i) => {
+                const likes = announcement.likes ? Object.keys(announcement.likes).length : 0;
+                const comments = announcement.comments ? Object.keys(announcement.comments).length : 0;
                 return (
                   <div style={styles.existingAnnouncement} key={i}>
                     <div style={styles.announcementContainer}>
@@ -203,7 +222,7 @@ export default class Announcements extends Component {
                       <div style={styles.content} className='text-large'>
                         {announcement.content}
                       </div>
-                      <div style={styles.likes}>0 likes  0 comments</div>
+                      <div style={styles.likes}>{`${likes} likes  ${comments} comments`}</div>
                     </div>
                   </div>
                 )
