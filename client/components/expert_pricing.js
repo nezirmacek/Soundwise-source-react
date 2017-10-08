@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const ExpertPricing = () => (
-  <section className=" builder-bg padding-70px-tb xs-padding-30px-tb cover-background tz-builder-bg-image border-none" style={{background:`linear-gradient(rgba(0,0,0,0.1), rgba(247,107,28,0.3))`}}>
+  <section className=" builder-bg  xs-padding-30px-tb cover-background tz-builder-bg-image border-none" style={{background:`linear-gradient(rgba(0,0,0,0.1), rgba(247,107,28,0.3))`, paddingBottom: 80}}>
       <div className="container">
           <div className="row">
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">

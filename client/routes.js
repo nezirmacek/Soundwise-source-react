@@ -169,11 +169,11 @@ class _Routes extends Component {
               <meta property="og:url" content="https://mysoundwise.com/" />
               <meta property="og:title" content="Soundwise"/>
               <meta property="fb:app_id" content='1726664310980105' />
-              <meta property="og:description" content="Soundwise is a audio content management system that helps real estate trainers and brokers disseminate trainings and informational updates in audio to real estate agents."/>
+              <meta property="og:description" content="Soundwise is an audio content management system that helps organizations and experts engage their audience and provide training on the go."/>
               <meta property="og:image" content="https://mysoundwise.com/images/soundwise_homepage.png" />
               <title>Soundwise: the most efficient way to train real estate agents</title>
-              <meta name="description" content="Soundwise is a audio content management system that helps real estate trainers and brokers disseminate trainings and informational updates in audio to real estate agents." />
-              <meta name="keywords" content="soundwise, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app" />
+              <meta name="description" content="Soundwise is an audio content management system that helps organizations and experts engage their audience and provide training on the go." />
+              <meta name="keywords" content="soundwise, training, online education, education software, subscription, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app" />
             </Helmet>
             <Switch>
                 <Route exact path="/" component={Page}/>

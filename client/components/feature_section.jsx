@@ -43,7 +43,7 @@ const settings = {
 const Feature_section = (props) => {
   const {description, feature1, feature2, feature3, feature4, featureTitle1, featureTitle2, featureTitle3, featureTitle4} = props.content;
   return (
-            <section className="padding-80px-tb feature-style4 builder-bg xs-padding-30px-tb cover-background tz-builder-bg-image border-none" style={{background:`linear-gradient(rgba(97,225,251,0.3), rgba(0,0,0,0.1))`}}>
+            <section className="padding-80px-tb feature-style4 builder-bg xs-padding-30px-tb cover-background tz-builder-bg-image border-none" style={{background:`linear-gradient(rgba(97,225,251,0.3), rgba(0,0,0,0.1))`, paddingTop: 80, paddingBottom: 30}}>
                 <div className="container">
                     <div className="row">
 
