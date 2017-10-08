@@ -21,13 +21,23 @@ const styles = {
   navItem: {
     display: 'inline'
   },
+  navlink: {
+    fontSize: 16,
+    float: 'right',
+    marginTop: 6,
+  },
+  aboutLink: {
+    marginTop: 6,
+    fontSize: 16,
+    float: 'left',
+  },
   navButton: {
     borderColor: 'white',
     borderWidth: 2,
-    padding: '10px 15px',
-    marginBottom: 10,
+    padding: '10px 10px',
+    marginTop: 6,
   },
-}
+};
 
 class _Header extends Component {
   constructor(props) {
@@ -64,6 +74,7 @@ class _Header extends Component {
 
 
   render() {
+    const {title, tagline, logoImage, backgroundImage, gradient1, gradient2} = this.props.content
     return (
       <div className="header-style6">
           <header className="header-style10" id="header-section17">
@@ -72,11 +83,18 @@ class _Header extends Component {
                   <div className="container navigation-menu">
                       <div className="row">
 
-                          <div className="col-md-3 col-sm-4 col-xs-9">
-                              <a href="#home" className="inner-link"><img alt="" src="images/soundwiselogo_white.svg" data-img-size="(W)163px X (H)40px"/></a>
+                          <div className="col-md-2 col-sm-2 col-xs-3">
+                              <Link to='/' className="inner-link"><img alt="" src={logoImage} data-img-size="(W)163px X (H)40px"/></Link>
                           </div>
-
-                          <div className="col-md-9 col-sm-8 col-xs-3 position-inherit">
+                          <div className='col-md-6 col-sm-6 col-xs-7'>
+                              <div className="nav-button propClone no-margin-tb  btn-medium margin-twelve-left xs-no-margin-right text-white font-weight-600" >
+                                <Link className="text-white font-weight-600" style={styles.aboutLink} to='/realestate'>Real Estate Brokers</Link>
+                              </div>
+                              <div className="nav-button propClone no-margin-tb  btn-medium margin-twelve-left xs-no-margin-right text-white font-weight-600" >
+                                <Link className="text-white font-weight-600" style={styles.aboutLink} to='/experts'>Expert Trainers</Link>
+                              </div>
+                          </div>
+                          <div className="col-md-5 col-sm-5 col-xs-2 position-inherit">
                               <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
                                   <span className="sr-only">Toggle navigation</span>
                                   <span className="icon-bar"></span>
@@ -84,10 +102,9 @@ class _Header extends Component {
                                   <span className="icon-bar"></span>
                               </button>
                               <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
-                                  <ul className="nav navbar-nav">
-                                      <li className="propClone"><a className="inner-link" href="#"></a></li>
-                                      <li className="propClone"><a className="inner-link" href="#"></a></li>
-                                      <li className="display-inline-block margin-one no-margin-tb xs-margin-nine-bottom xs-no-margin xs-width-100"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>GET STARTED</span></Link></li>
+                                  <ul className="nav navbar-nav" style={{display: 'flex', alignItems: 'center'}}>
+                                      <li className="propClone"><Link className="inner-link" to="/signin" style={styles.navlink}>Log In</Link></li>
+                                      <li className="propClone  float-left sm-no-margin-tb"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>GET STARTED</span></Link></li>
                                   </ul>
                               </div>
                           </div>
@@ -96,15 +113,15 @@ class _Header extends Component {
               </nav>
 
           </header>
-          <section className="no-padding cover-background tz-builder-bg-image border-none" data-img-size="(W)1920px X (H)994px" style={{background:"linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('images/header_img_bg_2.png')"}}>
+          <section className="no-padding cover-background tz-builder-bg-image border-none" data-img-size="(W)1920px X (H)994px" style={{background:`linear-gradient(-45deg, ${gradient1}, ${gradient2}), url(${backgroundImage})`}}>
               <div className="container one-fourth-screen xs-padding-nineteen-bottom position-relative">
                   <div className="slider-typography xs-position-static text-center">
                       <div className="slider-text-middle-main">
 
                           <div className="slider-text-middle text-left padding-left-right-px">
-                              <div className="col-md-6 no-padding margin-twenty-top sm-margin-twenty-three-top header-banner">
-                                  <h1 className="title-extra-large-4 md-title-extra-large-3 font-weight-400 line-height-65 sm-title-extra-large text-white  text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text">Train, engage and retain your agents with audios</h1>
-                                  <div className="text-white text-extra-large margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text"><p>Soundwise allows real estate brokers and trainers to easily disseminate training materials and updates in audio to help their agents stay productive and engaged.</p></div>
+                              <div className="col-md-6 no-padding margin-twenty-top sm-margin-twenty-three-top header-banner" >
+                                  <h1 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large   text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text text-white" style={{fontWeight: 800}} >{title}</h1>
+                                  <div className=" text-extra-large margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text text-white font-weight-700"><p>{tagline}</p></div>
                                   <div className="float-left width-100">
                                       <Link to="/trial_request" className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
 

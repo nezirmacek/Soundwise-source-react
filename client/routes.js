@@ -15,6 +15,8 @@ injectTapEventPlugin();
 import { config, awsConfig } from '../config';
 import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
 import Page from './components/page';
+import PageRealEstate from './components/page_realestate';
+import PageExperts from './components/page_experts';
 import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
@@ -176,6 +178,8 @@ class _Routes extends Component {
             <Switch>
                 <Route exact path="/" component={Page}/>
                 <Route path="/about" component={About}/>
+                <Route path="/realestate" component={PageRealEstate}/>
+                <Route path="/experts" component={PageExperts}/>
                 <Route exact={true} path='/signup/:mode' component={AppSignup} />
                 <Route path='/signup/:mode/:id' component={AppSignup} />
                 <Route path='/signin/:mode/:id' component={AppSignin} />
