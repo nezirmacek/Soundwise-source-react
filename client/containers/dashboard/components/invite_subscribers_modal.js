@@ -26,7 +26,7 @@ export default class InviteSubscribersModal extends Component {
 
   inviteListeners() {
     const inviteeArr = this.state.inviteeList.split(',');
-
+    const that = this;
     const { soundcast, userInfo } = this.props;
 
     for(var i = inviteeArr.length -1; i >= 0; i--) {
@@ -41,11 +41,21 @@ export default class InviteSubscribersModal extends Component {
     inviteListeners(inviteeArr, subject, content);
 
     inviteeArr.forEach(email => {
-        const _email = email.replace(/\./g, "(dot)");
+        let _email = email.replace(/\./g, "(dot)");
+        _email = _email.trim().toLowerCase();
         if(_email) {
           firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(moment().format('X'));
           //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
-          firebase.database().ref(`invitations/${_email}/${this.props.soundcast.id}`).set(true);
+          firebase.database().ref(`invitations/${_email}`)
+          .once('value')
+          .then(snapshot => {
+            if(snapshot.val()) {
+              const update = {...snapshot.val(), [that.props.soundcast.id]: true};
+              firebase.database().ref(`invitations/${_email}`).update(update);
+            } else {
+              firebase.database().ref(`invitations/${_email}/${that.props.soundcast.id}`).set(true);
+            }
+          })
         }
     });
     this.setState({
