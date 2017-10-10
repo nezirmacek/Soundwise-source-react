@@ -228,10 +228,10 @@ export default class AddSoundcast extends Component {
 				.once('value')
 				.then(snapshot => {
 					if(snapshot.val()) {
-						const update = {...snapshot.val(), [that.props.soundcast.id]: true};
+						const update = {...snapshot.val(), [that.soundcastId]: true};
 						firebase.database().ref(`invitations/${invitee}`).update(update);
 					} else {
-						firebase.database().ref(`invitations/${invitee}/${that.props.soundcast.id}`).set(true);
+						firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true);
 					}
 				})
 				.then(
