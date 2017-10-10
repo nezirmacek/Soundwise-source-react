@@ -122,9 +122,13 @@ class _Header extends Component {
                               <div className="col-md-6 no-padding margin-twenty-top sm-margin-twenty-three-top header-banner" >
                                   <h1 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large   text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text text-white" style={{fontWeight: 800}} >{title}</h1>
                                   <div className=" text-extra-large margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text text-white font-weight-700"><p>{tagline}</p></div>
-                                  <div className="float-left width-100">
+                                  <div className="float-left width-100" style={{paddingBottom: 45}}>
                                       <Link to="/trial_request" className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
 
+                                  </div>
+                                  <div className="float-left width-100 xs-text-center">
+                                      <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8" target="_blank" className="sm-width-140px float-left xs-float-none xs-display-inline-block"><img src="../images/app-store-badge.png" style={{width: 175,}} data-img-size="(W)200px X (H)61px" alt="" /></a>
+                                      <a href="#" target="_blank" className="sm-width-140px float-left xs-float-none margin-five-left xs-margin-two-left xs-display-inline-block"><img src="" data-img-size="(W)200px X (H)61px" alt="" /></a>
                                   </div>
                               </div>
                           </div>

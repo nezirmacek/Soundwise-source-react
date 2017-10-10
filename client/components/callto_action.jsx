@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom'
 
 const Callto_action = () => (
-  <section className="padding-110px-tb bg-dark-blue footer-top builder-bg xs-padding-60px-tb border-none" id="callto-action6">
+  <section className=" bg-dark-blue footer-top builder-bg xs-padding-60px-tb border-none" style={{paddingTop: 110, paddingBottom: 70}}>
     <div className="container">
       <div className="row">
         { /* section title */ }
@@ -12,12 +12,16 @@ const Callto_action = () => (
             <p>Try Soundwise's innovative real estate training dissemination for free. Cancel anytime.</p>
           </div>
         </div>
-        { /* end section title */ }
-        { /* button */ }
         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
           <Link to="/trial_request" className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
         </div>
-        { /* end button */ }
+        <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+            <div className="offer-box-right">
+                <div className="width-100 text-center">
+                    <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8" target="_blank" className="xs-width-150px display-inline-block margin-two"><img alt="" style={{width: 175}} src="../images/app-store-badge.png" data-img-size="(W)175px X (H)51px" /></a>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   </section>
