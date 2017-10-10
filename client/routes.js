@@ -85,35 +85,31 @@ class _Routes extends Component {
 							}
 
                             // for (let key in _user.soundcasts_managed)
-                                firebase.database().ref(`users/${userId}/soundcasts_managed`).off();
-                                firebase.database().ref(`users/${userId}/soundcasts_managed`).on('value', snapshot => {
-                                    console.log('soundcasts_managed: ', snapshot.val());
-                                    snapshot.forEach(childSnapshot => {
-                                        // watch managed soundcasts
-                                        firebase.database().ref(`soundcasts/${childSnapshot.key}`).off(); // to avoid error when subscribe twice
-                                        firebase.database().ref(`soundcasts/${childSnapshot.key}`).on('value', snapshot => {
-                                            if (snapshot.val()) {
-                                                _user = JSON.parse(JSON.stringify(_user));
-                                                const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                                                _user.soundcasts_managed[childSnapshot.key] = _soundcast;
-                                                that.props.signinUser(_user);
-                                                if (_soundcast.episodes) {
-                                                    for (let epkey in _soundcast.episodes) {
-                                                        // watch episodes of soundcasts
-                                                        firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
-                                                        firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
-                                                            if (snapshot.val()) {
-                                                                _user = JSON.parse(JSON.stringify(_user));
-                                                                _user.soundcasts_managed[childSnapshot.key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-                                                                that.props.signinUser(_user);
-                                                            }
-                                                        });
+                            for (let key in _user.soundcasts_managed) {
+                                // watch managed soundcasts
+                                firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
+                                firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
+                                    if (snapshot.val()) {
+                                        _user = JSON.parse(JSON.stringify(_user));
+                                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+                                        _user.soundcasts_managed[key] = _soundcast;
+                                        that.props.signinUser(_user);
+                                        if (_soundcast.episodes) {
+                                            for (let epkey in _soundcast.episodes) {
+                                                // watch episodes of soundcasts
+                                                firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
+                                                firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
+                                                    if (snapshot.val()) {
+                                                        _user = JSON.parse(JSON.stringify(_user));
+                                                        _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+                                                        that.props.signinUser(_user);
                                                     }
-                                                }
+                                                });
                                             }
-                                        });
-                                    })
+                                        }
+                                    }
                                 });
+                            }
 
                         }
 

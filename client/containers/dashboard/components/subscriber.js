@@ -179,10 +179,11 @@ export default class Subscriber extends Component {
   }
 
   matchEpisodes(soundcastObj, episodes) {
-    console.log('episodes: ', episodes);
     for(var id in episodes) {
-                soundcastObj[episodes[id].soundcastId].episodes[id].percentCompleted = episodes[id].percentCompleted;
-                soundcastObj[episodes[id].soundcastId].episodes[id].lastListen = episodes[id].date;
+                if(soundcastObj[episodes[id].soundcastId]['episodes'][id]) {
+                  soundcastObj[episodes[id].soundcastId]['episodes'][id]['percentCompleted'] = episodes[id].percentCompleted;
+                  soundcastObj[episodes[id].soundcastId]['episodes'][id]['lastListen'] = episodes[id].date;
+                }
     }
     for(var id in soundcastObj) {
       soundcastObj[id].episodeArr = Object.values(soundcastObj[id].episodes);
@@ -256,7 +257,7 @@ export default class Subscriber extends Component {
               </div>
               {soundcastArr.map((soundcast, i) => {
                 return (
-                  <MuiThemeProvider>
+                  <MuiThemeProvider key={i}>
                     <Card key={i}>
                       <CardHeader
                         title={soundcast.title}

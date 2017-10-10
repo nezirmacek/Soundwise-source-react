@@ -142,7 +142,6 @@ export default class EpisodeStatsModal extends Component {
 
     Promise.all(promises)
     .then(res => {
-      console.log('listeners after promises: ', listenersArr);
       this.setState({
         listenersArr
       })
@@ -153,7 +152,6 @@ export default class EpisodeStatsModal extends Component {
 
   render() {
     const {data, listenersArr} = this.state;
-    console.log('listenersArr: ', listenersArr);
     if(!this.props.isShown) {
       return null;
     }
@@ -201,13 +199,19 @@ export default class EpisodeStatsModal extends Component {
             <div className='title-small' style={{marginBottom: 5}}>Listeners</div>
             {
               listenersArr.map((listener, i) => {
+                let pic_url;
+                if(listener.pic_url) {
+                  pic_url = listener.pic_url;
+                } else {
+                  pic_url = '../../../images/profile_pic.png';
+                }
                 return (
                   <MuiThemeProvider key={i}>
                     <Chip
                       key={i}
                       style={styles.chip}
                     >
-                      <Avatar src={listener.pic_url} />
+                      <Avatar src={pic_url} />
                       {`${listener.firstName} ${listener.lastName}`}
                     </Chip>
                   </MuiThemeProvider>
