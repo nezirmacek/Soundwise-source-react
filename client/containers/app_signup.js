@@ -425,32 +425,30 @@ class _AppSignup extends Component {
 
             firebase.database().ref('users/' + userId).set(userToSave);
 
-            Axios.post('/api/user', {  //save user to postgres DB
-                userId,
-                firstName,
-                lastName,
-                picURL: pic_url,
-
-            }).then(res => {
-                // console.log('userToSave: ', userToSave);
-                signupUser(userToSave);
-                // for user -> goTo myPrograms, for admin need to register publisher first
-                if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-                    history.push('/myprograms');
-                } else if(match.params.mode == 'soundcast_user') {
-                    history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-                }
-            }).catch(err => {
-                console.log('user saving failed: ', err);
-                signupUser(userToSave);
-                // for user -> goTo myPrograms, for admin need to register publisher first
-                if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-                    history.push('/myprograms');
-                } else if(match.params.mode == 'soundcast_user') {
-                    history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-                }
-            })
-
+            const _user = { userId, firstName, lastName, picURL: pic_url };
+            // TODO: _user.picURL = false
+            Axios.post('/api/user', _user)
+				.then(res => {
+					// console.log('userToSave: ', userToSave);
+					console.log('success save user');
+					signupUser(userToSave);
+					// for user -> goTo myPrograms, for admin need to register publisher first
+					if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+						history.push('/myprograms');
+					} else if(match.params.mode == 'soundcast_user') {
+						history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+					}
+				})
+				.catch(err => {
+					console.log('user saving failed: ', err);
+					signupUser(userToSave);
+					// for user -> goTo myPrograms, for admin need to register publisher first
+					if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+						history.push('/myprograms');
+					} else if(match.params.mode == 'soundcast_user') {
+						history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+					}
+				})
         })
     }
 
