@@ -11,6 +11,7 @@ import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 import InviteSubscribersModal from './invite_subscribers_modal';
 import Subscriber from './subscriber';
+import PendingInviteModal from './pending_invite_modal';
 
 export default class Subscribers extends Component {
   constructor(props) {
@@ -18,12 +19,13 @@ export default class Subscribers extends Component {
 
     this.state = {
       currentSoundcastID: null,
-      currentSoundcast: null,
+      currentSoundcast: {invited: {}, title:''},
       soundcasts_managed: [],
       subscribers: [],
       checked: false,
       toBeUnsubscribed: [],
-      showModal: false
+      showModal: false,
+      showPendingInvite: false,
     }
 
     this.subscribers = [];
@@ -32,39 +34,89 @@ export default class Subscribers extends Component {
     this.handleCheck = this.handleCheck.bind(this);
     this.deleteSubscriber = this.deleteSubscriber.bind(this);
     this.handleModal = this.handleModal.bind(this);
+    this.handlePendingInvite = this.handlePendingInvite.bind(this);
   }
 
   componentDidMount() {
     const that = this;
-    const { userInfo } = this.props;
-    const _subscribers = [];
-    const _soundcasts_managed = [];
-    for (let id in userInfo.soundcasts_managed) {
-        const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
-        if (_soundcast.title) {
-            _soundcast.id = id;
-            _soundcasts_managed.push(_soundcast);
+    if(this.props.userInfo.soundcasts_managed && this.props.userInfo.publisher) {
+      if(typeof Object.values(this.props.userInfo.soundcasts_managed)[0] == 'object') {
+        const that = this;
+        const { userInfo } = this.props;
+        const _subscribers = [];
+        const _soundcasts_managed = [];
+
+        for (let id in userInfo.soundcasts_managed) {
+            const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
+            if (_soundcast.title) {
+                _soundcast.id = id;
+                _soundcasts_managed.push(_soundcast);
+            }
         }
+
+        const promises = [];
+
+        for(let userId in _soundcasts_managed[0].subscribed) {
+          promises.push(this.retrieveSubscriberInfo(userId));
+        }
+
+
+        Promise.all(promises)
+        .then(res => {
+          that.setState({
+            soundcasts_managed: _soundcasts_managed,
+            currentSoundcastID: _soundcasts_managed[0].id,
+            currentSoundcast: _soundcasts_managed[0],
+            // subscribers: that.subscribers,
+            subscribers: res,
+          });
+          // that.subscribers = [];
+        }, err => {
+          console.log('promise error: ', err);
+        })
+      }
     }
+  }
 
-    const promises = [];
+  componentWillReceiveProps(nextProps) {
+    const that = this;
+    if(nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
+      if(typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
+        const that = this;
+        const { userInfo } = nextProps;
+        const _subscribers = [];
+        const _soundcasts_managed = [];
 
-    for(let userId in _soundcasts_managed[0].subscribed) {
-      promises.push(this.retrieveSubscriberInfo(userId));
+        for (let id in userInfo.soundcasts_managed) {
+            const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
+            if (_soundcast.title) {
+                _soundcast.id = id;
+                _soundcasts_managed.push(_soundcast);
+            }
+        }
+
+        const promises = [];
+
+        for(let userId in _soundcasts_managed[0].subscribed) {
+          promises.push(this.retrieveSubscriberInfo(userId));
+        }
+
+
+        Promise.all(promises)
+        .then(res => {
+          that.setState({
+            soundcasts_managed: _soundcasts_managed,
+            currentSoundcastID: _soundcasts_managed[0].id,
+            currentSoundcast: _soundcasts_managed[0],
+            // subscribers: that.subscribers,
+            subscribers: res,
+          });
+          // that.subscribers = [];
+        }, err => {
+          console.log('promise error: ', err);
+        })
+      }
     }
-
-    Promise.all(promises)
-    .then(res => {
-      that.setState({
-        soundcasts_managed: _soundcasts_managed,
-        currentSoundcastID: _soundcasts_managed[0].id,
-        currentSoundcast: _soundcasts_managed[0],
-        subscribers: that.subscribers,
-      })
-    }, err => {
-      console.log('promise error: ', err);
-    })
-
   }
 
   handleModal() {
@@ -79,13 +131,26 @@ export default class Subscribers extends Component {
     }
   }
 
+  handlePendingInvite() {
+    if(!this.state.showPendingInvite) {
+      this.setState({
+        showPendingInvite: true,
+      })
+    } else {
+      this.setState({
+        showPendingInvite: false
+      })
+    }
+  }
+
  retrieveSubscriberInfo(userId) {
     const that = this;
     const {currentSoundcastID} = this.state;
     return firebase.database().ref('users/'+userId)
             .once('value')
             .then(snapshot => {
-              that.subscribers.push({...JSON.parse(JSON.stringify(snapshot.val())), id: userId});
+              // that.subscribers.push({...JSON.parse(JSON.stringify(snapshot.val())), id: userId});
+              return {...JSON.parse(JSON.stringify(snapshot.val())), id: userId};
             })
             .then(res => res, err => console.log(err));
   }
@@ -96,7 +161,6 @@ export default class Subscribers extends Component {
       currentSoundcastID: e.target.value
     });
 
-    this.subscribers = [];
     const { soundcasts_managed, currentSoundcastID } = this.state;
     let currentSoundcast;
 
@@ -114,7 +178,7 @@ export default class Subscribers extends Component {
     Promise.all(promises)
     .then(res => {
       that.setState({
-        subscribers: that.subscribers,
+        subscribers: res,
         currentSoundcast
       })
     }, err => {
@@ -165,6 +229,7 @@ export default class Subscribers extends Component {
     }
   }
 
+
   render() {
     const { soundcasts_managed, subscribers, checked, currentSoundcast, currentSoundcastID } = this.state;
     const { history } = this.props;
@@ -180,6 +245,11 @@ export default class Subscribers extends Component {
           soundcast={this.state.currentSoundcast}
           onClose={this.handleModal}
           userInfo={this.props.userInfo}
+        />
+        <PendingInviteModal
+          isShown={this.state.showPendingInvite}
+          soundcast={this.state.currentSoundcast}
+          onClose={this.handlePendingInvite}
         />
         <div >
             <div className='padding-bottom-20px'>
@@ -214,7 +284,11 @@ export default class Subscribers extends Component {
               </div>
             </div>
             <div style={styles.pendingInviteWrap}>
-              <span style={styles.pendingInvites}>See pending and accepted invites</span>
+              <span
+                style={styles.pendingInvites}
+                onClick={this.handlePendingInvite}>
+                See pending invites
+              </span>
               <div style={styles.deleteButtonWrap}>
               {
                 checked &&

@@ -40,13 +40,29 @@ export default class Analytics extends Component {
     }
 
     this.getListeningStats = this.getListeningStats.bind(this);
+    this.loadData = this.loadData.bind(this);
   }
 
   componentDidMount() {
     const { userInfo } = this.props;
+    if(userInfo.soundcasts_managed) {
+      if(typeof Object.values(userInfo.soundcasts_managed)[0] == 'object') {
+        this.loadData(userInfo);
+      }
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.userInfo.soundcasts_managed) {
+      if(typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
+         this.loadData(nextProps.userInfo);
+      }
+    }
+  }
+
+  loadData(userInfo) {
     const _subscribers = [];
     const _soundcasts_managed = [];
-
     for (let id in userInfo.soundcasts_managed) {
         const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
         if (_soundcast.title) {
@@ -56,7 +72,6 @@ export default class Analytics extends Component {
     }
 
     const selectedSoundcastId = this.props.history.location.state ? this.props.history.location.state.soundcastId : null;
-
 
     if(selectedSoundcastId) {
       this.setState({

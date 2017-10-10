@@ -15,6 +15,8 @@ injectTapEventPlugin();
 import { config, awsConfig } from '../config';
 import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
 import Page from './components/page';
+import PageRealEstate from './components/page_realestate';
+import PageExperts from './components/page_experts';
 import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
@@ -42,11 +44,11 @@ import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
 
 class _Routes extends Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+      super(props);
 
-    props.subscribeToCategories();
-  }
+      props.subscribeToCategories();
+    }
 
     componentDidMount() {
         const that = this
@@ -82,6 +84,7 @@ class _Routes extends Component {
 								});
 							}
 
+                            // for (let key in _user.soundcasts_managed)
                             for (let key in _user.soundcasts_managed) {
                                 // watch managed soundcasts
                                 firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
@@ -107,6 +110,7 @@ class _Routes extends Component {
                                     }
                                 });
                             }
+
                         }
 
                         if (_user.soundcasts) {
@@ -145,15 +149,86 @@ class _Routes extends Component {
             this.props.loadCourses(snapshot.val());
         });
 
-        // butter.post.list({page: 1, page_size: 10}).then(function(response) {
-        //     console.log(response)
-        // })
+    }
 
-        // butter.content.retrieve(['homepage_headline']).then(function(response) {
-        //     console.log(response)
-        // })
+    async compileUser() {
+        const { signinUser, history, userInfo, match } = this.props;
+        let creatorID = firebase.auth().currentUser.uid;
+        let fb_operation;
 
-        // new AWS.Credentials(awsConfig);
+        const user_snapshot = await firebase.database().ref(`users/${creatorID}`).once('value');
+
+        let _user = user_snapshot.val();
+        if (_user.soundcasts_managed && _user.admin) {
+            if (_user.publisherID) {
+
+                let publisher_snapshot = await firebase.database().ref(`publishers/${_user.publisherID}`).once('value');
+
+                if (publisher_snapshot.val()) {
+                    const _publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
+                    _publisher.id = _user.publisherID;
+                    _user.publisher = _publisher;
+
+                    if (_user.publisher.administrators) {
+                        let admins = {};
+                        for (let adminId in _user.publisher.administrators) {
+                            admins[adminId] = await firebase.database().ref(`users/${adminId}`).once('value');
+                            if (admins[adminId].val()) {
+                                const _admin = JSON.parse(JSON.stringify(admins[adminId].val()));
+                                _user.publisher.administrators[adminId] = _admin;
+                            }
+                        }
+                    }
+                }
+            }
+
+            let soundcastsManaged = {};
+            for (let key in _user.soundcasts_managed) {
+                soundcastsManaged[key] = await firebase.database().ref(`soundcasts/${key}`).once('value');
+
+                if (soundcastsManaged[key].val()) {
+                    _user = JSON.parse(JSON.stringify(_user));
+                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
+                    _user.soundcasts_managed[key] = _soundcast;
+                    signinUser(_user);
+                    if (_soundcast.episodes) {
+                        let episodes = {};
+                        for (let epkey in _soundcast.episodes) {
+                            episodes[epkey] = await firebase.database().ref(`episodes/${epkey}`).once('value');
+                            if (episodes[epkey].val()) {
+                                _user = JSON.parse(JSON.stringify(_user));
+                                _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
+                                signinUser(_user);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (_user.soundcasts) {
+            let userSoundcasts = {};
+            for (let key in _user.soundcasts) {
+                userSoundcasts[key] = await firebase.database().ref(`soundcasts/${key}`).once('value');
+                if (userSoundcasts[key].val()) {
+                    _user = JSON.parse(JSON.stringify(_user));
+                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
+                    _user.soundcasts[key] = _soundcast;
+                    signinUser(_user);
+                    if (_soundcast.episodes) {
+                        let soundcastEpisodes = {};
+                        for (let epkey in _soundcast.episodes) {
+                            soundcastEpisodes[epkey] = await firebase.database().ref(`episodes/${epkey}`).once('value')
+                            if (soundcastEpisodes[epkey].val()) {
+                                _user = JSON.parse(JSON.stringify(_user));
+                                _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
+                                signinUser(_user);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     }
 
@@ -167,15 +242,17 @@ class _Routes extends Component {
               <meta property="og:url" content="https://mysoundwise.com/" />
               <meta property="og:title" content="Soundwise"/>
               <meta property="fb:app_id" content='1726664310980105' />
-              <meta property="og:description" content="Soundwise is a audio content management system that helps real estate trainers and brokers disseminate trainings and informational updates in audio to real estate agents."/>
+              <meta property="og:description" content="Soundwise is an audio content management system that helps organizations and experts engage their audience and provide training on the go."/>
               <meta property="og:image" content="https://mysoundwise.com/images/soundwise_homepage.png" />
-              <title>Soundwise: the most efficient way to train real estate agents</title>
-              <meta name="description" content="Soundwise is a audio content management system that helps real estate trainers and brokers disseminate trainings and informational updates in audio to real estate agents." />
-              <meta name="keywords" content="soundwise, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app" />
+              <title>Soundwise: Spread Your Knowledge Fast with Audio</title>
+              <meta name="description" content="Soundwise is an audio content management system that helps organizations and experts engage their audience and provide training on the go." />
+              <meta name="keywords" content="soundwise, training, online education, education software, subscription, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app" />
             </Helmet>
             <Switch>
                 <Route exact path="/" component={Page}/>
                 <Route path="/about" component={About}/>
+                <Route path="/realestate" component={PageRealEstate}/>
+                <Route path="/experts" component={PageExperts}/>
                 <Route exact={true} path='/signup/:mode' component={AppSignup} />
                 <Route path='/signup/:mode/:id' component={AppSignup} />
                 <Route path='/signin/:mode/:id' component={AppSignin} />

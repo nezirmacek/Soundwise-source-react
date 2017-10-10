@@ -40,14 +40,16 @@ const settings = {
   }]
 }
 
-const Feature_section = () => (
-            <section className="padding-80px-tb feature-style4 bg-white builder-bg xs-padding-30px-tb" id="feature-section7">
+const Feature_section = (props) => {
+  const {description, feature1, feature2, feature3, feature4, featureTitle1, featureTitle2, featureTitle3, featureTitle4} = props.content;
+  return (
+            <section className="padding-80px-tb feature-style4 builder-bg xs-padding-30px-tb cover-background tz-builder-bg-image border-none" style={{background:`linear-gradient(rgba(97,225,251,0.3), rgba(0,0,0,0.1))`, paddingTop: 80, paddingBottom: 30}}>
                 <div className="container">
                     <div className="row">
 
                         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                             <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">HOW IT WORKS</h2>
-                            <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">Less time sitting in meetings/classrooms is more time for your agents to work on their business. Use Soundwise to make your agents more productive and better trained.</div>
+                            <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">{description}</div>
                         </div>
 
                     </div>
@@ -56,35 +58,36 @@ const Feature_section = () => (
 
                             <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nineteen-bottom">
                                 <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/broadcast.png" data-img-size="(W)90px X (H)90px"/></div>
-                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Record / Upload</h3>
-                                <div className="text-medium tz-text"> <p>Record or upload your training classes or sales meetings through Soundwise web interface.</p> </div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">{featureTitle1}</h3>
+                                <div className="text-medium tz-text"> <p>{feature1}</p> </div>
                             </div>
 
 
                             <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nineteen-bottom">
                                 <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/phone_buzz.png" data-img-size="(W)90px X (H)90px"/></div>
-                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Notify / Remind</h3>
-                                <div className="text-medium tz-text"> <p>Your agents will be notified on their phone when new audios are available and be reminded to listen to them.</p> </div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">{featureTitle2}</h3>
+                                <div className="text-medium tz-text"> <p>{feature2}</p> </div>
                             </div>
 
 
                             <div className="col-md-3 col-sm-6 col-xs-12 text-center xs-margin-nine-bottom xs-margin-nineteen-bottom">
                                 <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/earphones.png" data-img-size="(W)90px X (H)90px"/></div>
-                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Listen / Comment</h3>
-                                <div className="text-medium tz-text"> <p>Agents listen to your materials at a time convenient to them. They can also give comments/raise questions from their phones.</p> </div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">{featureTitle3}</h3>
+                                <div className="text-medium tz-text"> <p>{feature3}</p> </div>
                             </div>
 
 
                             <div className="col-md-3 col-sm-6 col-xs-12 text-center">
                                 <div className="margin-nineteen-bottom sm-margin-thirteen-bottom xs-margin-nine-bottom"><img alt="" src="images/analytics.png" data-img-size="(W)90px X (H)90px"/></div>
-                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">Track / Analyze</h3>
-                                <div className="text-medium tz-text"> <p>Listening stats and tracking provide proof of who's listened to what, and help you analyze what kinds of materials are more popular.</p> </div>
+                                <h3 className="text-medium text-dark-gray alt-font font-weight-600 margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">{featureTitle4}</h3>
+                                <div className="text-medium tz-text"> <p>{feature4}</p> </div>
                             </div>
 
                         </div>
                     </div>
                 </div>
             </section>
-);
+  );
+}
 
 export default Feature_section;

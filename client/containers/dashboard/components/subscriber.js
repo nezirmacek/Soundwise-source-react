@@ -148,7 +148,8 @@ export default class Subscriber extends Component {
             })
             .then(res => console.log('res: ', res), err => console.log(err));
     });
-    promises1.push(124);
+    // promises1.push(124);
+
     Promise.all(promises1)
     .then(res => {
       const promises2 = episodeArr.map(episodeId => {
@@ -168,7 +169,7 @@ export default class Subscriber extends Component {
       });
       Promise.all(promises2)
       .then(res => {
-        that.matchEpisodes(soundcastObj, episodes);
+        that.matchEpisodes(soundcastObj, that.state.episodes);
       }, err => {
         console.log('promise error: ', err);
       });
@@ -179,8 +180,10 @@ export default class Subscriber extends Component {
 
   matchEpisodes(soundcastObj, episodes) {
     for(var id in episodes) {
-                soundcastObj[episodes[id].soundcastId].episodes[id].percentCompleted = episodes[id].percentCompleted;
-                soundcastObj[episodes[id].soundcastId].episodes[id].lastListen = episodes[id].date;
+                if(soundcastObj[episodes[id].soundcastId]['episodes'][id]) {
+                  soundcastObj[episodes[id].soundcastId]['episodes'][id]['percentCompleted'] = episodes[id].percentCompleted;
+                  soundcastObj[episodes[id].soundcastId]['episodes'][id]['lastListen'] = episodes[id].date;
+                }
     }
     for(var id in soundcastObj) {
       soundcastObj[id].episodeArr = Object.values(soundcastObj[id].episodes);
@@ -254,7 +257,7 @@ export default class Subscriber extends Component {
               </div>
               {soundcastArr.map((soundcast, i) => {
                 return (
-                  <MuiThemeProvider>
+                  <MuiThemeProvider key={i}>
                     <Card key={i}>
                       <CardHeader
                         title={soundcast.title}

@@ -213,7 +213,17 @@ export default class AddSoundcast extends Component {
         });
 
         let _promises_3 = inviteeArr.map(invitee => {
-            return firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true).then(
+            return firebase.database().ref(`invitations/${_email}`)
+                .once('value')
+                .then(snapshot => {
+                  if(snapshot.val()) {
+                    const update = {...snapshot.val(), [that.props.soundcast.id]: true};
+                    firebase.database().ref(`invitations/${_email}`).update(update);
+                  } else {
+                    firebase.database().ref(`invitations/${_email}/${that.props.soundcast.id}`).set(true);
+                  }
+                })
+                .then(
                     res => {
                         console.log('success adding invitee to invitations node: ', res);
                         return res;

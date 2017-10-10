@@ -34,7 +34,7 @@ export default class ImageS3Uploader extends Component {
         const splittedFileName = file.name.split('.');
         const ext = (splittedFileName)[splittedFileName.length - 1];
         data.append('file', file, `${fileName}.${ext}`);
-        axios.post('http://localhost:3000/api/upload', data)
+        axios.post('/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
                 console.log('success upload to aws s3: ', res);
