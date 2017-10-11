@@ -95,7 +95,7 @@ export default class Analytics extends Component {
   getListeningStats(soundcastId) {
     // console.log('soundcastId: ', soundcastId);
     const that = this;
-    Axios.get(`https://mysoundwise.com/api/stats_by_soundcast?soundcastId=${soundcastId}&startDate='${this.state.startDate}'&endDate='${this.state.endDate}'`)
+    Axios.get(`/api/stats_by_soundcast?soundcastId=${soundcastId}&startDate='${this.state.startDate}'&endDate='${this.state.endDate}'`)
     .then(res => {
       this.countListenings(res.data);
       // console.log(that.state.currentSoundcast.title, res.data);
