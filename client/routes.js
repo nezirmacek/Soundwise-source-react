@@ -120,11 +120,17 @@ class _Routes extends Component {
 								);
                             }
                         }
-	
+
                         if (_user.soundcasts) {
                             for (let key in _user.soundcasts) {
 								// to not watch the same soundcasts twice
 								// fixes problem with .off of managed soundcasts, that are subscribed too
+                                if(_user.soundcasts_managed[key]) {
+                                    _user = JSON.parse(JSON.stringify(_user));
+                                    _user.soundcasts[key] = _user.soundcasts_managed[key];
+                                    that.props.signinUser(_user);
+                                }
+
                             	if (!_user.soundcasts_managed[key]) { // otherwise this soundcast is watched in soundcasts_managed
 									// watch soundcasts subscriptions
 									firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice

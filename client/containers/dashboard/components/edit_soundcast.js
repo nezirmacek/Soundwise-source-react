@@ -81,7 +81,6 @@ export default class EditSoundcast extends Component {
     }
 
     _uploadToAws (file, hostImg) {
-        console.log('file: ', file);
         const _self = this;
         let data = new FormData();
         const splittedFileName = file.name.split('.');
@@ -90,7 +89,14 @@ export default class EditSoundcast extends Component {
           alert('Only .png or .jpg files are accepted. please upload a new file.');
           return;
         }
-        data.append('file', file, `${this.soundcastId}.${ext}`);
+        let fileName = '';
+        if(hostImg) {
+          fileName = `${this.soundcastId}-${userId}.${ext}`;
+        } else {
+          fileName = `${this.soundcastId}.${ext}`;
+        }
+
+        data.append('file', file, fileName);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
         Axios.post('/api/upload', data)
             .then(function (res) {

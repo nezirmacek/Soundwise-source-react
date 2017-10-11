@@ -21,7 +21,7 @@ import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../compo
 export default class AddSoundcast extends Component {
 	constructor (props) {
 		super(props);
-		
+
 		this.state = {
 			title: '',
 			subscribers: '',
@@ -38,20 +38,24 @@ export default class AddSoundcast extends Component {
 			forSale: false,
 			prices: [],
 		};
-		
+
 		this.soundcastId = `${moment().format('x')}s`;
 		this.fileInputRef = null;
 		this.hostImgInputRef = null;
 		this.addFeature = this.addFeature.bind(this);
 		this.onEditorStateChange = this.onEditorStateChange.bind(this);
 	}
-	
+
 	_uploadToAws (file, hostImg) {
 		const _self = this;
 		const userId = firebase.auth().currentUser.uid;
 		let data = new FormData();
 		const splittedFileName = file.name.split('.');
 		const ext = (splittedFileName)[splittedFileName.length - 1];
+    if(ext !== 'png' && ext !=='jpg' && ext !== 'jpeg') {
+      alert('Only .png or .jpg files are accepted. please upload a new file.');
+      return;
+    }
 		let fileName = '';
 		if(hostImg) {
 			fileName = `${this.soundcastId}-${userId}.${ext}`;
@@ -64,13 +68,13 @@ export default class AddSoundcast extends Component {
 			.then(function (res) {
 				// POST succeeded...
 				console.log('success upload to aws s3: ', res);
-				
+
 				//replace 'http' with 'https'
 				let url = res.data[0].url;
 				if(url.slice(0, 5) !== 'https') {
 					url = url.replace(/http/i, 'https');
 				}
-				
+
 				if(hostImg) {
 					_self.setState({hostImageURL: url});
 				} else {
@@ -82,13 +86,12 @@ export default class AddSoundcast extends Component {
 				console.log('ERROR upload to aws s3: ', err);
 			});
 	}
-	
+
 	setFileName (hostImg, e) {
 		// if (e.target.value) {
 		//     this.setState({fileUploaded: true});
 		// }
 		// document.getElementById('file').value = e.target.value;
-		console.log('hostImage: ', hostImg, 'this.hostImgInputRef.files[0]: ', this.hostImgInputRef.files[0]);
 		if(hostImg) {
 			this._uploadToAws(this.hostImgInputRef.files[0], true);
 			if(this.hostImgInputRef.files[0]) {
@@ -101,7 +104,7 @@ export default class AddSoundcast extends Component {
 			}
 		}
 	}
-	
+
 	submit () {
 		let { title, imageURL, subscribers, short_description,
 			long_description, landingPage,
@@ -113,22 +116,22 @@ export default class AddSoundcast extends Component {
 		const { userInfo, history } = this.props;
 		// const host = [{hostName, hostBio, hostImageURL}];
 		const that = this;
-		
+
 		// need to remove all spaces
 		subscribers = subscribers.replace(/\s/g, '');
-		
+
 		const subscribersArr = subscribers.split(',');
 		for(var i = subscribersArr.length -1; i >= 0; i--) {
 			if (subscribersArr[i].indexOf('@') === -1) {
 				subscribersArr.splice(i, 1);
 			}
 		}
-		
+
 		// send email invitations to invited listeners
 		const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to subscribe to ${title}`;
-		const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${title} on Soundwise. Start by downloading the Soundwise app <a href="https://mysoundwise.com">here</a>.</p><p></p><p>If you've already installed the app on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+		const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${title} on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="">here</a>.</p><p></p><p>If you've already installed Soundwise on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
 		inviteListeners(subscribersArr, subject, content);
-		
+
 		const invited = {};
 		const inviteeArr = [];
 		subscribersArr.map((email, i) => {
@@ -136,9 +139,9 @@ export default class AddSoundcast extends Component {
 			invited[_email] = moment().format('X');  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
 			inviteeArr[i] = _email;
 		});
-		
+
 		const creatorID = firebase.auth().currentUser.uid;
-		
+
 		const newSoundcast = {
 			title,
 			imageURL,
@@ -156,7 +159,7 @@ export default class AddSoundcast extends Component {
 			forSale,
 			prices
 		};
-		
+
 		let _promises_1 = [
 			// add soundcast
 			firebase.database().ref(`soundcasts/${this.soundcastId}`).set(newSoundcast).then(
@@ -206,10 +209,10 @@ export default class AddSoundcast extends Component {
 				}
 			)
 		];
-		
+
 		//add soundcast to admins
 		let adminArr = Object.keys(userInfo.publisher.administrators);
-		
+
 		let _promises_2 = adminArr.map(adminId => {
 			return firebase.database().ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`).set(true)
 				.then(
@@ -222,7 +225,7 @@ export default class AddSoundcast extends Component {
 						Promise.reject(err);
 					})
 		});
-		
+
 		let _promises_3 = inviteeArr.map(invitee => {
 			return firebase.database().ref(`invitations/${invitee}`)
 				.once('value')
@@ -245,9 +248,9 @@ export default class AddSoundcast extends Component {
 					}
 				)
 		});
-		
+
 		let _promises = _promises_1.concat(_promises_2, _promises_3);
-		
+
 		Promise.all(_promises).then(
 			res => {
 				console.log('completed adding soundcast');
@@ -258,14 +261,14 @@ export default class AddSoundcast extends Component {
 			}
 		);
 	}
-	
+
 	handleCheck() {
 		const {landingPage} = this.state;
 		this.setState({
 			landingPage: !landingPage,
 		})
 	}
-	
+
 	setFeatures(i, event) {
 		const features = [...this.state.features];
 		features[i] = event.target.value;
@@ -273,7 +276,7 @@ export default class AddSoundcast extends Component {
 			features
 		})
 	}
-	
+
 	deleteFeature(i, event) {
 		const features = [...this.state.features];
 		if(features.length >= 2) {
@@ -285,7 +288,7 @@ export default class AddSoundcast extends Component {
 			features
 		})
 	}
-	
+
 	addFeature() {
 		const features = [...this.state.features];
 		features.push('');
@@ -293,7 +296,7 @@ export default class AddSoundcast extends Component {
 			features
 		})
 	}
-	
+
 	handleChargeOption() {
 		const {forSale} = this.state;
 		if(!forSale) {
@@ -308,13 +311,13 @@ export default class AddSoundcast extends Component {
 			})
 		}
 	}
-	
+
 	onEditorStateChange(editorState) {
 		this.setState({
 			long_description: editorState,
 		})
 	}
-	
+
 	renderAdditionalInputs() {
 		const featureNum = this.state.features.length;
 		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices} = this.state;
@@ -333,7 +336,7 @@ export default class AddSoundcast extends Component {
 						onEditorStateChange={this.onEditorStateChange}
 					/>
 				</div>
-				
+
 				{/*What Listeners Will Get*/}
 				<span style={{...styles.titleText, marginBottom: 5}}>
 					What Listeners Will Get
@@ -376,7 +379,7 @@ export default class AddSoundcast extends Component {
 						})
 					}
 				</div>
-				
+
 				{/*Host/Instructor Name*/}
 				<div>
                     <span style={styles.titleText}>
@@ -392,7 +395,7 @@ export default class AddSoundcast extends Component {
 						/>
 					</div>
 				</div>
-				
+
 				{/*Host/Instructor Bio*/}
 				<div>
 					<div >
@@ -408,7 +411,7 @@ export default class AddSoundcast extends Component {
 					>
                     </textarea>
 				</div>
-				
+
 				{/*Host/Instructor Profile Picture*/}
 				<div style={{height: 150, width: '100%'}}>
 					<div style={{marginBottom: 10}}>
@@ -456,7 +459,7 @@ export default class AddSoundcast extends Component {
 						</div>
 					</div>
 				</div>
-				
+
 				{/*Pricing*/}
 				{ landingPage &&
 				<div>
@@ -537,12 +540,12 @@ export default class AddSoundcast extends Component {
 					}
 				</div>
 				}
-			
+
 			</div>
 		)
-		
+
 	}
-	
+
 	handlePriceInputs(i, e) {
 		let prices = [...this.state.prices];
 		prices[i][e.target.name] = e.target.value;
@@ -550,7 +553,7 @@ export default class AddSoundcast extends Component {
 			prices
 		})
 	}
-	
+
 	addPriceOption() {
 		let prices = [...this.state.prices];
 		const price = {
@@ -563,7 +566,7 @@ export default class AddSoundcast extends Component {
 			prices
 		})
 	}
-	
+
 	deletePriceOption(i) {
 		let prices = [...this.state.prices];
 		if(prices.length > 1) {
@@ -579,12 +582,12 @@ export default class AddSoundcast extends Component {
 			prices
 		})
 	}
-	
+
 	render() {
 		const { imageURL, title, subscribers, fileUploaded,landingPage } = this.state;
 		const { userInfo, history } = this.props;
 		const that = this;
-		
+
 		return (
 			<div className='padding-30px-tb'>
 				<div className='padding-bottom-20px'>
@@ -592,7 +595,7 @@ export default class AddSoundcast extends Component {
                       Add A Soundcast
                   </span>
 				</div>
-				
+
 				{/*The landing page*/}
 				<div style={{marginTop: 15, marginBottom: 15,}}>
 					<span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>Add a public landing page for this soundcast</span>
@@ -617,7 +620,7 @@ export default class AddSoundcast extends Component {
 				</div>}
 				<div className="">
 					<div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-						
+
 						{/*Title*/}
 						<span style={styles.titleText}>Title</span>
 						<span style={{...styles.titleText, color: 'red'}}>*</span>
@@ -631,7 +634,7 @@ export default class AddSoundcast extends Component {
 							value={this.state.title}
 							validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
 						/>
-						
+
 						{/*Short Description*/}
 						<span style={styles.titleText}>
 							Short Description
@@ -640,7 +643,7 @@ export default class AddSoundcast extends Component {
 						<span style={{fontSize: 14}}>
 							<i> (300 characters max)</i>
 						</span>
-						
+
 						<div style={styles.inputTitleWrapper}>
 							<input
 								type="text"
@@ -650,7 +653,7 @@ export default class AddSoundcast extends Component {
 								value={this.state.short_description}
 							/>
 						</div>
-						
+
 						{/*Invitations*/}
 						<span style={styles.titleText}>
 							Invite listeners to subscribe
@@ -662,7 +665,7 @@ export default class AddSoundcast extends Component {
 							value={this.state.subscribers}
 						>
                     	</textarea>
-						
+
 						{/*Soundcast cover art*/}
 						<div style={{height: 150, width: '100%'}}>
 							<div style={styles.image}>

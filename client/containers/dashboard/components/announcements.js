@@ -40,12 +40,12 @@ export default class Announcements extends Component {
     if(nextProps.userInfo.soundcasts_managed) {
       if(typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
         const { userInfo } = nextProps;
-        this.loadUser(userInfo);
+        this.loadUser(userInfo, this.state.currentSoundcast, this.state.currentSoundcastID);
       }
     }
   }
 
-  loadUser(userInfo) {
+  loadUser(userInfo, currentSoundcast, currentSoundcastID) {
     const _subscribers = [];
     const _soundcasts_managed = [];
 
@@ -57,13 +57,24 @@ export default class Announcements extends Component {
         }
     }
 
-    this.setState({
-      soundcasts_managed: _soundcasts_managed,
-      currentSoundcastID: _soundcasts_managed[0].id,
-      currentSoundcast: _soundcasts_managed[0],
-    });
+    if(!currentSoundcast) {
+      this.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID: _soundcasts_managed[0].id,
+        currentSoundcast: _soundcasts_managed[0],
+      });
 
-    this.sortAnnouncements(_soundcasts_managed[0].id);
+      this.sortAnnouncements(_soundcasts_managed[0].id);
+    } else {
+      this.setState({
+        soundcasts_managed: _soundcasts_managed,
+        currentSoundcastID,
+        currentSoundcast,
+      });
+
+      this.sortAnnouncements(currentSoundcastID);
+    }
+
   }
 
 
