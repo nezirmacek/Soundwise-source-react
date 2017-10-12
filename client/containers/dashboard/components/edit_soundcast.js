@@ -47,6 +47,11 @@ export default class EditSoundcast extends Component {
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
              forSale, prices} = soundcast;
+      const {title0, subscribed0, imageURL0, short_description0,
+             long_description0, landingPage0,
+             features0, hostName0, hostBio0, hostImageURL0,
+             forSale0, prices0} = this.state;
+
       if(long_description) {
         let contentState = convertFromRaw(JSON.parse(long_description));
         editorState = EditorState.createWithContent(contentState);
@@ -56,13 +61,16 @@ export default class EditSoundcast extends Component {
 
       this.setState({
         title,
-        imageURL,
+        imageURL: imageURL ? imageURL : null,
         short_description,
-        landingPage,
-        hostName, hostBio, hostImageURL,
-        forSale,
-        long_description: editorState,
+        landingPage: landingPage ? landingPage : false,
+        hostName: hostName ? hostName : null,
+        hostBio: hostBio ? hostBio : null,
+        hostImageURL: hostImageURL ? hostImageURL : null,
+        forSale: forSale ? forSale : false,
+        long_description: editorState ,
       })
+
       if(subscribed) {
         this.setState({
             subscribed
