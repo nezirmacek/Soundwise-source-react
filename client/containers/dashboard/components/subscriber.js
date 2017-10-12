@@ -131,6 +131,7 @@ export default class Subscriber extends Component {
 
     const that = this;
     const {subscriber} = this.props.history.location.state;
+    const {userInfo} = this.props;
     const soundcastIDs =Object.keys(subscriber.soundcasts);
     let soundcastObj = {};
     let episodeArr = [];
@@ -139,14 +140,20 @@ export default class Subscriber extends Component {
       return firebase.database().ref(`soundcasts/${id}`)
             .once('value')
             .then(snapshot => {
-              soundcastObj[id] = {
-                title: snapshot.val().title,
-                episodes: {},
-              };
-              const episodeIds = Object.keys(snapshot.val().episodes);
-              episodeArr = episodeArr.concat(episodeIds);
+              if(userInfo.publisherID == snapshot.val().publisherID) { //make sure admin only sees the user's soundcasts from the current publisher
+                soundcastObj[id] = {
+                  title: snapshot.val().title,
+                  episodes: {},
+                };
+                if(snapshot.val().episodes) {
+                  const episodeIds = Object.keys(snapshot.val().episodes);
+                  episodeArr = episodeArr.concat(episodeIds);
+                }
+              } else {
+                soundcastObj = soundcastObj;
+              }
             })
-            .then(res => console.log('res: ', res), err => console.log(err));
+            .then(res => res, err => console.log(err));
     });
     // promises1.push(124);
 

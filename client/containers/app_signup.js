@@ -405,50 +405,43 @@ class _AppSignup extends Component {
         let userId;
 
         firebase.auth().onAuthStateChanged(user => {
-            userId = user.uid;
+            if(user) {
+                userId = user.uid;
 
-            //if user exists, redirect to sign in page
-            // firebase.database().ref('users/' + userId)
-            // .once('value')
-            // .then(snapshot => {
-            //     if(snapshot.val() !== null) {
-            //         history.push('/signin', {text: 'This account already exists. Please sign in instead'});
-            //     }
-            // });
+                const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
+                // add admin fields
+                if (match.params.mode === 'admin') {
+                    userToSave.admin = true;
+                    userToSave.publisherID = this.publisherID;
+                }
 
-            const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
-            // add admin fields
-            if (match.params.mode === 'admin') {
-                userToSave.admin = true;
-                userToSave.publisherID = this.publisherID;
+                firebase.database().ref('users/' + userId).set(userToSave);
+
+                const _user = { userId, firstName, lastName, picURL: pic_url };
+                // TODO: _user.picURL = false
+                Axios.post('/api/user', _user)
+                    .then(res => {
+                        // console.log('userToSave: ', userToSave);
+                        console.log('success save user');
+                        signupUser(userToSave);
+                        // for user -> goTo myPrograms, for admin need to register publisher first
+                        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+                            history.push('/myprograms');
+                        } else if(match.params.mode == 'soundcast_user') {
+                            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                        }
+                    })
+                    .catch(err => {
+                        console.log('user saving failed: ', err);
+                        signupUser(userToSave);
+                        // for user -> goTo myPrograms, for admin need to register publisher first
+                        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+                            history.push('/myprograms');
+                        } else if(match.params.mode == 'soundcast_user') {
+                            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                        }
+                    })
             }
-
-            firebase.database().ref('users/' + userId).set(userToSave);
-
-            const _user = { userId, firstName, lastName, picURL: pic_url };
-            // TODO: _user.picURL = false
-            Axios.post('/api/user', _user)
-				.then(res => {
-					// console.log('userToSave: ', userToSave);
-					console.log('success save user');
-					signupUser(userToSave);
-					// for user -> goTo myPrograms, for admin need to register publisher first
-					if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-						history.push('/myprograms');
-					} else if(match.params.mode == 'soundcast_user') {
-						history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-					}
-				})
-				.catch(err => {
-					console.log('user saving failed: ', err);
-					signupUser(userToSave);
-					// for user -> goTo myPrograms, for admin need to register publisher first
-					if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-						history.push('/myprograms');
-					} else if(match.params.mode == 'soundcast_user') {
-						history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-					}
-				})
         })
     }
 

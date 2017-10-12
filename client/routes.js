@@ -95,9 +95,9 @@ class _Routes extends Component {
 											_user.soundcasts_managed[key] = _soundcast;
 											// to not watch the same soundcasts twice
 											// fixes problem with .off of managed soundcasts, that are subscribed too
-											if (_user.soundcasts[key]) {
-												_user.soundcasts[key] = _soundcast;
-											}
+											// if (_user.soundcasts[key]) {
+											// 	_user.soundcasts[key] = _soundcast;
+											// }
 											that.props.signinUser(_user);
 											if (_soundcast.episodes) {
 												for (let epkey in _soundcast.episodes) {

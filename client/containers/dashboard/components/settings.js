@@ -68,7 +68,6 @@ export default class Settings extends Component {
   componentWillReceiveProps(nextProps) {
     if(nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
       const { userInfo } = nextProps;
-            console.log('userInfo: ', userInfo );
       this.loadFromProp(userInfo);
       const that = this;
       const publisherId = userInfo.publisherID;
