@@ -25,6 +25,7 @@ export default class SoundcastBody extends Component {
             imageURL: '',
             long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
             prices: [],
+            features: [],
           },
         };
         this.renderDescription = this.renderDescription.bind(this);
@@ -59,18 +60,22 @@ export default class SoundcastBody extends Component {
 
     renderDescription() {
         const {long_description} = this.state.soundcast;
-        const editorState = JSON.parse(long_description);
-        const longDescriptionHTML = draftToHtml(editorState);
+        if(long_description) {
+            const editorState = JSON.parse(long_description);
+            const longDescriptionHTML = draftToHtml(editorState);
 
-        return (
-            <div className="row " >
-                <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '4%'}}>
-                    <div>
-                        {renderHTML(longDescriptionHTML)}
+            return (
+                <div className="row " >
+                    <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '4%'}}>
+                        <div>
+                            {renderHTML(longDescriptionHTML)}
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        } else {
+            return null;
+        }
     }
 
     renderFeatures() {
@@ -107,7 +112,7 @@ export default class SoundcastBody extends Component {
                                 {this.renderFeatures()}
                             </div>
                         </div>
-                        {this.renderDescription()}
+                        {soundcast.long_description && this.renderDescription()}
                         {soundcast.hostName && <Instructor soundcast={soundcast}/>}
                         <HowItWorks />
                     </div>

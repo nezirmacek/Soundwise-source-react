@@ -192,7 +192,7 @@ class _SoundcastHeader extends Component {
     let displayedPrice = 'Free';
     let {prices} = this.props.soundcast;
 
-    if(prices.length > 0 && prices[0].price != 'free' ) {
+    if(prices && prices.length > 0 && prices[0].price != 'free' ) {
         prices = prices.map(price => {
             if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
                 price.measure = price.price;

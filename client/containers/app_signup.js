@@ -289,7 +289,9 @@ class _AppSignup extends Component {
             imageURL: publisherImage,
             short_description: 'First soundcast',
             creatorID,
-            publisherID: this.publisherID
+            publisherID: this.publisherID,
+            prices: [{price: 'free', billingCycle: 'free'}],
+            forSale: true
         };
 
         let _promises = [

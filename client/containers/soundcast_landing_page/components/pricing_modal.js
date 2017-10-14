@@ -68,7 +68,8 @@ class _PricingModal extends Component {
           open={open}
           onRequestClose={handleModal}
         >
-        {
+         {
+          prices && prices.length > 0 &&
           prices.map((price, i) => {
             const isChecked = (checked == i);
             let currentPrice = `USD $${price.price} / month`;
@@ -119,7 +120,9 @@ class _PricingModal extends Component {
               </Card>
             )
           })
-        }
+          ||
+          null
+         }
         <div style={styles.sumTotal}>
           <span style={{fontSize: 18}}>{sumTotal}</span>
         </div>

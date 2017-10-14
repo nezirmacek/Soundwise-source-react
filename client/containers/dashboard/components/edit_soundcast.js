@@ -385,58 +385,62 @@ export default class EditSoundcast extends Component {
                         forSale &&
                       <div style={{width: '100%,'}}>
                         {
-                            prices.map((price, i) => (
-                                <div className='row' style={{marginBottom: 10}}>
-                                  <span style={styles.titleText}>{`${i + 1}. `}</span>
-                                  <div style={{width: '35%', display: 'inline-block', marginRight: 10,}}>
-                                    <span>Payment Plan Name</span>
-                                    <input
-                                      type="text"
-                                      style={styles.inputTitle}
-                                      name="paymentPlan"
-                                      placeholder='e.g. Monthly subscription'
-                                      onChange={this.handlePriceInputs.bind(this, i)}
-                                      value={prices[i].paymentPlan}
-                                    />
-                                  </div>
-                                  <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                                    <span>Billing Cycle</span>
-                                    <select
-                                      type="text"
-                                      style={styles.inputTitle}
-                                      name="billingCycle"
-                                      onChange={this.handlePriceInputs.bind(this, i)}
-                                      value={prices[i].billingCycle}
-                                    >
-                                      <optgroup>
-                                        <option value='monthly'>monthly recuring</option>
-                                        <option value='quarterly'>quarterly recurring</option>
-                                        <option value='annual'>annual recurring</option>
-                                        <option value='one time'>one time</option>
-                                      </optgroup>
-                                    </select>
-                                  </div>
-                                  <div style={{width: '20%', display: 'inline-block', marginRight: 10,}}>
-                                    <span>Price</span>
-                                    <div>
-                                        <input
-                                          type="text"
-                                          style={{...styles.inputTitle, width: '70%'}}
-                                          name="price"
-                                          placeholder={'15'}
-                                          onChange={this.handlePriceInputs.bind(this, i)}
-                                          value={prices[i].price}
-                                        />
-                                        <span>  USD</span>
+                            prices.map((price, i) => {
+                                const priceTag = price.price == 'free' ? 0 : price.price;
+                                return (
+                                  <div className='row' style={{marginBottom: 10}}>
+                                    <span style={styles.titleText}>{`${i + 1}. `}</span>
+                                    <div style={{width: '35%', display: 'inline-block', marginRight: 10,}}>
+                                      <span>Payment Plan Name</span>
+                                      <input
+                                        type="text"
+                                        style={styles.inputTitle}
+                                        name="paymentPlan"
+                                        placeholder='e.g. Monthly subscription'
+                                        onChange={this.handlePriceInputs.bind(this, i)}
+                                        value={prices[i].paymentPlan}
+                                      />
                                     </div>
+                                    <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                                      <span>Billing Cycle</span>
+                                      <select
+                                        type="text"
+                                        style={styles.inputTitle}
+                                        name="billingCycle"
+                                        onChange={this.handlePriceInputs.bind(this, i)}
+                                        value={prices[i].billingCycle}
+                                      >
+                                        <optgroup>
+                                          <option value='free'>free</option>
+                                          <option value='monthly'>monthly recuring</option>
+                                          <option value='quarterly'>quarterly recurring</option>
+                                          <option value='annual'>annual recurring</option>
+                                          <option value='one time'>one time</option>
+                                        </optgroup>
+                                      </select>
+                                    </div>
+                                    <div style={{width: '20%', display: 'inline-block', marginRight: 10,}}>
+                                      <span>Price</span>
+                                      <div>
+                                          <input
+                                            type="text"
+                                            style={{...styles.inputTitle, width: '70%'}}
+                                            name="price"
+                                            placeholder={'15'}
+                                            onChange={this.handlePriceInputs.bind(this, i)}
+                                            value={priceTag}
+                                          />
+                                          <span>  USD</span>
+                                      </div>
+                                    </div>
+                                    <span
+                                        style={{marginLeft: 5, cursor: 'pointer'}}
+                                        onClick={this.deletePriceOption.bind(this, i)}>
+                                      <i className="fa fa-times " aria-hidden="true"></i>
+                                    </span>
                                   </div>
-                                  <span
-                                      style={{marginLeft: 5, cursor: 'pointer'}}
-                                      onClick={this.deletePriceOption.bind(this, i)}>
-                                    <i className="fa fa-times " aria-hidden="true"></i>
-                                  </span>
-                                </div>
-                            ) )
+                                )
+                            } )
                         }
                         <div
                             onClick={this.addPriceOption.bind(this)}

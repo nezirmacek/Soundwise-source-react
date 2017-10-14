@@ -74,7 +74,7 @@ export default class SoundcastFooter extends Component {
     let displayedPrice = 'Free';
     let {prices} = soundcast;
 
-    if(prices.length > 0 && prices[0].price != 'free' ) {
+    if(prices && prices.length > 0 && prices[0].price != 'free' ) {
         prices = prices.map(price => {
             if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
                 price.measure = price.price;

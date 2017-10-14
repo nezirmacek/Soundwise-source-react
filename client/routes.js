@@ -64,11 +64,12 @@ class _Routes extends Component {
                         if (_user.soundcasts_managed && _user.admin) {
                             if (_user.publisherID) {
 								// add publisher with admins (without watching)
-								firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
+								firebase.database().ref(`publishers/${_user.publisherID}`).on('value', snapshot => {
 									if (snapshot.val()) {
 										const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
 										_publisher.id = _user.publisherID;
 										_user.publisher = _publisher;
+                                        that.props.signinUser(_user);
 
 										if (_user.publisher.administrators) {
 										    for (let adminId in _user.publisher.administrators) {

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
-const renderBio = (bio) => {
-  return (
-    <div>
-      {bio.map((para, i) => (
-        <p key={i}>{para}</p>
-      ))}
-    </div>
-  )
-}
+// const renderBio = (bio) => {
+//   return (
+//     <div>
+//       {bio.map((para, i) => (
+//         <p key={i}>{para}</p>
+//       ))}
+//     </div>
+//   )
+// }
 
 const Instructor = (props) => (
   <section className="about-style3 padding-30px-tb xs-padding-40px-tb bg-white builder-bg border-none" >
