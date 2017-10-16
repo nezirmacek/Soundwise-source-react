@@ -24,10 +24,12 @@ export default class Settings extends Component {
       inviteeEmail: '',
       inviteeFirstName: '',
       inviteeLastName: '',
+      publisherSaved: false,
     };
     this.loadFromProp(props.userInfo);
     this.loadFromProp = this.loadFromProp.bind(this);
     this._uploadToAws = this._uploadToAws.bind(this);
+    this.submit = this.submit.bind(this);
   }
 
   componentDidMount() {
@@ -117,11 +119,11 @@ export default class Settings extends Component {
         let data = new FormData();
         const splittedFileName = file.name.split('.');
         const ext = (splittedFileName)[splittedFileName.length - 1];
-        data.append('file', file, `${this.state.publisherId}.${ext}`);
+        const id = `${moment().format('X')}p`;
+        data.append('file', file, `${id}.${ext}`);
         Axios.post('/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
-                console.log('success upload to aws s3: ', res);
 
                 //replace 'http' with 'https'
                 let url = res.data[0].url;
@@ -148,12 +150,15 @@ export default class Settings extends Component {
   submit() {
     const { publisher } = this.props.userInfo;
     const { publisherImg, publisherName, publisherId } = this.state;
-
+    const that = this;
     const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg};
     firebase.database().ref(`publishers/${publisherId}`)
     .set(revisedPublisher)
     .then(() => {
-      console.log('publisher saved');
+      // console.log('publisher saved');
+      that.setState({
+        publisherSaved: true,
+      })
     })
     .catch(err => {
       console.log(err);
@@ -186,8 +191,10 @@ export default class Settings extends Component {
   }
 
   render() {
-    const { publisherImg, publisherName, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent } = this.state;
+    const { publisherImg, publisherName, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent } = this.state;
     const that = this;
+    const {userInfo} = this.props;
+
     return (
             <div className='padding-30px-tb'>
                 <div className='padding-bottom-20px'>
@@ -233,8 +240,9 @@ export default class Settings extends Component {
                                         <span>{this.fileInputRef.files[0].name}</span>
                                         <span style={styles.cancelImg}
                                           onClick={() => {
-                                            that.setState({fileUploaded: false, imageURL: ''});
+                                            that.setState({fileUploaded: false});
                                             document.getElementById('upload_hidden_cover').value = null;
+                                            that.loadFromProp(userInfo);
                                           }}>Cancel</span>
                                       </div>
                                       ||
@@ -252,16 +260,23 @@ export default class Settings extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                            <OrangeSubmitButton
-                                label="Save"
-                                onClick={this.submit.bind(this)}
-                            />
+                        <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
+                            {
+                              publisherSaved &&
+                              <div style={{paddingTop: 45, display: 'flex', justifyContent: 'center'}}>
+                                <span style={{fontSize: 16, color: Colors.mainOrange}}>Saved</span>
+                              </div>
+                              ||
+                              <OrangeSubmitButton
+                                  label="Save"
+                                  onClick={this.submit}
+                              />
+                            }
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <TransparentShortSubmitButton
                                 label="Cancel"
-                                onClick={this.loadFromProp.bind(this)}
+                                onClick={() => this.loadFromProp(userInfo)}
                             />
                         </div>
                         <div style={{marginTop: 20,}}>

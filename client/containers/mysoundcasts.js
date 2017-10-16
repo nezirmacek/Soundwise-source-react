@@ -32,20 +32,14 @@ class _MySoundcasts extends Component {
 
     componentDidMount () {
         const that = this;
-        // firebase.auth().onAuthStateChanged(function(user) {
-        //     if (user) {
-        //         const userId = firebase.auth().currentUser.uid;
-        //         that.retrieveSoundcasts(userId);
-        //     }
-        // })
-        // let userSoundcasts = [];
-        // for (var key in this.props.userInfo.soundcasts) {
-        //     userSoundcasts.push(this.props.userInfo.soundcasts[key]);
-        // }
-
-        // this.setState({
-        //     userSoundcasts
-        // });
+        if(this.props.userInfo.soundcasts) {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const userId = firebase.auth().currentUser.uid;
+                    that.retrieveSoundcasts(userId);
+                }
+            })
+        }
     }
 
     componentWillReceiveProps(nextProps) {
