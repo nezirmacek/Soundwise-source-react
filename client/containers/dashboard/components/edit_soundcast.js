@@ -99,7 +99,7 @@ export default class EditSoundcast extends Component {
         }
         let fileName = '';
         if(hostImg) {
-          fileName = `${this.soundcastId}-${userId}.${ext}`;
+          fileName = `${this.soundcastId}-host-image.${ext}`;
         } else {
           fileName = `${this.soundcastId}.${ext}`;
         }
