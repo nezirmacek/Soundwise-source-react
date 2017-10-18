@@ -88,6 +88,9 @@ class _SoundwiseHeader extends Component {
                                 </li>
                                 }
                                 <li>
+                                    <Link to='/myprofile'>My Profile</Link>
+                                </li>
+                                <li>
                                     <a onClick={() => this.signoutUser()}>
                                         <font style={{color: 'black'}}>Log Out</font>
                                     </a>
