@@ -307,7 +307,7 @@ const styles = {
         marginLeft: 0,
     },
     soundcastInfo: {
-        height: 86,
+        height: 96,
         backgroundColor: Colors.mainWhite,
         paddingTop: 15,
         paddingBottom: 15,
@@ -322,6 +322,7 @@ const styles = {
     soundcastDescription: {
         height: 46,
         float: 'left',
+        width: '65%',
     },
     soundcastTitle: {
         fontSize: 18,

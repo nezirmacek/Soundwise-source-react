@@ -543,7 +543,7 @@ export default class EditSoundcast extends Component {
                             placeholder={'Soundcast title'}
                             onChange={(e) => {this.setState({title: e.target.value})}}
                             value={this.state.title}
-                            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 40)]}
+                            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
                         />
                         <div style={{marginTop: 20,}}>
                           <span style={{...styles.titleText, marginTop: 20,}}>

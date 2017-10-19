@@ -216,7 +216,7 @@ class _SoundcastHeader extends Component {
 
     return (
       <div>
-        <section className=" bg-white" id="content-section23" style={{paddingBottom: '15px'}}>
+        <section className=" bg-white" id="content-section23" style={{paddingBottom: 15, paddingTop: 35}}>
             <div className="container">
                 <div className="row equalize sm-equalize-auto equalize-display-inherit">
                     <div className="col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
@@ -226,7 +226,7 @@ class _SoundcastHeader extends Component {
                                     <div style={{height: 80, display: 'flex', alignItems: 'center',}}>
                                       <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text">{this.props.soundcast.title}</h2>
                                     </div>
-                                    <div style={{height: 160}}>
+                                    <div style={{height: 160, paddingTop: 15}}>
                                       <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${this.props.soundcast.short_description}`}</span>
                                     </div>
                                     <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text" style={{display: 'flex', alignItems: 'center'}}>
@@ -263,7 +263,7 @@ class _SoundcastHeader extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-5 col-sm-12 col-xs-12 display-table sm-margin-fifteen-bottom" style={{height: '378px'}}>
+                    <div className="col-md-5 col-sm-12 col-xs-12  sm-margin-fifteen-bottom" style={{height: '378px', display: 'flex', justifyContent: 'flex-end'}}>
                         <div className="" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
                             <img
                                 src={this.props.soundcast.imageURL}

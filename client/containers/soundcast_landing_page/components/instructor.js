@@ -15,7 +15,7 @@ const Instructor = (props) => (
       <div className="">
           <div className="row padding-40px-tb">
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                  <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text" id="tz-slider-text125">YOUR INSTRUCTOR</h2>
+                  <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text" id="tz-slider-text125">YOUR HOST</h2>
               </div>
           </div>
           <div className="row">
