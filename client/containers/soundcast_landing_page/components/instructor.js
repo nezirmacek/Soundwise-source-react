@@ -20,14 +20,15 @@ const Instructor = (props) => (
           </div>
           <div className="row">
             <div className="">
-                <div className="col-md-12 col-sm-12 col-xs-12 bg-cream text-left tz-background-color"  style={{padding: '8%'}}>
-                  <div className='col-md-4 col-sm-6 col-xs-12 xs-padding-bottom-5px'>
+                <div className="col-md-12 col-sm-12 col-xs-12 bg-cream text-left tz-background-color"  style={{padding: '5% 8%'}}>
+                  <div className='col-md-4 col-sm-6 col-xs-12 xs-padding-bottom-5px'
+                    style={{display: 'flex', justifyContent: 'center'}}>
                       <div alt={`${props.soundcast.hostName}`}
                            className="img-round"
                            style={{backgroundImage: `url(${props.soundcast.hostImageURL})`}}>
                       </div>
                   </div>
-                   <div className="should-have-a-children scroll-me col-md-8 col-sm-6 col-xs-12" >
+                   <div className="should-have-a-children scroll-me col-md-8 col-sm-6 col-xs-12" style={{paddingTop: 20}}>
                       <span className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500" id="tz-slider-text127">{props.soundcast.hostName}</span>
                       <div className="text-dark-gray text-medium margin-twelve no-margin-lr tz-text" id="tz-slider-text130"><p></p></div>
                       <div className="text-dark-gray text-large tz-text" id="tz-slider-text129" >

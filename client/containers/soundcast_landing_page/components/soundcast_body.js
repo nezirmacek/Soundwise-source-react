@@ -83,10 +83,10 @@ export default class SoundcastBody extends Component {
 
         if(features) {
             return (
-                <ul>
+                <ul style={{paddingBottom: '1em'}}>
                     {features.map((feature, i) => {
                         return (
-                            <li key={i} className="text-dark-gray text-extra-large  margin-lr-auto col-md-6 tz-text" style={{paddingLeft: '1em', paddingRight: '2em', paddingTop: '1em', listStyleType: 'none'}}>
+                            <li key={i} className="text-dark-gray text-extra-large  margin-lr-auto col-md-5 col-sm-6 col-xs-12 tz-text" style={{paddingLeft: '0.5em', paddingRight: '1em', paddingTop: '1em', paddingBottom: '1em', listStyleType: 'none', display: 'flex', alignItems: 'center', }}>
                                 <strong><i className="material-icons" style={{paddingRight: '1em', color: 'green'}}>check</i></strong>{feature}
                             </li>
                         )
@@ -102,13 +102,13 @@ export default class SoundcastBody extends Component {
             <div>
                 <section className="padding-20px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
                     <div className="container">
-                        <div className="row padding-40px-tb" >
+                        <div className=" padding-40px-tb center-col " >
                             {soundcast.features &&
-                                <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                                <div className="col-md-11 col-sm-12 col-xs-12 text-center">
                                 <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">WHAT YOU WILL GET
                                 </h2>
                             </div>}
-                            <div className="col-md-12 col-sm-12 col-xs-12">
+                            <div className="col-md-12 col-sm-12 col-xs-12 center-col" style={{paddingBottom: 30}}>
                                 {this.renderFeatures()}
                             </div>
                         </div>
