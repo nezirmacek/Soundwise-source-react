@@ -399,7 +399,7 @@ class _AppSignup extends Component {
 
     signUpUser () {
         const { match, history, signupUser } = this.props;
-        if(history.location.state) {
+        if(history.location.state && history.location.state.soundcast) {
           const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         }
         const {firstName, lastName, email, pic_url} = this.state;
@@ -429,8 +429,13 @@ class _AppSignup extends Component {
                         // for user -> goTo myPrograms, for admin need to register publisher first
                         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
                             history.push('/myprograms');
-                        } else if(match.params.mode == 'soundcast_user') {
-                            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+                            history.push('/soundcast_checkout', {
+                                soundcast: history.location.state.soundcast,
+                                soundcastID: history.location.state.soundcastID,
+                                checked: history.location.state.checked,
+                                sumTotal: history.location.state.sumTotal,
+                            });
                         }
                     })
                     .catch(err => {
@@ -439,8 +444,13 @@ class _AppSignup extends Component {
                         // for user -> goTo myPrograms, for admin need to register publisher first
                         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
                             history.push('/myprograms');
-                        } else if(match.params.mode == 'soundcast_user') {
-                            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                        } else if(match.params.mode == 'soundcast_user' && hostory.location.state) {
+                            history.push('/soundcast_checkout', {
+                                soundcast: history.location.state.soundcast,
+                                soundcastID: history.location.state.soundcastID,
+                                checked: history.location.state.checked,
+                                sumTotal: history.location.state.sumTotal,
+                            });
                         }
                     })
             }
@@ -692,6 +702,7 @@ class _AppSignup extends Component {
                                             pathname: '/signin',
                                             state: {
                                                 soundcast: history.location.state.soundcast,
+                                                soundcastID: history.location.state.soundcastID,
                                                 checked: history.location.state.checked,
                                                 sumTotal: history.location.state.sumTotal
                                             }

@@ -34,7 +34,7 @@ class _MySoundcasts extends Component {
         const that = this;
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
-                if(this.props.userInfo.soundcasts) {
+                if(that.props.userInfo.soundcasts) {
                     const userId = firebase.auth().currentUser.uid;
                     that.retrieveSoundcasts(userId);
                 }
@@ -321,6 +321,7 @@ const styles = {
     soundcastDescription: {
         height: 46,
         float: 'left',
+        width: '80%',
     },
     soundcastTitle: {
         fontSize: 18,
@@ -380,7 +381,7 @@ const styles = {
         cursor: 'pointer',
     },
     footer: {
-        position: 'fixed',
+        // position: 'fixed',
         bottom: 0,
         width: '100%',
     }

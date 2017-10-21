@@ -31,7 +31,8 @@ class _SoundcastCheckout extends Component {
 
   render() {
 
-    const {soundcast, soundcastID, checked, sumTotal} = this.props.location.state;
+    const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
+    const {userInfo} = this.props;
     let totalPrice;
     if(soundcast.prices[checked].price == 'free') {
       totalPrice = 0;
@@ -103,7 +104,7 @@ class _SoundcastCheckout extends Component {
                       soundcastID={soundcastID}
                       checked={checked}
                       total={totalPrice}
-                      userInfo={this.props.userInfo}
+                      userInfo={userInfo}
                       handlePaymentSuccess={this.handlePaymentSuccess}
                     />
                 </div>
@@ -114,9 +115,7 @@ class _SoundcastCheckout extends Component {
 
 const mapStateToProps = state => {
     const { userInfo, isLoggedIn } = state.user;
-    return {
-        userInfo, isLoggedIn
-    }
+    return { userInfo, isLoggedIn, };
 };
 
 const Checkout_worouter = connect(mapStateToProps, null)(_SoundcastCheckout);

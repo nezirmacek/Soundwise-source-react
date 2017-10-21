@@ -27,6 +27,7 @@ export default class Payment extends Component {
             paid: false,
             startPaymentSubmission: false,
             stripe_id: '',
+            userInfo: null,
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -41,14 +42,24 @@ export default class Payment extends Component {
         this.setState({
             totalPay: this.props.total
         });
-        if(this.props.total == 0 || this.props.total == 'free') {
-            this.addSoundcastToUser();
+        if(this.props.userInfo && this.props.userInfo.email) {
+            this.setState({
+                userInfo: this.props.userInfo
+            })
+            if(this.props.total == 0 || this.props.total == 'free') {
+                this.addSoundcastToUser();
+            }
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.total === 0) { //if it's free course, then no need for credit card info. add soundcast to user and then redirect
-            this.addSoundcastToUser(this.props.userInfo);
+        if(nextProps.userInfo && nextProps.userInfo.email) { //if it's free course, then no need for credit card info. add soundcast to user and then redirect
+            this.setState({
+                userInfo: nextProps.userInfo
+            });
+            if(nextProps.total === 0 || nextProps.total == 'free') {
+              this.addSoundcastToUser(nextProps.userInfo);
+            }
         }
         this.setState({
             totalPay: nextProps.total
@@ -64,51 +75,55 @@ export default class Payment extends Component {
     addSoundcastToUser(charge) {
         // console.log('charge: ', charge);
         const that = this;
-        const {soundcastID, userInfo} = this.props;
-        const _email = userInfo.email[0].replace(/\./g, "(dot)");
-        const {soundcast, checked} = this.props;
-        const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
-        let current_period_end = 4638902400;
+        const {soundcastID, soundcast, checked} = this.props;
+        const {userInfo} = this.state;
+        let _email;
+        if(userInfo) {
+            _email = userInfo.email[0].replace(/\./g, "(dot)");
 
-        const paymentID = charge && charge.id ? charge.id : null;
-        const planID = charge && charge.plan ? charge.plan.id : null;
-        current_period_end = charge && charge.current_period_end ? charge.current_period_end : current_period_end ; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+            const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
+            let current_period_end = 4638902400;
 
-        // send email invitations to subscribers
-        const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
-        const content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
-        inviteListeners([userInfo.email[0]], subject, content);
+            const paymentID = charge && charge.id ? charge.id : null;
+            const planID = charge && charge.plan ? charge.plan.id : null;
+            current_period_end = charge && charge.current_period_end ? charge.current_period_end : current_period_end ; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
 
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                const userId = user.uid;
-                // add soundcast to user
-                firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
-                .set({
-                    subscribed: true,
-                    paymentID: paymentID ? paymentID : null,
-                    current_period_end, //this will be null if one time payment
-                    billingCycle: billingCycle ? billingCycle : null,
-                    planID: planID ? planID : null,
-                    date_subscribed: moment().format('X')
-                });
-                // add stripe_id to user data if not already exists
-                if(charge) {
-                    if(!userInfo.stripe_id && charge.customer && charge.customer.length > 0) {
-                        firebase.database().ref(`users/${userId}/stripe_id`)
-                        .set(charge.customer);
+            // send email invitations to subscribers
+            const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
+            const content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+            inviteListeners([userInfo.email[0]], subject, content);
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const userId = user.uid;
+                    // add soundcast to user
+                    firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
+                    .set({
+                        subscribed: true,
+                        paymentID: paymentID ? paymentID : null,
+                        current_period_end, //this will be null if one time payment
+                        billingCycle: billingCycle ? billingCycle : null,
+                        planID: planID ? planID : null,
+                        date_subscribed: moment().format('X')
+                    });
+                    // add stripe_id to user data if not already exists
+                    if(charge) {
+                        if(!userInfo.stripe_id && charge.customer && charge.customer.length > 0) {
+                            firebase.database().ref(`users/${userId}/stripe_id`)
+                            .set(charge.customer);
+                        }
                     }
-                }
-                //add user to soundcast
-                firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
-                .set(moment().format('X'));
-                //remove from invited list
-                firebase.database().ref(`soundcasts/${soundcastID}/invited/${_email}`)
-                .remove();
+                    //add user to soundcast
+                    firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
+                    .set(moment().format('X'));
+                    //remove from invited list
+                    firebase.database().ref(`soundcasts/${soundcastID}/invited/${_email}`)
+                    .remove();
 
-                that.props.handlePaymentSuccess();
-            }
-        });
+                    that.props.handlePaymentSuccess();
+                }
+            });
+        }
     }
 
     async onSubmit(event) {

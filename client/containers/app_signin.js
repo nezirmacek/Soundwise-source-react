@@ -48,11 +48,12 @@ class _AppSignin extends Component {
         const { signinUser, history, userInfo, match } = this.props;
         // let soundcast, checked, sumTotal;
 
-        if(history.location.state) {
-            let {soundcast, checked, sumTotal} = history.location.state;
+        if(history.location.state && history.location.state.soundcast) {
+            let {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         }
 
         const that = this;
+        let _user;
 
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -60,12 +61,20 @@ class _AppSignin extends Component {
             const userId = firebase.auth().currentUser.uid;
             firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
                 if (snapshot.val()) {
-                    let _user = JSON.parse(JSON.stringify(snapshot.val()));
+                    _user = JSON.parse(JSON.stringify(snapshot.val()));
                     signinUser(_user);
-
-                    if (history.location.state) {
+                }
+            })
+            .then(() => {
+                    if (history.location.state && history.location.state.soundcast) {
                         that.compileUser(_user);
-                        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                        history.push('/soundcast_checkout', {
+                            soundcast: history.location.state.soundcast,
+                            soundcastID: history.location.state.soundcastID,
+                            checked: history.location.state.checked,
+                            sumTotal: history.location.state.sumTotal,
+                            userInfo: _user,
+                        });
                     } else if (_user.admin && !match.params.id) {
                         that.compileUser(_user);
                         history.push('/dashboard/soundcasts');
@@ -78,9 +87,6 @@ class _AppSignin extends Component {
                         that.compileUser(_user);
                         history.push('/mysoundcasts');
                     }
-
-
-                }
             });
 
         } catch (error) {
@@ -91,78 +97,81 @@ class _AppSignin extends Component {
         }
     }
 
-    compileUser(_user) {
+    async compileUser(_user) {
         const { signinUser, history, userInfo, match } = this.props;
+        let creatorID = firebase.auth().currentUser.uid;
 
         if (_user.soundcasts_managed && _user.admin) {
             if (_user.publisherID) {
-                // add publisher with admins (without watching)
-                firebase.database().ref(`publishers/${_user.publisherID}`).once('value').then(snapshot => {
-                    if (snapshot.val()) {
-                        const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
-                        _publisher.id = _user.publisherID;
-                        _user.publisher = _publisher;
 
-                        if (_user.publisher.administrators) {
-                            for (let adminId in _user.publisher.administrators) {
-                                firebase.database().ref(`users/${adminId}`).once('value').then(snapshot => {
-                                    if (snapshot.val()) {
-                                        const _admin = JSON.parse(JSON.stringify(snapshot.val()));
-                                        _user.publisher.administrators[adminId] = _admin;
-                                    }
-                                });
+                let publisher_snapshot = await firebase.database().ref(`publishers/${_user.publisherID}`).once('value');
+
+                if (publisher_snapshot.val()) {
+                    const _publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
+                    _publisher.id = _user.publisherID;
+                    _user.publisher = _publisher;
+
+                    if (_user.publisher.administrators) {
+                        let admins = {};
+                        for (let adminId in _user.publisher.administrators) {
+                            admins[adminId] = await firebase.database().ref(`users/${adminId}`).once('value');
+                            if (admins[adminId].val()) {
+                                const _admin = JSON.parse(JSON.stringify(admins[adminId].val()));
+                                _user.publisher.administrators[adminId] = _admin;
                             }
                         }
                     }
-                });
+                }
             }
 
+            let soundcastsManaged = {};
             for (let key in _user.soundcasts_managed) {
-                firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
-                    if (snapshot.val()) {
-                        _user = JSON.parse(JSON.stringify(_user));
-                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                        _user.soundcasts_managed[key] = _soundcast;
-                        signinUser(_user);
-                        if (_soundcast.episodes) {
-                            for (let epkey in _soundcast.episodes) {
-                                firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
-                                    if (snapshot.val()) {
-                                        _user = JSON.parse(JSON.stringify(_user));
-                                        _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-                                        signinUser(_user);
-                                    }
-                                });
+                soundcastsManaged[key] = await firebase.database().ref(`soundcasts/${key}`).once('value');
+
+                if (soundcastsManaged[key].val()) {
+                    _user = JSON.parse(JSON.stringify(_user));
+                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
+                    _user.soundcasts_managed[key] = _soundcast;
+                    signinUser(_user);
+                    if (_soundcast.episodes) {
+                        let episodes = {};
+                        for (let epkey in _soundcast.episodes) {
+                            episodes[epkey] = await firebase.database().ref(`episodes/${epkey}`).once('value');
+                            if (episodes[epkey].val()) {
+                                _user = JSON.parse(JSON.stringify(_user));
+                                _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
+                                signinUser(_user);
                             }
                         }
                     }
-                });
+                }
             }
         }
 
         if (_user.soundcasts) {
+            let userSoundcasts = {};
             for (let key in _user.soundcasts) {
-                firebase.database().ref(`soundcasts/${key}`).once('value').then(snapshot => {
-                    if (snapshot.val()) {
-                        _user = JSON.parse(JSON.stringify(_user));
-                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-                        _user.soundcasts[key] = _soundcast;
-                        signinUser(_user);
-                        if (_soundcast.episodes) {
-                            for (let epkey in _soundcast.episodes) {
-                                firebase.database().ref(`episodes/${epkey}`).once('value').then(snapshot => {
-                                    if (snapshot.val()) {
-                                        _user = JSON.parse(JSON.stringify(_user));
-                                        _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-                                        signinUser(_user);
-                                    }
-                                });
+                userSoundcasts[key] = await firebase.database().ref(`soundcasts/${key}`).once('value');
+                if (userSoundcasts[key].val()) {
+                    _user = JSON.parse(JSON.stringify(_user));
+                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
+                    _user.soundcasts[key] = _soundcast;
+                    signinUser(_user);
+                    if (_soundcast.episodes) {
+                        let soundcastEpisodes = {};
+                        for (let epkey in _soundcast.episodes) {
+                            soundcastEpisodes[epkey] = await firebase.database().ref(`episodes/${epkey}`).once('value')
+                            if (soundcastEpisodes[epkey].val()) {
+                                _user = JSON.parse(JSON.stringify(_user));
+                                _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
+                                signinUser(_user);
                             }
                         }
                     }
-                });
+                }
             }
         }
+
     }
 
     signInInvitedAdmin() {
@@ -242,7 +251,7 @@ class _AppSignin extends Component {
     handleFBAuth() {
         const that = this;
         const { history, userInfo, signinUser, match } = this.props;
-        if(history.location.state) {
+        if(history.location.state && history.location.state.soundcast) {
             let {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         }
         // firebase.auth().signInWithRedirect(provider)
@@ -264,9 +273,14 @@ class _AppSignin extends Component {
                         delete _user.photoURL;
                         signinUser(_user);
 
-                        if (history.location.state) {
+                        if (history.location.state && history.location.state.soundcast) {
                             that.compileUser(_user);
-                            history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                            history.push('/soundcast_checkout', {
+                                soundcast: history.location.state.soundcast,
+                                soundcastID: history.location.state.soundcastID,
+                                checked: history.location.state.checked,
+                                sumTotal: history.location.state.sumTotal,
+                            });
                         } else if (_user.admin) {
                             that.compileUser(_user);
                             history.push('/dashboard/soundcasts');
