@@ -137,6 +137,9 @@ class _SoundwiseHeader extends Component {
                                 </li>
                                 }
                                 <li>
+                                    <Link to='/myprofile'>My Profile</Link>
+                                </li>
+                                <li>
                                     <a onClick={() => this.signoutUser()}>
                                         <font style={{color: 'black'}}>LOG OUT</font>
                                     </a>
@@ -168,7 +171,9 @@ class _SoundwiseHeader extends Component {
                     <div className="container navigation-menu">
                         <div className="row">
                             <div className="col-md-3 col-sm-0 col-xs-0">
-                                <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
+                                <Link to='/'>
+                                  <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
+                                </Link>
                             </div>
                             <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
                                 {/*menu button for md, sm, xs*/}

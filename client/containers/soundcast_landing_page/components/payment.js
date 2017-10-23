@@ -42,10 +42,11 @@ export default class Payment extends Component {
         this.setState({
             totalPay: this.props.total
         });
+        const that = this;
         if(this.props.userInfo && this.props.userInfo.email) {
             this.setState({
-                userInfo: this.props.userInfo
-            })
+                userInfo: that.props.userInfo
+            });
             if(this.props.total == 0 || this.props.total == 'free') {
                 this.addSoundcastToUser();
             }
@@ -76,9 +77,11 @@ export default class Payment extends Component {
         // console.log('charge: ', charge);
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
-        const {userInfo} = this.state;
+        const userInfo = this.state.userInfo || this.props.userInfo;
         let _email;
+
         if(userInfo) {
+            // console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
             const {billingCycle, paymentPlan, price} = soundcast.prices[checked];

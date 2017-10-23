@@ -33,6 +33,7 @@ class _SoundcastCheckout extends Component {
 
     const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
     const {userInfo} = this.props;
+
     let totalPrice;
     if(soundcast.prices[checked].price == 'free') {
       totalPrice = 0;
