@@ -138,7 +138,7 @@ export default class SoundcastBody extends Component {
                                 </h5>
                                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">What if I'm not happy with the soundcast?</h2>
                                 <h5 className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text" style={{ lineHeight: '30px'}}>
-                                    We want you to be happy! If you are unsatisfied with the soundcast, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your subscription and we will give you a full refund.
+                                    We want you to be happy! If you've subscribed to a free soundcast, you can simply unsubscribe by going to Me --> Settings on the mobile app. If your soundcast is a paid one, let us know at <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14 days of your subscription and we will give you a full refund.
                                 </h5>
                             </div>
                         </div>
