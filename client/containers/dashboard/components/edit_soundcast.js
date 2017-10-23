@@ -90,6 +90,7 @@ export default class EditSoundcast extends Component {
 
     _uploadToAws (file, hostImg) {
         const _self = this;
+        const { id } = this.props;
         let data = new FormData();
         const splittedFileName = file.name.split('.');
         const ext = (splittedFileName)[splittedFileName.length - 1];
@@ -99,9 +100,9 @@ export default class EditSoundcast extends Component {
         }
         let fileName = '';
         if(hostImg) {
-          fileName = `${this.soundcastId}-host-image.${ext}`;
+          fileName = `${id}-host-image.${ext}`;
         } else {
-          fileName = `${this.soundcastId}.${ext}`;
+          fileName = `${id}.${ext}`;
         }
 
         data.append('file', file, fileName);
@@ -177,9 +178,15 @@ export default class EditSoundcast extends Component {
               const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
 
               firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-              .set(changedSoundcast).then(
+              .set(changedSoundcast)
+              .then(
                 res => {
-                    history.goBack();
+                      Axios.post('/api/soundcast', {
+                        soundcastId: that.props.history.location.state.id,
+                        publisherId: that.props.userInfo.publisherID,
+                        title
+                      })
+                      .then(() => history.goBack())
                 },
                 err => {
                     console.log('ERROR add soundcast: ', err);

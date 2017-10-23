@@ -16,7 +16,6 @@ module.exports = (app) => {
 	});
 
 	app.post('/api/episode', (req, res) => {
-		console.log('req.body: ', req.body);
 		database.Episode.findOrCreate({
 			where: {episodeId: req.body.episodeId},
 			defaults: req.body
@@ -31,13 +30,31 @@ module.exports = (app) => {
 			});
 	});
 
+	// app.post('/api/soundcast', (req, res) => {
+	// 	database.Soundcast.findOrCreate({
+	// 		where: {soundcastId: req.body.soundcastId},
+	// 		defaults: req.body
+	// 	})
+	// 		.then(data => res.send(data))
+	// 		.catch(err => { res.status(500).send(err); });
+	// });
+
 	app.post('/api/soundcast', (req, res) => {
-		database.Soundcast.findOrCreate({
-			where: {soundcastId: req.body.soundcastId},
-			defaults: req.body
+		database.Soundcast.findOne({
+			where: {soundcastId: req.body.soundcastId}
 		})
-			.then(data => res.send(data))
-			.catch(err => { res.status(500).send(err); });
+		.then(obj => {
+			if(obj) {
+				return obj.update({
+									publisherId: req.body.publisherId,
+									title: req.body.title
+								});
+			} else {
+				return database.Soundcast.create(req.body);
+			}
+		})
+		.then(data => { res.send(data); })
+		.catch(err => { res.status(500).send(err); });
 	});
 
 	app.post('/api/listening_session', (req, res) => {

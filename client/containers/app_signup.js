@@ -328,6 +328,20 @@ class _AppSignup extends Component {
                     Promise.reject(err);
                 }
             ),
+            Axios.post('/api/soundcast', {
+                soundcastId: soundcastId,
+                publisherId: that.publisherID,
+                title
+            }).then(
+                res => {
+                    return res;
+                }
+            ).catch(
+                err => {
+                    console.log('ERROR API post soundcast: ', err);
+                    Promise.reject(err)
+                }
+            )
         ];
 
         Promise.all(_promises)
