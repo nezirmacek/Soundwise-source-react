@@ -128,7 +128,7 @@ class _Header extends Component {
                                   </div>
                                   <div className="float-left width-100 xs-text-center">
                                       <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8" target="_blank" className="sm-width-140px float-left xs-float-none xs-display-inline-block"><img src="../images/app-store-badge.png" style={{width: 175,}} data-img-size="(W)200px X (H)61px" alt="" /></a>
-                                      <a href="#" target="_blank" className="sm-width-140px float-left xs-float-none margin-five-left xs-margin-two-left xs-display-inline-block"><img src="" data-img-size="(W)200px X (H)61px" alt="" /></a>
+                                      <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android" target="_blank" className="sm-width-140px float-left xs-float-none margin-five-left xs-margin-two-left xs-display-inline-block"><img src="../images/google-play-badge.png" data-img-size="(W)200px X (H)61px" style={{width: 175,}} alt="" /></a>
                                   </div>
                               </div>
                           </div>
