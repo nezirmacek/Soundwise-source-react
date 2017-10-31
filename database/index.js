@@ -55,6 +55,27 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
   percentCompleted: { type: Sequelize.INTEGER, allowNull: false }, //0 - 100, equal to endPosition / total audio file length * 100
 });
 
+var Transaction = db.define('Transaction', { // records of listener payments and refunds
+  transactionId: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund' id from stripe
+  invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
+  type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
+  amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  date: { type: Sequelize.DATEONLY, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING },
+  customer: { type: Sequelize.STRING, allowNull: false }, // listener's stripe id
+  paymentId: { type: Sequelize.STRING }, // id for the payment plan, only present if it's a subscription
+});
+
+var Payout = db.define('Payout', { // records of payouts
+  batchId: { type: Sequelize.STRING, allowNull: false }, //id for the payout batch from paypal that this particular payout belongs to
+  amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  date: { type: Sequelize.DATEONLY, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  email: { type: Sequelize.STRING, allowNull: false }, //email address used to send paypal payout
+  payoutId: { type: Sequelize.STRING }, // id for the payout item returned by paypal's webhook event
+});
+
 Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -77,11 +98,15 @@ User.sync({force: false});
 Soundcast.sync({force: false});
 Episode.sync({force: false});
 ListeningSession.sync({force: false});
+Transaction.sync({force: false});
+Payout.sync({force: false});
 
 module.exports = {
   User: User,
   Soundcast: Soundcast,
   Episode: Episode,
   ListeningSession: ListeningSession,
+  Transaction: Transaction,
+  Payout: Payout,
   db: db,
 };

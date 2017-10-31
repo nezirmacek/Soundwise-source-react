@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
+// import {ScrollArea} from 'react-scrollbar';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -25,7 +27,7 @@ export default class PendingInviteModal extends Component {
     let email;
     for(var key in invited) {
       if(invited[key]) {
-        email = key.replace('(dot)', '.');
+        email = key.replace(/\(dot\)/g, '.');
         invitees.push({
           email,
           date: invited[key]
@@ -43,7 +45,7 @@ export default class PendingInviteModal extends Component {
           onClick={this.closeModal}>
         </div>
         <div style={styles.modal}>
-          <div style={{padding: 25}}>
+          <div style={{padding: 25, height: '100%'}}>
             <div className='row'>
               <div className='title-small' style={styles.headingText}>
                 {`Pending Invite List for ${this.props.soundcast.title}`}
@@ -56,25 +58,33 @@ export default class PendingInviteModal extends Component {
                   </div>
               </div>
             </div>
-            <div style={styles.table}>
-              <table >
-                <tr style={styles.tr}>
-                  <th style={{...styles.th, width: 37}}></th>
-                  <th style={{...styles.th, width: 350}}>EMAIL</th>
-                  <th style={{...styles.th, width: 150}}>INVITED ON</th>
-                </tr>
-                {
-                  invitees.map((invitee, i) => {
-                    return (
-                      <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td, width: 37}}></td>
-                        <td style={{...styles.td, width: 350}}>{invitee.email}</td>
-                        <td style={{...styles.td, width: 150}}>{typeof invitee.date == 'boolean' ? '__' : moment.unix(invitee.date).format('MMM DD YYYY')}</td>
-                      </tr>
-                    )
-                  })
-                }
-              </table>
+            <div style={{display: 'flex', justifyContent: 'center', height: '100%', paddingLeft: 20}}>
+              <Scrollbars
+                style={styles.table}
+                >
+                <table >
+                  <thead>
+                    <tr style={styles.tr}>
+                      <th style={{...styles.th, width: 37}}></th>
+                      <th style={{...styles.th, width: 350}}>EMAIL</th>
+                      <th style={{...styles.th, width: 150}}>INVITED ON</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      invitees.map((invitee, i) => {
+                        return (
+                          <tr key={i} style={styles.tr}>
+                            <td style={{...styles.td, width: 37}}></td>
+                            <td style={{...styles.td, width: 350}}>{invitee.email}</td>
+                            <td style={{...styles.td, width: 150}}>{typeof invitee.date == 'boolean' ? '__' : moment.unix(invitee.date).format('MMM DD YYYY')}</td>
+                          </tr>
+                        )
+                      })
+                    }
+                  </tbody>
+                </table>
+              </Scrollbars>
             </div>
           </div>
         </div>
@@ -105,8 +115,7 @@ const styles = {
     background: '#fff'
   },
   table: {
-    display: 'flex',
-    justifyContent: 'center',
+    height: '80%',
   },
   headingText:{
     width: '89%',

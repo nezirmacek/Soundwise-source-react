@@ -129,7 +129,7 @@ export default class AddSoundcast extends Component {
 
 		// send email invitations to invited listeners
 		const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to subscribe to ${title}`;
-		const content = `<p>Hi there!</p><p></p><p>This is an invitation for you to subscribe to ${title} on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>If you've already installed Soundwise on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+   const content = `<p>Hi there!</p><p></p><p>${userInfo.firstName} ${userInfo.lastName} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+this.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>If you've already installed Soundwise on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
 		inviteListeners(subscribersArr, subject, content);
 
 		const invited = {};
