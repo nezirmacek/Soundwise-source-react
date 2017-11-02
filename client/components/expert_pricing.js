@@ -16,7 +16,7 @@ const ExpertPricing = () => (
                 <div className="pricing-price  builder-bg margin-five-bottom xs-margin-five-bottom">
                     <span className="title-extra-large sm-title-extra-large alt-font  tz-text" style={{color: '#61e1fb'}}>$29</span>
                     <span className="text-large alt-font tz-text no-margin-bottom"> PER MONTH + </span>
-                    <span className="title-extra-large sm-title-extra-large alt-font  tz-text" style={{color: '#61e1fb'}}>9% </span>
+                    <span className="title-extra-large sm-title-extra-large alt-font  tz-text" style={{color: '#61e1fb'}}>7% </span>
                     <span className="text-large alt-font tz-text no-margin-bottom">PROCESSING FEE</span>
                 </div>
               </div>

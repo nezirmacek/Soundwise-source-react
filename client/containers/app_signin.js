@@ -189,6 +189,8 @@ class _AppSignin extends Component {
 
             firebase.database().ref(`users/${userId}/admin`).set(true);
 
+            firebase.database().ref(`users/${userId}/publisherID`).set(match.params.id);
+
             console.log('completed adding publisher to invited admin');
         })
         .then(() => {

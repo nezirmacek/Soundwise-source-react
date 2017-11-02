@@ -116,6 +116,8 @@ class _AppSignup extends Component {
 
                         firebase.database().ref(`users/${creatorID}/admin`).set(true);
 
+                        firebase.database().ref(`users/${userId}/publisherID`).set(that.publisherID);
+
                         console.log('completed adding publisher to invited admin');
                     })
                     .then(() => {
