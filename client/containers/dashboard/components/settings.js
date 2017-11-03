@@ -16,6 +16,7 @@ export default class Settings extends Component {
     super(props);
     this.state = {
       publisherName: '',
+      publisherEmail: '',
       publisherImg: '',
       fileUploaded: false,
       admins: [],
@@ -105,10 +106,11 @@ export default class Settings extends Component {
   loadFromProp(userInfo) {
     if(userInfo.publisher) {
       const publisherId = userInfo.publisherID;
-      const {name, imageUrl} = userInfo.publisher;
+      const {name, imageUrl, paypalEmail} = userInfo.publisher;
       this.setState({
         publisherName: name,
         publisherImg: imageUrl,
+        publisherEmail: paypalEmail,
         publisherId,
       })
     }
@@ -149,9 +151,9 @@ export default class Settings extends Component {
 
   submit() {
     const { publisher } = this.props.userInfo;
-    const { publisherImg, publisherName, publisherId } = this.state;
+    const { publisherImg, publisherName, publisherId, publisherEmail } = this.state;
     const that = this;
-    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg};
+    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, paypalEmail: publisherEmail};
     firebase.database().ref(`publishers/${publisherId}`)
     .set(revisedPublisher)
     .then(() => {
@@ -191,7 +193,7 @@ export default class Settings extends Component {
   }
 
   render() {
-    const { publisherImg, publisherName, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent } = this.state;
+    const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent } = this.state;
     const that = this;
     const {userInfo} = this.props;
 
@@ -203,7 +205,7 @@ export default class Settings extends Component {
                     </span>
                 </div>
                 <div className="row">
-                  <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                  <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         <div style={{marginTop: 20,}}>
                           <span style={{...styles.titleText, marginTop: 20,}}>
                               Publisher Name
@@ -259,6 +261,19 @@ export default class Settings extends Component {
                                     }
                                 </div>
                             </div>
+                        </div>
+                        <div style={{marginTop: 20,}}>
+                          <span style={{...styles.titleText, marginTop: 20,}}>
+                              Publisher Paypal Email
+                          </span>
+                        </div>
+                        <div style={styles.inputTitleWrapper}>
+                          <input
+                              type="text"
+                              style={styles.inputTitle}
+                              onChange={(e) => {this.setState({publisherEmail: e.target.value})}}
+                              value={publisherEmail}
+                          />
                         </div>
                         <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
                             {

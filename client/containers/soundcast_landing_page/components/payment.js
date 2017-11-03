@@ -145,7 +145,7 @@ export default class Payment extends Component {
     stripeTokenHandler(status, response) {
         const amount = this.state.totalPay * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
-        const {soundcast, checked} = this.props;
+        const {soundcast, checked, soundcastID} = this.props;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -164,7 +164,7 @@ export default class Payment extends Component {
                     receipt_email: email[0],
                     customer: stripe_id,
                     billingCycle,
-                    planID: `${soundcast.title} ${billingCycle} ${price}`,
+                    planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
                     description: `${soundcast.title}: ${paymentPlan}`,
                     statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                 })
@@ -197,7 +197,7 @@ export default class Payment extends Component {
                     receipt_email: email[0],
                     customer: stripe_id,
                     billingCycle,
-                    planID: `${soundcast.title} ${billingCycle} ${price}`,
+                    planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
                     description: `${soundcast.title}: ${paymentPlan}`,
                     statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                 })
