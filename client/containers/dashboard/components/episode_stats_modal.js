@@ -8,6 +8,7 @@ import Chip from 'material-ui/Chip';
 import {Bar} from 'react-chartjs-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import { Link } from 'react-router-dom';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -63,7 +64,7 @@ export default class EpisodeStatsModal extends Component {
 
   getListeningStats(episodeId) {
 
-    Axios.get('/api/stats_by_episode', {
+    Axios.get('https://mysoundwise.com/api/stats_by_episode', {
       params: {
         episodeId,
         startDate: this.state.startDate,
@@ -135,6 +136,7 @@ export default class EpisodeStatsModal extends Component {
                   firstName: snapshot.val().firstName,
                   lastName: snapshot.val().lastName,
                   pic_url: snapshot.val().pic_url,
+                  id: listener
                 };
               })
               .then(res => res, err => console.log(err));
@@ -206,15 +208,19 @@ export default class EpisodeStatsModal extends Component {
                   pic_url = '../../../images/profile_pic.png';
                 }
                 return (
-                  <MuiThemeProvider key={i}>
-                    <Chip
-                      key={i}
-                      style={styles.chip}
-                    >
-                      <Avatar src={pic_url} />
-                      {`${listener.firstName} ${listener.lastName}`}
-                    </Chip>
-                  </MuiThemeProvider>
+                  <div style={{display: 'inline-block', margin: 4}} key={i}>
+
+                    <MuiThemeProvider key={i}>
+                      <Chip
+                        key={i}
+                        style={styles.chip}
+                      >
+                        <Avatar src={pic_url} style={styles.userImage}/>
+                        {`${listener.firstName} ${listener.lastName}`}
+                      </Chip>
+                    </MuiThemeProvider>
+
+                  </div>
                 )
               })
             }
@@ -303,12 +309,26 @@ const styles = {
     padding: 20,
   },
   chip: {
-    margin: 4,
+    // margin: 4,
     display: 'inline-block',
   },
   submitButton: {
     backgroundColor: Colors.mainOrange,
     color: Colors.mainWhite,
     borderColor: Colors.mainOrange
-  }
+  },
+  userImage: {
+      // width: 26,
+      // height: 26,
+      // float: 'left',
+      // marginLeft: 10,
+      // borderRadius: '50%',
+      backgroundColor: Colors.mainWhite,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: Colors.lightGrey,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center center',
+      backgroundSize: 'cover',
+  },
 }

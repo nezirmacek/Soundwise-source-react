@@ -38,6 +38,7 @@ class _CreateEpisode extends Component {
             title: '',
             description: '',
             actions: '',
+            publicEpisode: false,
 
             audioUrl: '', // linkto uploaded file aws s3
 			blob: {}, // to play audio from react-mic
@@ -72,7 +73,17 @@ class _CreateEpisode extends Component {
     }
 
     componentDidMount () {
+        const that = this;
 		this.player.onended = () => this.setState({isPlaying: false});
+        firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
+        .once('value')
+        .then(snapshot => {
+            if(snapshot.val()) {
+                that.setState({
+                    publicEpisode: snapshot.val().landingPage ? true : false
+                })
+            }
+        })
 	}
 
     record () {
@@ -236,7 +247,7 @@ class _CreateEpisode extends Component {
     }
 
     saveEpisode (isPublished) {
-        const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration, audioDuration } = this.state;
+        const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
         const { userInfo, history } = this.props;
 
         if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
@@ -250,6 +261,7 @@ class _CreateEpisode extends Component {
                 url: audioUrl,
                 duration: audioDuration,  // duration is in seconds
                 notes: notesUrl,
+                publicEpisode,
                 soundcastID: this.currentSoundcastId,
                 isPublished: isPublished,
             };
@@ -430,7 +442,24 @@ class _CreateEpisode extends Component {
     }
 
     changeSoundcastId (e) {
+        const that = this;
         this.currentSoundcastId = e.target.value;
+        firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
+        .once('value')
+        .then(snapshot => {
+            if(snapshot.val()) {
+                that.setState({
+                    publicEpisode: snapshot.val().landingPage ? true : false
+                })
+            }
+        })
+    }
+
+    changeSharingSetting() {
+        const {publicEpisode} = this.state;
+        this.setState({
+            publicEpisode: !publicEpisode
+        })
     }
 
     render() {
@@ -516,8 +545,7 @@ class _CreateEpisode extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
                         <ValidatedInput
                             type="text"
                             styles={styles.inputTitle}
@@ -542,7 +570,7 @@ class _CreateEpisode extends Component {
                         >
                         </textarea>
                         <div style={styles.notes}>
-                            <div style={styles.notesLabel}>Notes</div>
+                            <div style={{...styles.notesLabel, fontWeight: 600}}>Notes</div>
                             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
                                 <input
                                     type="file"
@@ -592,19 +620,28 @@ class _CreateEpisode extends Component {
                                 }
                             </div>
                         </div>
+                        <div style={{marginTop: 15, marginBottom: 15,}}>
+                              <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>This episode is publicly sharable</span>
+                              <input
+                                type='checkbox'
+                                style={styles.checkbox}
+                                checked={this.state.publicEpisode}
+                                onClick={this.changeSharingSetting.bind(this)}
+                              />
+                        </div>
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
                             <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
                                 {
-                                    _soundcasts_managed.map((souncast, i) => {
+                                    _soundcasts_managed.map((soundcast, i) => {
                                         return (
-                                            <option value={souncast.id} key={i}>{souncast.title}</option>
+                                            <option value={soundcast.id} key={i}>{soundcast.title}</option>
                                         );
                                     })
                                 }
                             </select>
                         </div>
-                    </div>
+                </div>
                     <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                         <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
                             style={{textAlign: 'center'}}>
@@ -625,7 +662,7 @@ class _CreateEpisode extends Component {
                             </div>
                         </div>
                     </div>
-                </div>
+
             </div>
         );
     }
@@ -814,8 +851,8 @@ const styles = {
     },
     notes: {
         height: 102,
-        marginLeft: 10,
-        width: '50%',
+        // marginLeft: 10,
+        // width: '50%',
         // backgroundColor: Colors.mainWhite,
     },
     notesLabel: {
@@ -880,6 +917,19 @@ const styles = {
         fontSize: 11,
         marginLeft: 0,
         display: 'block',
+    },
+    checkbox: {
+        display: 'inline-block',
+        width: '20px',
+        height: '20px',
+        verticalAlign: 'middle',
+        // WebkitAppearance: 'none',
+        // appearance: 'none',
+        borderRadius: '1px',
+        borderColor: 'black',
+        borderWidth: 1,
+        boxSizing: 'border-box',
+        marginLeft: 10,
     },
 };
 

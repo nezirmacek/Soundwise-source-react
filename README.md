@@ -134,3 +134,13 @@ var uid = uuid.v1(),
 file.name = uid + ext;
 ```
 comment these 3 strings
+
+## Archiving in xcode shows 'duplicate symbol error' because of conflicts in cocoapod
+
+Follow instructions in this:
+https://github.com/facebook/react-native/issues/12814
+
+1. Open your [yourproject].xcworkspace
+2. Select your Pods project
+3. In TARGETS delete React.
+4. Clean (Product > Clean) & archive/build/whatever.

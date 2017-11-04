@@ -69,6 +69,7 @@
     "react-progress-label": "^1.2.2",
     "react-redux": "^4.0.0",
     "react-render-html": "^0.5.1",
+    "react-responsive-audio-player": "^1.1.4",
     "react-router": "^4.0.0",
     "react-router-dom": "^4.0.0",
     "react-router-redux": "^4.0.6",

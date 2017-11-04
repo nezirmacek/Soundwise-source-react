@@ -263,13 +263,23 @@ export default class SoundcastsManaged extends Component {
                             <span
                               style={{marginRight: 10, cursor: 'pointer', fontSize: 13, color: 'red'}}
                               onClick={() => this.deleteEpisode(episode)}>
-                                delete
+                                Delete
                             </span>
                             <span
-                              style={{cursor: 'pointer', fontSize: 13, color: Colors.link}}
+                              style={{marginRight: 10, cursor: 'pointer', fontSize: 13, color: Colors.link}}
                               onClick={() => this.editEpisode(episode)}>
-                              edit
+                              Edit
                             </span>
+                            {
+                              episode.publicEpisode &&
+                              <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
+                                <span className='text-dark-gray'
+                                  style={{cursor: 'pointer', fontSize: 13}}>
+                                  View
+                                </span>
+                              </a>
+                              || null
+                            }
                           </div>
                         </td>
     										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>

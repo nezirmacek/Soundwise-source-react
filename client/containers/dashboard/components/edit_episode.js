@@ -26,16 +26,18 @@ export default class EditEpisode extends Component {
             notesUploaded: false,
             notesName: '',
             notesUploading: false,
+            publicEpisode: '',
         };
 
     }
 
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
-      const {title, description, actionstep, notes} = episode;
+      const {title, description, actionstep, notes, publicEpisode} = episode;
 
       this.setState({
-        title
+        title,
+        publicEpisode,
       })
       if(description) {
         this.setState({
@@ -103,7 +105,7 @@ export default class EditEpisode extends Component {
     }
 
     submit () {
-        const { title, description, actionstep, notes} = this.state;
+        const { title, description, actionstep, notes, publicEpisode} = this.state;
         const { userInfo, history } = this.props;
         const { id } = history.location.state;
         const that = this;
@@ -113,7 +115,8 @@ export default class EditEpisode extends Component {
             title,
             description: description.length > 0 ? description : null,
             actionstep: actionstep.length > 0 ? actionstep : null,
-            notes
+            notes,
+            publicEpisode
         };
 
         // edit episode in database
@@ -132,6 +135,13 @@ export default class EditEpisode extends Component {
                 }
               );
             });
+    }
+
+    changeSharingSetting() {
+        const {publicEpisode} = this.state;
+        this.setState({
+            publicEpisode: !publicEpisode
+        })
     }
 
     render() {
@@ -192,7 +202,7 @@ export default class EditEpisode extends Component {
                           />
                         </div>
                         <div style={styles.notes}>
-                            <div style={styles.notesLabel}>Notes</div>
+                            <div style={{...styles.notesLabel, fontWeight: 600}}>Notes</div>
                             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
                                 <input
                                     type="file"
@@ -240,6 +250,15 @@ export default class EditEpisode extends Component {
                                   </div>
                                 }
                             </div>
+                        </div>
+                        <div style={{marginTop: 15, marginBottom: 15,}}>
+                              <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>This episode is publicly sharable</span>
+                              <input
+                                type='checkbox'
+                                style={styles.checkbox}
+                                checked={this.state.publicEpisode}
+                                onClick={this.changeSharingSetting.bind(this)}
+                              />
                         </div>
                         <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
@@ -406,7 +425,7 @@ const styles = {
     },
     notes: {
         height: 102,
-        marginLeft: 10,
+        // marginLeft: 10,
         width: '50%',
         // backgroundColor: Colors.mainWhite,
     },
@@ -415,5 +434,18 @@ const styles = {
         paddingTop: 12,
         paddingBottom: 6,
         fontSize: 16
+    },
+    checkbox: {
+        display: 'inline-block',
+        width: '20px',
+        height: '20px',
+        verticalAlign: 'middle',
+        // WebkitAppearance: 'none',
+        // appearance: 'none',
+        borderRadius: '1px',
+        borderColor: 'black',
+        borderWidth: 1,
+        boxSizing: 'border-box',
+        marginLeft: 10,
     },
 };
