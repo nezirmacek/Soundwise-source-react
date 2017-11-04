@@ -158,11 +158,11 @@ class _EpisodePage extends Component {
           <title>{`${soundcastTitle} | Soundwise`}</title>
           <meta property="og:url" content={`https://mysoundwise.com/episodes/${episodeID}`} />
           <meta property="fb:app_id" content='1726664310980105' />
-          <meta property="og:title" content={soundcastTitle}/>
+          <meta property="og:title" content={`${title} - ${soundcastTitle}`}/>
           <meta property="og:description" content={description}/>
           <meta property="og:image" content={soundcastImageURL} />
           <meta name="description" content={description} />
-          <meta name="twitter:title" content={soundcastTitle}/>
+          <meta name="twitter:title" content={`${title} - ${soundcastTitle}`}/>
           <meta name="twitter:description" content={description}/>
           <meta name="twitter:image" content={soundcastImageURL}/>
           <meta name="twitter:card" content={soundcastImageURL} />
