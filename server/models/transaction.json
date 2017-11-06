@@ -1,0 +1,50 @@
+{
+  "name": "transaction",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "Transaction"
+    }
+  },
+  "properties": {
+    "transactionId": {
+      "type": "string",
+      "required": true
+    },
+    "invoiceId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "required": true
+    },
+    "amount": {
+      "type": "number",
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "publisherId": {
+      "type": "string",
+      "required": true
+    },
+    "soundcastId": {
+      "type": "string"
+    },
+    "customer": {
+      "type": "string",
+      "required": true
+    },
+    "paymentId": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
