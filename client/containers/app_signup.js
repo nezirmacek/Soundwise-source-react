@@ -154,7 +154,8 @@ class _AppSignup extends Component {
     }
 
     signUpAdmin () {
-        const that = this
+        console.log('>>>>>>>>>>signUpAdmin');
+        const that = this;
         const { match, history } = this.props;
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
 
@@ -333,7 +334,7 @@ class _AppSignup extends Component {
             Axios.post('/api/soundcast', {
                 soundcastId: soundcastId,
                 publisherId: that.publisherID,
-                title
+                title: newSoundcast.title,
             }).then(
                 res => {
                     return res;
@@ -377,6 +378,7 @@ class _AppSignup extends Component {
     }
 
     async _signUp () {
+    	console.log('>>>>>>>>>>_signUp');
         const { match, history, signupUser } = this.props;
         const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
         let authArr = [];
@@ -389,6 +391,7 @@ class _AppSignup extends Component {
         // console.log('authArr: ', authArr);
 
         if(authArr.length > 0) {
+        	console.log('>>>>>>>>>>FOUND IN PROVIDERS');
             if(match.params.id) {
               history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
               return;
