@@ -18,8 +18,8 @@
     },
     "episodeId": {
       "type": "string",
-      "required": true,
       "id": true,
+      "required": true,
       "postgresql": {
         "column": "episodeId"
       }

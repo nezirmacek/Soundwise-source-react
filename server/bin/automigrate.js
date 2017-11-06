@@ -7,3 +7,5 @@ ds.automigrate('listener');
 ds.automigrate('soundcast');
 ds.automigrate('episode');
 ds.automigrate('listeningSession');
+ds.automigrate('transaction');
+ds.automigrate('payout');

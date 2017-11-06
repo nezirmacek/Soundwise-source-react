@@ -1,0 +1,54 @@
+{
+  "name": "payout",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "Payout"
+    }
+  },
+  "properties": {
+    "batchId": {
+      "type": "string",
+      "required": true
+    },
+    "amount": {
+      "type": "number",
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "publisherId": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "payoutId": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "createdAt"
+      }
+    },
+    "updatedAt": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "updatedAt"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

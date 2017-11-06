@@ -11,8 +11,8 @@
   "properties": {
     "soundcastId": {
       "type": "string",
-      "required": true,
       "id": true,
+      "required": true,
       "postgresql": {
         "column": "soundcastId"
       }
