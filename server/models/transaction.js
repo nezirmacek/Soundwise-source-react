@@ -112,11 +112,17 @@ module.exports = function(Transaction) {
 						soundcastId: _transactionData[1],
 						customer: data.data.object.customer, // listener's stripe id
 						paymentId: line.plan.id, // id for the payment plan, only present if it's a subscription
+						createdAt: moment().utc().format(),
+						updatedAt: moment().utc().format(),
 					};
+					console.log('Try to create transaction: ', _transaction);
 					_transactions.push(_transaction);
 					_transactionsPromises.push(
 						Transaction.create(_transaction)
-							.catch(err => _errors.push(_transaction))
+							.catch(err => {
+								_errors.push(_transaction);
+								Promise.reject(err);
+							})
 					);
 				});
 				Promise.all(_transactionsPromises)
@@ -158,7 +164,7 @@ module.exports = function(Transaction) {
 			http: {path: '/handleStripeWebhookEvent', verb: 'post', status: 200, errorStatus: 400},
 			description: ['handle stripe webhook events'],
 			notes: 'it accepts stripe event data',
-			accepts: {arg: 'data', type: 'object', http: { source: 'query' }, required: true},
+			accepts: {arg: 'data', type: 'object', http: { source: 'body' }, required: true},
 			returns: {type: 'array', root: true}
 		}
 	);

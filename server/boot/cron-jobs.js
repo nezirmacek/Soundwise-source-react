@@ -38,7 +38,11 @@ module.exports = function(app) {
 							})
 								.then(transactions => {
 									if (transactions.length) {
-										// console.log('>>>>>>>>>>transactions', transactions);
+										console.log('>>>>>>>>>>transactions', transactions);
+										let _payoutAmount = 0;
+										transactions.map(transaction => {
+											_payoutAmount += transaction.amount;
+										});
 										
 									}
 								})
