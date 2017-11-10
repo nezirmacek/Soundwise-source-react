@@ -23,6 +23,13 @@
         "column": "invoiceId"
       }
     },
+    "chargeId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "chargeId"
+      }
+    },
     "type": {
       "type": "string",
       "required": true
