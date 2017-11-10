@@ -38,7 +38,8 @@ class _SoundcastCheckout extends Component {
     if(soundcast.prices[checked].price == 'free') {
       totalPrice = 0;
     } else {
-      totalPrice = Math.floor(soundcast.prices[checked].price * 1.03 * 100) / 100;
+      // totalPrice = Math.floor(soundcast.prices[checked].price * 1.03 * 100) / 100;
+      totalPrice = Math.floor(soundcast.prices[checked].price * 100) / 100;
     }
 
 

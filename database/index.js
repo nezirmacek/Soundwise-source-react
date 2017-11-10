@@ -28,6 +28,19 @@ var User = db.define('User', {
   picURL: Sequelize.STRING,
 });
 
+var Publisher = db.define('Publisher', {
+  publisherId: { type: Sequelize.STRING, primaryKey: true },
+  name: Sequelize.STRING,
+  imageUrl: Sequelize.STRING,
+});
+
+var Comment = db.define('Comment', {
+  commentId: { type: Sequelize.STRING, primaryKey: true },
+  content: Sequelize.STRING,
+  userId: { type: Sequelize.STRING, allowNull: false },
+  announcementId: Sequelize.STRING,
+});
+
 var Episode = db.define('Episode', {
   episodeId: { type: Sequelize.STRING, primaryKey: true },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
@@ -56,7 +69,8 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
 });
 
 var Transaction = db.define('Transaction', { // records of listener payments and refunds
-  transactionId: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund' id from stripe
+  transactionId: { type: Sequelize.STRING, allowNull: false, primaryKey: true },
+  chargeId: { type: Sequelize.STRING }, //only present if the charge is associated with a one-time purchase
   invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
   type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
@@ -68,12 +82,12 @@ var Transaction = db.define('Transaction', { // records of listener payments and
 });
 
 var Payout = db.define('Payout', { // records of payouts
+  payoutId: { type: Sequelize.STRING, primaryKey: true }, // id for the payout item returned by paypal's webhook event
   batchId: { type: Sequelize.STRING, allowNull: false }, //id for the payout batch from paypal that this particular payout belongs to
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   date: { type: Sequelize.DATEONLY, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
   email: { type: Sequelize.STRING, allowNull: false }, //email address used to send paypal payout
-  payoutId: { type: Sequelize.STRING }, // id for the payout item returned by paypal's webhook event
 });
 
 Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
@@ -94,6 +108,11 @@ Episode.hasMany(ListeningSession, {as: 'ListeningSessions'});
 ListeningSession.belongsTo(User, {foreignKey: 'userId'});
 User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
+Transaction.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+Soundcast.hasMany(Transaction, {as: 'Transactions'});
+
+
+
 User.sync({force: false});
 Soundcast.sync({force: false});
 Episode.sync({force: false});
@@ -103,6 +122,8 @@ Payout.sync({force: false});
 
 module.exports = {
   User: User,
+  Publisher: Publisher,
+  Comment: Comment,
   Soundcast: Soundcast,
   Episode: Episode,
   ListeningSession: ListeningSession,
