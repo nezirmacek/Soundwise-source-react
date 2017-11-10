@@ -42,6 +42,12 @@ var Soundcast = db.define('Soundcast', {
   title: { type: Sequelize.STRING}
 });
 
+var Publisher = db.define('Publisher', {
+	publisherId: { type: Sequelize.STRING, primaryKey: true },
+    name: { type: Sequelize.STRING, allowNull: false },
+	paypalEmail: { type: Sequelize.STRING },
+});
+
 var ListeningSession = db.define('ListeningSession', { //<------ a session is the period between user starting to play an audio and the audio being paused
   sessionId: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
@@ -58,6 +64,7 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
 var Transaction = db.define('Transaction', { // records of listener payments and refunds
   transactionId: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund' id from stripe
   invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
+  chargeId: { type: Sequelize.STRING, allowNull: false },
   type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   date: { type: Sequelize.DATEONLY, allowNull: false },
@@ -95,6 +102,7 @@ ListeningSession.belongsTo(User, {foreignKey: 'userId'});
 User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
 User.sync({force: false});
+Publisher.sync({force: false});
 Soundcast.sync({force: false});
 Episode.sync({force: false});
 ListeningSession.sync({force: false});
@@ -102,11 +110,12 @@ Transaction.sync({force: false});
 Payout.sync({force: false});
 
 module.exports = {
-  User: User,
-  Soundcast: Soundcast,
-  Episode: Episode,
-  ListeningSession: ListeningSession,
-  Transaction: Transaction,
-  Payout: Payout,
-  db: db,
+	User: User,
+	Soundcast: Soundcast,
+	Episode: Episode,
+	ListeningSession: ListeningSession,
+	Transaction: Transaction,
+	Payout: Payout,
+	Publisher: Publisher,
+	db: db,
 };
