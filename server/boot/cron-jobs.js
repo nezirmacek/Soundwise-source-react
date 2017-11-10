@@ -104,6 +104,8 @@ module.exports = function(app) {
 									_payouts.map(_payout => {
 										_payout.batchId = payout.batchId; // TODO: find batchId in payout
 										_payout.payoutId = payout.payoutId; // TODO: find batchId in payout
+										_payout.createdAt = moment().utc().format();
+										_payout.updatedAt = moment().utc().format();
 										
 										_payoutsPromises.push(Payout.create(_payout));
 									});

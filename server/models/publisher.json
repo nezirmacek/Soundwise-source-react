@@ -24,7 +24,7 @@
     "paypalEmail": {
       "type": "string",
       "postgresql": {
-        "column": "publisherId"
+        "column": "paypalEmail"
       }
     },
     "createdAt": {
