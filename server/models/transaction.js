@@ -8,89 +8,91 @@ module.exports = function(Transaction) {
 		console.log('request body: ', data);
 		
 		// let _body = {
-		// 	"created": 1326853478,
-		// 	"livemode": false,
-		// 	"id": "evt_00000000000000",
-		// 	"type": "invoice.payment_succeeded",
+		// 	"id": "evt_1BMIZGH62wlr1FFaa0Lymsmi",
 		// 	"object": "event",
-		// 	"request": null,
-		// 	"pending_webhooks": 1,
-		// 	"api_version": "2017-08-15",
+		// 	"api_version": "2017-04-06",
+		// 	"created": 1510243670,
 		// 	"data": {
 		// 		"object": {
-		// 			"id": "in_00000000000000",
+		// 			"id": "in_1BMIZEH62wlr1FFa65J8GKsO",
 		// 			"object": "invoice",
-		// 			"amount_due": 2000,
+		// 			"amount_due": 515,
 		// 			"application_fee": null,
-		// 			"attempt_count": 1,
+		// 			"attempt_count": 0,
 		// 			"attempted": true,
 		// 			"billing": "charge_automatically",
-		// 			"charge": "_00000000000000",
+		// 			"charge": "ch_1BMIZEH62wlr1FFaBxGs2aGd",
 		// 			"closed": true,
 		// 			"currency": "usd",
-		// 			"customer": "cus_00000000000000",
-		// 			"date": 1479552851,
+		// 			"customer": "cus_Bjm7lqBvULh8VF",
+		// 			"date": 1510243668,
 		// 			"description": null,
 		// 			"discount": null,
 		// 			"ending_balance": 0,
 		// 			"forgiven": false,
 		// 			"lines": {
+		// 				"object": "list",
 		// 				"data": [
 		// 					{
-		// 						"id": "sub_7kS1lODzhN8cWx",
+		// 						"id": "sub_Bjm7lDpCIO9S6s",
 		// 						"object": "line_item",
-		// 						"amount": 2000,
+		// 						"amount": 515,
 		// 						"currency": "usd",
 		// 						"description": null,
 		// 						"discountable": true,
 		// 						"livemode": true,
 		// 						"metadata": {},
 		// 						"period": {
-		// 							"start": 1482144844,
-		// 							"end": 1484823244
+		// 							"start": 1510243668,
+		// 							"end": 1512835668
 		// 						},
 		// 						"plan": {
-		// 							"id": "pt_renew_01",
+		// 							"id": "1503002103690p-1503691618714s-Founders Nextdoor-monthly-5",
 		// 							"object": "plan",
-		// 							"amount": 99,
-		// 							"created": 1474890258,
+		// 							"amount": 515,
+		// 							"created": 1510243666,
 		// 							"currency": "usd",
 		// 							"interval": "month",
 		// 							"interval_count": 1,
-		// 							"livemode": false,
+		// 							"livemode": true,
 		// 							"metadata": {},
-		// 							"name": "pt_renew_01",
+		// 							"name": "Founders Nextdoor: Monthly subscription",
 		// 							"statement_descriptor": null,
 		// 							"trial_period_days": null
 		// 						},
 		// 						"proration": false,
 		// 						"quantity": 1,
 		// 						"subscription": null,
-		// 						"subscription_item": "si_18RxUBHsaYKYxSMRW7wW8dhm",
+		// 						"subscription_item": "si_1BMIZEH62wlr1FFabl12IHEK",
 		// 						"type": "subscription"
 		// 					}
 		// 				],
 		// 				"has_more": false,
-		// 				"object": "list",
-		// 				"url": "/v1/invoices/in_19HWU3HsaYKYxSMRjyb5BanT/lines"
+		// 				"total_count": 1,
+		// 				"url": "/v1/invoices/in_1BMIZEH62wlr1FFa65J8GKsO/lines"
 		// 			},
-		// 			"livemode": false,
+		// 			"livemode": true,
 		// 			"metadata": {},
 		// 			"next_payment_attempt": null,
+		// 			"number": "efa4702232-0001",
 		// 			"paid": true,
-		// 			"period_end": 1479552844,
-		// 			"period_start": 1476874444,
-		// 			"receipt_number": null,
+		// 			"period_end": 1510243668,
+		// 			"period_start": 1510243668,
+		// 			"receipt_number": "2743-3745",
 		// 			"starting_balance": 0,
 		// 			"statement_descriptor": null,
-		// 			"subscription": "sub_00000000000000",
-		// 			"subtotal": 2000,
+		// 			"subscription": "sub_Bjm7lDpCIO9S6s",
+		// 			"subtotal": 515,
 		// 			"tax": null,
 		// 			"tax_percent": null,
-		// 			"total": 2000,
-		// 			"webhooks_delivered_at": 1479552851
+		// 			"total": 515,
+		// 			"webhooks_delivered_at": null
 		// 		}
-		// 	}
+		// 	},
+		// 	"livemode": true,
+		// 	"pending_webhooks": 2,
+		// 	"request": "req_ofehLEd21SaMIm",
+		// 	"type": "invoice.payment_succeeded"
 		// };
 		
 		// need to handle only 2 types of events
@@ -105,6 +107,7 @@ module.exports = function(Transaction) {
 					const _transaction = {
 						transactionId: `${data.id}-${i}`, //'charge' or 'refund' id from stripe
 						invoiceId: data.data.object.id,
+						chargeId: data.data.object.charge, // TODO: add to DB !!!!!!!!!!!!!!!!!!!!!!!!
 						type: 'charge',
 						amount: line.amount / 100,
 						date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
