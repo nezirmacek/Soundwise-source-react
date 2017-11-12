@@ -73,11 +73,10 @@ export default class InviteSubscribersModal extends Component {
     Promise.all(invitationPromise)
     .then(
       res => {
-        console.log('completed adding soundcast');
-        history.goBack();
+        return res;
       },
       err => {
-        console.log('failed to complete adding soundcast');
+        console.log('failed to complete adding invitees: ', err);
       }
     );
 
