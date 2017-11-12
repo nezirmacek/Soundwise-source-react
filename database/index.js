@@ -56,7 +56,8 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
 });
 
 var Transaction = db.define('Transaction', { // records of listener payments and refunds
-  transactionId: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund' id from stripe
+  transactionId: { type: Sequelize.STRING, allowNull: false }, //id of response from stripe
+  chargeId: { type: Sequelize.STRING }, //the 'charge' variable of the invoice object returned by stripe
   invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
   type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
