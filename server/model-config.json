@@ -59,5 +59,9 @@
   "payout": {
     "dataSource": "db",
     "public": true
+  },
+  "publisher": {
+    "dataSource": "db",
+    "public": true
   }
 }

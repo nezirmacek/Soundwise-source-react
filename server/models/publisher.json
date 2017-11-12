@@ -1,45 +1,30 @@
 {
-  "name": "payout",
+  "name": "publisher",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true,
     "postgresql": {
-      "table": "Payouts"
+      "table": "Publishers"
     }
   },
   "properties": {
-    "batchId": {
-      "type": "string",
-      "id": true,
-      "required": true,
-      "postgresql": {
-        "column": "batchId"
-      }
-    },
-    "amount": {
-      "type": "number",
-      "required": true
-    },
-    "date": {
-      "type": "date",
-      "required": true
-    },
     "publisherId": {
       "type": "string",
+      "id": true,
       "required": true,
       "postgresql": {
         "column": "publisherId"
       }
     },
-    "email": {
+    "name": {
       "type": "string",
       "required": true
     },
-    "payoutId": {
+    "paypalEmail": {
       "type": "string",
       "postgresql": {
-        "column": "payoutId"
+        "column": "paypalEmail"
       }
     },
     "createdAt": {

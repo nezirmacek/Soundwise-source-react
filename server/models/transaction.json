@@ -5,16 +5,30 @@
   "options": {
     "validateUpsert": true,
     "postgresql": {
-      "table": "Transaction"
+      "table": "Transactions"
     }
   },
   "properties": {
     "transactionId": {
       "type": "string",
-      "required": true
+      "id": true,
+      "required": true,
+      "postgresql": {
+        "column": "transactionId"
+      }
     },
     "invoiceId": {
-      "type": "string"
+      "type": "string",
+      "postgresql": {
+        "column": "invoiceId"
+      }
+    },
+    "chargeId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "chargeId"
+      }
     },
     "type": {
       "type": "string",
@@ -30,27 +44,36 @@
     },
     "publisherId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "postgresql": {
+        "column": "publisherId"
+      }
     },
     "soundcastId": {
-      "type": "string"
+      "type": "string",
+      "postgresql": {
+        "column": "soundcastId"
+      }
     },
     "customer": {
       "type": "string",
       "required": true
     },
     "paymentId": {
-      "type": "string"
+      "type": "string",
+      "postgresql": {
+        "column": "paymentId"
+      }
     },
     "createdAt": {
-      "type": "string",
+      "type": "date",
       "required": true,
       "postgresql": {
         "column": "createdAt"
       }
     },
     "updatedAt": {
-      "type": "string",
+      "type": "date",
       "required": true,
       "postgresql": {
         "column": "updatedAt"
