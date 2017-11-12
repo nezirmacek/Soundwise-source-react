@@ -51,5 +51,17 @@
   "listeningSession": {
     "dataSource": "db",
     "public": true
+  },
+  "transaction": {
+    "dataSource": "db",
+    "public": true
+  },
+  "payout": {
+    "dataSource": "db",
+    "public": true
+  },
+  "publisher": {
+    "dataSource": "db",
+    "public": true
   }
 }

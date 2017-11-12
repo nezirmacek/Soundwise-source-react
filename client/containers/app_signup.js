@@ -154,7 +154,6 @@ class _AppSignup extends Component {
     }
 
     signUpAdmin () {
-        console.log('>>>>>>>>>>signUpAdmin');
         const that = this;
         const { match, history } = this.props;
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
@@ -378,7 +377,6 @@ class _AppSignup extends Component {
     }
 
     async _signUp () {
-    	console.log('>>>>>>>>>>_signUp');
         const { match, history, signupUser } = this.props;
         const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
         let authArr = [];
@@ -391,7 +389,6 @@ class _AppSignup extends Component {
         // console.log('authArr: ', authArr);
 
         if(authArr.length > 0) {
-        	console.log('>>>>>>>>>>FOUND IN PROVIDERS');
             if(match.params.id) {
               history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
               return;
@@ -438,7 +435,7 @@ class _AppSignup extends Component {
 
                 firebase.database().ref('users/' + userId).set(userToSave);
 
-                const _user = { userId, firstName, lastName, picURL: pic_url };
+                const _user = { userId, firstName, lastName, picURL: pic_url || '' };
                 // TODO: _user.picURL = false
                 Axios.post('/api/user', _user)
                     .then(res => {

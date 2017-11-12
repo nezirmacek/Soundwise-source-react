@@ -50,6 +50,10 @@ See table content of table 'Users':
 node server/bin/create-lb-tables.js
 node server/bin/automigrate.js
 ```
+### setup test publisher and transactions:
+```
+node server/bin/create-test-data.js
+```
 
 ### SSL certificate renewal
 - every three months, need to renew certificate (cron job set up for auto-renewal, but need to check regularly, just to make sure)

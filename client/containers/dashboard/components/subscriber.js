@@ -49,7 +49,7 @@ export default class Subscriber extends Component {
   }
 
   getListeningStats(userId, publisherId) {
-    Axios.get(`https://mysoundwise.com/api/stats_by_user_publisher?userId=${userId}&publisherId=${publisherId}&startDate='${this.state.startDate}'&endDate='${this.state.endDate}'`)
+    Axios.get(`/api/stats_by_user_publisher?userId=${userId}&publisherId=${publisherId}&startDate='${this.state.startDate}'&endDate='${this.state.endDate}'`)
     .then(res => {
       this.countListenings(res.data);
     })
