@@ -60,8 +60,9 @@ module.exports = function(app) {
 									publisherId,
 									date: {
 										between: [
-											moment().utc().subtract(15, 'days').subtract(1, 'months').format('YYYY-MM-DD'),
-											moment().utc().subtract(15, 'days').format('YYYY-MM-DD')
+											// be sure it runs at the START of the month
+											moment().startOf('month').subtract(2, 'months').add(15, 'days').format('YYYY-MM-DD'),
+											moment().startOf('month').subtract(1, 'months').add(14, 'days').format('YYYY-MM-DD')
 										]
 									},
 									type: 'charge'
