@@ -18,13 +18,13 @@ module.exports = function(app) {
 	// init firebase
 	// firebase.initializeApp(config); // uncomment to get publishers from firebase
 	paypal.configure(paypalConfig);
-	
+
 	var j = schedule.scheduleJob('10 * * * * *', function () { // TODO: need to set up schedule
 		// need to pay money for every publisher for all transactions for the last month (-15 days os delay)
 		const Publisher = app.models.Publisher;
 		const Transaction = app.models.Transaction;
 		const Payout = app.models.Payout;
-		
+
 		// for paypal
 		const sender_batch_id = Math.random().toString(36).substring(9);
 		const payoutsObj = {
@@ -37,7 +37,7 @@ module.exports = function(app) {
 
 		// for our database
 		const _payouts = [];
-		
+
 		// firebase.database().ref('publishers').once('value') // uncomment to get publishers from firebase
 		Publisher.find()
 			.then(
@@ -46,13 +46,13 @@ module.exports = function(app) {
 				// 		const _publishersObj = publishersSnapshot.val();
 				publishers => {
 					const _publisherPromises = [];
-					
+
 					// for (let publisherId in _publishersObj) {
 					// 	if (_publishersObj.hasOwnProperty(publisherId)) {
 					// 		const _publisher = _publishersObj[publisherId];
 					publishers.map(_publisher => {
 						const publisherId = _publisher.publisherId;
-						
+
 						_publisherPromises.push(
 							// first find charges
 							Transaction.find({
@@ -75,7 +75,9 @@ module.exports = function(app) {
 											const fees = transaction.amount * (stripeFee_percent + soundwiseFee_percent) + stripeFee_fixed;
 											_payoutAmount += (+transaction.amount - fees);
 										});
-										
+
+										_payoutAmount = _payoutAmount.toFixed(2);
+
 										payoutsObj.items.push({
 											recipient_type: 'EMAIL',
 											amount: {
@@ -86,7 +88,7 @@ module.exports = function(app) {
 											note: 'Thank you.',
 											sender_item_id: publisherId
 										});
-										
+
 										_payouts.push({
 											batchId: sender_batch_id, //id for the payout batch from paypal that this particular payout belongs to
 											amount: _payoutAmount,
@@ -102,10 +104,14 @@ module.exports = function(app) {
 					});
 					// 	}
 					// }
-					
+
 					// when all payout are generated, send them with paypal
 					Promise.all(_publisherPromises)
 						.then(res => {
+							if (!payoutsObj.items.length) {
+								return;
+							}
+
 							paypal.payout.create(payoutsObj, function (error, payout) {
 								if (error) {
 									console.log(error.response);
