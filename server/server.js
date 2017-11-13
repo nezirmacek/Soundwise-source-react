@@ -64,7 +64,7 @@ uploader.use(new S3Strategy({
 }));
 
 // use part
-app.post('/api/charge', handlePayment);
+// app.post('/api/charge', handlePayment);
 app.post('/api/recurring_charge', handleRecurringPayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);

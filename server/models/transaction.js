@@ -1,12 +1,14 @@
 'use strict';
 const moment = require('moment');
+var stripe_key =  require('../../config').stripe_key;
+var stripe = require('stripe')(stripe_key);
 
 module.exports = function(Transaction) {
 	Transaction.handleStripeWebhookEvent = function(data, cb) {
 		//When recording to database, the soundcast id and publisher id come from the 'plan id' data returned from stripe.
 		//because the format of 'plan id' is publisherID-soundcastID-soundcast title-billingCycle-price.
 		console.log('request body: ', data);
-		
+
 		// let _body = {
 		// 	"id": "evt_1BMIZGH62wlr1FFaa0Lymsmi",
 		// 	"object": "event",
@@ -94,7 +96,7 @@ module.exports = function(Transaction) {
 		// 	"request": "req_ofehLEd21SaMIm",
 		// 	"type": "invoice.payment_succeeded"
 		// };
-		
+
 		// need to handle only 2 types of events
 		switch (data.type) {
 			case 'invoice.payment_succeeded':
@@ -103,11 +105,11 @@ module.exports = function(Transaction) {
 				const _errors = [];
 				data.data.object.lines.data.map((line, i) => {
 					const _transactionData = line.plan.id.split('-');
-					
+
 					const _transaction = {
-						transactionId: `${data.id}-${i}`, //'charge' or 'refund' id from stripe
+						transactionId: `${data.id}-${i}`,
 						invoiceId: data.data.object.id,
-						chargeId: data.data.object.charge, // TODO: add to DB !!!!!!!!!!!!!!!!!!!!!!!!
+						chargeId: data.data.object.charge,
 						type: 'charge',
 						amount: line.amount / 100,
 						date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
@@ -169,6 +171,94 @@ module.exports = function(Transaction) {
 			notes: 'it accepts stripe event data',
 			accepts: {arg: 'data', type: 'object', http: { source: 'body' }, required: true},
 			returns: {type: 'array', root: true}
+		}
+	);
+
+	Transaction.handleOnetimeCharge = function (data, cb) {
+	  if (!req.customer) { //if customer id does not exist yet, create a customer first and then make the charge
+	      stripe.customers.create({
+	        email: req.receipt_email,
+	        source: req.source,
+	      })
+	      .then(customer => {
+	        return stripe.charges.create({
+	            amount: req.amount,
+	            currency: 'usd',
+	            customer: customer.id,
+	            description: req.description,
+	            statement_descriptor: req.statement_descriptor,
+	          }, (err, charge) => {
+	            if (err) {
+	              console.log(err);
+	              return cb(err);
+	            }
+							const _transaction = {
+								transactionId: `tr_${moment().format('x')}`,
+								chargeId: charge.id,
+								type: 'charge',
+								amount: charge.amount / 100,
+								date: moment().format('YYYY-MM-DD'),
+								publisherId: req.publisherID,
+								paymentId: req.planID,
+								soundcastId: req.soundcastID,
+								customer: customer.id, // listener's stripe id
+								createdAt: moment().utc().format(),
+								updatedAt: moment().utc().format(),
+							};
+							Transaction.create(_transaction)
+							.then(() => {
+								return cb(null, charge);
+							})
+							.catch(err => {
+								return cb(err);
+							});
+	          });
+	      });
+	  } else { // if customer id is in the reqest body, create a charge using the existing customer id
+	      console.log('customer: ', req.customer);
+	        stripe.charges.create({
+	          amount: req.amount,
+	          currency: 'usd',
+	          customer: req.customer,
+	          description: req.description,
+	          statement_descriptor: req.statement_descriptor,
+	        }, (err, charge) => {
+	          if (err) {
+	            console.log(err);
+	            return cb(err);;
+	          }
+						const _transaction = {
+							transactionId: `tr_${moment().format('x')}`,
+							chargeId: charge.id,
+							type: 'charge',
+							amount: charge.amount / 100,
+							date: moment().format('YYYY-MM-DD'),
+							publisherId: req.publisherID,
+							paymentId: req.planID,
+							soundcastId: req.soundcastID,
+							customer: req.customer, // listener's stripe id
+							createdAt: moment().utc().format(),
+							updatedAt: moment().utc().format(),
+						};
+						Transaction.create(_transaction)
+						.then(() => {
+							return cb(null, charge);
+						})
+						.catch(err => {
+							return cb(err);
+						});
+	        });
+	  }
+	};
+
+	Transaction.remoteMethod(
+		'handleOnetimeCharge',
+		{
+			http: {path: '/handleOnetimeCharge', verb: 'post', status: 200, errorStatus: 400},
+			description: ['handle one time charges'],
+			notes: 'it accepts post request from frontend',
+			accepts: {arg: 'req', type: 'object', http: { source: 'body' }, required: true},
+			returns: {arg: 'res', type: 'object', http: { source: 'body' }, required: true}
 		}
 	);
 };
