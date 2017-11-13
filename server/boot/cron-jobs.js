@@ -4,7 +4,7 @@
 'use strict';
 var schedule = require('node-schedule');
 var moment = require('moment');
-var firebase = require('firebase');
+// var firebase = require('firebase');
 var paypal = require('paypal-rest-sdk');
 
 var config = require('../../config').config;
@@ -12,11 +12,12 @@ var paypalConfig = require('../../config').paypalConfig;
 
 module.exports = function(app) {
 	// init firebase
-	firebase.initializeApp(config);
+	// firebase.initializeApp(config); // uncomment to get publishers from firebase
 	paypal.configure(paypalConfig);
 	
 	var j = schedule.scheduleJob('10 * * * * *', function () { // TODO: need to set up schedule
 		// need to pay money for every publisher for all transactions for the last month (-15 days os delay)
+		const Publisher = app.models.Publisher;
 		const Transaction = app.models.Transaction;
 		const Payout = app.models.Payout;
 		
@@ -33,61 +34,68 @@ module.exports = function(app) {
 		// for our database
 		const _payouts = [];
 		
-		firebase.database().ref('publishers').once('value')
-			.then(publishersSnapshot => {
-				if (publishersSnapshot.val()) {
-					const _publishersObj = publishersSnapshot.val();
+		// firebase.database().ref('publishers').once('value') // uncomment to get publishers from firebase
+		Publisher.find()
+			.then(
+				// publishersSnapshot => {
+				// 	if (publishersSnapshot.val()) {
+				// 		const _publishersObj = publishersSnapshot.val();
+				publishers => {
 					const _publisherPromises = [];
 					
-					for (let publisherId in _publishersObj) {
-						if (_publishersObj.hasOwnProperty(publisherId)) {
-							const _publisher = _publishersObj[publisherId];
-							_publisherPromises.push(
-								// first find charges
-								Transaction.find({
-									where: {
-										publisherId,
-										date: {
-											between: [
-												moment().utc().subtract(15, 'days').subtract(1, 'months').format('YYYY-MM-DD'),
-												moment().utc().subtract(15, 'days').format('YYYY-MM-DD')
-											]
-										},
-										type: 'charge'
+					// for (let publisherId in _publishersObj) {
+					// 	if (_publishersObj.hasOwnProperty(publisherId)) {
+					// 		const _publisher = _publishersObj[publisherId];
+					publishers.map(_publisher => {
+						const publisherId = _publisher.publisherId;
+						
+						_publisherPromises.push(
+							// first find charges
+							Transaction.find({
+								where: {
+									publisherId,
+									date: {
+										between: [
+											moment().utc().subtract(15, 'days').subtract(1, 'months').format('YYYY-MM-DD'),
+											moment().utc().subtract(15, 'days').format('YYYY-MM-DD')
+										]
+									},
+									type: 'charge'
+								}
+							})
+								.then(transactions => {
+									if (transactions.length) {
+										let _payoutAmount = 0;
+										transactions.map(transaction => {
+											_payoutAmount += +transaction.amount;
+										});
+										
+										payoutsObj.items.push({
+											recipient_type: 'EMAIL',
+											amount: {
+												value: _payoutAmount,
+												currency: 'USD'
+											},
+											receiver: _publisher.paypalEmail || 'dd.yakovenko@gmail.com', // TODO: check field name, remove hardcoded value
+											note: 'Thank you.',
+											sender_item_id: publisherId
+										});
+										
+										_payouts.push({
+											batchId: sender_batch_id, //id for the payout batch from paypal that this particular payout belongs to
+											amount: _payoutAmount,
+											date: moment().utc().format('YYYY-MM-DD'),
+											publisherId,
+											email: _publisher.paypalEmail, //email address used to send paypal payout // TODO: check field name
+											// payoutId: { type: Sequelize.STRING }, // id for the payout item returned by paypal's webhook event
+										});
 									}
+									return null;
 								})
-									.then(transactions => {
-										if (transactions.length) {
-											let _payoutAmount = 0;
-											transactions.map(transaction => {
-												_payoutAmount += +transaction.amount;
-											});
-											
-											payoutsObj.items.push({
-												recipient_type: 'EMAIL',
-												amount: {
-													value: _payoutAmount,
-													currency: 'USD'
-												},
-												receiver: _publisher.paypalEmail || 'dd.yakovenko@gmail.com', // TODO: check field name, remove hardcoded value
-												note: 'Thank you.',
-												sender_item_id: publisherId
-											});
-											
-											_payouts.push({
-												batchId: sender_batch_id, //id for the payout batch from paypal that this particular payout belongs to
-												amount: _payoutAmount,
-												date: moment().utc().format('YYYY-MM-DD'),
-												publisherId,
-												email: _publisher.paypalEmail, //email address used to send paypal payout // TODO: check field name
-												// payoutId: { type: Sequelize.STRING }, // id for the payout item returned by paypal's webhook event
-											});
-										}
-										return null;
-									})
-							);
-						}
-					}
+						);
+					});
+					// 	}
+					// }
 					
 					// when all payout are generated, send them with paypal
 					Promise.all(_publisherPromises)
@@ -119,10 +127,9 @@ module.exports = function(app) {
 							});
 						})
 						.catch(err => console.log('ERROR payout is canceled: ', err));
-					
-					
+				// 	}
 				}
-			})
+			)
 			.catch(err => {
 				console.log('ERROR get publishers for payouts: ', err);
 			})
