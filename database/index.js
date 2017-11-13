@@ -98,7 +98,7 @@ var Transaction = db.define('Transaction', { // records of listener payments and
   publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING },
   customer: { type: Sequelize.STRING, allowNull: false }, // listener's stripe id
-  paymentId: { type: Sequelize.STRING }, // id for the payment plan, only present if it's a subscription
+  paymentId: { type: Sequelize.STRING }, // id for the payment plan
 });
 
 var Payout = db.define('Payout', { // records of payouts
