@@ -104,6 +104,7 @@ export default class Analytics extends Component {
 
   countListenings(rawDataArr) {
       const labels = getDateArray(this.state.startDate, this.state.endDate, 1);
+      // console.log('labels: ', labels);
       const statsByDate = Array(labels.length).fill({
         listens: 0,
         length: 0
@@ -111,30 +112,33 @@ export default class Analytics extends Component {
       const statsByUser = {}, statsByEpisode = {};
       rawDataArr.forEach(session => {
         //calculate stats by date
-        const {listens, length} = statsByDate[labels.indexOf(session.date)];
-        statsByDate[labels.indexOf(session.date)] = {
-          listens: listens + 1,
-          length: length + session.sessionDuration,
-        };
+        // console.log('statsByDate: ', statsByDate[labels.indexOf(session.date)], 'session.date: ', session.date);
+        if(labels.indexOf(session.date) > -1) {
+          const {listens, length} = statsByDate[labels.indexOf(session.date)];
+          statsByDate[labels.indexOf(session.date)] = {
+            listens: listens + 1,
+            length: length + session.sessionDuration,
+          };
 
-        //calculate stats by user
-        if(statsByUser[session.userId]) {
-          statsByUser[session.userId].listens++; //how frequently user listens
-          statsByUser[session.userId].length += session.sessionDuration; //how long user listens
-        } else if(!statsByUser[session.userId]) {
-          statsByUser[session.userId] = {};
-          statsByUser[session.userId].listens = 1;
-          statsByUser[session.userId].length = session.sessionDuration;
-        }
+          //calculate stats by user
+          if(statsByUser[session.userId]) {
+            statsByUser[session.userId].listens++; //how frequently user listens
+            statsByUser[session.userId].length += session.sessionDuration; //how long user listens
+          } else if(!statsByUser[session.userId]) {
+            statsByUser[session.userId] = {};
+            statsByUser[session.userId].listens = 1;
+            statsByUser[session.userId].length = session.sessionDuration;
+          }
 
-        //calculate stats by episode
-        if(statsByEpisode[session.episodeId]) {
-          statsByEpisode[session.episodeId].listens++;
-          statsByEpisode[session.episodeId].length += session.sessionDuration;
-        } else if(!statsByEpisode[session.episodeId]) {
-          statsByEpisode[session.episodeId] = {};
-          statsByEpisode[session.episodeId].listens = 1;
-          statsByEpisode[session.episodeId].length = session.sessionDuration;
+          //calculate stats by episode
+          if(statsByEpisode[session.episodeId]) {
+            statsByEpisode[session.episodeId].listens++;
+            statsByEpisode[session.episodeId].length += session.sessionDuration;
+          } else if(!statsByEpisode[session.episodeId]) {
+            statsByEpisode[session.episodeId] = {};
+            statsByEpisode[session.episodeId].listens = 1;
+            statsByEpisode[session.episodeId].length = session.sessionDuration;
+          }
         }
       });
 

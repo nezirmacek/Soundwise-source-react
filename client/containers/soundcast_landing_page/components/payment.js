@@ -157,13 +157,15 @@ export default class Payment extends Component {
             })
         } else {
             if(billingCycle == 'one time') { //if one time charge, post to api/charge
-                Axios.post('/api/charge', {
+                Axios.post('/api/handleOnetimeCharge', {
                     amount,
                     source: response.id,
                     currency: 'usd',
                     receipt_email: email[0],
                     customer: stripe_id,
                     billingCycle,
+                    publisherID: soundcast.publisherID,
+                    soundcastID,
                     planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
                     description: `${soundcast.title}: ${paymentPlan}`,
                     statement_descriptor: `${soundcast.title}: ${paymentPlan}`,

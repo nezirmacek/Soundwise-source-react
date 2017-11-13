@@ -40,24 +40,46 @@ export default class InviteSubscribersModal extends Component {
     const content = `<p>Hi there!</p><p></p><p>${userInfo.firstName} ${userInfo.lastName} has invited you to subscribe to <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>If you've already installed Soundwise on your phone, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
     inviteListeners(inviteeArr, subject, content);
 
-    inviteeArr.forEach(email => {
+    var invitationPromise = inviteeArr.map(email => {
         let _email = email.replace(/\./g, "(dot)");
         _email = _email.trim().toLowerCase();
         if(_email) {
-          firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(moment().format('X'));
-          //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
-          firebase.database().ref(`invitations/${_email}`)
-          .once('value')
-          .then(snapshot => {
-            if(snapshot.val()) {
-              const update = {...snapshot.val(), [that.props.soundcast.id]: true};
-              firebase.database().ref(`invitations/${_email}`).update(update);
-            } else {
-              firebase.database().ref(`invitations/${_email}/${that.props.soundcast.id}`).set(true);
-            }
-          })
+          return firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(moment().format('X'))//invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+          .then(() => {
+              firebase.database().ref(`invitations/${_email}`)
+              .once('value')
+              .then(snapshot => {
+                if(snapshot.val()) {
+                  const update = {...snapshot.val(), [that.props.soundcast.id]: true};
+                  firebase.database().ref(`invitations/${_email}`).update(update);
+                } else {
+                  firebase.database().ref(`invitations/${_email}/${that.props.soundcast.id}`).set(true);
+                }
+              })
+              .then(
+                res => {
+                  return res;
+                },
+                err => {
+                  console.log('ERROR adding invitee: ', err);
+                  Promise.reject(err);
+                })
+          });
+        } else {
+          return null;
         }
     });
+
+    Promise.all(invitationPromise)
+    .then(
+      res => {
+        return res;
+      },
+      err => {
+        console.log('failed to complete adding invitees: ', err);
+      }
+    );
+
     this.setState({
       submitted: true
     });

@@ -9,3 +9,7 @@ ds.automigrate('episode');
 ds.automigrate('listeningSession');
 ds.automigrate('transaction');
 ds.automigrate('payout');
+ds.automigrate('publisher');
+ds.automigrate('comment');
+ds.automigrate('like');
+ds.automigrate('announcement');

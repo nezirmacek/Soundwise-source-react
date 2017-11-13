@@ -10,6 +10,10 @@ var paypal = require('paypal-rest-sdk');
 var config = require('../../config').config;
 var paypalConfig = require('../../config').paypalConfig;
 
+var stripeFee_fixed = 0.3;
+var stripeFee_percent = 0.029;
+var soundwiseFee_percent = 0;
+
 module.exports = function(app) {
 	// init firebase
 	// firebase.initializeApp(config); // uncomment to get publishers from firebase
@@ -30,7 +34,7 @@ module.exports = function(app) {
 			},
 			items: [],
 		};
-		
+
 		// for our database
 		const _payouts = [];
 		
@@ -67,7 +71,8 @@ module.exports = function(app) {
 									if (transactions.length) {
 										let _payoutAmount = 0;
 										transactions.map(transaction => {
-											_payoutAmount += +transaction.amount;
+											const fees = transaction.amount * (stripeFee_percent + soundwiseFee_percent) + stripeFee_fixed;
+											_payoutAmount += (+transaction.amount - fees);
 										});
 										
 										payoutsObj.items.push({
@@ -108,16 +113,16 @@ module.exports = function(app) {
 									console.log("Create Payout Response");
 									console.log(payout);
 									const _payoutsPromises = [];
-									
+
 									_payouts.map(_payout => {
 										_payout.batchId = payout.batchId; // TODO: find batchId in payout
 										_payout.payoutId = payout.payoutId; // TODO: find batchId in payout
 										_payout.createdAt = moment().utc().format();
 										_payout.updatedAt = moment().utc().format();
-										
+
 										_payoutsPromises.push(Payout.create(_payout));
 									});
-									
+
 									Promise.all(_payoutsPromises)
 										.then(res => console.log('success create payouts: ', res))
 										.catch(err => {

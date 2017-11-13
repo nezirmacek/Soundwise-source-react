@@ -28,6 +28,32 @@ var User = db.define('User', {
   picURL: Sequelize.STRING,
 });
 
+
+var Comment = db.define('Comment', {
+  commentId: { type: Sequelize.STRING, primaryKey: true },
+  content: Sequelize.STRING,
+  userId: { type: Sequelize.STRING, allowNull: false },
+  announcementId: Sequelize.STRING,
+  episodeId: Sequelize.STRING
+});
+
+var Announcement = db.define('Announcement', {
+  announcementId: { type: Sequelize.STRING, primaryKey: true },
+  content: Sequelize.STRING,
+  userId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false }
+});
+
+var Like = db.define('Like', {
+  likeId: { type: Sequelize.STRING, primaryKey: true },
+  userId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  episodeId: Sequelize.STRING,
+  announcementId: Sequelize.STRING
+});
+
 var Episode = db.define('Episode', {
   episodeId: { type: Sequelize.STRING, primaryKey: true },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
@@ -44,8 +70,9 @@ var Soundcast = db.define('Soundcast', {
 
 var Publisher = db.define('Publisher', {
 	publisherId: { type: Sequelize.STRING, primaryKey: true },
-    name: { type: Sequelize.STRING, allowNull: false },
+  name: { type: Sequelize.STRING, allowNull: false },
 	paypalEmail: { type: Sequelize.STRING },
+  imageUrl: Sequelize.STRING,
 });
 
 var ListeningSession = db.define('ListeningSession', { //<------ a session is the period between user starting to play an audio and the audio being paused
@@ -62,7 +89,7 @@ var ListeningSession = db.define('ListeningSession', { //<------ a session is th
 });
 
 var Transaction = db.define('Transaction', { // records of listener payments and refunds
-  transactionId: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund' id from stripe
+  transactionId: { type: Sequelize.STRING, allowNull: false, primaryKey: true },
   invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
   chargeId: { type: Sequelize.STRING, allowNull: false },
   type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
@@ -71,16 +98,16 @@ var Transaction = db.define('Transaction', { // records of listener payments and
   publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING },
   customer: { type: Sequelize.STRING, allowNull: false }, // listener's stripe id
-  paymentId: { type: Sequelize.STRING }, // id for the payment plan, only present if it's a subscription
+  paymentId: { type: Sequelize.STRING }, // id for the payment plan
 });
 
 var Payout = db.define('Payout', { // records of payouts
+  payoutId: { type: Sequelize.STRING, primaryKey: true }, // id for the payout item returned by paypal's webhook event
   batchId: { type: Sequelize.STRING, allowNull: false }, //id for the payout batch from paypal that this particular payout belongs to
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   date: { type: Sequelize.DATEONLY, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
   email: { type: Sequelize.STRING, allowNull: false }, //email address used to send paypal payout
-  payoutId: { type: Sequelize.STRING }, // id for the payout item returned by paypal's webhook event
 });
 
 Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
@@ -101,21 +128,69 @@ Episode.hasMany(ListeningSession, {as: 'ListeningSessions'});
 ListeningSession.belongsTo(User, {foreignKey: 'userId'});
 User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
+Comment.belongsTo(User, {foreignKey: 'userId'});
+User.hasMany(Comment, {as: 'Comments'});
+
+Announcement.belongsTo(User, {foreignKey: 'userId'});
+User.hasMany(Announcement, {as: 'Announcements'});
+
+Like.belongsTo(User, {foreignKey: 'userId'});
+User.hasMany(Like, {as: 'Likes'});
+
+Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
+Episode.hasMany(Comment, {as: 'Comments'});
+
+Like.belongsTo(Episode, {foreignKey: 'episodeId'});
+Episode.hasMany(Like, {as: 'Likes'});
+
+Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
+Announcement.hasMany(Comment, {as: 'Comments'});
+
+Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
+Announcement.hasMany(Like, {as: 'Likes'});
+
+Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+Soundcast.hasMany(Announcement, {as: 'Announcements'});
+
+Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+Soundcast.hasMany(Like, {as: 'Likes'});
+
+Announcement.belongsTo(Publisher, {foreignKey: 'publisherId'});
+Publisher.hasMany(Announcement, {as: 'Announcements'});
+
+Like.belongsTo(Publisher, {foreignKey: 'publisherId'});
+Publisher.hasMany(Like, {as: 'Likes'});
+
+// Transaction.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Soundcast.hasMany(Transaction, {as: 'Transactions'});
+
+// Transaction.belongsTo(Publisher, {foreignKey: 'publisherId'});
+// Publisher.hasMany(Transaction, {as: 'Transactions'});
+
+Payout.belongsTo(Publisher, {foreignKey: 'publisherId'});
+Publisher.hasMany(Payout, {as: 'Payouts'});
+
 User.sync({force: false});
-Publisher.sync({force: false});
+Publisher.sync({force: false, alter: true});
+Comment.sync({force: false});
+Announcement.sync({force: false});
+Like.sync({force: false});
 Soundcast.sync({force: false});
 Episode.sync({force: false});
 ListeningSession.sync({force: false});
-Transaction.sync({force: false});
+Transaction.sync({force: false, alter: true});
 Payout.sync({force: false});
 
 module.exports = {
-	User: User,
-	Soundcast: Soundcast,
-	Episode: Episode,
-	ListeningSession: ListeningSession,
-	Transaction: Transaction,
-	Payout: Payout,
-	Publisher: Publisher,
-	db: db,
+  User: User,
+  Publisher: Publisher,
+  Comment: Comment,
+  Announcement: Announcement,
+  Like: Like,
+  Soundcast: Soundcast,
+  Episode: Episode,
+  ListeningSession: ListeningSession,
+  Transaction: Transaction,
+  Payout: Payout,
+  db: db,
 };

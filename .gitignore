@@ -19,6 +19,7 @@ node_modules
 npm-debug.log
 config.js
 serviceAccountKey.json
+client/bundle.js
 
 /_.*
 _.*
