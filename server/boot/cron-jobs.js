@@ -19,7 +19,7 @@ module.exports = function (app) {
     // firebase.initializeApp(config); // uncomment to get publishers from firebase
     paypal.configure(paypalConfig);
 
-    var j = schedule.scheduleJob('10 * * * * *', function () { // TODO: need to set up schedule
+    var j = schedule.scheduleJob('* * * 1 * *', function () { // TODO: need to set up schedule
         // need to pay money for every publisher for all transactions for the last month (-15 days os delay)
         const Publisher = app.models.Publisher;
         const Transaction = app.models.Transaction;
