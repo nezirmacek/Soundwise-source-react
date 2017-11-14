@@ -19,7 +19,7 @@ module.exports = function (app) {
     // firebase.initializeApp(config); // uncomment to get publishers from firebase
     paypal.configure(paypalConfig);
 
-    var j = schedule.scheduleJob('* * * 1 * *', function () { // TODO: need to set up schedule
+    var j = schedule.scheduleJob('* * * 1 * *', function () {
         // need to pay money for every publisher for all transactions for the last month (-15 days os delay)
         const Publisher = app.models.Publisher;
         const Transaction = app.models.Transaction;
@@ -84,7 +84,7 @@ module.exports = function (app) {
                                                 value: _payoutAmount,
                                                 currency: 'USD'
                                             },
-                                            receiver: _publisher.paypalEmail || 'dd.yakovenko@gmail.com', // TODO: check field name, remove hardcoded value
+                                            receiver: _publisher.paypalEmail,
                                             note: 'Thank you.',
                                             sender_item_id: publisherId
                                         });
@@ -94,7 +94,7 @@ module.exports = function (app) {
                                             amount: _payoutAmount,
                                             date: moment().utc().format('YYYY-MM-DD'),
                                             publisherId,
-                                            email: _publisher.paypalEmail, //email address used to send paypal payout // TODO: check field name
+                                            email: _publisher.paypalEmail, //email address used to send paypal payout
                                             // payoutId: { type: Sequelize.STRING }, // id for the payout item returned by paypal's webhook event
                                         });
                                     }
