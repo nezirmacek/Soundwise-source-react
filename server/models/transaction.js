@@ -97,13 +97,14 @@ module.exports = function(Transaction) {
 		// 	"type": "invoice.payment_succeeded"
 		// };
 
+		const _transactions = [];
+		const _transactionsPromises = [];
+		const _errors = [];
+
 		// need to handle only 2 types of events
 		switch (data.type) {
 			case 'invoice.payment_succeeded':
-				const _transactions = [];
-				const _transactionsPromises = [];
-				const _errors = [];
-				data.data.object.lines.data.map((line, i) => {
+				data.data.object.lines.data.forEach((line, i) => {
 					const _transactionData = line.plan.id.split('-');
 
 					const _transaction = {
@@ -120,6 +121,7 @@ module.exports = function(Transaction) {
 						createdAt: moment().utc().format(),
 						updatedAt: moment().utc().format(),
 					};
+
 					console.log('Try to create transaction: ', _transaction);
 					_transactions.push(_transaction);
 					_transactionsPromises.push(
@@ -130,34 +132,47 @@ module.exports = function(Transaction) {
 							})
 					);
 				});
-				Promise.all(_transactionsPromises)
-					.then(res => {
-						console.log('success create transactions: ', res);
-						cb(null, res);
-					})
-					.catch(err => {
-						console.log('ERROR create transactions: ', err);
-						// need to delete all created transactions
-						_transactions.map(transaction => {
-							// TODO: need to find transactions with errors and just remove transactions without errors
-							Transaction.find({where: {transactionId: transaction.transactionId}})
-								.then(res => {
-									if (res.length) {
-										const intervalHandler = setInterval(() => {
-											Transaction.destroyById(transaction.transactionId, err => {
-												if (!err) {
-													clearInterval(intervalHandler);
-												}
-											});
-										}, 3600000); // try every hours until success
-									}
-								});
-						});
-						cb(err);
-					});
+
+				createTransactions(Transaction, _transactionsPromises, _transactions, cb);
+
 				break;
 			case 'charge.refunded':
-				cb(null, {});
+                data.data.object.refunds.data.forEach((refund, i) => {
+                    Transaction.find({where: {chargeId: refund.charge}})
+                        .then(res => {
+                            const publisherId = (res.length && res[0].publisherId) || null;
+                            const soundcastId = (res.length && res[0].soundcastId) || null;
+
+                            const _transaction = {
+                                transactionId: `${data.id}-${i}`,
+                                invoiceId: null,
+                                chargeId: data.data.object.id,
+                                type: 'refund',
+                                amount: refund.amount / 100,
+                                date: moment(data.data.object.created * 1000).format('YYYY-MM-DD'),
+                                publisherId,
+                                soundcastId,
+                                customer: data.data.object.customer, // listener's stripe id
+                                paymentId: refund.id,
+                                refund_date: moment(refund.created * 1000).format('YYYY-MM-DD'),
+                                createdAt: moment().utc().format(),
+                                updatedAt: moment().utc().format(),
+                            };
+
+                            _transactions.push(_transaction);
+                            _transactionsPromises.push(
+                                Transaction.create(_transaction)
+                                    .catch(err => {
+                                        _errors.push(_transaction);
+                                        Promise.reject(err);
+                                    })
+                            );
+                        })
+                        .then(() => {
+                            createTransactions(Transaction, _transactionsPromises, _transactions, cb);
+                        });
+                });
+
 				break;
 			default:
 				cb(null, {});
@@ -262,3 +277,31 @@ module.exports = function(Transaction) {
 		}
 	);
 };
+
+function createTransactions(Transaction, transactionsPromises, transactions, cb) {
+    Promise.all(transactionsPromises)
+        .then(res => {
+            console.log('success create transactions: ', res);
+            cb(null, res);
+        })
+        .catch(err => {
+            console.log('ERROR create transactions: ', err);
+            // need to delete all created transactions
+            transactions.map(transaction => {
+                // TODO: need to find transactions with errors and just remove transactions without errors
+                Transaction.find({where: {transactionId: transaction.transactionId}})
+                    .then(res => {
+                        if (res.length) {
+                            const intervalHandler = setInterval(() => {
+                                Transaction.destroyById(transaction.transactionId, err => {
+                                    if (!err) {
+                                        clearInterval(intervalHandler);
+                                    }
+                                });
+                            }, 3600000); // try every hours until success
+                        }
+                    });
+            });
+            cb(err);
+        });
+}
