@@ -312,37 +312,40 @@ export default class Subscribers extends Component {
                 </tr>
                 {
                   this.state.subscribers.map((subscriber, i) => {
-                    return (
-                        <tr key={i} style={styles.tr}>
-                          <td style={{...styles.td, width: 37}}></td>
-                          <td style={{...styles.td, width: 320}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
-                          <td style={{...styles.td, width: 350}}>{subscriber.email[0]}</td>
-                          <td style={{...styles.td, width: 170}}>{
-                            subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
-                            moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')
-                            ||
-                            '__'
-                          }</td>
-                          <td style={{...styles.td, width: 170}}>
-                            <i onClick={() => history.push({
-                                pathname: `/dashboard/subscriber/${subscriber.id}`,
-                                state: {
-                                  subscriber,
-                                  soundcast: currentSoundcast,
-                                }
-                              })}
-                              className="fa fa-line-chart" style={styles.itemChartIcon}></i>
-                          </td>
-                          <td style={{...styles.td, width: 100}}>
-                            <input
-                              type="checkbox"
-                              name={subscriber.id}
-                              onClick={this.handleCheck}
-                              style={styles.itemCheckbox} />
-                          </td>
-                        </tr>
-                      );
-
+                    if(subscriber.email) {
+                      return (
+                          <tr key={i} style={styles.tr}>
+                            <td style={{...styles.td, width: 37}}></td>
+                            <td style={{...styles.td, width: 320}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
+                            <td style={{...styles.td, width: 350}}>{subscriber.email[0]}</td>
+                            <td style={{...styles.td, width: 170}}>{
+                              subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
+                              moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')
+                              ||
+                              '__'
+                            }</td>
+                            <td style={{...styles.td, width: 170}}>
+                              <i onClick={() => history.push({
+                                  pathname: `/dashboard/subscriber/${subscriber.id}`,
+                                  state: {
+                                    subscriber,
+                                    soundcast: currentSoundcast,
+                                  }
+                                })}
+                                className="fa fa-line-chart" style={styles.itemChartIcon}></i>
+                            </td>
+                            <td style={{...styles.td, width: 100}}>
+                              <input
+                                type="checkbox"
+                                name={subscriber.id}
+                                onClick={this.handleCheck}
+                                style={styles.itemCheckbox} />
+                            </td>
+                          </tr>
+                        );
+                    } else {
+                      return null;
+                    }
                   })
                 }
               </table>

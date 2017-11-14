@@ -16,7 +16,7 @@ const Pricing = () => (
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                 <h3 className="alt-font text-large text-dark-gray tz-text">PLANS START AT</h3>
                 <div className="pricing-price  builder-bg">
-                    <h4 className="title-extra-large-2 sm-title-extra-large-2 alt-font  tz-text" style={{color: '#61e1fb'}}>$49</h4>
+                    <h4 className="title-extra-large-2 sm-title-extra-large-2 alt-font  tz-text" style={{color: '#61e1fb'}}>$39</h4>
                     <div className="text-large alt-font tz-text no-margin-bottom"> <p>PER MONTH</p> </div>
                 </div>
               </div>
