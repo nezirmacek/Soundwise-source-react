@@ -48,7 +48,7 @@ export default class Payment extends Component {
                 userInfo: that.props.userInfo
             });
             if(this.props.total == 0 || this.props.total == 'free') {
-                this.addSoundcastToUser();
+                this.addSoundcastToUser(that.props.userInfo);
             }
         }
     }
@@ -77,7 +77,8 @@ export default class Payment extends Component {
         // console.log('charge: ', charge);
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
-        const userInfo = this.state.userInfo || this.props.userInfo;
+        let userInfo = this.state.userInfo || this.props.userInfo;
+
         let _email;
 
         if(userInfo) {

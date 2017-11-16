@@ -35,7 +35,7 @@ class _AppSignup extends Component {
             password: '',
             message: '',
             publisher_name: '',
-            pic_url: props.match.params.mode === '../images/smiley_face.jpg',
+            pic_url: '../images/smiley_face.jpg',
             publisherImage: null,
             redirectToReferrer: false,
             isPublisherFormShown: false,
@@ -53,6 +53,14 @@ class _AppSignup extends Component {
         }
     }
 
+    setStatePromise(that, newState) {
+        return new Promise((resolve) => {
+            that.setState(newState, () => {
+                resolve();
+            });
+        });
+    }
+
     signUp() {
         const {firstName, lastName, email, password, pic_url} = this.state;
         const {history, match} = this.props;
@@ -62,7 +70,7 @@ class _AppSignup extends Component {
 
         firebase.auth().fetchProvidersForEmail(email)
         .then(authArr => {
-            console.log('authArr: ', authArr);
+            // console.log('authArr: ', authArr);
             if(authArr.length > 0) {
                 if(match.params.id) {
                   history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
@@ -97,7 +105,7 @@ class _AppSignup extends Component {
         this.setState({publisherImage: url});
     }
 
-    signUpInvitedAdmin() {
+    signUpInvitedAdmin(user) {
         const that = this;
         const { match, history } = this.props;
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
@@ -129,7 +137,7 @@ class _AppSignup extends Component {
                 }
             );
         } else {
-            this.signUpUser();
+            this.signUpUser(user);
             let creatorID = firebase.auth().currentUser.uid;
             firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`).set(true);
 
@@ -277,7 +285,7 @@ class _AppSignup extends Component {
         const that = this;
 
         let creatorID = firebase.auth().currentUser.uid;
-        console.log('creatorID: ', creatorID);
+        // console.log('creatorID: ', creatorID);
 
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
         const subscribed = {};
@@ -413,12 +421,26 @@ class _AppSignup extends Component {
         }
     }
 
-    signUpUser () {
+    signUpUser (userToSignUP) {
+        // console.log('signUpUser called');
         const { match, history, signupUser } = this.props;
         if(history.location.state && history.location.state.soundcast) {
           const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
         }
-        const {firstName, lastName, email, pic_url} = this.state;
+        let firstName, lastName, email, pic_url;
+
+        if(userToSignUP) {
+            firstName = userToSignUP.firstName;
+            lastName = userToSignUP.lastName;
+            email = userToSignUP.email;
+            pic_url = userToSignUP.pic_url;
+
+        } else {
+            firstName = this.state.firstName;
+            lastName = this.state.lastName;
+            email = this.state.email;
+            pic_url = this.state.pic_url;
+        }
 
         let userId;
 
@@ -440,7 +462,7 @@ class _AppSignup extends Component {
                 Axios.post('/api/user', _user)
                     .then(res => {
                         // console.log('userToSave: ', userToSave);
-                        console.log('success save user');
+                        // console.log('success save user');
                         signupUser(userToSave);
                         // for user -> goTo myPrograms, for admin need to register publisher first
                         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
@@ -460,7 +482,7 @@ class _AppSignup extends Component {
                         // for user -> goTo myPrograms, for admin need to register publisher first
                         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
                             history.push('/myprograms');
-                        } else if(match.params.mode == 'soundcast_user' && hostory.location.state) {
+                        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
                             history.push('/soundcast_checkout', {
                                 soundcast: history.location.state.soundcast,
                                 soundcastID: history.location.state.soundcastID,
@@ -488,11 +510,14 @@ class _AppSignup extends Component {
             .then(function(result) {
                 // This gives you a Facebook Access Token. You can use it to access the Facebook API.
                 // The signed-in user info.
+              // console.log('result.user: ', JSON.parse(JSON.stringify(result.user)));
               const userId = firebase.auth().currentUser.uid;
+              // console.log('userid: ', userId);
               firebase.database().ref('users/' + userId)
                 .once('value')
                 .then(snapshot => {
                     if(snapshot.val() && typeof(snapshot.val().firstName) !== 'undefined') { // if user already exists
+                        console.log('user already exists');
                         let updates = {};
                         updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
                         firebase.database().ref().update(updates);
@@ -519,33 +544,26 @@ class _AppSignup extends Component {
                             history.push('/myprograms');
                         }
                     } else {  //if it's a new user
-                        const { email, photoURL, displayName } = result.user;
-                        const name = displayName.split(' ');
-
+                        const { email, photoURL, displayName } = JSON.parse(JSON.stringify(result.user));
+                        const name = displayName ? displayName.split(' ') : ['User', ''];
+                        const user = {
+                            firstName: name[0],
+                            lastName: name[1],
+                            email,
+                            pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
+                        };
                         if (match.params.mode === 'admin' && !match.params.id) {
                             that.setState({
                                 firstName: name[0],
                                 lastName: name[1],
                                 email,
-                                pic_url: photoURL,
+                                pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                                 isPublisherFormShown: true,
                             });
                         } else if(match.params.id) {
-                            that.setState({
-                                firstName: name[0],
-                                lastName: name[1],
-                                email,
-                                pic_url: photoURL,
-                            });
-                            that.signUpInvitedAdmin();
+                            that.signUpInvitedAdmin(user);
                         } else {
-                            that.setState({
-                                firstName: name[0],
-                                lastName: name[1],
-                                email,
-                                pic_url: photoURL,
-                            });
-                            that.signUpUser();
+                            that.signUpUser(user);
                         }
 
                     }
@@ -579,13 +597,19 @@ class _AppSignup extends Component {
                                     .once('value')
                                     .then(snapshot => {
                                         const { firstName, lastName, email, pic_url } = snapshot.val();
+                                        const user = {
+                                            firstName,
+                                            lastName,
+                                            email,
+                                            pic_url
+                                        };
                                         that.setState({ firstName, lastName, email, pic_url });
                                         if (match.params.mode === 'admin' && !match.params.id) {
                                             that.setState({isPublisherFormShown: true});
                                         } else if(match.params.id) {
-                                            that.signUpInvitedAdmin();
+                                            that.signUpInvitedAdmin(user);
                                         } else {
-                                            that.signUpUser();
+                                            that.signUpUser(user);
                                         }
                                     });
                             })
