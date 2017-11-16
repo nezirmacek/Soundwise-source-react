@@ -188,8 +188,10 @@ export default class Announcements extends Component {
               Announcements
           </span>
           <div style={styles.soundcastSelectWrapper}>
-              <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
-                  <optgroup>
+              <select
+                   style={styles.soundcastSelect}
+                   value={this.state.currentSoundcastID}
+                   onChange={(e) => {this.changeSoundcastId(e);}}>
                     {
                         soundcasts_managed.map((souncast, i) => {
                             return (
@@ -197,7 +199,6 @@ export default class Announcements extends Component {
                             );
                         })
                     }
-                  </optgroup>
               </select>
           </div>
         </div>

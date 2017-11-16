@@ -53,27 +53,32 @@ export default class Subscribers extends Component {
                 _soundcasts_managed.push(_soundcast);
             }
         }
-
+        // console.log('_soundcasts_managed: ', _soundcasts_managed);
+        this.setState({
+          soundcasts_managed: _soundcasts_managed,
+        });
         const promises = [];
 
-        for(let userId in _soundcasts_managed[0].subscribed) {
-          promises.push(this.retrieveSubscriberInfo(userId));
+        if(!this.state.currentSoundcastID) { //if loading for the first time, retrieve subscribers
+            for(let userId in _soundcasts_managed[0].subscribed) {
+              promises.push(this.retrieveSubscriberInfo(userId));
+            }
+
+
+            Promise.all(promises)
+            .then(res => {
+              that.setState({
+                soundcasts_managed: _soundcasts_managed,
+                currentSoundcastID: _soundcasts_managed[0].id,
+                currentSoundcast: _soundcasts_managed[0],
+                // subscribers: that.subscribers,
+                subscribers: res,
+              });
+              // that.subscribers = [];
+            }, err => {
+              console.log('promise error: ', err);
+            })
         }
-
-
-        Promise.all(promises)
-        .then(res => {
-          that.setState({
-            soundcasts_managed: _soundcasts_managed,
-            currentSoundcastID: _soundcasts_managed[0].id,
-            currentSoundcast: _soundcasts_managed[0],
-            // subscribers: that.subscribers,
-            subscribers: res,
-          });
-          // that.subscribers = [];
-        }, err => {
-          console.log('promise error: ', err);
-        })
       }
     }
   }
@@ -94,27 +99,30 @@ export default class Subscribers extends Component {
                 _soundcasts_managed.push(_soundcast);
             }
         }
-
+        this.setState({
+          soundcasts_managed: _soundcasts_managed,
+        });
         const promises = [];
 
-        for(let userId in _soundcasts_managed[0].subscribed) {
-          promises.push(this.retrieveSubscriberInfo(userId));
+        if(!this.state.currentSoundcastID) {
+            for(let userId in _soundcasts_managed[0].subscribed) {
+              promises.push(this.retrieveSubscriberInfo(userId));
+            }
+
+
+            Promise.all(promises)
+            .then(res => {
+              that.setState({
+                currentSoundcastID: _soundcasts_managed[0].id,
+                currentSoundcast: _soundcasts_managed[0],
+                // subscribers: that.subscribers,
+                subscribers: res,
+              });
+              // that.subscribers = [];
+            }, err => {
+              console.log('promise error: ', err);
+            })
         }
-
-
-        Promise.all(promises)
-        .then(res => {
-          that.setState({
-            soundcasts_managed: _soundcasts_managed,
-            currentSoundcastID: _soundcasts_managed[0].id,
-            currentSoundcast: _soundcasts_managed[0],
-            // subscribers: that.subscribers,
-            subscribers: res,
-          });
-          // that.subscribers = [];
-        }, err => {
-          console.log('promise error: ', err);
-        })
       }
     }
   }
@@ -158,7 +166,8 @@ export default class Subscribers extends Component {
   changeSoundcastId (e) {
     const that = this;
     this.setState({
-      currentSoundcastID: e.target.value
+      currentSoundcastID: e.target.value,
+      toBeUnsubscribed: [],
     });
 
     const { soundcasts_managed, currentSoundcastID } = this.state;
@@ -190,16 +199,26 @@ export default class Subscribers extends Component {
     this.setState({
       checked: e.target.checked
     })
-
+    const id = e.target.name.split('-')[0];
     const toBeUnsubscribed = this.state.toBeUnsubscribed.slice(0);
-    toBeUnsubscribed.push(e.target.name);
+    if(e.target.checked) {
+      toBeUnsubscribed.push(id);
+    } else {
+      const position = toBeUnsubscribed.indexOf(id);
+      if(position > -1) {
+        toBeUnsubscribed.splice(position, 1);
+      }
+    }
+    // console.log('toBeUnsubscribed: ', toBeUnsubscribed);
     this.setState({
       toBeUnsubscribed: toBeUnsubscribed
     })
   }
 
   deleteSubscriber() {
-    if(confirm(`Are you sure you want to unsubscribe these listeners from ${this.state.currentSoundcast.title}?`)){
+    const {currentSoundcastID, currentSoundcast, subscribers} = this.state;
+    this.subscribers = subscribers.slice(0);
+    if(confirm(`Are you sure you want to unsubscribe these listeners from ${this.state.currentSoundcast.title}? There is no going back!`)){
 
       // remove user-soundcast from both soundcast node and user node
       this.state.toBeUnsubscribed.forEach(listenerID => {
@@ -221,7 +240,11 @@ export default class Subscribers extends Component {
           }
         }
         this.setState({
-          subscribers: this.subscribers
+          subscribers: this.subscribers,
+          checked: false,
+          currentSoundcast,
+          currentSoundcastID,
+          toBeUnsubscribed: [],
         })
 
       })
@@ -257,16 +280,21 @@ export default class Subscribers extends Component {
                   Subscribers
               </span>
               <div style={styles.soundcastSelectWrapper}>
-                  <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
-                      <optgroup>
+                  <select
+                    style={styles.soundcastSelect}
+                    value={currentSoundcastID}
+                    onChange={(e) => {this.changeSoundcastId(e);}}>
                         {
                             soundcasts_managed.map((souncast, i) => {
                                 return (
-                                    <option style={styles.option} value={souncast.id} key={i}>{souncast.title}</option>
+                                    <option
+                                      style={styles.option}
+                                      value={souncast.id}
+                                      key={i}>{souncast.title}
+                                    </option>
                                 );
                             })
                         }
-                      </optgroup>
                   </select>
               </div>
               <span
@@ -291,63 +319,70 @@ export default class Subscribers extends Component {
               </span>
               <div style={styles.deleteButtonWrap}>
               {
-                checked &&
+                this.state.toBeUnsubscribed.length > 0 &&
                     <div
                         style={styles.unsubscribe}
                         onClick={this.deleteSubscriber}
                     >Unsubscribe
                     </div>
+                || null
               }
               </div>
             </div>
             <div style={styles.tableWrapper}>
               <table>
-                <tr style={styles.tr}>
-                  <th style={{...styles.th, width: 37}}></th>
-                  <th style={{...styles.th, width: 320}}>NAME</th>
-                  <th style={{...styles.th, width: 350}}>EMAIL</th>
-                  <th style={{...styles.th, width: 170}}>SUBSCRIBED ON</th>
-                  <th style={{...styles.th, width: 170}}>STATS</th>
-                  <th style={{...styles.th, width: 100}}></th>
-                </tr>
-                {
-                  this.state.subscribers.map((subscriber, i) => {
-                    if(subscriber.email) {
-                      return (
-                          <tr key={i} style={styles.tr}>
-                            <td style={{...styles.td, width: 37}}></td>
-                            <td style={{...styles.td, width: 320}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
-                            <td style={{...styles.td, width: 350}}>{subscriber.email[0]}</td>
-                            <td style={{...styles.td, width: 170}}>{
-                              subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
-                              moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')
-                              ||
-                              '__'
-                            }</td>
-                            <td style={{...styles.td, width: 170}}>
-                              <i onClick={() => history.push({
-                                  pathname: `/dashboard/subscriber/${subscriber.id}`,
-                                  state: {
-                                    subscriber,
-                                    soundcast: currentSoundcast,
-                                  }
-                                })}
-                                className="fa fa-line-chart" style={styles.itemChartIcon}></i>
-                            </td>
-                            <td style={{...styles.td, width: 100}}>
-                              <input
-                                type="checkbox"
-                                name={subscriber.id}
-                                onClick={this.handleCheck}
-                                style={styles.itemCheckbox} />
-                            </td>
-                          </tr>
-                        );
-                    } else {
-                      return null;
-                    }
-                  })
-                }
+                <thead>
+                  <tr style={styles.tr}>
+                    <th style={{...styles.th, width: 37}}></th>
+                    <th style={{...styles.th, width: 320}}>NAME</th>
+                    <th style={{...styles.th, width: 350}}>EMAIL</th>
+                    <th style={{...styles.th, width: 170}}>SUBSCRIBED ON</th>
+                    <th style={{...styles.th, width: 170}}>STATS</th>
+                    <th style={{...styles.th, width: 100}}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    this.state.subscribers.map((subscriber, i) => {
+                      if(subscriber.email) {
+                        return (
+                            <tr key={i} style={styles.tr}>
+                              <td style={{...styles.td, width: 37}}></td>
+                              <td style={{...styles.td, width: 320}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
+                              <td style={{...styles.td, width: 350}}>{subscriber.email[0]}</td>
+                              <td style={{...styles.td, width: 170}}>{
+                                subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
+                                moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')
+                                ||
+                                '__'
+                              }</td>
+                              <td style={{...styles.td, width: 170}}>
+                                <i onClick={() => history.push({
+                                    pathname: `/dashboard/subscriber/${subscriber.id}`,
+                                    state: {
+                                      subscriber,
+                                      soundcast: currentSoundcast,
+                                    }
+                                  })}
+                                  className="fa fa-line-chart" style={styles.itemChartIcon}></i>
+                              </td>
+                              <td style={{...styles.td, width: 100}}>
+                                <input
+                                  type="checkbox"
+                                  id={`${subscriber.id}-${currentSoundcastID}`}
+                                  value={`${subscriber.id}-${currentSoundcastID}`}
+                                  name={`${subscriber.id}-${currentSoundcastID}`}
+                                  onClick={this.handleCheck}
+                                  style={styles.itemCheckbox} />
+                              </td>
+                            </tr>
+                          );
+                      } else {
+                        return null;
+                      }
+                    })
+                  }
+                </tbody>
               </table>
             </div>
         </div>

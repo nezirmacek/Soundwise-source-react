@@ -279,7 +279,6 @@ export default class Analytics extends Component {
                 onChange={(e) => {this.changeSoundcastId(e);}}
                 value={currentSoundcastID}
               >
-                  <optgroup>
                     {
                         soundcasts_managed.map((souncast, i) => {
                             return (
@@ -287,7 +286,6 @@ export default class Analytics extends Component {
                             );
                         })
                     }
-                  </optgroup>
               </select>
           </div>
           <div style={styles.chartWrapper}>
