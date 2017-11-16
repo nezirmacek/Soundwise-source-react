@@ -65,6 +65,9 @@
         "column": "paymentId"
       }
     },
+    "refund_date": {
+      "type": "date"
+    },
     "createdAt": {
       "type": "date",
       "required": true,
