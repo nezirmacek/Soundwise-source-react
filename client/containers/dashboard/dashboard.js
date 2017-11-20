@@ -18,6 +18,7 @@ import Analytics from "./components/analytics";
 import EditSoundcast from './components/edit_soundcast';
 import Settings from './components/settings';
 import EditEpisode from './components/edit_episode';
+import Soundcast from './components/soundcast';
 
 const verticalMenuItems = [
     {
@@ -32,6 +33,12 @@ const verticalMenuItems = [
         label: 'edit',
         isMenuItemVisible: false,
         Component: EditSoundcast,
+    },
+    {
+        path: 'soundcast',
+        label: 'edit',
+        isMenuItemVisible: false,
+        Component: Soundcast,
     },
     {
         path: 'add_episode',
@@ -73,7 +80,7 @@ const verticalMenuItems = [
     },
     {
         path: 'settings',
-        label: 'Publisher Settings',
+        label: 'Publisher',
         iconClass: 'cog',
         isMenuItemVisible: true,
         Component: Settings,
@@ -180,20 +187,22 @@ const styles = {
         width: '100%',
         height: 75,
         color: '#687178',
-        fontSize: 16,
+        fontSize: 18,
         paddingTop: 25,
         paddingLeft: 19,
         cursor: 'pointer',
+        fontWeight: 'bold',
     },
     activeVerticalMenuItem: {
         width: '100%',
         height: 75,
-        fontSize: 16,
+        fontSize: 18,
         paddingTop: 25,
         paddingLeft: 19,
         backgroundColor: '#f5f5f5',
         color: '#F76B1C',
         borderLeft: '3px solid #F76B1C',
+        fontWeight: 'bold',
     },
     verticalMenuItemIcon: {
         fontSize: '20px',

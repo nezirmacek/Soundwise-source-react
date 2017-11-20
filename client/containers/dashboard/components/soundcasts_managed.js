@@ -119,7 +119,6 @@ export default class SoundcastsManaged extends Component {
     const { userInfo } = this.state;
     const { history, id } = this.props;
 
-    if (!id) {
 			const _soundcasts_managed = [];
 			for (let id in userInfo.soundcasts_managed) {
 				const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -153,7 +152,7 @@ export default class SoundcastsManaged extends Component {
 					{
 						_soundcasts_managed.map((soundcast, i) => {
 							return (
-								<div className="row" key={i} style={{...styles.row,        overflowX: 'auto',whiteSpace: 'nowrap',}}>
+								<div className="row" key={i} style={{...styles.row,        }}>
 									<div className=" col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                     <div className='row'>
                       <div className='col-md-2 col-sm-2 col-xs-12'>
@@ -161,7 +160,7 @@ export default class SoundcastsManaged extends Component {
                       </div>
   										<div className='col-md-6 col-sm-6 col-xs-12'
                         style={styles.soundcastDescription}>
-  											<div style={styles.soundcastTitle}>{soundcast.title}</div>
+  											<span style={styles.soundcastTitle}>{soundcast.title}</span>
   											{
   												soundcast.last_update
   												&&
@@ -172,7 +171,7 @@ export default class SoundcastsManaged extends Component {
   												null
   											}
   										</div>
-  										<div className='col-md-4'
+  										<div className='col-md-4 col-sm-4 col-xs-12'
                         style={{...styles.subscribers, textAlign:'center'}}>
                         <span style={styles.soundcastUpdated}>
                             {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
@@ -186,7 +185,7 @@ export default class SoundcastsManaged extends Component {
                     </div>
 									</div>
 									<div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-										<div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcasts/${soundcast.id}`)}>Episodes</div>
+										<div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}>Episodes</div>
 										<div onClick={() => history.push({
                       pathname: '/dashboard/analytics',
                       state: {
@@ -219,103 +218,7 @@ export default class SoundcastsManaged extends Component {
 					</div>
 				</div>
 			);
-		} else if(id) {
-        	let _soundcast = {};
-          if(userInfo.soundcasts_managed[id]) {
-            _soundcast = userInfo.soundcasts_managed[id];
-          };
-        	const _episodes = [];
-          if(_soundcast.episodes) {
-            for (let id in _soundcast.episodes) {
-              const _episode = _soundcast.episodes[id];
-              if (typeof(_episode)==='object') {
-                _episode.id = id;
-                _episodes.push(_episode);
-              }
-            }
-          }
 
-          _episodes.sort((a, b) => {
-            return b.date_created - a.date_created;
-          });
-
-  			return (
-  				<div className='container-fluid' style={styles.itemContainer}>
-            <EpisodeStatsModal
-              isShown={this.state.showStatsModal}
-              episode={this.state.currentEpisode}
-              onClose={this.handleStatsModal}
-              userInfo={this.props.userInfo}
-            />
-  					<div className='row ' style={styles.itemHeader}>
-  						<div className='col-lg-9 col-md-9 col-sm-8 col-xs-12'
-                style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
-  						<div className='col-lg-3 col-md-3 col-sm-4 col-xs-12'
-                style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add episode</div>
-  					</div>
-            <div className='table-responsive' style={styles.tableWrapper}>
-    					<table className='table table-hover'>
-                <thead>
-      						<tr style={styles.tr}>
-      							<th style={{...styles.th, }}>
-                      TITLE
-                    </th>
-      							<th style={{...styles.th, }}>PUBLISHED ON</th>
-      							<th style={{...styles.th, }}>LENGTH</th>
-      							<th style={{...styles.th, }}>CREATOR</th>
-      							<th style={{...styles.th, }}>ANALYTICS</th>
-      						</tr>
-                </thead>
-                <tbody>
-      						{
-      							_episodes.map((episode, i) => {
-      								episode.creator = userInfo.publisher.administrators[episode.creatorID];
-
-      								return (
-      									<tr key={i} style={{...styles.tr}}>
-      										<td style={styles.td}>
-                            <div style={{marginRight: 20}}>
-                              <div style={{marginTop: 24}}>{episode.title}</div>
-                              <div style={{marginBottom: 5}}>
-                                <span
-                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
-                                  onClick={() => this.deleteEpisode(episode)}>
-                                    Delete
-                                </span>
-                                <span
-                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
-                                  onClick={() => this.editEpisode(episode)}>
-                                  Edit
-                                </span>
-                                {
-                                  episode.publicEpisode &&
-                                  <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
-                                    <span className='text-dark-gray'
-                                      style={{cursor: 'pointer', fontSize: 15}}>
-                                      View
-                                    </span>
-                                  </a>
-                                  || null
-                                }
-                              </div>
-                            </div>
-                          </td>
-      										<td style={{...styles.td, textAlign: 'center'}}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
-      										<td style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-      										<td style={{...styles.td, textAlign: 'center'}}>{episode.creator.firstName} {episode.creator.lastName}</td>
-      										<td style={{...styles.td, textAlign: 'center'}}>
-      											<i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
-      										</td>
-      									</tr>
-      								);
-      							})
-      						}
-                </tbody>
-    					</table>
-            </div>
-				  </div>
-			);
-		}
   }
 };
 
@@ -350,14 +253,14 @@ const styles = {
         // float: 'left',
     },
     soundcastDescription: {
-        height: 46,
+        // height: 46,
         // float: 'left',
         // width: '65%',
     },
     soundcastTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        display: 'block',
+        // display: 'block',
     },
     soundcastUpdated: {
         fontSize: 16,
@@ -411,7 +314,6 @@ const styles = {
         borderStyle: 'solid',
         cursor: 'pointer',
     },
-
 	itemContainer: {
     	marginTop: 30,
     	marginRight: 20,
