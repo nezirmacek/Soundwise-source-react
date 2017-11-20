@@ -25,6 +25,7 @@ import Privacy from './components/privacy';
 import Terms from './components/terms_of_use';
 import TermsFreeContent from './components/terms_free_content_May2017';
 import { OrderConfirmation } from './components/order_confirmation';
+import {Notice} from './components/notice';
 import {AppSignup} from './containers/app_signup';
 import {AppSignin} from './containers/app_signin';
 import {Courses} from './containers/courses';
@@ -205,6 +206,7 @@ class _Routes extends Component {
                 <Route exact={true} path='/signin' component={AppSignin} />
                 <Route path='/trial_request' component={TrialRequest} />
                 <Route path="/gift" component={Referral} />
+                <Route path='/notice' component={Notice} />
                 <Route path="/creator_terms" component={CreatorTerms} />
                 <Route path="/privacy" component={Privacy} />
                 <Route path="/terms" component={Terms} />

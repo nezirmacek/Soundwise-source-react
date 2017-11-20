@@ -111,6 +111,7 @@ export default class SoundcastsManaged extends Component {
       firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`).remove();
       firebase.database().ref(`episodes/${episode.id}`).remove();
       alert(`${title} has been deleted`);
+      return;
     }
   }
 
@@ -137,14 +138,14 @@ export default class SoundcastsManaged extends Component {
 			}
 
 			return (
-				<div className='padding-30px-tb'>
+				<div className='padding-30px-tb container-fluid'>
           <InviteSubscribersModal
             isShown={this.state.showModal}
             soundcast={this.state.currentSoundcast}
             onClose={this.handleModal}
             userInfo={userInfo}
           />
-          <div className='padding-bottom-20px'>
+          <div className='padding-bottom-20px row'>
               <span className='title-medium '>
                   Soundcasts
               </span>
@@ -152,31 +153,37 @@ export default class SoundcastsManaged extends Component {
 					{
 						_soundcasts_managed.map((soundcast, i) => {
 							return (
-								<div className="row" key={i} style={styles.row}>
-									<div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-										<img src={soundcast.imageURL} style={styles.soundcastImage} />
-										<div style={styles.soundcastDescription}>
-											<label style={styles.soundcastTitle}>{soundcast.title}</label>
-											{
-												soundcast.last_update
-												&&
-												<span style={styles.soundcastUpdated}>
-                                                Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
-                                            </span>
-												||
-												null
-											}
-										</div>
-										<div style={styles.subscribers}>
-                                        <span style={styles.soundcastUpdated}>
-                                            {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
-                                        </span>
-											<span
-                        onClick={() => this.handleModal(soundcast)}
-                        style={styles.addLink}>
-                        Add
-                      </span>
-										</div>
+								<div className="row" key={i} style={{...styles.row,        overflowX: 'auto',whiteSpace: 'nowrap',}}>
+									<div className=" col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+                    <div className='row'>
+                      <div className='col-md-2 col-sm-2 col-xs-12'>
+  										  <img src={soundcast.imageURL} style={styles.soundcastImage} />
+                      </div>
+  										<div className='col-md-6 col-sm-6 col-xs-12'
+                        style={styles.soundcastDescription}>
+  											<div style={styles.soundcastTitle}>{soundcast.title}</div>
+  											{
+  												soundcast.last_update
+  												&&
+  												<div style={styles.soundcastUpdated}>
+                                                  Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
+                                              </div>
+  												||
+  												null
+  											}
+  										</div>
+  										<div className='col-md-4'
+                        style={{...styles.subscribers, textAlign:'center'}}>
+                        <span style={styles.soundcastUpdated}>
+                            {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
+                        </span>
+  											<span
+                          onClick={() => this.handleModal(soundcast)}
+                          style={styles.addLink}>
+                          Add
+                        </span>
+  										</div>
+                    </div>
 									</div>
 									<div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
 										<div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcasts/${soundcast.id}`)}>Episodes</div>
@@ -202,7 +209,7 @@ export default class SoundcastsManaged extends Component {
 							);
 						})
 					}
-					<div className="row" style={styles.row}>
+					<div className="row" style={{...styles.row, backgroundColor: 'transparent'}}>
 						<div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<OrangeSubmitButton
 								label="Add New Soundcast"
@@ -228,70 +235,82 @@ export default class SoundcastsManaged extends Component {
             }
           }
 
+          _episodes.sort((a, b) => {
+            return b.date_created - a.date_created;
+          });
+
   			return (
-  				<div style={styles.itemContainer}>
+  				<div className='container-fluid' style={styles.itemContainer}>
             <EpisodeStatsModal
               isShown={this.state.showStatsModal}
               episode={this.state.currentEpisode}
               onClose={this.handleStatsModal}
               userInfo={this.props.userInfo}
             />
-  					<div style={styles.itemHeader}>
-  						<div style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
-  						<div style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add episode</div>
+  					<div className='row ' style={styles.itemHeader}>
+  						<div className='col-lg-9 col-md-9 col-sm-8 col-xs-12'
+                style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
+  						<div className='col-lg-3 col-md-3 col-sm-4 col-xs-12'
+                style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add episode</div>
   					</div>
-            <div style={styles.tableWrapper}>
-    					<table>
-    						<tr style={styles.tr}>
-    							<th style={{...styles.th, width: 387}}>
-                    TITLE
-                  </th>
-    							<th style={{...styles.th, width: 175}}>PUBLISHED ON</th>
-    							<th style={{...styles.th, width: 175}}>LENGTH</th>
-    							<th style={{...styles.th, width: 175}}>CREATOR</th>
-    							<th style={{...styles.th, width: 175}}>ANALYTICS</th>
-    						</tr>
-    						{
-    							_episodes.map((episode, i) => {
-    								episode.creator = userInfo.publisher.administrators[episode.creatorID];
+            <div className='table-responsive' style={styles.tableWrapper}>
+    					<table className='table table-hover'>
+                <thead>
+      						<tr style={styles.tr}>
+      							<th style={{...styles.th, }}>
+                      TITLE
+                    </th>
+      							<th style={{...styles.th, }}>PUBLISHED ON</th>
+      							<th style={{...styles.th, }}>LENGTH</th>
+      							<th style={{...styles.th, }}>CREATOR</th>
+      							<th style={{...styles.th, }}>ANALYTICS</th>
+      						</tr>
+                </thead>
+                <tbody>
+      						{
+      							_episodes.map((episode, i) => {
+      								episode.creator = userInfo.publisher.administrators[episode.creatorID];
 
-    								return (
-    									<tr key={i} style={styles.tr}>
-    										<td style={styles.td}>
-                          <div style={{marginTop: 24}}>{episode.title}</div>
-                          <div style={{marginBottom: 5}}>
-                            <span
-                              style={{marginRight: 10, cursor: 'pointer', fontSize: 13, color: 'red'}}
-                              onClick={() => this.deleteEpisode(episode)}>
-                                Delete
-                            </span>
-                            <span
-                              style={{marginRight: 10, cursor: 'pointer', fontSize: 13, color: Colors.link}}
-                              onClick={() => this.editEpisode(episode)}>
-                              Edit
-                            </span>
-                            {
-                              episode.publicEpisode &&
-                              <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
-                                <span className='text-dark-gray'
-                                  style={{cursor: 'pointer', fontSize: 13}}>
-                                  View
+      								return (
+      									<tr key={i} style={{...styles.tr}}>
+      										<td style={styles.td}>
+                            <div style={{marginRight: 20}}>
+                              <div style={{marginTop: 24}}>{episode.title}</div>
+                              <div style={{marginBottom: 5}}>
+                                <span
+                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
+                                  onClick={() => this.deleteEpisode(episode)}>
+                                    Delete
                                 </span>
-                              </a>
-                              || null
-                            }
-                          </div>
-                        </td>
-    										<td style={styles.td}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
-    										<td style={styles.td}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-    										<td style={styles.td}>{episode.creator.firstName} {episode.creator.lastName}</td>
-    										<td style={styles.td}>
-    											<i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-line-chart" style={styles.itemChartIcon}></i>
-    										</td>
-    									</tr>
-    								);
-    							})
-    						}
+                                <span
+                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
+                                  onClick={() => this.editEpisode(episode)}>
+                                  Edit
+                                </span>
+                                {
+                                  episode.publicEpisode &&
+                                  <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
+                                    <span className='text-dark-gray'
+                                      style={{cursor: 'pointer', fontSize: 15}}>
+                                      View
+                                    </span>
+                                  </a>
+                                  || null
+                                }
+                              </div>
+                            </div>
+                          </td>
+      										<td style={{...styles.td, textAlign: 'center'}}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
+      										<td style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
+      										<td style={{...styles.td, textAlign: 'center'}}>{episode.creator.firstName} {episode.creator.lastName}</td>
+      										<td style={{...styles.td, textAlign: 'center'}}>
+      											<i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
+      										</td>
+      									</tr>
+      								);
+      							})
+      						}
+                </tbody>
     					</table>
             </div>
 				  </div>
@@ -315,24 +334,25 @@ const styles = {
         marginRight: 10,
         marginBottom: 10,
         marginLeft: 0,
+        backgroundColor: Colors.mainWhite,
     },
     soundcastInfo: {
-        height: 96,
+        // height: 96,
         backgroundColor: Colors.mainWhite,
         paddingTop: 15,
         paddingBottom: 15,
     },
     soundcastImage: {
-        width: 52,
-        height: 52,
+        width: '100%',
+        height: '100%',
         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
-        marginRight: 30,
-        float: 'left',
+        // marginRight: 30,
+        // float: 'left',
     },
     soundcastDescription: {
         height: 46,
-        float: 'left',
-        width: '65%',
+        // float: 'left',
+        // width: '65%',
     },
     soundcastTitle: {
         fontSize: 18,
@@ -357,19 +377,19 @@ const styles = {
     },
     subscribers: {
         paddingTop: 10,
-        float: 'right',
-        fontSize: 14,
+        // float: 'right',
+        fontSize: 15,
+        display: 'block',
     },
     addLink: {
         color: Colors.link,
-        fontSize: 14,
+        fontSize: 15,
         display: 'block',
-        float: 'none',
-        height: 11,
-        lineHeight: '11px',
+        // height: 11,
+        // lineHeight: '11px',
         position: 'relative',
         bottom: 5,
-        width: 16,
+        // width: 17,
         margin: '0 auto',
         paddingTop: 6,
         cursor: 'pointer'
@@ -404,25 +424,28 @@ const styles = {
 		paddingLeft: 0,
 	},
 	itemHeader: {
-		height: 22,
+		// height: 22,
 		marginLeft: 15,
     marginTop: 10,
-    marginBottom: 25
+    marginBottom: 25,
+    display: 'flex',
+    justifyContent: 'start',
+    alignItems: 'center',
 
 	},
 	itemTitle: {
-    fontSize: 22,
-		float: 'left',
-		height: 22,
-		lineHeight: '22px',
+    fontSize: 24,
+		// float: 'left',
+		// height: 22,
+		// lineHeight: '22px',
 	},
 	addEpisodeLink: {
-    	float: 'left',
+    	// float: 'left',
 		fontSize: 16,
 		color: Colors.mainOrange,
-		marginLeft: 20,
-		height: 22,
-		lineHeight: '22px',
+		// marginLeft: 20,
+		// height: 22,
+		// lineHeight: '22px',
 		cursor: 'pointer',
 	},
   tableWrapper: {
@@ -434,25 +457,27 @@ const styles = {
 		borderBottomStyle: 'solid',
 	},
 	th: {
-    fontSize: 15,
+    fontSize: 17,
 		color: Colors.fontGrey,
 		height: 35,
 		fontWeight: 'regular',
-		vAlign: 'middle',
+		verticalAlign: 'middle',
 	},
 	td: {
     	color: Colors.fontDarkGrey,
-		fontSize: 15,
+		fontSize: 17,
+    color: 'black',
 		height: 40,
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
 		whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
 	},
 	itemCheckbox: {
     	marginTop: 7,
 	},
 	itemChartIcon: {
-    	fontSize: 12,
+    	// fontSize: 12,
 		color: Colors.fontBlack,
 		cursor: 'pointer',
 	},

@@ -7,6 +7,7 @@ var parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
 var sendinObj = new sendinblue(parameters);
 
 module.exports.sendListenerInvites = (req, res) => {
+  // console.log('invitees: ', req.body.invitees);
   var _promises = req.body.invitees.map(invitee => {
     var input = {'to': {[invitee]: ''},
       'from': ['support@mysoundwise.com', 'Soundwise'],
@@ -19,7 +20,7 @@ module.exports.sendListenerInvites = (req, res) => {
         console.log('email error: ', err);
         Promise.reject(err);
       } else {
-        // console.log('email sent: ', response);
+        // console.log('email sent to: ', invitee);
         return response;
       }
     });

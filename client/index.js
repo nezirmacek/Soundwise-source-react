@@ -40,65 +40,6 @@ const expiration = new Date(2099, 7, 31)
 
 firebase.initializeApp(config)
 
-// const soundcast1 = {
-//   "title": "Example Soundcast",
-//   "creatorID": "xD5tW78sX6M96C4xpd7iOIN5Qth1",
-//   "imageURL": "https://s3.amazonaws.com/soundwiseinc/demo/fightForYourJoy.png",
-//   "episodes": {
-//     "d46b4eb8-7663-11e7-b5a5-be2e44b06b34": true
-//   },
-//   "invited": {
-//     "ilovewordsworth@gmail(dot)com": true,
-//     "natasha@natashache(dot)com": true
-//   },
-//   "subscribed": {
-//     "xD5tW78sX6M96C4xpd7iOIN5Qth1": true
-//   }
-// }
-
-// const episode1 = {
-//   "title": "Example Episode",
-//   "timestamp": 1501556215,
-//   "creatorID": "xD5tW78sX6M96C4xpd7iOIN5Qth1",
-//   "description": "This is an example episode.",
-//   "url": "https://s3.amazonaws.com/soundwiseinc/demo/7+Instant+Gratification.mp3",
-//   "actionstep": "This is an example action step.",
-//   "notes": "https://s3.amazonaws.com/soundwiseinc/demo/Thiscouldbegood.Thiscouldbebad.Factisyouarefreetochoose.pdf",
-//   "soundcastID": "5a83201c-76bd-11e7-b5a5-be2e44b06b34",
-//   "likes": {
-//     "keeq4re9p0v4ws": true,
-//     "vcarieemgridos": true
-//   },
-//   "comments": {
-//     "voesfmvioedkht": true,
-//     "4fionviutrmrem": true
-//   }
-// }
-
-// const comments = {
-//   "voesfmvioedkht": {
-//     "userID": "vcarieemgridos",
-//     "timestamp": 1901756724,
-//     "content": "Thanks a lot. I fully agree!",
-//     "episodeID": "755047ae-76bc-11e7-b5a5-be2e44b06b34"
-//   },
-//   "4fionviutrmrem": {
-//     "userID": "keeq4re9p0v4ws",
-//     "timestamp": 1501756712,
-//     "content": "This is awesome!",
-//     "episodeID": "755047ae-76bc-11e7-b5a5-be2e44b06b34"
-//   },
-// }
-
-// firebase.database().ref('soundcasts/5a83201c-76bd-11e7-b5a5-be2e44b06b34')
-//     .set(soundcast1)
-
-// firebase.database().ref('episodes/d46b5246-7663-11e7-b5a5-be2e44b06b34')
-//     .set(episode1)
-
-// firebase.database().ref('comments')
-//     .set(comments)
-
 const admin = {
   "firstName": "Denis",
   "lastName": "Yakovenko",
@@ -134,9 +75,15 @@ export default class App extends Component {
     }
   }
 
-  componentWillMount(){
-    // const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']}, () => {
-    //   this.setState({ rehydrated: true })
+  componentDidMount(){
+    // firebase.database().ref('invitations/xc22@georgetown(dot)edu')
+    // .once('value')
+    // .then(snapshot => {
+    //   if(snapshot.val()) {
+    //     console.log('invitation: ', snapshot.val());
+    //   } else {
+    //     console.log('not found');
+    //   }
     // })
   }
 

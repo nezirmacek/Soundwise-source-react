@@ -48,7 +48,7 @@ class _EpisodePage extends Component {
               episodeID,
               title: snapshot.val().title,
               url: snapshot.val().url,
-              date_created: snapshot.val().date_createdd,
+              date_created: snapshot.val().date_created,
               description: snapshot.val().description,
               duration: snapshot.val().duration,
               likes: snapshot.val().likes ? Object.keys(snapshot.val().likes).length : 0,
@@ -215,7 +215,7 @@ class _EpisodePage extends Component {
                         </div>
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20}}>
-                              <h2 className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">{`${moment(date_created).format('MMM DD YYYY')} ${String.fromCharCode(183)} ${this.getTime_hoursMins(duration)}`}</h2>
+                              <h2 className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">{`${moment(date_created * 1000).format('MMM DD YYYY')} ${String.fromCharCode(183)} ${this.getTime_hoursMins(duration)}`}</h2>
                             </div>
                         </div>
                         <div className="row">

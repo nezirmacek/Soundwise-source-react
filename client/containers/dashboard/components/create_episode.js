@@ -73,6 +73,7 @@ class _CreateEpisode extends Component {
     }
 
     componentDidMount () {
+        console.log('create_episode is mounted');
         const that = this;
 		this.player.onended = () => this.setState({isPlaying: false});
         firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
@@ -247,10 +248,16 @@ class _CreateEpisode extends Component {
     }
 
     saveEpisode (isPublished) {
+        const that = this;
         const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
         const { userInfo, history } = this.props;
+        if(!audioUrl) {
+            alert("Please upload an audio file before saving!");
+            console.log('alerted missing audio url');
+            return;
+        }
 
-        if (userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
+        if (audioUrl && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
             const newEpisode = {
                 title,
                 description: description.length > 0 ? description : null,
@@ -268,7 +275,7 @@ class _CreateEpisode extends Component {
 
             firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
                 res => {
-                    console.log('success add episode: ', res);
+                    // console.log('success add episode: ', res);
                 },
                 err => {
                     console.log('ERROR add episode: ', err);
@@ -279,8 +286,7 @@ class _CreateEpisode extends Component {
 
             firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
                 res => {
-                    console.log('success add episodeID to soundcast: ', res);
-                    this.notifySubscribers();
+                    // console.log('success add episodeID to soundcast: ', res);
                 },
                 err => {
                     console.log('ERROR add episodeID to soundcast: ', err);
@@ -295,13 +301,15 @@ class _CreateEpisode extends Component {
                 soundcastTitle: userInfo.soundcasts_managed[this.currentSoundcastId].title,
             }).then(
                 res => {
-                    console.log('episode saved to db', res);
-                    history.goBack();
+                    // console.log('episode saved to db', res);
+                    that.notifySubscribers();
+                    history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
                 }
             ).catch(
                 err => {
                     console.log('episode failed to save to db', err);
-                    history.goBack();
+                    that.notifySubscribers();
+                    history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
                 }
             );
         }
@@ -326,6 +334,7 @@ class _CreateEpisode extends Component {
                 badge: '1'
               }
             };
+            console.log('notification sending is triggered from create_episode.js');
             sendNotifications(registrationTokens, payload); //sent push notificaiton
           })
     }

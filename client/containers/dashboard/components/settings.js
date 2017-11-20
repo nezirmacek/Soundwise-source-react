@@ -16,8 +16,8 @@ export default class Settings extends Component {
     super(props);
     this.state = {
       publisherName: '',
-      publisherEmail: '',
       publisherImg: '',
+      publisherPaypal: '',
       fileUploaded: false,
       admins: [],
       adminFormShow: false,
@@ -64,7 +64,7 @@ export default class Settings extends Component {
           }, err => {
                console.log('promise error: ', err);
           });
-      })
+      });
     }
   }
 
@@ -99,7 +99,7 @@ export default class Settings extends Component {
           }, err => {
                console.log('promise error: ', err);
           });
-      })
+      });
     }
   }
 
@@ -107,10 +107,11 @@ export default class Settings extends Component {
     if(userInfo.publisher) {
       const publisherId = userInfo.publisherID;
       const {name, imageUrl, paypalEmail} = userInfo.publisher;
+      const {publisherName, publisherImg, publisherPaypal} = this.state;
       this.setState({
-        publisherName: name,
-        publisherImg: imageUrl,
-        publisherEmail: paypalEmail,
+        publisherName: name ? name : publisherEmail,
+        publisherImg: imageUrl ? imageUrl : publisherImg,
+        publisherEmail: paypalEmail ? paypalEmail : publisherPaypal,
         publisherId,
       })
     }
@@ -151,9 +152,9 @@ export default class Settings extends Component {
 
   submit() {
     const { publisher } = this.props.userInfo;
-    const { publisherImg, publisherName, publisherId, publisherEmail } = this.state;
+    const { publisherImg, publisherName, publisherId, publisherPaypal } = this.state;
     const that = this;
-    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, paypalEmail: publisherEmail};
+    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, paypalEmail: publisherPaypal};
     firebase.database().ref(`publishers/${publisherId}`)
     .set(revisedPublisher)
     .then(() => {

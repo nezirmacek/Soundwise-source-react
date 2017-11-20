@@ -7,6 +7,7 @@ import { withRouter } from 'react-router';
 import  PageHeader  from './components/page_header';
 import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
+import Notice from '../../components/notice';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -22,11 +23,16 @@ class _SoundcastCheckout extends Component {
 
   }
 
-  handlePaymentSuccess() {
+  handlePaymentSuccess(soundcast) {
     this.setState({
       success: true,
     });
-    this.props.history.push('/mysoundcasts');
+    // this.props.history.push('/mysoundcasts');
+    const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+    this.props.history.push({
+      pathname: '/notice',
+      state: { text }
+    });
   }
 
   render() {
@@ -57,21 +63,6 @@ class _SoundcastCheckout extends Component {
                         </div>
                     </section>
                 </div>
-      )
-    } else if (soundcast && this.state.success) {
-      return (
-        <div>
-          <PageHeader />
-            <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                            <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">{`You've successfully subscribed to ${soundcast.title}. Please check your email for download instructions.`}</h2>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
       )
     } else if(soundcast && !this.state.success) {
       return (
@@ -110,6 +101,10 @@ class _SoundcastCheckout extends Component {
                       handlePaymentSuccess={this.handlePaymentSuccess}
                     />
                 </div>
+      )
+    } else {
+      return (
+        <div></div>
       )
     }
   }
