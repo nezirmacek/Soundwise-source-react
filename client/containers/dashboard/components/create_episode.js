@@ -73,8 +73,9 @@ class _CreateEpisode extends Component {
     }
 
     componentDidMount () {
-        console.log('create_episode is mounted');
+        // console.log('create_episode is mounted');
         const that = this;
+
 		this.player.onended = () => this.setState({isPlaying: false});
         firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
         .once('value')
@@ -84,7 +85,11 @@ class _CreateEpisode extends Component {
                     publicEpisode: snapshot.val().landingPage ? true : false
                 })
             }
-        })
+        });
+
+        if(this.props.location.state && this.props.location.state.soundcastID) {
+            this.currentSoundcastId = this.props.location.state.soundcastID;
+        }
 	}
 
     record () {
@@ -640,7 +645,10 @@ class _CreateEpisode extends Component {
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
-                            <select style={styles.soundcastSelect} onChange={(e) => {this.changeSoundcastId(e);}}>
+                            <select
+                              value = {this.currentSoundcastId}
+                              style={styles.soundcastSelect}
+                              onChange={(e) => {this.changeSoundcastId(e);}}>
                                 {
                                     _soundcasts_managed.map((soundcast, i) => {
                                         return (

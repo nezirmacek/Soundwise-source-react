@@ -99,7 +99,7 @@ export default class Soundcast extends Component {
     });
 
     return (
-        <div className='container-fluid' style={styles.itemContainer}>
+        <div className='' style={styles.itemContainer}>
           <EpisodeStatsModal
             isShown={this.state.showStatsModal}
             episode={this.state.currentEpisode}
@@ -109,68 +109,78 @@ export default class Soundcast extends Component {
           <div className='row ' style={styles.itemHeader}>
             <div className='col-lg-9 col-md-9 col-sm-8 col-xs-12'
               style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
-            <div className='col-lg-3 col-md-3 col-sm-4 col-xs-12'
-              style={styles.addEpisodeLink} onClick={() => history.push('/dashboard/add_episode')}>Add episode</div>
+            <div className='col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center'
+              style={{...styles.button}}
+              onClick={() => history.push({
+                pathname:'/dashboard/add_episode',
+                state: {soundcastID: id},
+              })}
+            >
+              Add episode
+            </div>
           </div>
-          <div className='table-responsive' style={styles.tableWrapper}>
-            <table className='table table-hover'>
-              <thead>
-                <tr style={styles.tr}>
-                  <th style={{...styles.th, }}>
-                    TITLE
-                  </th>
-                  <th style={{...styles.th, textAlign: 'center'}}>PUBLISHED ON</th>
-                  <th style={{...styles.th, textAlign: 'center'}}>LENGTH</th>
-                  <th style={{...styles.th, textAlign: 'center'}}>CREATOR</th>
-                  <th style={{...styles.th, textAlign: 'center'}}>ANALYTICS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  _episodes.map((episode, i) => {
-                    episode.creator = userInfo.publisher.administrators[episode.creatorID];
+          <div className=''>
+            <div className='table-responsive' style={styles.tableWrapper}>
+              <table className='table  table-hover'>
+                <thead>
+                  <tr className='' style={styles.tr}>
+                    <th className='col-md-6' style={{...styles.th, }}>
+                      TITLE
+                    </th>
+                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>PUBLISHED ON</th>
+                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>LENGTH</th>
+                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>CREATOR</th>
+                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>ANALYTICS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    _episodes.map((episode, i) => {
+                      episode.creator = userInfo.publisher.administrators[episode.creatorID];
 
-                    return (
-                      <tr key={i} style={{...styles.tr}}>
-                        <td style={styles.td}>
-                          <div style={{marginRight: 20}}>
-                            <div style={{marginTop: 24}}>{episode.title}</div>
-                            <div style={{marginBottom: 5}}>
-                              <span
-                                style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
-                                onClick={() => this.deleteEpisode(episode)}>
-                                  Delete
-                              </span>
-                              <span
-                                style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
-                                onClick={() => this.editEpisode(episode)}>
-                                Edit
-                              </span>
-                              {
-                                episode.publicEpisode &&
-                                <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
-                                  <span className='text-dark-gray'
-                                    style={{cursor: 'pointer', fontSize: 15}}>
-                                    View
-                                  </span>
-                                </a>
-                                || null
-                              }
+                      return (
+                        <tr className='' key={i} style={{...styles.tr}}>
+                          <td className='col-md-6'
+                            style={{...styles.td}}>
+                            <div style={{marginRight: 20}}>
+                              <div style={{marginTop: 24}}>{episode.title}</div>
+                              <div style={{marginBottom: 5}}>
+                                <span
+                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
+                                  onClick={() => this.deleteEpisode(episode)}>
+                                    Delete
+                                </span>
+                                <span
+                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
+                                  onClick={() => this.editEpisode(episode)}>
+                                  Edit
+                                </span>
+                                {
+                                  episode.publicEpisode &&
+                                  <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
+                                    <span className='text-dark-gray'
+                                      style={{cursor: 'pointer', fontSize: 15}}>
+                                      View
+                                    </span>
+                                  </a>
+                                  || null
+                                }
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td style={{...styles.td, textAlign: 'center'}}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
-                        <td style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-                        <td style={{...styles.td, textAlign: 'center'}}>{episode.creator.firstName} {episode.creator.lastName}</td>
-                        <td style={{...styles.td, textAlign: 'center'}}>
-                          <i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
-                        </td>
-                      </tr>
-                    );
-                  })
-                }
-              </tbody>
-            </table>
+                          </td>
+                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
+                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
+                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.creator.firstName} {episode.creator.lastName}</td>
+                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>
+                            <i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
     );
@@ -248,20 +258,24 @@ const styles = {
     },
     button: {
         height: 30,
+        textAlign: 'center',
+        color: Colors.mainWhite,
+        fontWeight: 'bold',
         borderRadius: 14,
         fontSize: 12,
         letterSpacing: 2,
         wordSpacing: 4,
         display: 'inline-block',
-        paddintTop: 5,
+        paddingTop: 5,
         paddingRight: 15,
         paddingBottom: 5,
         paddingLeft: 15,
-        borderWidth: 3,
+        borderWidth: 0,
         marginTop: 10,
         marginRight: 15,
         borderStyle: 'solid',
         cursor: 'pointer',
+        backgroundColor: Colors.mainOrange,
     },
   itemContainer: {
       marginTop: 30,

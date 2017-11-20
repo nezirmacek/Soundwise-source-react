@@ -8,9 +8,12 @@ import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import Toggle from 'material-ui/Toggle';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -29,7 +32,7 @@ export default class AddSoundcast extends Component {
 			long_description: EditorState.createEmpty(),
 			imageURL: '',
 			fileUploaded: false,
-			landingPage: false,
+			landingPage: true,
 			features: [''],
 			hostName: '',
 			hostBio: '',
@@ -37,6 +40,7 @@ export default class AddSoundcast extends Component {
 			hostImgUploaded: '',
 			forSale: false,
 			prices: [],
+			paypalEmail: '',
 		};
 
 		this.soundcastId = `${moment().format('x')}s`;
@@ -300,17 +304,45 @@ export default class AddSoundcast extends Component {
 
 	handleChargeOption() {
 		const {forSale} = this.state;
+		const {userInfo} = this.props;
+
 		if(!forSale) {
-			this.setState({
-				forSale: !forSale,
-				prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}]
-			})
+			if(!userInfo.publisher.paypalEmail) {
+				this.setState({
+					paypalModalOpen: true,
+				});
+			} else {
+				this.setState({
+					forSale: !forSale,
+					prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}]
+				})
+			}
 		} else {
 			this.setState({
 				forSale: !forSale,
 				prices: [{price: 'free'}],
 			})
 		}
+	}
+
+	handlePaypalModalClose() {
+		if(this.state.paypalModalOpen) {
+			this.setState({
+				paypalModalOpen: false,
+			})
+		}
+	}
+
+	handlePaypalInput() {
+		const {paypalEmail, forSale} = this.state;
+		const {userInfo} = this.props;
+		firebase.database().ref(`publishers/${userInfo.publisherID}/paypalEmail`)
+		.set(paypalEmail);
+		this.setState({
+			paypalModalOpen: false,
+			forSale: !forSale,
+			prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}],
+		})
 	}
 
 	onEditorStateChange(editorState) {
@@ -322,22 +354,22 @@ export default class AddSoundcast extends Component {
 	renderAdditionalInputs() {
 		const featureNum = this.state.features.length;
 		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices} = this.state;
+		const {userInfo} = this.props;
 		const that = this;
+    const actions = [
+      <FlatButton
+        label="Submit"
+        labelStyle={{color: Colors.mainOrange}}
+        onClick={this.handlePaypalInput.bind(this)}
+      />,
+      <FlatButton
+        label="Cancel"
+        onClick={this.handlePaypalModalClose.bind(this)}
+      />,
+    ];
+
 		return (
 			<div style={{marginTop: 15}}>
-				{/*Long Description*/}
-				<span style={{...styles.titleText, marginBottom: 5}}>
-                    Long Description
-                </span>
-				<div>
-					<Editor
-						editorState = {long_description}
-						editorStyle={styles.editorStyle}
-						wrapperStyle={styles.wrapperStyle}
-						onEditorStateChange={this.onEditorStateChange}
-					/>
-				</div>
-
 				{/*What Listeners Will Get*/}
 				<span style={{...styles.titleText, marginBottom: 5}}>
 					What Listeners Will Get
@@ -381,6 +413,19 @@ export default class AddSoundcast extends Component {
 					}
 				</div>
 
+				{/*Long Description*/}
+				<span style={{...styles.titleText, marginBottom: 5}}>
+                    Long Description
+                </span>
+				<div>
+					<Editor
+						editorState = {long_description}
+						editorStyle={styles.editorStyle}
+						wrapperStyle={styles.wrapperStyle}
+						onEditorStateChange={this.onEditorStateChange}
+					/>
+				</div>
+
 				{/*Host/Instructor Name*/}
 				<div>
                     <span style={styles.titleText}>
@@ -410,7 +455,7 @@ export default class AddSoundcast extends Component {
 						onChange={(e) => {this.setState({hostBio: e.target.value})}}
 						value={this.state.hostBio}
 					>
-                    </textarea>
+          </textarea>
 				</div>
 
 				{/*Host/Instructor Profile Picture*/}
@@ -466,20 +511,38 @@ export default class AddSoundcast extends Component {
 				<div>
 					<span style={styles.titleText}>Pricing</span>
 					<div style={{marginTop: 15, marginBottom: 15,}}>
-						<span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>Charge subscribers for this soundcast?</span>
-						<input
-							type='checkbox'
-							style={styles.checkbox}
-							checked={this.state.forSale}
-							onClick={this.handleChargeOption.bind(this)}
-						/>
+            <Toggle
+              label="Charge subscribers for this soundcast?"
+              toggled={this.state.forSale}
+              onClick={this.handleChargeOption.bind(this)}
+              thumbSwitchedStyle={styles.thumbSwitched}
+              trackSwitchedStyle={styles.trackSwitched}
+              style={{fontSize: 20, width: '50%'}}
+            />
+            <Dialog
+		          title={`Hold on, ${userInfo.firstName}...what's your Paypal email? We need it to send you the sales proceeds.`}
+		          actions={actions}
+		          modal={true}
+		          open={this.state.paypalModalOpen}
+		          onRequestClose={this.handlePaypalModalClose}
+            >
+							<div style={{...styles.inputTitleWrapper, width: '90%'}}>
+								<input
+									type="text"
+									style={styles.inputTitle}
+									placeholder={"Publisher's paypal email address"}
+									onChange={(e) => {this.setState({paypalEmail: e.target.value})}}
+									value={this.state.paypalEmail}
+								/>
+							</div>
+            </Dialog>
 					</div>
 					{
 						forSale &&
 						<div style={{width: '100%,'}}>
 							{
 								prices.map((price, i) => (
-									<div className='row' style={{marginBottom: 10}}>
+									<div key={i} className='row' style={{marginBottom: 10}}>
 										<span style={styles.titleText}>{`${i + 1}. `}</span>
 										<div style={{width: '35%', display: 'inline-block', marginRight: 10,}}>
 											<span>Payment Plan Name</span>
@@ -590,42 +653,42 @@ export default class AddSoundcast extends Component {
 		const that = this;
 
 		return (
-			<div className='padding-30px-tb'>
-				<div className='padding-bottom-20px'>
-                  <span className='title-medium '>
-                      Add A Soundcast
-                  </span>
-				</div>
-
-				{/*The landing page*/}
-				<div style={{marginTop: 15, marginBottom: 15,}}>
-					<span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>Add a public landing page for this soundcast</span>
-					<input
-						type='checkbox'
-						style={styles.checkbox}
-						checked={this.state.landingPage}
-						onClick={this.handleCheck.bind(this)}
-					/>
-				</div>
-				{landingPage &&
-				<div style={{marginBottom: 20, fontSize: 16}}>
-					<span>The landing page will be published at </span>
-					<span >
-						<a
-							target="_blank"
-							style={{color: Colors.mainOrange}}
-							href={`https://mysoundwise.com/soundcasts/${this.soundcastId}`}>
-							{`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
-                        </a>
-                    </span>
-				</div>}
-				<div className="">
-					<div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+			<MuiThemeProvider >
+				<div className='padding-30px-tb'>
+					<div className='padding-bottom-20px'>
+	                  <span className='title-medium '>
+	                      Add A Soundcast
+	                  </span>
+					</div>
+					<div className="col-lg-10 col-md-11 col-sm-12 col-xs-12">
+						{/*The landing page*/}
+						<div style={{marginTop: 15, marginBottom: 15}}>
+		          <Toggle
+		            label="Add a public landing page for this soundcast"
+		            toggled={this.state.landingPage}
+		            onClick={this.handleCheck.bind(this)}
+		            thumbSwitchedStyle={styles.thumbSwitched}
+		            trackSwitchedStyle={styles.trackSwitched}
+		            style={{fontSize: 20, width: '60%'}}
+		          />
+						</div>
+						{landingPage &&
+						<div style={{marginBottom: 20, fontSize: 20}}>
+							<span>The landing page will be published at </span>
+							<span >
+								<a
+									target="_blank"
+									style={{color: Colors.mainOrange}}
+									href={`https://mysoundwise.com/soundcasts/${this.soundcastId}`}>
+									{`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
+		                        </a>
+		                    </span>
+						</div>}
 
 						{/*Title*/}
 						<span style={styles.titleText}>Title</span>
 						<span style={{...styles.titleText, color: 'red'}}>*</span>
-						<span style={{fontSize: 14}}><i> (60 characters max)</i></span>
+						<span style={{fontSize: 17}}><i> (60 characters max)</i></span>
 						<ValidatedInput
 							type="text"
 							styles={styles.inputTitle}
@@ -641,7 +704,7 @@ export default class AddSoundcast extends Component {
 							Short Description
 						</span>
 						<span style={{...styles.titleText, color: 'red'}}>*</span>
-						<span style={{fontSize: 14}}>
+						<span style={{fontSize: 17}}>
 							<i> (300 characters max)</i>
 						</span>
 
@@ -724,8 +787,9 @@ export default class AddSoundcast extends Component {
 							/>
 						</div>
 					</div>
+
 				</div>
-			</div>
+			</MuiThemeProvider>
 		);
 	}
 };
@@ -739,7 +803,7 @@ AddSoundcast.propTypes = {
 
 const styles = {
 	titleText: {
-		fontSize: 16,
+		fontSize: 20,
 		fontWeight: 600,
 	},
 	inputTitleWrapper: {
@@ -751,16 +815,18 @@ const styles = {
 		height: 40,
 		backgroundColor: Colors.mainWhite,
 		width: '100%',
-		fontSize: 16,
+		fontSize: 18,
 		borderRadius: 4,
 		marginBottom: 0,
 	},
 	inputDescription: {
-		height: 80,
-		fontSize: 16,
+		height: 100,
+		fontSize: 18,
 		borderRadius: 4,
 		marginTop: 10,
 		marginBottom: 20,
+    resize: 'vertical',
+    overflow: 'auto',
 	},
 	editorStyle: {
 		padding: '5px',
@@ -819,7 +885,7 @@ const styles = {
 		marginLeft: 10,
 	},
 	addFeature: {
-		fontSize: 16,
+		fontSize: 20,
 		marginLeft: 10,
 		color: Colors.link,
 		cursor: 'pointer',
@@ -855,19 +921,28 @@ const styles = {
 		height: 30,
 		// float: 'left',
 		color: Colors.mainWhite,
-		fontSize: 14,
+		fontSize: 18,
 		border: 0,
 		marginTop: 5
 	},
 	cancelImg: {
 		color: Colors.link,
 		marginLeft: 20,
-		fontSize: 14,
+		fontSize: 16,
 		cursor: 'pointer'
 	},
 	fileTypesLabel: {
-		fontSize: 11,
+		fontSize: 16,
 		marginLeft: 0,
 		display: 'block',
 	},
+  radioButton: {
+    marginBottom: 16,
+  },
+  thumbSwitched: {
+    backgroundColor: Colors.link,
+  },
+  trackSwitched: {
+    backgroundColor: Colors.link,
+  },
 };

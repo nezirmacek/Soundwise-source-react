@@ -133,7 +133,8 @@ class _Dashboard extends Component {
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
 
         return (
-            <div style={{position: 'absolute', height: '100%', width: '100%'}}>
+            <div className='container-fluid'
+              >
                 <SoundwiseHeader />
                 <div className="row" style={{minHeight: '100%', width: '100%'}}>
                     <div className="col-lg-2 col-md-3 col-sm-4 col-xs-6" style={styles.verticalMenu}>
@@ -207,7 +208,7 @@ const styles = {
     verticalMenuItemIcon: {
         fontSize: '20px',
         color: '#687178',
-        marginRight: 10,
+        marginRight: 5,
         width: 25,
     },
     contentWrapper: {

@@ -7,6 +7,8 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import Toggle from 'material-ui/Toggle';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -258,17 +260,6 @@ export default class EditSoundcast extends Component {
         return (
             <div style={{marginTop: 25}}>
                 <span style={{...styles.titleText, marginBottom: 5}}>
-                    Long Description
-                </span>
-                <div>
-                    <Editor
-                      editorState = {long_description}
-                      editorStyle={styles.editorStyle}
-                      wrapperStyle={styles.wrapperStyle}
-                      onEditorStateChange={this.onEditorStateChange}
-                    />
-                </div>
-                <span style={{...styles.titleText, marginBottom: 5}}>
                   What Listeners Will Get
                 </span>
                 <span>
@@ -303,6 +294,17 @@ export default class EditSoundcast extends Component {
                         Add
                       </span>
                     </div>
+                </div>
+                <span style={{...styles.titleText, marginBottom: 5}}>
+                    Long Description
+                </span>
+                <div>
+                    <Editor
+                      editorState = {long_description}
+                      editorStyle={styles.editorStyle}
+                      wrapperStyle={styles.wrapperStyle}
+                      onEditorStateChange={this.onEditorStateChange}
+                    />
                 </div>
                 <div>
                     <span style={styles.titleText}>
@@ -380,12 +382,13 @@ export default class EditSoundcast extends Component {
                     <div>
                       <span style={styles.titleText}>Pricing</span>
                       <div style={{marginTop: 15, marginBottom: 15,}}>
-                          <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>Charge subscribers for this soundcast?</span>
-                          <input
-                            type='checkbox'
-                            style={styles.checkbox}
-                            checked={this.state.forSale}
+                          <Toggle
+                            label="Charge subscribers for this soundcast?"
+                            toggled={this.state.forSale}
                             onClick={this.handleChargeOption.bind(this)}
+                            thumbSwitchedStyle={styles.thumbSwitched}
+                            trackSwitchedStyle={styles.trackSwitched}
+                            style={{fontSize: 20, width: '50%'}}
                           />
                       </div>
                       {
@@ -395,7 +398,7 @@ export default class EditSoundcast extends Component {
                             prices.map((price, i) => {
                                 const priceTag = price.price == 'free' ? 0 : price.price;
                                 return (
-                                  <div className='row' style={{marginBottom: 10}}>
+                                  <div className='row' style={{marginBottom: 10, marginLeft: 10}}>
                                     <span style={styles.titleText}>{`${i + 1}. `}</span>
                                     <div style={{width: '35%', display: 'inline-block', marginRight: 10,}}>
                                       <span>Payment Plan Name</span>
@@ -508,24 +511,25 @@ export default class EditSoundcast extends Component {
         const that = this;
 
         return (
-            <div className='padding-30px-tb'>
+          <MuiThemeProvider >
+            <div className='padding-30px-tb' style={{fontSize: 20}}>
               <div className='padding-bottom-20px'>
                   <span className='title-medium '>
                       Edit Soundcast
                   </span>
               </div>
-              <div style={{marginTop: 15, marginBottom: 15,}}>
-                  <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>Add a public landing page for this soundcast</span>
-                  <input
-                    type='checkbox'
-                    style={styles.checkbox}
-                    checked={this.state.landingPage}
+              <div className='' style={{marginTop: 15, marginBottom: 15,}}>
+                  <Toggle
+                    label="Add a public landing page for this soundcast"
+                    toggled={this.state.landingPage}
                     onClick={this.handleCheck.bind(this)}
-
+                    thumbSwitchedStyle={styles.thumbSwitched}
+                    trackSwitchedStyle={styles.trackSwitched}
+                    style={{fontSize: 20, width: '50%'}}
                   />
               </div>
               {landingPage &&
-                <div style={{marginBottom: 20, fontSize: 16}}>
+                <div style={{marginBottom: 20, fontSize: 20}}>
                     <span>The landing page will be published at </span>
                     <span >
                       <a
@@ -541,7 +545,7 @@ export default class EditSoundcast extends Component {
                         <div style={{marginBottom: 15}}>
                           <span style={styles.titleText}>Title</span>
                           <span style={{...styles.titleText, color: 'red'}}>*</span>
-                          <span style={{fontSize: 14, marginBottom: 15,}}><i> (60 characters max)</i></span>
+                          <span style={{fontSize: 17, marginBottom: 15,}}><i> (60 characters max)</i></span>
                         </div>
                         <ValidatedInput
                             type="text"
@@ -557,7 +561,7 @@ export default class EditSoundcast extends Component {
                               Short Description
                           </span>
                           <span style={{...styles.titleText, color: 'red'}}>*</span>
-                          <span style={{fontSize: 14}}>
+                          <span style={{fontSize: 17}}>
                               <i> (300 characters max)</i>
                           </span>
                         </div>
@@ -632,6 +636,7 @@ export default class EditSoundcast extends Component {
                     </div>
                 </div>
             </div>
+          </MuiThemeProvider>
         );
     }
 };
@@ -643,7 +648,7 @@ EditSoundcast.propTypes = {
 
 const styles = {
     titleText: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 600,
     },
     inputTitleWrapper: {
@@ -655,7 +660,7 @@ const styles = {
         height: 40,
         backgroundColor: Colors.mainWhite,
         width: '100%',
-        fontSize: 16,
+        fontSize: 18,
         borderRadius: 4,
         marginBottom: 0,
     },
@@ -663,7 +668,7 @@ const styles = {
         height: 80,
         backgroundColor: Colors.mainWhite,
         width: '100%',
-        fontSize: 16,
+        fontSize: 18,
         borderRadius: 4,
         marginTop: 10,
         marginBottom: 20
@@ -725,7 +730,7 @@ const styles = {
         marginLeft: 10,
     },
     addFeature: {
-        fontSize: 16,
+        fontSize: 20,
         marginLeft: 10,
         color: Colors.link,
         cursor: 'pointer',
@@ -762,7 +767,7 @@ const styles = {
         height: 30,
         // float: 'left',
         color: Colors.mainWhite,
-        fontSize: 14,
+        fontSize: 18,
         border: 0,
         marginTop: 5
 
@@ -770,12 +775,21 @@ const styles = {
     cancelImg: {
       color: Colors.link,
       marginLeft: 20,
-      fontSize: 14,
+      fontSize: 16,
       cursor: 'pointer'
     },
     fileTypesLabel: {
-        fontSize: 11,
+        fontSize: 16,
         marginLeft: 0,
         display: 'block',
+    },
+    radioButton: {
+      marginBottom: 16,
+    },
+    thumbSwitched: {
+      backgroundColor: Colors.link,
+    },
+    trackSwitched: {
+      backgroundColor: Colors.link,
     },
 };

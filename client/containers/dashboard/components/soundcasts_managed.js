@@ -194,7 +194,10 @@ export default class SoundcastsManaged extends Component {
                     })} style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
 										<div
                       style={{...styles.button, borderColor: Colors.mainGrey}}
-                      onClick={() => history.push('/dashboard/add_episode')}
+                      onClick={() => history.push({
+                        pathname:'/dashboard/add_episode',
+                        state: {soundcastID: soundcast.id},
+                      })}
                     >
                       Add new episode
                     </div>
@@ -267,12 +270,16 @@ const styles = {
     },
     edit: {
       height: 30,
-      display: 'inline-block'
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      marginTop: 10,
+      marginBottom: 10,
     },
     editLink: {
-      paddingTop: 15,
+      paddingTop: 10,
       paddingLeft: 20,
-      fontSize: 16,
+      fontSize: 17,
+      fontWeight: 700,
       color: Colors.link,
       float: 'right',
       cursor: 'pointer'
@@ -301,18 +308,21 @@ const styles = {
         height: 30,
         borderRadius: 14,
         fontSize: 12,
-        letterSpacing: 2,
+        letterSpacing: 1.5,
+        fontWeight: 'bold',
         wordSpacing: 4,
         display: 'inline-block',
-        paddintTop: 5,
+        // paddingTop: 5,
         paddingRight: 15,
         paddingBottom: 5,
         paddingLeft: 15,
         borderWidth: 3,
         marginTop: 10,
-        marginRight: 15,
+        marginRight: 7,
+        marginLeft: 7,
         borderStyle: 'solid',
         cursor: 'pointer',
+        verticalAlign: 'middle',
     },
 	itemContainer: {
     	marginTop: 30,

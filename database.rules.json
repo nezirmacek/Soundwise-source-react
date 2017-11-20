@@ -1,0 +1,50 @@
+{
+  "rules": {
+    "publishers": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "soundcasts": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "invitations": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+    },      
+    "episodes": {
+      ".read": true,
+      ".write": true
+    },
+    "comments": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "courses": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "staging": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "users": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["email/0", "stripe_id", "soundcasts/planID"],
+        
+    },
+    "coupons": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "contentcreators": {
+      ".write": true,
+      ".read": "auth != null"
+    },
+    "categories": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}
