@@ -210,7 +210,7 @@ class _CreateEpisode extends Component {
             })
             .catch(function (err) {
                 // POST failed...
-                console.log('ERROR upload to storage: ', err);
+                // console.log('ERROR upload to storage: ', err);
             });
     }
 
