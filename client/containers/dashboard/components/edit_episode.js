@@ -13,6 +13,7 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
+import {sendNotifications} from '../../../helpers/send_notifications';
 
 export default class EditEpisode extends Component {
     constructor (props) {
@@ -27,17 +28,19 @@ export default class EditEpisode extends Component {
             notesName: '',
             notesUploading: false,
             publicEpisode: '',
+            isPublished: null,
         };
 
     }
 
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
-      const {title, description, actionstep, notes, publicEpisode} = episode;
+      const {title, description, actionstep, notes, publicEpisode, isPublished} = episode;
 
       this.setState({
         title,
         publicEpisode,
+        isPublished,
       })
       if(description) {
         this.setState({
@@ -104,8 +107,8 @@ export default class EditEpisode extends Component {
         }
     }
 
-    submit () {
-        const { title, description, actionstep, notes, publicEpisode} = this.state;
+    submit (toPublish) {
+        const { title, description, actionstep, notes, publicEpisode, isPublished} = this.state;
         const { userInfo, history } = this.props;
         const { id } = history.location.state;
         const that = this;
@@ -116,25 +119,59 @@ export default class EditEpisode extends Component {
             description: description.length > 0 ? description : null,
             actionstep: actionstep.length > 0 ? actionstep : null,
             notes,
-            publicEpisode
+            publicEpisode,
+            isPublished: toPublish ? true : isPublished
         };
 
-        // edit episode in database
-            firebase.database().ref(`episodes/${id}`)
-            .once('value')
-            .then(snapshot => {
-              const changedEpisode = Object.assign({}, snapshot.val(), editedEpisode);
+        if(toPublish) {
+            this.notifySubscribers();
+        }
 
-              firebase.database().ref(`episodes/${id}`)
-              .set(changedEpisode).then(
-                res => {
-                    history.goBack();
-                },
-                err => {
-                    console.log('ERROR edit episode: ', err);
-                }
-              );
-            });
+        // edit episode in database
+        firebase.database().ref(`episodes/${id}`)
+        .once('value')
+        .then(snapshot => {
+          const changedEpisode = Object.assign({}, snapshot.val(), editedEpisode);
+
+          firebase.database().ref(`episodes/${id}`)
+          .set(changedEpisode).then(
+            res => {
+                history.goBack();
+            },
+            err => {
+                console.log('ERROR edit episode: ', err);
+            }
+          );
+        });
+    }
+
+    notifySubscribers() {
+        const { episode } = this.props.history.location.state;
+        firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`)
+        .once('value', snapshot => {
+            if(snapshot.val()) {
+              firebase.database().ref(`soundcasts/${episode.soundcastID}`)
+              .once('value', snapshot => {
+                let registrationTokens = [];
+                // get an array of device tokens
+                // console.log('snapshot.val(): ', snapshot.val());
+                Object.keys(snapshot.val().subscribed).forEach(user => {
+                  if(typeof snapshot.val().subscribed[user] == 'object') {
+                      registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
+                  }
+                });
+                const payload = {
+                  notification: {
+                    title: `${snapshot.val().title} just published:`,
+                    body: `${this.state.title}`,
+                    sound: 'default',
+                    badge: '1'
+                  }
+                };
+                sendNotifications(registrationTokens, payload); //sent push notificaiton
+              })
+            }
+        })
     }
 
     changeSharingSetting() {
@@ -145,7 +182,7 @@ export default class EditEpisode extends Component {
     }
 
     render() {
-        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName } = this.state;
+        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished } = this.state;
         const {history} = this.props;
 
         const that = this;
@@ -260,15 +297,27 @@ export default class EditEpisode extends Component {
                                 onClick={this.changeSharingSetting.bind(this)}
                               />
                         </div>
-                        <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
-                                label="Save"
-                                onClick={this.submit.bind(this)}
+                                label={isPublished ? "Save" : "Save draft"}
+                                onClick={this.submit.bind(this, false)}
+                                styles={{backgroundColor: Colors.link, borderWidth: 0}}
                             />
                         </div>
+                        {
+                            !isPublished &&
+                            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                              <OrangeSubmitButton
+                                label='Publish'
+                                onClick={this.submit.bind(this, true)}
+                              />
+                            </div>
+                            || null
+                        }
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <TransparentShortSubmitButton
                                 label="Cancel"
+                                styles={{width: 229}}
                                 onClick={() => {
                                   history.goBack();
                                 }}

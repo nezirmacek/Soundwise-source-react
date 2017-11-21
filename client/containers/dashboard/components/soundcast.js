@@ -70,6 +70,7 @@ export default class Soundcast extends Component {
     const title = episode.title;
     if(confirm(`Are you sure you want to delete ${title}? You won't be able to go back.`)) {
       firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`).remove();
+      firebase.database().ref(`episodes/${episode.id}/isPublished`).set(false);
       firebase.database().ref(`episodes/${episode.id}`).remove();
       alert(`${title} has been deleted`);
       return;
@@ -168,7 +169,7 @@ export default class Soundcast extends Component {
                               </div>
                             </div>
                           </td>
-                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{moment(episode.date_created * 1000).format('MMM DD YYYY')}</td>
+                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.isPublished &&moment(episode.date_created * 1000).format('MMM DD YYYY') || 'draft'}</td>
                           <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
                           <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.creator.firstName} {episode.creator.lastName}</td>
                           <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>

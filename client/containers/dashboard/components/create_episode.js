@@ -92,6 +92,12 @@ class _CreateEpisode extends Component {
         }
 	}
 
+    componentWillUnmount() {
+        // console.log('create_episode unmounted');
+        // firebase.database().ref(`episodes/${this.episodeId}`).off();
+        // firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).off();
+    }
+
     record () {
         const that = this;
 
@@ -165,7 +171,7 @@ class _CreateEpisode extends Component {
 
     save () {
         let _self = this;
-        console.log('start converting to mp3');
+        // console.log('start converting to mp3');
 		//upload file to aws s3
 		this._uploadToAws(this.state.blob.blob, 'audio');
         this.setState({isSaved: true})
@@ -188,7 +194,7 @@ class _CreateEpisode extends Component {
         Axios.post('/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
-                console.log('success upload to aws s3: ', res);
+                // console.log('success upload to aws s3: ', res);
 
                 //replace 'http' with 'https'
                 let url = res.data[0].url;
@@ -204,7 +210,7 @@ class _CreateEpisode extends Component {
             })
             .catch(function (err) {
                 // POST failed...
-                console.log('ERROR upload to aws s3: ', err);
+                console.log('ERROR upload to storage: ', err);
             });
     }
 
@@ -258,7 +264,6 @@ class _CreateEpisode extends Component {
         const { userInfo, history } = this.props;
         if(!audioUrl) {
             alert("Please upload an audio file before saving!");
-            console.log('alerted missing audio url');
             return;
         }
 
@@ -307,13 +312,17 @@ class _CreateEpisode extends Component {
             }).then(
                 res => {
                     // console.log('episode saved to db', res);
-                    that.notifySubscribers();
+                    if(isPublished) {
+                      that.notifySubscribers();
+                    }
                     history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
                 }
             ).catch(
                 err => {
                     console.log('episode failed to save to db', err);
-                    that.notifySubscribers();
+                    if(isPublished) {
+                      that.notifySubscribers();
+                    }
                     history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
                 }
             );
@@ -321,27 +330,32 @@ class _CreateEpisode extends Component {
     }
 
     notifySubscribers() {
-          firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
-          .on('value', snapshot => {
-            let registrationTokens = [];
-            // get an array of device tokens
-            // console.log('snapshot.val(): ', snapshot.val());
-            Object.keys(snapshot.val().subscribed).forEach(user => {
-              if(typeof snapshot.val().subscribed[user] == 'object') {
-                  registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
-              }
-            });
-            const payload = {
-              notification: {
-                title: `${snapshot.val().title} just published:`,
-                body: `${this.state.title}`,
-                sound: 'default',
-                badge: '1'
-              }
-            };
-            console.log('notification sending is triggered from create_episode.js');
-            sendNotifications(registrationTokens, payload); //sent push notificaiton
-          })
+        firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`)
+        .once('value', snapshot => {
+            if(snapshot.val()) {
+              firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
+              .once('value', snapshot => {
+                let registrationTokens = [];
+                // get an array of device tokens
+                // console.log('snapshot.val(): ', snapshot.val());
+                Object.keys(snapshot.val().subscribed).forEach(user => {
+                  if(typeof snapshot.val().subscribed[user] == 'object') {
+                      registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
+                  }
+                });
+                const payload = {
+                  notification: {
+                    title: `${snapshot.val().title} just published:`,
+                    body: `${this.state.title}`,
+                    sound: 'default',
+                    badge: '1'
+                  }
+                };
+                // console.log('notification sending is triggered from create_episode.js');
+                sendNotifications(registrationTokens, payload); //sent push notificaiton
+              })
+            }
+        })
     }
 
     renderRecorder() {
