@@ -563,7 +563,7 @@ class _CreateEpisode extends Component {
                                         </button>
                                     </div>
                                     <div>
-                                        <div style={styles.fileTypesLabel}>.mp3 files accepted</div>
+                                        <div style={styles.fileTypesLabel}>ONLY .mp3 files accepted</div>
                                         {wrongFileTypeFor == 'audio' && <div style={{...styles.fileTypesLabel, color: 'red'}}>Wrong file type. Please try again.</div>}
                                     </div>
                                   </div>
@@ -591,7 +591,7 @@ class _CreateEpisode extends Component {
                         >
                         </textarea>
                         <textarea
-                            style={styles.inputActions}
+                            style={styles.inputDescription}
                             placeholder={'Action step'}
                             onChange={(e) => {this.setState({actions: e.target.value})}}
                             value={this.state.actions}
@@ -641,7 +641,7 @@ class _CreateEpisode extends Component {
                                         </button>
                                     </div>
                                     <div>
-                                        <div style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</div>
+                                        <div style={styles.fileTypesLabel}>pdf, jpg or png files accepted</div>
                                         {wrongFileTypeFor == 'notes' && <div style={{...styles.fileTypesLabel, color: 'red'}}>Wrong file type. Please try again.</div>}
                                     </div>
                                   </div>
@@ -871,7 +871,9 @@ const styles = {
         fontSize: 16,
         borderRadius: 4,
         marginTop: 0,
-        marginBottom: 10
+        marginBottom: 10,
+        resize: 'vertical',
+        overflow: 'auto',
     },
     inputActions: {
         height: 58,
@@ -919,9 +921,12 @@ const styles = {
         marginRight: 'auto',
         marginBottom: 0,
         marginLeft: 'auto',
-        textAlign: 'center',
+        // textAlign: 'center',
         paddingTop: 5,
 		cursor: 'pointer',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     publishButton: {
         backgroundColor: Colors.mainOrange,
@@ -933,7 +938,7 @@ const styles = {
         height: 35,
         // float: 'left',
         color: Colors.mainWhite,
-        fontSize: 14,
+        fontSize: 16,
         border: 0,
         marginTop: 5
 
@@ -941,11 +946,11 @@ const styles = {
     cancelImg: {
       color: Colors.link,
       marginLeft: 20,
-      fontSize: 14,
+      fontSize: 15,
       cursor: 'pointer'
     },
     fileTypesLabel: {
-        fontSize: 11,
+        fontSize: 15,
         marginLeft: 0,
         display: 'block',
     },

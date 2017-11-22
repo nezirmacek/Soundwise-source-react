@@ -525,8 +525,11 @@ class _AppSignin extends Component {
 								label="SIGN IN"
 								onClick={this.signIn.bind(this)}
 							/>
+                            <div style={{fontSize: 14, textDecoration: 'underline'}}>
+                              <Link  to='/password_reset'>Forgot your password? </Link>
+                            </div>
 							<hr />
-							<div>
+							<div style={{marginBottom: 10}}>
 								<span style={styles.italicText}>Don't have an account? </span>
 								<Link to="/signup/user" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
 									Sign up >
@@ -603,7 +606,7 @@ const styles = {
 		borderColor: Colors.link,
 	},
 	italicText: {
-		fontSize: 11,
+		fontSize: 15,
 		fontStyle: 'Italic',
 		marginBottom: 10,
 		display: 'inline-block',

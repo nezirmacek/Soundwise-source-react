@@ -270,96 +270,108 @@ export default class Analytics extends Component {
     return (
       <div className='padding-30px-tb'>
         <div className='padding-bottom-20px'>
-          <span className='title-medium '>
-              Analytics
-          </span>
-          <div style={styles.soundcastSelectWrapper}>
-              <select
-                style={styles.soundcastSelect}
-                onChange={(e) => {this.changeSoundcastId(e);}}
-                value={currentSoundcastID}
-              >
-                    {
-                        soundcasts_managed.map((souncast, i) => {
-                            return (
-                                <option style={styles.option} value={souncast.id} key={i}>{souncast.title}</option>
-                            );
-                        })
-                    }
-              </select>
-          </div>
-          <div style={styles.chartWrapper}>
-            <Bar
-              data={data}
-              width={100}
-              height={450}
-              options={{
-                maintainAspectRatio: false,
-                scales: {
-                  xAxes: [
-                    {
-                      gridLines: {
-                        display: false
+          <div className='row' style={{marginLeft: 10}}>
+            <span className='title-medium '>
+                Analytics
+            </span>
+            <div className='' style={styles.soundcastSelectWrapper}>
+                <select
+                  style={styles.soundcastSelect}
+                  onChange={(e) => {this.changeSoundcastId(e);}}
+                  value={currentSoundcastID}
+                >
+                      {
+                          soundcasts_managed.map((souncast, i) => {
+                              return (
+                                  <option style={styles.option} value={souncast.id} key={i}>{souncast.title}</option>
+                              );
+                          })
                       }
-                    }
-                  ]
-                }
-              }}
-            />
+                </select>
+            </div>
+          </div>
+          <div className='row' style={{marginRight: 25, marginLeft: 5}}>
+            <div className='col-md-12' style={styles.chartWrapper}>
+              <Bar
+                data={data}
+                width={100}
+                height={450}
+                options={{
+                  maintainAspectRatio: false,
+                  scales: {
+                    xAxes: [
+                      {
+                        gridLines: {
+                          display: false
+                        }
+                      }
+                    ]
+                  }
+                }}
+              />
+            </div>
           </div>
           <div className='row' style={{marginLeft: 5, marginRight: 5}}>
-            <div  style={{...styles.tableWrapper, width: '58%', float: 'left'}}>
+            <div className='col-md-6 col-sm-12 col-xs-12'  style={{...styles.tableWrapper}}>
               <div style={styles.sectionTitleWrapper}>
                 TOP EPISODES
               </div>
-              <table>
-                <tr style={styles.tr}>
-                  <th style={{...styles.th, width: '40%'}}>TITLE</th>
-                  <th style={{...styles.th, width: '20%'}}>PUBLISHED ON</th>
-                  <th style={{...styles.th, width: '20%'}}>TOTAL LISTENS</th>
-                  <th style={{...styles.th, width: '20%'}}>AVE. DURATION (min)</th>
-                </tr>
-                {
-                  this.state.episodeArr.map((episode, i) => {
-                    const ave_duration = Math.floor(episode.length / episode.listens / 60);
-                    return (
-                      <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td, width: '40%'}}>{`${episode.title}`}</td>
-                        <td style={{...styles.td, width: '20%'}}>{episode.date_created}</td>
-                        <td style={{...styles.td, width: '20%'}}>{episode.listens}</td>
-                        <td style={{...styles.td, width: '20%'}}>{ave_duration}</td>
-                      </tr>
-                    );
-                  })
-                }
+              <table className='table'>
+                <thead>
+                  <tr style={styles.tr}>
+                    <th style={{...styles.th, }}>TITLE</th>
+                    <th style={{...styles.th, }}>PUBLISHED ON</th>
+                    <th style={{...styles.th, }}>TOTAL LISTENS</th>
+                    <th style={{...styles.th, }}>AVE. DURATION (min)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    this.state.episodeArr.map((episode, i) => {
+                      const ave_duration = Math.floor(episode.length / episode.listens / 60);
+                      return (
+                        <tr key={i} style={styles.tr}>
+                          <td style={{...styles.td, }}>{`${episode.title}`}</td>
+                          <td style={{...styles.td, }}>{episode.date_created}</td>
+                          <td style={{...styles.td, }}>{episode.listens}</td>
+                          <td style={{...styles.td, }}>{ave_duration}</td>
+                        </tr>
+                      );
+                    })
+                  }
+                </tbody>
               </table>
             </div>
-            <div className='col-md-5' style={{...styles.tableWrapper, width: '40%', float:'right'}}>
+            <div className='col-md-5 col-sm-12 col-xs-12' style={{...styles.tableWrapper, marginLeft: 20}}>
               <div style={styles.sectionTitleWrapper}>
                 TOP SUBSCRIBERS
               </div>
-              <table>
-                <tr style={styles.tr}>
-                  <th style={{...styles.th, width: '10%'}}></th>
-                  <th style={{...styles.th, width: '40%'}}>NAME</th>
-                  <th style={{...styles.th, width: '25%'}}># OF LISTENS</th>
-                  <th style={{...styles.th, width: '25%'}}>TOTAL MINUTES</th>
-                </tr>
-                {
-                  this.state.userArr.map((user, i) => {
-                    return (
-                      <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td, width: '10%'}}>
-                          <div style={{...styles.userImage, backgroundImage: `url(${user.pic_url})`}}>
-                          </div>
-                        </td>
-                        <td style={{...styles.td, width: '40%'}}>{`${user.firstName} ${user.lastName}`}</td>
-                        <td style={{...styles.td, width: '25%'}}>{user.listens}</td>
-                        <td style={{...styles.td, width: '25%'}}>{Math.floor(user.length / 60)}</td>
-                      </tr>
-                    );
-                  })
-                }
+              <table className='table'>
+                <thead>
+                  <tr style={styles.tr}>
+                    <th style={{...styles.th, width: '10%'}}></th>
+                    <th style={{...styles.th, width: '40%'}}>NAME</th>
+                    <th style={{...styles.th, width: '25%'}}># OF LISTENS</th>
+                    <th style={{...styles.th, width: '25%'}}>TOTAL MINUTES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    this.state.userArr.map((user, i) => {
+                      return (
+                        <tr key={i} style={styles.tr}>
+                          <td style={{...styles.td, width: '10%'}}>
+                            <div style={{...styles.userImage, backgroundImage: `url(${user.pic_url})`}}>
+                            </div>
+                          </td>
+                          <td style={{...styles.td, width: '40%'}}>{`${user.firstName} ${user.lastName}`}</td>
+                          <td style={{...styles.td, width: '25%'}}>{user.listens}</td>
+                          <td style={{...styles.td, width: '25%'}}>{Math.floor(user.length / 60)}</td>
+                        </tr>
+                      );
+                    })
+                  }
+                </tbody>
               </table>
             </div>
           </div>
@@ -402,12 +414,14 @@ const styles = {
   chartWrapper: {
     backgroundColor: Colors.mainWhite,
     marginTop: 20,
+    marginLeft: 5,
+    marginRight: 5,
     padding: 20,
   },
   tableWrapper: {
     marginTop: 20,
-    marginLeft: 5,
-    marginRight: 5,
+    marginLeft: 10,
+    marginRight: 10,
     padding: 20,
     display: 'inline-block',
     backgroundColor: Colors.mainWhite
@@ -422,21 +436,24 @@ const styles = {
     color: Colors.fontGrey,
     height: 35,
     fontWeight: 'regular',
-    vAlign: 'middle',
+    verticalAlign: 'middle',
+    wordWrap: 'break-word',
   },
   td: {
-    color: Colors.fontDarkGrey,
+    color: Colors.softBlack,
     fontSize: 14,
     height: 45,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    // whiteSpace: 'nowrap',
+    wordWrap: 'break-word',
   },
   userImage: {
       width: 26,
       height: 26,
       float: 'left',
       marginLeft: 10,
+      marginRight: 5,
       borderRadius: '50%',
       backgroundColor: Colors.mainWhite,
       borderWidth: 1,

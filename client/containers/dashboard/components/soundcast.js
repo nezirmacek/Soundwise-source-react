@@ -328,6 +328,7 @@ const styles = {
     height: 35,
     fontWeight: 'regular',
     verticalAlign: 'middle',
+    wordWrap: 'break-word',
   },
   td: {
       color: Colors.fontDarkGrey,
@@ -336,7 +337,8 @@ const styles = {
     height: 40,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    // whiteSpace: 'nowrap',
+    wordWrap: 'break-word',
     verticalAlign: 'middle',
   },
   itemCheckbox: {

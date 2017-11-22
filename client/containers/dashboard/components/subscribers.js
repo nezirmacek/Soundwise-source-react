@@ -274,12 +274,14 @@ export default class Subscribers extends Component {
           soundcast={this.state.currentSoundcast}
           onClose={this.handlePendingInvite}
         />
-        <div >
-            <div className='padding-bottom-20px'>
-              <span className='title-medium '>
-                  Subscribers
-              </span>
-              <div style={styles.soundcastSelectWrapper}>
+        <div style={{}}>
+          <row className='padding-bottom-20px '>
+              <div className='col-md-2 col-sm-6 col-xs-12'>
+                <span className='title-medium '>
+                    Subscribers
+                </span>
+              </div>
+              <div className='col-md-5 col-sm-6 col-xs-12' style={styles.soundcastSelectWrapper}>
                   <select
                     style={styles.soundcastSelect}
                     value={currentSoundcastID}
@@ -297,12 +299,7 @@ export default class Subscribers extends Component {
                         }
                   </select>
               </div>
-              <span
-                style={styles.invite}
-                onClick={this.handleModal}>
-                Invite Subscribers
-              </span>
-              <div style={styles.searchWrap}>
+              <div className='col-md-4 col-sm-6 col-xs-12' style={styles.searchWrap}>
 
                     <input type="text" style={styles.searchTerm} placeholder="Search subscribers" />
                     <button type="submit" style={styles.searchButton}>
@@ -310,14 +307,24 @@ export default class Subscribers extends Component {
                    </button>
 
               </div>
-            </div>
-            <div style={styles.pendingInviteWrap}>
-              <span
-                style={styles.pendingInvites}
-                onClick={this.handlePendingInvite}>
-                See pending invites
-              </span>
-              <div style={styles.deleteButtonWrap}>
+          </row>
+          <row>
+            <div className='col-md-12' style={styles.pendingInviteWrap}>
+              <div className='col-md-3 col-sm-6 col-xs-12' style={{paddingTop: 10}}>
+                <span
+                  style={styles.invite}
+                  onClick={this.handleModal}>
+                  Invite Subscribers
+                </span>
+              </div>
+              <div className='col-md-3 col-sm-6 col-xs-12' style={{paddingTop: 10}}>
+                <span
+                  style={styles.pendingInvites}
+                  onClick={this.handlePendingInvite}>
+                  See pending invites
+                </span>
+              </div>
+              <div className='col-md-3 col-sm-6 col-xs-12' style={styles.deleteButtonWrap}>
               {
                 this.state.toBeUnsubscribed.length > 0 &&
                     <div
@@ -329,8 +336,10 @@ export default class Subscribers extends Component {
               }
               </div>
             </div>
-            <div style={styles.tableWrapper}>
-              <table>
+          </row>
+          <row>
+            <div className='col-md-12' style={styles.tableWrapper}>
+              <table className='table table-condensed'>
                 <thead>
                   <tr style={styles.tr}>
                     <th style={{...styles.th, width: 37}}></th>
@@ -385,6 +394,7 @@ export default class Subscribers extends Component {
                 </tbody>
               </table>
             </div>
+          </row>
         </div>
       </div>
     )
@@ -397,12 +407,12 @@ const styles = {
   },
   soundcastSelectWrapper: {
       height: 40,
-      width: 300,
+      // width: 300,
       // backgroundColor: Colors.mainWhite,
       marginTop: 0,
-      marginLeft: 30,
-      marginRight: 30,
-      display: 'inline-block'
+      // marginLeft: 30,
+      // marginRight: 30,
+      // display: 'inline-block'
   },
   soundcastSelect: {
       backgroundColor: Colors.mainWhite,
@@ -416,17 +426,17 @@ const styles = {
   invite: {
     color: Colors.mainOrange,
     fontSize: 18,
-    marginRight: 60,
+    // marginRight: 60,
     cursor: 'pointer'
   },
   option: {
     fontSize: 16
   },
   searchWrap: {
-    width: '30%',
-    position: 'absolute',
-    float: 'right',
-    display: 'inline-block',
+    // width: '30%',
+    // position: 'absolute',
+    // float: 'right',
+    // display: 'inline-block',
     marginTop: 0,
   },
   search: {
@@ -440,7 +450,7 @@ const styles = {
     border: '1px solid ',
     borderColor: Colors.link,
     padding: '5px',
-    marginTop: '2px',
+    // marginTop: '2px',
     height: '35px',
     borderRadius: '5px',
     outline: 'none',
@@ -459,13 +469,13 @@ const styles = {
     color: '#fff',
     borderRadius: '5px',
     cursor: 'pointer',
-    marginTop: '2px',
+    // marginTop: '2px',
     fontSize: '20px'
   },
   pendingInviteWrap: {
-    marginTop: 25,
+    // marginTop: 25,
     marginBottom: 25,
-    height: 40
+    height: 35
   },
   pendingInvites: {
     fontSize: 16,
@@ -474,16 +484,17 @@ const styles = {
     cursor: 'pointer'
   },
   deleteButtonWrap: {
+    height: 35,
     marginLeft: 25,
-    display: 'inline-block',
+    // display: 'inline-block',
     verticalAlign: 'middle'
   },
   unsubscribe: {
-    height: 37,
+    height: 35,
     borderRadius: 23,
     overflow: 'hidden',
     // margin: '40px auto',
-    fontSize: 14,
+    fontSize: 16,
     letterSpacing: 2.5,
     wordSpacing: 5,
     paddingTop: 6,
@@ -496,10 +507,12 @@ const styles = {
     backgroundColor: 'transparent',
     color: Colors.darkGrey,
     borderColor: Colors.darkGrey,
+    textAlign: 'center',
   },
   tableWrapper: {
     marginTop: 20,
-    backgroundColor: Colors.mainWhite
+    backgroundColor: Colors.mainWhite,
+    padding: 25
   },
   tr: {
       borderBottomWidth: 1,
@@ -507,19 +520,21 @@ const styles = {
     borderBottomStyle: 'solid',
   },
   th: {
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.fontGrey,
-    height: 35,
+    // height: 35,
     fontWeight: 'regular',
-    vAlign: 'middle',
+    verticalAlign: 'middle',
+    wordWrap: 'break-word',
   },
   td: {
-      color: Colors.fontDarkGrey,
-    fontSize: 14,
-    height: 40,
+      color: Colors.softBlack,
+    fontSize: 16,
+    // height: 40,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
+    wordWrap: 'break-word',
   },
   itemCheckbox: {
       marginTop: 0,

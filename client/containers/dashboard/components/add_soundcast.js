@@ -459,14 +459,15 @@ export default class AddSoundcast extends Component {
 				</div>
 
 				{/*Host/Instructor Profile Picture*/}
-				<div style={{height: 150, width: '100%'}}>
-					<div style={{marginBottom: 10}}>
+				<div style={{marginTop: 10, }} className='row'>
+					<div style={{marginBottom: 10}} className='col-md-12'>
                         <span style={styles.titleText}>
                             Host/Instructor Profile Picture
                         </span>
 					</div>
-					<div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}} />
-					<div style={styles.loaderWrapper}>
+
+					<div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}} className='col-md-3'/>
+					<div style={styles.loaderWrapper} className='col-md-9'>
 						<div style={{...styles.inputFileWrapper, marginTop: 0}}>
 							<input
 								type="file"
@@ -499,7 +500,7 @@ export default class AddSoundcast extends Component {
 									>
 										Upload
 									</button>
-									<span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
+									<span style={styles.fileTypesLabel}>jpg or png files accepted</span>
 								</div>
 							}
 						</div>
@@ -728,48 +729,53 @@ export default class AddSoundcast extends Component {
 							onChange={(e) => {this.setState({subscribers: e.target.value})}}
 							value={this.state.subscribers}
 						>
-                    	</textarea>
+            </textarea>
 
 						{/*Soundcast cover art*/}
-						<div style={{height: 150, width: '100%'}}>
-							<div style={styles.image}>
-								<img src={imageURL} />
+						<div style={{marginBottom: 30, marginTop: 30,}} className='row'>
+							<div className='col-md-3'>
+								<div style={styles.image}>
+									<img src={imageURL} />
+								</div>
 							</div>
-							<div style={styles.loaderWrapper}>
-                            <span style={{...styles.titleText, marginLeft: 10}}>
-                                Soundcast cover art (square image)
-                            </span>
-								<div style={{...styles.inputFileWrapper, marginTop: 0}}>
-									<input
-										type="file"
-										name="upload"
-										id="upload_hidden_cover"
-										onChange={this.setFileName.bind(this, null)}
-										style={styles.inputFileHidden}
-										ref={input => this.fileInputRef = input}
-									/>
-									{
-										fileUploaded
-										&&
-										<div>
-											<span>{this.fileInputRef.files[0].name}</span>
-											<span style={styles.cancelImg}
-												  onClick={() => {
-													  that.setState({fileUploaded: false, imageURL: ''});
-													  document.getElementById('upload_hidden_cover').value = null;
-												  }}>Cancel</span>
-										</div>
-										||
-										<div>
-											<button
-												onClick={() => {document.getElementById('upload_hidden_cover').click();}}
-												style={{...styles.uploadButton, backgroundColor:  Colors.link}}
-											>
-												Upload
-											</button>
-											<span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
-										</div>
-									}
+							<div className='col-md-9'>
+								<div style={styles.loaderWrapper}>
+	                <div style={{...styles.titleText, marginLeft: 10}}>
+	                    Soundcast cover art
+	                </div>
+									<div style={{...styles.inputFileWrapper, marginTop: 0}}>
+										<input
+											type="file"
+											name="upload"
+											id="upload_hidden_cover"
+											onChange={this.setFileName.bind(this, null)}
+											style={styles.inputFileHidden}
+											ref={input => this.fileInputRef = input}
+										/>
+										{
+											fileUploaded
+											&&
+											<div>
+												<span>{this.fileInputRef.files[0].name}</span>
+												<span style={styles.cancelImg}
+													  onClick={() => {
+														  that.setState({fileUploaded: false, imageURL: ''});
+														  document.getElementById('upload_hidden_cover').value = null;
+													  }}>Cancel</span>
+											</div>
+											||
+											<div>
+												<button
+													onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+													style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+												>
+													Upload
+												</button>
+												<div style={styles.fileTypesLabel}><span>(jpg or png files accepted; square image, recommended at least 800px by 800px)</span>
+												</div>
+											</div>
+										}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -843,7 +849,7 @@ const styles = {
 	image: {
 		width: 133,
 		height: 133,
-		float: 'left',
+		// float: 'left',
 		backgroundColor: Colors.mainWhite,
 		borderWidth: 1,
 		borderStyle: 'solid',
@@ -852,7 +858,8 @@ const styles = {
 	hostImage: {
 		width: 100,
 		height: 100,
-		float: 'left',
+		// float: 'left',
+		marginLeft: 10,
 		borderRadius: '50%',
 		backgroundColor: Colors.mainWhite,
 		borderWidth: 1,
@@ -868,8 +875,8 @@ const styles = {
 		paddingRight: 0,
 		paddingBottom: 0,
 		paddingLeft: 20,
-		width: 'calc(100% - 133px)',
-		float: 'left',
+		// width: 'calc(100% - 133px)',
+		// float: 'left',
 	},
 	checkbox: {
 		display: 'inline-block',
@@ -896,7 +903,7 @@ const styles = {
 		width: 'calc(100% - 20px)',
 		height: 60,
 		// backgroundColor: Colors.mainWhite,
-		overflow: 'hidden',
+		// overflow: 'hidden',
 		marginBottom: 0,
 		float: 'left',
 	},
