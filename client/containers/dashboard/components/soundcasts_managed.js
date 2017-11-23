@@ -306,7 +306,7 @@ const styles = {
     },
     button: {
         height: 30,
-        borderRadius: 14,
+        borderRadius: 5,
         fontSize: 12,
         letterSpacing: 1.5,
         fontWeight: 'bold',

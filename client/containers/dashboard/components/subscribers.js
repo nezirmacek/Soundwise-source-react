@@ -4,6 +4,7 @@ import moment from 'moment';
 import ReactCrop from 'react-image-crop';
 import axios from 'axios';
 import firebase from 'firebase';
+import {CSVLink, CSVDownload} from 'react-csv';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -21,7 +22,7 @@ export default class Subscribers extends Component {
       currentSoundcastID: null,
       currentSoundcast: {invited: {}, title:''},
       soundcasts_managed: [],
-      subscribers: [],
+      subscribers: [{}],
       checked: false,
       toBeUnsubscribed: [],
       showModal: false,
@@ -260,6 +261,15 @@ export default class Subscribers extends Component {
     // for (let id in _soundcast.subscribed) {
     //   _subscribers.push(id);
     // }
+    let csvData = [
+      ['First Name', 'Last Name', 'Email']
+    ];
+
+    subscribers.forEach(subscriber => {
+      if(subscriber.email && subscriber.email[0]) {
+        csvData.push([subscriber.firstName, subscriber.lastName, subscriber.email[0]]);
+      }
+    });
 
     return (
       <div className='padding-30px-tb'>
@@ -276,12 +286,12 @@ export default class Subscribers extends Component {
         />
         <div style={{}}>
           <row className='padding-bottom-20px '>
-              <div className='col-md-2 col-sm-6 col-xs-12'>
+              <div className='col-md-2 col-sm-4 col-xs-12'>
                 <span className='title-medium '>
                     Subscribers
                 </span>
               </div>
-              <div className='col-md-5 col-sm-6 col-xs-12' style={styles.soundcastSelectWrapper}>
+              <div className='col-md-6 col-sm-8 col-xs-12' style={styles.soundcastSelectWrapper}>
                   <select
                     style={styles.soundcastSelect}
                     value={currentSoundcastID}
@@ -299,7 +309,7 @@ export default class Subscribers extends Component {
                         }
                   </select>
               </div>
-              <div className='col-md-4 col-sm-6 col-xs-12' style={styles.searchWrap}>
+              <div className='col-md-4 col-sm-12 col-xs-12' style={styles.searchWrap}>
 
                     <input type="text" style={styles.searchTerm} placeholder="Search subscribers" />
                     <button type="submit" style={styles.searchButton}>
@@ -308,46 +318,52 @@ export default class Subscribers extends Component {
 
               </div>
           </row>
-          <row>
-            <div className='col-md-12' style={styles.pendingInviteWrap}>
-              <div className='col-md-3 col-sm-6 col-xs-12' style={{paddingTop: 10}}>
+          <row style={{marginBottom: 25,}}>
+              <div className='col-md-3 col-sm-6 col-xs-12' style={styles.button}>
                 <span
-                  style={styles.invite}
+                  style={{color: Colors.mainOrange}}
                   onClick={this.handleModal}>
                   Invite Subscribers
                 </span>
               </div>
-              <div className='col-md-3 col-sm-6 col-xs-12' style={{paddingTop: 10}}>
+              <div className='col-md-3 col-sm-6 col-xs-12' style={styles.button}>
                 <span
-                  style={styles.pendingInvites}
+                  style={{color: Colors.link}}
                   onClick={this.handlePendingInvite}>
-                  See pending invites
+                  See Pending Invites
                 </span>
               </div>
-              <div className='col-md-3 col-sm-6 col-xs-12' style={styles.deleteButtonWrap}>
+              <div className='col-md-3 col-sm-6 col-xs-12' style={styles.button}>
+                <CSVLink
+                  data={csvData}
+                  filename={`${currentSoundcast.title} subscribers.csv`}>
+                  <span>Download Subscribers</span>
+                </CSVLink>
+              </div>
+              <div className='col-md-3 col-sm-6 col-xs-12' >
               {
                 this.state.toBeUnsubscribed.length > 0 &&
                     <div
-                        style={styles.unsubscribe}
+                        style={{...styles.button, color: 'red'}}
                         onClick={this.deleteSubscriber}
                     >Unsubscribe
                     </div>
                 || null
               }
               </div>
-            </div>
+
           </row>
           <row>
-            <div className='col-md-12' style={styles.tableWrapper}>
+            <div className='col-md-12 col-sm-12 col-xs-12 table-responsive' style={styles.tableWrapper}>
               <table className='table table-condensed'>
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th, width: 37}}></th>
-                    <th style={{...styles.th, width: 320}}>NAME</th>
-                    <th style={{...styles.th, width: 350}}>EMAIL</th>
-                    <th style={{...styles.th, width: 170}}>SUBSCRIBED ON</th>
-                    <th style={{...styles.th, width: 170}}>STATS</th>
-                    <th style={{...styles.th, width: 100}}></th>
+                    <th style={{...styles.th,}}></th>
+                    <th style={{...styles.th, }}>NAME</th>
+                    <th style={{...styles.th, }}>EMAIL</th>
+                    <th style={{...styles.th, }}>SUBSCRIBED ON</th>
+                    <th style={{...styles.th, }}>STATS</th>
+                    <th style={{...styles.th,}}></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -356,16 +372,16 @@ export default class Subscribers extends Component {
                       if(subscriber.email) {
                         return (
                             <tr key={i} style={styles.tr}>
-                              <td style={{...styles.td, width: 37}}></td>
-                              <td style={{...styles.td, width: 320}}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
-                              <td style={{...styles.td, width: 350}}>{subscriber.email[0]}</td>
-                              <td style={{...styles.td, width: 170}}>{
+                              <td style={{...styles.td, }}></td>
+                              <td style={{...styles.td, }}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
+                              <td style={{...styles.td, }}>{subscriber.email[0]}</td>
+                              <td style={{...styles.td, }}>{
                                 subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
                                 moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')
                                 ||
                                 '__'
                               }</td>
-                              <td style={{...styles.td, width: 170}}>
+                              <td style={{...styles.td,}}>
                                 <i onClick={() => history.push({
                                     pathname: `/dashboard/subscriber/${subscriber.id}`,
                                     state: {
@@ -375,7 +391,7 @@ export default class Subscribers extends Component {
                                   })}
                                   className="fa fa-line-chart" style={styles.itemChartIcon}></i>
                               </td>
-                              <td style={{...styles.td, width: 100}}>
+                              <td style={{...styles.td, }}>
                                 <input
                                   type="checkbox"
                                   id={`${subscriber.id}-${currentSoundcastID}`}
@@ -460,7 +476,7 @@ const styles = {
   searchButton: {
     position: 'absolute',
     right: '-0px',
-    width: '40px',
+    // width: '40px',
     height: '35px',
     border: '1px solid',
     borderColor: Colors.link,
@@ -473,9 +489,9 @@ const styles = {
     fontSize: '20px'
   },
   pendingInviteWrap: {
-    // marginTop: 25,
+    marginTop: 30,
     marginBottom: 25,
-    height: 35
+    // height: 35
   },
   pendingInvites: {
     fontSize: 16,
@@ -510,7 +526,7 @@ const styles = {
     textAlign: 'center',
   },
   tableWrapper: {
-    marginTop: 20,
+    marginTop: 25,
     backgroundColor: Colors.mainWhite,
     padding: 25
   },
@@ -546,5 +562,26 @@ const styles = {
       fontSize: 16,
     color: Colors.fontBlack,
     cursor: 'pointer',
+  },
+  button: {
+      // height: 35,
+      borderRadius: 5,
+      fontSize: 16,
+      letterSpacing: 1.5,
+      fontWeight: 'bold',
+      wordSpacing: 4,
+      // display: 'inline-block',
+      // paddingTop: 5,
+      // paddingRight: 15,
+      paddingBottom: 5,
+      // paddingLeft: 15,
+      borderWidth: 0,
+      marginTop: 10,
+      // marginRight: 7,
+      // marginLeft: 7,
+      borderStyle: 'solid',
+      cursor: 'pointer',
+      textAlign: 'center',
+      verticalAlign: 'middle',
   },
 }
