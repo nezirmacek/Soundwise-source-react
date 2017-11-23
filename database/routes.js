@@ -61,7 +61,10 @@ module.exports = (app) => {
 		const data = Object.assign({}, req.body, {date: new Date(req.body.date)});
 		database.ListeningSession.create(req.body)
 			.then(data => { res.send(data); })
-			.catch(err => { res.status(500).send(err); });
+			.catch(err => {
+				console.log(err);
+				res.status(500).send(err);
+			});
 	});
 
 	app.get('/api/stats_by_user', (req, res) => {

@@ -58,14 +58,6 @@ const admin = {
   }
 }
 
-const publisher = {
-  "name": "Keller Williams Realty",
-  "imageURL": "",
-  "soundcasts": {
-    "5a83201c-76bd-11e7-b5a5-be2e44b06b34": true,
-    "35546702-76cb-11e7-b5a5-be2e44b06b34": true
-  }
-}
 
 export default class App extends Component {
   constructor() {

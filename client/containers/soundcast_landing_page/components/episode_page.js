@@ -34,7 +34,10 @@ class _EpisodePage extends Component {
       publicEpisode: true,
       liked: false,
       webID: `web-${moment().format('x')}`,
-    }
+      startPosition: 0,
+      endPosition: null,
+    };
+    this.audio = null;
   }
 
   componentDidMount() {
@@ -98,9 +101,53 @@ class _EpisodePage extends Component {
 
   recordPlaying() {
     // console.log('recordPlaying fired');
-    const {episodeID, listens} = this.state;
+    const {episodeID, listens, startPosition} = this.state;
+    if(this.audio) {
+      this.setState({
+        startPosition: this.audio.currentTime,
+      })
+    }
+
+  }
+
+  sendToDatabase(event) {
+    const {soundcastID, publisherID, episodeID, startPosition, listens} = this.state;
+    const _date = moment().utc().format();
+
     firebase.database().ref(`episodes/${episodeID}/totalListens`)
     .set(listens + 1);
+
+    if(event == 'pause') {
+      this.setState({
+        endPosition: this.audio.currentTime,
+      });
+    } else if(event == 'ended') {
+      this.setState({
+        endPosition: this.audio.duration,
+      })
+    }
+
+    const listeningSession = {
+            soundcastId: soundcastID,
+            publisherId: publisherID,
+            episodeId: episodeID,
+            userId: 'guest_listening',
+            date: _date,
+            startPosition: Math.floor(startPosition),
+            endPosition: Math.floor(this.state.endPosition >= startPosition ? this.state.endPosition : startPosition),
+            percentCompleted: Math.round(this.state.endPosition / this.audio.duration * 100 || 100),
+            sessionDuration: this.state.endPosition - startPosition,
+            createdAt: _date,
+            updatedAt: _date,
+    };
+
+        if (this.state.endPosition - startPosition > 0) { // save only with positive duration
+            Axios.post('/api/listening_session', listeningSession)
+                .then(res => {
+                    // console.log('success save listeningSessions: ', res)
+                })
+                .catch(err => console.log(err));
+        }
   }
 
   changeLike() {
@@ -126,6 +173,7 @@ class _EpisodePage extends Component {
   }
 
   render() {
+    const that = this;
     const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, publisherImageURL, publisherID, publisherName, publicEpisode, liked } = this.state;
     const playlist = [{
       url,
@@ -243,7 +291,12 @@ class _EpisodePage extends Component {
                               playlist={playlist}
                               hideBackSkip={true}
                               hideForwardSkip={true}
-                              onMediaEvent={{play: this.recordPlaying.bind(this)}}
+                              audioElementRef={(elem) => that.audio = elem}
+                              onMediaEvent={{
+                                play: this.recordPlaying.bind(this),
+                                pause: this.sendToDatabase.bind(this, 'pause'),
+                                ended: this.sendToDatabase.bind(this, 'ended')
+                              }}
                               style={{width: '70%'}}
                             />
                           </div>
