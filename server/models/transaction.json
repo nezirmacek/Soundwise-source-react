@@ -30,6 +30,12 @@
         "column": "chargeId"
       }
     },
+    "refundId": {
+      "type": "string",
+      "postgresql": {
+        "column": "refundId"
+      }
+    },
     "type": {
       "type": "string",
       "required": true

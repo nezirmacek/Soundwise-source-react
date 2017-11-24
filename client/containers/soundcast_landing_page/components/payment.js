@@ -160,7 +160,7 @@ export default class Payment extends Component {
             })
         } else {
             if(billingCycle == 'one time') { //if one time charge, post to api/charge
-                Axios.post('/api/handleOnetimeCharge', {
+                Axios.post('/api/transactions/handleOnetimeCharge', {
                     amount,
                     source: response.id,
                     currency: 'usd',

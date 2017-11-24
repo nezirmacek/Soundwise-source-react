@@ -104,6 +104,7 @@ module.exports = function (Transaction) {
         // need to handle only 2 types of events
         switch (data.type) {
             case 'invoice.payment_succeeded':
+
                 data.data.object.lines.data.forEach((line, i) => {
                     const _transactionData = line.plan.id.split('-');
 
@@ -147,6 +148,7 @@ module.exports = function (Transaction) {
                                 transactionId: `${data.id}-${i}`,
                                 invoiceId: null,
                                 chargeId: data.data.object.id,
+                                refundId: refund.id,
                                 type: 'refund',
                                 amount: refund.amount / 100,
                                 date: moment(data.data.object.created * 1000).format('YYYY-MM-DD'),

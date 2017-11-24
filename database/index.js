@@ -92,6 +92,7 @@ var Transaction = db.define('Transaction', { // records of listener payments and
   transactionId: { type: Sequelize.STRING, allowNull: false, primaryKey: true },
   invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
   chargeId: { type: Sequelize.STRING, allowNull: false },
+  refundId: { type: Sequelize.STRING },
   type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   date: { type: Sequelize.DATEONLY, allowNull: false },
