@@ -153,12 +153,12 @@ export default class SoundcastsManaged extends Component {
 						_soundcasts_managed.map((soundcast, i) => {
 							return (
 								<div className="row" key={i} style={{...styles.row,        }}>
-									<div className=" col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+									<div className=" col-lg-6 col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                     <div className='row'>
                       <div className='col-md-2 col-sm-2 col-xs-12'>
   										  <img src={soundcast.imageURL} style={styles.soundcastImage} />
                       </div>
-  										<div className='col-md-6 col-sm-6 col-xs-12'
+  										<div className='col-md-7 col-sm-6 col-xs-12'
                         style={styles.soundcastDescription}>
   											<span style={styles.soundcastTitle}>{soundcast.title}</span>
   											{
@@ -171,7 +171,7 @@ export default class SoundcastsManaged extends Component {
   												null
   											}
   										</div>
-  										<div className='col-md-4 col-sm-4 col-xs-12'
+  										<div className='col-md-2 col-sm-4 col-xs-12'
                         style={{...styles.subscribers, textAlign:'center'}}>
                         <span style={styles.soundcastUpdated}>
                             {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
@@ -184,25 +184,27 @@ export default class SoundcastsManaged extends Component {
   										</div>
                     </div>
 									</div>
-									<div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-										<div style={{...styles.button, borderColor: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}>Episodes</div>
-										<div onClick={() => history.push({
+									<div className="col-lg-6 col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+										<div className="col-md-3 col-sm-6 col-xs-12" style={{...styles.button, borderColor: Colors.link, color: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}><span>Episodes</span></div>
+										<div className="col-md-3 col-sm-6 col-xs-12" onClick={() => history.push({
                       pathname: '/dashboard/analytics',
                       state: {
                         soundcastId: soundcast.id,
                       }
-                    })} style={{...styles.button, borderColor: Colors.mainOrange}}>Analytics</div>
-										<div
+                    })} style={{...styles.button, borderColor: Colors.mainOrange, color: Colors.mainOrange}}><span>Analytics</span></div>
+										<div className="col-md-3 col-sm-6 col-xs-12"
                       style={{...styles.button, borderColor: Colors.mainGrey}}
                       onClick={() => history.push({
                         pathname:'/dashboard/add_episode',
                         state: {soundcastID: soundcast.id},
                       })}
                     >
-                      Add new episode
+                      <span>
+                      Add Episode
+                      </span>
                     </div>
-                    <div style={styles.edit}>
-                      <span style={styles.editLink} onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
+                    <div className="col-md-2 col-sm-6 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
+                      <span  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
                         Edit
                       </span>
                     </div>
@@ -247,6 +249,8 @@ const styles = {
         backgroundColor: Colors.mainWhite,
         paddingTop: 15,
         paddingBottom: 15,
+        // paddingLeft: 0,
+        paddingRight: 0,
     },
     soundcastImage: {
         width: '100%',
@@ -259,6 +263,7 @@ const styles = {
         // height: 46,
         // float: 'left',
         // width: '65%',
+        paddingRight: 0,
     },
     soundcastTitle: {
         fontSize: 18,
@@ -290,6 +295,8 @@ const styles = {
         // float: 'right',
         fontSize: 15,
         display: 'block',
+        paddingLeft: 0,
+        paddingRight: 0,
     },
     addLink: {
         color: Colors.link,
@@ -305,24 +312,27 @@ const styles = {
         cursor: 'pointer'
     },
     button: {
-        height: 30,
+        height: 35,
         borderRadius: 5,
-        fontSize: 12,
-        letterSpacing: 1.5,
+        fontSize: 16,
+        // letterSpacing: 1.5,
         fontWeight: 'bold',
         wordSpacing: 4,
-        display: 'inline-block',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         // paddingTop: 5,
-        paddingRight: 15,
+        paddingRight: 10,
         paddingBottom: 5,
-        paddingLeft: 15,
-        borderWidth: 3,
+        paddingLeft: 10,
+        borderWidth: 1.5,
         marginTop: 10,
-        marginRight: 7,
+        // marginRight: 7,
         marginLeft: 7,
         borderStyle: 'solid',
         cursor: 'pointer',
-        verticalAlign: 'middle',
+        // overflow: 'auto',
+
     },
 	itemContainer: {
     	marginTop: 30,

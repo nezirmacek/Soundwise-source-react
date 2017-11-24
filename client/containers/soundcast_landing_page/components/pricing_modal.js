@@ -7,12 +7,34 @@ import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router'
 
+import Colors from '../../../styles/colors';
+
 class _PricingModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: null,
+      checked: 0,
       sumTotal: null,
+    }
+  }
+
+  componentDidMount() {
+    if(this.props.soundcast && this.props.soundcast.prices[0]) {
+      const {prices} = this.props.soundcast;
+      const {checked} = this.state;
+      this.setState({
+        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${prices[checked].price}`
+      })
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(!this.props.soundcast.prices[0] && nextProps.soundcast.prices[0]) {
+      const {prices} = nextProps.soundcast;
+      const {checked} = this.state;
+      this.setState({
+        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${prices[checked].price}`
+      })
     }
   }
 
@@ -48,7 +70,8 @@ class _PricingModal extends Component {
     const actions = [
         <FlatButton
           label="Checkout"
-          primary={true}
+          // primary={true}
+          labelStyle={{color: Colors.mainOrange}}
           onClick={this.handleCheckout.bind(this)}
         />
       ,
