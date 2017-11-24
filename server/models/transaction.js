@@ -2,6 +2,7 @@
 const moment = require('moment');
 var stripe_key = require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
+var admin = require("firebase-admin");
 
 module.exports = function (Transaction) {
     Transaction.handleStripeWebhookEvent = function (data, cb) {
@@ -105,6 +106,23 @@ module.exports = function (Transaction) {
         switch (data.type) {
             case 'invoice.payment_succeeded':
 
+                if (data.data.object.lines.data[0].period.end) {
+                    const customer = data.data.object.customer;
+                    const db = admin.database();
+                    const ref = db.ref('users');
+                    ref.orderByChild('stripe_id').equalTo(customer)
+                      .on('value', snapshot => {
+                        const userId = snapshot.key;
+                        db.ref(`users/${userId}/soundcasts`).orderByChild('planID').equalTo(data.data.object.lines.data[0].plan.id)
+                          .on('value', snapshot => {
+                            const soundcast = snapshot.key;
+                            db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`)
+                              .set(data.data.object.lines.data[0].period.end);
+                            console.log('subscription renewed');
+                          });
+                      });
+                }
+
                 data.data.object.lines.data.forEach((line, i) => {
                     const _transactionData = line.plan.id.split('-');
 
@@ -161,6 +179,7 @@ module.exports = function (Transaction) {
                                 updatedAt: moment().utc().format(),
                             };
 
+                            console.log('try to create refund: ', _transaction);
                             _transactions.push(_transaction);
                             _transactionsPromises.push(
                                 Transaction.create(_transaction)

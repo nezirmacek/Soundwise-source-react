@@ -46,6 +46,7 @@ module.exports.handleRecurringPayment = (req, res) => {
   stripe.plans.retrieve(
     req.body.planID,
     (err, plan) => {
+      console.log('req.body.amount: ', req.body.amount);
       if (err) { // if payment plan doesn't already exist, create a new plan
         let interval_count = 1;
         if (req.body.billingCycle == 'quarterly') {
