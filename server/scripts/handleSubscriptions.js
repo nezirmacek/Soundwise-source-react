@@ -6,8 +6,7 @@ var stripe_key =  require('../../config').stripe_key;
 
 var stripe = require('stripe')(stripe_key);
 
-module.exports.subscriptionRenewal = (req, res) => {
-  // console.log('req.body: ', req.data);
+module.exports.subscriptionRenewal = (req, res) => { //moved to transaction.js
 
   if (req.body.data.object.lines.data[0].period.end) {
     const customer = req.body.data.object.customer;

@@ -6,6 +6,7 @@ var schedule = require('node-schedule');
 var moment = require('moment');
 // var firebase = require('firebase');
 var paypal = require('paypal-rest-sdk');
+var firebase = require("firebase-admin");
 
 var config = require('../../config').config;
 var paypalConfig = require('../../config').paypalConfig;
@@ -39,8 +40,8 @@ module.exports = function (app) {
         // for our database
         const _payouts = [];
 
-        // firebase.database().ref('publishers').once('value') // uncomment to get publishers from firebase
-        Publisher.find()
+        firebase.database().ref('publishers').once('value') // uncomment to get publishers from firebase
+        // Publisher.find()
             .then(
                 // publishersSnapshot => {
                 // 	if (publishersSnapshot.val()) {
@@ -66,7 +67,7 @@ module.exports = function (app) {
                                             moment().startOf('month').subtract(1, 'months').add(14, 'days').format('YYYY-MM-DD')
                                         ]
                                     },
-                                    type: 'charge'
+                                    // type: 'charge'
                                 }
                             })
                                 .then(transactions => {
@@ -74,10 +75,16 @@ module.exports = function (app) {
                                         let _payoutAmount = 0;
                                         transactions.map(transaction => {
                                             const fees = transaction.amount * (stripeFee_percent + soundwiseFee_percent) + stripeFee_fixed;
-                                            _payoutAmount += (+transaction.amount - fees);
+                                            if(transaction.type == 'charge') {
+                                                _payoutAmount += (+transaction.amount - fees);
+                                            } else if(transaction.type == 'refund') {
+                                                _payoutAmount -= (+transaction.amount - fees);
+                                            }
+
                                         });
 
-                                        _payoutAmount = +_payoutAmount.toFixed(2);
+                                        //something is wrong if _payoutAmount is less than 0
+                                        _payoutAmount = _payoutAmount > 0 ? +_payoutAmount.toFixed(2) : 0;
 
                                         payoutsObj.items.push({
                                             recipient_type: 'EMAIL',
@@ -130,7 +137,7 @@ module.exports = function (app) {
                                                         console.log(error);
                                                         reject(error);
                                                     } else {
-                                                        resolve(payout.items[0].payout_item_id);
+                                                        resolve(payout.items[0].payout_item_id); //this part seems problemetic
                                                     }
                                                 });
                                             })

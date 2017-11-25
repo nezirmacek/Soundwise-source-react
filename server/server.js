@@ -10,7 +10,7 @@ var S3Strategy = require('express-fileuploader-s3');
 var awsConfig = require('../config').awsConfig;
 var bodyParser = require('body-parser');
 var path = require('path');
-var admin = require("firebase-admin");
+var firebase = require("firebase-admin");
 var serviceAccount = require("../serviceAccountKey.json");
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
@@ -25,8 +25,8 @@ var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 
 var database = require('../database');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+firebase.initializeApp({
+  credential: firebase.credential.cert(serviceAccount),
   databaseURL: "https://soundwise-a8e6f.firebaseio.com",
 });
 

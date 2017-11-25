@@ -23,7 +23,7 @@ const Video = () => (
                             </div>
                         </div>
                         <div className="col-md-8 col-sm-12 col-xs-12 display-table center-col margin-ten-top text-center">
-                            <Link to="/trial_request" className="btn btn-large propClone  btn-circle text-white" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
+                            <Link to="/signup/admin" className="btn btn-large propClone  btn-circle text-white" style={{backgroundColor: '#61E1FB'}}><span className="tz-text">GET START</span></Link>
                         </div>
                     </div>
                 </div>

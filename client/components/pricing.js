@@ -1,57 +1,106 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import Colors from '../styles/colors';
 
 const Pricing = () => (
-  <section className=" builder-bg xs-padding-30px-tb cover-background tz-builder-bg-image border-none" style={{background:`linear-gradient(rgba(0,0,0,0.1), rgba(247,107,28,0.3))`, paddingBottom: 80, paddingTop: 30}}>
-      <div className="container">
-          <div className="row">
-
-              <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                  <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">TRY IT FOR FREE FOR 30 DAYS</h2>
-                  <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-five-bottom xs-margin-five-bottom">No credit card required. Cancel anytime.</div>
-              </div>
-
-          </div>
-          <div className="row">
-              <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                <h3 className="alt-font text-large text-dark-gray tz-text">PLANS START AT</h3>
-                <div className="pricing-price  builder-bg">
-                    <h4 className="title-extra-large-2 sm-title-extra-large-2 alt-font  tz-text" style={{color: '#61e1fb'}}>$39</h4>
-                    <div className="text-large alt-font tz-text no-margin-bottom"> <p>PER MONTH</p> </div>
+  <div>
+    <section className="xs-padding-30px-tb bg-white builder-bg" id="pricing-table5" style={{background:`linear-gradient(rgba(0,0,0,0.1), rgba(247,107,28,0.3))`, paddingBottom: 80, paddingTop: 30,}}>
+        <div className="container">
+            <div className="row">
+                <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                    <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">START SPREADING YOUR KNOWLEDGE IN AUDIO</h2>
+                    <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-three-bottom">How many subscribers will you have? *</div>
+                    <div className="text-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">(* Don't worry. Just pick one to start. We'll automatically move you across pricing tiers as your subscriber size changes.)</div>
                 </div>
-              </div>
-          </div>
-          <div className="row margin-five-bottom xs-margin-five-bottom">
-              <div className="col-md-4 col-sm-4 col-xs-12">
-                  <ul className="list-style-none ">
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Up to 50 subscribers</span></li>
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Unlimited uploading and storage</span></li>
-
-                  </ul>
-              </div>
-              <div className="col-md-4 col-sm-4 col-xs-12">
-                  <ul className="list-style-none ">
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Optional landing pages for your programs</span></li>
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Mobile and web interfaces</span></li>
-                  </ul>
-              </div>
-              <div className="col-md-4 col-sm-4 col-xs-12">
-                  <ul className="list-style-none ">
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Listener analytics & tracking</span></li>
-                      <li className="position-relative padding-left-30px line-height-34 text-medium"><i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34"></i><span className="tz-text">Push notifications</span></li>
-                  </ul>
-              </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-              <Link to="/trial_request" className="btn-large btn text-dark-blue btn-3d" href="http://eepurl.com/cX2uof" style={{backgroundColor: '#F76B1C'}}><span className="tz-text">TRY IT FOR FREE</span></Link>
             </div>
-          </div>
-
-      </div>
-  </section>
-
+            <div className="row">
+                <div className="col-xs-12 col-sm-6 col-md-3">
+                    <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
+                        <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
+                            <h5 className="text-white title-small font-weight-600 tz-text alt-font">0 - 50</h5>
+                            <div className="text-small text-white alt-font tz-text no-margin-bottom font-weight-400"> <p className="no-margin-bottom">SUBSCRIBERS</p>  </div>
+                        </li>
+                        <li className="tz-border">
+                            <h3 className="title-extra-large sm-title-extra-large alt-font tz-text" style={{color: Colors.link}}>FREE</h3>
+                            <span className="tz-text alt-font">FOREVER</span>
+                        </li>
+                        <li className="tz-border"><span className="tz-text">Mobile and web interfaces</span></li>
+                        <li className="tz-border"><span className="tz-text">Unlimited uploading and storage</span></li>
+                        <li className="tz-border"><span className="tz-text">Optional landing pages</span></li>
+                        <li className="tz-border"><span className="tz-text">Advanced listener analytics & tracking</span></li>
+                        <li className="tz-border"><span className="tz-text">Mobile push notifications</span></li>
+                        <li>
+                            <Link className="btn-small btn border-2-dark-gray bg-white text-dark-gray no-letter-spacing" to="/signup/admin"><span className="tz-text">GET STARTED</span></Link>
+                        </li>
+                    </ul>
+                </div>
+                <div className="col-xs-12 col-sm-6 col-md-3">
+                    <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
+                        <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
+                            <h5 className="text-white title-small font-weight-600 tz-text alt-font">50 - 100</h5>
+                            <div className="text-small text-white alt-font tz-text no-margin-bottom font-weight-400"> <p className="no-margin-bottom">SUBSCRIBERS</p>  </div>
+                        </li>
+                        <li className="tz-border">
+                            <h3 className="title-extra-large sm-title-extra-large alt-font tz-text" style={{color: Colors.link}}>$29</h3>
+                            <span className="tz-text alt-font">PER MONTH</span>
+                        </li>
+                        <li className="tz-border"><span className="tz-text">Mobile and web interfaces</span></li>
+                        <li className="tz-border"><span className="tz-text">Unlimited uploading and storage</span></li>
+                        <li className="tz-border"><span className="tz-text">Optional landing pages</span></li>
+                        <li className="tz-border"><span className="tz-text">Advanced listener analytics & tracking</span></li>
+                        <li className="tz-border"><span className="tz-text">Mobile push notifications</span></li>
+                        <li>
+                            <Link className="btn-small btn border-2-dark-gray bg-white text-dark-gray no-letter-spacing" to="/signup/admin"><span className="tz-text">GET STARTED</span></Link>
+                        </li>
+                    </ul>
+                </div>
+                <div className="col-xs-12 col-sm-6 col-md-3">
+                    <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
+                        <li className="tz-background-color" style={{backgroundColor: Colors.mainOrange}}>
+                            <h5 className="text-white font-weight-600 title-small tz-text alt-font">100-1K</h5>
+                            <div className="text-small text-white alt-font tz-text no-margin-bottom"> <p className="no-margin-bottom"> SUBSCRIBERS</p> </div>
+                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                              <div className="popular position-absolute bg-yellow border-radius-2 alt-font text-small2 builder-bg tz-text">MOST POPULAR</div>
+                            </div>
+                        </li>
+                        <li className="tz-border">
+                            <h3 className="sm-title-extra-large title-extra-large alt-font tz-text" style={{color: Colors.mainOrange}}>$69</h3>
+                            <span className="tz-text alt-font">PER MONTH</span>
+                        </li>
+                        <li className="tz-border"><span className="tz-text">Mobile and web interfaces</span></li>
+                        <li className="tz-border"><span className="tz-text">Unlimited uploading and storage</span></li>
+                        <li className="tz-border"><span className="tz-text">Optional landing pages</span></li>
+                        <li className="tz-border"><span className="tz-text">Advanced listener analytics & tracking</span></li>
+                        <li className="tz-border"><span className="tz-text">Mobile push notifications</span></li>
+                        <li>
+                            <Link className="btn-small btn text-white no-letter-spacing" to="/signup/admin" style={{backgroundColor: Colors.mainOrange}}><span className="tz-text">GET STARTED</span></Link>
+                        </li>
+                    </ul>
+                </div>
+                <div className="col-xs-12 col-sm-6 col-md-3">
+                    <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
+                        <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
+                            <h5 className="text-white title-small font-weight-600 tz-text alt-font">1K - 3K</h5>
+                            <div className="text-small text-white alt-font tz-text no-margin-bottom font-weight-400"> <p className="no-margin-bottom">SUBSCRIBERS</p>  </div>
+                        </li>
+                        <li className="tz-border">
+                            <h3 className="title-extra-large sm-title-extra-large alt-font tz-text" style={{color: Colors.link}}>$99</h3>
+                            <span className="tz-text alt-font">PER MONTH</span>
+                        </li>
+                        <li className="tz-border"><span className="tz-text">Mobile and web interfaces</span></li>
+                        <li className="tz-border"><span className="tz-text">Unlimited uploading and storage</span></li>
+                        <li className="tz-border"><span className="tz-text">Optional landing pages</span></li>
+                        <li className="tz-border"><span className="tz-text">Advanced listener analytics & tracking</span></li>
+                        <li className="tz-border"><span className="tz-text">Mobile push notifications</span></li>
+                        <li>
+                            <Link className="btn-small btn border-2-dark-gray bg-white text-dark-gray no-letter-spacing" to="/signup/admin"><span className="tz-text">GET STARTED</span></Link>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+  </div>
 )
 
 export default Pricing

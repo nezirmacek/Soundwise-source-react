@@ -440,7 +440,7 @@ header .row { align-items: center; display: flex; height: auto;}
 .pricing-box-style5 li {border-bottom: 1px solid #dedede;}
 .pricing-box-style5 li:nth-child(2) {padding: 25px 0;}
 .pricing-box-style5 li:last-child{padding: 30px 13px; border-bottom:0}
-.pricing-box-style5 .popular { box-shadow: 0 0 4px rgba(0, 0, 0, .10); left:50%; padding:1px 15px; top:-15px; margin-left:-43px; }
+.pricing-box-style5 .popular { box-shadow: 0 0 4px rgba(0, 0, 0, .10);  padding:1px 15px; top:-15px;  }
 
 /* price box 6 */
 .pricing-box-style6 .pricing-box{background:rgba(10,10,10,.7); padding:40px}
