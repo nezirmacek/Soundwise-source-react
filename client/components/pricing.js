@@ -14,7 +14,7 @@ const Pricing = () => (
                 </div>
             </div>
             <div className="row">
-                <div className="col-xs-12 col-sm-6 col-md-3">
+                <div className="col-xs-12 col-sm-6 col-md-3 xs-margin-bottom-20px sm-margin-bottom-20px" >
                     <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
                         <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
                             <h5 className="text-white title-small font-weight-600 tz-text alt-font">0 - 50</h5>
@@ -34,7 +34,7 @@ const Pricing = () => (
                         </li>
                     </ul>
                 </div>
-                <div className="col-xs-12 col-sm-6 col-md-3">
+                <div className="col-xs-12 col-sm-6 col-md-3 xs-margin-bottom-20px sm-margin-bottom-20px" >
                     <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
                         <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
                             <h5 className="text-white title-small font-weight-600 tz-text alt-font">50 - 100</h5>
@@ -54,7 +54,7 @@ const Pricing = () => (
                         </li>
                     </ul>
                 </div>
-                <div className="col-xs-12 col-sm-6 col-md-3">
+                <div className="col-xs-12 col-sm-6 col-md-3 xs-margin-bottom-20px sm-margin-bottom-20px" >
                     <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
                         <li className="tz-background-color" style={{backgroundColor: Colors.mainOrange}}>
                             <h5 className="text-white font-weight-600 title-small tz-text alt-font">100-1K</h5>
@@ -77,7 +77,7 @@ const Pricing = () => (
                         </li>
                     </ul>
                 </div>
-                <div className="col-xs-12 col-sm-6 col-md-3">
+                <div className="col-xs-12 col-sm-6 col-md-3 xs-margin-bottom-20px sm-margin-bottom-20px" >
                     <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
                         <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
                             <h5 className="text-white title-small font-weight-600 tz-text alt-font">1K - 3K</h5>
@@ -96,6 +96,13 @@ const Pricing = () => (
                             <Link className="btn-small btn border-2-dark-gray bg-white text-dark-gray no-letter-spacing" to="/signup/admin"><span className="tz-text">GET STARTED</span></Link>
                         </li>
                     </ul>
+                </div>
+            </div>
+            <div className="row">
+                <div className='col-md-12 text-center margin-eight-top' style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <span style={{ paddingRight: 15}} className="section-title-medium xs-title-medium  tz-text">Have a bigger audience?</span>
+                    <a className="btn-large btn text-white no-letter-spacing" href="mailto:support@mysoundwise.com" style={{borderColor: Colors.mainOrange, borderWidth: 2}}><span style={{color: Colors.mainOrange}} className="tz-text">Get a custom quote</span></a>
+
                 </div>
             </div>
         </div>
