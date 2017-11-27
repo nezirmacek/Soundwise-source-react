@@ -40,7 +40,8 @@ class _CreateEpisode extends Component {
             actions: '',
             publicEpisode: false,
 
-            audioUrl: '', // linkto uploaded file aws s3
+            recordedAudioUrl: '', // linkto uploaded file aws s3
+            uploadedAudioUrl: '',
 			blob: {}, // to play audio from react-mic
             notesUrl: '', // linkto uploaded file aws s3
             audioDuration: 0,
@@ -172,13 +173,26 @@ class _CreateEpisode extends Component {
     save () {
         let _self = this;
         // console.log('start converting to mp3');
+        this.setState({
+            currentPlayingDuration: 0,
+            isPlaying: false,
+        });
+        clearInterval(this.recordingInterval);
+        clearInterval(this.playingInterval);
+        this.player.pause();
+        this.player.currentTime = 0;
 		//upload file to aws s3
 		this._uploadToAws(this.state.blob.blob, 'audio');
-        this.setState({isSaved: true})
+        this.setState({
+            audioUploading: true,
+            isSaved: true,
+        })
     }
 
-    _uploadToAws (file, type) {
-        this.setAudioDuration(file);
+    _uploadToAws (file, type, uploadedAudio) {
+        if(uploadedAudio) {
+            this.setAudioDuration(file);
+        }
 
         const _self = this;
         let data = new FormData();
@@ -203,10 +217,23 @@ class _CreateEpisode extends Component {
                 }
 
                 _self.setState({
-                    [`${type}Url`]: url,
                     [`${type}Uploading`]: false,
                     wrongFileTypeFor: null,
                 });
+
+                if(type == 'audio' && !uploadedAudio) {
+                    _self.setState({
+                        recordedAudioUrl: url,
+                    })
+                } else if(type == 'audio' && uploadedAudio) {
+                    _self.setState({
+                        uploadedAudioUrl: url,
+                    })
+                } else if(type == 'notes') {
+                    _self.setState({
+                        notesUrl: url,
+                    })
+                }
             })
             .catch(function (err) {
                 // POST failed...
@@ -245,8 +272,11 @@ class _CreateEpisode extends Component {
                         [`${type}Uploading`]: true,
                         [`${type}Name`]: file.name,
                     });
-
-                    this._uploadToAws(file, type);
+                    if(type== 'audio') {
+                        this._uploadToAws(file, type, true);
+                    } else if(type == 'notes') {
+                        this._uploadToAws(file, type);
+                    }
                 } else {
                     this.setState({
                         wrongFileTypeFor: type
@@ -260,14 +290,19 @@ class _CreateEpisode extends Component {
 
     saveEpisode (isPublished) {
         const that = this;
-        const { title, description, actions, audioUrl, notesUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
+        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
         const { userInfo, history } = this.props;
-        if(!audioUrl) {
+        if(!recordedAudioUrl && !uploadedAudioUrl) {
             alert("Please upload an audio file before saving!");
             return;
         }
 
-        if (audioUrl && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
+        if(!title) {
+            alert("Please enter a title for the episode before saving!");
+            return;
+        }
+
+        if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
             const newEpisode = {
                 title,
                 description: description.length > 0 ? description : null,
@@ -275,13 +310,17 @@ class _CreateEpisode extends Component {
                 date_created: moment().format('X'),
                 creatorID: firebase.auth().currentUser.uid,
                 publisherID: userInfo.publisherID,
-                url: audioUrl,
-                duration: audioDuration,  // duration is in seconds
+                url: recordedAudioUrl || uploadedAudioUrl,
+                duration: audioDuration > 0 ? audioDuration : currentRecordingDuration / 1000,  // duration is in seconds
                 notes: notesUrl,
                 publicEpisode,
                 soundcastID: this.currentSoundcastId,
                 isPublished: isPublished,
             };
+
+            // console.log('audioDuration: ', audioDuration, 'currentRecordingDuration: ', currentRecordingDuration);
+
+            // console.log('newEpisode: ', newEpisode);
 
             firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
                 res => {
@@ -359,15 +398,23 @@ class _CreateEpisode extends Component {
     }
 
     renderRecorder() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl, isSaved, currentRecordingDuration, currentPlayingDuration } = this.state;
-        if(isSaved) {
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, notesUrl, isSaved, audioUploading, currentRecordingDuration, currentPlayingDuration } = this.state;
+        if(isSaved && !audioUploading) {
             return (
                 <div style={{textAlign: 'center'}}>
                     <div className='title-small'>
-                        Audio file saved to
+                        Audio file saved!
                     </div>
-                    <div className='text-small'>
-                        {audioUrl}
+                </div>
+            )
+        } else if(isSaved && audioUploading) {
+            return (
+                <div style={{textAlign: 'center'}}>
+                    <div className='title-small' style={{marginBottom: 5,}}>
+                        {`Saving audio file`}
+                    </div>
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Dots style={{}} color="#727981" size={22} speed={1}/>
                     </div>
                 </div>
             )
@@ -398,7 +445,7 @@ class _CreateEpisode extends Component {
                             onStop={this.stop.bind(this)}
                             strokeColor={Colors.mainWhite}
                             backgroundColor={Colors.lightGrey}
-                            audioBitsPerSecond={192000}
+                            audioBitsPerSecond={128000}
                         />
                     </div>
                     <div style={styles.time}>
@@ -415,7 +462,7 @@ class _CreateEpisode extends Component {
 
     renderPlayAndSave() {
         const that = this;
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, notesUrl } = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, notesUrl } = this.state;
         if(!isRecorded) {
             return (
                 <div></div>
@@ -456,9 +503,13 @@ class _CreateEpisode extends Component {
                     <div style={styles.trashWrapper}
                         onClick={() => {
                             that.setState({isRecorded: false, currentPlayingDuration: 0, currentRecordingDuration: 0,
-                                playingStartTime: null, recordingStartTime: null, isPlaying: false,});
+                                playingStartTime: null,
+                                recordingStartTime: null,
+                                isPlaying: false,});
                             clearInterval(that.recordingInterval);
                             clearInterval(that.playingInterval);
+                            that.player.pause();
+                            that.player.currentTime = 0;
                             return;
                         }}>
                         Discard
@@ -491,7 +542,7 @@ class _CreateEpisode extends Component {
     }
 
     render() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, audioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, wrongFileTypeFor } = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, wrongFileTypeFor } = this.state;
         const { userInfo } = this.props;
 
         const _soundcasts_managed = [];
@@ -533,7 +584,7 @@ class _CreateEpisode extends Component {
                                     style={styles.inputFileHidden}
                                 />
                                 {
-                                  audioUploading &&
+                                  audioUploading && !isRecorded &&
                                   <div style={{textAlign: 'center'}}>
                                     <div className='title-small' style={{marginBottom: 5,}}>
                                         {`Uploading audio file`}
@@ -543,16 +594,16 @@ class _CreateEpisode extends Component {
                                     </div>
                                   </div>
                                   ||
-                                  audioUrl &&
+                                  uploadedAudioUrl && !isRecorded &&
                                   <div style={{textAlign: 'center',}}>
                                     <div className='text-medium'>
                                         {`${audioName} saved`}
                                     </div>
                                     <div style={styles.cancelImg}
-                                      onClick={() => this.setState({audioUploaded: false, audioUrl: ''})}>Cancel</div>
+                                      onClick={() => this.setState({audioUploaded: false, uploadedAudioUrl: ''})}>Cancel</div>
                                   </div>
                                   ||
-                                  !audioUrl &&
+                                  !uploadedAudioUrl &&
                                   <div style={{textAlign: 'center',}}>
                                     <div>
                                         <button
