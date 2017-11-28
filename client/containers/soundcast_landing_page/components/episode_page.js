@@ -257,7 +257,7 @@ class _EpisodePage extends Component {
                           <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col " style={{display: 'flex', justifyContent: 'center', marginTop: 20}}>
                             <a href={`https://mysoundwise.com/soundcasts/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#61E1FB'}}
                             >
-                              <span className="text-extra-large sm-text-extra-large tz-text">CHECK IT OUT</span>
+                              <span className="text-extra-large sm-text-extra-large tz-text">SUBSCRIBE</span>
                             </a>
                           </div>
                         </div>
@@ -302,8 +302,8 @@ class _EpisodePage extends Component {
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-9 col-sm-9 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20, marginBottom: 10}}>
-                            <p className="text-large text-dark-gray">{description}</p>
+                          <div className="col-md-9 col-sm-9 col-xs-12  center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20, marginBottom: 10}}>
+                            <p className="text-large text-dark-gray" style={{whiteSpace: 'pre-wrap', textAligh: 'left'}}>{description}</p>
                           </div>
                         </div>
                     </div>

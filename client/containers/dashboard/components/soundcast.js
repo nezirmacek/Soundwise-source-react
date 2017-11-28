@@ -171,7 +171,7 @@ export default class Soundcast extends Component {
                           </td>
                           <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.isPublished &&moment(episode.date_created * 1000).format('MMM DD YYYY') || 'draft'}</td>
                           <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.creator.firstName} {episode.creator.lastName}</td>
+                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.creator ? episode.creator.firstName : '__'} {episode.creator? episode.creator.lastName : '__'}</td>
                           <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>
                             <i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
                           </td>

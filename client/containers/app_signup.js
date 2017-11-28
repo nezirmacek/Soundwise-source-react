@@ -301,7 +301,7 @@ class _AppSignup extends Component {
             creatorID,
             publisherID: this.publisherID,
             prices: [{price: 'free', billingCycle: 'free'}],
-            forSale: true
+            forSale: false,
         };
 
         let _promises = [

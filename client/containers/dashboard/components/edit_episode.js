@@ -29,18 +29,20 @@ export default class EditEpisode extends Component {
             notesUploading: false,
             publicEpisode: '',
             isPublished: null,
+            soundcastID: '',
         };
 
     }
 
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
-      const {title, description, actionstep, notes, publicEpisode, isPublished} = episode;
+      const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID} = episode;
 
       this.setState({
         title,
         publicEpisode,
         isPublished,
+        soundcastID
       })
       if(description) {
         this.setState({
@@ -108,7 +110,7 @@ export default class EditEpisode extends Component {
     }
 
     submit (toPublish) {
-        const { title, description, actionstep, notes, publicEpisode, isPublished} = this.state;
+        const { title, description, actionstep, notes, publicEpisode, isPublished, soundcastID} = this.state;
         const { userInfo, history } = this.props;
         const { id } = history.location.state;
         const that = this;
@@ -116,6 +118,7 @@ export default class EditEpisode extends Component {
 
         const editedEpisode = {
             title,
+            soundcastID,
             description: description.length > 0 ? description : null,
             actionstep: actionstep.length > 0 ? actionstep : null,
             notes,
@@ -132,6 +135,11 @@ export default class EditEpisode extends Component {
         .once('value')
         .then(snapshot => {
           const changedEpisode = Object.assign({}, snapshot.val(), editedEpisode);
+          const oldSoundcastID = snapshot.val().soundcastID;
+          if(oldSoundcastID !== soundcastID) {
+            firebase.database().ref(`soundcasts/${oldSoundcastID}/episodes/${id}`).remove();
+            firebase.database().ref(`soundcasts/${soundcastID}/episodes/${id}`).set(true);
+          }
 
           firebase.database().ref(`episodes/${id}`)
           .set(changedEpisode).then(
@@ -143,6 +151,13 @@ export default class EditEpisode extends Component {
             }
           );
         });
+    }
+
+
+    changeSoundcastId (e) {
+        this.setState({
+            soundcastID: e.target.value,
+        })
     }
 
     notifySubscribers() {
@@ -182,8 +197,17 @@ export default class EditEpisode extends Component {
     }
 
     render() {
-        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished } = this.state;
-        const {history} = this.props;
+        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished, soundcastID } = this.state;
+        const {history, userInfo} = this.props;
+
+        const _soundcasts_managed = [];
+        for (let id in userInfo.soundcasts_managed) {
+            const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
+            if (_soundcast.title) {
+                _soundcast.id = id;
+                _soundcasts_managed.push(_soundcast);
+            }
+        }
 
         const that = this;
 
@@ -218,12 +242,13 @@ export default class EditEpisode extends Component {
                           </span>
                         </div>
                         <div style={styles.inputTitleWrapper}>
-                          <input
-                              type="text"
-                              style={styles.inputTitle}
+                          <textarea
+                              style={styles.inputDescription}
+                              // placeholder={'Description'}
                               onChange={(e) => {this.setState({description: e.target.value})}}
                               value={this.state.description}
-                          />
+                          >
+                          </textarea>
                         </div>
                         <div style={{marginTop: 20,}}>
                           <span style={{...styles.titleText, marginTop: 20,}}>
@@ -231,12 +256,13 @@ export default class EditEpisode extends Component {
                           </span>
                         </div>
                         <div style={styles.inputTitleWrapper}>
-                          <input
-                              type="text"
-                              style={styles.inputTitle}
+                          <textarea
+                              style={styles.inputDescription}
+                              placeholder={'Action step'}
                               onChange={(e) => {this.setState({actionstep: e.target.value})}}
                               value={this.state.actionstep}
-                          />
+                          >
+                          </textarea>
                         </div>
                         <div style={styles.notes}>
                             <div style={{...styles.notesLabel, fontWeight: 600}}>Notes</div>
@@ -297,6 +323,21 @@ export default class EditEpisode extends Component {
                                 onClick={this.changeSharingSetting.bind(this)}
                               />
                         </div>
+                        <div style={styles.soundcastSelectWrapper}>
+                            <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
+                            <select
+                              value = {soundcastID}
+                              style={styles.soundcastSelect}
+                              onChange={(e) => {this.changeSoundcastId(e);}}>
+                                {
+                                    _soundcasts_managed.map((soundcast, i) => {
+                                        return (
+                                            <option value={soundcast.id} key={i}>{soundcast.title}</option>
+                                        );
+                                    })
+                                }
+                            </select>
+                        </div>
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
                                 label={isPublished ? "Save" : "Save draft"}
@@ -354,13 +395,13 @@ const styles = {
         marginBottom: 0,
     },
     inputDescription: {
-        height: 80,
-        backgroundColor: Colors.mainWhite,
-        width: '100%',
+        height: 120,
         fontSize: 16,
         borderRadius: 4,
-        marginTop: 10,
-        marginBottom: 20
+        marginTop: 0,
+        marginBottom: 10,
+        resize: 'vertical',
+        overflow: 'auto',
     },
     editorStyle: {
         padding: '5px',
@@ -452,7 +493,7 @@ const styles = {
     },
     uploadButton: {
         backgroundColor: Colors.link,
-        width: 80,
+        // width: 80,
         height: 30,
         // float: 'left',
         color: Colors.mainWhite,
@@ -496,5 +537,19 @@ const styles = {
         borderWidth: 1,
         boxSizing: 'border-box',
         marginLeft: 10,
+    },
+    soundcastSelectWrapper: {
+        height: 92,
+        backgroundColor: Colors.mainWhite,
+        marginTop: 15,
+    },
+    soundcastSelect: {
+        backgroundColor: 'transparent',
+        width: 'calc(100% - 20px)',
+        height: 35,
+        marginLeft: 10,
+        marginRight: 10,
+        marginTop: 5,
+        fontSize: 16
     },
 };
