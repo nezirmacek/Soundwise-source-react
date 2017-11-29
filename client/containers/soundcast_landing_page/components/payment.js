@@ -55,6 +55,9 @@ export default class Payment extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        this.setState({
+            totalPay: nextProps.total
+        });
         if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) { //if it's free course, then no need for credit card info. add soundcast to user and then redirect
             this.setState({
                 userInfo: nextProps.userInfo
@@ -64,9 +67,6 @@ export default class Payment extends Component {
               this.addSoundcastToUser(nextProps.userInfo);
             }
         }
-        this.setState({
-            totalPay: nextProps.total
-        });
     }
 
     handleChange(e) {
@@ -79,6 +79,7 @@ export default class Payment extends Component {
         // console.log('charge: ', charge);
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
+        const {totalPay} = this.state;
         let userInfo = this.state.userInfo || this.props.userInfo;
 
         let _email;
@@ -125,6 +126,33 @@ export default class Payment extends Component {
                     //remove from invited list
                     firebase.database().ref(`soundcasts/${soundcastID}/invited/${_email}`)
                     .remove();
+
+                    //if it's a free soundcast, add subscriber to publisher
+                    if(totalPay == 0 || totalPay == 'free') {
+                        firebase.database().ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}`)
+                        .once('value')
+                        .then(snapshot => {
+                            if(!snapshot.val()) {
+                                firebase.database().ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
+                                .set(true)
+                                .then(() => {
+                                    firebase.database().ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
+                                    .once('value').then(snapshot => {
+                                        if(snapshot.val()) {
+                                            firebase.database().ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
+                                            .set(snapshot.val() + 1);
+                                        } else {
+                                            firebase.database().ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
+                                            .set(1);
+                                        }
+                                    })
+                                })
+                            } else {
+                                firebase.database().ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
+                                .set(true);
+                            }
+                        })
+                    }
 
                     that.props.handlePaymentSuccess(soundcast);
                 }

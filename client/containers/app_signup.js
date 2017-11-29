@@ -35,7 +35,7 @@ class _AppSignup extends Component {
             password: '',
             message: '',
             publisher_name: '',
-            pic_url: '../images/smiley_face.jpg',
+            pic_url: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
             publisherImage: null,
             redirectToReferrer: false,
             isPublisherFormShown: false,
@@ -176,10 +176,12 @@ class _AppSignup extends Component {
         this._signUp().then(
             res => {
                 if (this.props.match.params.mode === 'admin') { // admin case
+                    const publisherNameEncode = encodeURIComponent(publisher_name);
+                    const imageLink = `https://dummyimage.com/300.png/F76B1C/ffffff&text=${publisherNameEncode}`;
 
                     let _newPublisher = {
                         name: publisher_name,
-                        imageUrl: publisherImage,
+                        imageUrl: publisherImage || imageLink,
                         administrators: {
                             [firebase.auth().currentUser.uid]: true,
                         },
@@ -296,7 +298,8 @@ class _AppSignup extends Component {
 
         const newSoundcast = {
             title: 'Default Soundcast',
-            imageURL: publisherImage,
+            imageURL: 'https://s3.amazonaws.com/soundwiseinc/default+image.jpg',
+            hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
             short_description: 'First soundcast',
             creatorID,
             publisherID: this.publisherID,
@@ -457,7 +460,7 @@ class _AppSignup extends Component {
 
                 firebase.database().ref('users/' + userId).set(userToSave);
 
-                const _user = { userId, firstName, lastName, picURL: pic_url || '' };
+                const _user = { userId, firstName, lastName, picURL: pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png' };
                 // TODO: _user.picURL = false
                 Axios.post('/api/user', _user)
                     .then(res => {

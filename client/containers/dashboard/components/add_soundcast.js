@@ -36,7 +36,7 @@ export default class AddSoundcast extends Component {
 			features: [''],
 			hostName: '',
 			hostBio: '',
-			hostImageURL: '',
+			hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
 			hostImgUploaded: '',
 			forSale: false,
 			prices: [],
@@ -109,6 +109,15 @@ export default class AddSoundcast extends Component {
 		}
 	}
 
+	getRandomColor() {
+	  var letters = '0123456789ABCDEF';
+	  var color = '';
+	  for (var i = 0; i < 6; i++) {
+	    color += letters[Math.floor(Math.random() * 16)];
+	  }
+	  return color;
+	}
+
 	submit () {
 		let { title, imageURL, subscribers, short_description,
 			long_description, landingPage,
@@ -149,7 +158,7 @@ export default class AddSoundcast extends Component {
 
 		const newSoundcast = {
 			title,
-			imageURL,
+			imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${this.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
 			creatorID,
 			short_description,
 			long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),

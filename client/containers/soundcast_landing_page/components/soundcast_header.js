@@ -194,7 +194,7 @@ class _SoundcastHeader extends Component {
 
     if(prices && prices.length > 0 && prices[0].price != 'free' ) {
         prices = prices.map(price => {
-            if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
+            if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' || price.billingCycle == 'free' ) {
                 price.measure = price.price;
             } else if(price.billingCycle == 'quarterly') {
                 price.measure = Math.floor(price.price / 3 *100) / 100;
@@ -207,7 +207,7 @@ class _SoundcastHeader extends Component {
         prices.sort((a, b) => (
             a.measure - b.measure
         ));
-        // console.log('prices: ', prices);
+        console.log('prices: ', prices);
         displayedPrice = prices[0].billingCycle == 'one time' ?
                             `$${prices[0].measure}` :
                             `$${prices[0].measure} / month`;
@@ -249,10 +249,11 @@ class _SoundcastHeader extends Component {
                                 </div>
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
-                                <div className="col-md-6 col-sm-6 col-xs-6 feature-box-details-second">
-                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">{displayedPrice}</span>
+                                <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center ">
+                                  {displayedPrice != 'Free' && <span className="title-medium alt-font sm-section-title-medium xs-title-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{marginRight: 10}}>FROM</span>}
+                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}>{`${displayedPrice}`}</span>
                                 </div>
-                                <div className="col-md-5 col-sm-6 col-xs-6">
+                                <div className="col-md-4 col-sm-6 col-xs-12 text-center ">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#F76B1C'}}
                                   >
                                     <span className="text-extra-large sm-text-extra-large tz-text">SUBSCRIBE</span>
@@ -263,7 +264,7 @@ class _SoundcastHeader extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-5 col-sm-12 col-xs-12  sm-margin-fifteen-bottom" style={{height: '378px', display: 'flex', justifyContent: 'flex-end'}}>
+                    <div className="col-md-5 col-sm-12 col-xs-12  sm-margin-fifteen-bottom text-center center-col" style={{height: '378px', display: 'flex', justifyContent: 'flex-end'}}>
                         <div className="" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
                             <img
                                 src={this.props.soundcast.imageURL}
