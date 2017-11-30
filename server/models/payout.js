@@ -14,7 +14,7 @@ module.exports = function(Payout) {
         if (data.resource.payout_item_id) {
           const payout = {
             batchId: data.resource.payout_batch_id,
-            amount: data.resource.payout_item.amount,
+            amount: data.resource.payout_item.amount.value,
             date: data.create_time,
             publisherId: data.resource.payout_item.sender_item_id,
             email: data.resource.payout_item.receiver,
@@ -60,8 +60,8 @@ module.exports = function(Payout) {
         status: 200,
         errorStatus: 400,
       },
-      description: ['handle stripe webhook events'],
-      notes: 'it accepts stripe event data',
+      description: ['handle Paypal webhook events'],
+      notes: 'it accepts Paypal event data',
       accepts: {
         arg: 'data',
         type: 'object',
