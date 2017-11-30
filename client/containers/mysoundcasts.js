@@ -77,6 +77,7 @@ class _MySoundcasts extends Component {
                                 imageURL: snapshot.val().imageURL,
                                 subscribed: soundcasts[id].subscribed,
                                 paymentID: soundcasts[id].paymentID,
+                                publisherID: snapshot.val().publisherID,
                                 current_period_end: soundcasts[id].current_period_end,
                                 planID: soundcasts[id].planID,
                                 billingCycle: soundcasts[id].billingCycle,
@@ -108,7 +109,7 @@ class _MySoundcasts extends Component {
     handleSubscription(soundcast) {
         const that = this;
         const {userId} = this.state;
-        const {soundcastId, paymentID, subscribed} = soundcast;
+        const {soundcastId, paymentID, subscribed, publisherID} = soundcast;
 
         this.setState({
             currentSoundcast: soundcastId
@@ -140,6 +141,24 @@ class _MySoundcasts extends Component {
                     // if it's a free soundcast, end the current subscription period immediately
                     firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
                     .set(moment().format('X'));
+
+                    firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`).remove();
+
+                    firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${userId}`)
+                    .once('value')
+                    .then(snapshot => {
+                        if(!snapshot.val()) {
+                            firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
+                            .once('value').then(snapshot => {
+                                if(snapshot.val()) {
+                                    const count = snapshot.val();
+                                    // console.log('free subscriber count: ', count);
+                                    firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
+                                    .set(count - 1);
+                                }
+                            })
+                        }
+                    });
                 }
             }
         } else {

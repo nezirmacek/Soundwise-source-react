@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-// import {ScrollArea} from 'react-scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars';
+import firebase from 'firebase';
+
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -15,10 +15,52 @@ export default class PendingInviteModal extends Component {
     super(props);
 
     this.closeModal = this.closeModal.bind(this);
+    this.sendInviteReminder = this.sendInviteReminder.bind(this);
   }
 
   closeModal() {
     this.props.onClose();
+  }
+
+  sendInviteReminder() {
+    const invitees = [];
+    const {invited} = this.props.soundcast;
+    let email;
+    for(var key in invited) {
+      if(invited[key]) {
+        email = key.replace(/\(dot\)/g, '.');
+        invitees.push(email);
+      }
+    }
+    const that = this;
+    const { soundcast, userInfo } = this.props;
+
+    // send email invitations to invited listeners
+    const subject = `[Reminder] ${userInfo.publisher.name} invited you to subscribe to ${soundcast.title}`;
+    const content = `<p>Hi there!</p><p></p><p>This is to remind you that you've got an invitation from ${userInfo.publisher.name} to subscribe to <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a> on Soundwise. </p><p> If you don't have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
+    inviteListeners(invitees, subject, content);
+
+    var invitationPromise = invitees.map(email => {
+        let _email = email.replace(/\./g, "(dot)");
+        _email = _email.trim().toLowerCase();
+        if(_email) {
+          return firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(moment().format('X'))//invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+        } else {
+          return null;
+        }
+    });
+
+    Promise.all(invitationPromise)
+    .then(
+      res => {
+        alert('Invitation reminder has been sent');
+        return res;
+      },
+      err => {
+        console.log('failed to complete adding invitees: ', err);
+      }
+    );
+
   }
 
   render() {
@@ -58,11 +100,16 @@ export default class PendingInviteModal extends Component {
                   </div>
               </div>
             </div>
-            <div style={{display: 'flex', justifyContent: 'center', height: '100%', paddingLeft: 20}}>
-              <Scrollbars
-                style={styles.table}
-                >
-                <table >
+            <div className='row'>
+              <div className='col-md-12' style={styles.button}>
+                <span
+                  style={{color: Colors.link}}
+                  onClick={this.sendInviteReminder}
+                >Send Invite Reminder</span>
+              </div>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'center', height: '100%', paddingLeft: 20, height: '70%', overflow: 'auto'}}>
+                <table className='table table-condensed'>
                   <thead>
                     <tr style={styles.tr}>
                       <th style={{...styles.th, width: 37}}></th>
@@ -84,7 +131,7 @@ export default class PendingInviteModal extends Component {
                     }
                   </tbody>
                 </table>
-              </Scrollbars>
+
             </div>
           </div>
         </div>
@@ -109,7 +156,7 @@ const styles = {
     top: '30%',
     left: '50%',
     width: '60%',
-    height: '50%',
+    height: '70vh',
     transform: 'translate(-50%, -50%)',
     zIndex: '9999',
     background: '#fff'
@@ -146,5 +193,26 @@ const styles = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+  },
+  button: {
+      // height: 35,
+      borderRadius: 5,
+      fontSize: 16,
+      letterSpacing: 1.5,
+      fontWeight: 'bold',
+      wordSpacing: 4,
+      // display: 'inline-block',
+      // paddingTop: 5,
+      // paddingRight: 15,
+      paddingBottom: 20,
+      // paddingLeft: 15,
+      borderWidth: 0,
+      // marginTop: 10,
+      // marginRight: 7,
+      // marginLeft: 7,
+      borderStyle: 'solid',
+      cursor: 'pointer',
+      textAlign: 'center',
+      verticalAlign: 'middle',
   },
 }

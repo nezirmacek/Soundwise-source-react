@@ -218,6 +218,9 @@ export default class Subscribers extends Component {
 
   deleteSubscriber() {
     const {currentSoundcastID, currentSoundcast, subscribers} = this.state;
+    const {userInfo} = this.props;
+    const publisherID = userInfo.publisherID;
+
     this.subscribers = subscribers.slice(0);
     if(confirm(`Are you sure you want to unsubscribe these listeners from ${this.state.currentSoundcast.title}? There is no going back!`)){
 
@@ -234,6 +237,25 @@ export default class Subscribers extends Component {
         firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/subscribed').set(false);
 
         firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/current_period_end').set(moment().format('X'));
+
+        firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${listenerID}/${this.state.currentSoundcastID}`).remove();
+
+        firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${listenerID}`)
+        .once('value')
+        .then(snapshot => {
+            if(!snapshot.val()) {
+                firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
+                .once('value').then(snapshot => {
+                    if(snapshot.val()) {
+                        const count = snapshot.val();
+                        // console.log('free subscriber count: ', count);
+                        firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
+                        .set(count - 1);
+                        console.log('subscriber count reduced by 1');
+                    }
+                })
+            }
+        });
 
         for(var i = this.subscribers.length - 1; i>=0; i-=1) {
           if(this.subscribers[i].id == listenerID) {
@@ -282,6 +304,7 @@ export default class Subscribers extends Component {
         <PendingInviteModal
           isShown={this.state.showPendingInvite}
           soundcast={this.state.currentSoundcast}
+          userInfo={this.props.userInfo}
           onClose={this.handlePendingInvite}
         />
         <div style={{}}>
@@ -528,7 +551,9 @@ const styles = {
   tableWrapper: {
     marginTop: 25,
     backgroundColor: Colors.mainWhite,
-    padding: 25
+    padding: 25,
+    overflow: 'auto',
+    height: 550,
   },
   tr: {
       borderBottomWidth: 1,
