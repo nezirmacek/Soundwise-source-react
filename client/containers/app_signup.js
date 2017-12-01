@@ -190,7 +190,17 @@ class _AppSignup extends Component {
                     firebase.database().ref(`publishers/${this.publisherID}`).set(_newPublisher).then(
                         res => {
                             // console.log('success add publisher: ', res);
-                            that.addDefaultSoundcast()
+                            Axios.post('/api/publishers', {
+                                publisherId: that.publisherID,
+                                name: publisher_name,
+                            })
+                            .then((res) => {
+                              console.log('publisher added to db');
+                              that.addDefaultSoundcast();
+                            })
+                            .catch((err) => {
+                              that.addDefaultSoundcast();
+                          })
                         },
                         err => {
                             console.log('ERROR add publisher: ', err);

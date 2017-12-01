@@ -204,7 +204,7 @@ module.exports = function(Transaction) {
             'from': ['support@mysoundwise.com', 'Soundwise'],
             'subject': `Payment failed for invoice #${data.data.object.id}`,
             'html': `<p>Webhook notice from Stripe:</p>
-              <div>${data}</div>`,
+              <div>${JSON.stringify(data)}</div>`,
           };
 
           sendinObj.send_email(input, function(err, response) {
