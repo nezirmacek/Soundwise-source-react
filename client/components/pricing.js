@@ -64,7 +64,7 @@ const Pricing = () => (
                             </div>
                         </li>
                         <li className="tz-border">
-                            <h3 className="sm-title-extra-large title-extra-large alt-font tz-text" style={{color: Colors.mainOrange}}>$69</h3>
+                            <h3 className="sm-title-extra-large title-extra-large alt-font tz-text" style={{color: Colors.mainOrange}}>$49</h3>
                             <span className="tz-text alt-font">PER MONTH</span>
                         </li>
                         <li className="tz-border"><span className="tz-text">Mobile and web interfaces</span></li>
@@ -84,7 +84,7 @@ const Pricing = () => (
                             <div className="text-small text-white alt-font tz-text no-margin-bottom font-weight-400"> <p className="no-margin-bottom">SUBSCRIBERS</p>  </div>
                         </li>
                         <li className="tz-border">
-                            <h3 className="title-extra-large sm-title-extra-large alt-font tz-text" style={{color: Colors.link}}>$99</h3>
+                            <h3 className="title-extra-large sm-title-extra-large alt-font tz-text" style={{color: Colors.link}}>$79</h3>
                             <span className="tz-text alt-font">PER MONTH</span>
                         </li>
                         <li className="tz-border"><span className="tz-text">Mobile and web interfaces</span></li>
