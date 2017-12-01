@@ -15,7 +15,7 @@ const _transactions = [
 		chargeId: 'ch_123123',
 		type: 'charge', // 'charge' or 'refund'
 		amount: 2,
-		date: moment().subtract(20, 'days').format('YYYY-MM-DD'),
+		date: moment().subtract(40, 'days').format('YYYY-MM-DD'),
 		publisherId: '1503002103690p',
 		soundcastId: '1503691618714s',
 		customer: 'customer1', // listener's stripe id
@@ -30,7 +30,7 @@ const _transactions = [
 		chargeId: 'ch_123124',
 		type: 'charge', // 'charge' or 'refund'
 		amount: 4,
-		date: moment().subtract(60, 'days').format('YYYY-MM-DD'),
+		date: moment().subtract(40, 'days').format('YYYY-MM-DD'),
 		publisherId: '1503002103690p',
 		soundcastId: '1503691618714s',
 		customer: 'customer1', // listener's stripe id
@@ -40,12 +40,12 @@ const _transactions = [
 	},
 	// this shouldn't be paid because of refund
 	{
-		transactionId: moment().format('x')+'t', //'charge' or 'refund' id from stripe
+		transactionId: moment().format('x')+'4'+'t', //'charge' or 'refund' id from stripe
 		invoiceId: 'invoiceId3', //only present if the charge is associated with a subscription invoice
 		chargeId: 'ch_123125',
 		type: 'charge', // 'charge' or 'refund'
 		amount: 3,
-		date: moment().subtract(20, 'days').format('YYYY-MM-DD'),
+		date: moment().subtract(40, 'days').format('YYYY-MM-DD'),
 		publisherId: '1503002103690p',
 		soundcastId: '1505855025645s',
 		customer: 'customer2', // listener's stripe id
@@ -55,12 +55,12 @@ const _transactions = [
 	},
 	// this is refund
 	{
-		transactionId: moment().format('x')+'t', //'charge' or 'refund' id from stripe
+		transactionId: moment().format('x')+'5'+'t', //'charge' or 'refund' id from stripe
 		invoiceId: 'invoiceId4', //only present if the charge is associated with a subscription invoice
 		chargeId: 'ch_123126',
 		type: 'refund', // 'charge' or 'refund'
 		amount: 3,
-		date: moment().subtract(20, 'days').format('YYYY-MM-DD'),
+		date: moment().subtract(40, 'days').format('YYYY-MM-DD'),
 		publisherId: '1503002103690p',
 		soundcastId: '1505855025645s',
 		customer: 'customer2', // listener's stripe id
@@ -70,24 +70,26 @@ const _transactions = [
 	},
 ];
 
+
 _transactions.map(transaction => {
 	Transaction.create(transaction)
 		.then(res => console.log('success save transaction'))
 		.catch(err => console.log('ERROR save transaction: ', err));
 });
 
-const _publishers = [
-	{
-		publisherId: '1503002103690p',
-		name: 'Soundwise',
-		paypalEmail: '208@1.com',
-		createdAt: moment().utc().format(),
-		updatedAt: moment().utc().format(),
-	}
-];
 
-_publishers.map(publisher => {
-	Publisher.create(publisher)
-		.then(res => console.log('success save publisher'))
-		.catch(err => console.log('ERROR save publisher: ', err));
-});
+// const _publishers = [
+// 	{
+// 		publisherId: '1503002103690p',
+// 		name: 'Soundwise',
+// 		paypalEmail: '208@1.com',
+// 		createdAt: moment().utc().format(),
+// 		updatedAt: moment().utc().format(),
+// 	}
+// ];
+
+// _publishers.map(publisher => {
+// 	Publisher.create(publisher)
+// 		.then(res => console.log('success save publisher'))
+// 		.catch(err => console.log('ERROR save publisher: ', err));
+// });

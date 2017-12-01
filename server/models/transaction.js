@@ -8,7 +8,7 @@ module.exports = function (Transaction) {
     Transaction.handleStripeWebhookEvent = function(data, cb) {
         // When recording to database, the soundcast id and publisher id come from the 'plan id' data returned from stripe.
         // because the format of 'plan id' is publisherID-soundcastID-soundcast title-billingCycle-price.
-      console.log('request body: ', data);
+      console.log('handleStripeWebhookEvent post request body: ', data);
 
         // let _body = {
         // 	"id": "evt_1BMIZGH62wlr1FFaa0Lymsmi",

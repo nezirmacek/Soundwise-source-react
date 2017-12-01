@@ -6,7 +6,7 @@ const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
 module.exports = function(Payout) {
   Payout.handlePaypalWebhookEvents = function(data, cb) {
-    console.log('request body: ', data);
+    // console.log('request body: ', data);
 
     switch (data.event_type) {
       case 'PAYMENT.PAYOUTS-ITEM.SUCCEEDED':

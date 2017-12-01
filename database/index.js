@@ -169,8 +169,8 @@ Publisher.hasMany(Like, {as: 'Likes'});
 // Transaction.belongsTo(Publisher, {foreignKey: 'publisherId'});
 // Publisher.hasMany(Transaction, {as: 'Transactions'});
 
-Payout.belongsTo(Publisher, {foreignKey: 'publisherId'});
-Publisher.hasMany(Payout, {as: 'Payouts'});
+// Payout.belongsTo(Publisher, {foreignKey: 'publisherId'});
+// Publisher.hasMany(Payout, {as: 'Payouts'});
 
 User.sync({force: false});
 Publisher.sync({force: false, alter: true});
@@ -181,7 +181,7 @@ Soundcast.sync({force: false});
 Episode.sync({force: false});
 ListeningSession.sync({force: false});
 Transaction.sync({force: false, alter: true});
-Payout.sync({force: false});
+Payout.sync({force: false, alter: true});
 
 module.exports = {
   User: User,
