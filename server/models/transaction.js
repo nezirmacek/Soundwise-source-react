@@ -294,11 +294,17 @@ function createCharge(Transaction, data, cb) {
     amount,
     customer,
     description,
-    statement_descriptor,
     publisherID,
     planID,
     soundcastID,
   } = data;
+
+  let statement_descriptor;
+  if (data.statement_descriptor.length > 18) {
+    statement_descriptor = data.statement_descriptor.slice(0, 18) + '...';
+  } else {
+    statement_descriptor = data.statement_descriptor;
+  }
 
   stripe.charges.create({
         amount,
