@@ -174,7 +174,7 @@ export default class Payment extends Component {
     }
 
     stripeTokenHandler(status, response) {
-        const amount = this.state.totalPay.toFixed(2) * 100; // in cents
+        const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
         const {soundcast, checked, soundcastID} = this.props;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
