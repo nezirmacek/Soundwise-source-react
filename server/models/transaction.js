@@ -307,7 +307,7 @@ function createCharge(Transaction, data, cb) {
   }
 
   stripe.charges.create({
-        amount,
+        amount: Number(amount).toFixed(),
         currency: 'usd',
         customer,
         description,

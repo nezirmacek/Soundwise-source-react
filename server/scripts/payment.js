@@ -56,7 +56,7 @@ module.exports.handleRecurringPayment = (req, res) => {
           interval_count = 12;
         }
         stripe.plans.create({
-          amount: req.body.amount,
+          amount: Number(req.body.amount).toFixed(),
           interval: 'month',
           interval_count,
           name: req.body.description,
