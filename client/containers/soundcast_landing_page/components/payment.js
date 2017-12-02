@@ -188,7 +188,7 @@ export default class Payment extends Component {
             })
         } else {
             if(billingCycle == 'one time') { //if one time charge, post to api/charge
-                Axios.post('/api/transactions/handleOnetimeCharge', {
+                Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
                     amount,
                     source: response.id,
                     currency: 'usd',
@@ -202,9 +202,8 @@ export default class Payment extends Component {
                     statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                 })
                 .then(function (response) {
-
-                    const paid = response.data.paid; //boolean
-                    const customer = response.data.customer;
+                    const paid = response.data.res.paid; //boolean
+                    const customer = response.data.res.customer;
 
                     if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
                         that.setState({
@@ -212,7 +211,7 @@ export default class Payment extends Component {
                             startPaymentSubmission: false
                         });
 
-                        that.addSoundcastToUser(response.data) //add soundcast to user database and redirect
+                        that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
                     }
                 })
                 .catch(function (error) {
