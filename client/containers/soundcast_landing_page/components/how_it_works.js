@@ -9,7 +9,7 @@ const HowItWorks = (props) => (
                   </div>
               </div>
               <div className="row">
-                  <div className="col-md-12 col-sm-12 col-xs-12n four-column">
+                  <div className="col-md-12 col-sm-12 col-xs-12 four-column">
                       <div className="col-md-3 col-sm-6 col-xs-12 text-center sm-margin-nine-bottom xs-margin-nine-bottom">
                           <div className="border-radius-50 bg-light-orange text-white icon-extra-large line-height-75 feature-icon builder-bg margin-nineteen-bottom sm-margin-sixteen-bottom xs-margin-nine-bottom"><i className="fa fa-bicycle" aria-hidden="true"></i></div>
                           <h3 className="text-large text-dark-gray font-weight-600 alt-font margin-six-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text">LEARN EFFICIENTLY</h3>

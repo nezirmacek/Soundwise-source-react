@@ -98,6 +98,7 @@ class _SoundcastPage extends Component {
             <SoundcastBody
                   soundcast={soundcast}
                   soundcastID={soundcastID}
+                  openModal={this.handleModal.bind(this)}
                   // relatedsoundcasts={_relatedsoundcasts}
                   cb={this.setMaxCardHeight.bind(this)}
                   userInfo={this.props.userInfo}

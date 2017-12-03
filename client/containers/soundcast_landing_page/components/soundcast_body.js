@@ -9,6 +9,7 @@ import { EditorState, convertToRaw } from 'draft-js';
 
 import HowItWorks from './how_it_works';
 import Instructor from './instructor';
+import SoundcastContent from './soundcast_content';
 // import RelatedCourses from './related_courses';
 // import AddCourseToUser from '../helpers/add_course_to_user'; // this need to contain { props: { course, userInfo, history } }
 
@@ -115,6 +116,12 @@ export default class SoundcastBody extends Component {
                             </div>
                         }
                         {soundcast.long_description && this.renderDescription()}
+                        {soundcast.episodes &&
+                            <SoundcastContent
+                              soundcast={soundcast}
+                              openModal={this.props.openModal}
+                            />
+                        }
                         {soundcast.hostName && <Instructor soundcast={soundcast}/>}
                         <HowItWorks />
                     </div>
