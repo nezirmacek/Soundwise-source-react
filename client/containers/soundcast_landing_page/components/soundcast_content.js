@@ -78,8 +78,8 @@ export default class SoundcastContent extends Component {
             >
             </source>
         </audio>
-        <section className="padding-30px-tb  feature-style4 bg-white builder-bg xs-padding-40px-tb border-none" id="feature-section6">
-            <div className="">
+        <section className=" feature-style4 bg-white builder-bg  border-none" id="feature-section6">
+            <div className="container padding-30px-tb xs-padding-30px-tb" style={{ borderBottom: '0.5px solid lightgrey'}}>
                 <div className="row">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center padding-40px-tb">
                         <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">CONTENT</h2>

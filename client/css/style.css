@@ -217,6 +217,7 @@ header .row { align-items: center; display: flex; height: auto;}
 ====================================== */
 
 .feature-box-image { background: #a1a1a1; overflow: hidden;}
+.feature-box-image img:before {padding-top: 100%;}
 .feature-box img { opacity: 1; transition: all 0.3s ease 0s; width: 100%;}
 .feature-box:hover img {opacity: 0.5; transform: scale(1.2, 1.2); transition: all 0.3s ease 0s;}
 

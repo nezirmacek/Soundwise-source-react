@@ -118,7 +118,7 @@ export default class AddSoundcast extends Component {
 	  return color;
 	}
 
-	submit () {
+	submit (publish) {
 		let { title, imageURL, subscribers, short_description,
 			long_description, landingPage,
 			features, hostName, hostBio, hostImageURL,
@@ -171,7 +171,8 @@ export default class AddSoundcast extends Component {
 			hostBio,
 			hostImageURL,
 			forSale,
-			prices
+			prices,
+			published: publish,
 		};
 
 		let _promises_1 = [
@@ -789,17 +790,26 @@ export default class AddSoundcast extends Component {
 							</div>
 						</div>
 						{this.renderAdditionalInputs()}
-						<div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-							<OrangeSubmitButton
-								label="Add New Soundcast"
-								onClick={this.submit.bind(this)}
-							/>
-						</div>
-						<div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-							<TransparentShortSubmitButton
-								label="Cancel"
-								onClick={() => history.goBack()}
-							/>
+						<div className='row'>
+	            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+	                <OrangeSubmitButton
+	                    label="Save Draft"
+	                    styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
+	                    onClick={this.submit.bind(this, false)}
+	                />
+	            </div>
+							<div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+								<OrangeSubmitButton
+									label="Publish"
+									onClick={this.submit.bind(this, true)}
+								/>
+							</div>
+							<div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+								<TransparentShortSubmitButton
+									label="Cancel"
+									onClick={() => history.goBack()}
+								/>
+							</div>
 						</div>
 					</div>
 

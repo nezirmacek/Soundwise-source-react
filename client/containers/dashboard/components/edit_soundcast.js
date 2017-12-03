@@ -147,7 +147,7 @@ export default class EditSoundcast extends Component {
         }
     }
 
-    submit () {
+    submit (publish) {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
@@ -170,7 +170,8 @@ export default class EditSoundcast extends Component {
             hostBio,
             hostImageURL,
             forSale,
-            prices
+            prices,
+            published: publish,
         };
 
         // edit soundcast in database
@@ -619,19 +620,28 @@ export default class EditSoundcast extends Component {
                         {
                             this.renderAdditionalInputs()
                         }
-                        <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                            <OrangeSubmitButton
-                                label="Save"
-                                onClick={this.submit.bind(this)}
-                            />
-                        </div>
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                            <TransparentShortSubmitButton
-                                label="Cancel"
-                                onClick={() => {
-                                  history.goBack();
-                                }}
-                            />
+                        <div className='row'>
+                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                              <OrangeSubmitButton
+                                  label="Save Draft"
+                                  styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
+                                  onClick={this.submit.bind(this, false)}
+                              />
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                              <OrangeSubmitButton
+                                  label="Publish"
+                                  onClick={this.submit.bind(this, true)}
+                              />
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                              <TransparentShortSubmitButton
+                                  label="Cancel"
+                                  onClick={() => {
+                                    history.goBack();
+                                  }}
+                              />
+                          </div>
                         </div>
                     </div>
                 </div>

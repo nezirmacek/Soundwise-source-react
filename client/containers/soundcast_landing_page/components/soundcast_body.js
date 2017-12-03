@@ -6,10 +6,12 @@ import PropTypes from 'prop-types';
 import draftToHtml from 'draftjs-to-html';
 import renderHTML from 'react-render-html';
 import { EditorState, convertToRaw } from 'draft-js';
+import firebase from 'firebase';
 
 import HowItWorks from './how_it_works';
 import Instructor from './instructor';
 import SoundcastContent from './soundcast_content';
+import RelatedSoundcasts from './related_soundcasts'
 // import RelatedCourses from './related_courses';
 // import AddCourseToUser from '../helpers/add_course_to_user'; // this need to contain { props: { course, userInfo, history } }
 
@@ -28,6 +30,8 @@ export default class SoundcastBody extends Component {
             prices: [],
             features: [''],
           },
+          publisher: {},
+          relatedSoundcasts: [],
         };
         this.renderDescription = this.renderDescription.bind(this);
         this.renderFeatures = this.renderFeatures.bind(this);
@@ -41,21 +45,58 @@ export default class SoundcastBody extends Component {
             this.setState({
                 soundcast: this.props.soundcast
             });
-
-            window.prerenderReady = true;
+            this.retrieveRelatedSoundcasts(this.props.soundcast, this.props.soundcastID);
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.soundcast) {
+        if(nextProps.soundcast && nextProps.soundcast !== this.props.soundcast) {
             this.setState({
                 soundcast: nextProps.soundcast
             });
-
-            window.prerenderReady = true;
+            this.retrieveRelatedSoundcasts(nextProps.soundcast, nextProps.soundcastID);
         }
     }
 
+    retrieveRelatedSoundcasts(soundcast, soundcastID) {
+        const that = this;
+        const soundcastsArr = [];
+        firebase.database().ref(`publishers/${soundcast.publisherID}`)
+        .once('value')
+        .then(snapshot => {
+            if(snapshot.val()) {
+                that.setState({
+                    publisher: snapshot.val()
+                });
+                const allSoundcasts = Object.keys(snapshot.val().soundcasts);
+                if(allSoundcasts.length > 1) {
+                    const promises = allSoundcasts.map(soundcast => {
+                        if(soundcast == soundcastID) {
+                            return null;
+                        }
+                        return firebase.database().ref(`soundcasts/${soundcast}`)
+                            .once('value')
+                            .then(soundcastSnapshot => {
+                                if(soundcastSnapshot.val().published && soundcastSnapshot.val().landingPage) {
+                                        const relatedSoundcast = soundcastSnapshot.val();
+                                        relatedSoundcast.id = soundcast;
+                                        soundcastsArr.push(relatedSoundcast);
+                                }
+                            });
+                    })
+                    Promise.all(promises)
+                    .then(() => {
+                        that.setState({
+                            relatedSoundcasts: soundcastsArr
+                        });
+                    })
+                    .then(() => window.prerenderReady = true);
+                } else {
+                    window.prerenderReady = true;
+                }
+            }
+        });
+    }
 
     /*RENDER*/
 
@@ -64,11 +105,10 @@ export default class SoundcastBody extends Component {
         if(long_description) {
             const editorState = JSON.parse(long_description);
             const longDescriptionHTML = draftToHtml(editorState);
-
             return (
                 <div className="row " >
-                    <div className="col-md-12 col-sm-12 col-xs-12 bg-cream tz-background-color" style={{padding: '4%'}}>
-                        <div>
+                    <div className="col-md-12 col-sm-12 col-xs-12 bg-cream" style={{padding: '4%'}}>
+                        <div className='container'>
                             {renderHTML(longDescriptionHTML)}
                         </div>
                     </div>
@@ -98,11 +138,14 @@ export default class SoundcastBody extends Component {
     }
 
     render() {
-        const {soundcast} = this.state;
+        const {soundcast, relatedSoundcasts, publisher} = this.state;
         return (
             <div>
-                <section className="padding-20px-tb xs-padding-40px-tb bg-white builder-bg border-none" id="title-section1">
-                    <div className="container">
+                <section className="padding-30px-tb xs-padding-30px-tb bg-white builder-bg border-none" id="title-section1">
+                        {
+                            relatedSoundcasts.length >= 1 &&
+                            <RelatedSoundcasts soundcasts={relatedSoundcasts} title={`Also from ${publisher.name}`}/>
+                        }
                         {
                             soundcast.features && soundcast.features[0].length > 0 &&
                             <div className=" padding-40px-tb center-col " >
@@ -124,9 +167,9 @@ export default class SoundcastBody extends Component {
                         }
                         {soundcast.hostName && <Instructor soundcast={soundcast}/>}
                         <HowItWorks />
-                    </div>
+
                 </section>
-                <section className="padding-80px-tb xs-padding-60px-tb bg-white  border-none" id="title-section1" style={{backgroundColor: '#FFF3E0'}}>
+                <section className="padding-30px-tb xs-padding-30px-tb bg-white  border-none" id="title-section1" style={{backgroundColor: '#FFF3E0'}}>
                     <div className="container">
                         <div className=" padding-40px-tb" >
                             <div className=" row col-md-12 col-sm-12 col-xs-12 text-center">

@@ -215,9 +215,9 @@ class _SoundcastHeader extends Component {
 
     return (
       <div>
-        <section className=" bg-white" id="content-section23" style={{paddingBottom: 15, paddingTop: 35}}>
+        <section className=" bg-white" id="content-section23" style={{}}>
             <div className="container">
-                <div className="row equalize sm-equalize-auto equalize-display-inherit">
+                <div className="row equalize sm-equalize-auto equalize-display-inherit" style={{borderBottom: '0.5px solid lightgrey', paddingBottom: 15, paddingTop: 35}}>
                     <div className="col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
                         <div className="display-table-cell-vertical-middle">
                             <div className="row" style={{height: '80%'}}>

@@ -166,10 +166,24 @@ export default class SoundcastsManaged extends Component {
   												&&
   												<div style={styles.soundcastUpdated}>
                                                   Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
-                                              </div>
+                          </div>
   												||
   												null
   											}
+                        {
+                          soundcast.landingPage
+                          &&
+                          <div style={{...styles.soundcastUpdated, }}>
+                            <a
+                              target='_blank'
+                              href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
+                              style={{cursor: 'pointer'}}>
+                            <span style={{color: Colors.mainOrange}}>View</span>
+                            </a>
+                          </div>
+                          ||
+                          null
+                        }
   										</div>
   										<div className='col-md-2 col-sm-4 col-xs-12'
                         style={{...styles.subscribers, textAlign:'center'}}>
@@ -200,7 +214,7 @@ export default class SoundcastsManaged extends Component {
                       })}
                     >
                       <span>
-                      Add Episode
+                      + Episode
                       </span>
                     </div>
                     <div className="col-md-2 col-sm-6 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>

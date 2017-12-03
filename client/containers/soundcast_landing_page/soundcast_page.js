@@ -8,7 +8,7 @@ import { withRouter } from 'react-router'
 import { Redirect } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw } from 'draft-js'
 
 import { SoundcastHeader } from './components/soundcast_header'
 import Footer from '../../components/footer'
@@ -18,6 +18,7 @@ import SoundcastFooter from './components/soundcast_footer'
 import {PricingModal} from './components/pricing_modal'
 
 import  PageHeader  from './components/page_header'
+import RelatedSoundcasts from './components/related_soundcasts'
 // import {CourseSignup} from './course_signup'
 
 class _SoundcastPage extends Component {
@@ -47,8 +48,24 @@ class _SoundcastPage extends Component {
         that.setState({
           soundcast: snapshot.val(),
           soundcastID
-        })
+        });
       })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const that = this;
+    if(nextProps.match.params.id !== this.props.match.params.id) {
+      const soundcastID = nextProps.match.params.id;
+      // console.log('soundcastID: ', soundcastID);
+      firebase.database().ref('soundcasts/' + soundcastID)
+        .on('value', snapshot => {
+          // console.log('soundcast: ', snapshot.val());
+          that.setState({
+            soundcast: snapshot.val(),
+            soundcastID
+          });
+        })
+    }
   }
 
   setMaxCardHeight (height) {
@@ -66,7 +83,11 @@ class _SoundcastPage extends Component {
 
   render() {
     const {soundcast, soundcastID, modalOpen} = this.state;
-
+    if(soundcast.title && !soundcast.landingPage) {
+      return (
+        <Redirect to="/notfound"/>
+      )
+    }
     return (
       <div>
         <Helmet>
