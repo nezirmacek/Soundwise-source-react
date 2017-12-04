@@ -36,8 +36,8 @@ export default class RelatedSoundcastCard extends Component {
     render () {
         const { cardHeight, soundcast, index } = this.props;
         const _style = JSON.parse(JSON.stringify(style));
-        // _style.bottomShadowed.height = cardHeight;
-        _style.bottomShadowed.height = 470;
+        _style.bottomShadowed.height = cardHeight;
+        // _style.bottomShadowed.height = 470;
 
         return (
             <div className="col-md-12 col-sm-12 col-xs-12">
@@ -60,7 +60,7 @@ export default class RelatedSoundcastCard extends Component {
                                             <ReactStars
                                                 count={5}
                                                 value={5}
-                                                size={30}
+                                                size={20}
                                                 edit={false}
                                                 color2={'#ffd700'}
                                             />
@@ -102,7 +102,7 @@ const style = {
         padding: '15px',
     },
     cardContent: {
-        paddingBottom: 40,
+        // paddingBottom: 40,
     },
     author: {
         display: 'flex',
@@ -134,7 +134,7 @@ const style = {
         lineHeight: '14px',
     },
     cardFooter: {
-        position: 'absolute',
+        // position: 'absolute',
         bottom: '24px',
         paddingBottom: 15,
         paddingLeft: '15px',
