@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
+import { Link } from 'react-router-dom';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -17,7 +18,7 @@ export default class Settings extends Component {
     this.state = {
       publisherName: '',
       publisherImg: '',
-      publisherPaypal: '',
+      publisherEmail: '',
       fileUploaded: false,
       admins: [],
       adminFormShow: false,
@@ -152,9 +153,10 @@ export default class Settings extends Component {
 
   submit() {
     const { publisher } = this.props.userInfo;
-    const { publisherImg, publisherName, publisherId, publisherPaypal } = this.state;
+    const { publisherImg, publisherName, publisherId, publisherEmail } = this.state;
     const that = this;
-    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, paypalEmail: publisherPaypal};
+    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, paypalEmail: publisherEmail};
+
     firebase.database().ref(`publishers/${publisherId}`)
     .set(revisedPublisher)
     .then(() => {
@@ -202,172 +204,178 @@ export default class Settings extends Component {
             <div className='padding-30px-tb'>
                 <div className='padding-bottom-20px'>
                     <span className='title-medium '>
-                        Publisher Settings
+                        Publisher
                     </span>
                 </div>
-                <div className="row">
-                  <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <div style={{marginTop: 20,}}>
-                          <span style={{...styles.titleText, marginTop: 20,}}>
-                              Publisher Name
-                          </span>
-                        </div>
-                        <div style={styles.inputTitleWrapper}>
-                          <input
-                              type="text"
-                              style={styles.inputTitle}
-                              onChange={(e) => {this.setState({publisherName: e.target.value})}}
-                              value={publisherName}
-                          />
-                        </div>
-                        <div style={{height: 150,}}>
-                            <div style={styles.image}>
-                              <img src={publisherImg} />
-                            </div>
-                            <div style={styles.loaderWrapper}>
-                                <span style={{...styles.titleText, marginLeft: 10}}>
-                                    Publisher Profile Image (square image)
-                                </span>
-                                <div style={{...styles.inputFileWrapper, marginTop: 0}}>
-                                    <input
-                                        type="file"
-                                        name="upload"
-                                        id="upload_hidden_cover"
-                                        onChange={this.setFileName.bind(this)}
-                                        style={styles.inputFileHidden}
-                                        ref={input => this.fileInputRef = input}
-                                    />
-                                    {
-                                      fileUploaded &&
-                                      <div>
-                                        <span>{this.fileInputRef.files[0].name}</span>
-                                        <span style={styles.cancelImg}
-                                          onClick={() => {
-                                            that.setState({fileUploaded: false});
-                                            document.getElementById('upload_hidden_cover').value = null;
-                                            that.loadFromProp(userInfo);
-                                          }}>Cancel</span>
-                                      </div>
-                                      ||
-                                      !fileUploaded &&
-                                      <div>
-                                        <button
-                                            onClick={() => {document.getElementById('upload_hidden_cover').click();}}
-                                            style={{...styles.uploadButton, backgroundColor:  Colors.link}}
-                                        >
-                                            Upload
-                                        </button>
-                                        <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
-                                      </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div style={{marginTop: 20,}}>
-                          <span style={{...styles.titleText, marginTop: 20,}}>
-                              Publisher Paypal Email
-                          </span>
-                        </div>
-                        <div style={styles.inputTitleWrapper}>
-                          <input
-                              type="text"
-                              style={styles.inputTitle}
-                              onChange={(e) => {this.setState({publisherEmail: e.target.value})}}
-                              value={publisherEmail}
-                          />
-                        </div>
-                        <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
-                            {
-                              publisherSaved &&
-                              <div style={{paddingTop: 45, display: 'flex', justifyContent: 'center'}}>
-                                <span style={{fontSize: 16, color: Colors.mainOrange}}>Saved</span>
-                              </div>
-                              ||
-                              <OrangeSubmitButton
-                                  label="Save"
-                                  onClick={this.submit}
-                              />
-                            }
-                        </div>
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                            <TransparentShortSubmitButton
-                                label="Cancel"
-                                onClick={() => this.loadFromProp(userInfo)}
+                <ul className="nav nav-pills">
+                  <li role="presentation" className="active"><Link style={{backgroundColor: Colors.mainOrange}}   to='/dashboard/publisher'><span style={{fontSize: 15, fontWeight: 600}}>Settings</span></Link></li>
+                  <li role="presentation"><Link to="/dashboard/publisher/transactions"><span style={{fontSize: 15, fontWeight: 600}}>Transactions</span></Link></li>
+                  <li role="presentation"><Link to="/dashboard/publisher/payouts"><span style={{fontSize: 15, fontWeight: 600}}>Payouts</span></Link></li>
+                </ul>
+                <div className='container'>
+                  <div  className="row">
+                    <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                          <div style={{marginTop: 20,}}>
+                            <span style={{...styles.titleText, marginTop: 20,}}>
+                                Publisher Name
+                            </span>
+                          </div>
+                          <div style={styles.inputTitleWrapper}>
+                            <input
+                                type="text"
+                                style={styles.inputTitle}
+                                onChange={(e) => {this.setState({publisherName: e.target.value})}}
+                                value={publisherName}
                             />
-                        </div>
-                        <div style={{marginTop: 20,}}>
-                          <span style={{...styles.titleText, marginTop: 20,}}>
-                              Admins
-                          </span>
-                        </div>
-                        <div style={{marginTop: 10, marginBottom: 20,}}>
-                            <ul style={{listStyle: 'none', paddingLeft: 0,}}>
-                                {
-                                    admins.map((admin, i) => (
-                                        <li key={i}>
-                                            <span className='text-large'>{`${admin.firstName} ${admin.lastName} (${admin.email})`}</span>
-                                        </li>
-                                    ))
-                                }
-                            </ul>
-                        </div>
-                        <div>
-                          <span style={styles.addAdmin} onClick={() => {that.setState({adminFormShow: true, inviteSent: false, inviteeEmail: '', inviteeFirstName: '', inviteeLastName: '',})}}>
-                            Add Another Admin
-                          </span>
-                        </div>
-                        {
-                            adminFormShow && !inviteSent &&
-                            <div className='row' style={{marginBottom: 10, marginLeft: 5,}}>
-                              <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                                <span>First Name</span>
-                                <input
-                                  type="text"
-                                  style={styles.inputTitle}
-                                  name="inviteeFirstName"
-                                  onChange={this.handleInvite.bind(this)}
-                                  value={inviteeFirstName}
+                          </div>
+                          <div style={{height: 150,}}>
+                              <div style={styles.image}>
+                                <img src={publisherImg} />
+                              </div>
+                              <div style={styles.loaderWrapper}>
+                                  <span style={{...styles.titleText, marginLeft: 10}}>
+                                      Publisher Profile Image (square image)
+                                  </span>
+                                  <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                                      <input
+                                          type="file"
+                                          name="upload"
+                                          id="upload_hidden_cover"
+                                          onChange={this.setFileName.bind(this)}
+                                          style={styles.inputFileHidden}
+                                          ref={input => this.fileInputRef = input}
+                                      />
+                                      {
+                                        fileUploaded &&
+                                        <div>
+                                          <span>{this.fileInputRef.files[0].name}</span>
+                                          <span style={styles.cancelImg}
+                                            onClick={() => {
+                                              that.setState({fileUploaded: false});
+                                              document.getElementById('upload_hidden_cover').value = null;
+                                              that.loadFromProp(userInfo);
+                                            }}>Cancel</span>
+                                        </div>
+                                        ||
+                                        !fileUploaded &&
+                                        <div>
+                                          <button
+                                              onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                              style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                                          >
+                                              Upload
+                                          </button>
+                                          <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
+                                        </div>
+                                      }
+                                  </div>
+                              </div>
+                          </div>
+                          <div style={{marginTop: 20,}}>
+                            <span style={{...styles.titleText, marginTop: 20,}}>
+                                Publisher Paypal Email
+                            </span>
+                          </div>
+                          <div style={styles.inputTitleWrapper}>
+                            <input
+                                type="text"
+                                style={styles.inputTitle}
+                                onChange={(e) => {this.setState({publisherEmail: e.target.value})}}
+                                value={publisherEmail}
+                            />
+                          </div>
+                          <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
+                              {
+                                publisherSaved &&
+                                <div style={{paddingTop: 45, display: 'flex', justifyContent: 'center'}}>
+                                  <span style={{fontSize: 16, color: Colors.mainOrange}}>Saved</span>
+                                </div>
+                                ||
+                                <OrangeSubmitButton
+                                    label="Save"
+                                    onClick={this.submit}
                                 />
+                              }
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                              <TransparentShortSubmitButton
+                                  label="Cancel"
+                                  onClick={() => this.loadFromProp(userInfo)}
+                              />
+                          </div>
+                          <div style={{marginTop: 20,}}>
+                            <span style={{...styles.titleText, marginTop: 20,}}>
+                                Admins
+                            </span>
+                          </div>
+                          <div style={{marginTop: 10, marginBottom: 20,}}>
+                              <ul style={{listStyle: 'none', paddingLeft: 0,}}>
+                                  {
+                                      admins.map((admin, i) => (
+                                          <li key={i}>
+                                              <span className='text-large'>{`${admin.firstName} ${admin.lastName} (${admin.email})`}</span>
+                                          </li>
+                                      ))
+                                  }
+                              </ul>
+                          </div>
+                          <div>
+                            <span style={styles.addAdmin} onClick={() => {that.setState({adminFormShow: true, inviteSent: false, inviteeEmail: '', inviteeFirstName: '', inviteeLastName: '',})}}>
+                              Add Another Admin
+                            </span>
+                          </div>
+                          {
+                              adminFormShow && !inviteSent &&
+                              <div className='row' style={{marginBottom: 10, marginLeft: 5,}}>
+                                <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                                  <span>First Name</span>
+                                  <input
+                                    type="text"
+                                    style={styles.inputTitle}
+                                    name="inviteeFirstName"
+                                    onChange={this.handleInvite.bind(this)}
+                                    value={inviteeFirstName}
+                                  />
+                                </div>
+                                <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                                  <span>Last Name</span>
+                                  <input
+                                    type="text"
+                                    style={styles.inputTitle}
+                                    name="inviteeLastName"
+                                    onChange={this.handleInvite.bind(this)}
+                                    value={inviteeLastName}
+                                  />
+                                </div>
+                                <div style={{width: '40%', display: 'inline-block', marginRight: 10,}}>
+                                  <span>Email</span>
+                                  <input
+                                    type="text"
+                                    style={styles.inputTitle}
+                                    name="inviteeEmail"
+                                    onChange={this.handleInvite.bind(this)}
+                                    value={inviteeEmail}
+                                  />
+                                </div>
+                                <div>
+                                      <button
+                                          onClick={this.inviteAdmin.bind(this)}
+                                          style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                                      >
+                                          Confirm
+                                      </button>
+                                </div>
                               </div>
-                              <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                                <span>Last Name</span>
-                                <input
-                                  type="text"
-                                  style={styles.inputTitle}
-                                  name="inviteeLastName"
-                                  onChange={this.handleInvite.bind(this)}
-                                  value={inviteeLastName}
-                                />
+                          }
+                          {
+                              adminFormShow && inviteSent &&
+                              <div style={{marginTop: 10,}}>
+                                  <span className='text-large'><i>{`An email invitation has been sent to ${inviteeEmail}.`}</i></span>
                               </div>
-                              <div style={{width: '40%', display: 'inline-block', marginRight: 10,}}>
-                                <span>Email</span>
-                                <input
-                                  type="text"
-                                  style={styles.inputTitle}
-                                  name="inviteeEmail"
-                                  onChange={this.handleInvite.bind(this)}
-                                  value={inviteeEmail}
-                                />
-                              </div>
-                              <div>
-                                    <button
-                                        onClick={this.inviteAdmin.bind(this)}
-                                        style={{...styles.uploadButton, backgroundColor:  Colors.link}}
-                                    >
-                                        Confirm
-                                    </button>
-                              </div>
-                            </div>
-                        }
-                        {
-                            adminFormShow && inviteSent &&
-                            <div style={{marginTop: 10,}}>
-                                <span className='text-large'><i>{`An email invitation has been sent to ${inviteeEmail}.`}</i></span>
-                            </div>
-                        }
+                          }
+                    </div>
                   </div>
                 </div>
-
             </div>
     )
   }

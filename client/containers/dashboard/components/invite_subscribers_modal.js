@@ -4,6 +4,7 @@ import ReactCrop from 'react-image-crop';
 import axios from 'axios';
 import firebase from 'firebase';
 import moment from 'moment';
+import Papa from 'papaparse';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -87,10 +88,44 @@ export default class InviteSubscribersModal extends Component {
 
   closeModal() {
     this.setState({
-      submitted: false
+      submitted: false,
+      inviteeList: '',
     });
 
     this.props.onClose();
+  }
+
+  setFileName(e) {
+    const that = this;
+    const emailList = [];
+    if (e.target.value) {
+      const file = document.getElementById('upload_csv').files[0];
+      if(file.name.slice(-3) == 'csv') {
+        Papa.parse(file, {
+          complete: function(results) {
+            if(results.data) {
+              let targetCol = prompt('Which column is the emails stored in? (Enter the column number)');
+              if(Number.isInteger(Number(targetCol)) && Number(targetCol) > 0) {
+                results.data.forEach(row => {
+                  let email = row[targetCol - 1] ? row[targetCol - 1] : '';
+                  if(email.indexOf('@') > 0) {
+                    email = email.toLowerCase().trim();
+                    emailList.push(email);
+                  }
+                });
+                that.setState({
+                  inviteeList: emailList.join(','),
+                })
+              } else {
+                alert('Please enter a valid column number.');
+              }
+            }
+          }
+        });
+      } else {
+        alert('Please upload a valid csv file.');
+      }
+    }
   }
 
   render() {
@@ -137,13 +172,37 @@ export default class InviteSubscribersModal extends Component {
                 {`Invite subscribers to ${soundcast.title}`}
             </div>
           </div>
+          <div className='col-md-12' style={{height: '45%'}}>
           <textarea
               style={styles.inputDescription}
               placeholder={'Enter listener email addresses, separated by commas'}
               onChange={(e) => {this.setState({inviteeList: e.target.value})}}
-              value={this.state.subscribers}
+              value={this.state.inviteeList}
           >
           </textarea>
+          </div>
+          <div className='col-md-12' style={{}}>
+            <div className='text-medium col-md-12'
+              style={{display: 'flex', justifyContent: 'center'}}
+              >
+              <span>OR</span>
+            </div>
+            <div className='col-md-12'>
+              <input
+                  type="file"
+                  name="upload"
+                  id="upload_csv"
+                  onChange={this.setFileName.bind(this)}
+                  style={styles.inputFileHidden}
+              />
+              <div className='btn'
+                  style={{...styles.draftButton,}}
+                  onClick={() => {document.getElementById('upload_csv').click();}}
+              >
+                  <span>Upload invitee email list in CSV file</span>
+              </div>
+            </div>
+          </div>
           <div style={styles.buttonsWrap}>
             <div
                 style={{...styles.button, ...styles.submitButton}}
@@ -201,15 +260,24 @@ const styles = {
     marginLeft: 20
   },
   inputDescription: {
-    height: '50%',
-    width: '90%',
+    height: '100%',
+    // width: '90%',
     paddingLeft: 20,
-    marginLeft: 20,
+    marginBottom: 20,
     // padding: '10px 10px',
     fontSize: 16,
     borderRadius: 4,
 
   },
+    inputFileHidden: {
+        position: 'absolute',
+        display: 'block',
+        overflow: 'hidden',
+        width: 0,
+        height: 0,
+        border: 0,
+        padding: 0,
+    },
   buttonsWrap: {
   },
   button: {
@@ -238,5 +306,27 @@ const styles = {
     backgroundColor: Colors.mainOrange,
     color: Colors.mainWhite,
     borderColor: Colors.mainOrange
-  }
+  },
+    draftButton: {
+        // backgroundColor: Colors.link,
+        color: Colors.fontBlack,
+        borderColor: Colors.fontBlack,
+        borderWidth: 1.5,
+        borderStyle: 'solid',
+        fontSize: 16,
+        height: '40px',
+        lineHeight: '40px',
+        borderRadius: 10,
+        marginTop: 15,
+        marginRight: 'auto',
+        marginBottom: 20,
+        marginLeft: 'auto',
+        // textAlign: 'center',
+        paddingTop: 5,
+    cursor: 'pointer',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
 }

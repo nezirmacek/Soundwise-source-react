@@ -134,6 +134,7 @@ module.exports = function(Transaction) {
                     chargeId: data.data.object.charge,
                     type: 'charge',
                     amount: line.amount / 100,
+                    description: line.description,
                     date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
                     publisherId: _transactionData[0],
                     soundcastId: _transactionData[1],
@@ -176,6 +177,7 @@ module.exports = function(Transaction) {
                             soundcastId,
                             customer: data.data.object.customer, // listener's stripe id
                             paymentId: refund.id,
+                            description: data.data.object.description,
                             refund_date: moment(refund.created * 1000).format('YYYY-MM-DD'),
                             createdAt: moment().utc().format(),
                             updatedAt: moment().utc().format(),
@@ -327,6 +329,7 @@ function createCharge(Transaction, data, cb) {
         publisherId: publisherID,
         paymentId: planID,
         soundcastId: soundcastID,
+        description,
         customer, // listener's stripe id
         createdAt: moment().utc().format(),
         updatedAt: moment().utc().format(),

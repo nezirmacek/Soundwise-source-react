@@ -74,6 +74,12 @@
     "refund_date": {
       "type": "date"
     },
+    "description": {
+      "type": "string",
+      "postgresql": {
+        "column": "description"
+      }
+    },
     "createdAt": {
       "type": "date",
       "required": true,

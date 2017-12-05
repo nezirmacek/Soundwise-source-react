@@ -16,7 +16,7 @@ import Subscriber from "./components/subscriber";
 import Announcements from "./components/announcements";
 import Analytics from "./components/analytics";
 import EditSoundcast from './components/edit_soundcast';
-import Settings from './components/settings';
+import Publisher from './components/publisher';
 import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
 
@@ -79,11 +79,11 @@ const verticalMenuItems = [
         Component: Announcements,
     },
     {
-        path: 'settings',
+        path: 'publisher',
         label: 'Publisher',
         iconClass: 'cog',
         isMenuItemVisible: true,
-        Component: Settings,
+        Component: Publisher,
     },
     {
         path: 'edit_episode',
@@ -165,6 +165,7 @@ class _Dashboard extends Component {
                             currentTab
                             &&
                             <currentTab.Component
+                                {...this.props}
                                 userInfo={userInfo}
                                 history={history}
                                 id={match.params.id}
