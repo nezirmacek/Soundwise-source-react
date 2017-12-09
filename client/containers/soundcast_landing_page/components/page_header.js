@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
 
-const PageHeader = () => (
+const PageHeader = (props) => (
   <header className="leadgen-agency-1" id="header-section1">
       <nav className="navbar bg-white tz-header-bg no-margin alt-font shrink-header light-header">
           <div className="container navigation-menu">
               <div className="row">
                   <div className="col-md-3 col-sm-0 col-xs-0">
-                    <Link to='/'>
+                    <Link to={`/soundcasts/${props.soundcastID}`}>
                       <img alt="Soundwise Logo" src="../../images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                     </Link>
                   </div>

@@ -1247,14 +1247,14 @@
     .header-style1 li a::before, .header-style2 li a::before { display: none;}
     .navbar-toggle { background-color: #000; border-radius: 0; margin-right: 0; display: block; cursor: pointer !important;}
     .navbar-toggle .icon-bar {background: #fff;}
-    .navbar-collapse {box-shadow: none; background:rgba(0,0,0,.90); width: 100%; position: absolute; top: 90px;}
+    .navbar-collapse {box-shadow: none; background:#acb3bc; width: 100%; position: absolute; top: 90px;}
     .navbar.shrink .navbar-collapse {top:53px;}
     .header-style8 .navbar.shrink .navbar-collapse {top:64px;}
     .navbar-collapse.collapse {display: none!important;}
     .navbar-nav { padding: 25px 10px; }
     .navbar li { margin: 0 15px; padding: 12px 0 11px; border-bottom: 1px solid rgba(255,255,255,.20);}
     .navbar li:last-child { border: none;}
-    header .nav-button a.text-black, header .nav-button.active a.text-black, header .nav-button a.text-black:hover, .header-style9 .black-header.navbar li.nav-button a:hover, .header-style9 .black-header.navbar li.nav-button.active a:hover, .dark-header.navbar li.nav-button.active a {color:#000 !important;}
+    header .nav-button a.text-black, header .nav-button.active a.text-black, header .nav-button a.text-black:hover, .header-style9 .black-header.navbar li.nav-button a:hover, .header-style9 .black-header.navbar li.nav-button.active a:hover, .dark-header.navbar li.nav-button.active a {color:#000 ;}
     .navbar li a:hover, .navbar li a.active, .header-style1 .black-header.navbar li a:hover, .header-style1 .black-header.navbar li a.active, .header-style3 .black-header.navbar li a:hover, .header-style3 .black-header.navbar li a.active,
     .header-style4 .white-header .header-bottom li a:hover, .header-style4 .white-header .header-bottom li a.active, .header-style5 .black-header.navbar li a:hover, .header-style5 .black-header.navbar li a.active,
     .header-style9 .black-header.navbar li a:hover, .header-style9 .black-header.navbar li a.active, .shrink-transparent-header-light.shrink.navbar li a:hover, .shrink-transparent-header-light.shrink.navbar li a.active, .dark-header.navbar li.active a, .light-header.navbar li.active a{ opacity: 1; color: rgba(255,255,255,0.7) !important; border-bottom:1px solid transparent; }

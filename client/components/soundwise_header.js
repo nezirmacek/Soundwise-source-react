@@ -10,7 +10,7 @@ import IconButton from 'material-ui/IconButton';
 import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
+import Colors from '../styles/colors';
 import {signoutUser} from '../actions/index';
 
 const styles = {
@@ -59,43 +59,50 @@ class _SoundwiseHeader extends Component {
         if(this.props.isLoggedIn) {
             if (this.props.userInfo.admin) {
                 return (
-                    <ul className="nav navbar-nav">
-                        <li className="menu-button">
-                            <Link to='/dashboard/add_episode' className="inner-link">
-                                <label className="inner-link orange-text">+</label>
-                                Add new episode
-                            </Link>
+                    <ul className="nav navbar-nav" style={{
+                        verticalAlign: 'center',
+                    }}>
+                        <li style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <div className="menu-button">
+                                <Link to='/dashboard/add_episode' className="inner-link">
+                                    <label className="inner-link orange-text">+</label>
+                                    Add new episode
+                                </Link>
+                            </div>
                         </li>
                         <li className="propClone sm-no-border" >
-                            <a className='dropdown-toggle' data-toggle="dropdown">
-                                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
-                                <span className="caret"></span>
-                            </a>
-                            <ul className="dropdown-menu">
-                                {this.props.userInfo.soundcasts &&
-                                <li>
-                                    <Link to='/mysoundcasts'>My Soundcasts</Link>
-                                </li>
-                                }
-                                {this.props.userInfo.admin &&
-                                <li>
-                                    <Link to='/dashboard/soundcasts'>Admin Dashboard</Link>
-                                </li>
-                                }
-                                {this.props.userInfo.courses &&
-                                <li>
-                                    <Link to='/myprograms'>My Courses</Link>
-                                </li>
-                                }
-                                <li>
-                                    <Link to='/myprofile'>My Profile</Link>
-                                </li>
-                                <li>
-                                    <a onClick={() => this.signoutUser()}>
-                                        <font style={{color: 'black'}}>Log Out</font>
-                                    </a>
-                                </li>
-                            </ul>
+                            <div className='dropdown'>
+                                <div className='btn dropdown-toggle' data-toggle="dropdown" style={{height: 37, justifyContent: 'center'}}>
+                                    <div style={{}}>{`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                                       <span className="caret"></span>
+                                    </div>
+                                </div>
+                                <ul className="dropdown-menu">
+                                    {this.props.userInfo.soundcasts &&
+                                    <li>
+                                        <Link to='/mysoundcasts'>My Soundcasts</Link>
+                                    </li>
+                                    }
+                                    {this.props.userInfo.admin &&
+                                    <li>
+                                        <Link to='/dashboard/soundcasts'>Admin Dashboard</Link>
+                                    </li>
+                                    }
+                                    {this.props.userInfo.courses &&
+                                    <li>
+                                        <Link to='/myprograms'>My Courses</Link>
+                                    </li>
+                                    }
+                                    <li>
+                                        <Link to='/myprofile'>My Profile</Link>
+                                    </li>
+                                    <li>
+                                        <a onClick={() => this.signoutUser()}>
+                                            <font style={{color: 'black'}}>Log Out</font>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
                 );
@@ -152,9 +159,6 @@ class _SoundwiseHeader extends Component {
         } else {
             return (
                 <ul className="nav navbar-nav">
-                    {<li className="propClone sm-no-border">
-                        <Link to='/courses' className="inner-link"></Link>
-                    </li>}
                     <li className="propClone sm-no-border" style={styles.navItem}>
                         <Link className="inner-link" to="/signin">LOG IN</Link>
                     </li>
@@ -171,9 +175,16 @@ class _SoundwiseHeader extends Component {
                     <div className="container navigation-menu">
                         <div className="row">
                             <div className="col-md-3 col-sm-0 col-xs-0">
+                            {
+                                this.props.soundcastID &&
+                                <Link to={`/soundcasts/${this.props.soundcastID}`}>
+                                  <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
+                                </Link>
+                                ||
                                 <Link to='/'>
                                   <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                                 </Link>
+                            }
                             </div>
                             <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
                                 {/*menu button for md, sm, xs*/}
@@ -184,7 +195,7 @@ class _SoundwiseHeader extends Component {
                                     <span className="icon-bar"></span>
                                 </button>
                                 {/*inline menu for lg*/}
-                                <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right font-weight-500">
+                                <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right font-weight-500" >
                                     {this.renderLogin()}
                                 </div>
                             </div>

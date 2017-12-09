@@ -18,6 +18,7 @@ import SoundcastFooter from './components/soundcast_footer'
 import {PricingModal} from './components/pricing_modal'
 
 import  PageHeader  from './components/page_header'
+import {SoundwiseHeader} from '../../components/soundwise_header'
 import RelatedSoundcasts from './components/related_soundcasts'
 // import {CourseSignup} from './course_signup'
 
@@ -106,7 +107,9 @@ class _SoundcastPage extends Component {
         </Helmet>
         <MuiThemeProvider >
           <div>
-            <PageHeader />
+            <SoundwiseHeader
+              soundcastID={soundcastID}
+            />
             <PricingModal
               soundcast={soundcast}
               soundcastID={soundcastID}
@@ -129,7 +132,9 @@ class _SoundcastPage extends Component {
               soundcast={soundcast}
               soundcastID={soundcastID}
               openModal={this.handleModal.bind(this)}/>
-            <Footer />
+            <Footer
+              soundcastID={soundcastID}
+            />
           </div>
         </MuiThemeProvider>
       </div>

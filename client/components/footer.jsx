@@ -1,14 +1,14 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 
-const Footer = () => (
+const Footer = (props) => (
   <footer id="footer-section11" className="padding-30px-tb bg-dark-gray builder-bg">
     <div className="container">
       <div className="row equalize" style={{display: 'flex', alignItems: 'flex-start'}}>
 
         <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12 xs-text-center xs-margin-four-bottom display-table">
           <div className="display-table-cell-vertical-middle">
-            <Link to="/" className="inner-link"><img src="/images/soundwiselogo_white.svg" data-img-size="(W)163px X (H)40px" alt="Soundwise Logo" /></Link>
+            <Link to={props.soundcastID ? `/soundcasts/${props.soundcastID}` : '/'} className="inner-link"><img src="/images/soundwiselogo_white.svg" data-img-size="(W)163px X (H)40px" alt="Soundwise Logo" /></Link>
           </div>
         </div>
         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12 xs-text-center xs-margin-four-bottom display-table text-left">

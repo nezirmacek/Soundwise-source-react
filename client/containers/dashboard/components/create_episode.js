@@ -266,7 +266,7 @@ class _CreateEpisode extends Component {
 
                 const splittedFileName = file.name.split('.');
                 ext = (splittedFileName)[splittedFileName.length - 1];
-                if((type == 'audio' && ext == 'mp3') || type == 'notes' && (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) {
+                if((type == 'audio' && (ext == 'mp3' || ext == 'm4a')) || type == 'notes' && (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) {
                     this.setState({
                         [`${type}Uploaded`]: true,
                         [`${type}Uploading`]: true,
@@ -614,7 +614,7 @@ class _CreateEpisode extends Component {
                                         </button>
                                     </div>
                                     <div>
-                                        <div style={styles.fileTypesLabel}>ONLY .mp3 files accepted</div>
+                                        <div style={styles.fileTypesLabel}>ONLY .mp3 and .m4a files accepted</div>
                                         {wrongFileTypeFor == 'audio' && <div style={{...styles.fileTypesLabel, color: 'red'}}>Wrong file type. Please try again.</div>}
                                     </div>
                                   </div>

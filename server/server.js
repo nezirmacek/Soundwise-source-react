@@ -22,8 +22,10 @@ var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerI
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
-
+var Raven = require('raven');
 var database = require('../database');
+
+Raven.config('https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847').install();
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -52,7 +54,7 @@ app.use(require('prerender-node').set('prerenderToken',
         'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
 
 uploader.use(new S3Strategy({
-  uploadPath: 'demo/',
+  uploadPath: 'soundcasts/',
   headers: {
     'x-amz-acl': 'public-read',
   },
