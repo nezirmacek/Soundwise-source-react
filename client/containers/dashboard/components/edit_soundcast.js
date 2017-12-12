@@ -567,9 +567,9 @@ export default class EditSoundcast extends Component {
                           </span>
                         </div>
                         <div style={styles.inputTitleWrapper}>
-                          <input
+                          <textarea
                               type="text"
-                              style={styles.inputTitle}
+                              style={styles.inputDescription}
                               placeholder={'A short description of this soundcast (300 characters max)'}
                               onChange={(e) => {this.setState({short_description: e.target.value})}}
                               value={this.state.short_description}
@@ -686,6 +686,7 @@ const styles = {
     editorStyle: {
         padding: '5px',
         borderRadius: 4,
+        fontSize: 16,
         height: '300px',
         width: '100%',
         backgroundColor: Colors.mainWhite,

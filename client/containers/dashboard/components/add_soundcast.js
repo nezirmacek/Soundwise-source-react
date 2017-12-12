@@ -12,7 +12,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
 import Toggle from 'material-ui/Toggle';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
@@ -20,6 +20,13 @@ import {inviteListeners} from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
+
+const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p><p></p><p>Thanks for subscribing to [soundcast title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8"><strong style="border-bottom: 2px solid currentColor;">here</strong></a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"><strong style="border-bottom: 2px solid currentColor;" >here</strong></a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p></div>`;
+const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
+const confirmationEmail = ContentState.createFromBlockArray(
+  subscriptionConfirmationEmail.contentBlocks,
+  subscriptionConfirmationEmail.entityMap
+);
 
 export default class AddSoundcast extends Component {
 	constructor (props) {
@@ -41,13 +48,13 @@ export default class AddSoundcast extends Component {
 			forSale: false,
 			prices: [],
 			paypalEmail: '',
+			confirmationEmail: EditorState.createWithContent(confirmationEmail),
 		};
 
 		this.soundcastId = `${moment().format('x')}s`;
 		this.fileInputRef = null;
 		this.hostImgInputRef = null;
 		this.addFeature = this.addFeature.bind(this);
-		this.onEditorStateChange = this.onEditorStateChange.bind(this);
 	}
 
 	_uploadToAws (file, hostImg) {
@@ -122,7 +129,15 @@ export default class AddSoundcast extends Component {
 		let { title, imageURL, subscribers, short_description,
 			long_description, landingPage,
 			features, hostName, hostBio, hostImageURL,
-			forSale, prices} = this.state;
+			forSale, prices, confirmationEmail} = this.state;
+		if(title.length == 0) {
+			alert('Please enter a soundcast title before saving.');
+			return;
+		}
+		if(short_description == 0) {
+			alert('Please enter a short description for the soundcast before saving.');
+			return;
+		}
 		if(prices.length === 0) { //if pricing isn't specified, then this is a free soundcast
 			prices = [{price: 'free'}];
 		}
@@ -162,6 +177,7 @@ export default class AddSoundcast extends Component {
 			creatorID,
 			short_description,
 			long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+			confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
 			date_created: moment().format('X'),
 			publisherID: userInfo.publisherID,
 			invited,
@@ -199,16 +215,16 @@ export default class AddSoundcast extends Component {
 				}
 			),
 			// add soundcast to admin
-			// firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
-			//     res => {
-			//         console.log('success add soundcast to admin.soundcasts_managed: ', res);
-			//         return res;
-			//     },
-			//     err => {
-			//         console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-			//         Promise.reject(err);
-			//     }
-			// ),
+			firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
+			    res => {
+			        console.log('success add soundcast to admin.soundcasts_managed: ', res);
+			        return res;
+			    },
+			    err => {
+			        console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+			        Promise.reject(err);
+			    }
+			),
 			Axios.post('/api/soundcast', {
 				soundcastId: this.soundcastId,
 				publisherId: userInfo.publisherID,
@@ -355,15 +371,22 @@ export default class AddSoundcast extends Component {
 		})
 	}
 
-	onEditorStateChange(editorState) {
-		this.setState({
-			long_description: editorState,
-		})
+	onEditorStateChange(editorState, confirmationEmail) {
+			this.setState({
+				long_description: editorState,
+			})
+
+	}
+
+	onConfirmationStateChange(editorState) {
+			this.setState({
+				confirmationEmail: editorState,
+			})
 	}
 
 	renderAdditionalInputs() {
 		const featureNum = this.state.features.length;
-		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices} = this.state;
+		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices, confirmationEmail} = this.state;
 		const {userInfo} = this.props;
 		const that = this;
     const actions = [
@@ -379,7 +402,7 @@ export default class AddSoundcast extends Component {
     ];
 
 		return (
-			<div style={{marginTop: 15}}>
+			<div style={{marginTop: 25, marginBottom: 25,}}>
 				{/*What Listeners Will Get*/}
 				<span style={{...styles.titleText, marginBottom: 5}}>
 					What Listeners Will Get
@@ -432,7 +455,7 @@ export default class AddSoundcast extends Component {
 						editorState = {long_description}
 						editorStyle={styles.editorStyle}
 						wrapperStyle={styles.wrapperStyle}
-						onEditorStateChange={this.onEditorStateChange}
+						onEditorStateChange={this.onEditorStateChange.bind(this)}
 					/>
 				</div>
 
@@ -720,26 +743,14 @@ export default class AddSoundcast extends Component {
 						</span>
 
 						<div style={styles.inputTitleWrapper}>
-							<input
+							<textarea
 								type="text"
-								style={styles.inputTitle}
+								style={styles.inputDescription}
 								placeholder={'A short description of this soundcast'}
 								onChange={(e) => {this.setState({short_description: e.target.value})}}
 								value={this.state.short_description}
 							/>
 						</div>
-
-						{/*Invitations*/}
-						<span style={styles.titleText}>
-							Invite listeners to subscribe
-						</span>
-						<textarea
-							style={styles.inputDescription}
-							placeholder={'Enter listener email addresses, separated by commas'}
-							onChange={(e) => {this.setState({subscribers: e.target.value})}}
-							value={this.state.subscribers}
-						>
-            </textarea>
 
 						{/*Soundcast cover art*/}
 						<div style={{marginBottom: 30, marginTop: 30,}} className='row'>
@@ -790,6 +801,33 @@ export default class AddSoundcast extends Component {
 							</div>
 						</div>
 						{this.renderAdditionalInputs()}
+
+						{/*Invitations*/}
+						<div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
+							<span style={styles.titleText}>
+								Invite listeners to subscribe
+							</span>
+							<textarea
+								style={styles.inputDescription}
+								placeholder={'Enter listener email addresses, separated by commas'}
+								onChange={(e) => {this.setState({subscribers: e.target.value})}}
+								value={this.state.subscribers}
+							>
+	            </textarea>
+							<div>
+								<span style={styles.titleText}>
+									Subsciption Confirmation Message
+								</span>
+								<Editor
+									editorState = {this.state.confirmationEmail}
+									editorStyle={styles.editorStyle}
+									wrapperStyle={styles.wrapperStyle}
+									onEditorStateChange={this.onConfirmationStateChange.bind(this)}
+								/>
+							</div>
+            </div>
+
+	          {/*Bubmission buttons*/}
 						<div className='row'>
 	            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 	                <OrangeSubmitButton
@@ -855,6 +893,7 @@ const styles = {
 	},
 	editorStyle: {
 		padding: '5px',
+		fontSize: 16,
 		borderRadius: 4,
 		height: '300px',
 		width: '100%',

@@ -193,7 +193,7 @@ export default class SoundcastsManaged extends Component {
   											<span
                           onClick={() => this.handleModal(soundcast)}
                           style={styles.addLink}>
-                          Add
+                          Invite
                         </span>
   										</div>
                     </div>

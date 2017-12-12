@@ -5,7 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
 import draftToHtml from 'draftjs-to-html';
 import renderHTML from 'react-render-html';
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw, } from 'draft-js';
 import firebase from 'firebase';
 
 import HowItWorks from './how_it_works';

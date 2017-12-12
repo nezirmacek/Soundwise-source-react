@@ -31,7 +31,12 @@ class _SoundcastCheckout extends Component {
     const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
     this.props.history.push({
       pathname: '/notice',
-      state: { text }
+      state: {
+        text,
+        soundcastTitle: soundcast.title,
+        ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
+        android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
+      }
     });
   }
 
