@@ -181,9 +181,9 @@ class _SoundwiseHeader extends Component {
                                   <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                                 </Link>
                                 ||
-                                <Link to='/'>
+                                // <Link to='/'>
                                   <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
-                                </Link>
+                                // </Link>
                             }
                             </div>
                             <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">

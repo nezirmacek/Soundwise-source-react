@@ -6,7 +6,7 @@ import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState } from 'draft-js';
 import Toggle from 'material-ui/Toggle';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -14,6 +14,25 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
+
+const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
+<p></p>
+<p>Thanks for subscribing to [soundcast title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p>
+<p><strong>
+<span>iPhone user: Download the app </span>
+<a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8"><span style="border-bottom: 2px solid currentColor;">here</span></a>.
+</strong></p>
+<p><strong>
+<span>Android user: Download the app <span>
+<a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"><span style="border-bottom: 2px solid currentColor;" >here</span></a>.
+</strong></p><p></p>
+<p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
+</div>`;
+const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
+const confirmationEmail = ContentState.createFromBlockArray(
+  subscriptionConfirmationEmail.contentBlocks,
+  subscriptionConfirmationEmail.entityMap
+);
 
 export default class EditSoundcast extends Component {
     constructor (props) {
@@ -34,6 +53,7 @@ export default class EditSoundcast extends Component {
             hostImgUploaded: '',
             forSale: false,
             prices: [],
+            confirmationEmail: EditorState.createWithContent(confirmationEmail),
         };
 
         this.fileInputRef = null;
@@ -43,16 +63,16 @@ export default class EditSoundcast extends Component {
     }
 
     componentDidMount() {
-      let editorState;
+      let editorState, confirmEmailEditorState;
       const { id, soundcast } = this.props.history.location.state;
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
-             forSale, prices} = soundcast;
-      const {title0, subscribed0, imageURL0, short_description0,
-             long_description0, landingPage0,
-             features0, hostName0, hostBio0, hostImageURL0,
-             forSale0, prices0} = this.state;
+             forSale, prices, confirmationEmail} = soundcast;
+      // const {title0, subscribed0, imageURL0, short_description0,
+      //        long_description0, landingPage0,
+      //        features0, hostName0, hostBio0, hostImageURL0,
+      //        forSale0, prices0, } = this.state;
 
       if(long_description) {
         let contentState = convertFromRaw(JSON.parse(long_description));
@@ -61,6 +81,12 @@ export default class EditSoundcast extends Component {
         editorState = EditorState.createEmpty();
       }
 
+      if(confirmationEmail) {
+        let confirmEmailText = convertFromRaw(JSON.parse(confirmationEmail));
+        confirmEmailEditorState = EditorState.createWithContent(confirmEmailText);
+      } else {
+        confirmEmailEditorState = this.state.confirmationEmail;
+      }
       this.setState({
         title,
         imageURL: imageURL ? imageURL : null,
@@ -71,6 +97,7 @@ export default class EditSoundcast extends Component {
         hostImageURL: hostImageURL ? hostImageURL : null,
         forSale: forSale ? forSale : false,
         long_description: editorState ,
+        confirmationEmail: confirmEmailEditorState,
       })
 
       if(subscribed) {
@@ -151,7 +178,7 @@ export default class EditSoundcast extends Component {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
-                forSale, prices} = this.state;
+                forSale, prices, confirmationEmail} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
         const creatorID = firebase.auth().currentUser.uid;
@@ -160,6 +187,7 @@ export default class EditSoundcast extends Component {
             title,
             short_description,
             long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+            confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
             imageURL,
             creatorID,
             publisherID: userInfo.publisherID,
@@ -254,12 +282,18 @@ export default class EditSoundcast extends Component {
         })
     }
 
+    onConfirmationStateChange(editorState) {
+        this.setState({
+          confirmationEmail: editorState,
+        })
+    }
+
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
         const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices} = this.state;
         const that = this;
         return (
-            <div style={{marginTop: 25}}>
+            <div style={{marginTop: 25, marginBottom: 25,}}>
                 <span style={{...styles.titleText, marginBottom: 5}}>
                   What Listeners Will Get
                 </span>
@@ -620,6 +654,20 @@ export default class EditSoundcast extends Component {
                         {
                             this.renderAdditionalInputs()
                         }
+                        {/*Invitations*/}
+                        <div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
+                          <div>
+                            <span style={styles.titleText}>
+                              Subsciption Confirmation Message
+                            </span>
+                            <Editor
+                              editorState = {this.state.confirmationEmail}
+                              editorStyle={styles.editorStyle}
+                              wrapperStyle={styles.wrapperStyle}
+                              onEditorStateChange={this.onConfirmationStateChange.bind(this)}
+                            />
+                          </div>
+                        </div>
                         <div className='row'>
                           <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                               <OrangeSubmitButton

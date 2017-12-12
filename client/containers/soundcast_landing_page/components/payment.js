@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
+import draftToHtml from 'draftjs-to-html';
 
 import * as firebase from 'firebase';
 import moment from 'moment';
@@ -79,10 +80,11 @@ export default class Payment extends Component {
         // console.log('charge: ', charge);
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
+        const {confirmationEmail} = soundcast;
         const {totalPay} = this.state;
         let userInfo = this.state.userInfo || this.props.userInfo;
 
-        let _email;
+        let _email, content;
 
         if(userInfo) {
             // console.log('userInfo: ', userInfo);
@@ -97,7 +99,14 @@ export default class Payment extends Component {
 
             // send email invitations to subscribers
             const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
-            const content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p><p>The Soundwise Team</p>`;
+            if(confirmationEmail) {
+                const editorState = JSON.parse(confirmationEmail);
+                const confirmEmailHTML = draftToHtml(editorState);
+                content = confirmEmailHTML.replace('[subscriber first name]', userInfo.firstName);
+                content = content.replace('[soundcast title]', soundcast.title);
+            } else {
+                content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
+            }
             inviteListeners([userInfo.email[0]], subject, content);
 
             firebase.auth().onAuthStateChanged(function(user) {

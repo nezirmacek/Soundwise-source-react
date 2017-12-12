@@ -21,7 +21,19 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
-const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p><p></p><p>Thanks for subscribing to [soundcast title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8"><strong style="border-bottom: 2px solid currentColor;">here</strong></a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"><strong style="border-bottom: 2px solid currentColor;" >here</strong></a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p></div>`;
+const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
+<p></p>
+<p>Thanks for subscribing to [soundcast title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p>
+<p><strong>
+<span>iPhone user: Download the app </span>
+<a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8"><span style="border-bottom: 2px solid currentColor;">here</span></a>.
+</strong></p>
+<p><strong>
+<span>Android user: Download the app <span>
+<a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"><span style="border-bottom: 2px solid currentColor;" >here</span></a>.
+</strong></p><p></p>
+<p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
+</div>`;
 const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
 const confirmationEmail = ContentState.createFromBlockArray(
   subscriptionConfirmationEmail.contentBlocks,
@@ -195,7 +207,7 @@ export default class AddSoundcast extends Component {
 			// add soundcast
 			firebase.database().ref(`soundcasts/${this.soundcastId}`).set(newSoundcast).then(
 				res => {
-					console.log('success add soundcast: ', res);
+					// console.log('success add soundcast: ', res);
 					return res;
 				},
 				err => {
@@ -206,7 +218,7 @@ export default class AddSoundcast extends Component {
 			// add soundcast to publisher
 			firebase.database().ref(`publishers/${userInfo.publisherID}/soundcasts/${this.soundcastId}`).set(true).then(
 				res => {
-					console.log('success add soundcast to publisher: ', res);
+					// console.log('success add soundcast to publisher: ', res);
 					return res;
 				},
 				err => {
@@ -217,7 +229,7 @@ export default class AddSoundcast extends Component {
 			// add soundcast to admin
 			firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
 			    res => {
-			        console.log('success add soundcast to admin.soundcasts_managed: ', res);
+			        // console.log('success add soundcast to admin.soundcasts_managed: ', res);
 			        return res;
 			    },
 			    err => {
@@ -248,7 +260,7 @@ export default class AddSoundcast extends Component {
 			return firebase.database().ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`).set(true)
 				.then(
 					res => {
-						console.log('success add soundcast to admin.soundcasts_managed: ', res);
+						// console.log('success add soundcast to admin.soundcasts_managed: ', res);
 						return res;
 					},
 					err => {
@@ -257,31 +269,31 @@ export default class AddSoundcast extends Component {
 					})
 		});
 
-		let _promises_3 = inviteeArr.map(invitee => {
-			return firebase.database().ref(`invitations/${invitee}`)
-				.once('value')
-				.then(snapshot => {
-					if(snapshot.val()) {
-						const update = {...snapshot.val(), [that.soundcastId]: true};
-						firebase.database().ref(`invitations/${invitee}`).update(update);
-					} else {
-						firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true);
-					}
-				})
-				.then(
-					res => {
-						console.log('success adding invitee to invitations node: ', res);
-						return res;
-					},
-					err => {
-						console.log('ERROR adding invitee to invitations node: ', err);
-						Promise.reject(err);
-					}
-				)
-		});
+		// let _promises_3 = inviteeArr.map(invitee => {
+		// 	return firebase.database().ref(`invitations/${invitee}`)
+		// 		.once('value')
+		// 		.then(snapshot => {
+		// 			if(snapshot.val()) {
+		// 				const update = {...snapshot.val(), [that.soundcastId]: true};
+		// 				firebase.database().ref(`invitations/${invitee}`).update(update);
+		// 			} else {
+		// 				firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true);
+		// 			}
+		// 		})
+		// 		.then(
+		// 			res => {
+		// 				console.log('success adding invitee to invitations node: ', res);
+		// 				return res;
+		// 			},
+		// 			err => {
+		// 				console.log('ERROR adding invitee to invitations node: ', err);
+		// 				Promise.reject(err);
+		// 			}
+		// 		)
+		// });
 
-		let _promises = _promises_1.concat(_promises_2, _promises_3);
-
+		// let _promises = _promises_1.concat(_promises_2, _promises_3);
+		let _promises = _promises_1.concat(_promises_2);
 		Promise.all(_promises).then(
 			res => {
 				console.log('completed adding soundcast');
@@ -804,16 +816,6 @@ export default class AddSoundcast extends Component {
 
 						{/*Invitations*/}
 						<div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
-							<span style={styles.titleText}>
-								Invite listeners to subscribe
-							</span>
-							<textarea
-								style={styles.inputDescription}
-								placeholder={'Enter listener email addresses, separated by commas'}
-								onChange={(e) => {this.setState({subscribers: e.target.value})}}
-								value={this.state.subscribers}
-							>
-	            </textarea>
 							<div>
 								<span style={styles.titleText}>
 									Subsciption Confirmation Message
