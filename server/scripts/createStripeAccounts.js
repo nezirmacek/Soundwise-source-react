@@ -1,5 +1,6 @@
 'use strict';
 var stripe_key =  require('../../config').stripe_key;
+var stripe = require('stripe')(stripe_key);
 var request = require('request-promise');
 var firebase = require('firebase-admin');
 
