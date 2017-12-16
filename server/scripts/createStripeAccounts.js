@@ -16,8 +16,9 @@ module.exports.createStripeAccount = (req, res) => {
     stripe_user_id = JSON.parse(response).stripe_user_id;
     firebase.database().ref(`publishers/${req.body.publisherId}/stripe_user_id`).set(stripe_user_id)
     .catch(err => console.log(err));
+    return JSON.parse(response);
   })
-  .then(() => {
+  .then(response => {
     stripe.accounts.update(stripe_user_id, {
       'payout_schedule': { // monthly payouts, with two week delay
         'delay_days': 14,
