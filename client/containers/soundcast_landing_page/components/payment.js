@@ -38,8 +38,9 @@ export default class Payment extends Component {
     }
 
     componentDidMount() {
-        // stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        // stripe = Stripe('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+        // stripe = Stripe('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         this.setState({
             totalPay: this.props.total
         });
@@ -77,13 +78,11 @@ export default class Payment extends Component {
     }
 
     addSoundcastToUser(charge) {
-        console.log('charge: ', charge);
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
         const {confirmationEmail} = soundcast;
         const {totalPay} = this.state;
         let userInfo = this.state.userInfo || this.props.userInfo;
-
         let _email, content;
 
         if(userInfo) {
@@ -113,6 +112,9 @@ export default class Payment extends Component {
                 if (user) {
                     const userId = user.uid;
                     const customer = charge && charge.customer ? charge.customer : null;
+                    console.log('charge: ', charge);
+                    console.log('customerID: ', customer);
+                    const platformCustomer = charge ? charge.platformCustomer : null;
                     // add soundcast to user
                     firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
                     .set({
@@ -124,13 +126,11 @@ export default class Payment extends Component {
                         planID: planID ? planID : null,
                         date_subscribed: moment().format('X')
                     });
+
                     // add stripe_id to user data if not already exists
-                    if(charge) {
-                        if(!userInfo.stripe_id && charge.platformCustomer && charge.platformCustomer.length > 0) {
-                            firebase.database().ref(`users/${userId}/stripe_id`)
-                            .set(charge.platformCustomer);
-                        }
-                    }
+                    firebase.database().ref(`users/${userId}/stripe_id`)
+                    .set(platformCustomer);
+
                     //add user to soundcast
                     firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
                     .set(moment().format('X'));
@@ -173,7 +173,7 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
-
+        const that = this;
         this.setState({
             startPaymentSubmission: true
         });
@@ -221,7 +221,6 @@ export default class Payment extends Component {
                         .then(function (response) {
                             const paid = response.data.res.paid; //boolean
                             const customer = response.data.res.customer;
-                            console.log('response: ', response);
                             if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
                                 that.setState({
                                     paid,
