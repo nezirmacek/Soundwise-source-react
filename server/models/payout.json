@@ -9,14 +9,6 @@
     }
   },
   "properties": {
-    "batchId": {
-      "type": "string",
-      "id": true,
-      "required": true,
-      "postgresql": {
-        "column": "batchId"
-      }
-    },
     "amount": {
       "type": "number",
       "required": true
@@ -34,10 +26,13 @@
     },
     "email": {
       "type": "string",
-      "required": true
+      "postgresql": {
+        "column": "email"
+      }
     },
     "payoutId": {
       "type": "string",
+      "id": true,
       "postgresql": {
         "column": "payoutId"
       }

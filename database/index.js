@@ -106,11 +106,10 @@ var Transaction = db.define('Transaction', { // records of listener payments and
 
 var Payout = db.define('Payout', { // records of payouts
   payoutId: { type: Sequelize.STRING, primaryKey: true }, // id for the payout item returned by paypal's webhook event
-  batchId: { type: Sequelize.STRING, allowNull: false }, //id for the payout batch from paypal that this particular payout belongs to
   amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   date: { type: Sequelize.DATEONLY, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
-  email: { type: Sequelize.STRING, allowNull: false }, //email address used to send paypal payout
+  email: { type: Sequelize.STRING }, //email address used to send paypal payout
 });
 
 Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});

@@ -1,67 +1,63 @@
 'use strict';
 
+const firebase = require('firebase-admin');
 const moment = require('moment');
 const sendinblue = require('sendinblue-api');
 const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
 module.exports = function(Payout) {
-  Payout.handlePaypalWebhookEvents = function(data, cb) {
+  Payout.handlePayoutWebhookEvents = function(data, cb) {
     // console.log('request body: ', data);
+    const ref = firebase.database().ref('publishers');
+    let publisherId;
+    ref.orderByChild('stripe_user_id').equalTo(data.account).on('value', (snapshot) => {
+      publisherId = snapshot.key;
+      switch (data.type) {
+        case 'payout.paid':
+          // write payout date to Payout table
+          if (data.data.object.id) {
+            const payout = {
+              batchId: data.data.object.id,
+              amount: data.data.object.amount,
+              date: data.data.object.arrival_date,
+              publisherId,
+              email: snapshot.val().email,
+              payoutId: data.data.object.id,
+              createdAt: moment().utc().format(),
+              updatedAt: moment().utc().format(),
+            };
+            console.log('new payout data: ', payout);
 
-    switch (data.event_type) {
-      case 'PAYMENT.PAYOUTS-ITEM.SUCCEEDED':
-        // write payout date to Payout table
-        if (data.resource.payout_item_id) {
-          const payout = {
-            batchId: data.resource.payout_batch_id,
-            amount: data.resource.payout_item.amount.value,
-            date: data.create_time,
-            publisherId: data.resource.payout_item.sender_item_id,
-            email: data.resource.payout_item.receiver,
-            payoutId: data.resource.payout_item_id,
-            createdAt: moment().utc().format(),
-            updatedAt: moment().utc().format(),
-          };
-          console.log('new payout data: ', payout);
-
-          Payout.create(payout)
-          .then(res => {
-            return cb(null, res);
-          })
-          .catch(err => {
-            return cb(err);
-          });
-        }
-        break;
-      case 'PAYMENT.PAYOUTS-ITEM.FAILED':
-        // aleart administrator that payout failed
-        emailAdmin(data, cb);
-        break;
-      case 'PAYMENT.PAYOUTS-ITEM.BLOCKED':
-        emailAdmin(data, cb);
-        break;
-      case 'PAYMENT.PAYOUTS-ITEM.DENIED':
-        emailAdmin(data, cb);
-        break;
-      case 'PAYMENT.PAYOUTS-ITEM.UNCLAIMED':
-        emailAdmin(data, cb);
-        break;
-      default:
-        return cb(null, {});
-    }
+            Payout.create(payout)
+            .then(res => {
+              return cb(null, res);
+            })
+            .catch(err => {
+              return cb(err);
+            });
+          }
+          break;
+        case 'payout.failed':
+          // aleart administrator that payout failed
+          emailAdmin(Object.assign({}, data, {publisherId}), cb);
+          break;
+        default:
+          return cb(null, {});
+      }
+    });
   };
 
   Payout.remoteMethod(
-    'handlePaypalWebhookEvents',
+    'handlePayoutWebhookEvents',
     {
       http: {
-        path: '/handlePaypalWebhookEvents',
+        path: '/handlePayoutWebhookEvents',
         verb: 'post',
         status: 200,
         errorStatus: 400,
       },
-      description: ['handle Paypal webhook events'],
-      notes: 'it accepts Paypal event data',
+      description: ['handle payout webhook events from stripe'],
+      notes: 'it accepts payout event data',
       accepts: {
         arg: 'data',
         type: 'object',
@@ -78,9 +74,9 @@ function emailAdmin(data, cb) {
   const sendinObj = new sendinblue(parameters);
   const input = {'to': {['natasha@mysoundwise.com']: 'Natasha Che'},
     'from': ['support@mysoundwise.com', 'Soundwise'],
-    'subject': `There is a problem with payout item
-      ${data.resource.payout_item_id}`,
-    'html': `<p>Webhook notice from Paypal:</p>
+    'subject': `There is a problem with payout
+    ${data.data.object.id} for ${data.publisherId}`,
+    'html': `<p>Webhook notice from Stripe:</p>
       <div>${JSON.stringify(data)}</div>`,
   };
 

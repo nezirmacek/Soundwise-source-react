@@ -185,6 +185,7 @@ class _AppSignup extends Component {
                         administrators: {
                             [firebase.auth().currentUser.uid]: true,
                         },
+                        email,
                     };
 
                     firebase.database().ref(`publishers/${this.publisherID}`).set(_newPublisher).then(

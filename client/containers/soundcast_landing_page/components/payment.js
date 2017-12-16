@@ -111,16 +111,15 @@ export default class Payment extends Component {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const userId = user.uid;
-                    const customer = charge && charge.customer ? charge.customer : null;
+                    const connectedCustomer = charge && charge.connectedCustomer ? charge.connectedCustomer : null;
                     console.log('charge: ', charge);
-                    console.log('customerID: ', customer);
                     const platformCustomer = charge ? charge.platformCustomer : null;
                     // add soundcast to user
                     firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
                     .set({
                         subscribed: true,
                         paymentID: paymentID ? paymentID : null,
-                        customerID: customer,
+                        customerID: connectedCustomer,
                         current_period_end,
                         billingCycle: billingCycle ? billingCycle : null,
                         planID: planID ? planID : null,
@@ -220,7 +219,6 @@ export default class Payment extends Component {
                         })
                         .then(function (response) {
                             const paid = response.data.res.paid; //boolean
-                            const customer = response.data.res.customer;
                             if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
                                 that.setState({
                                     paid,

@@ -156,7 +156,7 @@ module.exports = function(Transaction) {
                 source: req.source,
             })
                 .then(customer => {
-                    const data = Object.assign({}, req, {customer: customer.id});
+                    const data = Object.assign({}, req, {platformCustomer: customer.id});
                     return createCharge(Transaction, data, cb);
                 });
         } else { // if customer id is in the reqest body, create a charge using the existing customer id
@@ -209,7 +209,7 @@ function createTransactions(Transaction, transactionsPromises,
 function createCharge(Transaction, data, cb) {
   const {
     amount,
-    customer,
+    platformCustomer,
     description,
     publisherID,
     planID,
@@ -228,7 +228,7 @@ function createCharge(Transaction, data, cb) {
   // create token from customer
   // and then create charge using token and connected account id
   stripe.tokens.create({
-    customer: customer,
+    customer: platformCustomer,
   }, {
     stripe_account: stripe_user_id,
   }).then(function(token) {
@@ -257,14 +257,14 @@ function createCharge(Transaction, data, cb) {
         paymentId: planID,
         soundcastId: soundcastID,
         description,
-        customer, // listener's stripe id, this is the customer on platform, not on the connected account
+        customer: platformCustomer, // listener's stripe id, this is the customer on platform, not on the connected account
         createdAt: moment().utc().format(),
         updatedAt: moment().utc().format(),
       };
 
       Transaction.create(_transaction)
         .then(() => {
-          return cb(null, Object.assign({}, charge, {platformCustomer: customer}));
+          return cb(null, Object.assign({}, charge, {platformCustomer}));
         })
         .catch(err => {
           return cb(err);
