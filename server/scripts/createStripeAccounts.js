@@ -27,7 +27,7 @@ module.exports.createStripeAccount = (req, res) => {
       'metadata': {
         'publisherId': req.body.publisherId,
       },
-      'payout_statement_descript': 'Soundwise transfer',
+      'payout_statement_descriptor': 'Soundwise transfer',
     });
     res.send(response);
   })
