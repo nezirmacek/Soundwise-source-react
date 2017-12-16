@@ -4,6 +4,7 @@ import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
+import Dots from 'react-activity/lib/Dots';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -12,6 +13,23 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
+var parseQueryString = function( queryString ) {
+    var params = {}, queries, temp, i, l;
+    // Split into key/value pairs
+    queries = queryString.split("&");
+    // Convert the array of strings into an object
+    for ( i = 0, l = queries.length; i < l; i++ ) {
+        temp = queries[i].split('=');
+        params[temp[0]] = temp[1];
+    }
+    return params;
+};
+
+// development
+var redirectURI = 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK';
+// production
+// var redirectURI = 'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
+
 export default class Settings extends Component {
   constructor(props) {
     super(props);
@@ -19,6 +37,7 @@ export default class Settings extends Component {
       publisherName: '',
       publisherImg: '',
       publisherEmail: '',
+      stripe_user_id: null,
       fileUploaded: false,
       admins: [],
       adminFormShow: false,
@@ -27,14 +46,18 @@ export default class Settings extends Component {
       inviteeFirstName: '',
       inviteeLastName: '',
       publisherSaved: false,
+      authorized: false,
+      creatingAccount: false,
     };
     this.loadFromProp(props.userInfo);
     this.loadFromProp = this.loadFromProp.bind(this);
+    this.handleStripeRedirect = this.handleStripeRedirect.bind(this);
     this._uploadToAws = this._uploadToAws.bind(this);
     this.submit = this.submit.bind(this);
   }
 
   componentDidMount() {
+    const that = this;
     if(this.props.userInfo.publisher) {
       const { userInfo } = this.props;
       this.loadFromProp(userInfo);
@@ -66,11 +89,13 @@ export default class Settings extends Component {
                console.log('promise error: ', err);
           });
       });
+
+      this.handleStripeRedirect(publisherId, userInfo);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
+    if(nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher && nextProps != this.props) {
       const { userInfo } = nextProps;
       this.loadFromProp(userInfo);
       const that = this;
@@ -101,19 +126,50 @@ export default class Settings extends Component {
                console.log('promise error: ', err);
           });
       });
+
+      this.handleStripeRedirect(publisherId, userInfo);
     }
+  }
+
+  handleStripeRedirect(publisherId, userInfo) {
+      // handle stripe re-direct
+      const that = this;
+      const queryString = window.location.search.substring(1);
+      if(queryString.length > 0) {
+        const params = parseQueryString(queryString);
+        console.log('params.code: ', params.code);
+        if(params.state == publisherId && !this.state.authorized  && !this.state.creatingAccount) {
+            that.setState({
+              creatingAccount: true,
+            });
+            Axios.post('/api/create_stripe_account', {
+              code: params.code,
+              publisherId,
+            })
+            .then(res => {
+              that.setState({
+                stripe_user_id: res.stripe_user_id,
+                authorized: true,
+                creatingAccount: false,
+              });
+              that.loadFromProp(userInfo);
+            })
+            .catch(err => console.log('stripe client posting error: ', err));
+        }
+      }
   }
 
   loadFromProp(userInfo) {
     if(userInfo.publisher) {
       const publisherId = userInfo.publisherID;
-      const {name, imageUrl, paypalEmail} = userInfo.publisher;
+      const {name, imageUrl, paypalEmail, stripe_user_id} = userInfo.publisher;
       const {publisherName, publisherImg, publisherPaypal} = this.state;
       this.setState({
         publisherName: name ? name : publisherEmail,
         publisherImg: imageUrl ? imageUrl : publisherImg,
         publisherEmail: paypalEmail ? paypalEmail : publisherPaypal,
         publisherId,
+        stripe_user_id,
       })
     }
   }
@@ -196,7 +252,7 @@ export default class Settings extends Component {
   }
 
   render() {
-    const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent } = this.state;
+    const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent, stripe_user_id, creatingAccount } = this.state;
     const that = this;
     const {userInfo} = this.props;
 
@@ -271,37 +327,58 @@ export default class Settings extends Component {
                                   </div>
                               </div>
                           </div>
-                          <div style={{marginTop: 20,}}>
-                            <span style={{...styles.titleText, marginTop: 20,}}>
-                                Publisher Paypal Email
-                            </span>
+                          <div className='row' style={{paddingBottom: 30}}>
+                            <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
+                                {
+                                  publisherSaved &&
+                                  <div style={{paddingTop: 25, display: 'flex', justifyContent: 'center'}}>
+                                    <span style={{fontSize: 16, color: Colors.mainOrange}}>Saved</span>
+                                  </div>
+                                  ||
+                                  <OrangeSubmitButton
+                                      label="Save"
+                                      onClick={this.submit}
+                                      styles={{margin: '20px auto'}}
+                                  />
+                                }
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <TransparentShortSubmitButton
+                                    label="Cancel"
+                                    styles={{margin: '20px auto'}}
+                                    onClick={() => this.loadFromProp(userInfo)}
+                                />
+                            </div>
                           </div>
-                          <div style={styles.inputTitleWrapper}>
-                            <input
-                                type="text"
-                                style={styles.inputTitle}
-                                onChange={(e) => {this.setState({publisherEmail: e.target.value})}}
-                                value={publisherEmail}
-                            />
-                          </div>
-                          <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
+                          <div className='row' style={{padding: '30px 0px 30px 0px', borderTop: '0.5px solid lightgrey', borderBottom: '0.5px solid lightgrey'}}>
+                            <div className='col-md-7' style={{display: 'flex', alignItems: 'center', height: 37}}>
                               {
-                                publisherSaved &&
-                                <div style={{paddingTop: 45, display: 'flex', justifyContent: 'center'}}>
-                                  <span style={{fontSize: 16, color: Colors.mainOrange}}>Saved</span>
+                                stripe_user_id &&
+                                <div>
+                                  <span style={{...styles.titleText, color: 'green', marginRight: 15}}><i className="fa fa-check" aria-hidden="true"></i></span>
+                                  <span style={styles.titleText}>Stripe Payout Account Connected
+                                  </span>
                                 </div>
                                 ||
-                                <OrangeSubmitButton
-                                    label="Save"
-                                    onClick={this.submit}
-                                />
+                                creatingAccount &&
+                                <span style={styles.titleText}>Setting up Stripe Account</span>
+                                ||
+                                <span style={styles.titleText}>Set up Payouts with Stripe</span>
                               }
-                          </div>
-                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                              <TransparentShortSubmitButton
-                                  label="Cancel"
-                                  onClick={() => this.loadFromProp(userInfo)}
-                              />
+                            </div>
+                            <div className='col-md-4'>
+                              {
+                                creatingAccount &&
+                                <Dots style={{display: 'flex'}} color="#727981" size={24} speed={1}/>
+                                ||
+                                <a href={`https://connect.stripe.com/express/oauth/authorize?redirect_uri=${redirectURI}&state=${userInfo.publisherID}`}>
+                                  <OrangeSubmitButton
+                                    label= {stripe_user_id ? 'Reconnect' : 'Start >>'}
+                                    styles={{backgroundColor: Colors.link, borderColor: Colors.link, width: '100%', margin: '0px auto'}}
+                                  />
+                                </a>
+                              }
+                            </div>
                           </div>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>

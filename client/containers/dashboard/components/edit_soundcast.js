@@ -82,7 +82,7 @@ export default class EditSoundcast extends Component {
       }
 
       if(confirmationEmail) {
-        let confirmEmailText = convertFromRaw(JSON.parse(confirmationEmail));
+        let confirmEmailText = convertFromRaw(JSON.parse(confirmationEmail.replace('[soundcast title]', title)));
         confirmEmailEditorState = EditorState.createWithContent(confirmEmailText);
       } else {
         confirmEmailEditorState = this.state.confirmationEmail;

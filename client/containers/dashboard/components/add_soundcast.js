@@ -814,7 +814,7 @@ export default class AddSoundcast extends Component {
 						</div>
 						{this.renderAdditionalInputs()}
 
-						{/*Invitations*/}
+						{/*Confirmation email*/}
 						<div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
 							<div>
 								<span style={styles.titleText}>

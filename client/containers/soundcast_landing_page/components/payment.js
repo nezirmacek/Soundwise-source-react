@@ -77,7 +77,7 @@ export default class Payment extends Component {
     }
 
     addSoundcastToUser(charge) {
-        // console.log('charge: ', charge);
+        console.log('charge: ', charge);
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
         const {confirmationEmail} = soundcast;
@@ -91,7 +91,7 @@ export default class Payment extends Component {
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
             const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
-            let current_period_end = 4638902400;
+            let current_period_end = 4638902400; // 2117/1/1
 
             const paymentID = charge && charge.id ? charge.id : null;
             const planID = charge && charge.plan ? charge.plan.id : null;
@@ -112,21 +112,23 @@ export default class Payment extends Component {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const userId = user.uid;
+                    const customer = charge && charge.customer ? charge.customer : null;
                     // add soundcast to user
                     firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
                     .set({
                         subscribed: true,
                         paymentID: paymentID ? paymentID : null,
-                        current_period_end, //this will be null if one time payment
+                        customerID: customer,
+                        current_period_end,
                         billingCycle: billingCycle ? billingCycle : null,
                         planID: planID ? planID : null,
                         date_subscribed: moment().format('X')
                     });
                     // add stripe_id to user data if not already exists
                     if(charge) {
-                        if(!userInfo.stripe_id && charge.customer && charge.customer.length > 0) {
+                        if(!userInfo.stripe_id && charge.platformCustomer && charge.platformCustomer.length > 0) {
                             firebase.database().ref(`users/${userId}/stripe_id`)
-                            .set(charge.customer);
+                            .set(charge.platformCustomer);
                         }
                     }
                     //add user to soundcast
@@ -196,75 +198,92 @@ export default class Payment extends Component {
                 startPaymentSubmission: false
             })
         } else {
-            if(billingCycle == 'one time') { //if one time charge, post to api/charge
-                Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
-                    amount,
-                    source: response.id,
-                    currency: 'usd',
-                    receipt_email: email[0],
-                    customer: stripe_id,
-                    billingCycle,
-                    publisherID: soundcast.publisherID,
-                    soundcastID,
-                    planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
-                    description: `${soundcast.title}: ${paymentPlan}`,
-                    statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
-                })
-                .then(function (response) {
-                    const paid = response.data.res.paid; //boolean
-                    const customer = response.data.res.customer;
+            firebase.database().ref(`publishers/${soundcast.publisherID}`)
+            .once('value')
+            .then(snapshot => {
+               if(snapshot.val() && snapshot.val().stripe_user_id) {
+                    const stripe_user_id = snapshot.val().stripe_user_id;
+                    if(billingCycle == 'one time') { //if one time charge, post to api/charge
+                        Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
+                            amount,
+                            source: response.id,
+                            currency: 'usd',
+                            receipt_email: email[0],
+                            customer: stripe_id,
+                            billingCycle,
+                            publisherID: soundcast.publisherID,
+                            stripe_user_id,
+                            soundcastID,
+                            planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
+                            description: `${soundcast.title}: ${paymentPlan}`,
+                            statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
+                        })
+                        .then(function (response) {
+                            const paid = response.data.res.paid; //boolean
+                            const customer = response.data.res.customer;
+                            console.log('response: ', response);
+                            if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
+                                that.setState({
+                                    paid,
+                                    startPaymentSubmission: false
+                                });
 
-                    if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
-                        that.setState({
-                            paid,
-                            startPaymentSubmission: false
-                        });
+                                that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log('error from stripe: ', error)
+                            that.setState({
+                                paymentError: 'Your payment is declined :( Please check your credit card information.',
+                                startPaymentSubmission: false
+                            })
+                        })
+                    } else {  //if subscription, post to api/recurring_charge
+                        Axios.post('/api/recurring_charge', {
+                            amount,
+                            source: response.id,
+                            currency: 'usd',
+                            receipt_email: email[0],
+                            customer: stripe_id,
+                            publisherID: soundcast.publisherID,
+                            stripe_user_id,
+                            soundcastID,
+                            billingCycle,
+                            planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
+                            description: `${soundcast.title}: ${paymentPlan}`,
+                            statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
+                        })
+                        .then(function (response) {
 
-                        that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
+                            const subscription = response.data; //boolean
+                            const customer = response.data.customer;
+                            // console.log('subscription: ', subscription);
+
+                            if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
+                                that.setState({
+                                    paid: true,
+                                    startPaymentSubmission: false
+                                });
+
+                                that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log('error from stripe: ', error)
+                            that.setState({
+                                paymentError: 'Your payment is declined :( Please check your credit card information.',
+                                startPaymentSubmission: false
+                            })
+                        })
                     }
-                })
-                .catch(function (error) {
-                    console.log('error from stripe: ', error)
-                    that.setState({
-                        paymentError: 'Your payment is declined :( Please check your credit card information.',
+               } else {
+                    this.setState({
+                        paymentError: "Unable to process this payment. Sorry!",
+                        submitDisabled: false,
                         startPaymentSubmission: false
                     })
-                })
-            } else {  //if subscription, post to api/recurring_charge
-                Axios.post('/api/recurring_charge', {
-                    amount,
-                    source: response.id,
-                    currency: 'usd',
-                    receipt_email: email[0],
-                    customer: stripe_id,
-                    billingCycle,
-                    planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
-                    description: `${soundcast.title}: ${paymentPlan}`,
-                    statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
-                })
-                .then(function (response) {
-
-                    const subscription = response.data; //boolean
-                    const customer = response.data.customer;
-                    // console.log('subscription: ', subscription);
-
-                    if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
-                        that.setState({
-                            paid: true,
-                            startPaymentSubmission: false
-                        });
-
-                        that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
-                    }
-                })
-                .catch(function (error) {
-                    console.log('error from stripe: ', error)
-                    that.setState({
-                        paymentError: 'Your payment is declined :( Please check your credit card information.',
-                        startPaymentSubmission: false
-                    })
-                })
-            }
+               }
+            })
         }
     }
 

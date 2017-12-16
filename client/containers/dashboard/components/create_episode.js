@@ -39,6 +39,7 @@ class _CreateEpisode extends Component {
             description: '',
             actions: '',
             publicEpisode: false,
+            index: null,
 
             recordedAudioUrl: '', // linkto uploaded file aws s3
             uploadedAudioUrl: '',

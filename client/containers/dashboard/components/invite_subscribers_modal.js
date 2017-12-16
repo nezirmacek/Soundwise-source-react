@@ -3,8 +3,14 @@ import PropTypes from 'prop-types';
 import ReactCrop from 'react-image-crop';
 import axios from 'axios';
 import firebase from 'firebase';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import draftToHtml from 'draftjs-to-html';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import moment from 'moment';
 import Papa from 'papaparse';
+import { Editor } from 'react-draft-wysiwyg';
+import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -18,27 +24,49 @@ export default class InviteSubscribersModal extends Component {
     super(props);
     this.state={
       inviteeList: '',
-      submitted: false
+      submitted: false,
+      invitation: EditorState.createEmpty(),
     }
 
     this.closeModal = this.closeModal.bind(this);
     this.inviteListeners = this.inviteListeners.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { soundcast, userInfo } = nextProps;
+    let editorState;
+    if(userInfo.publisher && soundcast && nextProps != this.props) {
+      if(soundcast.invitationEmail) {
+        let contentState = convertFromRaw(JSON.parse(soundcast.invitationEmail));
+        editorState = EditorState.createWithContent(contentState);
+      } else {
+        const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: </strong>Download the app <strong><a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</strong></p><p><strong>Android user: </strong>Download the app <strong><a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</strong></p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p>`;
+          const invitationEmail = convertFromHTML(content);
+          const invitation = ContentState.createFromBlockArray(
+            invitationEmail.contentBlocks,
+            invitationEmail.entityMap
+          );
+          editorState = EditorState.createWithContent(invitation);
+      }
+        this.setState({
+          invitation: editorState,
+        })
+    }
+  }
+
   inviteListeners() {
     const inviteeArr = this.state.inviteeList.split(',');
     const that = this;
     const { soundcast, userInfo } = this.props;
-
+    const {invitation} = this.state;
     for(var i = inviteeArr.length -1; i >= 0; i--) {
         if (inviteeArr[i].indexOf('@') == -1) {
             inviteeArr.splice(i, 1);
         }
     }
-
+    const content = draftToHtml(convertToRaw(invitation.getCurrentContent()));
     // send email invitations to invited listeners
     const subject = `${userInfo.publisher.name} invites you to subscribe to ${soundcast.title}`;
-    const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
     inviteListeners(inviteeArr, subject, content);
 
     var invitationPromise = inviteeArr.map(email => {
@@ -74,6 +102,8 @@ export default class InviteSubscribersModal extends Component {
     Promise.all(invitationPromise)
     .then(
       res => {
+        firebase.database().ref(`soundcasts/${that.props.soundcast.id}/invitationEmail`).set(JSON.stringify(convertToRaw(invitation.getCurrentContent())))
+        .catch(err => console.log('error'));
         return res;
       },
       err => {
@@ -93,6 +123,12 @@ export default class InviteSubscribersModal extends Component {
     });
 
     this.props.onClose();
+  }
+
+  onInvitationStateChange(editorState) {
+    this.setState({
+      invitation: editorState,
+    })
   }
 
   setFileName(e) {
@@ -130,7 +166,24 @@ export default class InviteSubscribersModal extends Component {
 
   render() {
     const { soundcast, userInfo } = this.props;
-
+    const actions = [
+      <FlatButton
+        label="Submit"
+        labelStyle={{color: Colors.link}}
+        onClick={this.inviteListeners}
+      />,
+      <FlatButton
+        label="Cancel"
+        onClick={this.closeModal}
+      />,
+    ];
+    const actionsSubmitted = [
+      <FlatButton
+        label="OK"
+        labelStyle={{color: Colors.link}}
+        onClick={this.closeModal}
+      />
+    ];
     if(!this.props.isShown) {
       return null;
     }
@@ -138,84 +191,79 @@ export default class InviteSubscribersModal extends Component {
     if(this.state.submitted) {
       return (
       <div>
-        <div
-          style={styles.backDrop}
-          onClick={this.closeModal}>
-        </div>
-        <div style={styles.modal}>
-          <div className='title-medium'
-            style={styles.successText}>
-            Your invitee list has been submitted
-          </div>
-          <div style={styles.successButtonWrap}>
-              <div
-                  style={{...styles.button}}
-                  onClick={this.closeModal}>
-                  Close
-              </div>
-          </div>
-        </div>
+        <MuiThemeProvider>
+          <Dialog
+            title='Your invitations have been sent'
+            titleStyle={{borderBottom: '0px'}}
+            actions={actionsSubmitted}
+            modal={false}
+            open={this.props.isShown}
+          >
+          </Dialog>
+        </MuiThemeProvider>
       </div>
       )
     }
 
     return (
       <div>
-        <div
-          style={styles.backDrop}
-          onClick={this.closeModal}>
-        </div>
-        <div style={styles.modal}>
-          <div style={styles.titleText}>
-            <div
-              className='title-medium'>
-                {`Invite subscribers to ${soundcast.title}`}
-            </div>
-          </div>
-          <div className='col-md-12' style={{height: '45%'}}>
-          <textarea
-              style={styles.inputDescription}
-              placeholder={'Enter listener email addresses, separated by commas'}
-              onChange={(e) => {this.setState({inviteeList: e.target.value})}}
-              value={this.state.inviteeList}
-          >
-          </textarea>
-          </div>
-          <div className='col-md-12' style={{}}>
-            <div className='text-medium col-md-12'
-              style={{display: 'flex', justifyContent: 'center'}}
+        <MuiThemeProvider>
+        <Dialog
+          title={`Invite subscribers to ${soundcast.title}`}
+          titleStyle={{borderBottom: '0px'}}
+          actions={actions}
+          modal={false}
+          open={this.props.isShown}
+          contentStyle={{width: '80%', maxWidth: 'none', height: 700, maxHeight: 'none'}}
+          autoScrollBodyContent={true}
+        >
+            <div className='col-md-12' style={{height: 100}}>
+              <textarea
+                  style={styles.inputDescription}
+                  placeholder={'Enter listener email addresses, separated by commas'}
+                  onChange={(e) => {this.setState({inviteeList: e.target.value})}}
+                  value={this.state.inviteeList}
               >
-              <span>OR</span>
+              </textarea>
             </div>
-            <div className='col-md-12'>
-              <input
-                  type="file"
-                  name="upload"
-                  id="upload_csv"
-                  onChange={this.setFileName.bind(this)}
-                  style={styles.inputFileHidden}
-              />
-              <div className='btn'
-                  style={{...styles.draftButton,}}
-                  onClick={() => {document.getElementById('upload_csv').click();}}
-              >
-                  <span>Upload invitee email list in CSV file</span>
+            <div className='col-md-12' style={{}}>
+              <div className='text-medium col-md-12'
+                style={{display: 'flex', justifyContent: 'center'}}
+                >
+                <span>OR</span>
+              </div>
+              <div className='col-md-6 center-col'>
+                <input
+                    type="file"
+                    name="upload"
+                    id="upload_csv"
+                    onChange={this.setFileName.bind(this)}
+                    style={styles.inputFileHidden}
+                />
+                <div className='btn'
+                    style={{...styles.draftButton,}}
+                    onClick={() => {document.getElementById('upload_csv').click();}}
+                >
+                    <span>Upload invitee email list in CSV file</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div style={styles.buttonsWrap}>
-            <div
-                style={{...styles.button, ...styles.submitButton}}
-                onClick={this.inviteListeners}>
-                Submit
+            {/*Confirmation email*/}
+            <div className='col-md-12' style={{paddingTop: 25, paddingBottom: 25,}}>
+              <div>
+                <span style={styles.titleText}>
+                  Invitation Message
+                </span>
+                <Editor
+                  editorState = {this.state.invitation}
+                  editorStyle={styles.editorStyle}
+                  wrapperStyle={styles.wrapperStyle}
+                  onEditorStateChange={this.onInvitationStateChange.bind(this)}
+                />
+              </div>
             </div>
-            <div
-                style={styles.button}
-                onClick={this.closeModal}>
-                Cancel
-            </div>
-          </div>
-        </div>
+        </Dialog>
+        </MuiThemeProvider>
       </div>
     )
   }
@@ -235,8 +283,8 @@ const styles = {
     position: 'absolute',
     top: '30%',
     left: '50%',
-    width: '60%',
-    height: '50%',
+    width: '95%',
+    height: '60%',
     transform: 'translate(-50%, -50%)',
     zIndex: '9999',
     background: '#fff'
@@ -257,7 +305,22 @@ const styles = {
   titleText: {
     marginTop: 30,
     marginBottom: 20,
-    marginLeft: 20
+    // marginLeft: 20,
+    fontSize: 18,
+    fontWeight: 600,
+  },
+  editorStyle: {
+    padding: '5px',
+    fontSize: 16,
+    borderRadius: 4,
+    height: '250px',
+    width: '100%',
+    backgroundColor: Colors.mainWhite,
+  },
+  wrapperStyle: {
+    borderRadius: 4,
+    marginBottom: 25,
+    marginTop: 15,
   },
   inputDescription: {
     height: '100%',

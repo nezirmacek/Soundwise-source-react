@@ -210,7 +210,10 @@ export default class SoundcastsManaged extends Component {
                       style={{...styles.button, borderColor: Colors.mainGrey}}
                       onClick={() => history.push({
                         pathname:'/dashboard/add_episode',
-                        state: {soundcastID: soundcast.id},
+                        state: {
+                          soundcastID: soundcast.id,
+                          soundcast,
+                        },
                       })}
                     >
                       <span>

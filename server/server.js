@@ -12,6 +12,7 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require("firebase-admin");
 var serviceAccount = require("../serviceAccountKey.json");
+var cors = require('cors');
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
@@ -22,6 +23,7 @@ var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerI
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
+var createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
 var Raven = require('raven');
 var database = require('../database');
 
@@ -47,6 +49,7 @@ app.start = function() {
   });
 };
 
+app.use(cors());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
@@ -67,6 +70,7 @@ uploader.use(new S3Strategy({
 
 // use part
 // app.post('/api/charge', handlePayment);
+app.post('/api/create_stripe_account', createStripeAccount);
 app.post('/api/recurring_charge', handleRecurringPayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);

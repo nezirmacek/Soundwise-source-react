@@ -6,100 +6,15 @@ var admin = require("firebase-admin");
 const sendinblue = require('sendinblue-api');
 const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
+const stripeFeeFixed = 30; // 30 cents fixed fee
+const stripeFeePercent = (2.9 + 0.5); // 2.9% transaction fee, 0.5% fee on payout volume
+const soundwiseFeePercent = 0;
+
 module.exports = function(Transaction) {
   Transaction.handleStripeWebhookEvent = function(data, cb) {
         // When recording to database, the soundcast id and publisher id come from the 'plan id' data returned from stripe.
         // because the format of 'plan id' is publisherID-soundcastID-soundcast title-billingCycle-price.
     console.log('handleStripeWebhookEvent post request body: ', data);
-
-        // let _body = {
-        // 	"id": "evt_1BMIZGH62wlr1FFaa0Lymsmi",
-        // 	"object": "event",
-        // 	"api_version": "2017-04-06",
-        // 	"created": 1510243670,
-        // 	"data": {
-        // 		"object": {
-        // 			"id": "in_1BMIZEH62wlr1FFa65J8GKsO",
-        // 			"object": "invoice",
-        // 			"amount_due": 515,
-        // 			"application_fee": null,
-        // 			"attempt_count": 0,
-        // 			"attempted": true,
-        // 			"billing": "charge_automatically",
-        // 			"charge": "ch_1BMIZEH62wlr1FFaBxGs2aGd",
-        // 			"closed": true,
-        // 			"currency": "usd",
-        // 			"customer": "cus_Bjm7lqBvULh8VF",
-        // 			"date": 1510243668,
-        // 			"description": null,
-        // 			"discount": null,
-        // 			"ending_balance": 0,
-        // 			"forgiven": false,
-        // 			"lines": {
-        // 				"object": "list",
-        // 				"data": [
-        // 					{
-        // 						"id": "sub_Bjm7lDpCIO9S6s",
-        // 						"object": "line_item",
-        // 						"amount": 515,
-        // 						"currency": "usd",
-        // 						"description": null,
-        // 						"discountable": true,
-        // 						"livemode": true,
-        // 						"metadata": {},
-        // 						"period": {
-        // 							"start": 1510243668,
-        // 							"end": 1512835668
-        // 						},
-        // 						"plan": {
-        // 							"id": "1503002103690p-1503691618714s-Founders Nextdoor-monthly-5",
-        // 							"object": "plan",
-        // 							"amount": 515,
-        // 							"created": 1510243666,
-        // 							"currency": "usd",
-        // 							"interval": "month",
-        // 							"interval_count": 1,
-        // 							"livemode": true,
-        // 							"metadata": {},
-        // 							"name": "Founders Nextdoor: Monthly subscription",
-        // 							"statement_descriptor": null,
-        // 							"trial_period_days": null
-        // 						},
-        // 						"proration": false,
-        // 						"quantity": 1,
-        // 						"subscription": null,
-        // 						"subscription_item": "si_1BMIZEH62wlr1FFabl12IHEK",
-        // 						"type": "subscription"
-        // 					}
-        // 				],
-        // 				"has_more": false,
-        // 				"total_count": 1,
-        // 				"url": "/v1/invoices/in_1BMIZEH62wlr1FFa65J8GKsO/lines"
-        // 			},
-        // 			"livemode": true,
-        // 			"metadata": {},
-        // 			"next_payment_attempt": null,
-        // 			"number": "efa4702232-0001",
-        // 			"paid": true,
-        // 			"period_end": 1510243668,
-        // 			"period_start": 1510243668,
-        // 			"receipt_number": "2743-3745",
-        // 			"starting_balance": 0,
-        // 			"statement_descriptor": null,
-        // 			"subscription": "sub_Bjm7lDpCIO9S6s",
-        // 			"subtotal": 515,
-        // 			"tax": null,
-        // 			"tax_percent": null,
-        // 			"total": 515,
-        // 			"webhooks_delivered_at": null
-        // 		}
-        // 	},
-        // 	"livemode": true,
-        // 	"pending_webhooks": 2,
-        // 	"request": "req_ofehLEd21SaMIm",
-        // 	"type": "invoice.payment_succeeded"
-        // };
-
     const _transactions = [];
     const _transactionsPromises = [];
     const _errors = [];
@@ -299,6 +214,7 @@ function createCharge(Transaction, data, cb) {
     publisherID,
     planID,
     soundcastID,
+    stripe_user_id,
   } = data;
 
   let statement_descriptor;
@@ -308,19 +224,30 @@ function createCharge(Transaction, data, cb) {
     statement_descriptor = data.statement_descriptor;
   }
 
-  stripe.charges.create({
-        amount: Number(amount).toFixed(),
-        currency: 'usd',
-        customer,
-        description,
-        statement_descriptor,
-  }, (err, charge) => {
-    if (err) {
-      console.log(err);
-      return cb(err);
-    }
+  const fees = soundwiseFeePercent / 100 * Number(amount);
+  // create token from customer
+  // and then create charge using token and connected account id
+  stripe.tokens.create({
+    customer: customer,
+  }, {
+    stripe_account: stripe_user_id,
+  }).then(function(token) {
+    stripe.charges.create({
+      amount: Number(amount).toFixed(),
+      currency: 'usd',
+      source: token.id,
+      application_fee: fees.toFixed(),
+      description,
+      statement_descriptor,
+    }, {
+      stripe_account: stripe_user_id,
+    }, (err, charge) => {
+      if (err) {
+        console.log(err);
+        return cb(err);
+      }
 
-    const _transaction = {
+      const _transaction = {
         transactionId: `tr_${moment().format('x')}`,
         chargeId: charge.id,
         type: 'charge',
@@ -330,19 +257,18 @@ function createCharge(Transaction, data, cb) {
         paymentId: planID,
         soundcastId: soundcastID,
         description,
-        customer, // listener's stripe id
+        customer, // listener's stripe id, this is the customer on platform, not on the connected account
         createdAt: moment().utc().format(),
         updatedAt: moment().utc().format(),
-    };
+      };
 
-    console.log(_transaction);
-
-    Transaction.create(_transaction)
+      Transaction.create(_transaction)
         .then(() => {
-          return cb(null, charge);
+          return cb(null, Object.assign({}, charge, {platformCustomer: customer}));
         })
         .catch(err => {
           return cb(err);
         });
+    });
   });
 }

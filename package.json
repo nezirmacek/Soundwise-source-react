@@ -22,7 +22,7 @@
     "chart.js": "^2.6.0",
     "compression": "^1.0.3",
     "connect-multiparty": "^2.0.0",
-    "cors": "^2.5.2",
+    "cors": "^2.8.4",
     "dotenv": "^2.0.0",
     "draft-js": "^0.10.1",
     "draftjs-to-html": "^0.7.5",
