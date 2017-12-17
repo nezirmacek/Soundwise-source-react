@@ -85,7 +85,7 @@ class _CreateEpisode extends Component {
             if(snapshot.val()) {
                 that.setState({
                     publicEpisode: snapshot.val().landingPage ? true : false
-                })
+                });
             }
         });
 
@@ -319,53 +319,54 @@ class _CreateEpisode extends Component {
                 isPublished: isPublished,
             };
 
-            // console.log('audioDuration: ', audioDuration, 'currentRecordingDuration: ', currentRecordingDuration);
-
-            // console.log('newEpisode: ', newEpisode);
-
-            firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
-                res => {
-                    // console.log('success add episode: ', res);
-                },
-                err => {
-                    console.log('ERROR add episode: ', err);
-                }
-            );
-
-            firebase.database().ref(`soundcasts/${this.currentSoundcastId}/last_update`).set(newEpisode.date_created);
-
-            firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
-                res => {
-                    // console.log('success add episodeID to soundcast: ', res);
-                },
-                err => {
-                    console.log('ERROR add episodeID to soundcast: ', err);
-                }
-            );
-
-            Axios.post('/api/episode', {
-                episodeId: this.episodeId,
-                soundcastId: this.currentSoundcastId,
-                publisherId: userInfo.publisherID,
-                title,
-                soundcastTitle: userInfo.soundcasts_managed[this.currentSoundcastId].title,
-            }).then(
-                res => {
-                    // console.log('episode saved to db', res);
-                    if(isPublished) {
-                      that.notifySubscribers();
+            firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes`)
+            .once('value')
+            .then(snapshot => {
+                const index = Object.keys(snapshot.val()).length + 1;
+                newEpisode.index = index;
+                firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
+                    res => {
+                        // console.log('success add episode: ', res);
+                    },
+                    err => {
+                        console.log('ERROR add episode: ', err);
                     }
-                    history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
-                }
-            ).catch(
-                err => {
-                    console.log('episode failed to save to db', err);
-                    if(isPublished) {
-                      that.notifySubscribers();
+                );
+
+                firebase.database().ref(`soundcasts/${this.currentSoundcastId}/last_update`).set(newEpisode.date_created);
+
+                firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).set(true).then(
+                    res => {
+                    },
+                    err => {
+                        console.log('ERROR add episodeID to soundcast: ', err);
                     }
-                    history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
-                }
-            );
+                );
+
+                Axios.post('/api/episode', {
+                    episodeId: this.episodeId,
+                    soundcastId: this.currentSoundcastId,
+                    publisherId: userInfo.publisherID,
+                    title,
+                    soundcastTitle: userInfo.soundcasts_managed[this.currentSoundcastId].title,
+                }).then(
+                    res => {
+                        // console.log('episode saved to db', res);
+                        if(isPublished) {
+                          that.notifySubscribers();
+                        }
+                        history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
+                    }
+                ).catch(
+                    err => {
+                        console.log('episode failed to save to db', err);
+                        if(isPublished) {
+                          that.notifySubscribers();
+                        }
+                        history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
+                    }
+                );
+            })
         }
     }
 

@@ -3,9 +3,41 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import axios from 'axios';
 import firebase from 'firebase';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
+
+// a little function to help us with reordering the result
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+};
+
+// using some little inline style helpers to make the app look okay
+const grid = 8;
+const getItemStyle = (draggableStyle, isDragging) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: 'none',
+  padding: grid * 2,
+  margin: `0 0 ${grid}px 0`,
+
+  // change background colour if dragging
+  background: isDragging ? Colors.link : '#f5f5f5',
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+  borderBottom: '0.3px solid lightgrey',
+});
+const getListStyle = isDraggingOver => ({
+  background: isDraggingOver ? 'lightgrey' : 'white',
+  padding: 20,
+  maxHeight: 700,
+  overflowY: 'scroll',
+  // width: 250,
+});
 
 export default class Soundcast extends Component {
   constructor(props) {
@@ -14,8 +46,11 @@ export default class Soundcast extends Component {
       showStatsModal: false,
       currentEpisode: null,
       userInfo: {soundcasts_managed: {}},
+      episodes: [],
     };
     this.handleStatsModal = this.handleStatsModal.bind(this);
+    this.loadEpisodes = this.loadEpisodes.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
   }
 
   componentDidMount() {
@@ -23,17 +58,65 @@ export default class Soundcast extends Component {
       const { userInfo } = this.props;
       this.setState({
         userInfo
-      })
+      });
+      this.loadEpisodes(userInfo);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.userInfo) {
+    if(nextProps.userInfo && nextProps.userInfo != this.props.userInfo) {
       const { userInfo } = nextProps;
       this.setState({
         userInfo
-      })
+      });
+      this.loadEpisodes(userInfo);
     }
+  }
+
+  loadEpisodes(userInfo) {
+    const { history, id } = this.props;
+    let _soundcast = {};
+    if(userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
+      _soundcast = userInfo.soundcasts_managed[id];
+      const _episodes = [];
+      if(_soundcast.episodes) {
+        for (let id in _soundcast.episodes) {
+          const _episode = _soundcast.episodes[id];
+          if (typeof(_episode)==='object') {
+            _episode.id = id;
+            _episodes.push(_episode);
+          }
+        }
+        _episodes.sort((a, b) => {
+          return b.index - a.index;
+        });
+        this.setState({
+          episodes: _episodes,
+        })
+      }
+    };
+  }
+
+  onDragEnd(result) {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+    const episodes = reorder(
+      this.state.episodes,
+      result.source.index,
+      result.destination.index
+    );
+
+    this.setState({
+      episodes,
+    });
+    const total = episodes.length;
+    const promises = episodes.map((episode, i) => {
+      return firebase.database().ref(`episodes/${episode.id}/index`)
+        .set(total - i);
+    });
+    Promise.all(promises);
   }
 
   handleStatsModal() {
@@ -78,26 +161,25 @@ export default class Soundcast extends Component {
   }
 
   render() {
-    const { userInfo } = this.state;
+    const { userInfo, episodes } = this.state;
     const { history, id } = this.props;
     let _soundcast = {};
     if(userInfo.soundcasts_managed[id]) {
       _soundcast = userInfo.soundcasts_managed[id];
-    };
-    const _episodes = [];
-    if(_soundcast.episodes) {
-      for (let id in _soundcast.episodes) {
-        const _episode = _soundcast.episodes[id];
-        if (typeof(_episode)==='object') {
-          _episode.id = id;
-          _episodes.push(_episode);
+      const _episodes = [];
+      if(_soundcast.episodes) {
+        for (let id in _soundcast.episodes) {
+          const _episode = _soundcast.episodes[id];
+          if (typeof(_episode)==='object') {
+            _episode.id = id;
+            _episodes.push(_episode);
+          }
         }
+        _episodes.sort((a, b) => {
+          return b.date_created - a.date_created;
+        });
       }
-    }
-
-    _episodes.sort((a, b) => {
-      return b.date_created - a.date_created;
-    });
+    };
 
     return (
         <div className='' style={styles.itemContainer}>
@@ -120,68 +202,86 @@ export default class Soundcast extends Component {
               Add episode
             </div>
           </div>
-          <div className=''>
-            <div className='table-responsive' style={styles.tableWrapper}>
-              <table className='table  table-hover'>
-                <thead>
-                  <tr className='' style={styles.tr}>
-                    <th className='col-md-6' style={{...styles.th, }}>
-                      TITLE
-                    </th>
-                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>PUBLISHED ON</th>
-                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>LENGTH</th>
-                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>CREATOR</th>
-                    <th className='col-md-1' style={{...styles.th, textAlign: 'center'}}>ANALYTICS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    _episodes.map((episode, i) => {
-                      episode.creator = userInfo.publisher.administrators[episode.creatorID];
-
-                      return (
-                        <tr className='' key={i} style={{...styles.tr}}>
-                          <td className='col-md-6'
-                            style={{...styles.td}}>
-                            <div style={{marginRight: 20}}>
-                              <div style={{marginTop: 24}}>{episode.title}</div>
-                              <div style={{marginBottom: 5}}>
-                                <span
-                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
-                                  onClick={() => this.deleteEpisode(episode)}>
-                                    Delete
-                                </span>
-                                <span
-                                  style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
-                                  onClick={() => this.editEpisode(episode)}>
-                                  Edit
-                                </span>
-                                {
-                                  episode.publicEpisode &&
-                                  <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
-                                    <span className='text-dark-gray'
-                                      style={{cursor: 'pointer', fontSize: 15}}>
-                                      View
-                                    </span>
-                                  </a>
-                                  || null
-                                }
-                              </div>
-                            </div>
-                          </td>
-                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.isPublished &&moment(episode.date_created * 1000).format('MMM DD YYYY') || 'draft'}</td>
-                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</td>
-                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>{episode.creator ? episode.creator.firstName : '__'} {episode.creator? episode.creator.lastName : '__'}</td>
-                          <td className='col-md-1' style={{...styles.td, textAlign: 'center'}}>
-                            <i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  }
-                </tbody>
-              </table>
+          <div className='row' style={{...styles.tr, margin: 0}}>
+            <div className='col-md-12' style={{ padding: 20,}}>
+              <div style={{padding: grid * 2, margin: `0 0 ${grid}px 0`,}}>
+                <div className='col-md-6' style={{...styles.th, }}>
+                  TITLE
+                </div>
+                <div className='col-md-2' style={{...styles.th, textAlign: 'center'}}>PUBLISHED ON</div>
+                <div className='col-md-2' style={{...styles.th, textAlign: 'center'}}>LENGTH</div>
+                <div className='col-md-2' style={{...styles.th, textAlign: 'center'}}>ANALYTICS</div>
+              </div>
             </div>
+          </div>
+          <div>
+            <DragDropContext onDragEnd={this.onDragEnd}>
+              <Droppable droppableId="droppable">
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                  >
+                    {this.state.episodes.map(episode => {
+                      episode.creator = userInfo.publisher.administrators[episode.creatorID];
+                      return (
+                        <Draggable key={episode.index} draggableId={episode.index}>
+                          {(provided, snapshot) => (
+                            <div className='' style={{cursor: 'move'}} dataToggle="tooltip" dataPlacement="top" title="drag to reorder">
+                              <div
+                                ref={provided.innerRef}
+                                className='col-md-12'
+                                style={getItemStyle(
+                                  provided.draggableStyle,
+                                  snapshot.isDragging
+                                )}
+                                {...provided.dragHandleProps}
+                              >
+                                  <div className='col-md-6'
+                                    style={{...styles.td}}>
+                                    <div style={{marginRight: 20}}>
+                                      <div style={{marginTop: 0, cursor: 'move'}}>{episode.title}</div>
+                                      <div style={{marginBottom: 5}}>
+                                        <span
+                                          style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
+                                          onClick={() => this.deleteEpisode(episode)}>
+                                            Delete
+                                        </span>
+                                        <span
+                                          style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
+                                          onClick={() => this.editEpisode(episode)}>
+                                          Edit
+                                        </span>
+                                        {
+                                          episode.publicEpisode &&
+                                          <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
+                                            <span className='text-dark-gray'
+                                              style={{cursor: 'pointer', fontSize: 15}}>
+                                              View
+                                            </span>
+                                          </a>
+                                          || null
+                                        }
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.isPublished &&moment(episode.date_created * 1000).format('MMM DD YYYY') || 'draft'}</div>
+                                  <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</div>
+                                  <div className='col-md-2' style={{...styles.td, textAlign: 'center'}} dataToggle="tooltip" dataPlacement="top" title="episode analytics">
+                                    <i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
+                                  </div>
+                                </div>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Draggable>
+                      )
+                    })}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         </div>
     );
@@ -293,7 +393,7 @@ const styles = {
     // height: 22,
     marginLeft: 15,
     marginTop: 10,
-    marginBottom: 25,
+    // marginBottom: 25,
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
@@ -303,7 +403,7 @@ const styles = {
     fontSize: 24,
     // float: 'left',
     // height: 22,
-    // lineHeight: '22px',
+    lineHeight: '30px',
   },
   addEpisodeLink: {
       // float: 'left',
@@ -334,7 +434,6 @@ const styles = {
       color: Colors.fontDarkGrey,
     fontSize: 17,
     color: 'black',
-    height: 40,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     // whiteSpace: 'nowrap',

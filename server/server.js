@@ -117,30 +117,20 @@ boot(app, __dirname, function(err) {
   }
 });
 
-// the last use case - receive frontent files
-// let _clientRoutes = [
-// 	'/',
-// 	'/about',
-// 	'/signup/*',
-// 	'/signin',
-// 	'/trial_request',
-// 	'/gift',
-// 	'/creator_terms',
-// 	'/terms_free_content_May2017',
-// 	'/myprograms',
-// 	'/myprograms/*',
-// 	'/cart',
-// 	'/confirmation',
-// 	'/courses/*',
-// 	'/staging/*',
-// 	'/password_reset',
-// 	'/courses',
-// 	'/dashboard/*',
-// 	'/soundcasts/*',
-// 	'/soundcast_checkout',
-// 	'/notfound',
-// ];
 app.use(express.static('./client'));
 app.all(/^\/(?!api|explorer)/, function(request, response) {
 	response.sendFile(path.resolve('./client/index.html'));
 });
+
+// firebase.database().ref('soundcasts/1505855025645s')
+// .once('value')
+// .then(snapshot => {
+//   const episodesArr = Object.keys(snapshot.val().episodes);
+//   episodesArr.sort();
+//   console.log(episodesArr);
+//   const episodePromises = episodesArr.map((episode, i) => {
+//     return firebase.database().ref(`episodes/${episode}/index`)
+//             .set(i + 1);
+//   });
+//   Promise.all(episodePromises);
+// });
