@@ -32,7 +32,7 @@ class _SoundcastPage extends Component {
         short_description: '',
         imageURL: '',
         long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
-        prices: [],
+        prices: [{}],
         modalOpen: false
       },
       cardHeight: 0,
@@ -41,30 +41,39 @@ class _SoundcastPage extends Component {
 
   componentDidMount() {
     const that = this;
+    const {history} = this.props;
     const soundcastID = this.props.match.params.id;
     // console.log('soundcastID: ', soundcastID);
+
     firebase.database().ref('soundcasts/' + soundcastID)
       .on('value', snapshot => {
-        // console.log('soundcast: ', snapshot.val());
-        that.setState({
-          soundcast: snapshot.val(),
-          soundcastID
-        });
+        if(snapshot.val()) {
+          that.setState({
+            soundcast: snapshot.val(),
+            soundcastID
+          });
+        } else {
+            history.push('/notfound');
+        }
       })
   }
 
   componentWillReceiveProps(nextProps) {
     const that = this;
+    const {history} = this.props;
     if(nextProps.match.params.id !== this.props.match.params.id) {
       const soundcastID = nextProps.match.params.id;
       // console.log('soundcastID: ', soundcastID);
       firebase.database().ref('soundcasts/' + soundcastID)
         .on('value', snapshot => {
-          // console.log('soundcast: ', snapshot.val());
-          that.setState({
-            soundcast: snapshot.val(),
-            soundcastID
-          });
+          if(snapshot.val()) {
+            that.setState({
+              soundcast: snapshot.val(),
+              soundcastID
+            });
+          } else {
+            history.push('/notfound');
+          }
         })
     }
   }
@@ -83,8 +92,9 @@ class _SoundcastPage extends Component {
   }
 
   render() {
-    const {soundcast, soundcastID, modalOpen} = this.state;
-    if(soundcast.title && !soundcast.landingPage) {
+    const soundcastID = this.props.match.params.id;
+    const {soundcast, modalOpen} = this.state;
+    if(!soundcastID || !soundcast || (soundcast && soundcast.title && !soundcast.landingPage)) {
       return (
         <Redirect to="/notfound"/>
       )

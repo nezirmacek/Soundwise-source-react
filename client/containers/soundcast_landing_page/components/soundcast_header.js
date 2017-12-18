@@ -192,29 +192,30 @@ class _SoundcastHeader extends Component {
     let displayedPrice = '___';
     let {prices, forSale} = this.props.soundcast;
 
-    if(prices && prices.length > 0 && prices[0].price != 'free' ) {
-        prices = prices.map(price => {
-            if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' || price.billingCycle == 'free' ) {
-                price.measure = price.price;
-            } else if(price.billingCycle == 'quarterly') {
-                price.measure = Math.floor(price.price / 3 *100) / 100;
-            } else if(price.billingCycle == 'annual') {
-                price.measure = Math.floor(price.price / 12 *100) / 100;
-            }
-            return price;
-        });
+    if(prices && prices.length > 0 ) {
+        if(prices[0].price != 'free') {
+            prices = prices.map(price => {
+                if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' || price.billingCycle == 'free' ) {
+                    price.measure = price.price;
+                } else if(price.billingCycle == 'quarterly') {
+                    price.measure = Math.floor(price.price / 3 *100) / 100;
+                } else if(price.billingCycle == 'annual') {
+                    price.measure = Math.floor(price.price / 12 *100) / 100;
+                }
+                return price;
+            });
 
-        prices.sort((a, b) => (
-            a.measure - b.measure
-        ));
-        displayedPrice = prices[0].billingCycle == 'one time' ?
-                            `$${prices[0].measure}` :
-                            `$${prices[0].measure} / month`;
-        if(!forSale) {
+            prices.sort((a, b) => (
+                a.measure - b.measure
+            ));
+            displayedPrice = prices[0].billingCycle == 'one time' ?
+                                `$${prices[0].measure}` :
+                                `$${prices[0].measure} / month`;
+        } else {
             displayedPrice = 'Free';
         }
-    }
 
+    }
 
     return (
       <div>
