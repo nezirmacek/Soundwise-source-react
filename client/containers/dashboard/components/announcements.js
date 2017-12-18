@@ -129,7 +129,7 @@ export default class Announcements extends Component {
 
   handlePublish() {
     const that = this;
-    const {currentSoundcastID, message} = this.state;
+    const {currentSoundcastID, message, currentSoundcast} = this.state;
     const {userInfo} = this.props;
     const announcementID = `${moment().format('x')}a`;
 
@@ -161,7 +161,8 @@ export default class Announcements extends Component {
             });
             const payload = {
               notification: {
-                title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                title: `${currentSoundcast.title} sent you a message`,
                 body: message,
                 badge: '1',
                 sound: 'default'

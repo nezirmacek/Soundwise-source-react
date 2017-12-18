@@ -63,7 +63,7 @@ class _UserProfile extends Component {
         alert('Only .png or .jpg files are accepted. please upload a new file.');
         return;
       }
-      let fileName = `${firstName}-${lastName}-${moment().format('X')}.${ext}`;
+      let fileName = encodeURIComponent(`${firstName}-${lastName}`) + `-${moment().format('X')}.${ext}`;
 
       data.append('file', file, fileName);
       // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)

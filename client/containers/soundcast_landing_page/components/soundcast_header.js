@@ -189,8 +189,8 @@ class _SoundcastHeader extends Component {
   render() {
 
     const soundcastName = this.props.soundcast.title.split(' ').join('%20');
-    let displayedPrice = 'Free';
-    let {prices} = this.props.soundcast;
+    let displayedPrice = '___';
+    let {prices, forSale} = this.props.soundcast;
 
     if(prices && prices.length > 0 && prices[0].price != 'free' ) {
         prices = prices.map(price => {
@@ -210,6 +210,9 @@ class _SoundcastHeader extends Component {
         displayedPrice = prices[0].billingCycle == 'one time' ?
                             `$${prices[0].measure}` :
                             `$${prices[0].measure} / month`;
+        if(!forSale) {
+            displayedPrice = 'Free';
+        }
     }
 
 
@@ -249,7 +252,8 @@ class _SoundcastHeader extends Component {
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
                                 <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center ">
-                                  {displayedPrice != 'Free' && <span className="title-medium alt-font sm-section-title-medium xs-title-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{marginRight: 10}}>FROM</span>}
+                                  {displayedPrice != 'Free' && <span className="title-medium alt-font sm-section-title-medium xs-title-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{marginRight: 10}}>FROM</span>
+                                    || null}
                                   <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}>{`${displayedPrice}`}</span>
                                 </div>
                                 <div className="col-md-4 col-sm-6 col-xs-12 text-center ">
