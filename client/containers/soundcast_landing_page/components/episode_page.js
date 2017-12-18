@@ -183,7 +183,7 @@ class _EpisodePage extends Component {
     if(!publicEpisode) {
       return (
         <div>
-          <PageHeader />
+          <PageHeader/>
           <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
               <div className="container">
                   <div className="row">
@@ -217,7 +217,9 @@ class _EpisodePage extends Component {
         </Helmet>
         <MuiThemeProvider >
           <div>
-            <PageHeader />
+            <PageHeader
+              soundcastID = {soundcastID}
+            />
             <div>
                 <section className="padding-90px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                     <div className="container">
@@ -309,7 +311,9 @@ class _EpisodePage extends Component {
                     </div>
                 </section>
             </div>
-            <Footer />
+            <Footer
+              soundcastID = {soundcastID}
+            />
           </div>
         </MuiThemeProvider>
       </div>

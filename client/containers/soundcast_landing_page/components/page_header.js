@@ -7,7 +7,7 @@ const PageHeader = (props) => (
           <div className="container navigation-menu">
               <div className="row">
                   <div className="col-md-3 col-sm-0 col-xs-0">
-                    <Link to={`/soundcasts/${props.soundcastID}`}>
+                    <Link to={props.soundcastID ? `/soundcasts/${props.soundcastID}` : '/'}>
                       <img alt="Soundwise Logo" src="../../images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                     </Link>
                   </div>
