@@ -24,6 +24,7 @@ var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 var createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
+var requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
 var Raven = require('raven');
 var database = require('../database');
 
@@ -71,6 +72,7 @@ uploader.use(new S3Strategy({
 // use part
 // app.post('/api/charge', handlePayment);
 app.post('/api/create_stripe_account', createStripeAccount);
+app.post('/api/requestStripeDashboard', requestStripeDashboard);
 app.post('/api/recurring_charge', handleRecurringPayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);

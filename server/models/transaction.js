@@ -54,7 +54,7 @@ module.exports = function(Transaction) {
                     publisherId: _transactionData[0],
                     soundcastId: _transactionData[1],
                     customer: data.data.object.customer, // listener's stripe id
-                    paymentId: line.plan.id, // id for the payment plan, only present if it's a subscription
+                    paymentId: line.plan.id, // id for the subscription plan, only present if it's a subscription
                     createdAt: moment().utc().format(),
                     updatedAt: moment().utc().format(),
                 };

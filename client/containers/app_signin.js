@@ -531,7 +531,7 @@ class _AppSignin extends Component {
 							<hr />
 							<div style={{marginBottom: 10}}>
 								<span style={styles.italicText}>Don't have an account? </span>
-								<Link to="/signup/user" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+								<Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
 									Sign up >
 								</Link>
 							</div>

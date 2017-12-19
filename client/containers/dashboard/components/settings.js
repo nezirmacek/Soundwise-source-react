@@ -284,6 +284,24 @@ export default class Settings extends Component {
     this._uploadToAws(fileBlob, hostImg);
   }
 
+  requestStripeDashboard() {
+    let newWindow = window.open('', '_blank');
+    newWindow.document.write('Loading...');
+    const that = this;
+    const {stripe_user_id} = this.state;
+    Axios.post('/api/requestStripeDashboard', {stripe_user_id})
+    .then(res => {
+      // window.open(res.url, '_blank');
+      newWindow.location.href = res.url;
+    })
+    .catch(err => {
+      that.setState({
+        errorMessage: err.response.data,
+      });
+      newWindow.document.write(err.response.data);
+    })
+  }
+
   render() {
     const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent, stripe_user_id, creatingAccount, modalOpen } = this.state;
     const that = this;
@@ -413,12 +431,23 @@ export default class Settings extends Component {
                                 ||
                                 <a href={`https://connect.stripe.com/express/oauth/authorize?redirect_uri=${redirectURI}&state=${userInfo.publisherID}`}>
                                   <OrangeSubmitButton
-                                    label= {stripe_user_id ? 'Reconnect' : 'Start >>'}
-                                    styles={{backgroundColor: Colors.link, borderColor: Colors.link, width: '100%', margin: '0px auto'}}
+                                    label= {stripe_user_id ? 'Reconnect >' : 'Start >>'}
+                                    styles={{backgroundColor: 'transparent', borderColor: stripe_user_id ? 'transparent' : Colors.softBlack, width: '100%', margin: '0px auto', color: Colors.softBlack}}
                                   />
                                 </a>
                               }
                             </div>
+                            {
+                              stripe_user_id &&
+                              <div className='col-md-12'>
+                                <div style={{marginTop: 30, }}>
+                                  <div style={{...styles.titleText, cursor: 'pointer', display: 'flex', justifyContent: 'center'}} onClick={this.requestStripeDashboard.bind(this)}>
+                                  <span>View Stripe Account</span></div>
+                                  <div style={{color: 'red'}}>{this.state.errorMessage}</div>
+                                </div>
+                              </div>
+                              || null
+                            }
                           </div>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>

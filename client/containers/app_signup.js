@@ -224,7 +224,6 @@ class _AppSignup extends Component {
         let _user = user_snapshot.val();
         if (_user.soundcasts_managed && _user.admin) {
             if (_user.publisherID) {
-
                 let publisher_snapshot = await firebase.database().ref(`publishers/${_user.publisherID}`).once('value');
 
                 if (publisher_snapshot.val()) {
@@ -321,7 +320,7 @@ class _AppSignup extends Component {
         };
 
         let _promises = [
-        // add soundcast
+        // add soundcast to soundcasts node
             firebase.database().ref(`soundcasts/${soundcastId}`).set(newSoundcast).then(
                 res => {
                     console.log('success add soundcast: ', res);
@@ -374,7 +373,7 @@ class _AppSignup extends Component {
         .then(
             res => {
                 console.log('completed adding soundcast');
-                that.compileUser();
+                // that.compileUser();
             },
             err => {
                 console.log('failed to complete adding soundcast');
