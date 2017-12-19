@@ -139,7 +139,7 @@ export default class Settings extends Component {
       const queryString = window.location.search.substring(1);
       if(queryString.length > 0) {
         const params = parseQueryString(queryString);
-        console.log('params.code: ', params.code);
+        // console.log('params.code: ', params.code);
         if(params.state == publisherId && !this.state.authorized  && !this.state.creatingAccount) {
             that.setState({
               creatingAccount: true,
@@ -147,6 +147,7 @@ export default class Settings extends Component {
             Axios.post('/api/create_stripe_account', {
               code: params.code,
               publisherId,
+              publisherName: this.state.publisherName,
             })
             .then(res => {
               that.setState({
