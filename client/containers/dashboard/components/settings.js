@@ -10,6 +10,7 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import {inviteListeners} from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
@@ -48,6 +49,7 @@ export default class Settings extends Component {
       publisherSaved: false,
       authorized: false,
       creatingAccount: false,
+      modalOpen: false,
     };
     this.loadFromProp(props.userInfo);
     this.loadFromProp = this.loadFromProp.bind(this);
@@ -177,7 +179,7 @@ export default class Settings extends Component {
   _uploadToAws (file) {
         const _self = this;
         let data = new FormData();
-        const splittedFileName = file.name.split('.');
+        const splittedFileName = file.type.split('/');
         const ext = (splittedFileName)[splittedFileName.length - 1];
         const id = `${moment().format('X')}p`;
         data.append('file', file, `${id}.${ext}`);
@@ -201,10 +203,17 @@ export default class Settings extends Component {
 
   setFileName (e) {
         // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
-            this._uploadToAws(this.fileInputRef.files[0], null)
-            if (this.fileInputRef.files[0]) {
-                this.setState({fileUploaded: true});
-            }
+    if (this.fileInputRef.files[0]) {
+          const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+          if(allowedFileTypes.indexOf(this.fileInputRef.files[0].type) < 0) {
+            alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+            this.setState({fileUploaded: false});
+            return;
+          }
+          this.setState({fileUploaded: true});
+          this.currentImageRef = this.fileInputRef.files[0];
+          this.handleModalOpen();
+    }
   }
 
   submit() {
@@ -251,8 +260,32 @@ export default class Settings extends Component {
     });
   }
 
+  handleModalOpen() {
+    this.setState({
+      modalOpen: true,
+      fileCropped: false,
+    })
+  }
+
+  handleModalClose() {
+    this.setState({
+      modalOpen: false,
+      fileUploaded: false,
+    });
+    document.getElementById('upload_hidden_cover').value = null;
+  }
+
+  uploadViaModal(fileBlob, hostImg) {
+    this.setState({
+      fileCropped: true,
+      modalOpen: false,
+      fileUploaded: true,
+    });
+    this._uploadToAws(fileBlob, hostImg);
+  }
+
   render() {
-    const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent, stripe_user_id, creatingAccount } = this.state;
+    const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent, stripe_user_id, creatingAccount, modalOpen } = this.state;
     const that = this;
     const {userInfo} = this.props;
 
@@ -269,6 +302,13 @@ export default class Settings extends Component {
                   <li role="presentation"><Link to="/dashboard/publisher/payouts"><span style={{fontSize: 15, fontWeight: 600}}>Payouts</span></Link></li>
                 </ul>
                 <div className='container'>
+                  <ImageCropModal
+                    open={modalOpen}
+                    handleClose={this.handleModalClose.bind(this)}
+                    upload={this.uploadViaModal.bind(this)}
+                    hostImg={false}
+                    file={this.currentImageRef}
+                  />
                   <div  className="row">
                     <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                           <div style={{marginTop: 20,}}>

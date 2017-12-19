@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import ReactCrop from 'react-image-crop';
 import axios from 'axios';
 import firebase from 'firebase';
 import Dialog from 'material-ui/Dialog';

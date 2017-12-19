@@ -4,7 +4,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
@@ -15,6 +14,7 @@ import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
 import Toggle from 'material-ui/Toggle';
 
+import ImageCropModal from './image_crop_modal';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -59,6 +59,7 @@ export default class AddSoundcast extends Component {
 			hostImgUploaded: '',
 			forSale: false,
 			prices: [],
+      modalOpen: false,
 			paypalEmail: '',
 			confirmationEmail: EditorState.createWithContent(confirmationEmail),
 		};
@@ -66,6 +67,7 @@ export default class AddSoundcast extends Component {
 		this.soundcastId = `${moment().format('x')}s`;
 		this.fileInputRef = null;
 		this.hostImgInputRef = null;
+		this.currentImageRef = null;
 		this.addFeature = this.addFeature.bind(this);
 	}
 
@@ -73,18 +75,14 @@ export default class AddSoundcast extends Component {
 		const _self = this;
 		const userId = firebase.auth().currentUser.uid;
 		let data = new FormData();
-		const splittedFileName = file.name.split('.');
+		const splittedFileName = file.type.split('/');
 		const ext = (splittedFileName)[splittedFileName.length - 1];
-    if(ext !== 'png' && ext !=='jpg' && ext !== 'jpeg') {
-      alert('Only .png or .jpg files are accepted. please upload a new file.');
-      return;
-    }
 		let fileName = '';
-		if(hostImg) {
-			fileName = `${this.soundcastId}-${userId}.${ext}`;
-		} else {
-			fileName = `${this.soundcastId}.${ext}`;
-		}
+    if(hostImg) {
+      fileName = `host-image-${moment().format('x')}.${ext}`;
+    } else {
+      fileName = `${moment().format('x')}.${ext}`;
+    }
 		data.append('file', file, fileName);
 		// axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
 		Axios.post('/api/upload', data)
@@ -111,21 +109,42 @@ export default class AddSoundcast extends Component {
 	}
 
 	setFileName (hostImg, e) {
-		// if (e.target.value) {
-		//     this.setState({fileUploaded: true});
-		// }
-		// document.getElementById('file').value = e.target.value;
-		if(hostImg) {
-			this._uploadToAws(this.hostImgInputRef.files[0], true);
-			if(this.hostImgInputRef.files[0]) {
-				this.setState({hostImgUploaded: true});
-			}
-		} else {
-			this._uploadToAws(this.fileInputRef.files[0], null);
-			if (this.fileInputRef.files[0]) {
-				this.setState({fileUploaded: true});
-			}
-		}
+        // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
+        if(hostImg) {
+            // this._uploadToAws(this.hostImgInputRef.files[0], true);
+            if(this.hostImgInputRef.files[0]) {
+                this.setState({
+                  hostImgUploaded: true,
+                  hostImg: true,
+                });
+                this.currentImageRef = this.hostImgInputRef.files[0];
+            }
+        } else {
+            // this._uploadToAws(this.fileInputRef.files[0], null)
+            if (this.fileInputRef.files[0]) {
+                this.setState({
+                  fileUploaded: true,
+                  hostImg: false,
+                });
+                this.currentImageRef = this.fileInputRef.files[0];
+            }
+        }
+
+        const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+        if(allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
+          alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+          if(hostImg) {
+          	this.setState({
+          		hostImgUploaded: false,
+          	})
+          } else {
+          	this.setState({
+          		fileUploaded: false,
+          	})
+          }
+          return;
+        }
+        this.handleModalOpen();
 	}
 
 	getRandomColor() {
@@ -693,14 +712,61 @@ export default class AddSoundcast extends Component {
 		})
 	}
 
+  handleModalOpen() {
+    this.setState({
+      modalOpen: true,
+    })
+  }
+
+  handleModalClose() {
+    this.setState({
+      modalOpen: false,
+    });
+    if(this.state.hostImg) {
+    	this.setState({
+    		hostImgUploaded: false,
+    	});
+      document.getElementById('upload_hidden_cover_2').value = null;
+    } else {
+    	this.setState({
+    		fileUploaded: false,
+    	});
+      document.getElementById('upload_hidden_cover').value = null;
+    }
+  }
+
+  uploadViaModal(fileBlob, hostImg) {
+    this.setState({
+      fileCropped: true,
+      modalOpen: false,
+    });
+    if(hostImg) {
+      this.setState({
+        hostImgUploaded: true,
+      })
+    } else {
+      this.setState({
+        fileUploaded: true,
+      })
+    }
+    this._uploadToAws(fileBlob, hostImg);
+  }
+
 	render() {
-		const { imageURL, title, subscribers, fileUploaded,landingPage } = this.state;
+		const { imageURL, title, subscribers, fileUploaded,landingPage, modalOpen, hostImg } = this.state;
 		const { userInfo, history } = this.props;
 		const that = this;
 
 		return (
 			<MuiThemeProvider >
 				<div className='padding-30px-tb'>
+          <ImageCropModal
+            open={modalOpen}
+            handleClose={this.handleModalClose.bind(this)}
+            upload={this.uploadViaModal.bind(this)}
+            hostImg={hostImg}
+            file={this.currentImageRef}
+          />
 					<div className='padding-bottom-20px'>
 	                  <span className='title-medium '>
 	                      Add A Soundcast

@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
@@ -12,6 +11,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
@@ -50,14 +50,17 @@ export default class EditSoundcast extends Component {
             hostName: '',
             hostBio: '',
             hostImageURL: '',
+            hostImg: false,
             hostImgUploaded: '',
             forSale: false,
             prices: [],
+            modalOpen: false,
             confirmationEmail: EditorState.createWithContent(confirmationEmail),
         };
 
         this.fileInputRef = null;
         this.hostImgInputRef = null;
+        this.currentImageRef = null;
         this.addFeature = this.addFeature.bind(this);
         this.onEditorStateChange = this.onEditorStateChange.bind(this);
     }
@@ -121,17 +124,13 @@ export default class EditSoundcast extends Component {
         const _self = this;
         const { id } = this.props;
         let data = new FormData();
-        const splittedFileName = file.name.split('.');
+        const splittedFileName = file.type.split('/');
         const ext = (splittedFileName)[splittedFileName.length - 1];
-        if(ext !== 'png' && ext !=='jpg' && ext !== 'jpeg') {
-          alert('Only .png or .jpg files are accepted. please upload a new file.');
-          return;
-        }
         let fileName = '';
         if(hostImg) {
-          fileName = `${id}-host-image.${ext}`;
+          fileName = `${id}-host-image-${moment().format('x')}.${ext}`;
         } else {
-          fileName = `${id}.${ext}`;
+          fileName = `${id}-${moment().format('x')}.${ext}`;
         }
 
         data.append('file', file, fileName);
@@ -162,16 +161,31 @@ export default class EditSoundcast extends Component {
     setFileName (hostImg, e) {
         // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
         if(hostImg) {
-            this._uploadToAws(this.hostImgInputRef.files[0], true);
+            // this._uploadToAws(this.hostImgInputRef.files[0], true);
             if(this.hostImgInputRef.files[0]) {
-                this.setState({hostImgUploaded: true});
+                this.setState({
+                  hostImgUploaded: true,
+                  hostImg: true,
+                });
+                this.currentImageRef = this.hostImgInputRef.files[0];
             }
         } else {
-            this._uploadToAws(this.fileInputRef.files[0], null)
+            // this._uploadToAws(this.fileInputRef.files[0], null)
             if (this.fileInputRef.files[0]) {
-                this.setState({fileUploaded: true});
+                this.setState({
+                  fileUploaded: true,
+                  hostImg: false,
+                });
+                this.currentImageRef = this.fileInputRef.files[0];
             }
         }
+
+        const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+        if(allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
+          alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+          return;
+        }
+        this.handleModalOpen();
     }
 
     submit (publish) {
@@ -433,7 +447,7 @@ export default class EditSoundcast extends Component {
                             prices.map((price, i) => {
                                 const priceTag = price.price == 'free' ? 0 : price.price;
                                 return (
-                                  <div className='row' style={{marginBottom: 10, marginLeft: 10}}>
+                                  <div key={i} className='row' style={{marginBottom: 10, marginLeft: 10}}>
                                     <span style={styles.titleText}>{`${i + 1}. `}</span>
                                     <div style={{width: '35%', display: 'inline-block', marginRight: 10,}}>
                                       <span>Payment Plan Name</span>
@@ -540,14 +554,62 @@ export default class EditSoundcast extends Component {
         })
     }
 
+    handleModalOpen() {
+      this.setState({
+        modalOpen: true,
+        fileCropped: false,
+      })
+    }
+
+    handleModalClose() { // image upload is cancelled
+      this.setState({
+        modalOpen: false,
+      });
+      if(this.state.hostImg) {
+        this.setState({
+          hostImgUploaded: false,
+        });
+        document.getElementById('upload_hidden_cover_2').value = null;
+      } else {
+        this.setState({
+          fileUploaded: false,
+        });
+        document.getElementById('upload_hidden_cover').value = null;
+      }
+    }
+
+    uploadViaModal(fileBlob, hostImg) {
+      this.setState({
+        fileCropped: true,
+        modalOpen: false,
+      });
+      if(hostImg) {
+        this.setState({
+          hostImgUploaded: true,
+        })
+      } else {
+        this.setState({
+          fileUploaded: true,
+        })
+      }
+      this._uploadToAws(fileBlob, hostImg);
+    }
+
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage } = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg } = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
         return (
           <MuiThemeProvider >
             <div className='padding-30px-tb' style={{fontSize: 20}}>
+              <ImageCropModal
+                open={modalOpen}
+                handleClose={this.handleModalClose.bind(this)}
+                upload={this.uploadViaModal.bind(this)}
+                hostImg={hostImg}
+                file={this.currentImageRef}
+              />
               <div className='padding-bottom-20px'>
                   <span className='title-medium '>
                       Edit Soundcast

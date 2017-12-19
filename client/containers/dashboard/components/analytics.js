@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import ReactCrop from 'react-image-crop';
 import Axios from 'axios';
 import firebase from 'firebase';
 import {Bar} from 'react-chartjs-2';

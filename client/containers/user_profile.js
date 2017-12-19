@@ -7,6 +7,7 @@ import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 
+import ImageCropModal from './dashboard/components/image_crop_modal';
 import Footer from '../components/footer';
 import {SoundwiseHeader} from '../components/soundwise_header';
 import Colors from '../styles/colors';
@@ -23,6 +24,7 @@ class _UserProfile extends Component {
             profileSaved: false,
         };
         this.profileImgInputRef = null;
+        this.currentImageRef = null;
         this.submit = this.submit.bind(this);
     }
 
@@ -57,12 +59,8 @@ class _UserProfile extends Component {
       const _self = this;
       const {firstName, lastName} = this.state;
       let data = new FormData();
-      const splittedFileName = file.name.split('.');
+      const splittedFileName = file.type.split('/');
       const ext = (splittedFileName)[splittedFileName.length - 1];
-      if(ext !== 'png' && ext !=='jpg' && ext !== 'jpeg') {
-        alert('Only .png or .jpg files are accepted. please upload a new file.');
-        return;
-      }
       let fileName = encodeURIComponent(`${firstName}-${lastName}`) + `-${moment().format('X')}.${ext}`;
 
       data.append('file', file, fileName);
@@ -87,10 +85,18 @@ class _UserProfile extends Component {
 
   setFileName (e) {
       // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
-          if (this.profileImgInputRef.files[0]) {
-              this._uploadToAws(this.profileImgInputRef.files[0]);
-              this.setState({profileImgUploaded: true});
+      if (this.profileImgInputRef.files[0]) {
+          // this._uploadToAws(this.profileImgInputRef.files[0]);
+          const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+          if(allowedFileTypes.indexOf(this.profileImgInputRef.files[0].type) < 0) {
+            alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+            this.setState({profileImgUploaded: false});
+            return;
           }
+          this.setState({profileImgUploaded: true});
+          this.currentImageRef = this.profileImgInputRef.files[0];
+          this.handleModalOpen();
+      }
   }
 
   submit () {
@@ -107,14 +113,44 @@ class _UserProfile extends Component {
       })
   }
 
+  handleModalOpen() {
+    this.setState({
+      modalOpen: true,
+    })
+  }
+
+  handleModalClose() {
+    this.setState({
+      modalOpen: false,
+      profileImgUploaded: false,
+    });
+    document.getElementById('upload_hidden_cover_2').value = null;
+  }
+
+  uploadViaModal(fileBlob, hostImg) {
+    this.setState({
+      fileCropped: true,
+      modalOpen: false,
+      profileImgUploaded: true,
+    });
+    this._uploadToAws(fileBlob, hostImg);
+  }
+
   render() {
-    const {firstName, lastName, pic_url, profileImgUploaded, profileSaved} = this.state;
+    const {firstName, lastName, pic_url, profileImgUploaded, profileSaved, modalOpen} = this.state;
     const that = this;
     return (
             <div>
                 <SoundwiseHeader />
                 <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                     <div className="container">
+                    <ImageCropModal
+                      open={modalOpen}
+                      handleClose={this.handleModalClose.bind(this)}
+                      upload={this.uploadViaModal.bind(this)}
+                      hostImg={false}
+                      file={this.currentImageRef}
+                    />
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                                 <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
