@@ -19,21 +19,22 @@ class _PricingModal extends Component {
   }
 
   componentDidMount() {
-    if(this.props.soundcast && this.props.soundcast.prices[0]) {
+    if(this.props.soundcast && this.props.soundcast.prices[0].price) {
       const {prices} = this.props.soundcast;
       const {checked} = this.state;
       this.setState({
-        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${prices[checked].price}`
+        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${Number(prices[checked].price).toFixed(2)}`
       })
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!this.props.soundcast.prices[0] && nextProps.soundcast.prices[0]) {
+    if(!this.props.soundcast.prices[0].price && nextProps.soundcast.prices[0].price) {
       const {prices} = nextProps.soundcast;
       const {checked} = this.state;
+      console.log('prices[checked].price: ', prices[checked].price);
       this.setState({
-        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${prices[checked].price}`
+        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${Number(prices[checked].price).toFixed(2)}`
       })
     }
   }
@@ -43,7 +44,7 @@ class _PricingModal extends Component {
 
     this.setState({
       checked: i,
-      sumTotal: prices[i].price == 'free' ? '' : `Total today: $${prices[i].price}`
+      sumTotal: prices[i].price == 'free' ? '' : `Total today: $${Number(prices[i].price).toFixed(2)}`
     })
 
   }
@@ -92,20 +93,20 @@ class _PricingModal extends Component {
           onRequestClose={handleModal}
         >
          {
-          prices && prices.length > 0 &&
+          prices && prices.length > 0 && prices[0].price &&
           prices.map((price, i) => {
             const isChecked = (checked == i);
-            let currentPrice = `USD $${price.price} / month`;
+            let currentPrice = `USD $${Number(price.price).toFixed(2)} / month`;
             let billing = 'billed monthly';
 
             if(price.billingCycle == 'annual') {
-              currentPrice = `USD $${Math.floor(price.price / 12 * 100) / 100} / month`;
+              currentPrice = `USD $${(Math.floor(price.price / 12 * 100) / 100).toFixed(2)} / month`;
               billing = 'billed annually';
             } else if(price.billingCycle == 'quarterly') {
-              currentPrice = `USD $${Math.floor(price.price / 3 * 100) / 100} / month`;
+              currentPrice = `USD $${(Math.floor(price.price / 3 * 100) / 100).toFixed(2)} / month`;
               billing = 'billed quarterly'
             } else if(price.billingCycle == 'one time') {
-              currentPrice = `USD $${price.price}`
+              currentPrice = `USD $${Number(price.price).toFixed(2)}`
               billing = 'one time charge'
             }
 
@@ -134,7 +135,7 @@ class _PricingModal extends Component {
                       <input
                         type='checkbox'
                         checked = {isChecked}
-                        onClick={this.handleCheck.bind(this, i)}
+                        onChange={this.handleCheck.bind(this, i)}
                       />
                     </div>
                   </div>

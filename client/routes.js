@@ -214,7 +214,6 @@ class _Routes extends Component {
                 <Route path="/courses/:courseId" component={Course} />
                 <Route path="/staging/:courseId" component={Staged_Course} />
                 <Route path="/password_reset" component={PassRecovery} />
-                <Route exact path ="/courses" component={CoursesCatalog} />
                 <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
                 <Route path="/dashboard/:tab/:id" component={Dashboard} />
                 <Route path="/soundcasts/:id" component={SoundcastPage} />
