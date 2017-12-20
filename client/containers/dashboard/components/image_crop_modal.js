@@ -36,6 +36,8 @@ export default class ImageCropModal extends Component {
       src: '',
       cropResult: null,
       cropped: false,
+      width: 16,
+      height: 9,
       crop: {
         x: 20,
         y: 10,
@@ -52,6 +54,7 @@ export default class ImageCropModal extends Component {
     let file = nextProps.file;
     if(file) {
       const reader = new FileReader();
+      reader.readAsDataURL(file);
       reader.onload = () => {
         var image = new Image();
         image.src = reader.result;
@@ -64,7 +67,6 @@ export default class ImageCropModal extends Component {
           });
         }
       };
-      reader.readAsDataURL(file);
     }
   }
 
@@ -126,20 +128,22 @@ export default class ImageCropModal extends Component {
         >
         {
           !this.state.cropped &&
-          <div className='center-col' style={{}}>
-            <Cropper
-              // onImageLoaded={this.onImageLoaded}
-              // onChange={this.onChange.bind(this)}
-              // onComplete={this.setPixels}
-              style={{ height: 300, width: width / height * 300, margin: '0 auto' }}
-              // crop={this.cropImage}
-              // ratio={1 / 1}
-              src={this.state.src}
-              // ref={ref => this.image = ref }
-              ref='cropper'
-              aspectRatio={1 / 1}
-              guides={false}
-            />
+          <div className='' style={{}}>
+            <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <Cropper
+                // onImageLoaded={this.onImageLoaded}
+                // onChange={this.onChange.bind(this)}
+                // onComplete={this.setPixels}
+                style={{ height: 300, width: width / height * 300 }}
+                // crop={this.cropImage}
+                // ratio={1 / 1}
+                src={this.state.src}
+                // ref={ref => this.image = ref }
+                ref='cropper'
+                aspectRatio={1 / 1}
+                guides={false}
+              />
+            </div>
             <div style={{width: '100%', marginTop: 10,}}>
               <RaisedButton
                 onClick={this.cropImage}

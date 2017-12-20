@@ -165,12 +165,12 @@ export default class Settings extends Component {
   loadFromProp(userInfo) {
     if(userInfo.publisher) {
       const publisherId = userInfo.publisherID;
-      const {name, imageUrl, paypalEmail, stripe_user_id} = userInfo.publisher;
-      const {publisherName, publisherImg, publisherPaypal} = this.state;
+      const {name, imageUrl, email, stripe_user_id} = userInfo.publisher;
+      const {publisherName, publisherImg, publisherEmail} = this.state;
       this.setState({
         publisherName: name ? name : publisherEmail,
         publisherImg: imageUrl ? imageUrl : publisherImg,
-        publisherEmail: paypalEmail ? paypalEmail : publisherPaypal,
+        publisherEmail: email ? email : publisherEmail,
         publisherId,
         stripe_user_id,
       })
@@ -221,7 +221,7 @@ export default class Settings extends Component {
     const { publisher } = this.props.userInfo;
     const { publisherImg, publisherName, publisherId, publisherEmail } = this.state;
     const that = this;
-    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, paypalEmail: publisherEmail};
+    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, email: publisherEmail};
 
     firebase.database().ref(`publishers/${publisherId}`)
     .set(revisedPublisher)
@@ -293,7 +293,7 @@ export default class Settings extends Component {
     Axios.post('/api/requestStripeDashboard', {stripe_user_id})
     .then(res => {
       // window.open(res.url, '_blank');
-      newWindow.location.href = res.url;
+      newWindow.location.href = res.data.url;
     })
     .catch(err => {
       that.setState({
@@ -443,7 +443,7 @@ export default class Settings extends Component {
                               <div className='col-md-12'>
                                 <div style={{marginTop: 30, }}>
                                   <div style={{...styles.titleText, cursor: 'pointer', display: 'flex', justifyContent: 'center'}} onClick={this.requestStripeDashboard.bind(this)}>
-                                  <span>View Stripe Account</span></div>
+                                  <span>View Payout Account</span></div>
                                   <div style={{color: 'red'}}>{this.state.errorMessage}</div>
                                 </div>
                               </div>

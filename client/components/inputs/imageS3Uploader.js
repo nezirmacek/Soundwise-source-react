@@ -4,8 +4,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import moment from 'moment';
 
 import Colors from '../../styles/colors';
+import ImageCropModal from '../../containers/dashboard/components/image_crop_modal';
 
 export default class ImageS3Uploader extends Component {
     constructor(props) {
@@ -14,9 +16,12 @@ export default class ImageS3Uploader extends Component {
         this.state = {
             imageURL: '',
             fileUploaded: false,
+            modalOpen: false,
+            fileCropped: false,
         };
 
         this.fileInputRef = null;
+        this.currentImageRef = null;
         this.visibleFileInputRef = null;
     }
 
@@ -31,9 +36,9 @@ export default class ImageS3Uploader extends Component {
         const { cb, fileName } = this.props;
         const _self = this;
         let data = new FormData();
-        const splittedFileName = file.name.split('.');
+        const splittedFileName = file.type.split('/');
         const ext = (splittedFileName)[splittedFileName.length - 1];
-        data.append('file', file, `${fileName}.${ext}`);
+        data.append('file', file, `${fileName}-${moment().format('x')}.${ext}`);
         axios.post('/api/upload', data)
             .then(function (res) {
                 // POST succeeded...
@@ -53,22 +58,57 @@ export default class ImageS3Uploader extends Component {
     }
 
     setFileName (e) {
-        // if (e.target.value) {
-        //     this.setState({fileUploaded: true});
-        // }
-        // this.visibleFileInputRef.value = e.target.files[0].name;
-        this._uploadToAws(this.fileInputRef.files[0])
+        // this._uploadToAws(this.fileInputRef.files[0])
         if (this.fileInputRef.files[0]) {
-            this.setState({fileUploaded: true});
+              const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+              if(allowedFileTypes.indexOf(this.fileInputRef.files[0].type) < 0) {
+                alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+                this.setState({fileUploaded: false});
+                return;
+              }
+              this.setState({fileUploaded: true});
+              this.currentImageRef = this.fileInputRef.files[0];
+              this.handleModalOpen();
         }
     }
 
+    handleModalOpen() {
+        this.setState({
+          modalOpen: true,
+          fileCropped: false,
+        })
+    }
+
+    handleModalClose() {
+        this.setState({
+          modalOpen: false,
+          fileUploaded: false,
+        });
+        document.getElementById('upload_hidden_cover').value = null;
+    }
+
+    uploadViaModal(fileBlob, hostImg) {
+        this.setState({
+          fileCropped: true,
+          modalOpen: false,
+          fileUploaded: true,
+        });
+        this._uploadToAws(fileBlob, hostImg);
+    }
+
     render () {
-        const { imageURL, fileUploaded } = this.state;
+        const { imageURL, fileUploaded, modalOpen } = this.state;
         const that = this;
 
         return (
             <div style={_styles.fileUploader}>
+                <ImageCropModal
+                    open={modalOpen}
+                    handleClose={this.handleModalClose.bind(this)}
+                    upload={this.uploadViaModal.bind(this)}
+                    hostImg={false}
+                    file={this.currentImageRef}
+                />
                 <div style={_styles.image}>
                     {
                         this.fileInputRef && this.fileInputRef.files && this.fileInputRef.files[0]

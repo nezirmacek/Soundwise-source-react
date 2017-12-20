@@ -795,7 +795,7 @@ class _AppSignup extends Component {
                                 <ImageS3Uploader
                                     cb={this.getUrl.bind(this)}
                                     fileName={this.publisherID}
-                                    title={'Publisher picture (square image)'}
+                                    title={'Publisher Image'}
                                 />
                                 <OrangeSubmitButton
                                     label="CREATE ACCOUNT"
