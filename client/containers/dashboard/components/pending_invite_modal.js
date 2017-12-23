@@ -38,7 +38,7 @@ export default class PendingInviteModal extends Component {
     // send email invitations to invited listeners
     const subject = `[Reminder] ${userInfo.publisher.name} invited you to subscribe to ${soundcast.title}`;
     const content = `<p>Hi there!</p><p></p><p>This is to remind you that you've got an invitation from ${userInfo.publisher.name} to subscribe to <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a> on Soundwise. </p><p> If you don't have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
-    inviteListeners(invitees, subject, content);
+    inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
 
     var invitationPromise = invitees.map(email => {
         let _email = email.replace(/\./g, "(dot)");

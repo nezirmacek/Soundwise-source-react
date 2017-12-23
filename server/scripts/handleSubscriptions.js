@@ -29,11 +29,16 @@ module.exports.subscriptionRenewal = (req, res) => { //moved to transaction.js
 module.exports.unsubscribe = (req, res) => {
   if (req.body.paymentID.slice(0, 3) == 'sub') {
     stripe.subscriptions.del(
-      req.body.paymentID,
+      req.body.paymentID, {
+        stripe_account: req.body.publisher,
+      },
       function(err, confirmation) {
         if (err) {
+          console.log('error');
           res.status(500).send(err);
+          return;
         }
+        // console.log('confirmation: ', confirmation);
         res.send(confirmation);
       }
     );

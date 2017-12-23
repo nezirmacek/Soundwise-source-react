@@ -5,14 +5,18 @@ var sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
 var parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
 var sendinObj = new sendinblue(parameters);
+var emailTemplate = require('./helpers/emailTemplate').emailTemplate;
 
 module.exports.sendListenerInvites = (req, res) => {
   // console.log('invitees: ', req.body.invitees);
+  var content = emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
+  // console.log('req.body.content: ', req.body.content);
+  // console.log('compiled content: ', content);
   var _promises = req.body.invitees.map(invitee => {
     var input = {'to': {[invitee]: ''},
       'from': ['support@mysoundwise.com', 'Soundwise'],
       'subject': req.body.subject,
-      'html': req.body.content,
+      'html': content,
     };
 
     sendinObj.send_email(input, function(err, response) {

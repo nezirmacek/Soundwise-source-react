@@ -168,7 +168,7 @@ export default class Settings extends Component {
       const {name, imageUrl, email, stripe_user_id} = userInfo.publisher;
       const {publisherName, publisherImg, publisherEmail} = this.state;
       this.setState({
-        publisherName: name ? name : publisherEmail,
+        publisherName: name ? name : publisherName,
         publisherImg: imageUrl ? imageUrl : publisherImg,
         publisherEmail: email ? email : publisherEmail,
         publisherId,
@@ -245,12 +245,12 @@ export default class Settings extends Component {
   inviteAdmin() {
     const publisherId = this.props.userInfo.publisherID;
     const userInfo = this.props.userInfo;
-    const { inviteeEmail, inviteeFirstName, inviteeLastName, publisherName } = this.state;
+    const { inviteeEmail, inviteeFirstName, inviteeLastName, publisherName, publisherImg } = this.state;
     const inviteeArr = [inviteeEmail];
     const subject = `${userInfo.firstName} ${userInfo.lastName} invites you to become an admin for ${publisherName}`;
     const content = `<p>Hi ${inviteeFirstName}!</p><p></p><p>This is an invitation for you to join the admin team of ${publisherName} on Soundwise. You can sign up for your admin account <a href="https://mysoundwise.com/signup/admin/${publisherId}">here</a>.</p><p></p><p>If you already have an account on Soundwise, you can log in and join your team <a href="https://mysoundwise.com/signin/admin/${publisherId}">here</a>.</p><p>These links are unique for you. Please do not share.</p>`;
 
-    inviteListeners(inviteeArr, subject, content);
+    inviteListeners(inviteeArr, subject, content, publisherName, publisherImg);
 
     const email = inviteeEmail.replace(/\./g, "(dot)");
     firebase.database().ref(`publishers/${publisherId}/invitedAdmins/${email}`)

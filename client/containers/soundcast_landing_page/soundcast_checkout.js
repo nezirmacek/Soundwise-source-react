@@ -34,6 +34,7 @@ class _SoundcastCheckout extends Component {
       state: {
         text,
         soundcastTitle: soundcast.title,
+        soundcastID: this.props.history.location.state.soundcastID,
         ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
         android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
       }

@@ -250,7 +250,7 @@ class _EpisodePage extends Component {
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center'}}>
                               <img
                                   src={soundcastImageURL}
-                                  alt=""
+                                  alt={soundcastTitle}
                                   style={{width: '250px', height: '250px', display: 'block'}}
                               />
                             </div>

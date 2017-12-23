@@ -66,7 +66,7 @@ export default class InviteSubscribersModal extends Component {
     const content = draftToHtml(convertToRaw(invitation.getCurrentContent()));
     // send email invitations to invited listeners
     const subject = `${userInfo.publisher.name} invites you to subscribe to ${soundcast.title}`;
-    inviteListeners(inviteeArr, subject, content);
+    inviteListeners(inviteeArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
 
     var invitationPromise = inviteeArr.map(email => {
         let _email = email.replace(/\./g, "(dot)");

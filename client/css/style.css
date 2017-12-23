@@ -739,3 +739,17 @@ footer .social-icon a:last-child{ margin-right:0;}
     bottom: 15px;
 }
 
+/*center a div*/
+.parent {
+    position: relative;
+}
+
+.parent .center-wrapper {
+    position: absolute;
+    left: 50%;
+}
+
+.parent .center-wrapper .center-content {
+    position: relative;
+    left: -50%;
+}

@@ -31,6 +31,7 @@ import {AppSignin} from './containers/app_signin';
 import {Courses} from './containers/courses';
 import {MyCourses} from './containers/mycourses';
 import {MySoundcasts} from './containers/mysoundcasts';
+import {SoundcastPlayingPage} from './containers/soundcast_player/soundcast_playing_page';
 import {UserProfile} from './containers/user_profile';
 import {Course} from './containers/course_page';
 import {Staged_Course} from './containers/staged_course_page';
@@ -207,6 +208,8 @@ class _Routes extends Component {
                 <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
                 <Route exact path="/myprograms" component={MyCourses}/>
                 <Route exact path="/mysoundcasts" component={MySoundcasts}/>
+                <Route exact path="/mysoundcasts/:soundcastId" component={SoundcastPlayingPage}/>
+                <Route exact path="/mysoundcasts/:soundcastId/:episodeId" component={SoundcastPlayingPage}/>
                 <Route exact path="/myprofile" component={UserProfile}/>
                 <Route path="/myprograms/:courseId" component={Course_Purchased}/>
                 <Route path="/cart" component={Cart} />

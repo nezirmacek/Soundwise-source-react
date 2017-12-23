@@ -128,14 +128,18 @@ class _MySoundcasts extends Component {
                 that.retrieveSoundcasts(userId);
 
                 if(paymentID) {
-                    Axios.post('/api/unsubscribe', {
-                        paymentID,
-                    })
-                    .then(response => {
-                        alert('You have been successfully unsubscribed.');
-                    })
-                    .catch(error => {
-                        console.log(error);
+                    firebase.database().ref(`publishers/${publisherID}`)
+                    .once('value', snapshot => {
+                        Axios.post('/api/unsubscribe', {
+                            paymentID,
+                            publisher: snapshot.val().stripe_user_id,
+                        })
+                        .then(response => {
+                            alert('You have been successfully unsubscribed.');
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
                     })
                 } else {
                     // if it's a free soundcast, end the current subscription period immediately
@@ -269,14 +273,16 @@ class _MySoundcasts extends Component {
                             <div>
                                 {this.state.userSoundcasts.map((soundcast, i) => (
                                     <div className="row" key={i} style={styles.row}>
-                                        <div className="col-lg-7 col-md-7 col-sm-7 col-xs-12" style={styles.soundcastInfo}>
-                                            <img src={soundcast.imageURL} style={styles.soundcastImage} />
-                                            <div style={styles.soundcastDescription}>
-                                                <label style={styles.soundcastTitle}>{soundcast.title}</label>
-                                                <label >{`Current subscription is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
-                                                </label>
+                                        <Link to={`/mysoundcasts/${soundcast.soundcastId}`}>
+                                            <div className="col-lg-7 col-md-7 col-sm-7 col-xs-12" style={styles.soundcastInfo}>
+                                                <img src={soundcast.imageURL} style={styles.soundcastImage} />
+                                                <div style={styles.soundcastDescription}>
+                                                    <label style={styles.soundcastTitle}>{soundcast.title}</label>
+                                                    <label >{`Current subscription is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </Link>
                                         <div className="col-lg-2 col-md-2 col-sm-2 col-xs-12" style={styles.soundcastInfo}>
                                             {soundcast.subscribed && <span style={{...styles.statusText}}>Active</span> ||
                                                 <span style={{...styles.statusText, color: 'red'}}>Inactive</span>}

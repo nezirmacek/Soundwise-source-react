@@ -2512,6 +2512,7 @@
 /*customization start*/
 @media only screen and (max-width: 480px) {
     .jp-progress {display: none;}
+    .xs-none {display: : none;}
 }
 
 @media (min-width: 768px) {

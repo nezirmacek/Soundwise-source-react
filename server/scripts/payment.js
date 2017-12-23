@@ -46,135 +46,160 @@ module.exports.handlePayment = (req, res) => {
 
 module.exports.handleRecurringPayment = (req, res) => {
   // first create customer on connected account
-  const customers = createCustomer(req);
-  stripe.plans.retrieve( // ***** need to confirm the code for retrieving connected plan ??????
-    req.body.planID, {
-      stripe_account: req.body.stripe_user_id,
-    }, (err, plan) => {
-      if (err) { // if payment plan doesn't already exist, create a new plan
-        let interval_count = 1;
-        if (req.body.billingCycle == 'quarterly') {
-          interval_count = 3;
-        }
-        if (req.body.billingCycle == 'annual') {
-          interval_count = 12;
-        }
-        stripe.plans.create({ // create a plan on connected account
-          // ***** need to confirm the code for creating connected plan ???????
-          amount: Number(req.body.amount).toFixed(),
-          interval: 'month',
-          interval_count,
-          name: req.body.description,
-          currency: 'usd',
-          id: req.body.planID,
-        }, {
-          stripe_account: req.body.stripe_user_id,
-        }, (err, plan) => {
-             if (plan) {
-              console.log('new plan created: ', plan);
-              stripe.subscriptions.create({
-                customer: customers.connectedCustomer,
-                application_fee_percent: soundwiseFeePercent,
-                items: [
-                  {
-                    plan: plan.id,
-                  },
-                ],
-              }, {
-                stripe_account: req.body.stripe_user_id,
-              }, (err, subscription) => {
-                if (err) {
-                  console.log(err);
-                  return res.status(err.raw.statusCode).send(err.raw.message);
-                }
-                res.send(Object.assign({}, subscription, customers));
-              });
-             }
-        });
-      } else {
-        stripe.subscriptions.create({
-          customer: customers.connectedCustomer,
-          application_fee_percent: soundwiseFeePercent,
-          items: [
-            {
-              plan: plan.id,
-            },
-          ],
-        }, {
-          stripe_account: req.body.stripe_user_id,
-        }, (err, subscription) => {
-          if (err) {
-            console.log(err);
-            return res.status(err.raw.statusCode).send(err.raw.message);
+  const customers = createCustomer(req)
+  .then(customers => {
+    console.log('customers: ', customers);
+    stripe.plans.retrieve( // ***** need to confirm the code for retrieving connected plan ??????
+      req.body.planID, {
+        stripe_account: req.body.stripe_user_id,
+      }, (err, plan) => {
+        if (err) { // if payment plan doesn't already exist, create a new plan
+          let interval_count = 1;
+          if (req.body.billingCycle == 'quarterly') {
+            interval_count = 3;
           }
-          res.send(Object.assign({}, subscription, customers));
-        });
+          if (req.body.billingCycle == 'annual') {
+            interval_count = 12;
+          }
+          stripe.plans.create({ // create a plan on connected account
+            // ***** need to confirm the code for creating connected plan ???????
+            amount: Number(req.body.amount).toFixed(),
+            interval: 'month',
+            interval_count,
+            name: req.body.description,
+            currency: 'usd',
+            id: req.body.planID,
+          }, {
+            stripe_account: req.body.stripe_user_id,
+          }, (err, plan) => {
+               if (plan) {
+                console.log('new plan created: ', plan);
+                stripe.subscriptions.create({
+                  customer: customers.connectedCustomer,
+                  application_fee_percent: soundwiseFeePercent,
+                  items: [
+                    {
+                      plan: plan.id,
+                    },
+                  ],
+                }, {
+                  stripe_account: req.body.stripe_user_id,
+                }, (err, subscription) => {
+                  if (err) {
+                    console.log(err);
+                    return res.status(err.raw.statusCode).send(err.raw.message);
+                  }
+                  res.send(Object.assign({}, subscription, customers));
+                });
+               }
+          });
+        } else {
+          stripe.subscriptions.create({
+            customer: customers.connectedCustomer,
+            application_fee_percent: soundwiseFeePercent,
+            items: [
+              {
+                plan: plan.id,
+              },
+            ],
+          }, {
+            stripe_account: req.body.stripe_user_id,
+          }, (err, subscription) => {
+            if (err) {
+              console.log(err);
+              return res.status(err.raw.statusCode).send(err.raw.message);
+            }
+            res.send(Object.assign({}, subscription, customers));
+          });
+        }
       }
-    }
-  );
+    );
+  })
+  .catch(err => {
+    console.log(err);
+    return res.status(500).send(err);
+  });
 };
 
-const createCustomer = req => {
-  if(req.body.customer) { // if customer exists on platform, create token using customer, an then create customer using token on connected account
-    stripe.tokens.create({ // create token from platform customer
-      customer: req.body.customer,
-    }, {
-      stripe_account: req.body.stripe_user_id,
-    })
-    .then(token => { // create connected account customer from token
-      stripe.customers.create({
-        description: `connected customer from ${req.body.customer}`,
-        source: token,
+function createCustomer(req) {
+  return new Promise((resolve, reject) => {
+    console.log('req.body.customer: ', req.body.customer);
+    if(req.body.customer) { // if customer exists on platform, create token using customer, an then create customer using token on connected account
+      stripe.tokens.create({ // create token from platform customer
+        customer: req.body.customer,
       }, {
         stripe_account: req.body.stripe_user_id,
+      }, (err, token) => {
+        if(err) {
+          return reject(err);
+        }
+        stripe.customers.create({
+          description: req.body.customer.receipt_email,
+          source: token.id,
+        }, {
+          stripe_account: req.body.stripe_user_id,
+        }, (err, customer) => {
+          if(err) {
+            return reject(err);
+          }
+          return resolve({
+              platformCustomer: req.body.customer,
+              connectedCustomer: customer.id,
+          });
+        });
+      });
+    } else { // if platform customer doesn't exist
+      let platformCustomer;
+      stripe.customers.create({ // first create customer on platform
+        email: req.body.receipt_email,
+        source: req.body.source,
+        description: `platform customer from ${req.body.receipt_email}`,
       }, (err, customer) => {
         if (err) {
-          return {
-            platformCustomer: req.body.customer,
-            connectedCustomer: null,
-          };
+          console.log(err);
+          return reject(err);
         }
-        return {
-          platformCustomer: req.body.customer,
-          connectedCustomer: customer,
-        };
+        console.log('new platformCustomer: ', customer.id);
+        platformCustomer = customer.id;
+        stripe.tokens.create({
+          customer: customer.id,
+        }, {
+          stripe_account: req.body.stripe_user_id,
+        }, (err, token) => {
+          if(err) {
+            console.log(err);
+            return reject(err);
+          }
+          console.log('token: ', token.id);
+          stripe.customers.create({
+            source: token.id,
+            description: req.body.receipt_email,
+          }, {
+            stripe_account: req.body.stripe_user_id,
+          }, (err, customer) => {
+            if (err) {
+              console.log(err);
+              return reject(
+                {
+                  platformCustomer,
+                  connectedCustomer: null,
+                }
+              );
+            }
+            console.log('customer: ', {
+              platformCustomer,
+              connectedCustomer: customer.id,
+            });
+            return resolve(
+              {
+                platformCustomer,
+                connectedCustomer: customer.id,
+              }
+            );
+          });
+        });
       });
-    });
-  } else { // if platform customer doesn't exist
-    let platformCustomer;
-    stripe.customers.create({ // first create customer on platform
-      email: req.body.receipt_email,
-      source: req.body.source,
-      description: `platfrom customer from ${req.body.receipt_email}`,
-    })
-    .then(customer => { // then create token from platform customer
-      platformCustomer = customer;
-      stripe.tokens.create({
-        customer: customer,
-      }, {
-        stripe_account: req.body.stripe_user_id,
-      })
-      .then(token => { return token; });
-    })
-    .then(token => { // create connected customer from token
-      stripe.customers.create({
-        source: token,
-        description: `connected customer from ${req.body.customer}`,
-      }, {
-        stripe_account: req.body.stripe_user_id,
-      }, (err, customer) => {
-        if (err) {
-          return {
-            platformCustomer,
-            connectedCustomer: null,
-          };
-        }
-        return {
-          platformCustomer,
-          connectedCustomer: customer,
-        };
-      });
-    });
-  }
+    }
+  });
 };
 

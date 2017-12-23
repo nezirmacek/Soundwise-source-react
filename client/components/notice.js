@@ -1,5 +1,9 @@
 import React from 'react'
 import { withRouter } from 'react-router'
+import FlatButton from 'material-ui/FlatButton';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { Link } from 'react-router-dom';
+
 import {SoundwiseHeader} from './soundwise_header'
 import Footer from './footer'
 
@@ -13,7 +17,7 @@ const _Notice = (props) => (
           {
             props.location.state.soundcastTitle &&
             <div className="section-title-small text-dark-gray font-weight-500 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text" style={{textAlign: 'center', lineHeight: '150%'}}>
-              <div><strong>Thanks for signing up to</strong></div>
+              <div><strong>Thanks for signing up for</strong></div>
               <div>{props.location.state.soundcastTitle}</div>
             </div>
             || null
@@ -22,9 +26,12 @@ const _Notice = (props) => (
             props.location.state.ios &&
             <div style={{lineHeight: '150%'}}>
               <div className="section-title-small text-dark-gray font-weight-500 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text" style={{textAlign: 'center', marginTop: 20,}}>
-                <span><strong>How to Access Your Soundcast:</strong></span>
+                <span><strong>How to Access Your Soundcast</strong></span>
               </div>
               <div className='col-md-8 col-sm-9 col-xs-12 center-col text-center'>
+                <div className='section-title-small' style={{marginBottom: 15,}}>
+                  <span><strong>Mobile</strong></span>
+                </div>
                 <div className='text-large'>
                   <span><strong>Step 1: </strong></span>
                   <span>Download the Soundwise app</span>
@@ -41,6 +48,16 @@ const _Notice = (props) => (
                   <span><strong>Step 3: </strong></span>
                   <span>Enjoy your soundcast!</span>
                 </div>
+              </div>
+              <div className="section-title-small" style={{textAlign: 'center', marginTop: 20,}}>
+                <div style={{marginBottom: 10}}><strong>Desktop</strong></div>
+                <MuiThemeProvider>
+                  <Link to='/mysoundcasts'>
+                   <FlatButton label="Access your soundcast"
+                    style={{color: '#f76b1c'}}
+                   />
+                  </Link>
+                </MuiThemeProvider>
               </div>
             </div>
             || null

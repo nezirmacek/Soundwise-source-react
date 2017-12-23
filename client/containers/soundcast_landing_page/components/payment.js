@@ -106,14 +106,18 @@ export default class Payment extends Component {
             } else {
                 content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
             }
-            inviteListeners([userInfo.email[0]], subject, content);
+
+            firebase.database().ref(`publishers/${soundcast.publisherID}`)
+            .once('value', snapshot => {
+              inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl);
+            })
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const userId = user.uid;
                     const connectedCustomer = charge && charge.connectedCustomer ? charge.connectedCustomer : null;
-                    console.log('charge: ', charge);
-                    const platformCustomer = charge ? charge.platformCustomer : null;
+                    // console.log('charge: ', charge);
+                    const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
                     // add soundcast to user
                     firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
                     .set({
