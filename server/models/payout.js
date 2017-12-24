@@ -24,7 +24,7 @@ module.exports = function(Payout) {
               amount: data.data.object.amount,
               date: data.data.object.arrival_date,
               publisherId,
-              email: snapshot.val().email ? snapshot.val().email : snapshot.val().paypalEmail,
+              email: snapshot.val().publisherId.email ? snapshot.val().publisherId.email : snapshot.val().publisherId.paypalEmail,
               payoutId: data.data.object.id,
               createdAt: moment().utc().format(),
               updatedAt: moment().utc().format(),
