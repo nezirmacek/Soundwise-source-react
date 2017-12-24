@@ -33,50 +33,53 @@ module.exports = function(Transaction) {
                     snapshot.forEach(data => {
                       userId = data.key;
                     });
+                    console.log('userId: ', userId);
                     db.ref(`users/${userId}/soundcasts`).orderByChild('planID').equalTo(data.data.object.lines.data[0].plan.id)
                       .on('value', snapshot => {
                         let soundcast;
                         snapshot.forEach(data => {
                           soundcast = data.key;
                         });
+                        console.log('soundcastId: ', soundcast);
                         db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`)
                           .set(data.data.object.lines.data[0].period.end);
+
+                        data.data.object.lines.data.forEach((line, i) => {
+                            const _transactionData = line.plan.id.split('-');
+
+                            const _transaction = {
+                                transactionId: `${data.id}-${i}`,
+                                invoiceId: data.data.object.id,
+                                chargeId: data.data.object.charge,
+                                type: 'charge',
+                                amount: line.amount / 100,
+                                description: line.description,
+                                date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
+                                publisherId: _transactionData[0],
+                                soundcastId: _transactionData[1],
+                                customer: data.data.object.customer, // listener's stripe id
+                                paymentId: line.plan.id, // id for the subscription plan, only present if it's a subscription
+                                createdAt: moment().utc().format(),
+                                updatedAt: moment().utc().format(),
+                            };
+
+                            console.log('Try to create transaction: ', _transaction);
+                            _transactions.push(_transaction);
+                            _transactionsPromises.push(
+                                Transaction.create(_transaction)
+                                    .catch(err => {
+                                        _errors.push(_transaction);
+                                        Promise.reject(err);
+                                    })
+                            );
+                        });
+
+                        createTransactions(Transaction, _transactionsPromises, _transactions, cb);
+
                         console.log('subscription renewed');
                       });
                   });
             }
-
-            data.data.object.lines.data.forEach((line, i) => {
-                const _transactionData = line.plan.id.split('-');
-
-                const _transaction = {
-                    transactionId: `${data.id}-${i}`,
-                    invoiceId: data.data.object.id,
-                    chargeId: data.data.object.charge,
-                    type: 'charge',
-                    amount: line.amount / 100,
-                    description: line.description,
-                    date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
-                    publisherId: _transactionData[0],
-                    soundcastId: _transactionData[1],
-                    customer: data.data.object.customer, // listener's stripe id
-                    paymentId: line.plan.id, // id for the subscription plan, only present if it's a subscription
-                    createdAt: moment().utc().format(),
-                    updatedAt: moment().utc().format(),
-                };
-
-                console.log('Try to create transaction: ', _transaction);
-                _transactions.push(_transaction);
-                _transactionsPromises.push(
-                    Transaction.create(_transaction)
-                        .catch(err => {
-                            _errors.push(_transaction);
-                            Promise.reject(err);
-                        })
-                );
-            });
-
-            createTransactions(Transaction, _transactionsPromises, _transactions, cb);
 
             break;
         case 'charge.refunded':
