@@ -14,7 +14,6 @@ module.exports = function(Payout) {
       snapshot.forEach(data => {
         publisherId = data.key;
       });
-      console.log('snapshot.val()[publisherId]: ', snapshot.val()[publisherId]);
       switch (data.type) {
         case 'payout.paid':
           // write payout date to Payout table

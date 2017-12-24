@@ -29,10 +29,16 @@ module.exports = function(Transaction) {
                 const ref = db.ref('users');
                 ref.orderByChild('stripe_id').equalTo(customer)
                   .on('value', snapshot => {
-                    const userId = snapshot.key;
+                    let userId;
+                    snapshot.forEach(data => {
+                      userId = data.key;
+                    });
                     db.ref(`users/${userId}/soundcasts`).orderByChild('planID').equalTo(data.data.object.lines.data[0].plan.id)
                       .on('value', snapshot => {
-                        const soundcast = snapshot.key;
+                        let soundcast;
+                        snapshot.forEach(data => {
+                          soundcast = data.key;
+                        });
                         db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`)
                           .set(data.data.object.lines.data[0].period.end);
                         console.log('subscription renewed');
