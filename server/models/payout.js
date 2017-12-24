@@ -12,6 +12,7 @@ module.exports = function(Payout) {
     let publisherId;
     ref.orderByChild('stripe_user_id').equalTo(data.account).on('value', (snapshot) => {
       publisherId = snapshot.key;
+      console.log('publisher: ', snapshot.val());
       switch (data.type) {
         case 'payout.paid':
           // write payout date to Payout table
