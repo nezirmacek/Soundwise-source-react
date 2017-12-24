@@ -11,8 +11,10 @@ module.exports = function(Payout) {
     const ref = firebase.database().ref('publishers');
     let publisherId;
     ref.orderByChild('stripe_user_id').equalTo(data.account).on('value', (snapshot) => {
-      publisherId = snapshot.key;
-      console.log('publisher: ', snapshot.val());
+      snapshot.forEach(data => {
+        publisherId = data.key;
+      });
+      console.log('publisherId: ', publisherId);
       switch (data.type) {
         case 'payout.paid':
           // write payout date to Payout table
