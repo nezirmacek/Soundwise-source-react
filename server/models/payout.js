@@ -14,7 +14,7 @@ module.exports = function(Payout) {
       snapshot.forEach(data => {
         publisherId = data.key;
       });
-      console.log('snapshot.val(): ', snapshot.val());
+      console.log('snapshot.val()[publisherId]: ', snapshot.val()[publisherId]);
       switch (data.type) {
         case 'payout.paid':
           // write payout date to Payout table
@@ -24,7 +24,7 @@ module.exports = function(Payout) {
               amount: data.data.object.amount,
               date: data.data.object.arrival_date,
               publisherId,
-              email: snapshot.val().publisherId.email ? snapshot.val().publisherId.email : snapshot.val().publisherId.paypalEmail,
+              email: snapshot.val()[publisherId].email ? snapshot.val()[publisherId].email : snapshot.val()[publisherId].paypalEmail,
               payoutId: data.data.object.id,
               createdAt: moment().utc().format(),
               updatedAt: moment().utc().format(),
