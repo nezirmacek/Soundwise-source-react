@@ -3,7 +3,6 @@ import { Link, Redirect } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactStars from 'react-stars';
-import StarRating from 'react-star-rating';
 
 import { CourseSignup } from '../containers/course_signup';
 import { ReviewModal } from '../containers/review_modal';

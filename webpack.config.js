@@ -5,7 +5,7 @@ const webpack = require('webpack')
 module.exports = {
   context: __dirname,
   node: {
-    console: 'empty',
+    // console: 'empty',
     fs: 'empty',
     net: 'empty',
     tls: 'empty'
