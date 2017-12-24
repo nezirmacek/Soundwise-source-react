@@ -159,13 +159,13 @@ export default class LessonPlayer extends Component {
     }
 };
 
-LessonPlayer.propTypes = {
-    index: PropTypes.number,
-    section: PropTypes.object,
-    showDialogCb: PropTypes.func,
-    playingCb: PropTypes.func,
-    isPlaying: PropTypes.bool,
-};
+// LessonPlayer.propTypes = {
+//     index: PropTypes.number,
+//     section: PropTypes.object,
+//     showDialogCb: PropTypes.func,
+//     playingCb: PropTypes.func,
+//     isPlaying: PropTypes.bool,
+// };
 
 const styles = {
     sectionTitle: {

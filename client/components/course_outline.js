@@ -221,16 +221,16 @@ export default class CourseOutline extends Component {
     }
 }
 
-CourseOutline.propTypes = {
-    course: PropTypes.object,
-    relatedCourses: PropTypes.array,
-    cb: PropTypes.func,
-    isLoggedIn: PropTypes.bool,
-    openSignupbox: PropTypes.func,
-    userInfo: PropTypes.object,
-    history: PropTypes.object,
-    addCourseToCart: PropTypes.func,
-};
+// CourseOutline.propTypes = {
+//     course: PropTypes.object,
+//     relatedCourses: PropTypes.array,
+//     cb: PropTypes.func,
+//     isLoggedIn: PropTypes.bool,
+//     openSignupbox: PropTypes.func,
+//     userInfo: PropTypes.object,
+//     history: PropTypes.object,
+//     addCourseToCart: PropTypes.func,
+// };
 
 const styles = {
     moduleTitle: {

@@ -5,8 +5,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {Helmet} from 'react-helmet';
 import { browserHistory } from 'react-router';
-import Butter from 'buttercms';
-const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8');
+// import Butter from 'buttercms';
+// const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8');
 import injectTapEventPlugin from 'react-tap-event-plugin';
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941

@@ -36,9 +36,9 @@ export default class DialogPopup extends Component {
     }
 };
 
-DialogPopup.propTypes = {
-    dialogType: PropTypes.string,
-    buttonActions: PropTypes.array,
-    isShown: PropTypes.bool,
-    onRequestClose: PropTypes.func,
-};
+// DialogPopup.propTypes = {
+//     dialogType: PropTypes.string,
+//     buttonActions: PropTypes.array,
+//     isShown: PropTypes.bool,
+//     onRequestClose: PropTypes.func,
+// };

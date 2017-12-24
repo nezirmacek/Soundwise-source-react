@@ -4,6 +4,12 @@ const webpack = require('webpack')
 
 module.exports = {
   context: __dirname,
+  node: {
+    console: 'empty',
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  },
   entry: [
     'babel-polyfill',
     './client/index.js'
@@ -11,7 +17,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'client/'),
     publicPath: '/',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    devtoolModuleFilenameTemplate: '[absolute-resource-path]',
   },
   module: {
       loaders: [
@@ -101,6 +108,9 @@ module.exports = {
   //       // }],
   //     }
   //   ),
+    new webpack.SourceMapDevToolPlugin({
+       filename: '[file].map'
+    }),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
