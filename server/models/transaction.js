@@ -48,7 +48,7 @@ module.exports = function(Transaction) {
                         const _transactionData = line.plan.id.split('-');
 
                         const _transaction = {
-                            transactionId: `${data.id}-${i}`,
+                            transactionId: data.id,
                             invoiceId: data.data.object.id,
                             chargeId: data.data.object.charge,
                             type: 'charge',
