@@ -76,6 +76,9 @@ module.exports.handleRecurringPayment = (req, res) => {
                 console.log('new plan created: ', plan);
                 stripe.subscriptions.create({
                   customer: customers.connectedCustomer,
+                  metadata: {
+                    platformCustomer: customers.platformCustomer,
+                  },
                   application_fee_percent: soundwiseFeePercent,
                   items: [
                     {
@@ -96,6 +99,9 @@ module.exports.handleRecurringPayment = (req, res) => {
         } else {
           stripe.subscriptions.create({
             customer: customers.connectedCustomer,
+            metadata: {
+              platformCustomer: customers.platformCustomer,
+            },
             application_fee_percent: soundwiseFeePercent,
             items: [
               {

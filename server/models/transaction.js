@@ -24,7 +24,7 @@ module.exports = function(Transaction) {
         case 'invoice.payment_succeeded':
 
             if (data.data.object.lines.data[0].period.end) {
-                const customer = data.data.object.customer;
+                const customer = data.data.object.lines.data[0].metadata.platformCustomer; // need the platform customer id, not the connected account customer id
                 const db = admin.database();
                 const ref = db.ref('users');
                 ref.orderByChild('stripe_id').equalTo(customer)
