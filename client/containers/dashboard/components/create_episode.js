@@ -13,6 +13,7 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import {sendNotifications} from '../../../helpers/send_notifications';
+import {inviteListeners} from '../../../helpers/invite_listeners';
 
 window.URL = window.URL || window.webkitURL;
 
@@ -21,6 +22,7 @@ class _CreateEpisode extends Component {
         super(props);
 
         this.state = {
+            currentsoundcast: null,
             isRecording: false,
             isRecorded: false,
             isPlaying: false,
@@ -64,6 +66,7 @@ class _CreateEpisode extends Component {
         this.renderRecorder = this.renderRecorder.bind(this)
         this.notifySubscribers = this.notifySubscribers.bind(this);
         this.saveEpisode = this.saveEpisode.bind(this);
+        this.emailListeners = this.emailListeners.bind(this);
 
         // if (props.userInfo.soundcasts_managed && props.userInfo.soundcasts_managed[props.currentSoundcastId]) {
         //     const _titleArray = props.userInfo.soundcasts_managed[props.currentSoundcastId].title.split(' ');
@@ -77,7 +80,7 @@ class _CreateEpisode extends Component {
     componentDidMount () {
         // console.log('create_episode is mounted');
         const that = this;
-
+        const {userInfo} = this.props;
 		this.player.onended = () => this.setState({isPlaying: false});
         firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
         .once('value')
@@ -90,14 +93,18 @@ class _CreateEpisode extends Component {
         });
 
         if(this.props.location.state && this.props.location.state.soundcastID) {
-            this.currentSoundcastId = this.props.location.state.soundcastID;
+            this.changeSoundcastId(this.props.location.state.soundcastID);
         }
 	}
 
-    componentWillUnmount() {
-        // console.log('create_episode unmounted');
-        // firebase.database().ref(`episodes/${this.episodeId}`).off();
-        // firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`).off();
+    componentWillReceiveProps(nextProps) {
+        const {userInfo} = nextProps;
+        if(userInfo.soundcasts_managed) {
+            const soundcastArr = Object.keys(userInfo.soundcasts_managed);
+            if(typeof userInfo.soundcasts_managed[soundcastArr[0]] == 'object' && userInfo.soundcasts_managed[soundcastArr[0]].title && !this.currentSoundcastId) {
+                this.changeSoundcastId(soundcastArr[0], userInfo);
+            }
+        }
     }
 
     record () {
@@ -319,10 +326,16 @@ class _CreateEpisode extends Component {
                 isPublished: isPublished,
             };
 
-            firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes`)
+            firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
             .once('value')
             .then(snapshot => {
-                const index = Object.keys(snapshot.val()).length + 1;
+                // console.log('this.currentSoundcastId: ', that.currentSoundcastId);
+                let index;
+                if(snapshot.val().episodes) {
+                    index = Object.keys(snapshot.val().episodes).length + 1;
+                } else {
+                    index = 1;
+                }
                 newEpisode.index = index;
                 firebase.database().ref(`episodes/${this.episodeId}`).set(newEpisode).then(
                     res => {
@@ -354,16 +367,16 @@ class _CreateEpisode extends Component {
                         // console.log('episode saved to db', res);
                         if(isPublished) {
                           that.notifySubscribers();
+                          alert('Episode published.');
+                        } else {
+                          alert('Episode saved');
                         }
-                        history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
+
                     }
                 ).catch(
                     err => {
                         console.log('episode failed to save to db', err);
-                        if(isPublished) {
-                          that.notifySubscribers();
-                        }
-                        history.push(`/dashboard/soundcasts/${that.currentSoundcastId}`);
+                        alert('Hmm...there is a problem saving the episode. please try again later.');
                     }
                 );
             })
@@ -371,32 +384,84 @@ class _CreateEpisode extends Component {
     }
 
     notifySubscribers() {
+        const that = this;
         firebase.database().ref(`soundcasts/${this.currentSoundcastId}/episodes/${this.episodeId}`)
         .once('value', snapshot => {
             if(snapshot.val()) {
-              firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
+              firebase.database().ref(`soundcasts/${that.currentSoundcastId}`)
               .once('value', snapshot => {
                 let registrationTokens = [];
                 // get an array of device tokens
                 // console.log('snapshot.val(): ', snapshot.val());
-                Object.keys(snapshot.val().subscribed).forEach(user => {
-                  if(typeof snapshot.val().subscribed[user] == 'object') {
-                      registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
-                  }
-                });
-                const payload = {
-                  notification: {
-                    title: `${snapshot.val().title} just published:`,
-                    body: `${this.state.title}`,
-                    sound: 'default',
-                    badge: '1'
-                  }
-                };
-                // console.log('notification sending is triggered from create_episode.js');
-                sendNotifications(registrationTokens, payload); //sent push notificaiton
+                if(snapshot.val().subscribed) {
+                    Object.keys(snapshot.val().subscribed).forEach(user => {
+                      if(typeof snapshot.val().subscribed[user] == 'object') {
+                          registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
+                      }
+                    });
+                    const payload = {
+                      notification: {
+                        title: `${snapshot.val().title} just published:`,
+                        body: `${this.state.title}`,
+                        sound: 'default',
+                        badge: '1'
+                      }
+                    };
+                    // console.log('notification sending is triggered from create_episode.js');
+                    sendNotifications(registrationTokens, payload); //sent push notificaiton
+                }
+                const soundcast = {...snapshot.val(), id: that.currentSoundcastId};
+                that.emailListeners(soundcast);
               })
             }
-        })
+        });
+    }
+
+    emailListeners(soundcast) {
+        let subscribers = [];
+        const that = this;
+        const {userInfo} = this.props;
+        const subject = `${this.state.title} was just published on ${soundcast.title}`;
+        if(soundcast.subscribed) {
+            const promises = Object.keys(soundcast.subscribed).map(key => {
+                if(!soundcast.subscribed[key].noEmail) { // if listener has unsubscribed to emails, 'noEmail' should = true
+                    return firebase.database().ref(`users/${key}`).once('value')
+                            .then(snapshot => {
+                                if(snapshot.val()) {
+                                    subscribers.push({
+                                        firstName: snapshot.val().firstName,
+                                        email: snapshot.val().email[0],
+                                    });
+                                }
+                            })
+                }
+            });
+
+            // send notification email to subscribers
+            Promise.all(promises)
+            .then(() => {
+                const emailPromises = subscribers.map(subscriber => {
+                        const content = `<p>Hi ${subscriber.firstName}!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+                        return inviteListeners([subscriber.email], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+                });
+                Promise.all(emailPromises);
+            });
+        }
+
+        // send notification email to invitees
+        if(soundcast.invited) {
+            const {invited} = soundcast;
+            let email;
+            let invitees = [];
+            for(var key in invited) {
+              if(invited[key]) {
+                email = key.replace(/\(dot\)/g, '.');
+                invitees.push(email);
+              }
+            }
+            const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
+            inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+        }
     }
 
     renderRecorder() {
@@ -522,9 +587,13 @@ class _CreateEpisode extends Component {
 
     }
 
-    changeSoundcastId (e) {
+    changeSoundcastId (value, userObj) {
         const that = this;
-        this.currentSoundcastId = e.target.value;
+        const userInfo = userObj ? userObj : this.props.userInfo;
+        this.currentSoundcastId = value;
+        this.setState({
+            currentsoundcast: userInfo.soundcasts_managed[value],
+        })
         firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
         .once('value')
         .then(snapshot => {
@@ -715,7 +784,7 @@ class _CreateEpisode extends Component {
                             <select
                               value = {this.currentSoundcastId}
                               style={styles.soundcastSelect}
-                              onChange={(e) => {this.changeSoundcastId(e);}}>
+                              onChange={(e) => {this.changeSoundcastId(e.target.value);}}>
                                 {
                                     _soundcasts_managed.map((soundcast, i) => {
                                         return (

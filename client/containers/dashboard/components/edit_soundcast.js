@@ -6,8 +6,10 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState } from 'draft-js';
-import Toggle from 'material-ui/Toggle';
+// import Toggle from 'material-ui/Toggle';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Toggle from 'react-toggle'
+import "react-toggle/style.css"
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -45,7 +47,7 @@ export default class EditSoundcast extends Component {
             long_description: EditorState.createEmpty(),
             subscribed: {},
             fileUploaded: false,
-            landingPage: false,
+            landingPage: true,
             features: [''],
             hostName: '',
             hostBio: '',
@@ -94,7 +96,7 @@ export default class EditSoundcast extends Component {
         title,
         imageURL: imageURL ? imageURL : null,
         short_description,
-        landingPage: landingPage ? landingPage : false,
+        landingPage: landingPage ? landingPage : true,
         hostName: hostName ? hostName : null,
         hostBio: hostBio ? hostBio : null,
         hostImageURL: hostImageURL ? hostImageURL : null,
@@ -430,15 +432,18 @@ export default class EditSoundcast extends Component {
                 { landingPage &&
                     <div>
                       <span style={styles.titleText}>Pricing</span>
-                      <div style={{marginTop: 15, marginBottom: 15,}}>
+                      <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
                           <Toggle
-                            label="Charge subscribers for this soundcast?"
-                            toggled={this.state.forSale}
-                            onClick={this.handleChargeOption.bind(this)}
-                            thumbSwitchedStyle={styles.thumbSwitched}
-                            trackSwitchedStyle={styles.trackSwitched}
-                            style={{fontSize: 20, width: '50%'}}
+                            id='charging-status'
+                            aria-labelledby='charging-label'
+                            // label="Charge subscribers for this soundcast?"
+                            checked={this.state.forSale}
+                            onChange={this.handleChargeOption.bind(this)}
+                            // thumbSwitchedStyle={styles.thumbSwitched}
+                            // trackSwitchedStyle={styles.trackSwitched}
+                            // style={{fontSize: 20, width: '50%'}}
                           />
+                          <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge subscribers for this soundcast</span>
                       </div>
                       {
                         forSale &&
@@ -615,15 +620,15 @@ export default class EditSoundcast extends Component {
                       Edit Soundcast
                   </span>
               </div>
-              <div className='' style={{marginTop: 15, marginBottom: 15,}}>
+              <div className=''
+                style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
                   <Toggle
-                    label="Add a public landing page for this soundcast"
-                    toggled={this.state.landingPage}
-                    onClick={this.handleCheck.bind(this)}
-                    thumbSwitchedStyle={styles.thumbSwitched}
-                    trackSwitchedStyle={styles.trackSwitched}
-                    style={{fontSize: 20, width: '50%'}}
+                    id='landing-status'
+                    aria-labelledby='landing-label'
+                    checked={this.state.landingPage}
+                    onChange={this.handleCheck.bind(this)}
                   />
+                  <span id='landing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Add a public landing page for this soundcast</span>
               </div>
               {landingPage &&
                 <div style={{marginBottom: 20, fontSize: 20}}>

@@ -10,11 +10,13 @@ var emailTemplate = require('./helpers/emailTemplate').emailTemplate;
 module.exports.sendListenerInvites = (req, res) => {
   // console.log('invitees: ', req.body.invitees);
   var content = emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
+  var email = req.body.publisherEmail ? req.body.publisherEmail : 'support@mysoundwise.com';
+  var name = req.body.publisherName ? req.body.publisherName : 'Soundwise';
   // console.log('req.body.content: ', req.body.content);
   // console.log('compiled content: ', content);
   var _promises = req.body.invitees.map(invitee => {
     var input = {'to': {[invitee]: ''},
-      'from': ['support@mysoundwise.com', 'Soundwise'],
+      'from': [email, name],
       'subject': req.body.subject,
       'html': content,
     };

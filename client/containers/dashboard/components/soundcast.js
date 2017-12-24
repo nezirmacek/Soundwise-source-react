@@ -164,7 +164,7 @@ export default class Soundcast extends Component {
     const { userInfo, episodes } = this.state;
     const { history, id } = this.props;
     let _soundcast = {};
-    if(userInfo.soundcasts_managed[id]) {
+    if(userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
       _soundcast = userInfo.soundcasts_managed[id];
       const _episodes = [];
       if(_soundcast.episodes) {

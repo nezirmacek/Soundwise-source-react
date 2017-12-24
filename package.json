@@ -88,6 +88,7 @@
     "react-swipeable-views": "^0.12.12",
     "react-tap-event-plugin": "^3.0.2",
     "react-tappable": "^1.0.2",
+    "react-toggle": "^4.0.2",
     "react-tooltip": "^3.2.1",
     "redux": "^3.0.4",
     "redux-offline": "^2.0.0",
