@@ -664,7 +664,7 @@ class _CreateEpisode extends Component {
 
     onError(message) {
         console.log(`upload error: ` + message);
-        this.state({
+        this.setState({
             audioUploadError: message,
         })
     }
@@ -695,7 +695,7 @@ class _CreateEpisode extends Component {
 
     notesOnError(message) {
         console.log(`upload error: ` + message);
-        this.state({
+        this.setState({
             notesUploadError: message,
         })
     }

@@ -58,10 +58,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require('prerender-node').set('prerenderToken',
         'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
 
-AWS.config.update({
-  accessKeyId: awsConfig.accessKeyId,
-  secretAccessKey: awsConfig.secretAccessKey,
-});
+AWS.config.update(awsConfig);
 
 uploader.use(new S3Strategy({
   uploadPath: 'soundcasts/',
