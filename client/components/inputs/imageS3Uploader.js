@@ -126,6 +126,7 @@ export default class ImageS3Uploader extends Component {
                         <input
                             type="file"
                             name="upload"
+                            accept="image/*"
                             id="upload_hidden_cover"
                             onChange={this.setFileName.bind(this)}
                             style={_styles.inputFileHidden}

@@ -6,8 +6,11 @@ import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
 import moment from 'moment';
-import Dots from 'react-activity/lib/Dots';
 import { withRouter } from 'react-router';
+import Toggle from 'react-toggle'
+import ReactS3Uploader from 'react-s3-uploader'
+import LinearProgress from 'material-ui/LinearProgress';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -36,6 +39,10 @@ class _CreateEpisode extends Component {
 
             audioUploaded: false,
             notesUploaded: false,
+            audioUploadProgress: 0,
+            notesUploadProgress: 0,
+            audioUploadError: null,
+            notesUploadError: null,
 
             title: '',
             description: '',
@@ -59,7 +66,8 @@ class _CreateEpisode extends Component {
 		this.player = null;
         this.recordingInterval = null;
         this.playingInterval = null;
-
+        this.uploadAudioInput = null;
+        this.uploadNotesInput = null;
         this.currentSoundcastId = null;
 
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
@@ -73,7 +81,7 @@ class _CreateEpisode extends Component {
         //     let _transformedTitle = '';
         //     _titleArray.map(word => _transformedTitle += word);
         //     _transformedTitle = _transformedTitle.substr(0, 20);
-            this.episodeId = `${moment().format('x')}e`;
+        this.episodeId = `${moment().format('x')}e`;
         // }
     }
 
@@ -93,7 +101,9 @@ class _CreateEpisode extends Component {
         });
 
         if(this.props.location.state && this.props.location.state.soundcastID) {
-            this.changeSoundcastId(this.props.location.state.soundcastID);
+            if(this.props.userInfo.soundcasts_managed) {
+                this.changeSoundcastId(this.props.location.state.soundcastID);
+            }
         }
 	}
 
@@ -612,10 +622,88 @@ class _CreateEpisode extends Component {
         })
     }
 
-    render() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, wrongFileTypeFor } = this.state;
-        const { userInfo } = this.props;
+    preProcess(file, next) {
+        this.setAudioDuration(file);
+        this.clearInputFile(this.uploadAudioInput);
+        this.setState({
+            audioName: file.name,
+            audioUploading: true,
+        })
+        next(file);
+    }
 
+    onProgress(percent, message) {
+        this.setState({
+            audioUploadProgress: percent,
+        });
+    }
+
+    onFinish(signResult) {
+        this.setState({
+            audioUploading: false,
+            audioUploaded: true,
+            audioUploadProgress: 0,
+            uploadedAudioUrl: signResult.signedUrl.split('?')[0],
+        });
+    }
+
+    clearInputFile(f){
+        if(f.value){
+            try{
+                f.value = ''; //for IE11, latest Chrome/Firefox/Opera...
+            }catch(err){ }
+            if(f.value){ //for IE5 ~ IE10
+                var form = document.createElement('form'),
+                    parentNode = f.parentNode, ref = f.nextSibling;
+                form.appendChild(f);
+                form.reset();
+                parentNode.insertBefore(f,ref);
+            }
+        }
+    }
+
+    onError(message) {
+        console.log(`upload error: ` + message);
+        this.state({
+            audioUploadError: message,
+        })
+    }
+
+    notesPreProcess(file, next) {
+        this.clearInputFile(this.uploadNotesInput);
+        this.setState({
+            notesName: file.name,
+            notesUploading: true,
+        })
+        next(file);
+    }
+
+    notesOnProgress(percent, message) {
+        this.setState({
+            notesUploadProgress: percent,
+        });
+    }
+
+    notesOnFinish(signResult) {
+        this.setState({
+            notesUploading: false,
+            notesUploaded: true,
+            notesUploadProgress: 0,
+            notesUrl: signResult.signedUrl.split('?')[0],
+        });
+    }
+
+    notesOnError(message) {
+        console.log(`upload error: ` + message);
+        this.state({
+            notesUploadError: message,
+        })
+    }
+
+    render() {
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, audioUploadProgress, notesUploadProgress, wrongFileTypeFor, audioUploadError, notesUploadError, } = this.state;
+        const { userInfo } = this.props;
+        const that = this;
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
             const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -647,22 +735,47 @@ class _CreateEpisode extends Component {
                         <div style={styles.recorder}>
                             <div style={{...styles.recordTitleText, paddingBottom: 0,}}>Upload</div>
                             <div style={styles.inputFileWrapper}>
-                                <input
-                                    type="file"
-                                    name="upload"
-                                    id="upload_hidden_audio"
-                                    onChange={this.setFileName.bind(this, 'audio')}
-                                    style={styles.inputFileHidden}
-                                />
+                                <div style = {{display: 'none'}}>
+                                    <ReactS3Uploader
+                                        signingUrl="/s3/sign"
+                                        signingUrlMethod="GET"
+                                        accept='.mp3,.m4a'
+                                        preprocess={this.preProcess.bind(this)}
+                                        onProgress={this.onProgress.bind(this)}
+                                        onError={this.onError.bind(this)}
+                                        onFinish={this.onFinish.bind(this)}
+                                        uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}  // this is the default
+                                        contentDisposition="auto"
+                                        scrubFilename={(filename) => {
+                                            const original = filename.split('.');
+                                            const newName = that.episodeId;
+                                            return filename.replace(filename.slice(0), `${newName}.${original[original.length -1]}`);
+                                        }}
+                                        inputRef={cmp => this.uploadAudioInput = cmp}
+                                        autoUpload={true}
+                                        />
+                                </div>
                                 {
                                   audioUploading && !isRecorded &&
-                                  <div style={{textAlign: 'center'}}>
-                                    <div className='title-small' style={{marginBottom: 5,}}>
-                                        {`Uploading audio file`}
-                                    </div>
-                                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                        <Dots style={{}} color="#727981" size={22} speed={1}/>
-                                    </div>
+                                  <div style={{textAlign: 'center', marginTop: 25,}}>
+                                    {
+                                        audioUploadError &&
+                                        <div>
+                                          <span style={{color: 'red'}}>{audioUploadError}</span>
+                                        </div>
+                                        ||
+                                        <div style={{}}>
+                                            <MuiThemeProvider>
+                                              <LinearProgress
+                                                mode="determinate"
+                                                value={audioUploadProgress}
+                                                color={Colors.mainOrange}/>
+                                            </MuiThemeProvider>
+                                            <div className='text-medium' style={{textAlign: 'center'}}>
+                                                <span>{`uploading ${audioUploadProgress} %`}</span>
+                                            </div>
+                                        </div>
+                                    }
                                   </div>
                                   ||
                                   uploadedAudioUrl && !isRecorded &&
@@ -678,7 +791,10 @@ class _CreateEpisode extends Component {
                                   <div style={{textAlign: 'center',}}>
                                     <div>
                                         <button
-                                            onClick={() => {document.getElementById('upload_hidden_audio').click();}}
+                                            onClick={() => {
+                                                // document.getElementById('upload_hidden_audio').click();
+                                                this.uploadAudioInput.click();
+                                            }}
                                             style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
                                         >
                                             <span style={{paddingLeft: 5, paddingRight: 5}}>Upload Audio File</span>
@@ -722,22 +838,47 @@ class _CreateEpisode extends Component {
                         <div style={styles.notes}>
                             <div style={{...styles.notesLabel, fontWeight: 600}}>Notes</div>
                             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
-                                <input
-                                    type="file"
-                                    name="upload"
-                                    id="upload_hidden_notes"
-                                    onChange={this.setFileName.bind(this, 'notes')}
-                                    style={styles.inputFileHidden}
-                                />
+                                <div style = {{display: 'none'}}>
+                                    <ReactS3Uploader
+                                        signingUrl="/s3/sign"
+                                        signingUrlMethod="GET"
+                                        accept='image/*,.pdf'
+                                        preprocess={this.notesPreProcess.bind(this)}
+                                        onProgress={this.notesOnProgress.bind(this)}
+                                        onError={this.notesOnError.bind(this)}
+                                        onFinish={this.notesOnFinish.bind(this)}
+                                        uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}  // this is the default
+                                        contentDisposition="auto"
+                                        scrubFilename={(filename) => {
+                                            const original = filename.split('.');
+                                            const newName = `${that.episodeId}-notes`;
+                                            return filename.replace(filename.slice(0), `${newName}.${original[original.length -1]}`);
+                                        }}
+                                        inputRef={cmp => this.uploadNotesInput = cmp}
+                                        autoUpload={true}
+                                        />
+                                </div>
                                 {
                                   notesUploading &&
                                   <div style={{textAlign: 'left'}}>
-                                    <div className='title-small' style={{marginBottom: 5,}}>
-                                        {`Uploading notes`}
-                                    </div>
-                                    <div style={{display: 'flex', alignItems: 'center'}}>
-                                        <Dots style={{}} color="#727981" size={22} speed={1}/>
-                                    </div>
+                                    {
+                                        notesUploadError &&
+                                        <div>
+                                          <span style={{color: 'red'}}>{notesUploadError}</span>
+                                        </div>
+                                        ||
+                                        <div style={{}}>
+                                            <MuiThemeProvider>
+                                              <LinearProgress
+                                                mode="determinate"
+                                                value={notesUploadProgress}
+                                                color={Colors.mainOrange}/>
+                                            </MuiThemeProvider>
+                                            <div className='text-medium' style={{textAlign: 'center'}}>
+                                                <span>{`uploading ${notesUploadProgress} %`}</span>
+                                            </div>
+                                        </div>
+                                    }
                                   </div>
                                   ||
                                   notesUrl &&
@@ -756,28 +897,32 @@ class _CreateEpisode extends Component {
                                   <div style={{}}>
                                     <div>
                                         <button
-                                            onClick={() => {document.getElementById('upload_hidden_notes').click();}}
+                                            onClick={() => {that.uploadNotesInput.click();}}
                                             style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
                                         >
                                             <span style={{paddingLeft: 5, paddingRight: 5}}>Upload Notes </span>
                                         </button>
                                     </div>
                                     <div>
-                                        <div style={styles.fileTypesLabel}>pdf, jpg or png files accepted</div>
+                                        <div style={styles.fileTypesLabel}>pdf, jpeg or png files accepted</div>
                                         {wrongFileTypeFor == 'notes' && <div style={{...styles.fileTypesLabel, color: 'red'}}>Wrong file type. Please try again.</div>}
                                     </div>
                                   </div>
                                 }
                             </div>
                         </div>
-                        <div style={{marginTop: 15, marginBottom: 15,}}>
-                              <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>This episode is publicly sharable</span>
-                              <input
-                                type='checkbox'
-                                style={styles.checkbox}
-                                checked={this.state.publicEpisode}
-                                onClick={this.changeSharingSetting.bind(this)}
-                              />
+                        <div style={{marginTop: 15, marginBottom: 25, }}>
+                            <Toggle
+                              id='share-status'
+                              aria-labelledby='share-label'
+                              // label="Charge subscribers for this soundcast?"
+                              checked={this.state.publicEpisode}
+                              onChange={this.changeSharingSetting.bind(this)}
+                              // thumbSwitchedStyle={styles.thumbSwitched}
+                              // trackSwitchedStyle={styles.trackSwitched}
+                              // style={{fontSize: 20, width: '50%'}}
+                            />
+                            <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>

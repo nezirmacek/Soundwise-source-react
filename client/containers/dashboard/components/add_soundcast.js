@@ -537,6 +537,7 @@ export default class AddSoundcast extends Component {
 								type="file"
 								name="upload"
 								id="upload_hidden_cover_2"
+								accept="image/*"
 								onChange={this.setFileName.bind(this, true)}
 								style={styles.inputFileHidden}
 								ref={input => this.hostImgInputRef = input}
@@ -847,6 +848,7 @@ export default class AddSoundcast extends Component {
 											type="file"
 											name="upload"
 											id="upload_hidden_cover"
+											accept="image/*"
 											onChange={this.setFileName.bind(this, null)}
 											style={styles.inputFileHidden}
 											ref={input => this.fileInputRef = input}

@@ -356,6 +356,7 @@ export default class Settings extends Component {
                                           type="file"
                                           name="upload"
                                           id="upload_hidden_cover"
+                                          accept="image/*"
                                           onChange={this.setFileName.bind(this)}
                                           style={styles.inputFileHidden}
                                           ref={input => this.fileInputRef = input}

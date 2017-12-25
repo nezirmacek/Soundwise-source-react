@@ -7,6 +7,7 @@ import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 import Dots from 'react-activity/lib/Dots';
+import Toggle from 'react-toggle'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -27,7 +28,7 @@ export default class EditEpisode extends Component {
             notesUploaded: false,
             notesName: '',
             notesUploading: false,
-            publicEpisode: '',
+            publicEpisode: true,
             isPublished: null,
             soundcastID: '',
         };
@@ -368,14 +369,18 @@ export default class EditEpisode extends Component {
                                 }
                             </div>
                         </div>
-                        <div style={{marginTop: 15, marginBottom: 15,}}>
-                              <span style={{...styles.titleText, fontWeight: 600, verticalAlign: 'middle'}}>This episode is publicly sharable</span>
-                              <input
-                                type='checkbox'
-                                style={styles.checkbox}
-                                checked={this.state.publicEpisode}
-                                onClick={this.changeSharingSetting.bind(this)}
-                              />
+                        <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                            <Toggle
+                              id='sharing-status'
+                              aria-labelledby='sharing-label'
+                              // label="Charge subscribers for this soundcast?"
+                              checked={this.state.publicEpisode}
+                              onChange={this.changeSharingSetting.bind(this)}
+                              // thumbSwitchedStyle={styles.thumbSwitched}
+                              // trackSwitchedStyle={styles.trackSwitched}
+                              // style={{fontSize: 20, width: '50%'}}
+                            />
+                            <span id='sharing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>

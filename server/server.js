@@ -7,6 +7,7 @@ var boot = require('loopback-boot');
 var mutilpart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
+var AWS = require('aws-sdk');
 var awsConfig = require('../config').awsConfig;
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -57,6 +58,11 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require('prerender-node').set('prerenderToken',
         'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
 
+AWS.config.update({
+  accessKeyId: awsConfig.accessKeyId,
+  secretAccessKey: awsConfig.secretAccessKey,
+});
+
 uploader.use(new S3Strategy({
   uploadPath: 'soundcasts/',
   headers: {
@@ -90,6 +96,18 @@ app.post('/api/upload', function(req, res, next) {
     res.send(files);
   });
 });
+
+app.use('/s3', require('react-s3-uploader/s3router')({
+  bucket: 'soundwiseinc',
+  // region: 'us-east-1', // optional
+  signatureVersion: 'v4', // optional (use for some amazon regions: frankfurt and others)
+  headers: {'Access-Control-Allow-Origin': '*'}, // optional
+  ACL: 'public-read', // this is default
+  getFileKeyDir: function(req) {
+      return 'soundcasts/';
+  },
+  uniquePrefix: false, // (4.0.2 and above) default is true, setting the attribute to false preserves the original filename in S3
+}));
 
 //database API routes:
 require('../database/routes.js')(app);
