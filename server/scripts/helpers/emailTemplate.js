@@ -232,6 +232,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += "                        <table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\">";
   emailShell += "                            <tr>";
   emailShell += "                                <td style=\"padding: 20px 40px 40px 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555; text-align: center;\">";
+  emailShell += "                                    <h2 style=\"margin: 0 0 10px 0; font-family: sans-serif; font-size: 18px; line-height: 125%; color: #333333; font-weight: bold;\">To listen to your soundcast:<\/h2>";
   emailShell += "                                    <h2 style=\"margin: 0 0 10px 0; font-family: sans-serif; font-size: 18px; line-height: 125%; color: #333333; font-weight: bold;\">Open this email from your phone. Tap on a badge below to download the Soundwise app<\/h2>";
   emailShell += "                                    <p style=\"margin: 0;\">And don't forget to enable push notification to receive updates from your host!<\/p>";
   emailShell += "                                <\/td>";

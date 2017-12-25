@@ -9,6 +9,7 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import {sendNotifications} from '../../../helpers/send_notifications';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
+import {inviteListeners} from '../../../helpers/invite_listeners';
 
 export default class Announcements extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ export default class Announcements extends Component {
     this.handlePublish = this.handlePublish.bind(this);
     this.sortAnnouncements = this.sortAnnouncements.bind(this);
     this.loadUser = this.loadUser.bind(this);
+    this.emailListeners = this.emailListeners.bind(this);
   }
 
   componentDidMount() {
@@ -151,31 +153,79 @@ export default class Announcements extends Component {
 
           firebase.database().ref(`soundcasts/${currentSoundcastID}/subscribed`)
           .on('value', snapshot => {
-            let registrationTokens = [];
-            // get an array of device tokens
-            Object.keys(snapshot.val()).forEach(user => {
-              if(typeof snapshot.val()[user] == 'object') {
-                  registrationTokens.push(snapshot.val()[user][0]) //basic version: only allow one devise per user
-              }
-            });
-            const payload = {
-              notification: {
-                // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
-                title: `${currentSoundcast.title} sent you a message`,
-                body: message,
-                badge: '1',
-                sound: 'default'
-              }
-            };
-            sendNotifications(registrationTokens, payload); //sent push notificaiton
+            if(snapshot.val()) {
+              let registrationTokens = [];
+              // get an array of device tokens
+              Object.keys(snapshot.val()).forEach(user => {
+                if(typeof snapshot.val()[user] == 'object') {
+                    registrationTokens.push(snapshot.val()[user][0]) //basic version: only allow one devise per user
+                }
+              });
+              const payload = {
+                notification: {
+                  // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                  title: `${currentSoundcast.title} sent you a message`,
+                  body: message,
+                  badge: '1',
+                  sound: 'default'
+                }
+              };
+              sendNotifications(registrationTokens, payload); //sent push notificaiton
+              that.emailListeners(currentSoundcast, message)
+            }
           })
       },
       err => {
           console.log('ERROR adding announcement: ', err);
       }
-  );
+    );
+  }
 
+  emailListeners(soundcast, message) {
+      let subscribers = [];
+      const that = this;
+      const {userInfo} = this.props;
+      const subject = `${soundcast.title} sent you a message on Soundwise`;
+      if(soundcast.subscribed) {
+          const promises = Object.keys(soundcast.subscribed).map(key => {
+              if(!soundcast.subscribed[key].noEmail) { // if listener has unsubscribed to emails, 'noEmail' should = true
+                  return firebase.database().ref(`users/${key}`).once('value')
+                          .then(snapshot => {
+                              if(snapshot.val()) {
+                                  subscribers.push({
+                                      firstName: snapshot.val().firstName,
+                                      email: snapshot.val().email[0],
+                                  });
+                              }
+                          })
+              }
+          });
 
+          // send notification email to subscribers
+          Promise.all(promises)
+          .then(() => {
+              const emailPromises = subscribers.map(subscriber => {
+                      const content = `<p>Hi ${subscriber.firstName}!</p><p></p><p>${soundcast.title} just sent you a message on Soundwise:</p><p></p><div style=\"padding: 15px; white-space: pre-wrap; background: #FFF8E1;\"><strong>${message}</strong></div>`;
+                      return inviteListeners([subscriber.email], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+              });
+              Promise.all(emailPromises);
+          });
+      }
+
+      // send notification email to invitees
+      if(soundcast.invited) {
+          const {invited} = soundcast;
+          let email;
+          let invitees = [];
+          for(var key in invited) {
+            if(invited[key]) {
+              email = key.replace(/\(dot\)/g, '.');
+              invitees.push(email);
+            }
+          }
+          const content = `<p>Hi there!</p><p></p><p>${soundcast.title} just sent you a message on Soundwise:</p><p></p><div style=\"padding: 15px; white-space: pre-wrap; background: #FFF8E1;\"><strong>${message}</strong></div>`;
+          inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+      }
   }
 
   render() {
@@ -231,7 +281,7 @@ export default class Announcements extends Component {
                   <div style={styles.existingAnnouncement} key={i}>
                     <div style={styles.announcementContainer}>
                       <div style={styles.date}>{moment.unix(announcement.date_created).format("dddd, MMMM Do YYYY, h:mm a")}</div>
-                      <div style={styles.content} className='text-large'>
+                      <div style={{...styles.content, whiteSpace: 'pre-wrap'}} className='text-large'>
                         {announcement.content}
                       </div>
                       <div style={styles.likes}>{`${likes} likes  ${comments} comments`}</div>

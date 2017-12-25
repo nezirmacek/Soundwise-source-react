@@ -13,6 +13,7 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 import {sendNotifications} from '../../../helpers/send_notifications';
+import {inviteListeners} from '../../../helpers/invite_listeners';
 
 export default class EditEpisode extends Component {
     constructor (props) {
@@ -125,10 +126,6 @@ export default class EditEpisode extends Component {
             isPublished: toPublish ? true : isPublished
         };
 
-        if(toPublish) {
-            this.notifySubscribers();
-        }
-
         // edit episode in database
         firebase.database().ref(`episodes/${id}`)
         .once('value')
@@ -143,7 +140,13 @@ export default class EditEpisode extends Component {
           firebase.database().ref(`episodes/${id}`)
           .set(changedEpisode).then(
             res => {
-                history.goBack();
+                // history.goBack();
+                if(toPublish && !isPublished) { // if publishing for the first time
+                  alert('Episode is published.');
+                  that.notifySubscribers();
+                } else  {
+                  alert('The edited episode is saved');
+                }
             },
             err => {
                 console.log('ERROR edit episode: ', err);
@@ -161,31 +164,83 @@ export default class EditEpisode extends Component {
 
     notifySubscribers() {
         const { episode } = this.props.history.location.state;
-        firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`)
+        const that = this;
+        firebase.database().ref(`soundcasts/${this.state.soundcastID}/episodes/${episode.id}`)
         .once('value', snapshot => {
             if(snapshot.val()) {
-              firebase.database().ref(`soundcasts/${episode.soundcastID}`)
+              firebase.database().ref(`soundcasts/${this.state.soundcastID}`)
               .once('value', snapshot => {
                 let registrationTokens = [];
                 // get an array of device tokens
                 // console.log('snapshot.val(): ', snapshot.val());
-                Object.keys(snapshot.val().subscribed).forEach(user => {
-                  if(typeof snapshot.val().subscribed[user] == 'object') {
-                      registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
-                  }
-                });
-                const payload = {
-                  notification: {
-                    title: `${snapshot.val().title} just published:`,
-                    body: `${this.state.title}`,
-                    sound: 'default',
-                    badge: '1'
-                  }
-                };
-                sendNotifications(registrationTokens, payload); //sent push notificaiton
+                if(snapshot.val().subscribed) {
+                  Object.keys(snapshot.val().subscribed).forEach(user => {
+                    if(typeof snapshot.val().subscribed[user] == 'object') {
+                        registrationTokens.push(snapshot.val().subscribed[user][0]) //basic version: only allow one devise per user
+                    }
+                  });
+                  const payload = {
+                    notification: {
+                      title: `${snapshot.val().title} just published:`,
+                      body: `${this.state.title}`,
+                      sound: 'default',
+                      badge: '1'
+                    }
+                  };
+                  sendNotifications(registrationTokens, payload); //sent push notificaiton
+                }
+                const soundcast = {...snapshot.val(), id: that.state.soundcastID};
+                that.emailListeners(soundcast);
               })
             }
         })
+    }
+
+    emailListeners(soundcast) {
+        let subscribers = [];
+        const that = this;
+        const {userInfo} = this.props;
+        const subject = `${this.state.title} was just published on ${soundcast.title}`;
+        if(soundcast.subscribed) {
+            const promises = Object.keys(soundcast.subscribed).map(key => {
+                if(!soundcast.subscribed[key].noEmail) { // if listener has unsubscribed to emails, 'noEmail' should = true
+                    return firebase.database().ref(`users/${key}`).once('value')
+                            .then(snapshot => {
+                                if(snapshot.val()) {
+                                    subscribers.push({
+                                        firstName: snapshot.val().firstName,
+                                        email: snapshot.val().email[0],
+                                    });
+                                }
+                            })
+                }
+            });
+
+            // send notification email to subscribers
+            Promise.all(promises)
+            .then(() => {
+                const emailPromises = subscribers.map(subscriber => {
+                        const content = `<p>Hi ${subscriber.firstName}!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+                        return inviteListeners([subscriber.email], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+                });
+                Promise.all(emailPromises);
+            });
+        }
+
+        // send notification email to invitees
+        if(soundcast.invited) {
+            const {invited} = soundcast;
+            let email;
+            let invitees = [];
+            for(var key in invited) {
+              if(invited[key]) {
+                email = key.replace(/\(dot\)/g, '.');
+                invitees.push(email);
+              }
+            }
+            const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
+            inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+        }
     }
 
     changeSharingSetting() {
