@@ -97,9 +97,8 @@ app.post('/api/upload', function(req, res, next) {
 app.use('/s3', require('react-s3-uploader/s3router')({
   bucket: 'soundwiseinc',
   // region: 'us-east-1', // optional
-  signatureVersion: 'v4', // optional (use for some amazon regions: frankfurt and others)
   headers: {'Access-Control-Allow-Origin': '*'}, // optional
-  ACL: 'public-read', // this is default
+  ACL: 'public-read',
   getFileKeyDir: function(req) {
       return 'soundcasts/';
   },

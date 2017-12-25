@@ -744,7 +744,7 @@ class _CreateEpisode extends Component {
                                         onProgress={this.onProgress.bind(this)}
                                         onError={this.onError.bind(this)}
                                         onFinish={this.onFinish.bind(this)}
-                                        uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}  // this is the default
+                                        uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
                                         contentDisposition="auto"
                                         scrubFilename={(filename) => {
                                             const original = filename.split('.');
