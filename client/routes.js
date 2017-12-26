@@ -41,6 +41,7 @@ import {Checkout} from './containers/checkout';
 import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import {Dashboard} from './containers/dashboard/dashboard';
 import {SoundcastPage} from './containers/soundcast_landing_page/soundcast_page';
+import BlogList from './containers/blog/blog-list';
 import {EpisodePage} from './containers/soundcast_landing_page/components/episode_page';
 import {SoundcastCheckout} from './containers/soundcast_landing_page/soundcast_checkout';
 import NotFound from './components/page_404';
@@ -205,6 +206,7 @@ class _Routes extends Component {
                 <Route path="/creator_terms" component={CreatorTerms} />
                 <Route path="/privacy" component={Privacy} />
                 <Route path="/terms" component={Terms} />
+                <Route path="/blog" component={BlogList} />
                 <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
                 <Route exact path="/myprograms" component={MyCourses}/>
                 <Route exact path="/mysoundcasts" component={MySoundcasts}/>

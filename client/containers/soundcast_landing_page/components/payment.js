@@ -86,7 +86,7 @@ export default class Payment extends Component {
         let _email, content;
 
         if(userInfo) {
-            console.log('userInfo: ', userInfo);
+            // console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
             const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
