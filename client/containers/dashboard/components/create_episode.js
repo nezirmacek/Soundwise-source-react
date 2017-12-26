@@ -8,6 +8,7 @@ import Axios from 'axios';
 import moment from 'moment';
 import { withRouter } from 'react-router';
 import Toggle from 'react-toggle'
+import Dots from 'react-activity/lib/Dots';
 import ReactS3Uploader from 'react-s3-uploader'
 import LinearProgress from 'material-ui/LinearProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -735,6 +736,13 @@ class _CreateEpisode extends Component {
                         <div style={styles.recorder}>
                             <div style={{...styles.recordTitleText, paddingBottom: 0,}}>Upload</div>
                             <div style={styles.inputFileWrapper}>
+                                <input
+                                    type="file"
+                                    name="upload"
+                                    id="upload_hidden_audio"
+                                    onChange={this.setFileName.bind(this, 'audio')}
+                                    style={styles.inputFileHidden}
+                                />
                                 <div style = {{display: 'none'}}>
                                     <ReactS3Uploader
                                         signingUrl="/s3/sign"
@@ -757,22 +765,35 @@ class _CreateEpisode extends Component {
                                 </div>
                                 {
                                   audioUploading && !isRecorded &&
-                                  <div style={{textAlign: 'center', marginTop: 25,}}>
+                                  <div style={{
+                                      textAlign: 'center',
+                                      marginTop: 25,
+                                    }}>
                                     {
                                         audioUploadError &&
                                         <div>
                                           <span style={{color: 'red'}}>{audioUploadError}</span>
                                         </div>
                                         ||
-                                        <div style={{}}>
-                                            <MuiThemeProvider>
-                                              <LinearProgress
-                                                mode="determinate"
-                                                value={audioUploadProgress}
-                                                color={Colors.mainOrange}/>
-                                            </MuiThemeProvider>
-                                            <div className='text-medium' style={{textAlign: 'center'}}>
-                                                <span>{`uploading ${audioUploadProgress} %`}</span>
+                                        <div>
+                                          <div style={{textAlign: 'center', display:'none'}}>
+                                            <div className='title-small' style={{marginBottom: 5,}}>
+                                                {`Uploading audio file`}
+                                            </div>
+                                            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                                <Dots style={{}} color="#727981" size={22} speed={1}/>
+                                            </div>
+                                          </div>
+                                            <div style={{display: ''}}>
+                                                <MuiThemeProvider>
+                                                  <LinearProgress
+                                                    mode="determinate"
+                                                    value={audioUploadProgress}
+                                                    color={Colors.mainOrange}/>
+                                                </MuiThemeProvider>
+                                                <div className='text-medium' style={{textAlign: 'center'}}>
+                                                    <span>{`uploading ${audioUploadProgress} %`}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -838,6 +859,13 @@ class _CreateEpisode extends Component {
                         <div style={styles.notes}>
                             <div style={{...styles.notesLabel, fontWeight: 600}}>Notes</div>
                             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                                <input
+                                    type="file"
+                                    name="upload"
+                                    id="upload_hidden_notes"
+                                    onChange={this.setFileName.bind(this, 'notes')}
+                                    style={styles.inputFileHidden}
+                                />
                                 <div style = {{display: 'none'}}>
                                     <ReactS3Uploader
                                         signingUrl="/s3/sign"
@@ -867,15 +895,25 @@ class _CreateEpisode extends Component {
                                           <span style={{color: 'red'}}>{notesUploadError}</span>
                                         </div>
                                         ||
-                                        <div style={{}}>
-                                            <MuiThemeProvider>
-                                              <LinearProgress
-                                                mode="determinate"
-                                                value={notesUploadProgress}
-                                                color={Colors.mainOrange}/>
-                                            </MuiThemeProvider>
-                                            <div className='text-medium' style={{textAlign: 'center'}}>
-                                                <span>{`uploading ${notesUploadProgress} %`}</span>
+                                        <div style={{marginTop: 15}}>
+                                          <div style={{textAlign: 'left', display: 'none'}}>
+                                            <div className='title-small' style={{marginBottom: 5,}}>
+                                                {`Uploading notes`}
+                                            </div>
+                                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                                <Dots style={{}} color="#727981" size={22} speed={1}/>
+                                            </div>
+                                          </div>
+                                            <div style={{display: ''}}>
+                                                <MuiThemeProvider>
+                                                  <LinearProgress
+                                                    mode="determinate"
+                                                    value={notesUploadProgress}
+                                                    color={Colors.mainOrange}/>
+                                                </MuiThemeProvider>
+                                                <div className='text-medium' style={{textAlign: 'center'}}>
+                                                    <span>{`uploading ${notesUploadProgress} %`}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     }
@@ -897,7 +935,10 @@ class _CreateEpisode extends Component {
                                   <div style={{}}>
                                     <div>
                                         <button
-                                            onClick={() => {that.uploadNotesInput.click();}}
+                                            onClick={() => {
+                                                // document.getElementById('upload_hidden_notes').click();
+                                                that.uploadNotesInput.click();
+                                            }}
                                             style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
                                         >
                                             <span style={{paddingLeft: 5, paddingRight: 5}}>Upload Notes </span>
