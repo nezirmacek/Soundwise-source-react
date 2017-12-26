@@ -26,6 +26,14 @@ export default class EpisodePreview extends Component {
     }
   }
 
+  componentDidMount() {
+    if(this.props.episode && this.props.episode.title) {
+      this.setState({
+        episode: this.props.episode,
+      })
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if(nextProps.episode && nextProps.episode.title) {
       this.setState({

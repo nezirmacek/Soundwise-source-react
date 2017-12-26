@@ -51,7 +51,7 @@ export default class Payment extends Component {
             });
             if(this.props.total == 0 || this.props.total == 'free') {
                 // console.log('addSoundcastToUser called in componentDidMount');
-                this.addSoundcastToUser(that.props.userInfo);
+                this.addSoundcastToUser(null, that.props.userInfo);
             }
         }
     }
@@ -66,7 +66,7 @@ export default class Payment extends Component {
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
                 // console.log('addSoundcastToUser called in componentWillReceiveProps');
-              this.addSoundcastToUser(nextProps.userInfo);
+              this.addSoundcastToUser(null, nextProps.userInfo);
             }
         }
     }
@@ -77,16 +77,16 @@ export default class Payment extends Component {
         })
     }
 
-    addSoundcastToUser(charge) {
+    addSoundcastToUser(charge, userInfoFromProp) {
         const that = this;
         const {soundcastID, soundcast, checked} = this.props;
         const {confirmationEmail} = soundcast;
         const {totalPay} = this.state;
-        let userInfo = this.state.userInfo || this.props.userInfo;
+        let userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
         let _email, content;
 
         if(userInfo) {
-            // console.log('userInfo: ', userInfo);
+            console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
             const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
@@ -109,7 +109,8 @@ export default class Payment extends Component {
 
             firebase.database().ref(`publishers/${soundcast.publisherID}`)
             .once('value', snapshot => {
-              inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl);
+                const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
+              inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail);
             })
 
             firebase.auth().onAuthStateChanged(function(user) {
@@ -131,8 +132,10 @@ export default class Payment extends Component {
                     });
 
                     // add stripe_id to user data if not already exists
-                    firebase.database().ref(`users/${userId}/stripe_id`)
-                    .set(platformCustomer);
+                    if(platformCustomer) {
+                        firebase.database().ref(`users/${userId}/stripe_id`)
+                        .set(platformCustomer);
+                    }
 
                     //add user to soundcast
                     firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
