@@ -116,7 +116,7 @@ class _SoundcastPlayingPage extends Component {
   sendToDatabase(event, currentEpisode) {
     const {soundcastID, soundcast, startPosition, userID} = this.state;
     const _date = moment().utc().format();
-    let totalListen = currentEpisode.totalListens ? currentEpisode.totalListens : 0;
+    let totalListens = currentEpisode.totalListens ? currentEpisode.totalListens : 0;
     firebase.database().ref(`episodes/${currentEpisode.id}/totalListens`)
     .set(totalListens + 1);
 
