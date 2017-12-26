@@ -99,7 +99,7 @@ class _SoundcastPlayingPage extends Component {
     const episodes = [];
     let episode;
     for(var key in soundcast.episodes) {
-      if(typeof soundcast.episodes[key] == 'object' && soundcast.episodes[key].title) {
+      if(typeof soundcast.episodes[key] == 'object' && soundcast.episodes[key].title && soundcast.episodes[key].isPublished) {
         episode = soundcast.episodes[key];
         episode.id = key;
         episodes.push(episode);
@@ -116,9 +116,9 @@ class _SoundcastPlayingPage extends Component {
   sendToDatabase(event, currentEpisode) {
     const {soundcastID, soundcast, startPosition, userID} = this.state;
     const _date = moment().utc().format();
-
+    let totalListen = currentEpisode.totalListens ? currentEpisode.totalListens : 0;
     firebase.database().ref(`episodes/${currentEpisode.id}/totalListens`)
-    .set(currentEpisode.totalListens + 1);
+    .set(totalListens + 1);
 
     if(event == 'pause') {
       this.setState({

@@ -39,16 +39,25 @@ export default class SoundcastContent extends Component {
         .then(snapshot => {
           if(snapshot.val()) {
             const episode = snapshot.val();
-            episode.id = id;
-            episodesArr.push(episode);
+            if(episode.isPublished) {
+              episode.id = id;
+              episodesArr.push(episode);
+            }
           }
         });
     });
     Promise.all(promises)
     .then(() => {
-      episodesArr.sort((a, b) => {
-        return b.date_created - a.date_created;
-      })
+      if(episodesArr[0].index) {
+        episodesArr.sort((a, b) => {
+          return b.index - a.index;
+        });
+      } else {
+        episodesArr.sort((a, b) => {
+          return b.date_created - a.date_created;
+        });
+      }
+
       that.setState({
         episodes: episodesArr,
       })
