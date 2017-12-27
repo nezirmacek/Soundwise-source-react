@@ -103,6 +103,7 @@ class _Header extends Component {
                               </button>
                               <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
                                   <ul className="nav navbar-nav" style={{display: 'flex', alignItems: 'center'}}>
+                                      <li className="propClone"><Link className="inner-link" to="/blog" style={styles.navlink}>Blog</Link></li>
                                       <li className="propClone"><Link className="inner-link" to="/signin" style={styles.navlink}>Log In</Link></li>
                                       <li className="propClone  float-left sm-no-margin-tb"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>GET STARTED</span></Link></li>
                                   </ul>

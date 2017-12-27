@@ -483,6 +483,79 @@ header .row { align-items: center; display: flex; height: auto;}
 .blog-style1 .post-details { padding: 35px; text-align: center;}
 .blog-style1 .post-author { color: #fff; display: block; font-size: 11px; font-weight: 600; letter-spacing: 1px; line-height: 18px; padding: 4px 5px !important; text-align: center;}
 
+
+.blog-style1  h1, h2, h3, h4, h5 {
+    font-weight: 600;
+    margin-bottom: 1em !important;
+    margin-top: 1.5em !important;
+}
+
+.blog-style1  ul, ol {
+    margin-bottom: 1.25em !important;
+}
+.blog-style1    li {
+      margin-bottom: 0.25em !important;
+}
+
+
+.blog-style1  p {
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.65em;
+    line-height: 1.58;
+    margin-bottom: 1.25em;
+    font-weight: 400;
+    letter-spacing: -.003em;
+  }
+
+  /* Responsive default image width */
+.blog-style1  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Responsive floating */
+.blog-style1  @media only screen and (min-width: 720px)  {
+    .butter-float-left {
+      float: left;
+      margin: 0px 10px 10px 0px;
+    }
+
+.blog-style1  .butter-float-right {
+      float: right;
+      margin: 0px 0px 10px 10px;
+    }
+  }
+
+  /* Image caption */
+.blog-style1 figcaption {
+    font-style: italic;
+    text-align: center;
+    color: #ccc;
+  }
+
+.blog-style1 p code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #c7254e;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+
+.blog-style1 pre {
+    display: block;
+    padding: 1em;
+    margin: 0 0 2em;
+    font-size: 1em;
+    line-height: 1.4;
+    word-break: break-all;
+    word-wrap: break-word;
+    color: #333333;
+    background-color: #f5f5f5;
+    font-family: Menlo, Monaco,Consolas, "Courier New", monospace;
+  }
+
+
 /* ===================================
     Subscribe
 ====================================== */
