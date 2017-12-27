@@ -26,20 +26,32 @@ export default class BlogPost extends Component {
       this.setState({
         loaded: true,
         post: resp.data.data
-      })
+      });
     });
+
   }
 
   render() {
     if (this.state.loaded) {
       const post = this.state.post;
-
+      const tags = post.tags.map(tag => tag.name).join(',');
       return (
         <div>
           <Helmet>
             <title>{post.seo_title}</title>
             <meta name="description" content={post.meta_description} />
             <meta name="og:image" content={post.featured_image} />
+            <meta property="og:url" content={`https://mysoundwise.com/blog/post/${post.slug}`} />
+            <meta property="fb:app_id" content='1726664310980105' />
+            <meta property="og:title" content={post.seo_title}/>
+            <meta property="og:description" content={post.meta_description}/>
+            <meta property="og:image" content={post.featured_image} />
+            <meta name="description" content={post.meta_description} />
+            <meta name="keywords" content={tags} />
+            <meta name="twitter:title" content={post.seo_title}/>
+            <meta name="twitter:description" content={post.meta_description}/>
+            <meta name="twitter:image" content={post.featured_image}/>
+            <meta name="twitter:card" content={post.featured_image} />
           </Helmet>
           <SoundwiseHeader />
           <section className="padding-70px-tb xs-padding-60px-tb blog-style1 bg-white builder-bg" id="blog-section1" >
@@ -56,8 +68,44 @@ export default class BlogPost extends Component {
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
                       <div className= 'text-large text-dark-gray margin-thirteen-bottom  xs-margin-nineteen-bottom'>{moment(post.published).format('MMMM Do YYYY')}</div>
                     </div>
+                    <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center " style={{}}>
+                        <span className="margin-eight-right title-small sm-title-small">
+                          Share this:
+                        </span>
+                        <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
+                            <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                        </a>
+                        <a target="_blank" href={`https://twitter.com/intent/tweet?text=${post.title}. https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
+                            <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                        </a>
+                        <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
+                            <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                        </a>
+                        <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/blog/post/${post.slug}&amp;title=${post.seo_title}&amp;source=`} className="margin-eight-right">
+                            <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                        </a>
+                    </div>
                 </div>
                 <div dangerouslySetInnerHTML={{__html: post.body}} />
+                <div className='row'>
+                  <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center " style={{}}>
+                      <span className="margin-eight-right title-small sm-title-small">
+                        Share this:
+                      </span>
+                      <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
+                          <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                      </a>
+                      <a target="_blank" href={`https://twitter.com/intent/tweet?text=${post.title}. https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
+                          <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                      </a>
+                      <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
+                          <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                      </a>
+                      <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/blog/post/${post.slug}&amp;title=${post.seo_title}&amp;source=`} className="margin-eight-right">
+                          <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                      </a>
+                  </div>
+                </div>
               </div>
           </section>
           <div style={{bottom: 0, width: '100%', position: 'static'}}>
