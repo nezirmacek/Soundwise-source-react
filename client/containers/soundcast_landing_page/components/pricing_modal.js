@@ -63,8 +63,16 @@ class _PricingModal extends Component {
     })
   }
 
+  handleModalClose() {
+    this.setState({
+      checked: 0,
+      sumTotal: null,
+    });
+    this.props.handleModal();
+  }
+
   render() {
-    const {open, handleModal, soundcast, soundcastID} = this.props;
+    const {open, soundcast, soundcastID} = this.props;
     const {checked, sumTotal} = this.state;
     const {prices} = soundcast;
 
@@ -79,7 +87,7 @@ class _PricingModal extends Component {
       <FlatButton
         label="Cancel"
         primary={false}
-        onClick={handleModal}
+        onClick={this.handleModalClose.bind(this)}
       />,
     ];
 
@@ -88,9 +96,9 @@ class _PricingModal extends Component {
         <Dialog
           title="Select Subscription Option"
           actions={actions}
-          modal={false}
+          modal={true}
           open={open}
-          onRequestClose={handleModal}
+          onRequestClose={this.handleModalClose.bind(this)}
         >
          {
           prices && prices.length > 0 && prices[0].price &&

@@ -100,8 +100,8 @@ export default class SoundcastFooter extends Component {
                 <div className="container">
                     <div className="row equalize">
                         <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{height: "46px"}}>
-                            <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">{`Subscribe to This Soundcast for ${displayedPrice}`}</div>
-                            <a onClick={this.props.openModal} className="btn-large btn text-white highlight-button-white-border btn-circle"><span className="tz-text" >SUBSCRIBE</span></a>
+                            <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">{`Get This Soundcast for ${displayedPrice}`}</div>
+                            <a onClick={this.props.openModal} className="btn-large btn text-white highlight-button-white-border btn-circle"><span className="tz-text" >Get Access</span></a>
                         </div>
                     </div>
                 </div>

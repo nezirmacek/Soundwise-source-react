@@ -222,7 +222,7 @@ class _SoundcastHeader extends Component {
         <section className=" bg-white" id="content-section23" style={{}}>
             <div className="container">
                 <div className="row equalize sm-equalize-auto equalize-display-inherit" style={{borderBottom: '0.5px solid lightgrey', paddingBottom: 15, paddingTop: 35}}>
-                    <div className="col-md-6 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
+                    <div className="col-md-7 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin" style={{height: '378px'}}>
                         <div className="display-table-cell-vertical-middle">
                             <div className="row" style={{height: '80%'}}>
                                 <div className="col-md-12 col-sm-12 col-xs-12">
@@ -268,7 +268,7 @@ class _SoundcastHeader extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-5 col-sm-12 col-xs-12  sm-margin-fifteen-bottom text-center center-col" style={{height: '378px', display: 'flex', justifyContent: 'center'}}>
+                    <div className="col-md-4 col-sm-12 col-xs-12  sm-margin-fifteen-bottom text-center center-col" style={{height: '378px', display: 'flex', justifyContent: 'center'}}>
                         <div className="" style={{display: 'inline-block', position: 'relative', width: '350px', height: '350px'}}>
                             <img
                                 src={this.props.soundcast.imageURL}

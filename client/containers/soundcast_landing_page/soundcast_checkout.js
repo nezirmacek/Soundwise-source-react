@@ -34,7 +34,7 @@ class _SoundcastCheckout extends Component {
       state: {
         text,
         soundcastTitle: soundcast.title,
-        soundcast,
+        soundcast: this.props.history.location.state.soundcast,
         soundcastID: this.props.history.location.state.soundcastID,
         checked: this.props.history.location.state.checked,
         sumTotal: this.props.history.location.state.sumTotal,

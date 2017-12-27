@@ -11,6 +11,7 @@ import Axios from 'axios'
 import Footer from '../../../components/footer'
 import  PageHeader  from './page_header'
 import AudioPlayer from 'react-responsive-audio-player'
+import {SoundwiseHeader} from '../../../components/soundwise_header'
 
 class _EpisodePage extends Component {
   constructor(props) {
@@ -217,7 +218,7 @@ class _EpisodePage extends Component {
         </Helmet>
         <MuiThemeProvider >
           <div>
-            <PageHeader
+            <SoundwiseHeader
               soundcastID = {soundcastID}
             />
             <div>
