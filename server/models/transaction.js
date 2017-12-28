@@ -33,14 +33,14 @@ module.exports = function(Transaction) {
                     snapshot.forEach(data => {
                       userId = data.key;
                     });
-                    console.log('userId: ', userId);
+
                     db.ref(`users/${userId}/soundcasts`).orderByChild('planID').equalTo(data.data.object.lines.data[0].plan.id)
                       .once('value', snapshot => {
                         let soundcast;
                         snapshot.forEach(data => {
                           soundcast = data.key;
                         });
-                        console.log('soundcastId: ', soundcast);
+
                         db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`)
                           .set(data.data.object.lines.data[0].period.end);
 
@@ -189,7 +189,7 @@ function createTransactions(Transaction, transactionsPromises,
  transactions, cb) {
   Promise.all(transactionsPromises)
     .then(res => {
-        console.log('success create transactions: ', res);
+        // console.log('success create transactions: ', res);
         cb(null, res);
     })
     .catch(err => {

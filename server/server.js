@@ -150,3 +150,13 @@ app.all(/^\/(?!api|explorer)/, function(request, response) {
 //   });
 //   Promise.all(episodePromises);
 // });
+
+var stripe_key =  require('../config').stripe_key;
+var stripe = require('stripe')(stripe_key);
+
+stripe.accounts.update('acct_1Bdla1BEkT8zqJaI', {
+  'metadata': {
+    'publisherId': '1506441305461p',
+  },
+  'payout_statement_descriptor': 'Soundwise transfer',
+});

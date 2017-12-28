@@ -7,44 +7,46 @@ const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
 module.exports = function(Payout) {
   Payout.handlePayoutWebhookEvents = function(data, cb) {
-    // console.log('request body: ', data);
+    console.log('handlePayoutWebhookEvents request body: ', data);
     const ref = firebase.database().ref('publishers');
-    let publisherId;
+    let publisherId = null;
     ref.orderByChild('stripe_user_id').equalTo(data.account).on('value', (snapshot) => {
       snapshot.forEach(data => {
         publisherId = data.key;
       });
-      switch (data.type) {
-        case 'payout.paid':
-          // write payout date to Payout table
-          if (data.data.object.id) {
-            const payout = {
-              batchId: data.data.object.id,
-              amount: data.data.object.amount,
-              date: data.data.object.arrival_date,
-              publisherId,
-              email: snapshot.val()[publisherId].email ? snapshot.val()[publisherId].email : snapshot.val()[publisherId].paypalEmail,
-              payoutId: data.data.object.id,
-              createdAt: moment().utc().format(),
-              updatedAt: moment().utc().format(),
-            };
-            console.log('new payout data: ', payout);
+      if (publisherId) {
+        switch (data.type) {
+          case 'payout.paid':
+            // write payout date to Payout table
+            if (data.data.object.id) {
+              const payout = {
+                batchId: data.data.object.id,
+                amount: data.data.object.amount,
+                date: data.data.object.arrival_date,
+                publisherId,
+                email: snapshot.val()[publisherId].email ? snapshot.val()[publisherId].email : snapshot.val()[publisherId].paypalEmail,
+                payoutId: data.data.object.id,
+                createdAt: moment().utc().format(),
+                updatedAt: moment().utc().format(),
+              };
+              console.log('new payout data: ', payout);
 
-            Payout.create(payout)
-            .then(res => {
-              return cb(null, res);
-            })
-            .catch(err => {
-              return cb(err);
-            });
-          }
-          break;
-        case 'payout.failed':
-          // aleart administrator that payout failed
-          emailAdmin(Object.assign({}, data, {publisherId}), cb);
-          break;
-        default:
-          return cb(null, {});
+              Payout.create(payout)
+              .then(res => {
+                return cb(null, res);
+              })
+              .catch(err => {
+                return cb(err);
+              });
+            }
+            break;
+          case 'payout.failed':
+            // aleart administrator that payout failed
+            emailAdmin(Object.assign({}, data, {publisherId}), cb);
+            break;
+          default:
+            return cb(null, {});
+        }
       }
     });
   };

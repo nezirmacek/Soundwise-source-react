@@ -25,7 +25,6 @@ module.exports.createStripeAccount = (req, res) => {
         'interval': 'monthly',
         'monthly_anchor': 1,
       },
-      'business_name': req.body.publisherName,
       'metadata': {
         'publisherId': req.body.publisherId,
       },
