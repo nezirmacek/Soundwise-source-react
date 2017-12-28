@@ -14,6 +14,7 @@ var path = require('path');
 var firebase = require("firebase-admin");
 var serviceAccount = require("../serviceAccountKey.json");
 var cors = require('cors');
+const moment = require('moment');
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
@@ -138,25 +139,79 @@ app.all(/^\/(?!api|explorer)/, function(request, response) {
 	response.sendFile(path.resolve('./client/index.html'));
 });
 
-// firebase.database().ref('soundcasts/1505855025645s')
+// firebase.database().ref('courses/116')
 // .once('value')
 // .then(snapshot => {
-//   const episodesArr = Object.keys(snapshot.val().episodes);
-//   episodesArr.sort();
-//   console.log(episodesArr);
-//   const episodePromises = episodesArr.map((episode, i) => {
-//     return firebase.database().ref(`episodes/${episode}/index`)
-//             .set(i + 1);
+//   const soundcast = {};
+//   const {description,
+//     features, img_url_mobile, name, price,
+//     trailer_url, modules} = snapshot.val();
+//   soundcast.short_description = description;
+//   soundcast.features = features;
+//   soundcast.forSale = false;
+//   soundcast.hostImageURL = snapshot.val().teacher_img;
+//   soundcast.imageURL = img_url_mobile;
+//   soundcast.landingPage = true;
+//   soundcast.prices = [
+//     {
+//       billingCycle: 'free',
+//       price: 'free',
+//       // paymentPlan: 'Course Purchase',
+//     }];
+//   soundcast.published = true;
+//   soundcast.publisherID = '1503002103690p';
+//   soundcast.creatorID = 'uiG3uVUIdfZrDq4FLYs9YO40A0D2';
+//   soundcast.hostBio = snapshot.val().teacher_bio[0];
+//   soundcast.date_created = moment().format('x');
+//   soundcast.hostName = snapshot.val().teacher;
+//   soundcast.title = name;
+//   soundcast.trailer_url = trailer_url;
+//   // const soundcastID = `${moment().format('x')}s`;
+//   const soundcastID = '1514433422681s';
+//   console.log('soundcastID: ', soundcastID);
+//   firebase.database().ref(`soundcasts/${soundcastID}`)
+//   .set(soundcast);
+//   firebase.database()
+//   .ref(`publishers/1503002103690p/soundcasts/${soundcastID}`)
+//   .set(true);
+//   firebase.database()
+//   .ref(`users/uiG3uVUIdfZrDq4FLYs9YO40A0D2/soundcasts_managed/${soundcastID}`)
+//   .set(true);
+
+//   let currentMoment = moment().format('x');
+//   modules[0].sections.map((section, i) => {
+//     let duration = section.run_time.split(':');
+//     let durationInSecs = Number(duration[0]) * 60 + Number(duration[1]);
+//     let episode = {
+//       actionstep: section.actions ? section.actions : '',
+//       creatorID: 'uiG3uVUIdfZrDq4FLYs9YO40A0D2',
+//       date_created: moment().format('X'),
+//       duration: durationInSecs,
+//       isPublished: true,
+//       notes: section.notes_url ? section.notes_url : '',
+//       publicEpisode: false,
+//       publisherID: '1503002103690p',
+//       soundcastID,
+//       url: section.section_url,
+//       title: section.title,
+//       description: section.content ? section.content : '',
+//       index: modules[0].sections.length - i,
+//     };
+//     firebase.database().ref(`episodes/${currentMoment + 'e'}`)
+//     .set(episode);
+//     firebase.database().ref(`soundcasts/${soundcastID}/episodes/${currentMoment + 'e'}`)
+//     .set(true);
+//     console.log('episode set: ', currentMoment + 'e');
+//     currentMoment = Number(currentMoment) + 5;
 //   });
-//   Promise.all(episodePromises);
 // });
 
-var stripe_key =  require('../config').stripe_key;
-var stripe = require('stripe')(stripe_key);
+// var stripe_key =  require('../config').stripe_key;
+// var stripe = require('stripe')(stripe_key);
 
-stripe.accounts.update('acct_1Bdla1BEkT8zqJaI', {
-  'metadata': {
-    'publisherId': '1506441305461p',
-  },
-  'payout_statement_descriptor': 'Soundwise transfer',
-});
+// stripe.accounts.update('acct_1Bdla1BEkT8zqJaI', {
+//   'metadata': {
+//     'publisherId': '1506441305461p',
+//   },
+//   'payout_statement_descriptor': 'Soundwise transfer',
+// });

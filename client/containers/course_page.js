@@ -40,9 +40,22 @@ class _Course extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const that = this
-
+    const courseID = this.props.match.params.courseId;
+    const redirectLinks = {
+      '128': '1514424847083s',
+      '127': '1512247726161s',
+      '126': '1514429829515s',
+      '125': '1514430398074s',
+      '124': '1514431713134s',
+      '121': '1514432922023s',
+      '122': '1514432644090s',
+      '123': '1514432206914s',
+      '120': '1514433210215s',
+      '116': '1514433422681s',
+    }
+    this.props.history.push(`/soundcasts/${redirectLinks[courseID]}`);
 
       // firebase.database().ref('courses')
       //   .on('value', snapshot => {

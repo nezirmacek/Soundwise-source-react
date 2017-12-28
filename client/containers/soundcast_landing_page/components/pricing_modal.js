@@ -32,7 +32,7 @@ class _PricingModal extends Component {
     if(!this.props.soundcast.prices[0].price && nextProps.soundcast.prices[0].price) {
       const {prices} = nextProps.soundcast;
       const {checked} = this.state;
-      console.log('prices[checked].price: ', prices[checked].price);
+      // console.log('prices[checked].price: ', prices[checked].price);
       this.setState({
         sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${Number(prices[checked].price).toFixed(2)}`
       })
