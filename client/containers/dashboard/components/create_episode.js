@@ -40,6 +40,7 @@ class _CreateEpisode extends Component {
 
             audioUploaded: false,
             notesUploaded: false,
+            coverartUploaded: false,
             audioUploadProgress: 0,
             notesUploadProgress: 0,
             audioUploadError: null,
@@ -57,8 +58,10 @@ class _CreateEpisode extends Component {
             notesUrl: '', // linkto uploaded file aws s3
             audioDuration: 0,
 
+            coverartUrl: '',
             audioUploading: false,
             notesUploading: false,
+            coverArtUploading: false,
             wrongFileTypeFor: null,
         };
 
@@ -69,6 +72,7 @@ class _CreateEpisode extends Component {
         this.playingInterval = null;
         this.uploadAudioInput = null;
         this.uploadNotesInput = null;
+        this.uploadCoverArtInput = null;
         this.currentSoundcastId = null;
 
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
@@ -248,9 +252,9 @@ class _CreateEpisode extends Component {
                     _self.setState({
                         uploadedAudioUrl: url,
                     })
-                } else if(type == 'notes') {
+                } else if(type == 'notes' || type == 'coverart') {
                     _self.setState({
-                        notesUrl: url,
+                        [`${type}Url`]: url,
                     })
                 }
             })
@@ -279,13 +283,13 @@ class _CreateEpisode extends Component {
         if (e.target.value) {
             this[type] = [e.target.files[0]];
             let ext = '';
-            let file = document.getElementById(type === 'audio' && 'upload_hidden_audio' || 'upload_hidden_notes').files[0];
+            let file = document.getElementById(type === 'audio' && 'upload_hidden_audio' || (type == 'notes' && 'upload_hidden_notes') || (type == 'coverart' && 'upload_hidden_cover3')).files[0];
 
             if (file.name) {
 
                 const splittedFileName = file.name.split('.');
                 ext = (splittedFileName)[splittedFileName.length - 1];
-                if((type == 'audio' && (ext == 'mp3' || ext == 'm4a')) || type == 'notes' && (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) {
+                if((type == 'audio' && (ext == 'mp3' || ext == 'm4a')) || (type == 'notes' && (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) || (type == 'coverart' && (ext == 'jpg' || ext == 'png' || ext == 'jpeg'))) {
                     this.setState({
                         [`${type}Uploaded`]: true,
                         [`${type}Uploading`]: true,
@@ -293,7 +297,7 @@ class _CreateEpisode extends Component {
                     });
                     if(type== 'audio') {
                         this._uploadToAws(file, type, true);
-                    } else if(type == 'notes') {
+                    } else if(type == 'notes' || type == 'coverart') {
                         this._uploadToAws(file, type);
                     }
                 } else {
@@ -309,7 +313,7 @@ class _CreateEpisode extends Component {
 
     saveEpisode (isPublished) {
         const that = this;
-        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
+        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
         const { userInfo, history } = this.props;
         if(!recordedAudioUrl && !uploadedAudioUrl) {
             alert("Please upload an audio file before saving!");
@@ -335,6 +339,7 @@ class _CreateEpisode extends Component {
                 publicEpisode,
                 soundcastID: this.currentSoundcastId,
                 isPublished: isPublished,
+                coverArtUrl: coverartUrl,
             };
 
             firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
@@ -952,19 +957,81 @@ class _CreateEpisode extends Component {
                                 }
                             </div>
                         </div>
-                        <div style={{marginTop: 15, marginBottom: 25, }}>
-                            <Toggle
-                              id='share-status'
-                              aria-labelledby='share-label'
-                              // label="Charge subscribers for this soundcast?"
-                              checked={this.state.publicEpisode}
-                              onChange={this.changeSharingSetting.bind(this)}
-                              // thumbSwitchedStyle={styles.thumbSwitched}
-                              // trackSwitchedStyle={styles.trackSwitched}
-                              // style={{fontSize: 20, width: '50%'}}
-                            />
-                            <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
+                        <div style={{marginTop: 40, marginBottom: 25, }}>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <Toggle
+                                  id='share-status'
+                                  aria-labelledby='share-label'
+                                  // label="Charge subscribers for this soundcast?"
+                                  checked={this.state.publicEpisode}
+                                  onChange={this.changeSharingSetting.bind(this)}
+                                  // thumbSwitchedStyle={styles.thumbSwitched}
+                                  // trackSwitchedStyle={styles.trackSwitched}
+                                  // style={{fontSize: 20, width: '50%'}}
+                                />
+                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
+                            </div>
                         </div>
+                        {
+                            this.state.publicEpisode &&
+                            <div style={{marginBottom: 25,}}>
+                                <span style={{fontSize: 20, fontWeight: 800,}}>Episode link for sharing: </span><span ><a style={{color: Colors.mainOrange, fontSize: 18,}}>{`https://mywoundwise.com/episodes/${this.episodeId}`}</a></span>
+                            </div>
+                            || null
+                        }
+                        {
+                            this.state.publicEpisode &&
+                            <div style={{height: 165, marginBottom: 10,}}>
+                                <div>
+                                    <span style={{fontSize: 16, fontWeight: 800,}}>
+                                        Episode cover art (for social sharing)
+                                    </span>
+                                </div>
+                                {
+                                    this.state.coverartUrl &&
+                                    <div style={{...styles.image, marginRight: 10, marginTop: 10,}}>
+                                      <img style={styles.image}  src={this.state.coverartUrl} />
+                                    </div>
+                                    || null
+                                }
+                                <div style={styles.loaderWrapper}>
+                                    <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                                        <input
+                                            type="file"
+                                            name="upload"
+                                            id="upload_hidden_cover3"
+                                            accept="image/*"
+                                            onChange={this.setFileName.bind(this, 'coverart')}
+                                            style={styles.inputFileHidden}
+                                            ref={input => this.uploadCoverArtInput = input}
+                                        />
+                                        {
+                                          this.state.coverartUploaded &&
+                                          <div>
+                                            <span>{this.uploadCoverArtInput.files[0].name}</span>
+                                            <span style={styles.cancelImg}
+                                              onClick={() => {
+                                                that.setState({coverartUploaded: false, coverartUrl: ''});
+                                                document.getElementById('upload_hidden_cover3').value = null;
+                                              }}>Cancel</span>
+                                          </div>
+                                          ||
+                                          !this.state.coverartUploaded &&
+                                          <div>
+                                            <button
+                                                onClick={() => {document.getElementById('upload_hidden_cover3').click();}}
+                                                style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                                            >
+                                                Upload Cover Art
+                                            </button>
+                                            <span style={styles.fileTypesLabel}>jpeg or png files accepted</span>
+                                          </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            || null
+                        }
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
                             <select
@@ -1036,7 +1103,8 @@ const loaderOptions = {
 
 const styles = {
     titleText: {
-        fontSize: 16,
+        fontSize: 20,
+        fontWeight: 600,
     },
     recorder: {
         boxShadow: '0 0 8px rgba(0, 0, 0, 0.5)',
@@ -1135,9 +1203,28 @@ const styles = {
         color: Colors.mainOrange,
         marginLeft: 10,
     },
+    loaderWrapper: {
+        height: 133,
+        paddingTop: 20,
+        paddingRight: 0,
+        paddingBottom: 0,
+        paddingLeft: 0,
+        // width: 'calc(100% - 133px)',
+        float: 'left',
+    },
+    image: {
+        height: 133,
+        // width: 133,
+        float: 'left',
+        // marginRight: 10,
+        backgroundColor: Colors.mainWhite,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: Colors.lightGrey,
+    },
     inputFileWrapper: {
         margin: 1,
-        width: 'calc(100% - 20px)',
+        // width: 'calc(100% - 20px)',
         height: 80,
         // backgroundColor: Colors.mainWhite,
         overflow: 'hidden',

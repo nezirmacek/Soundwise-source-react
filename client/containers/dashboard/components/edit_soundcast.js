@@ -453,56 +453,77 @@ export default class EditSoundcast extends Component {
                             prices.map((price, i) => {
                                 const priceTag = price.price == 'free' ? 0 : price.price;
                                 return (
-                                  <div key={i} className='row' style={{marginBottom: 10, marginLeft: 10}}>
-                                    <span style={styles.titleText}>{`${i + 1}. `}</span>
-                                    <div style={{width: '35%', display: 'inline-block', marginRight: 10,}}>
-                                      <span>Payment Plan Name</span>
-                                      <input
-                                        type="text"
-                                        style={styles.inputTitle}
-                                        name="paymentPlan"
-                                        placeholder='e.g. Monthly subscription'
-                                        onChange={this.handlePriceInputs.bind(this, i)}
-                                        value={prices[i].paymentPlan}
-                                      />
-                                    </div>
-                                    <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                                      <span>Billing Cycle</span>
-                                      <select
-                                        type="text"
-                                        style={styles.inputTitle}
-                                        name="billingCycle"
-                                        onChange={this.handlePriceInputs.bind(this, i)}
-                                        value={prices[i].billingCycle}
-                                      >
-                                        <optgroup>
-                                          <option value='free'>free</option>
-                                          <option value='monthly'>monthly recuring</option>
-                                          <option value='quarterly'>quarterly recurring</option>
-                                          <option value='annual'>annual recurring</option>
-                                          <option value='one time'>one time</option>
-                                        </optgroup>
-                                      </select>
-                                    </div>
-                                    <div style={{width: '20%', display: 'inline-block', marginRight: 10,}}>
-                                      <span>Price</span>
-                                      <div>
+                                  <div key={i} className='' style={{marginBottom: 10}}>
+                                    <div style={{width: '100%'}}>
+                                      <span style={styles.titleText}>{`${i + 1}. `}</span>
+                                      <div style={{width: '45%', display: 'inline-block', marginRight: 10,}}>
+                                        <span>Payment Plan Name</span>
+                                        <input
+                                          type="text"
+                                          style={styles.inputTitle}
+                                          name="paymentPlan"
+                                          placeholder='e.g. 3 day access, monthly subscription, etc'
+                                          onChange={this.handlePriceInputs.bind(this, i)}
+                                          value={prices[i].paymentPlan}
+                                        />
+                                      </div>
+                                      <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                                        <span>Billing</span>
+                                        <select
+                                          type="text"
+                                          style={styles.inputTitle}
+                                          name="billingCycle"
+                                          onChange={this.handlePriceInputs.bind(this, i)}
+                                          value={prices[i].billingCycle}
+                                        >
+                                          <option value='one time'>one time purchase</option>
+                                          <option value='rental'>one time rental</option>
+                                          <option value='monthly'>monthly subscription</option>
+                                          <option value='quarterly'>quarterly subscription</option>
+                                          <option value='annual'>annual subscription</option>
+
+                                        </select>
+                                      </div>
+                                      <div style={{width: '20%', display: 'inline-block',}}>
+                                        <span>Price</span>
+                                        <div>
+                                          <span style={{fontSize: 18}}>{`$ `}</span>
                                           <input
                                             type="text"
-                                            style={{...styles.inputTitle, width: '70%'}}
+                                            style={{...styles.inputTitle, width: '85%'}}
                                             name="price"
-                                            placeholder={'15'}
+                                            placeholder={''}
                                             onChange={this.handlePriceInputs.bind(this, i)}
                                             value={priceTag}
                                           />
-                                          <span>  USD</span>
+                                        </div>
                                       </div>
-                                    </div>
-                                    <span
-                                        style={{marginLeft: 5, cursor: 'pointer'}}
+                                      <span
+                                        style={{marginLeft: 5, cursor: 'pointer', fontSize:20}}
                                         onClick={this.deletePriceOption.bind(this, i)}>
-                                      <i className="fa fa-times " aria-hidden="true"></i>
-                                    </span>
+                                                      <i className="fa fa-times " aria-hidden="true"></i>
+                                      </span>
+                                    </div>
+                                    {
+                                      prices[i].billingCycle == 'rental' &&
+                                      <div className='col-md-12' style={{marginTop: 10, marginBottom: 15, }}>
+                                        <div className='col-md-4 col-md-offset-6' style={{marginRight: 10,}}>
+                                          <span>Rental period</span>
+                                          <div>
+                                            <input
+                                              type="text"
+                                              style={{...styles.inputTitle, width: '70%'}}
+                                              name="rentalPeriod"
+                                              placeholder={'2'}
+                                              onChange={this.handlePriceInputs.bind(this, i)}
+                                              value={prices[i].rentalPeriod}
+                                            />
+                                            <span style={{fontSize: 18,}}>{` days`}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      || null
+                                    }
                                   </div>
                                 )
                             } )
@@ -608,7 +629,7 @@ export default class EditSoundcast extends Component {
 
         return (
           <MuiThemeProvider >
-            <div className='padding-30px-tb' style={{fontSize: 20}}>
+            <div className='padding-30px-tb' style={{}}>
               <ImageCropModal
                 open={modalOpen}
                 handleClose={this.handleModalClose.bind(this)}
@@ -790,6 +811,7 @@ const styles = {
         fontSize: 18,
         borderRadius: 4,
         marginBottom: 0,
+        marginTop: 5,
     },
     inputDescription: {
         height: 80,

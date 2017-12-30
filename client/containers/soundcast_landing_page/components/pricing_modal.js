@@ -106,16 +106,23 @@ class _PricingModal extends Component {
             const isChecked = (checked == i);
             let currentPrice = `USD $${Number(price.price).toFixed(2)} / month`;
             let billing = 'billed monthly';
-
+            let paymentPlan = price.paymentPlan || 'Monthly Subscription';
             if(price.billingCycle == 'annual') {
               currentPrice = `USD $${(Math.floor(price.price / 12 * 100) / 100).toFixed(2)} / month`;
               billing = 'billed annually';
+              paymentPlan = price.paymentPlan || 'Annual Subscription';
             } else if(price.billingCycle == 'quarterly') {
               currentPrice = `USD $${(Math.floor(price.price / 3 * 100) / 100).toFixed(2)} / month`;
-              billing = 'billed quarterly'
+              billing = 'billed quarterly';
+              paymentPlan = price.paymentPlan || 'Annual Subscription';
             } else if(price.billingCycle == 'one time') {
               currentPrice = `USD $${Number(price.price).toFixed(2)}`
-              billing = 'one time charge'
+              billing = 'one time charge';
+              paymentPlan = price.paymentPlan || 'Permanent Access';
+            } else if(price.billingCycle == 'rental') {
+              currentPrice = `USD $${Number(price.price).toFixed(2)}`
+              billing = `one time charge (${price.rentalPeriod}-day access)`;
+              paymentPlan = price.paymentPlan || `${price.rentalPeriod}-Day Access`;
             }
 
             if(price.price == 'free') {
@@ -130,7 +137,7 @@ class _PricingModal extends Component {
                   <div
                     className='title-small'
                     style={styles.titleDiv}>
-                    {price.paymentPlan}
+                    {paymentPlan}
                   </div>
                   <div>
                     <div style={styles.priceDiv}>

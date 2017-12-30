@@ -195,7 +195,7 @@ class _SoundcastHeader extends Component {
     if(prices && prices.length > 0 ) {
         if(prices[0].price != 'free' && prices[0].price != 0) {
             prices = prices.map(price => {
-                if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' || price.billingCycle == 'free' ) {
+                if(price.billingCycle == 'one time' || price.billingCycle == 'rental' || price.billingCycle == 'monthly' || price.billingCycle == 'free' ) {
                     price.measure = price.price;
                 } else if(price.billingCycle == 'quarterly') {
                     price.measure = Math.floor(price.price / 3 *100) / 100;
@@ -208,7 +208,7 @@ class _SoundcastHeader extends Component {
             prices.sort((a, b) => (
                 a.measure - b.measure
             ));
-            displayedPrice = prices[0].billingCycle == 'one time' ?
+            displayedPrice = (prices[0].billingCycle == 'one time' || prices[0].billingCycle == 'rental') ?
                                 `$${prices[0].measure || '___'}` :
                                 `$${prices[0].measure || '___'} / month`;
         } else {

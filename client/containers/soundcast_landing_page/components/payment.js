@@ -89,12 +89,12 @@ export default class Payment extends Component {
             // console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
-            const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
-            let current_period_end = 4638902400; // 2117/1/1
+            const {billingCycle, paymentPlan, price, rentalPeriod} = soundcast.prices[checked];
+            let current_period_end = rentalPeriod ? moment().add(Number(rentalPeriod), 'days').format('X') : 4638902400; // rental period or forever (2117/1/1 )
 
             const paymentID = charge && charge.id ? charge.id : null;
             const planID = charge && charge.plan ? charge.plan.id : null;
-            current_period_end = charge && charge.current_period_end ? charge.current_period_end : current_period_end ; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+            current_period_end = charge && charge.current_period_end ? charge.current_period_end : current_period_end ; //if it's not a recurring billing ('one time' or 'rental'), set the end period to 2117/1/1 or rental expiration date.
 
             // send email invitations to subscribers
             const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
@@ -209,7 +209,7 @@ export default class Payment extends Component {
             .then(snapshot => {
                if(snapshot.val() && snapshot.val().stripe_user_id) {
                     const stripe_user_id = snapshot.val().stripe_user_id;
-                    if(billingCycle == 'one time') { //if one time charge, post to api/charge
+                    if(billingCycle == 'one time' || billingCycle == 'rental') { //if purchase or rental, post to api/charge
                         Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
                             amount,
                             source: response.id,
@@ -221,7 +221,7 @@ export default class Payment extends Component {
                             stripe_user_id,
                             soundcastID,
                             planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
-                            description: `${soundcast.title}: ${paymentPlan}`,
+                            description: `${soundcast.title}: ${paymentPlan || billingCycle}`,
                             statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                         })
                         .then(function (response) {
