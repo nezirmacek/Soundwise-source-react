@@ -740,7 +740,7 @@ class _CreateEpisode extends Component {
                     <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <div style={styles.recorder}>
                             <div style={{...styles.recordTitleText, paddingBottom: 0,}}>Upload</div>
-                            <div style={styles.inputFileWrapper}>
+                            <div style={{...styles.inputFileWrapper, width: '100%'}}>
                                 <input
                                     type="file"
                                     name="upload"

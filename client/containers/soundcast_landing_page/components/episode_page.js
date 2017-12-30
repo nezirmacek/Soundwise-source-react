@@ -31,6 +31,7 @@ class _EpisodePage extends Component {
       soundcastImageURL: '',
       publisherImageURL: '',
       publisherID: '',
+      coverArtUrl: '',
       publisherName: '',
       publicEpisode: true,
       liked: false,
@@ -60,6 +61,7 @@ class _EpisodePage extends Component {
               publicEpisode: snapshot.val().publicEpisode ? true : false,
               soundcastID: snapshot.val().soundcastID,
               publisherID: snapshot.val().publisherID,
+              coverArtUrl: snapshot.val().coverArtUrl ? snapshot.val().coverArtUrl : '',
             });
 
             firebase.database().ref('publishers/' + that.state.publisherID)
@@ -175,7 +177,7 @@ class _EpisodePage extends Component {
 
   render() {
     const that = this;
-    const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, publisherImageURL, publisherID, publisherName, publicEpisode, liked } = this.state;
+    const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, coverArtUrl, publisherImageURL, publisherID, publisherName, publicEpisode, liked } = this.state;
     const playlist = [{
       url,
       displayText: title
@@ -209,7 +211,7 @@ class _EpisodePage extends Component {
           <meta property="fb:app_id" content='1726664310980105' />
           <meta property="og:title" content={`${title} - ${soundcastTitle}`}/>
           <meta property="og:description" content={description}/>
-          <meta property="og:image" content={soundcastImageURL} />
+          <meta property="og:image" content={coverArtUrl || soundcastImageURL} />
           <meta name="description" content={description} />
           <meta name="twitter:title" content={`${title} - ${soundcastTitle}`}/>
           <meta name="twitter:description" content={description}/>
@@ -250,9 +252,9 @@ class _EpisodePage extends Component {
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center'}}>
                               <img
-                                  src={soundcastImageURL}
+                                  src={coverArtUrl || soundcastImageURL}
                                   alt={soundcastTitle}
-                                  style={{width: '250px', height: '250px', display: 'block'}}
+                                  style={{height: '250px', display: 'block'}}
                               />
                             </div>
                         </div>
