@@ -169,6 +169,7 @@ module.exports = function(Transaction) {
                 });
         } else { // if customer id is in the reqest body, create a charge using the existing customer id
             console.log('customer: ', req.customer);
+            const data = Object.assign({}, req, {platformCustomer: req.customer});
             createCharge(Transaction, req, cb);
         }
   };
