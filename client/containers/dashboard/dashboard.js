@@ -133,25 +133,29 @@ class _Dashboard extends Component {
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
 
         return (
-            <div className='container-fluid'
+            <div className=''
               >
                 <SoundwiseHeader />
-                <div className="row" style={{minHeight: '100%', width: '100%'}}>
-                    <div className="col-lg-2 col-md-3 col-sm-4 col-xs-6" style={styles.verticalMenu}>
+                <div className="" style={{minHeight: '100%', width: '100%'}}>
+                    <div className="col-lg-2 col-md-3 col-sm-3 col-xs-3" style={styles.verticalMenu}>
                         {
                             verticalMenuItems.map((item, i) => {
                                 if (item.isMenuItemVisible) {
                                     return (
-                                        <div
+                                        <div className='col-md-12'
                                             style={match.params.tab === item.path && styles.activeVerticalMenuItem || styles.verticalMenuItem}
                                             key={i}
                                             onClick={() => match.params.tab !== item.path && history.push(`/dashboard/${item.path}`)}
                                         >
-                                            <i
-                                                className={`fa fa-${item.iconClass}`}
-                                                style={{...styles.verticalMenuItemIcon, ...(match.params.tab === item.path && {color: '#F76B1C'} || {})}}
-                                            ></i>
-                                            {item.label}
+                                            <div className='col-md-1 col-sm-2 col-xs-12'>
+                                                <i
+                                                    className={`fa fa-${item.iconClass}`}
+                                                    style={{...styles.verticalMenuItemIcon, ...(match.params.tab === item.path && {color: '#F76B1C'} || {})}}
+                                                ></i>
+                                            </div>
+                                            <div className='col-md-9 col-sm-9 hidden-xs'>
+                                               {item.label}
+                                            </div>
                                         </div>
                                     );
                                 } else {
@@ -160,7 +164,7 @@ class _Dashboard extends Component {
                             })
                         }
                     </div>
-                    <div className="col-lg-10 col-md-9 col-sm-8 col-xs-6" style={styles.contentWrapper}>
+                    <div className="col-lg-10 col-md-9 col-sm-9 col-xs-9" style={styles.contentWrapper}>
                         {
                             currentTab
                             &&
@@ -189,18 +193,18 @@ const styles = {
         width: '100%',
         height: 75,
         color: '#687178',
-        fontSize: 18,
+        fontSize: 16,
         paddingTop: 25,
-        paddingLeft: 19,
+        // paddingLeft: 19,
         cursor: 'pointer',
         fontWeight: 'bold',
     },
     activeVerticalMenuItem: {
         width: '100%',
         height: 75,
-        fontSize: 18,
+        fontSize: 16,
         paddingTop: 25,
-        paddingLeft: 19,
+        // paddingLeft: 19,
         backgroundColor: '#f5f5f5',
         color: '#F76B1C',
         borderLeft: '3px solid #F76B1C',

@@ -8,7 +8,8 @@ function user(state= {
         soundcasts_managed: {},
         soundcasts: {},
     },
-    isLoggedIn: ''
+    isLoggedIn: '',
+    isEmailSent:  false,
 }, action) {
     const newState = JSON.parse(JSON.stringify(state));
     switch (action.type) {
@@ -37,6 +38,11 @@ function user(state= {
                     ...state.userInfo,
                     soundcasts_managed: action.payload,
                 }
+            };
+        case types.EMAIL_SENT:
+            return {
+              ...state,
+              isEmailSent: action.payload,
             };
         case types.EDIT_MANAGED_SOUNDCAST:
             return {

@@ -94,10 +94,11 @@ class _PricingModal extends Component {
     return (
       <div>
         <Dialog
-          title="Select Subscription Option"
+          title="Select Access Option"
           actions={actions}
           modal={true}
           open={open}
+          autoScrollBodyContent={true}
           onRequestClose={this.handleModalClose.bind(this)}
         >
          {

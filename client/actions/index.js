@@ -15,6 +15,13 @@ export function signinUser(user) {
   }
 }
 
+export function sendEmail() {
+  return {
+    type: types.EMAIL_SENT,
+    payload: true,
+  }
+}
+
 export function signoutUser() {
   return {
     type: types.SIGNOUT,

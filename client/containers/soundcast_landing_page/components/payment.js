@@ -29,6 +29,7 @@ export default class Payment extends Component {
             startPaymentSubmission: false,
             stripe_id: '',
             userInfo: null,
+            confirmationEmailSent: false,
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -50,7 +51,7 @@ export default class Payment extends Component {
                 userInfo: that.props.userInfo
             });
             if(this.props.total == 0 || this.props.total == 'free') {
-                // console.log('addSoundcastToUser called in componentDidMount');
+                console.log('addSoundcastToUser called in componentDidMount');
                 this.addSoundcastToUser(null, that.props.userInfo);
             }
         }
@@ -65,10 +66,24 @@ export default class Payment extends Component {
                 userInfo: nextProps.userInfo
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
-                // console.log('addSoundcastToUser called in componentWillReceiveProps');
+                console.log('addSoundcastToUser called in componentWillReceiveProps');
               this.addSoundcastToUser(null, nextProps.userInfo);
             }
         }
+    }
+
+    shouldComponentUpdate(nextProps) {
+        if(  this.props.isEmailSent != nextProps.isEmailSent ){
+            // this.setState({confirmationEmailSent : true})
+            return true;
+        }
+        else {
+            return false
+        }
+    }
+
+    componentWillUnmount() {
+        console.log('payment component will unmount');
     }
 
     handleChange(e) {
@@ -107,11 +122,18 @@ export default class Payment extends Component {
                 content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
             }
 
-            firebase.database().ref(`publishers/${soundcast.publisherID}`)
-            .once('value', snapshot => {
-                const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
-              inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail);
-            })
+            if(!that.props.isEmailSent && !that.state.confirmationEmailSent) {
+                that.setState({
+                    confirmationEmailSent: true,
+                });
+                that.props.sendEmail();
+                firebase.database().ref(`publishers/${soundcast.publisherID}`)
+                .once('value', snapshot => {
+                    const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
+                        inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail);
+                        console.log('email sent');
+                })
+            }
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {

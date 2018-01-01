@@ -8,6 +8,7 @@ import  PageHeader  from './components/page_header';
 import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
+import {sendEmail} from '../../actions/index';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -109,6 +110,8 @@ class _SoundcastCheckout extends Component {
                       total={totalPrice}
                       userInfo={userInfo}
                       handlePaymentSuccess={this.handlePaymentSuccess}
+                      isEmailSent={this.props.isEmailSent}
+                      sendEmail={this.props.sendEmail}
                     />
                 </div>
       )
@@ -121,10 +124,14 @@ class _SoundcastCheckout extends Component {
 }
 
 const mapStateToProps = state => {
-    const { userInfo, isLoggedIn } = state.user;
-    return { userInfo, isLoggedIn, };
+    const { userInfo, isLoggedIn, isEmailSent } = state.user;
+    return { userInfo, isLoggedIn, isEmailSent};
 };
 
-const Checkout_worouter = connect(mapStateToProps, null)(_SoundcastCheckout);
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ sendEmail }, dispatch);
+}
+
+const Checkout_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundcastCheckout);
 
 export const SoundcastCheckout = withRouter(Checkout_worouter);

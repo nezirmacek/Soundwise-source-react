@@ -62,14 +62,6 @@ class _SoundwiseHeader extends Component {
                     <ul className="nav navbar-nav" style={{
                         verticalAlign: 'center',
                     }}>
-                        <li style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                            <div className="menu-button">
-                                <Link to='/dashboard/add_episode' className="inner-link">
-                                    <label className="inner-link orange-text">+</label>
-                                    Add new episode
-                                </Link>
-                            </div>
-                        </li>
                         <li className="propClone sm-no-border" >
                             <div className='dropdown'>
                                 <div className='btn dropdown-toggle' data-toggle="dropdown" style={{height: 37, justifyContent: 'center'}}>

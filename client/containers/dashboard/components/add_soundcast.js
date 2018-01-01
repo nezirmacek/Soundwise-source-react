@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
+import { Link } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
@@ -364,7 +365,8 @@ export default class AddSoundcast extends Component {
 		const {userInfo} = this.props;
 
 		if(!forSale) {
-			if(!userInfo.publisher.paypalEmail) {
+			if(!userInfo.publisher.stripe_user_id) {
+				this.submit.bind(this, false);
 				this.setState({
 					paypalModalOpen: true,
 				});
@@ -422,12 +424,8 @@ export default class AddSoundcast extends Component {
 		const that = this;
     const actions = [
       <FlatButton
-        label="Submit"
-        labelStyle={{color: Colors.mainOrange}}
-        onClick={this.handlePaypalInput.bind(this)}
-      />,
-      <FlatButton
-        label="Cancel"
+        label="OK"
+        labelStyle={{color: Colors.mainOrange, fontSize: 17}}
         onClick={this.handlePaypalModalClose.bind(this)}
       />,
     ];
@@ -586,20 +584,14 @@ export default class AddSoundcast extends Component {
               style={{fontSize: 20, width: '50%'}}
             />
             <Dialog
-		          title={`Hold on, ${userInfo.firstName}...what's your Paypal email? We need it to send you the sales proceeds.`}
+		          title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
 		          actions={actions}
 		          modal={true}
 		          open={this.state.paypalModalOpen}
 		          onRequestClose={this.handlePaypalModalClose}
             >
-							<div style={{...styles.inputTitleWrapper, width: '90%'}}>
-								<input
-									type="text"
-									style={styles.inputTitle}
-									placeholder={"Publisher's paypal email address"}
-									onChange={(e) => {this.setState({paypalEmail: e.target.value})}}
-									value={this.state.paypalEmail}
-								/>
+							<div style={{fontSize: 17,}}>
+								<span>You need a payout account so that we could send you your sales proceeds. Please save this soundcast, and go to publisher setting to enter your payout method, before setting up soundcast pricing.</span>
 							</div>
             </Dialog>
 					</div>

@@ -18,7 +18,7 @@ export default class EpisodePreview extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      episode: {},
+      episode: {id: ''},
       liked: false,
       descriptionShown: false,
       notesShown: false,
@@ -85,12 +85,15 @@ export default class EpisodePreview extends Component {
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const {episode, liked, descriptionShown, notesShown, actionsShown} = this.state;
     const {handlePlayClicked, playing, paused, currentEpisode} = this.props;
+    if(currentEpisode && episode.id == currentEpisode.id) {
+      console.log('current episode: ', episode.id);
+    }
     return (
       <div className='list-group-item col-md-12' style={{display: 'flex', }}>
           <div className='col-md-1 col-sm-1 col-xs-2'
             style={{marginTop: 20, display: 'flex', justifyContent: 'center'}}>
             {
-              playing && (episode == currentEpisode) &&
+              playing && currentEpisode && (episode.id == currentEpisode.id) &&
               <Levels color="#F76B1C" size={mobile ? 13 : 16} speed={1} />
               ||
               <div style={{cursor: 'pointer',}}>

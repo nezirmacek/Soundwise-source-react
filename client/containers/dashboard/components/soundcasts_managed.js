@@ -137,7 +137,7 @@ export default class SoundcastsManaged extends Component {
 			}
 
 			return (
-				<div className='padding-30px-tb container-fluid'>
+				<div className='padding-30px-tb '>
           <InviteSubscribersModal
             isShown={this.state.showModal}
             soundcast={this.state.currentSoundcast}
@@ -153,12 +153,12 @@ export default class SoundcastsManaged extends Component {
 						_soundcasts_managed.map((soundcast, i) => {
 							return (
 								<div className="row" key={i} style={{...styles.row,        }}>
-									<div className=" col-lg-6 col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-                    <div className='row'>
-                      <div className='col-md-2 col-sm-2 col-xs-12'>
+									<div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+
+                      <div className='col-md-2 col-sm-2 col-xs-2'>
   										  <img src={soundcast.imageURL} style={styles.soundcastImage} />
                       </div>
-  										<div className='col-md-7 col-sm-6 col-xs-12'
+  										<div className='col-md-7 col-sm-6 col-xs-10'
                         style={styles.soundcastDescription}>
   											<span style={styles.soundcastTitle}>{soundcast.title}</span>
   											{
@@ -187,7 +187,7 @@ export default class SoundcastsManaged extends Component {
                           null
                         }
   										</div>
-  										<div className='col-md-2 col-sm-4 col-xs-12'
+  										<div className='col-md-3 col-sm-4 col-xs-12'
                         style={{...styles.subscribers, textAlign:'center'}}>
                         <span style={styles.soundcastUpdated}>
                             {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
@@ -199,13 +199,13 @@ export default class SoundcastsManaged extends Component {
                           Invite
                         </span>
   										</div>
-                    </div>
+
 									</div>
-									<div className="col-lg-6 col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-										<div className="col-md-3 col-sm-6 col-xs-12"
+									<div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+										<div className="col-md-4 col-sm-4 col-xs-12"
                       dataToggle="tooltip" dataPlacement="top" title="existing episodes"
                       style={{...styles.button, borderColor: Colors.link, color: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}><span>Episodes</span></div>
-										<div className="col-md-3 col-sm-6 col-xs-12"
+										<div className="col-md-4 col-sm-4 col-xs-12"
                       dataToggle="tooltip" dataPlacement="top" title="show soundcast analytics"
                       onClick={() => history.push({
                       pathname: '/dashboard/analytics',
@@ -213,21 +213,7 @@ export default class SoundcastsManaged extends Component {
                         soundcastId: soundcast.id,
                       }
                     })} style={{...styles.button, borderColor: Colors.mainOrange, color: Colors.mainOrange}}><span>Analytics</span></div>
-										<div className="col-md-3 col-sm-6 col-xs-12"
-                      style={{...styles.button, borderColor: Colors.mainGrey}}
-                      onClick={() => history.push({
-                        pathname:'/dashboard/add_episode',
-                        state: {
-                          soundcastID: soundcast.id,
-                          soundcast,
-                        },
-                      })}
-                    >
-                      <span dataToggle="tooltip" dataPlacement="top" title="add new episode">
-                      + Episode
-                      </span>
-                    </div>
-                    <div className="col-md-2 col-sm-6 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
+                    <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
                       <span dataToggle="tooltip" dataPlacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
                         Edit
                       </span>
@@ -337,6 +323,7 @@ const styles = {
     },
     button: {
         height: 35,
+        maxWidth: 150,
         borderRadius: 5,
         fontSize: 16,
         // letterSpacing: 1.5,
@@ -351,7 +338,7 @@ const styles = {
         paddingLeft: 10,
         borderWidth: 1.5,
         marginTop: 10,
-        // marginRight: 7,
+        marginRight: 7,
         marginLeft: 7,
         borderStyle: 'solid',
         cursor: 'pointer',

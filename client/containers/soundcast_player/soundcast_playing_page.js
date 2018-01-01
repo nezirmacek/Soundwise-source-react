@@ -168,6 +168,8 @@ class _SoundcastPlayingPage extends Component {
     if(this.audio) {
       this.setState({
         startPosition: this.audio.currentTime,
+        playing: true,
+        paused: false,
       })
     }
 
@@ -185,6 +187,7 @@ class _SoundcastPlayingPage extends Component {
       });
       this.sendToDatabase('pause', this.state.currentEpisode);
     }
+    const startingIndex = this.state.episodes.indexOf(episode);
     this.setState({
       playlist: [{
         url: episode.url,
@@ -305,6 +308,8 @@ class _SoundcastPlayingPage extends Component {
         <AudioPlayer
           playlist={playlist}
           audioElementRef={(elem) => that.audio = elem}
+          hideBackSkip={true}
+          hideForwardSkip={true}
           onMediaEvent={{
             play: this.recordPlaying.bind(this),
             pause: this.handlePause.bind(this),
