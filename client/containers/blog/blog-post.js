@@ -54,10 +54,10 @@ export default class BlogPost extends Component {
             <meta name="twitter:card" content={post.featured_image} />
           </Helmet>
           <SoundwiseHeader />
-          <section className="padding-70px-tb xs-padding-60px-tb blog-style1 bg-white builder-bg" id="blog-section1" >
+          <section className="padding-70px-tb xs-padding-60px-tb blog-style1 blog-post-style bg-white builder-bg" id="blog-section1" >
               <div className='row' style={{paddingLeft: '10%', paddingRight: '10%',}}>
                 <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
-                    <img className="img100" alt="" src={post.featured_image} data-img-size="(W)800px X (H)507px"/>
+                    <img style={{}} className="img100" alt="" src={post.featured_image} data-img-size="(W)800px X (H)507px"/>
                 </div>
               </div>
               <div className="container post-container" style={{paddingLeft: '15%', paddingRight: '15%',}}>

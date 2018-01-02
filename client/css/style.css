@@ -542,6 +542,10 @@ header .row { align-items: center; display: flex; height: auto;}
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   }
 
+.blog-post-style a {
+    color: #f76b1c;
+  }
+
 .blog-style1 pre {
     display: block;
     padding: 1em;
