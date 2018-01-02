@@ -141,5 +141,22 @@ app.all(/^\/(?!api|explorer)/, function(request, response) {
 });
 
 
+// var sgMail = require('@sendgrid/mail');
+// var sendGridApiKey = require('../config').sendGridApiKey;
+// var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
+// var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
 
-
+// sgMail.setApiKey(sendGridApiKey);
+//     var msg = {
+//       to: 'natasha@natashache.com',
+//       from: 'support@mysoundwise.com',
+//       subject: 'Hello, Natasha!',
+//       html: content,
+//     };
+//     sgMail.send(msg)
+//     .then(res => console.log(res.toString()))
+//     .catch(err => {
+//       // Promise.reject(err);
+//       console.log(err.toString());
+//       Raven.captureException(err.toString());
+//     });
