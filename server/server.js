@@ -22,7 +22,7 @@ var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPaym
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
-var sendListenerInvites = require('./scripts/sendEmailInvites.js').sendListenerInvites;
+var sendTransactionalEmails = require('./scripts/sendEmails.js').sendTransactionalEmails;
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
@@ -82,7 +82,7 @@ app.post('/api/recurring_charge', handleRecurringPayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);
-app.post('/api/send_email_invites', sendListenerInvites);
+app.post('/api/send_email_invites', sendTransactionalEmails);
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
 app.post('/api/unsubscribe', unsubscribe);
@@ -142,7 +142,7 @@ app.all(/^\/(?!api|explorer)/, function(request, response) {
 
 
 // var sgMail = require('@sendgrid/mail');
-// var sendGridApiKey = require('../config').sendGridApiKey;
+var sendGridApiKey = require('../config').sendGridApiKey;
 // var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
 // var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
 
@@ -160,3 +160,32 @@ app.all(/^\/(?!api|explorer)/, function(request, response) {
 //       console.log(err.toString());
 //       Raven.captureException(err.toString());
 //     });
+
+// var stripe_key =  require('../config').stripe_key;
+// var stripe = require('stripe')(stripe_key);
+
+// stripe.transfers.create({
+//   amount: 59,
+//   currency: "usd",
+//   destination: "acct_1Bdla1BEkT8zqJaI",
+// }, function(err, transfer) {
+//   // asynchronously called
+//   if(err) console.log(err.toString());
+//   console.log(transfer);
+// });
+
+// const client = require('@sendgrid/client');
+// client.setApiKey(sendGridApiKey);
+// const options = {
+//   method: 'POST',
+//   url: '/v3/contactdb/recipients',
+//   body: [
+//     {email: 'natasha@natashache.com'},
+//   ],
+// };
+// client.request(options)
+// .then(([response, body]) => {
+//   console.log(response.statusCode);
+//   console.log(response.body);
+// });
+

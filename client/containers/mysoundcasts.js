@@ -82,6 +82,10 @@ class _MySoundcasts extends Component {
                                 planID: soundcasts[id].planID,
                                 billingCycle: soundcasts[id].billingCycle,
                             };
+                            if(soundcasts[id].subscribed && soundcasts[id].current_period_end < moment().format('X')) {
+                                userSoundcasts[i].subscribed = false;
+                                firebase.database().ref(`users/${userId}/soundcasts/${id}/subscribed`).set(false);
+                            }
                          })
                         .then(res => res, err => console.log(err));
                 });
@@ -273,12 +277,12 @@ class _MySoundcasts extends Component {
                             <div>
                                 {this.state.userSoundcasts.map((soundcast, i) => (
                                     <div className="row" key={i} style={styles.row}>
-                                        <Link to={`/mysoundcasts/${soundcast.soundcastId}`}>
+                                        <Link to={soundcast.subscribed ? `/mysoundcasts/${soundcast.soundcastId}` : `soundcasts/${soundcast.soundcastId}`}>
                                             <div className="col-lg-7 col-md-7 col-sm-7 col-xs-12" style={styles.soundcastInfo}>
                                                 <img src={soundcast.imageURL} style={styles.soundcastImage} />
                                                 <div style={styles.soundcastDescription}>
                                                     <label style={styles.soundcastTitle}>{soundcast.title}</label>
-                                                    <label >{`Current subscription is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
+                                                    <label >{soundcast.subscribed ? `Current access is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}` : `Access expired on ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
                                                     </label>
                                                 </div>
                                             </div>
@@ -288,14 +292,18 @@ class _MySoundcasts extends Component {
                                                 <span style={{...styles.statusText, color: 'red'}}>Inactive</span>}
                                         </div>
                                         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12" style={{...styles.soundcastInfo, justifyContent: 'flex-start'}}>
-                                            <div style={{...styles.button, borderColor: Colors.link, display: 'block'}} onClick={() => this.handleSubscription(soundcast)}>
-                                                {
-                                                    soundcast.subscribed && 'Unsubscribe'
-                                                    || this.state.paymentProcessing && (this.state.currentSoundcast == soundcast.soundcastId) &&
-                                                        <Dots style={{display: 'flex'}} color="#727981" size={21} speed={1}/>
-                                                    || 'Re-subscribe'
-                                                }
-                                            </div>
+                                            {
+                                                soundcast.subscribed &&
+                                                <div style={{...styles.button, borderColor: Colors.link, display: 'block'}} onClick={() => this.handleSubscription(soundcast)}>
+                                                    Unsubscribe
+                                                </div>
+                                                ||
+                                                <Link to={`soundcasts/${soundcast.soundcastId}`}>
+                                                    <div style={{...styles.button, borderColor: Colors.link, display: 'block'}} >
+                                                             Get Access
+                                                    </div>
+                                                </Link>
+                                            }
                                             <div style={{color: 'red'}}>
                                                 { this.state.currentSoundcast == soundcast.soundcastId && this.state.paymentError}
                                             </div>

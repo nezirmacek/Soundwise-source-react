@@ -31,7 +31,7 @@ const Instructor = (props) => (
                    <div className="should-have-a-children scroll-me col-md-8 col-sm-6 col-xs-12" style={{paddingTop: 20}}>
                       <span className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500" id="tz-slider-text127">{props.soundcast.hostName}</span>
                       <div className="text-dark-gray text-medium margin-twelve no-margin-lr tz-text" id="tz-slider-text130"><p></p></div>
-                      <div className="text-dark-gray text-large tz-text" id="tz-slider-text129" >
+                      <div className="text-dark-gray text-large tz-text" id="tz-slider-text129" style={{whiteSpace: 'pre-wrap',}}>
                         {props.soundcast.hostBio}
                       </div>
                       <div className="row">

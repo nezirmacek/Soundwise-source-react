@@ -287,7 +287,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += "                        <img src=\"https://s3.amazonaws.com/soundwiseinc/SOUNDWISE+LOGO+BLACK.png\" width=\"70\" height=\"\" alt=\"Soundwise\" border=\"0\" align=\"center\" style=\"width: 100%; max-width: 125px;  font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555; padding-top: 5px; padding-bottom: 5px;\">";
   emailShell += "                        <br>2818 Connecticut Ave NW<br>Washington, DC, USA, 20008";
   emailShell += "                        <br><br>";
-  emailShell += "                        <a href=\"[UNSUBSCRIBE]\"><unsubscribe style=\"color: #888888; text-decoration: underline;\">unsubscribe<\/unsubscribe></a>";
+  // emailShell += "                        <a href=\"[UNSUBSCRIBE]\"><unsubscribe style=\"color: #888888; text-decoration: underline;\">unsubscribe<\/unsubscribe></a>";
   emailShell += "                    <\/td>";
   emailShell += "                <\/tr>";
   emailShell += "            <\/table>";

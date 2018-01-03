@@ -11,7 +11,7 @@ var sgMail = require('@sendgrid/mail');
 var sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 
-module.exports.sendListenerInvites = (req, res) => {
+module.exports.sendTransactionalEmails = (req, res) => {
   // console.log('invitees: ', req.body.invitees);
   var content = emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
   var email = req.body.publisherEmail ? req.body.publisherEmail : 'support@mysoundwise.com';

@@ -97,7 +97,7 @@ export default class Payouts extends Component {
                                 return (
                                   <tr key={i} style={styles.tr}>
                                     <td style={{...styles.td, }}>{payout.createdAt.slice(0, 10)}</td>
-                                    <td style={{...styles.td, }}>{`$${payout.amount}`}</td>
+                                    <td style={{...styles.td, }}>{`$${payout.amount / 100}`}</td>
                                   </tr>
                                 )
                               })
