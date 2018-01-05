@@ -22,7 +22,8 @@ var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPaym
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
-var sendTransactionalEmails = require('./scripts/sendEmails.js').sendTransactionalEmails;
+var Emails = require('./scripts/sendEmails.js');
+
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
@@ -82,7 +83,12 @@ app.post('/api/recurring_charge', handleRecurringPayment);
 app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);
-app.post('/api/send_email_invites', sendTransactionalEmails);
+
+app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;
+app.post('/api/send_marketing_emails', Emails.sendMarketingEmails);
+app.post('/api/delete_emails', Emails.deleteFromEmailList);
+app.post('/api/add_emails', Emails.addToEmailList);
+
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
 app.post('/api/unsubscribe', unsubscribe);

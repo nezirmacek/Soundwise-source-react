@@ -13,6 +13,8 @@ import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromB
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
+import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
+import {addToEmailList} from '../../../helpers/addToEmailList';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -53,7 +55,7 @@ export default class InviteSubscribersModal extends Component {
     }
   }
 
-  inviteListeners() {
+  async inviteListeners() {
     const inviteeArr = this.state.inviteeList.split(',');
     const that = this;
     const { soundcast, userInfo } = this.props;
@@ -66,7 +68,12 @@ export default class InviteSubscribersModal extends Component {
     const content = draftToHtml(convertToRaw(invitation.getCurrentContent()));
     // send email invitations to invited listeners
     const subject = `${userInfo.publisher.name} invites you to subscribe to ${soundcast.title}`;
-    inviteListeners(inviteeArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
+
+    addToEmailList(soundcast.id, inviteeArr, soundcast.emailListId)
+    .then(listId => {
+      // sendMarketingEmails([listId], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4381);
+      inviteListeners (inviteeArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email); // use transactional email for this
+    });
 
     var invitationPromise = inviteeArr.map(email => {
         let _email = email.replace(/\./g, "(dot)");
