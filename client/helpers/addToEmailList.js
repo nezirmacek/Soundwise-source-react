@@ -1,10 +1,11 @@
 import Axios from 'axios';
 
-export function addToEmailList (soundcastId, emailAddressArr, emailListId) {
+export function addToEmailList (soundcastId, emailAddressArr, listName, emailListId) {
   return Axios.post('/api/add_emails', {
     soundcastId,
     emailAddressArr,
     emailListId,
+    listName,
   })
     .then(res => {
       return res.data.emailListId;

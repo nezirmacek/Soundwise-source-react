@@ -53,13 +53,22 @@ const sendTransactionalEmails = (req, res) => {
 
 const addToEmailList = (req, res) => {
   // req.body: {soundcastId: [string], emailListId: [number], emailAddressArr: [array]}
-  const {soundcastId, emailListId, emailAddressArr} = req.body;
+  const {soundcastId, emailListId, emailAddressArr, listName} = req.body;
   let recipients;
   const emails = emailAddressArr.map(email => {
-    return {
-      email,
-    };
+    if(typeof email == 'string') {
+      return {
+        email,
+      };
+    } else if (typeof email == 'object') {
+      return {
+        first_name: email.firstName,
+        last_name: email.lastName,
+        email: email.email,
+      };
+    }
   });
+  console.log('emails: ', emails);
   const options = {
     method: 'POST',
     url: '/v3/contactdb/recipients',
@@ -67,7 +76,6 @@ const addToEmailList = (req, res) => {
   };
   client.request(options)
   .then(([response, body]) => {
-    // console.log(response.body);
     recipients = body.persisted_recipients; // array of recipient IDs
     if (emailListId) { // if list already exists, add recipients to list
       const data = {
@@ -88,13 +96,12 @@ const addToEmailList = (req, res) => {
       const data1 = {
         method: 'POST',
         url: '/v3/contactdb/lists',
-        body: {'name': `${soundcastId}-list`},
+        body: {'name': `${soundcastId}-${listName}`},
       };
       // console.log('data1: ', data1);
       client.request(data1)
       .then(([response, body]) => {
         listId = body.id;
-        console.log('listId: ', listId);
         return listId;
       })
       .then(listId => {
@@ -105,19 +112,19 @@ const addToEmailList = (req, res) => {
         };
         client.request(data2)
         .then(([response, body]) => { // save listId in firebase
-          firebase.database().ref(`soundcasts/${soundcastId}/emailListId`)
+          firebase.database().ref(`soundcasts/${soundcastId}/${listName}`)
           .set(listId);
         })
         .then(() => {
           res.status(200).send({emailListId: listId});
         })
         .catch(err => {
-          console.log('error: ', err.message);
+          console.log('error adding recipients: ', err.message);
           res.status(400).send(err.message);
         });
       })
       .catch(err => {
-        console.log('error: ', err.message);
+        console.log('error creating list: ', err.message);
         res.status(400).send(err.message);
       });
     }
@@ -126,6 +133,7 @@ const addToEmailList = (req, res) => {
 
 const deleteFromEmailList = (req, res) => {
   // req.body: {emails: [array], emailListId: [string]}
+  console.log('req.body: ', req.body);
   const promises = req.body.emails.map(email => {
     const request = {};
     const queryParams = {
@@ -143,6 +151,7 @@ const deleteFromEmailList = (req, res) => {
               });
             })
             .catch(err => {
+              console.log('error: ', err.body);
               Promise.reject(err);
             });
   });
@@ -151,6 +160,7 @@ const deleteFromEmailList = (req, res) => {
     res.status(200).send({});
   })
   .catch(err => {
+    console.log('error: ', err.message);
     res.status(400).send(err.message);
   });
 };

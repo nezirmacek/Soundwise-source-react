@@ -81,6 +81,7 @@ class _MySoundcasts extends Component {
                                 current_period_end: soundcasts[id].current_period_end,
                                 planID: soundcasts[id].planID,
                                 billingCycle: soundcasts[id].billingCycle,
+                                subscriberEmailList: snapshot.val().subscriberEmailList,
                             };
                             if(soundcasts[id].subscribed && soundcasts[id].current_period_end < moment().format('X')) {
                                 userSoundcasts[i].subscribed = false;
@@ -125,49 +126,56 @@ class _MySoundcasts extends Component {
             if(confirmUnsubscribe) {
                 firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/subscribed`)
                 .set(false);
-
+                firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+                .set(moment().format('X'));
                 firebase.database().ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
                 .remove();
 
-                that.retrieveSoundcasts(userId);
-
-                if(paymentID) {
-                    firebase.database().ref(`publishers/${publisherID}`)
-                    .once('value', snapshot => {
-                        Axios.post('/api/unsubscribe', {
-                            paymentID,
-                            publisher: snapshot.val().stripe_user_id,
-                        })
-                        .then(response => {
-                            alert('You have been successfully unsubscribed.');
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        })
-                    })
-                } else {
-                    // if it's a free soundcast, end the current subscription period immediately
-                    firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
-                    .set(moment().format('X'));
-
-                    firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`).remove();
-
-                    firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${userId}`)
-                    .once('value')
-                    .then(snapshot => {
-                        if(!snapshot.val()) {
-                            firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
-                            .once('value').then(snapshot => {
-                                if(snapshot.val()) {
-                                    const count = snapshot.val();
-                                    // console.log('free subscriber count: ', count);
-                                    firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
-                                    .set(count - 1);
-                                }
+                Axios.post('/api/delete_emails', {
+                    emails: [that.props.userInfo.email[0]],
+                    emailListId: soundcast.subscriberEmailList,
+                })
+                .then(() => {
+                    if(paymentID) {
+                        firebase.database().ref(`publishers/${publisherID}`)
+                        .once('value', snapshot => {
+                            Axios.post('/api/unsubscribe', {
+                                paymentID,
+                                publisher: snapshot.val().stripe_user_id,
                             })
-                        }
-                    });
-                }
+                            .then(response => {
+                                that.retrieveSoundcasts(userId);
+                                alert('You have been successfully unsubscribed.');
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            })
+                        })
+                    } else {
+                        // if it's a free soundcast, end the current subscription period immediately
+                        firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+                        .set(moment().format('X'));
+
+                        firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`).remove();
+
+                        firebase.database().ref(`publishers/${publisherID}/freeSubscribers/${userId}`)
+                        .once('value')
+                        .then(snapshot => {
+                            if(!snapshot.val()) {
+                                firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
+                                .once('value').then(snapshot => {
+                                    if(snapshot.val()) {
+                                        const count = snapshot.val();
+                                        // console.log('free subscriber count: ', count);
+                                        firebase.database().ref(`publishers/${publisherID}/freeSubscriberCount`)
+                                        .set(count - 1);
+                                    }
+                                })
+                            }
+                            that.retrieveSoundcasts(userId);
+                        });
+                    }
+                })
             }
         } else {
             if(soundcast.planID) { //if it's a paid soundcast
@@ -282,7 +290,9 @@ class _MySoundcasts extends Component {
                                                 <img src={soundcast.imageURL} style={styles.soundcastImage} />
                                                 <div style={styles.soundcastDescription}>
                                                     <label style={styles.soundcastTitle}>{soundcast.title}</label>
-                                                    <label >{soundcast.subscribed ? `Current access is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}` : `Access expired on ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
+                                                    <label >{soundcast.subscribed && Number(soundcast.current_period_end) == 4638902400 && 'Current access is valid'
+                                                        || soundcast.subscribed && Number(soundcast.current_period_end) < 4638902400 && `Current access is valid till ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`
+                                                        || `Access expired on ${moment.unix(soundcast.current_period_end).format("MM/DD/YYYY")}`}
                                                     </label>
                                                 </div>
                                             </div>

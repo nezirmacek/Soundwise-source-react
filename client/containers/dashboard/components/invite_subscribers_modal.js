@@ -69,9 +69,8 @@ export default class InviteSubscribersModal extends Component {
     // send email invitations to invited listeners
     const subject = `${userInfo.publisher.name} invites you to subscribe to ${soundcast.title}`;
 
-    addToEmailList(soundcast.id, inviteeArr, soundcast.emailListId)
+    addToEmailList(soundcast.id, inviteeArr, 'inviteeEmailList', soundcast.inviteeEmailList)
     .then(listId => {
-      // sendMarketingEmails([listId], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4381);
       inviteListeners (inviteeArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email); // use transactional email for this
     });
 

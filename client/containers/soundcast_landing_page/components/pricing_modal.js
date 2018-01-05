@@ -107,7 +107,7 @@ class _PricingModal extends Component {
             const isChecked = (checked == i);
             let currentPrice = `USD $${Number(price.price).toFixed(2)} / month`;
             let billing = 'billed monthly';
-            let paymentPlan = price.paymentPlan || 'Monthly Subscription';
+            let paymentPlan = price.paymentPlan || 'Free Access';
             if(price.billingCycle == 'annual') {
               currentPrice = `USD $${(Math.floor(price.price / 12 * 100) / 100).toFixed(2)} / month`;
               billing = 'billed annually';

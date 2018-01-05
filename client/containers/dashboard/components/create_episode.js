@@ -17,7 +17,7 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import {sendNotifications} from '../../../helpers/send_notifications';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 window.URL = window.URL || window.webkitURL;
 
@@ -63,6 +63,8 @@ class _CreateEpisode extends Component {
             notesUploading: false,
             coverArtUploading: false,
             wrongFileTypeFor: null,
+
+            sendEmails: false,
         };
 
         this.audio = null;
@@ -94,16 +96,20 @@ class _CreateEpisode extends Component {
         // console.log('create_episode is mounted');
         const that = this;
         const {userInfo} = this.props;
+        if(userInfo.soundcasts_managed) {
+            this.currentSoundcastId = Object.keys(userInfo.soundcasts_managed)[0];
+            firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
+            .once('value')
+            .then(snapshot => {
+                if(snapshot.val()) {
+                    that.setState({
+                        publicEpisode: snapshot.val().landingPage ? true : false,
+                        currentsoundcast: snapshot.val(),
+                    });
+                }
+            });
+        }
 		this.player.onended = () => this.setState({isPlaying: false});
-        firebase.database().ref(`soundcasts/${this.currentSoundcastId}`)
-        .once('value')
-        .then(snapshot => {
-            if(snapshot.val()) {
-                that.setState({
-                    publicEpisode: snapshot.val().landingPage ? true : false
-                });
-            }
-        });
 
         if(this.props.location.state && this.props.location.state.soundcastID) {
             if(this.props.userInfo.soundcasts_managed) {
@@ -157,8 +163,6 @@ class _CreateEpisode extends Component {
         // clearInterval(recordingInterval);
         // console.log('interval cleared')
     }
-
-
 
     play () {
         const that = this;
@@ -427,7 +431,9 @@ class _CreateEpisode extends Component {
                     sendNotifications(registrationTokens, payload); //sent push notificaiton
                 }
                 const soundcast = {...snapshot.val(), id: that.currentSoundcastId};
-                that.emailListeners(soundcast);
+                if(that.state.sendEmails) {
+                  that.emailListeners(soundcast);
+                }
               })
             }
         });
@@ -439,44 +445,15 @@ class _CreateEpisode extends Component {
         const {userInfo} = this.props;
         const subject = `${this.state.title} was just published on ${soundcast.title}`;
         if(soundcast.subscribed) {
-            const promises = Object.keys(soundcast.subscribed).map(key => {
-                if(!soundcast.subscribed[key].noEmail) { // if listener has unsubscribed to emails, 'noEmail' should = true
-                    return firebase.database().ref(`users/${key}`).once('value')
-                            .then(snapshot => {
-                                if(snapshot.val()) {
-                                    subscribers.push({
-                                        firstName: snapshot.val().firstName,
-                                        email: snapshot.val().email[0],
-                                    });
-                                }
-                            })
-                }
-            });
-
             // send notification email to subscribers
-            Promise.all(promises)
-            .then(() => {
-                const emailPromises = subscribers.map(subscriber => {
-                        const content = `<p>Hi ${subscriber.firstName}!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
-                        return inviteListeners([subscriber.email], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
-                });
-                Promise.all(emailPromises);
-            });
+            const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+            sendMarketingEmails([soundcast.subscriberEmailList], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4383);
         }
 
         // send notification email to invitees
         if(soundcast.invited) {
-            const {invited} = soundcast;
-            let email;
-            let invitees = [];
-            for(var key in invited) {
-              if(invited[key]) {
-                email = key.replace(/\(dot\)/g, '.');
-                invitees.push(email);
-              }
-            }
             const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
-            inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+            sendMarketingEmails([soundcast.inviteeEmailList], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4383);
         }
     }
 
@@ -970,6 +947,19 @@ class _CreateEpisode extends Component {
                                   // style={{fontSize: 20, width: '50%'}}
                                 />
                                 <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15,}}>
+                                <Toggle
+                                  id='share-status'
+                                  aria-labelledby='share-label'
+                                  // label="Charge subscribers for this soundcast?"
+                                  checked={this.state.sendEmails}
+                                  onChange={() => {
+                                    const sendEmails = !that.state.sendEmails;
+                                    that.setState({sendEmails})
+                                  }}
+                                />
+                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Send email notification to subscribers and invitees</span>
                             </div>
                         </div>
                         {

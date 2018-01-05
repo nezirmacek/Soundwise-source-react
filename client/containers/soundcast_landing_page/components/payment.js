@@ -11,6 +11,8 @@ import  PageHeader  from './page_header';
 import Colors from '../../../styles/colors';
 
 import {inviteListeners} from '../../../helpers/invite_listeners';
+import {addToEmailList} from '../../../helpers/addToEmailList';
+
 let stripe, elements;
 
 export default class Payment extends Component {
@@ -51,7 +53,6 @@ export default class Payment extends Component {
                 userInfo: that.props.userInfo
             });
             if(this.props.total == 0 || this.props.total == 'free') {
-                console.log('addSoundcastToUser called in componentDidMount');
                 this.addSoundcastToUser(null, that.props.userInfo);
             }
         }
@@ -66,7 +67,6 @@ export default class Payment extends Component {
                 userInfo: nextProps.userInfo
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
-                console.log('addSoundcastToUser called in componentWillReceiveProps');
               this.addSoundcastToUser(null, nextProps.userInfo);
             }
         }
@@ -83,7 +83,7 @@ export default class Payment extends Component {
     }
 
     componentWillUnmount() {
-        console.log('payment component will unmount');
+        // console.log('payment component will unmount');
     }
 
     handleChange(e) {
@@ -130,8 +130,10 @@ export default class Payment extends Component {
                 firebase.database().ref(`publishers/${soundcast.publisherID}`)
                 .once('value', snapshot => {
                     const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
-                        inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail);
-                        console.log('email sent');
+                    addToEmailList(soundcastID, [{email: userInfo.email[0], firstName: userInfo.firstName, lastName: userInfo.lastName}], 'subscriberEmailList', soundcast.subscriberEmailList)
+                    .then(listId => {
+                      inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail); // use transactional email for this
+                    });
                 })
             }
 

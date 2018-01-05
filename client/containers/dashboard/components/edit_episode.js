@@ -14,7 +14,7 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 import {sendNotifications} from '../../../helpers/send_notifications';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 export default class EditEpisode extends Component {
     constructor (props) {
@@ -34,6 +34,7 @@ export default class EditEpisode extends Component {
             coverartUploaded: false,
             coverartUrl: '',
             coverArtUploading: false,
+            sendEmails: false,
         };
         this.uploadCoverArtInput = null;
     }
@@ -213,7 +214,9 @@ export default class EditEpisode extends Component {
                   sendNotifications(registrationTokens, payload); //sent push notificaiton
                 }
                 const soundcast = {...snapshot.val(), id: that.state.soundcastID};
-                that.emailListeners(soundcast);
+                if(that.state.sendEmails) {
+                  that.emailListeners(soundcast);
+                }
               })
             }
         })
@@ -225,44 +228,15 @@ export default class EditEpisode extends Component {
         const {userInfo} = this.props;
         const subject = `${this.state.title} was just published on ${soundcast.title}`;
         if(soundcast.subscribed) {
-            const promises = Object.keys(soundcast.subscribed).map(key => {
-                if(!soundcast.subscribed[key].noEmail) { // if listener has unsubscribed to emails, 'noEmail' should = true
-                    return firebase.database().ref(`users/${key}`).once('value')
-                            .then(snapshot => {
-                                if(snapshot.val()) {
-                                    subscribers.push({
-                                        firstName: snapshot.val().firstName,
-                                        email: snapshot.val().email[0],
-                                    });
-                                }
-                            })
-                }
-            });
-
             // send notification email to subscribers
-            Promise.all(promises)
-            .then(() => {
-                const emailPromises = subscribers.map(subscriber => {
-                        const content = `<p>Hi ${subscriber.firstName}!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
-                        return inviteListeners([subscriber.email], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
-                });
-                Promise.all(emailPromises);
-            });
+            const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+            sendMarketingEmails([soundcast.subscriberEmailList], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4383);
         }
 
         // send notification email to invitees
         if(soundcast.invited) {
-            const {invited} = soundcast;
-            let email;
-            let invitees = [];
-            for(var key in invited) {
-              if(invited[key]) {
-                email = key.replace(/\(dot\)/g, '.');
-                invitees.push(email);
-              }
-            }
             const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} just published <strong>${this.state.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
-            inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+            sendMarketingEmails([soundcast.inviteeEmailList], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4383);
         }
     }
 
@@ -405,6 +379,23 @@ export default class EditEpisode extends Component {
                                 />
                                 <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
                             </div>
+                            {
+                              !isPublished &&
+                              <div style={{display: 'flex', alignItems: 'center', marginTop: 15,}}>
+                                  <Toggle
+                                    id='share-status'
+                                    aria-labelledby='share-label'
+                                    // label="Charge subscribers for this soundcast?"
+                                    checked={this.state.sendEmails}
+                                    onChange={() => {
+                                      const sendEmails = !that.state.sendEmails;
+                                      that.setState({sendEmails})
+                                    }}
+                                  />
+                                  <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Send email notification to subscribers and invitees</span>
+                              </div>
+                              || null
+                            }
                         </div>
                         {
                             this.state.publicEpisode &&
@@ -483,7 +474,7 @@ export default class EditEpisode extends Component {
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
-                                label={isPublished ? "Save" : "Save draft"}
+                                label={isPublished ? "Update" : "Save draft"}
                                 onClick={this.submit.bind(this, false)}
                                 styles={{backgroundColor: Colors.link, borderWidth: 0}}
                             />
