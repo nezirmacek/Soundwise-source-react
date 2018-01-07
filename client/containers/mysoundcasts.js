@@ -274,7 +274,7 @@ class _MySoundcasts extends Component {
         return (
             <div>
                 <SoundwiseHeader />
-                <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
+                <section className="padding-90px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                     <div className="container">
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center">

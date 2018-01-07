@@ -22,6 +22,7 @@ import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
 import CreatorTerms from './components/creator_terms';
 import Privacy from './components/privacy';
+import Publisher from './components/publisher';
 import Terms from './components/terms_of_use';
 import TermsFreeContent from './components/terms_free_content_May2017';
 import { OrderConfirmation } from './components/order_confirmation';
@@ -225,6 +226,7 @@ class _Routes extends Component {
                 <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
                 <Route path="/dashboard/:tab/:id" component={Dashboard} />
                 <Route path="/soundcasts/:id" component={SoundcastPage} />
+                <Route path="/publishers/:id" component={Publisher} />
                 <Route path="/episodes/:id" component={EpisodePage} />
                 <Route path="/soundcast_checkout" component={SoundcastCheckout} />
                 <Route path ="/notfound" component={NotFound} />

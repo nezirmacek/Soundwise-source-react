@@ -24,7 +24,7 @@ const sendTransactionalEmails = (req, res) => {
   var _promises = req.body.invitees.map(invitee => {
     var msg = {
       to: invitee,
-      from: email,
+      from: {email, name},
       subject: req.body.subject,
       html: content,
     };
@@ -68,7 +68,6 @@ const addToEmailList = (req, res) => {
       };
     }
   });
-  console.log('emails: ', emails);
   const options = {
     method: 'POST',
     url: '/v3/contactdb/recipients',
@@ -133,7 +132,6 @@ const addToEmailList = (req, res) => {
 
 const deleteFromEmailList = (req, res) => {
   // req.body: {emails: [array], emailListId: [string]}
-  console.log('req.body: ', req.body);
   const promises = req.body.emails.map(email => {
     const request = {};
     const queryParams = {

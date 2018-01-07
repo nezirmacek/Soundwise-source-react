@@ -85,6 +85,9 @@ export default class EpisodePreview extends Component {
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const {episode, liked, descriptionShown, notesShown, actionsShown} = this.state;
     const {handlePlayClicked, playing, paused, currentEpisode} = this.props;
+    const likes = (episode.likes && Object.keys(episode.likes).length) || 0;
+    const listens = episode.totalListens || 0;
+
     if(currentEpisode && episode.id == currentEpisode.id) {
       console.log('current episode: ', episode.id);
     }
@@ -119,13 +122,13 @@ export default class EpisodePreview extends Component {
                       style={{color: liked ? 'red': 'black', cursor: 'pointer'}}
                       onClick={this.changeLike.bind(this)}>
                     </i>
-                    {` ${(episode.likes && Object.keys(episode.likes).length) || 0} likes ` }
+                    {` ${likes} ${likes > 1 ? 'likes' : 'like'} ` }
                   </span>
                 }
                 {
                   <span className="text-large sm-text-large xs-text-large text-dark-gray font-weight-400 alt-font margin-three-bottom margin-three-top tz-text">
                     <i className="fa fa-headphones" aria-hidden="true"></i>
-                    {` ${episode.totalListens || 0} listens` }
+                    {` ${listens} ${listens > 1 ? 'listens' : 'listen'}` }
                   </span>
                 }
               </div>

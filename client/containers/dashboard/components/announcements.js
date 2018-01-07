@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import axios from 'axios';
 import firebase from 'firebase';
+import Toggle from 'react-toggle';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -10,6 +11,7 @@ import {sendNotifications} from '../../../helpers/send_notifications';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 import {inviteListeners} from '../../../helpers/invite_listeners';
+import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 export default class Announcements extends Component {
   constructor(props) {
@@ -21,6 +23,7 @@ export default class Announcements extends Component {
       soundcasts_managed: [],
       message: '',
       announcementsArr: [],
+      sendEmails: false,
     }
 
     this.handlePublish = this.handlePublish.bind(this);
@@ -171,7 +174,9 @@ export default class Announcements extends Component {
                 }
               };
               sendNotifications(registrationTokens, payload); //sent push notificaiton
-              that.emailListeners(currentSoundcast, message)
+              if(that.state.sendEmails) {
+                that.emailListeners(currentSoundcast, message)
+              }
             }
           })
       },
@@ -187,50 +192,21 @@ export default class Announcements extends Component {
       const {userInfo} = this.props;
       const subject = `${soundcast.title} sent you a message on Soundwise`;
       if(soundcast.subscribed) {
-          const promises = Object.keys(soundcast.subscribed).map(key => {
-              if(!soundcast.subscribed[key].noEmail) { // if listener has unsubscribed to emails, 'noEmail' should = true
-                  return firebase.database().ref(`users/${key}`).once('value')
-                          .then(snapshot => {
-                              if(snapshot.val()) {
-                                  subscribers.push({
-                                      firstName: snapshot.val().firstName,
-                                      email: snapshot.val().email[0],
-                                  });
-                              }
-                          })
-              }
-          });
-
           // send notification email to subscribers
-          Promise.all(promises)
-          .then(() => {
-              const emailPromises = subscribers.map(subscriber => {
-                      const content = `<p>Hi ${subscriber.firstName}!</p><p></p><p>${soundcast.title} just sent you a message on Soundwise:</p><p></p><div style=\"padding: 15px; white-space: pre-wrap; background: #FFF8E1;\"><strong>${message}</strong></div>`;
-                      return inviteListeners([subscriber.email], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
-              });
-              Promise.all(emailPromises);
-          });
+          const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${soundcast.title} just sent you a message on Soundwise:</p><p></p><div style=\"padding: 15px; white-space: pre-wrap; background: #FFF8E1;\"><strong>${message}</strong></div>`;
+          sendMarketingEmails([soundcast.subscriberEmailList], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4385);
       }
 
       // send notification email to invitees
       if(soundcast.invited) {
-          const {invited} = soundcast;
-          let email;
-          let invitees = [];
-          for(var key in invited) {
-            if(invited[key]) {
-              email = key.replace(/\(dot\)/g, '.');
-              invitees.push(email);
-            }
-          }
-          const content = `<p>Hi there!</p><p></p><p>${soundcast.title} just sent you a message on Soundwise:</p><p></p><div style=\"padding: 15px; white-space: pre-wrap; background: #FFF8E1;\"><strong>${message}</strong></div>`;
-          inviteListeners(invitees, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email);
+        const content = `<p>Hi there!</p><p></p><p>${soundcast.title} just sent you a message on Soundwise:</p><p></p><div style=\"padding: 15px; white-space: pre-wrap; background: #FFF8E1;\"><strong>${message}</strong></div>`;
+        sendMarketingEmails([soundcast.inviteeEmailList], subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email, 4385);
       }
   }
 
   render() {
     const { soundcasts_managed, announcementsArr } = this.state;
-
+    const that = this;
     return (
       <div className='padding-30px-tb'>
         <div className='padding-bottom-20px'>
@@ -260,6 +236,21 @@ export default class Announcements extends Component {
               value={this.state.message}
           >
           </textarea>
+          <div style={{marginTop: 0, marginBottom: 15, }}>
+              <div style={{display: 'flex', alignItems: 'center', }}>
+                  <Toggle
+                    id='share-status'
+                    aria-labelledby='share-label'
+                    // label="Charge subscribers for this soundcast?"
+                    checked={this.state.sendEmails}
+                    onChange={() => {
+                      const sendEmails = !that.state.sendEmails;
+                      that.setState({sendEmails})
+                    }}
+                  />
+                  <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Email the announcement to subscribers and invitees</span>
+              </div>
+          </div>
           <div style={styles.publishButtonWrap}>
               <div
                   style={{...styles.button}}
@@ -284,7 +275,7 @@ export default class Announcements extends Component {
                       <div style={{...styles.content, whiteSpace: 'pre-wrap'}} className='text-large'>
                         {announcement.content}
                       </div>
-                      <div style={styles.likes}>{`${likes} likes  ${comments} comments`}</div>
+                      <div style={styles.likes}>{`${likes} ${likes > 1 ? 'likes' : 'like'}  ${comments} ${comments > 1 ? 'comments' : 'comment'}`}</div>
                     </div>
                   </div>
                 )
@@ -327,7 +318,8 @@ const styles = {
       fontSize: 16,
       borderRadius: 4,
       marginTop: 0,
-      marginBottom: 10
+      marginBottom: 10,
+      resize: 'vertical',
   },
   publishButtonWrap: {
     marginTop: 10,

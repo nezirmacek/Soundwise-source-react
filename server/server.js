@@ -180,8 +180,8 @@ var sendGridApiKey = require('../config').sendGridApiKey;
 //   console.log(transfer);
 // });
 
-// const client = require('@sendgrid/client');
-// client.setApiKey(sendGridApiKey);
+const client = require('@sendgrid/client');
+client.setApiKey(sendGridApiKey);
 // const options = {
 //   method: 'POST',
 //   url: '/v3/contactdb/recipients',

@@ -225,13 +225,7 @@ export default class Subscribers extends Component {
 
       // remove user-soundcast from both soundcast node and user node
       this.state.toBeUnsubscribed.forEach(listenerID => {
-        firebase.database().ref('soundcasts/' + this.state.currentSoundcastID + '/subscribed/' + listenerID).remove()
-          // .then(function() {
-          //   console.log("Remove succeeded.")
-          // })
-          // .catch(function(error) {
-          //   console.log("Remove failed: " + error.message)
-          // });
+        firebase.database().ref('soundcasts/' + this.state.currentSoundcastID + '/subscribed/' + listenerID).remove();
 
         firebase.database().ref('users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/subscribed').set(false);
 
@@ -255,6 +249,17 @@ export default class Subscribers extends Component {
                 })
             }
         });
+
+        if(currentSoundcast.subscriberEmailList) { // delete email from email list
+          firebase.database().ref(`users/${listenerID}`)
+          .once('value')
+          .then(snapshot => {
+            Axios.post('/api/delete_emails', {
+                emails: [snapshot.val().email[0]],
+                emailListId: currentSoundcast.subscriberEmailList,
+            });
+          });
+        }
 
         for(var i = this.subscribers.length - 1; i>=0; i-=1) {
           if(this.subscribers[i].id == listenerID) {

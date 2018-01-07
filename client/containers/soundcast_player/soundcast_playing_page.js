@@ -48,7 +48,7 @@ class _SoundcastPlayingPage extends Component {
                 that.setState({
                     userInfo: that.props.userInfo,
                 });
-                that.loadSoundcast(that.props);
+                that.loadSoundcast(that.props, user.uid);
             }
         } else {
             that.props.history.push('/signin');
@@ -57,42 +57,52 @@ class _SoundcastPlayingPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadSoundcast(nextProps);
+    this.loadSoundcast(nextProps, this.state.userID);
   }
 
-  loadSoundcast(props) {
+  loadSoundcast(props, userID) {
     const that = this;
     const soundcastID = props.match.params.soundcastId;
     const {userInfo, history} = props;
-    if(props.userInfo.firstName) {
-      if(props.userInfo.soundcasts) {
-        if(typeof userInfo.soundcasts[soundcastID] == 'object') {
-          if(userInfo.soundcasts[soundcastID].title) {
-            this.setState({
-              soundcast: userInfo.soundcasts[soundcastID],
-              soundcastID,
-              noAccess: false,
-            });
-            this.setEpisodes(userInfo.soundcasts[soundcastID]);
-          }
-        } else if(userInfo.soundcasts[soundcastID] == true && typeof userInfo.soundcasts_managed[soundcastID] == 'object') {
-            this.setState({
-              soundcast: userInfo.soundcasts_managed[soundcastID],
-              soundcastID,
-              noAccess: false,
-            });
-            this.setEpisodes(userInfo.soundcasts_managed[soundcastID]);
-        } else {
-          this.setState({
-            noAccess: true,
-          });
-        }
-      } else {
-        this.setState({
+    firebase.database().ref(`users/${userID}/soundcasts/${soundcastID}`)
+    .once('value')
+    .then(snapshot => {
+      if(snapshot.val().current_period_end < moment().format('X')) {
+        that.setState({
           noAccess: true,
-        })
+        });
+      } else {
+        if(props.userInfo.firstName) {
+          if(props.userInfo.soundcasts) {
+            if(typeof userInfo.soundcasts[soundcastID] == 'object') {
+              if(userInfo.soundcasts[soundcastID].title) {
+                that.setState({
+                  soundcast: userInfo.soundcasts[soundcastID],
+                  soundcastID,
+                  noAccess: false,
+                });
+                that.setEpisodes(userInfo.soundcasts[soundcastID]);
+              }
+            } else if(userInfo.soundcasts[soundcastID] == true && typeof userInfo.soundcasts_managed[soundcastID] == 'object') {
+                this.setState({
+                  soundcast: userInfo.soundcasts_managed[soundcastID],
+                  soundcastID,
+                  noAccess: false,
+                });
+                this.setEpisodes(userInfo.soundcasts_managed[soundcastID]);
+            } else {
+              this.setState({
+                noAccess: true,
+              });
+            }
+          } else {
+            this.setState({
+              noAccess: true,
+            })
+          }
+        }
       }
-    }
+    });
   }
 
   setEpisodes(soundcast) {
