@@ -12,6 +12,7 @@ import Footer from '../../../components/footer'
 import  PageHeader  from './page_header'
 import AudioPlayer from 'react-responsive-audio-player'
 import {SoundwiseHeader} from '../../../components/soundwise_header'
+import Colors from '../../../styles/colors';
 
 class _EpisodePage extends Component {
   constructor(props) {
@@ -206,7 +207,7 @@ class _EpisodePage extends Component {
     return (
       <div>
         <Helmet>
-          <title>{`${soundcastTitle} | Soundwise`}</title>
+          <title>{`${title} | Soundwise`}</title>
           <meta property="og:url" content={`https://mysoundwise.com/episodes/${episodeID}`} />
           <meta property="fb:app_id" content='1726664310980105' />
           <meta property="og:title" content={`${title} - ${soundcastTitle}`}/>
@@ -215,8 +216,8 @@ class _EpisodePage extends Component {
           <meta name="description" content={description} />
           <meta name="twitter:title" content={`${title} - ${soundcastTitle}`}/>
           <meta name="twitter:description" content={description}/>
-          <meta name="twitter:image" content={soundcastImageURL}/>
-          <meta name="twitter:card" content={soundcastImageURL} />
+          <meta name="twitter:image" content={coverArtUrl || soundcastImageURL}/>
+          <meta name="twitter:card" content={coverArtUrl || soundcastImageURL} />
         </Helmet>
         <MuiThemeProvider >
           <div>
@@ -237,24 +238,34 @@ class _EpisodePage extends Component {
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center margin-three-bottom xs-margin-fifteen-bottom">
                               {
                                subscribable &&
-                               <a target='_blank' href={`https://mysoundwise.com/soundcasts/${soundcastID}`}>
-                                  <span className="section-title-small sm-section-title-small xs-section-title-medium  font-weight-400 alt-font  tz-text" style={{color: '#F76B1C'}}>
-                                      {`${soundcastTitle} `}</span>
-                                  <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font  tz-text">{`by ${publisherName}`}</span>
-                               </a>
+                               <div>
+                                 <a target='_blank' href={`https://mysoundwise.com/soundcasts/${soundcastID}`}>
+                                    <span className="section-title-small sm-section-title-small xs-section-title-medium  font-weight-400 alt-font  tz-text" style={{color: '#F76B1C'}}>
+                                        {`${soundcastTitle} `}</span>
+                                </a>
+                                <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font tz-text">{`by `}</span>
+                                <a target='_blank' href={`https://mysoundwise.com/publishers/${publisherID}`}>
+                                    <span className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text" style={{color: Colors.link}}>{`${publisherName}`}</span>
+                                 </a>
+                               </div>
                                ||
-                                <h2 className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font tz-text">
-                                    {`${soundcastTitle} by ${publisherName}`}
-                                </h2>
+                               <div>
+                                <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font tz-text">
+                                    {`${soundcastTitle} by `}
+                                </span>
+                                <span className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text" style={{color: Colors.link}}>
+                                    {`${publisherName}`}
+                                </span>
+                               </div>
                               }
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center'}}>
+                            <div className="col-md-5 col-sm-5 col-xs-12 text-center center-col" style={{}}>
                               <img
                                   src={coverArtUrl || soundcastImageURL}
                                   alt={soundcastTitle}
-                                  style={{height: '250px', display: 'block'}}
+                                  style={{}}
                               />
                             </div>
                         </div>
@@ -279,13 +290,13 @@ class _EpisodePage extends Component {
                                     className="fa fa-heart" aria-hidden="true"
                                     style={{color: liked ? 'red' : 'black'}}
                                     onClick={this.changeLike.bind(this)}></i>
-                                  {` ${likes || 0} likes ` }
+                                  {` ${likes || 0} ${likes && likes > 1 ? 'likes' : 'like'}` }
                                 </span>
                               }
                               {
                                 <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
                                   <i className="fa fa-headphones" aria-hidden="true"></i>
-                                  {` ${listens || 0} listens` }
+                                  {` ${listens || 0} ${listens && listens > 1 ? 'listens' : 'listen'}` }
                                 </span>
                               }
                             </div>
