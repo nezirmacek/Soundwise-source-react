@@ -144,7 +144,10 @@ export default class SoundcastBody extends Component {
                 <section className="padding-30px-tb xs-padding-30px-tb bg-white builder-bg border-none" id="title-section1">
                         {
                             relatedSoundcasts.length >= 1 &&
-                            <RelatedSoundcasts soundcasts={relatedSoundcasts} title={`Also from ${publisher.name}`}/>
+                            <RelatedSoundcasts
+                              soundcasts={relatedSoundcasts}
+                              publisherID={soundcast.publisherID}
+                              title={`Also from ${publisher.name}`}/>
                         }
                         {
                             soundcast.features && soundcast.features[0].length > 0 &&

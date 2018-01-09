@@ -1126,6 +1126,9 @@ section {border-bottom:0  }
 .img-round-100{ border-radius: 50%; height: 100px; width: 100px; overflow: hidden;}
 .img-round-110{ border-radius: 50%; height: 110px; width: 110px; overflow: hidden;}
 .img-round-120{ border-radius: 50%; height: 120px; width: 120px; overflow: hidden;}
+.img-round-160{ border-radius: 50%; height: 160px; width: 160px; overflow: hidden; background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;}
 .img100 { width: 100% !important;}
 
 /* column for equalizer   ***/

@@ -5,6 +5,8 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
+import FlatButton from 'material-ui/FlatButton';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -165,7 +167,7 @@ export default class Settings extends Component {
   loadFromProp(userInfo) {
     if(userInfo.publisher) {
       const publisherId = userInfo.publisherID;
-      const {name, imageUrl, email, stripe_user_id} = userInfo.publisher;
+      const {name, imageUrl, email, stripe_user_id, publisherInfo, website, facebook, twitter, linkedin, instagram} = userInfo.publisher;
       const {publisherName, publisherImg, publisherEmail} = this.state;
       this.setState({
         publisherName: name ? name : publisherName,
@@ -173,6 +175,12 @@ export default class Settings extends Component {
         publisherEmail: email ? email : publisherEmail,
         publisherId,
         stripe_user_id,
+        publisherInfo: publisherInfo ? publisherInfo : '',
+        website: website ? website : '',
+        facebook: facebook ? facebook : '',
+        twitter: twitter ? twitter : '',
+        linkedin: linkedin ? linkedin : '',
+        instagram: instagram ? instagram : '',
       })
     }
   }
@@ -219,17 +227,15 @@ export default class Settings extends Component {
 
   submit() {
     const { publisher } = this.props.userInfo;
-    const { publisherImg, publisherName, publisherId, publisherEmail } = this.state;
+    const { publisherImg, publisherName, publisherId, publisherEmail, publisherInfo, website, facebook, twitter, linkedin, instagram,  } = this.state;
     const that = this;
-    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, email: publisherEmail};
+    const revisedPublisher = {...publisher, name: publisherName, imageUrl: publisherImg, email: publisherEmail, publisherInfo, website, facebook, twitter, linkedin, instagram};
 
     firebase.database().ref(`publishers/${publisherId}`)
     .set(revisedPublisher)
     .then(() => {
       // console.log('publisher saved');
-      that.setState({
-        publisherSaved: true,
-      })
+      alert('Publisher data saved.');
     })
     .catch(err => {
       console.log(err);
@@ -304,16 +310,19 @@ export default class Settings extends Component {
   }
 
   render() {
-    const { publisherImg, publisherName, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent, stripe_user_id, creatingAccount, modalOpen } = this.state;
+    const { publisherImg, publisherName, publisherInfo, website, facebook, twitter, linkedin, instagram, publisherEmail, publisherSaved, fileUploaded, admins, adminFormShow, inviteeFirstName, inviteeLastName, inviteeEmail, inviteSent, stripe_user_id, creatingAccount, modalOpen } = this.state;
     const that = this;
     const {userInfo} = this.props;
 
     return (
             <div className='padding-30px-tb'>
-                <div className='padding-bottom-20px'>
+                <div className='padding-bottom-20px' style={{display: 'flex', alignItems: 'center'}}>
                     <span className='title-medium '>
                         Publisher
                     </span>
+                    <Link to={`/publishers/${userInfo.publisherID}`}>
+                      <span className='text-medium' style={{marginLeft: 15, color: Colors.mainOrange}}><strong>View Publisher Page</strong></span>
+                    </Link>
                 </div>
                 <ul className="nav nav-pills">
                   <li role="presentation" className="active"><Link style={{backgroundColor: Colors.mainOrange}}   to='/dashboard/publisher'><span style={{fontSize: 15, fontWeight: 600}}>Settings</span></Link></li>
@@ -386,6 +395,111 @@ export default class Settings extends Component {
                                       }
                                   </div>
                               </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Publisher Info
+                              </span><span><i>{` (280 characters max)`}</i></span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({publisherInfo: e.target.value})}}
+                                  value={publisherInfo}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Publisher Email
+                              </span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({publisherEmail: e.target.value})}}
+                                  value={publisherEmail}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Website
+                              </span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({website: e.target.value})}}
+                                  value={website}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Facebook
+                              </span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({facebook: e.target.value})}}
+                                  value={facebook}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Twitter
+                              </span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({twitter: e.target.value})}}
+                                  value={twitter}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  LinkedIn
+                              </span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({linkedin: e.target.value})}}
+                                  value={linkedin}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{marginTop: 20,}}>
+                              <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Instagram
+                              </span>
+                            </div>
+                            <div style={styles.inputTitleWrapper}>
+                              <input
+                                  type="text"
+                                  style={styles.inputTitle}
+                                  onChange={(e) => {this.setState({instagram: e.target.value})}}
+                                  value={instagram}
+                              />
+                            </div>
                           </div>
                           <div className='row' style={{paddingBottom: 30}}>
                             <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">

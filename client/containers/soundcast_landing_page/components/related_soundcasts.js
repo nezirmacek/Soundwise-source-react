@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import RelatedSoundcastCard from './related_soundcast_card';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 function SliderNextArrow(props) {
   const {onClick} = props;
@@ -85,6 +86,12 @@ export default class RelatedSoundcasts extends Component {
                       >
                         {this.props.title}
                       </h2>
+                  </div>
+                  <div className='col-md-12' style={{display: 'flex', justifyContent: 'center', marginBottom: 30}}>
+                    <Link to={`/publishers/${this.props.publisherID}`} className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#61e1fb'}}
+                    >
+                      <span className="text-extra-large sm-text-extra-large tz-text">VIEW PUBLISHER</span>
+                    </Link>
                   </div>
               </div>
               <div style={style.sliderWrapper} className="row ">
