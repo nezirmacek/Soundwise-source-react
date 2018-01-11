@@ -77,31 +77,31 @@ export default class Publisher extends Component {
                             <div className='col-md-12 social social-icon-color' style={{marginTop: '1em', marginBottom: '1em'}}>
                               {
                                 publisher.website &&
-                                <a className='margin-eight-right'>
+                                <a href={publisher.website} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fa fa-link tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.facebook &&
-                                <a className='margin-eight-right'>
+                                <a href={publisher.facebook} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.twitter &&
-                                <a className='margin-eight-right'>
+                                <a href={publisher.twitter} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.linkedin &&
-                                <a className='margin-eight-right'>
+                                <a href={publisher.linkedin} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
                                 </a>
                               }
                               {
                                 publisher.instagram &&
-                                <a className='margin-eight-right'>
+                                <a href={publisher.instagram} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fa fa-instagram tz-icon-color"></i>
                                 </a>
                               }
