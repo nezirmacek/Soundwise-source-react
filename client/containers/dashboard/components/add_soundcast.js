@@ -74,7 +74,6 @@ export default class AddSoundcast extends Component {
 
 	_uploadToAws (file, hostImg) {
 		const _self = this;
-		const userId = firebase.auth().currentUser.uid;
 		let data = new FormData();
 		const splittedFileName = file.type.split('/');
 		const ext = (splittedFileName)[splittedFileName.length - 1];
@@ -189,7 +188,7 @@ export default class AddSoundcast extends Component {
 
 		// send email invitations to invited listeners
 		const subject = `${userInfo.publisher.name} invites you to subscribe to ${title}`;
-   const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+this.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
+   const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+that.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
 		inviteListeners(subscribersArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
 
 		const invited = {};
@@ -201,128 +200,111 @@ export default class AddSoundcast extends Component {
 			inviteeArr[i] = _email;
 		});
 
-		const creatorID = firebase.auth().currentUser.uid;
+    firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+              const creatorID = user.uid;
+							const newSoundcast = {
+								title,
+								imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
+								creatorID,
+								short_description,
+								long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+								confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
+								date_created: moment().format('X'),
+								publisherID: userInfo.publisherID,
+								invited,
+								landingPage,
+								features,
+								hostName,
+								hostBio,
+								hostImageURL,
+								forSale,
+								prices,
+								published: publish,
+							};
 
-		const newSoundcast = {
-			title,
-			imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${this.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
-			creatorID,
-			short_description,
-			long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
-			confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
-			date_created: moment().format('X'),
-			publisherID: userInfo.publisherID,
-			invited,
-			landingPage,
-			features,
-			hostName,
-			hostBio,
-			hostImageURL,
-			forSale,
-			prices,
-			published: publish,
-		};
+							let _promises_1 = [
+								// add soundcast
+								firebase.database().ref(`soundcasts/${that.soundcastId}`).set(newSoundcast).then(
+									res => {
+										// console.log('success add soundcast: ', res);
+										return res;
+									},
+									err => {
+										console.log('ERROR add soundcast: ', err);
+										Promise.reject(err);
+									}
+								),
+								// add soundcast to publisher
+								firebase.database().ref(`publishers/${userInfo.publisherID}/soundcasts/${that.soundcastId}`).set(true).then(
+									res => {
+										// console.log('success add soundcast to publisher: ', res);
+										return res;
+									},
+									err => {
+										console.log('ERROR add soundcast to publisher: ', err);
+										Promise.reject(err);
+									}
+								),
+								// add soundcast to admin
+								firebase.database().ref(`users/${creatorID}/soundcasts_managed/${that.soundcastId}`).set(true).then(
+								    res => {
+								        // console.log('success add soundcast to admin.soundcasts_managed: ', res);
+								        return res;
+								    },
+								    err => {
+								        console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+								        Promise.reject(err);
+								    }
+								),
+								Axios.post('/api/soundcast', {
+									soundcastId: that.soundcastId,
+									publisherId: userInfo.publisherID,
+									title
+								}).then(
+									res => {
+										return res;
+									}
+								).catch(
+									err => {
+										console.log('ERROR API post soundcast: ', err);
+										Promise.reject(err)
+									}
+								)
+							];
 
-		let _promises_1 = [
-			// add soundcast
-			firebase.database().ref(`soundcasts/${this.soundcastId}`).set(newSoundcast).then(
-				res => {
-					// console.log('success add soundcast: ', res);
-					return res;
-				},
-				err => {
-					console.log('ERROR add soundcast: ', err);
-					Promise.reject(err);
-				}
-			),
-			// add soundcast to publisher
-			firebase.database().ref(`publishers/${userInfo.publisherID}/soundcasts/${this.soundcastId}`).set(true).then(
-				res => {
-					// console.log('success add soundcast to publisher: ', res);
-					return res;
-				},
-				err => {
-					console.log('ERROR add soundcast to publisher: ', err);
-					Promise.reject(err);
-				}
-			),
-			// add soundcast to admin
-			firebase.database().ref(`users/${creatorID}/soundcasts_managed/${this.soundcastId}`).set(true).then(
-			    res => {
-			        // console.log('success add soundcast to admin.soundcasts_managed: ', res);
-			        return res;
-			    },
-			    err => {
-			        console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-			        Promise.reject(err);
-			    }
-			),
-			Axios.post('/api/soundcast', {
-				soundcastId: this.soundcastId,
-				publisherId: userInfo.publisherID,
-				title
-			}).then(
-				res => {
-					return res;
-				}
-			).catch(
-				err => {
-					console.log('ERROR API post soundcast: ', err);
-					Promise.reject(err)
-				}
-			)
-		];
+							//add soundcast to admins
+							let adminArr = Object.keys(userInfo.publisher.administrators);
 
-		//add soundcast to admins
-		let adminArr = Object.keys(userInfo.publisher.administrators);
+							let _promises_2 = adminArr.map(adminId => {
+								return firebase.database().ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`).set(true)
+									.then(
+										res => {
+											// console.log('success add soundcast to admin.soundcasts_managed: ', res);
+											return res;
+										},
+										err => {
+											console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+											Promise.reject(err);
+										})
+							});
 
-		let _promises_2 = adminArr.map(adminId => {
-			return firebase.database().ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`).set(true)
-				.then(
-					res => {
-						// console.log('success add soundcast to admin.soundcasts_managed: ', res);
-						return res;
-					},
-					err => {
-						console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-						Promise.reject(err);
-					})
-		});
-
-		// let _promises_3 = inviteeArr.map(invitee => {
-		// 	return firebase.database().ref(`invitations/${invitee}`)
-		// 		.once('value')
-		// 		.then(snapshot => {
-		// 			if(snapshot.val()) {
-		// 				const update = {...snapshot.val(), [that.soundcastId]: true};
-		// 				firebase.database().ref(`invitations/${invitee}`).update(update);
-		// 			} else {
-		// 				firebase.database().ref(`invitations/${invitee}/${that.soundcastId}`).set(true);
-		// 			}
-		// 		})
-		// 		.then(
-		// 			res => {
-		// 				console.log('success adding invitee to invitations node: ', res);
-		// 				return res;
-		// 			},
-		// 			err => {
-		// 				console.log('ERROR adding invitee to invitations node: ', err);
-		// 				Promise.reject(err);
-		// 			}
-		// 		)
-		// });
-
-		// let _promises = _promises_1.concat(_promises_2, _promises_3);
-		let _promises = _promises_1.concat(_promises_2);
-		Promise.all(_promises).then(
-			res => {
-				console.log('completed adding soundcast');
-				history.goBack();
-			},
-			err => {
-				console.log('failed to complete adding soundcast');
-			}
-		);
+							// let _promises = _promises_1.concat(_promises_2, _promises_3);
+							let _promises = _promises_1.concat(_promises_2);
+							Promise.all(_promises).then(
+								res => {
+									console.log('completed adding soundcast');
+									alert('New soundcast created.');
+									history.goBack();
+								},
+								err => {
+									console.log('failed to complete adding soundcast');
+								}
+							);
+          } else {
+              // alert('Soundcast saving failed. Please try again later.');
+          }
+    });
 	}
 
 	handleCheck() {

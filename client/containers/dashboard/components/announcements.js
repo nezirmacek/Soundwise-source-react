@@ -137,53 +137,61 @@ export default class Announcements extends Component {
     const {userInfo} = this.props;
     const announcementID = `${moment().format('x')}a`;
 
-    const newAnnouncement = {
-      content: message,
-      date_created: moment().format('X'),
-      creatorID: firebase.auth().currentUser.uid,
-      publisherID: this.props.userInfo.publisherID,
-      soundcastID: currentSoundcastID,
-      isPublished: true,
-      id: announcementID,
-    }
-
-    firebase.database().ref(`soundcasts/${currentSoundcastID}/announcements/${announcementID}`)
-    .set(newAnnouncement).then(
-      res => {
-          that.setState({
-            message: ''
-          });
-
-          firebase.database().ref(`soundcasts/${currentSoundcastID}/subscribed`)
-          .on('value', snapshot => {
-            if(snapshot.val()) {
-              let registrationTokens = [];
-              // get an array of device tokens
-              Object.keys(snapshot.val()).forEach(user => {
-                if(typeof snapshot.val()[user] == 'object') {
-                    registrationTokens.push(snapshot.val()[user][0]) //basic version: only allow one devise per user
-                }
-              });
-              const payload = {
-                notification: {
-                  // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
-                  title: `${currentSoundcast.title} sent you a message`,
-                  body: message,
-                  badge: '1',
-                  sound: 'default'
-                }
-              };
-              sendNotifications(registrationTokens, payload); //sent push notificaiton
-              if(that.state.sendEmails) {
-                that.emailListeners(currentSoundcast, message)
+    firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+              const creatorID = user.uid;
+              const newAnnouncement = {
+                content: message,
+                date_created: moment().format('X'),
+                creatorID: creatorID,
+                publisherID: this.props.userInfo.publisherID,
+                soundcastID: currentSoundcastID,
+                isPublished: true,
+                id: announcementID,
               }
-            }
-          })
-      },
-      err => {
-          console.log('ERROR adding announcement: ', err);
-      }
-    );
+
+              firebase.database().ref(`soundcasts/${currentSoundcastID}/announcements/${announcementID}`)
+              .set(newAnnouncement).then(
+                res => {
+                    that.setState({
+                      message: ''
+                    });
+
+                    firebase.database().ref(`soundcasts/${currentSoundcastID}/subscribed`)
+                    .on('value', snapshot => {
+                      if(snapshot.val()) {
+                        let registrationTokens = [];
+                        // get an array of device tokens
+                        Object.keys(snapshot.val()).forEach(user => {
+                          if(typeof snapshot.val()[user] == 'object') {
+                              registrationTokens.push(snapshot.val()[user][0]) //basic version: only allow one devise per user
+                          }
+                        });
+                        const payload = {
+                          notification: {
+                            // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                            title: `${currentSoundcast.title} sent you a message`,
+                            body: message,
+                            badge: '1',
+                            sound: 'default'
+                          }
+                        };
+                        sendNotifications(registrationTokens, payload); //sent push notificaiton
+                        if(that.state.sendEmails) {
+                          that.emailListeners(currentSoundcast, message)
+                        }
+                      }
+                    })
+                },
+                err => {
+                    console.log('ERROR adding announcement: ', err);
+                }
+              );
+          } else {
+              // alert('Announcement saving failed. Please try again later.');
+              // Raven.captureMessage('announcement saving failed!')
+          }
+    });
   }
 
   emailListeners(soundcast, message) {

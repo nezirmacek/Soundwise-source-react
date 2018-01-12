@@ -35,7 +35,7 @@ class _MySoundcasts extends Component {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
                 if(that.props.userInfo.soundcasts) {
-                    const userId = firebase.auth().currentUser.uid;
+                    const userId = user.uid;
                     that.retrieveSoundcasts(userId);
                 }
             } else {
@@ -50,7 +50,7 @@ class _MySoundcasts extends Component {
         if(nextProps.userInfo.soundcasts) {
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
-                    const userId = firebase.auth().currentUser.uid;
+                    const userId = user.uid;
                     that.retrieveSoundcasts(userId);
                 }
             })

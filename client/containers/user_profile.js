@@ -103,14 +103,19 @@ class _UserProfile extends Component {
       const {firstName, lastName, pic_url} = this.state;
       const { userInfo, history } = this.props;
       const that = this;
-      const userID = firebase.auth().currentUser.uid;
-
-      firebase.database().ref(`users/${userID}/firstName`).set(firstName);
-      firebase.database().ref(`users/${userID}/lastName`).set(lastName);
-      firebase.database().ref(`users/${userID}/pic_url`).set(pic_url);
-      this.setState({
-        profileSaved: true,
-      })
+      // const userID = firebase.auth().currentUser.uid;
+      firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                const userID = user.uid;
+                firebase.database().ref(`users/${userID}/firstName`).set(firstName);
+                firebase.database().ref(`users/${userID}/lastName`).set(lastName);
+                firebase.database().ref(`users/${userID}/pic_url`).set(pic_url);
+                alert('Profile change saved.');
+            } else {
+                // alert('profile saving failed. Please try again later.');
+                // Raven.captureMessage('profile saving failed!')
+            }
+      });
   }
 
   handleModalOpen() {

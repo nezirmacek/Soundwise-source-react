@@ -17,56 +17,10 @@ export default class SoundcastFooter extends Component {
   }
 
   addSoundcastToUser() {
-    // const that = this;
-    // const userId = firebase.auth().currentUser.uid;
-    // const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.course; // TODO: remove general course fields from user/course
-
-    // let sectionProgress = {};
-    // this.props.course.modules.forEach(module => {
-    //   module.sections.forEach(section => {
-    //     sectionProgress[section.section_id] = {
-    //       playProgress: 0,
-    //       completed: false,
-    //       timesRepeated: 0
-    //     }
-    //   })
-    // })
-
-    // const updates = {};
-    // updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}; // TODO: remove general course fields from user/course
-
-    // updates['/courses/' + this.props.course.id + '/users/' + userId] = userId;
-    // firebase.database().ref().update(updates);
-
-    // Axios.post('/api/email_signup', { //handle mailchimp api call
-    //   firstName: that.props.userInfo.firstName,
-    //   lastName: that.props.userInfo.lastName,
-    //   email: that.props.userInfo.email,
-    //   courseID: this.props.course.id
-    // })
-    // .then(() => {
-    //   that.props.history.push('/confirmation')
-    // })
-    // .catch((err) => {
-    //   that.props.history.push('/confirmation')
-    // })
-
   }
 
   checkOut() {
-    // if(this.props.isLoggedIn) {
-    //   if(this.props.course.price == 0) {
-    //     this.addCourseToUser()
 
-    //   } else {
-    //     this.props.addCourseToCart(this.props.course)
-    //     this.props.history.push('/cart')
-
-    //   }
-
-    // } else {
-    //   this.props.openSignupbox(true)
-    // }
   }
 
   render() {

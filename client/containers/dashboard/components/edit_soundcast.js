@@ -197,49 +197,57 @@ export default class EditSoundcast extends Component {
                 forSale, prices, confirmationEmail} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
-        const creatorID = firebase.auth().currentUser.uid;
 
-        const editedSoundcast = {
-            title,
-            short_description,
-            long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
-            confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
-            imageURL,
-            creatorID,
-            publisherID: userInfo.publisherID,
-            subscribed,
-            landingPage,
-            features,
-            hostName,
-            hostBio,
-            hostImageURL,
-            forSale,
-            prices,
-            published: publish,
-        };
+        firebase.auth().onAuthStateChanged(function(user) {
+              if (user) {
+                  const creatorID = user.uid;
+                  const editedSoundcast = {
+                      title,
+                      short_description,
+                      long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+                      confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
+                      imageURL,
+                      creatorID,
+                      publisherID: userInfo.publisherID,
+                      subscribed,
+                      landingPage,
+                      features,
+                      hostName,
+                      hostBio,
+                      hostImageURL,
+                      forSale,
+                      prices,
+                      published: publish,
+                  };
 
-        // edit soundcast in database
-            firebase.database().ref(`soundcasts/${this.props.history.location.state.id}`)
-            .once('value')
-            .then(snapshot => {
-              const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
+                  // edit soundcast in database
+                      firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+                      .once('value')
+                      .then(snapshot => {
+                        const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
 
-              firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-              .set(changedSoundcast)
-              .then(
-                res => {
-                      Axios.post('/api/soundcast', {
-                        soundcastId: that.props.history.location.state.id,
-                        publisherId: that.props.userInfo.publisherID,
-                        title
-                      })
-                      .then(alert('Soundcast changes are saved.'));
-                },
-                err => {
-                    console.log('ERROR add soundcast: ', err);
-                }
-              );
-            });
+                        firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+                        .set(changedSoundcast)
+                        .then(
+                          res => {
+                                Axios.post('/api/soundcast', {
+                                  soundcastId: that.props.history.location.state.id,
+                                  publisherId: that.props.userInfo.publisherID,
+                                  title
+                                })
+                                .then(alert('Soundcast changes are saved.'));
+                          },
+                          err => {
+                              console.log('ERROR add soundcast: ', err);
+                          }
+                        );
+                      });
+
+              } else {
+                // alert('Soundcast saving failed. Please try again later.');
+                // Raven.captureMessage('Soundcast saving failed!')
+              }
+        });
     }
 
     handleCheck() {

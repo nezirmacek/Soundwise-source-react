@@ -63,115 +63,18 @@ class _SoundcastHeader extends Component {
   }
 
   addSoundcastToUser() {
-    // const that = this
-    // const userId = firebase.auth().currentUser.uid
-
-
-    // const updates = {}
-    // updates['/users/' + userId + '/subscriptions/' + this.props.soundcastID] = true;
-
-    // updates['/soundcasts/' + this.props.soundcastID + '/subscribed/' + userId] = true;
-    // firebase.database().ref().update(updates)
-
-    // Axios.post('/api/email_signup', { //handle mailchimp api call
-    //   firstName: that.props.userInfo.firstName,
-    //   lastName: that.props.userInfo.lastName,
-    //   email: that.props.userInfo.email,
-    //   SoundcastID: this.props.soundcastID
-    // })
-    // .then(() => {
-    //   that.props.history.push('/confirm_subscription')
-    // })
-    // .catch((err) => {
-    //   that.props.history.push('/confirm_subscription')
-    // })
-
   }
 
   checkOut() {
-    // if(this.props.isLoggedIn) {
 
-    //   // if(this.props.userInfo.stripe_id && this.props.userInfo.stripe_id.length > 0) {
-    //   //   this.submitPayment()
-    //   // } else {
-    //     if(this.props.soundcast.price == 0) {
-    //       this.addSoundcastToUser()
-
-    //     } else {
-
-    //       this.props.addSoundcastToCart(this.props.soundcast)
-    //       this.props.history.push('/cart')
-    //     }
-    //   // }
-    // } else {
-    //   this.props.openSignupbox(true)
-    // }
   }
 
   submitPayment() {
-    // this.setState({
-    //   startPaymentSubmission: true
-    // })
 
-    // const amount = this.props.Soundcast.price *100 //in cents
-    // const email = this.props.userInfo.email
-    // const that = this
-    // const customer = this.props.userInfo.stripe_id
-
-    // Axios.post('/api/charge', {
-    //   amount,
-    //   customer: that.props.userInfo.stripe_id,
-    //   currency: 'usd',
-    //   receipt_email: email,
-    //   description: that.props.Soundcast.name,
-    //   statement_descriptor: 'Soundwise Audio Soundcast'
-    // })
-    // .then(function (response) {
-
-    //   const paid = response.data.paid //boolean
-
-    //   if(paid) {  // if payment made, push Soundcast to user data, and redirect to a thank you page
-    //     that.setState({
-    //       paid: true,
-    //       startPaymentSubmission: false
-    //     })
-
-    //     that.addSoundcastToUser() //push Soundcast to user profile and redirect
-    //   }
-    // })
-    // .catch(function (error) {
-    //   console.log('error from stripe: ', error)
-    //   that.setState({
-    //     paymentError: 'Your payment is declined :( Please check your credit card information.',
-    //     startPaymentSubmission: false
-    //   })
-    // })
   }
 
   addSoundcastToUser() {
-    // const that = this
-    // const userId = firebase.auth().currentUser.uid
-    // const {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail} = this.props.Soundcast
 
-    // let sectionProgress = {}
-    // this.props.Soundcast.modules.forEach(module => {
-    //   module.sections.forEach(section => {
-    //     sectionProgress[section.section_id] = {
-    //       playProgress: 0,
-    //       completed: false,
-    //       timesRepeated: 0
-    //     }
-    //   })
-    // })
-
-    // const updates = {}
-    // updates['/users/' + userId + '/Soundcasts/' + this.props.Soundcast.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
-    // // store stripe customer ID info: (only works with real credit cards)
-    // // updates['/users/' + userId + '/stripeId'] = stripeId
-    // updates['/Soundcasts/' + this.props.Soundcast.id + '/users/' + userId] = userId
-    // firebase.database().ref().update(updates)
-
-    // that.props.history.push('/confirmation')
   }
 
   renderProgressBar() {
@@ -181,10 +84,6 @@ class _SoundcastHeader extends Component {
       )
     }
   }
-
-  // handleClick() {
-  //   this.props.openSignupbox(true)
-  // }
 
   render() {
 

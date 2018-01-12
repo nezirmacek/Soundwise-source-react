@@ -58,37 +58,43 @@ class _AppSignin extends Component {
         try {
             await firebase.auth().signInWithEmailAndPassword(email, password);
 
-            const userId = firebase.auth().currentUser.uid;
-            firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
-                if (snapshot.val()) {
-                    _user = JSON.parse(JSON.stringify(snapshot.val()));
-                    signinUser(_user);
-                }
-            })
-            .then(() => {
-                    if (history.location.state && history.location.state.soundcast) {
-                        that.compileUser(_user);
-                        history.push('/soundcast_checkout', {
-                            soundcast: history.location.state.soundcast,
-                            soundcastID: history.location.state.soundcastID,
-                            checked: history.location.state.checked,
-                            sumTotal: history.location.state.sumTotal,
-                            userInfo: _user,
+              firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        const userId = user.uid;
+                        firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
+                            if (snapshot.val()) {
+                                _user = JSON.parse(JSON.stringify(snapshot.val()));
+                                signinUser(_user);
+                            }
+                        })
+                        .then(() => {
+                                if (history.location.state && history.location.state.soundcast) {
+                                    that.compileUser(_user);
+                                    history.push('/soundcast_checkout', {
+                                        soundcast: history.location.state.soundcast,
+                                        soundcastID: history.location.state.soundcastID,
+                                        checked: history.location.state.checked,
+                                        sumTotal: history.location.state.sumTotal,
+                                        userInfo: _user,
+                                    });
+                                } else if (_user.admin && !match.params.id) {
+                                    that.compileUser(_user);
+                                    history.push('/dashboard/soundcasts');
+                                } else if(match.params.id) {
+                                    that.signInInvitedAdmin();
+                                } else if (_user.courses) {
+                                    that.compileUser(_user);
+                                    history.push('/myprograms');
+                                } else {
+                                    that.compileUser(_user);
+                                    history.push('/mysoundcasts');
+                                }
                         });
-                    } else if (_user.admin && !match.params.id) {
-                        that.compileUser(_user);
-                        history.push('/dashboard/soundcasts');
-                    } else if(match.params.id) {
-                        this.signInInvitedAdmin();
-                    } else if (_user.courses) {
-                        that.compileUser(_user);
-                        history.push('/myprograms');
                     } else {
-                        that.compileUser(_user);
-                        history.push('/mysoundcasts');
+                        // alert('Failed to save login info. Please try again later.');
+                        // Raven.captureMessage('Failed to save login info. Please try again later.');
                     }
-            });
-
+              });
         } catch (error) {
             this.setState({
                 message: error.toString()
@@ -99,7 +105,6 @@ class _AppSignin extends Component {
 
     async compileUser(_user) {
         const { signinUser, history, userInfo, match } = this.props;
-        let creatorID = firebase.auth().currentUser.uid;
 
         if (_user.soundcasts_managed && _user.admin) {
             if (_user.publisherID) {
@@ -175,34 +180,41 @@ class _AppSignin extends Component {
     }
 
     signInInvitedAdmin() {
-        const userId = firebase.auth().currentUser.uid;
         const { match, history } = this.props;
         const that = this;
 
-        firebase.database().ref(`publishers/${match.params.id}/administrators/${userId}`).set(true);
+          firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const userId = user.uid;
+                    firebase.database().ref(`publishers/${match.params.id}/administrators/${userId}`).set(true);
 
-        firebase.database().ref(`publishers/${match.params.id}/soundcasts`)
-        .once('value')
-        .then(snapshot => {
-            firebase.database().ref(`users/${userId}/soundcasts_managed`)
-            .set(snapshot.val());
+                    firebase.database().ref(`publishers/${match.params.id}/soundcasts`)
+                    .once('value')
+                    .then(snapshot => {
+                        firebase.database().ref(`users/${userId}/soundcasts_managed`)
+                        .set(snapshot.val());
 
-            firebase.database().ref(`users/${userId}/admin`).set(true);
+                        firebase.database().ref(`users/${userId}/admin`).set(true);
 
-            firebase.database().ref(`users/${userId}/publisherID`).set(match.params.id);
+                        firebase.database().ref(`users/${userId}/publisherID`).set(match.params.id);
 
-            console.log('completed adding publisher to invited admin');
-        })
-        .then(() => {
-            firebase.database().ref(`users/${userId}`)
-            .on('value', snapshot => {
-                const _user = snapshot.val();
-                that.compileUser(_user);
-            });
-        })
-        .then(() => {
-            history.push('/dashboard/soundcasts');
-        })
+                        console.log('completed adding publisher to invited admin');
+                    })
+                    .then(() => {
+                        firebase.database().ref(`users/${userId}`)
+                        .on('value', snapshot => {
+                            const _user = snapshot.val();
+                            that.compileUser(_user);
+                        });
+                    })
+                    .then(() => {
+                        history.push('/dashboard/soundcasts');
+                    });
+                } else {
+                    // alert('profile saving failed. Please try again later.');
+                    // Raven.captureMessage('invited admin saving failed!')
+                }
+          });
     }
 
     handleChange(field, e) {
@@ -212,42 +224,7 @@ class _AppSignin extends Component {
     }
 
     componentWillMount() {
-        // const that = this
-        // firebase.auth().getRedirectResult().then(function(result) {
-        //   // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-        //   // The signed-in user info.
-        //   const userId = firebase.auth().currentUser.uid
-        //   firebase.database().ref('users/' + userId)
-        //   .once('value')
-        //   .then(snapshot => {
-        //     if(snapshot.val().firstName !== undefined) { // if user already exists
-        //       const firstName = snapshot.val().firstName
-        //       const lastName = snapshot.val().lastName
-        //       const email = snapshot.val().email
-        //       const courses = snapshot.val().courses || {}
-        //       that.props.signinUser({firstName, lastName, email, courses})
-        //       that.props.history.push('/myprograms')
-        //     } else {  //if it's a new user
-        //       const user = result.user
-        //       const email = user.email
-        //       const name = user.displayName.split(' ')
-        //       const firstName = name[0]
-        //       const lastName = name[1]
-        //       const courses = {}
 
-        //       firebase.database().ref('users/' + userId).set({
-        //         firstName,
-        //         lastName,
-        //         email,
-        //         courses
-        //       })
-
-        //       that.props.signinUser({firstName, lastName, email, courses})
-        //       that.props.history.push('/myprograms')
-        //     }
-
-        //   })
-        // })
     }
 
     handleFBAuth() {
@@ -343,36 +320,39 @@ class _AppSignin extends Component {
                             return user.link(pendingCred)
                         }).then(function() {
                             // Facebook account successfully linked to the existing Firebase user.
-                            const userId = firebase.auth().currentUser.uid;
-                            firebase.database().ref('users/' + userId)
-                                .once('value')
-                                .then(snapshot => {
-                                    const _user = snapshot.val();
-                                    const firstName = snapshot.val().firstName;
-                                    const lastName = snapshot.val().lastName;
-                                    const email = snapshot.val().email[0];
-                                    const courses = snapshot.val().courses;
-                                    const soundcasts = snapshot.val().soundcasts;
-                                    const pic_url = snapshot.val().pic_url;
-                                    // if(courses == undefined) {
-                                    //   firebase.database().ref('users/' + userId).set({
-                                    //     courses: {}
-                                    //   })
-                                    // }
-                                    that.props.signinUser(_user);
+                              firebase.auth().onAuthStateChanged(function(user) {
+                                    if (user) {
+                                        const userId = user.uid;
+                                        firebase.database().ref('users/' + userId)
+                                            .once('value')
+                                            .then(snapshot => {
+                                                const _user = snapshot.val();
+                                                const firstName = snapshot.val().firstName;
+                                                const lastName = snapshot.val().lastName;
+                                                const email = snapshot.val().email[0];
+                                                const courses = snapshot.val().courses;
+                                                const soundcasts = snapshot.val().soundcasts;
+                                                const pic_url = snapshot.val().pic_url;
 
-                                    if (soundcast) {
-                                        that.compileUser(_user);
-                                        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-                                    } else if (_user.admin && !match.params.id) {
-                                        that.compileUser(_user);
-                                        history.push('/dashboard/soundcasts');
-                                    } else if(match.params.id) {
-                                        that.signInInvitedAdmin();
+                                                that.props.signinUser(_user);
+
+                                                if (soundcast) {
+                                                    that.compileUser(_user);
+                                                    history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+                                                } else if (_user.admin && !match.params.id) {
+                                                    that.compileUser(_user);
+                                                    history.push('/dashboard/soundcasts');
+                                                } else if(match.params.id) {
+                                                    that.signInInvitedAdmin();
+                                                } else {
+                                                    history.push('/myprograms');
+                                                }
+                                            });
                                     } else {
-                                        history.push('/myprograms');
+                                        // alert('User saving failed. Please try again later.');
+                                        // Raven.captureMessage('user saving failed!')
                                     }
-                                })
+                              });
                         })
                     }
 

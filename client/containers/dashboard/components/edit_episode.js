@@ -137,7 +137,6 @@ export default class EditEpisode extends Component {
         const { userInfo, history } = this.props;
         const { id } = history.location.state;
         const that = this;
-        const creatorID = firebase.auth().currentUser.uid;
 
         const editedEpisode = {
             title,
