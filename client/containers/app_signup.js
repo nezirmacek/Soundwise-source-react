@@ -64,6 +64,7 @@ class _AppSignup extends Component {
     signUp() {
         const {firstName, lastName, email, password, pic_url} = this.state;
         const {history, match} = this.props;
+        const that = this;
 
         this.setState({ isFBauth: false });
         if (!this._validateForm(firstName, lastName, email, password)) return;
@@ -78,27 +79,17 @@ class _AppSignup extends Component {
                 } else {
                   history.push('/signin', {text: 'This account already exists. Please sign in instead'});
                 }
+            } else {
+                if (match.params.mode !== 'admin') { // user case
+                    that._signUp();
+                } else if (match.params.id) { // admin from invitation with publisher id
+                    that.signUpInvitedAdmin();
+                } else {
+                    that.setState({isPublisherFormShown: true});
+                }
             }
         })
         .catch(err => console.log('error: ', err));
-
-        // const userRef = firebase.database().ref('users');
-        // userRef.orderByChild('email/0').equalTo(email)
-        // .once('value')
-        // .then(snapshot => {
-        //     if(snapshot.val() !== null) {
-        //         history.push('/signin', {text: 'This account already exists. Please sign in instead'});
-        //     }
-        // })
-        // .catch(err => console.log('error: ', err));
-
-        if (match.params.mode !== 'admin') { // user case
-            this._signUp();
-        } else if (match.params.id) { // admin from invitation with publisher id
-            this.signUpInvitedAdmin();
-        } else {
-            this.setState({isPublisherFormShown: true});
-        }
     }
 
     getUrl (url) {
@@ -519,7 +510,13 @@ class _AppSignup extends Component {
                     userToSave.publisherID = that.publisherID;
                 }
 
-                firebase.database().ref('users/' + userId).set(userToSave);
+                firebase.database().ref(`users/${userId}`)
+                .once('value')
+                .then(userSnapshot => {
+                    if(!userSnapshot.val()) {
+                        firebase.database().ref('users/' + userId).set(userToSave);
+                    }
+                })
 
                 const _user = { userId, firstName, lastName, picURL: pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png' };
                 // TODO: _user.picURL = false

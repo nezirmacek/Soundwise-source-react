@@ -194,3 +194,10 @@ client.setApiKey(sendGridApiKey);
 //   console.log(response.statusCode);
 //   console.log(response.body);
 // });
+
+// firebase.database().ref('users/K8R91q4BXpeY3sw2tB2bjMBvqOK2/soundcasts/1514431713134s')
+// .set({
+//   subscribed: true,
+//   current_period_end: 4638902400,
+//   date_subscribed: 1515181960
+// });
