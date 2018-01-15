@@ -179,7 +179,7 @@ export default class EditEpisode extends Component {
                   history.goBack();
                 } else  {
                   alert('The edited episode is saved');
-                  history.goBack();
+                  // history.goBack();
                 }
             },
             err => {

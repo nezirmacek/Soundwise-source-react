@@ -63,6 +63,7 @@ export default class EditSoundcast extends Component {
         this.fileInputRef = null;
         this.hostImgInputRef = null;
         this.currentImageRef = null;
+        this.firebaseListener = null;
         this.addFeature = this.addFeature.bind(this);
         this.onEditorStateChange = this.onEditorStateChange.bind(this);
     }
@@ -198,8 +199,8 @@ export default class EditSoundcast extends Component {
         const { userInfo, history } = this.props;
         const that = this;
 
-        firebase.auth().onAuthStateChanged(function(user) {
-              if (user) {
+        this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+              if (user && that.firebaseListener) {
                   const creatorID = user.uid;
                   const editedSoundcast = {
                       title,
@@ -237,7 +238,8 @@ export default class EditSoundcast extends Component {
                                 })
                                 .then(() => {
                                   alert('Soundcast changes are saved.');
-                                  history.goBack();
+                                  // history.goBack();
+                                  that.firebaseListener = null;
                                 });
                           },
                           err => {
@@ -245,12 +247,12 @@ export default class EditSoundcast extends Component {
                           }
                         );
                       });
-
               } else {
                 // alert('Soundcast saving failed. Please try again later.');
                 // Raven.captureMessage('Soundcast saving failed!')
               }
         });
+        this.firebaseListener && this.firebaseListener();
     }
 
     handleCheck() {

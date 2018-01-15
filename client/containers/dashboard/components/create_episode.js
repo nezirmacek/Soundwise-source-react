@@ -77,6 +77,8 @@ class _CreateEpisode extends Component {
         this.uploadCoverArtInput = null;
         this.currentSoundcastId = null;
 
+        this.firebaseListener = null;
+
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
         this.renderRecorder = this.renderRecorder.bind(this)
         this.notifySubscribers = this.notifySubscribers.bind(this);
@@ -332,8 +334,8 @@ class _CreateEpisode extends Component {
 
             if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
 
-              firebase.auth().onAuthStateChanged(function(user) {
-                    if (user) {
+              this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+                    if (user && that.firebaseListener) {
                         const creatorID = user.uid;
                         const newEpisode = {
                             title,
@@ -413,6 +415,8 @@ class _CreateEpisode extends Component {
                         // Raven.captureMessage('episode saving failed!')
                     }
               });
+
+              this.firebaseListener && this.firebaseListener();
             }
         }
     }
@@ -420,7 +424,7 @@ class _CreateEpisode extends Component {
     componentWillUnmount() {
         const { content_saved, handleContentSaving } = this.props;
         handleContentSaving(this.episodeId, false);
-
+        this.firebaseListener = null;
     }
 
     notifySubscribers() {

@@ -26,6 +26,7 @@ export default class Announcements extends Component {
       sendEmails: false,
     }
 
+    this.firebaseListener = null;
     this.handlePublish = this.handlePublish.bind(this);
     this.sortAnnouncements = this.sortAnnouncements.bind(this);
     this.loadUser = this.loadUser.bind(this);
@@ -137,8 +138,8 @@ export default class Announcements extends Component {
     const {userInfo} = this.props;
     const announcementID = `${moment().format('x')}a`;
 
-    firebase.auth().onAuthStateChanged(function(user) {
-          if (user) {
+    this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+          if (user && that.firebaseListener) {
               const creatorID = user.uid;
               const newAnnouncement = {
                 content: message,
@@ -158,7 +159,7 @@ export default class Announcements extends Component {
                     });
 
                     firebase.database().ref(`soundcasts/${currentSoundcastID}/subscribed`)
-                    .on('value', snapshot => {
+                    .once('value', snapshot => {
                       if(snapshot.val()) {
                         let registrationTokens = [];
                         // get an array of device tokens
@@ -180,6 +181,8 @@ export default class Announcements extends Component {
                         if(that.state.sendEmails) {
                           that.emailListeners(currentSoundcast, message)
                         }
+                        alert('Announcement sent!');
+                        this.firebaseListener = null;
                       }
                     })
                 },
@@ -192,6 +195,12 @@ export default class Announcements extends Component {
               // Raven.captureMessage('announcement saving failed!')
           }
     });
+
+    this.firebaseListener && this.firebaseListener();
+  }
+
+  componentWillUnmount() {
+      this.firebaseListener = null;
   }
 
   emailListeners(soundcast, message) {

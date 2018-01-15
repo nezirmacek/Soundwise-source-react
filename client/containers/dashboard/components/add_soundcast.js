@@ -69,6 +69,7 @@ export default class AddSoundcast extends Component {
 		this.fileInputRef = null;
 		this.hostImgInputRef = null;
 		this.currentImageRef = null;
+		this.firebaseListener = null;
 		this.addFeature = this.addFeature.bind(this);
 	}
 
@@ -200,8 +201,8 @@ export default class AddSoundcast extends Component {
 			inviteeArr[i] = _email;
 		});
 
-    firebase.auth().onAuthStateChanged(function(user) {
-          if (user) {
+    this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+          if (user && that.firebaseListener) {
               const creatorID = user.uid;
 							const newSoundcast = {
 								title,
@@ -305,7 +306,12 @@ export default class AddSoundcast extends Component {
               // alert('Soundcast saving failed. Please try again later.');
           }
     });
+    this.firebaseListener && this.firebaseListener();
 	}
+
+  componentWillUnmount() {
+      this.firebaseListener = null;
+  }
 
 	handleCheck() {
 		const {landingPage} = this.state;
