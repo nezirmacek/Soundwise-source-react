@@ -143,13 +143,6 @@ export default class SoundcastBody extends Component {
             <div>
                 <section className="padding-30px-tb xs-padding-30px-tb bg-white builder-bg border-none" id="title-section1">
                         {
-                            relatedSoundcasts.length >= 1 &&
-                            <RelatedSoundcasts
-                              soundcasts={relatedSoundcasts}
-                              publisherID={soundcast.publisherID}
-                              title={`Also from ${publisher.name}`}/>
-                        }
-                        {
                             soundcast.features && soundcast.features[0].length > 0 &&
                             <div className=" padding-40px-tb center-col " >
                                 <div className="col-md-11 col-sm-12 col-xs-12 text-center">
@@ -169,6 +162,13 @@ export default class SoundcastBody extends Component {
                             />
                         }
                         {soundcast.hostName && <Instructor soundcast={soundcast}/>}
+                        {
+                            relatedSoundcasts.length >= 1 &&
+                            <RelatedSoundcasts
+                              soundcasts={relatedSoundcasts}
+                              publisherID={soundcast.publisherID}
+                              title={`Also from ${publisher.name}`}/>
+                        }
                         <HowItWorks />
 
                 </section>
