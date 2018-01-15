@@ -28,16 +28,28 @@ export default class EpisodePlayer extends Component {
         if (this.props.playingEpisode == this.props.episode && nextProps.playingEpisode !== this.props.episode && this.state.isPlaying) {
             this.handlePlayOrPause(true);
         }
+        if(nextProps.references.audio && !this.props.references.audio) {
+            setTimeout(() => {
+                nextProps.references.audio.addEventListener('ended', () => {
+                    this.setState({
+                        isPlaying: false,
+                        isInitialized: false,
+                    });
+                });
+            }, 1000);
+        }
     }
 
     componentDidMount() {
         setTimeout(() => {
-            this.props.references.audio.addEventListener('ended', () => {
-                this.setState({
-                    isPlaying: false,
-                    isInitialized: false,
+            if(this.props.references.audio) {
+                this.props.references.audio.addEventListener('ended', () => {
+                    this.setState({
+                        isPlaying: false,
+                        isInitialized: false,
+                    });
                 });
-            });
+            }
         }, 1000);
     }
 

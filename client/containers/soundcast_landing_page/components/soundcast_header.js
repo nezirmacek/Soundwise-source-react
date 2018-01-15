@@ -90,7 +90,7 @@ class _SoundcastHeader extends Component {
     const soundcastName = this.props.soundcast.title.split(' ').join('%20');
     let displayedPrice = '___';
     let {prices, forSale} = this.props.soundcast;
-
+    // console.log('soundcast: ', this.props.soundcast);
     if(prices && prices.length > 0 ) {
         if(prices[0].price != 'free' && prices[0].price != 0) {
             prices = prices.map(price => {

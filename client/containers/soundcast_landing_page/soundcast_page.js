@@ -43,10 +43,9 @@ class _SoundcastPage extends Component {
     const that = this;
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
-    // console.log('soundcastID: ', soundcastID);
 
     firebase.database().ref('soundcasts/' + soundcastID)
-      .on('value', snapshot => {
+      .once('value', snapshot => {
         if(snapshot.val()) {
           that.setState({
             soundcast: snapshot.val(),
@@ -65,7 +64,7 @@ class _SoundcastPage extends Component {
       const soundcastID = nextProps.match.params.id;
       // console.log('soundcastID: ', soundcastID);
       firebase.database().ref('soundcasts/' + soundcastID)
-        .on('value', snapshot => {
+        .once('value', snapshot => {
           if(snapshot.val()) {
             that.setState({
               soundcast: snapshot.val(),

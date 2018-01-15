@@ -68,7 +68,7 @@ export default class RelatedSoundcastCard extends Component {
                                     </div>
                                     <div style={_style.priceBlock}>
                                       {
-                                        (soundcast.prices[0].price == 'free' || soundcast.prices[0].price == 0) && 'Free'
+                                        !soundcast.forSale && 'Free'
                                         || null
                                       }
                                     </div>
