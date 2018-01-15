@@ -21,6 +21,7 @@ export default class EditEpisode extends Component {
         super(props);
 
         this.state = {
+            id: '',
             title: '',
             description: '',
             actionstep: '',
@@ -44,6 +45,7 @@ export default class EditEpisode extends Component {
       const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverArtUrl} = episode;
 
       this.setState({
+        id,
         title,
         publicEpisode,
         isPublished,
@@ -65,6 +67,13 @@ export default class EditEpisode extends Component {
           actionstep
         })
       }
+    }
+
+    componentWillUnmount() {
+        const { id } = this.state;
+        const { content_saved, handleContentSaving } = this.props;
+        handleContentSaving(id, false);
+
     }
 
     _uploadToAws (file, type) {
@@ -167,8 +176,10 @@ export default class EditEpisode extends Component {
                 if(toPublish && !isPublished) { // if publishing for the first time
                   alert('Episode is published.');
                   that.notifySubscribers();
+                  history.goBack();
                 } else  {
                   alert('The edited episode is saved');
+                  history.goBack();
                 }
             },
             err => {

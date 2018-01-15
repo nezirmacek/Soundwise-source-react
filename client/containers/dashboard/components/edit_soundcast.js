@@ -235,7 +235,10 @@ export default class EditSoundcast extends Component {
                                   publisherId: that.props.userInfo.publisherID,
                                   title
                                 })
-                                .then(alert('Soundcast changes are saved.'));
+                                .then(() => {
+                                  alert('Soundcast changes are saved.');
+                                  history.goBack();
+                                });
                           },
                           err => {
                               console.log('ERROR add soundcast: ', err);

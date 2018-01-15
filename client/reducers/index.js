@@ -10,6 +10,7 @@ function user(state= {
     },
     isLoggedIn: '',
     isEmailSent:  false,
+    content_saved: {},
 }, action) {
     const newState = JSON.parse(JSON.stringify(state));
     switch (action.type) {
@@ -92,6 +93,12 @@ function user(state= {
                 newState.userInfo.subscriptions[action.payload.soundcastID].episodes[episode.id] = episode;
             }
             return newState;
+        case types.CONTENT_SAVED:
+            const content_saved = state.content_saved;
+            return {
+              ...state,
+              content_saved: Object.assign({}, content_saved, action.payload),
+            }
         default:
             return state;
     }

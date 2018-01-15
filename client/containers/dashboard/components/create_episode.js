@@ -318,98 +318,109 @@ class _CreateEpisode extends Component {
     saveEpisode (isPublished) {
         const that = this;
         const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
-        const { userInfo, history } = this.props;
-        if(!recordedAudioUrl && !uploadedAudioUrl) {
-            alert("Please upload an audio file before saving!");
-            return;
-        }
+        const { userInfo, history, content_saved, handleContentSaving } = this.props;
+        if(!content_saved[this.episodeId]) { // prevent unnecessary rerendering of component
+            if(!recordedAudioUrl && !uploadedAudioUrl) {
+                alert("Please upload an audio file before saving!");
+                return;
+            }
 
-        if(!title) {
-            alert("Please enter a title for the episode before saving!");
-            return;
-        }
+            if(!title) {
+                alert("Please enter a title for the episode before saving!");
+                return;
+            }
 
-        if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
+            if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
 
-          firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    const creatorID = user.uid;
-                    const newEpisode = {
-                        title,
-                        description: description.length > 0 ? description : null,
-                        actionstep: actions.length > 0 ? actions : null,
-                        date_created: moment().format('X'),
-                        creatorID,
-                        publisherID: userInfo.publisherID,
-                        url: recordedAudioUrl || uploadedAudioUrl,
-                        duration: audioDuration > 0 ? audioDuration : currentRecordingDuration / 1000,  // duration is in seconds
-                        notes: notesUrl,
-                        publicEpisode,
-                        soundcastID: that.currentSoundcastId,
-                        isPublished: isPublished,
-                        coverArtUrl: coverartUrl,
-                    };
-
-                    firebase.database().ref(`soundcasts/${that.currentSoundcastId}`)
-                    .once('value')
-                    .then(snapshot => {
-                        // console.log('this.currentSoundcastId: ', that.currentSoundcastId);
-                        let index;
-                        if(snapshot.val().episodes) {
-                            index = Object.keys(snapshot.val().episodes).length + 1;
-                        } else {
-                            index = 1;
-                        }
-                        newEpisode.index = index;
-                        firebase.database().ref(`episodes/${that.episodeId}`).set(newEpisode).then(
-                            res => {
-                                // console.log('success add episode: ', res);
-                            },
-                            err => {
-                                console.log('ERROR add episode: ', err);
-                            }
-                        );
-
-                        firebase.database().ref(`soundcasts/${that.currentSoundcastId}/last_update`).set(newEpisode.date_created);
-
-                        firebase.database().ref(`soundcasts/${that.currentSoundcastId}/episodes/${that.episodeId}`).set(true).then(
-                            res => {
-                            },
-                            err => {
-                                console.log('ERROR add episodeID to soundcast: ', err);
-                            }
-                        );
-
-                        Axios.post('/api/episode', {
-                            episodeId: that.episodeId,
-                            soundcastId: that.currentSoundcastId,
-                            publisherId: userInfo.publisherID,
+              firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        const creatorID = user.uid;
+                        const newEpisode = {
                             title,
-                            soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].title,
-                        }).then(
-                            res => {
-                                // console.log('episode saved to db', res);
-                                if(isPublished) {
-                                  that.notifySubscribers();
-                                  alert('Episode published.');
-                                } else {
-                                  alert('Episode saved');
-                                }
+                            description: description.length > 0 ? description : null,
+                            actionstep: actions.length > 0 ? actions : null,
+                            date_created: moment().format('X'),
+                            creatorID,
+                            publisherID: userInfo.publisherID,
+                            url: recordedAudioUrl || uploadedAudioUrl,
+                            duration: audioDuration > 0 ? audioDuration : currentRecordingDuration / 1000,  // duration is in seconds
+                            notes: notesUrl,
+                            publicEpisode,
+                            soundcastID: that.currentSoundcastId,
+                            isPublished: isPublished,
+                            coverArtUrl: coverartUrl,
+                        };
 
+                        firebase.database().ref(`soundcasts/${that.currentSoundcastId}`)
+                        .once('value')
+                        .then(snapshot => {
+                            // console.log('this.currentSoundcastId: ', that.currentSoundcastId);
+                            let index;
+                            if(snapshot.val().episodes) {
+                                index = Object.keys(snapshot.val().episodes).length + 1;
+                            } else {
+                                index = 1;
                             }
-                        ).catch(
-                            err => {
-                                console.log('episode failed to save to db', err);
-                                alert('Hmm...there is a problem saving the episode. please try again later.');
-                            }
-                        );
-                    });
-                } else {
-                    // alert('Episode saving failed. Please try again later.');
-                    // Raven.captureMessage('episode saving failed!')
-                }
-          });
+                            newEpisode.index = index;
+                            firebase.database().ref(`episodes/${that.episodeId}`).set(newEpisode).then(
+                                res => {
+                                    // console.log('success add episode: ', res);
+                                },
+                                err => {
+                                    console.log('ERROR add episode: ', err);
+                                }
+                            );
+
+                            firebase.database().ref(`soundcasts/${that.currentSoundcastId}/last_update`).set(newEpisode.date_created);
+
+                            firebase.database().ref(`soundcasts/${that.currentSoundcastId}/episodes/${that.episodeId}`).set(true).then(
+                                res => {
+                                },
+                                err => {
+                                    console.log('ERROR add episodeID to soundcast: ', err);
+                                }
+                            );
+
+                            Axios.post('/api/episode', {
+                                episodeId: that.episodeId,
+                                soundcastId: that.currentSoundcastId,
+                                publisherId: userInfo.publisherID,
+                                title,
+                                soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].title,
+                            }).then(
+                                res => {
+                                    // console.log('episode saved to db', res);
+                                    if(isPublished) {
+                                      that.notifySubscribers();
+                                      alert('Episode published.');
+                                      handleContentSaving(that.episodeId, true);
+                                      history.goBack();
+                                    } else {
+                                      alert('Episode saved');
+                                      history.goBack();
+                                    }
+
+                                }
+                            ).catch(
+                                err => {
+                                    console.log('episode failed to save to db', err);
+                                    alert('Hmm...there is a problem saving the episode. please try again later.');
+                                }
+                            );
+                        });
+                    } else {
+                        // alert('Episode saving failed. Please try again later.');
+                        // Raven.captureMessage('episode saving failed!')
+                    }
+              });
+            }
         }
+    }
+
+    componentWillUnmount() {
+        const { content_saved, handleContentSaving } = this.props;
+        handleContentSaving(this.episodeId, false);
+
     }
 
     notifySubscribers() {

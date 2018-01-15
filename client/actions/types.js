@@ -27,3 +27,4 @@ export const EDIT_SUBSCRIPTION = 'EDIT_SUBSCRIPTION';
 export const ADD_EPISODES = 'ADD_EPISODES';
 export const EDIT_EPISODE = 'EDIT_EPISODE';
 export const EMAIL_SENT = 'EMAIL_SENT';
+export const CONTENT_SAVED = 'CONTENT_SAVED';

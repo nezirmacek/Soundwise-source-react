@@ -19,7 +19,7 @@ import EditSoundcast from './components/edit_soundcast';
 import Publisher from './components/publisher';
 import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
-
+import {handleContentSaving} from '../../actions/index';
 const verticalMenuItems = [
     {
         path: 'soundcasts',
@@ -128,7 +128,7 @@ class _Dashboard extends Component {
     }
 
     render() {
-        const { history, match, isLoggedIn } = this.props;
+        const { history, match, isLoggedIn, handleContentSaving, content_saved } = this.props;
         let userInfo = this.state.userInfo;
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
 
@@ -173,6 +173,8 @@ class _Dashboard extends Component {
                                 userInfo={userInfo}
                                 history={history}
                                 id={match.params.id}
+                                handleContentSaving={handleContentSaving}
+                                content_saved={content_saved}
                             />
                             ||
                             null
@@ -228,12 +230,12 @@ const styles = {
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({  }, dispatch);
+    return bindActionCreators({ handleContentSaving }, dispatch);
 }
 
 
 const mapStateToProps = state => {
-    const { userInfo, isLoggedIn } = state.user;
+    const { userInfo, isLoggedIn, content_saved } = state.user;
     return {
         userInfo, isLoggedIn
     }

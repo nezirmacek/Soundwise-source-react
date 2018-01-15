@@ -47,6 +47,7 @@ export default class Soundcast extends Component {
       currentEpisode: null,
       userInfo: {soundcasts_managed: {}},
       episodes: [],
+      soundcast: {},
     };
     this.handleStatsModal = this.handleStatsModal.bind(this);
     this.loadEpisodes = this.loadEpisodes.bind(this);
@@ -79,12 +80,14 @@ export default class Soundcast extends Component {
     if(userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
       _soundcast = userInfo.soundcasts_managed[id];
       const _episodes = [];
+      const episodeIdCount = {};
       if(_soundcast.episodes) {
         for (let id in _soundcast.episodes) {
           const _episode = _soundcast.episodes[id];
-          if (typeof(_episode)==='object') {
+          if (typeof(_episode)==='object' && !episodeIdCount[id]) { // prevent duplicate episodes
             _episode.id = id;
             _episodes.push(_episode);
+            episodeIdCount[id] = 1;
           }
         }
         _episodes.sort((a, b) => {
@@ -92,6 +95,7 @@ export default class Soundcast extends Component {
         });
         this.setState({
           episodes: _episodes,
+          soundcast: _soundcast,
         })
       }
     };
@@ -161,25 +165,8 @@ export default class Soundcast extends Component {
   }
 
   render() {
-    const { userInfo, episodes } = this.state;
+    const { userInfo, episodes, soundcast } = this.state;
     const { history, id } = this.props;
-    let _soundcast = {};
-    if(userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
-      _soundcast = userInfo.soundcasts_managed[id];
-      const _episodes = [];
-      if(_soundcast.episodes) {
-        for (let id in _soundcast.episodes) {
-          const _episode = _soundcast.episodes[id];
-          if (typeof(_episode)==='object') {
-            _episode.id = id;
-            _episodes.push(_episode);
-          }
-        }
-        _episodes.sort((a, b) => {
-          return b.date_created - a.date_created;
-        });
-      }
-    };
 
     return (
         <div className='' style={styles.itemContainer}>
@@ -191,7 +178,7 @@ export default class Soundcast extends Component {
           />
           <div className='row ' style={styles.itemHeader}>
             <div className='col-lg-9 col-md-9 col-sm-8 col-xs-12'
-              style={styles.itemTitle}>{_soundcast.title} - Episodes</div>
+              style={styles.itemTitle}>{soundcast.title} - Episodes</div>
             <div className='col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center'
               style={{...styles.button}}
               onClick={() => history.push({
