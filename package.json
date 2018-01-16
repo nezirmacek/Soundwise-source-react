@@ -17,6 +17,7 @@
   "dependencies": {
     "@sendgrid/client": "^6.1.4",
     "@sendgrid/mail": "^6.1.4",
+    "algoliasearch": "^3.24.9",
     "aws-sdk": "^2.175.0",
     "axios": "^0.15.3",
     "babel-preset-stage-1": "^6.1.18",

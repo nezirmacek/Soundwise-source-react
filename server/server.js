@@ -11,8 +11,8 @@ var AWS = require('aws-sdk');
 var awsConfig = require('../config').awsConfig;
 var bodyParser = require('body-parser');
 var path = require('path');
-var firebase = require("firebase-admin");
-var serviceAccount = require("../serviceAccountKey.json");
+var firebase = require('firebase-admin');
+var serviceAccount = require('../serviceAccountKey.json');
 var cors = require('cors');
 const moment = require('moment');
 var request = require('request');
@@ -39,8 +39,11 @@ firebase.initializeApp({
   databaseURL: "https://soundwise-a8e6f.firebaseio.com",
 });
 
-var app = module.exports = loopback();
+// sync firebase with Algolia
+var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
+algoliaIndex();
 
+var app = module.exports = loopback();
 app.start = function() {
   // start the web server
   return app.listen(function() {
@@ -113,20 +116,8 @@ app.use('/s3', require('react-s3-uploader/s3router')({
   uniquePrefix: false, // (4.0.2 and above) default is true, setting the attribute to false preserves the original filename in S3
 }));
 
-//database API routes:
+// database API routes:
 require('../database/routes.js')(app);
-
-// var prerendercloud = require('prerendercloud')
-//************* prerender.cloud *****************
-// prerendercloud.set('prerenderToken', 'dXMtd2VzdC0yOjE2MDE0OTIyLTk5MTgtNGY1Yi1hOTQwLTY1MDI2MzYyYTRlNQ.dE2HiZLJmqwNG0aJsAcWqmZHt_iAsV2tcIQQbvs2zPI')
-// prerendercloud.set('enableMiddlewareCache', true)
-// prerendercloud.set('middlewareCacheMaxAge', 1000 * 60 * 3) // 3 minutes
-// app.use(prerendercloud)
-//****************************
-
-// app.listen((process.env.PORT || 8080), function() {
-//   console.log('listening on port: ', process.env.PORT || 8080)
-// })
 
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.

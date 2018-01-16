@@ -80,11 +80,11 @@ class _AppSignup extends Component {
                   history.push('/signin', {text: 'This account already exists. Please sign in instead'});
                 }
             } else {
-                if (match.params.mode !== 'admin') { // user case
+                if (match.params.mode !== 'admin') { // listener case
                     that._signUp();
                 } else if (match.params.id) { // admin from invitation with publisher id
                     that.signUpInvitedAdmin();
-                } else {
+                } else { // admin case
                     that.setState({isPublisherFormShown: true});
                 }
             }
@@ -520,10 +520,10 @@ class _AppSignup extends Component {
 
                 const _user = { userId, firstName, lastName, picURL: pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png' };
                 // TODO: _user.picURL = false
-                Axios.post('/api/user', _user)
+                Axios.post('https://mysoundwise.com/api/user', _user)
                     .then(res => {
                         // console.log('userToSave: ', userToSave);
-                        // console.log('success save user');
+                        console.log('success save user');
                         signupUser(userToSave);
                         // for user -> goTo myPrograms, for admin need to register publisher first
                         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
