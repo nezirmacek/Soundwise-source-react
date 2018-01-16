@@ -34,10 +34,15 @@ export default class Publisher extends Component {
         history.push('/notfound');
       } else {
         const soundcastsArr = Object.keys(publisher.val().soundcasts);
+        console.log('soundcastsArr: ', soundcastsArr);
         this.setState({
           publisher: publisher.val(),
           loading: true,
         });
+
+        // await setTimeout(() => {
+        //   return true;
+        // }, 1000);
 
         let soundcast;
         for(let i = 0; i < soundcastsArr.length; i++) {
@@ -121,18 +126,22 @@ export default class Publisher extends Component {
                     <div className='col-md-12' style={{borderTop: 'solid 0.05em #f4f2f2', paddingTop: 45}}>
                       {
                         this.state.soundcasts.map((soundcast, i) => {
-                          let price = soundcast.prices[0].price;
-                          price = Number(price) == 0 ? 'free' : price;
-                          const pre = soundcast.prices.length > 1 ? 'From ' : '';
-                          let post = '';
-                          if(soundcast.prices[0].billingCycle == 'monthly') {
-                            post = ' / month';
-                          } else if(soundcast.prices[0].billingCycle == 'quarterly') {
-                            post = ' / month';
-                            price = Math.floor(price / 3 *100) / 100;
-                          } else if(soundcast.prices[0].billingCycle == 'annual') {
-                            post = ' / month';
-                            price = Math.floor(price.price / 12 *100) / 100;
+                          let price = '', pre = '', post = '';
+                          if(!soundcast.forSale) {
+                            price = 'Free';
+                          } else {
+                            price = soundcast.prices[0].price;
+                            price = Number(price) == 0 ? 'Free' : price;
+                            pre = soundcast.prices.length > 1 ? 'From ' : '';
+                            if(soundcast.prices[0].billingCycle == 'monthly') {
+                              post = ' / month';
+                            } else if(soundcast.prices[0].billingCycle == 'quarterly') {
+                              post = ' / month';
+                              price = Math.floor(price / 3 *100) / 100;
+                            } else if(soundcast.prices[0].billingCycle == 'annual') {
+                              post = ' / month';
+                              price = Math.floor(price.price / 12 *100) / 100;
+                            }
                           }
                           return (
                             <div key={i} className="col-md-4 col-sm-6 col-xs-12 padding-five  xs-padding-nineteen">
@@ -144,7 +153,7 @@ export default class Publisher extends Component {
                                     <div className="post-details">
                                         <div className="tz-text text-dark-gray  title-large sm-title-large font-weight-800 display-block margin-ten-bottom xs-margin-five-bottom">{soundcast.title}</div>
                                         <div className="tz-text text-dark-gray title-medium sm-title-medium  display-block margin-ten-bottom xs-margin-five-bottom" style={{fontWeight: 800}}>
-                                          {`${pre}${price == 'free' ? '' : '$'}${price}${post}`}
+                                          {`${pre}${price == 'Free' ? '' : '$'}${price}${post}`}
                                         </div>
                                         <div className="text-medium tz-text"><p>{soundcast.short_description}</p></div>
                                     </div>

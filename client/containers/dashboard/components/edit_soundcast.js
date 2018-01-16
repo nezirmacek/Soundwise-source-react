@@ -56,6 +56,8 @@ export default class EditSoundcast extends Component {
             hostImgUploaded: '',
             forSale: false,
             prices: [],
+            showTimeStamps: false,
+            showSubscriberCount: false,
             modalOpen: false,
             confirmationEmail: EditorState.createWithContent(confirmationEmail),
         };
@@ -74,7 +76,7 @@ export default class EditSoundcast extends Component {
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
-             forSale, prices, confirmationEmail} = soundcast;
+             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -104,7 +106,9 @@ export default class EditSoundcast extends Component {
         forSale: forSale ? forSale : false,
         long_description: editorState ,
         confirmationEmail: confirmEmailEditorState,
-      })
+        showTimeStamps: showTimeStamps ? showTimeStamps : false,
+        showSubscriberCount: showSubscriberCount ? showSubscriberCount : false,
+      });
 
       if(subscribed) {
         this.setState({
@@ -195,7 +199,7 @@ export default class EditSoundcast extends Component {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
-                forSale, prices, confirmationEmail} = this.state;
+                forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
 
@@ -218,6 +222,8 @@ export default class EditSoundcast extends Component {
                       hostImageURL,
                       forSale,
                       prices,
+                      showTimeStamps,
+                      showSubscriberCount,
                       published: publish,
                   };
 
@@ -665,7 +671,8 @@ export default class EditSoundcast extends Component {
                   />
                   <span id='landing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Add a public landing page for this soundcast</span>
               </div>
-              {landingPage &&
+              {
+                landingPage &&
                 <div style={{marginBottom: 20, fontSize: 20}}>
                     <span>The landing page will be published at </span>
                     <span >
@@ -676,126 +683,162 @@ export default class EditSoundcast extends Component {
                         {`https://mysoundwise.com/soundcasts/${id}`}
                       </a>
                     </span>
-                </div>}
-                <div className="row">
-                    <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                        <div style={{marginBottom: 15}}>
-                          <span style={styles.titleText}>Title</span>
-                          <span style={{...styles.titleText, color: 'red'}}>*</span>
-                          <span style={{fontSize: 17, marginBottom: 15,}}><i> (60 characters max)</i></span>
-                        </div>
-                        <ValidatedInput
+                </div>
+                || null
+              }
+              <div className="row">
+                  <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                      <div style={{marginBottom: 15}}>
+                        <span style={styles.titleText}>Title</span>
+                        <span style={{...styles.titleText, color: 'red'}}>*</span>
+                        <span style={{fontSize: 17, marginBottom: 15,}}><i> (60 characters max)</i></span>
+                      </div>
+                      <ValidatedInput
+                          type="text"
+                          styles={styles.inputTitle}
+                          wrapperStyle={styles.inputTitleWrapper}
+                          placeholder={'Soundcast title'}
+                          onChange={(e) => {this.setState({title: e.target.value})}}
+                          value={this.state.title}
+                          validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
+                      />
+                      <div style={{marginTop: 20,}}>
+                        <span style={{...styles.titleText, marginTop: 20,}}>
+                            Short Description
+                        </span>
+                        <span style={{...styles.titleText, color: 'red'}}>*</span>
+                        <span style={{fontSize: 17}}>
+                            <i> (300 characters max)</i>
+                        </span>
+                      </div>
+                      <div style={styles.inputTitleWrapper}>
+                        <textarea
                             type="text"
-                            styles={styles.inputTitle}
-                            wrapperStyle={styles.inputTitleWrapper}
-                            placeholder={'Soundcast title'}
-                            onChange={(e) => {this.setState({title: e.target.value})}}
-                            value={this.state.title}
-                            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
+                            style={styles.inputDescription}
+                            placeholder={'A short description of this soundcast (300 characters max)'}
+                            onChange={(e) => {this.setState({short_description: e.target.value})}}
+                            value={this.state.short_description}
                         />
-                        <div style={{marginTop: 20,}}>
-                          <span style={{...styles.titleText, marginTop: 20,}}>
-                              Short Description
-                          </span>
-                          <span style={{...styles.titleText, color: 'red'}}>*</span>
-                          <span style={{fontSize: 17}}>
-                              <i> (300 characters max)</i>
-                          </span>
+                      </div>
+                      <div style={{height: 150,}}>
+                          <div style={styles.image}>
+                            <img src={imageURL} />
+                          </div>
+                          <div style={styles.loaderWrapper}>
+                              <span style={{...styles.titleText, marginLeft: 10}}>
+                                  Soundcast cover art (square image)
+                              </span>
+                              <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                                  <input
+                                      type="file"
+                                      name="upload"
+                                      id="upload_hidden_cover"
+                                      accept="image/*"
+                                      onChange={this.setFileName.bind(this, null)}
+                                      style={styles.inputFileHidden}
+                                      ref={input => this.fileInputRef = input}
+                                  />
+                                  {
+                                    fileUploaded &&
+                                    <div>
+                                      <span>{this.fileInputRef.files[0].name}</span>
+                                      <span style={styles.cancelImg}
+                                        onClick={() => {
+                                          that.setState({fileUploaded: false, imageURL: ''});
+                                          document.getElementById('upload_hidden_cover').value = null;
+                                        }}>Cancel</span>
+                                    </div>
+                                    ||
+                                    !fileUploaded &&
+                                    <div>
+                                      <button
+                                          onClick={() => {document.getElementById('upload_hidden_cover').click();}}
+                                          style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                                      >
+                                          Upload
+                                      </button>
+                                      <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
+                                    </div>
+                                  }
+                              </div>
+                          </div>
+                      </div>
+                      {
+                          this.renderAdditionalInputs()
+                      }
+                      <div style={{paddingTop: 20, paddingBottom: 25,}}>
+                        <span style={{...styles.titleText, marginTop: 20,}}>
+                            Other Settings
+                        </span>
+                        <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                            <Toggle
+                              id='charging-status'
+                              aria-labelledby='charging-label'
+                              // label="Charge subscribers for this soundcast?"
+                              checked={this.state.showTimeStamps}
+                              onChange={() => {
+                                      const showTimeStamps = !that.state.showTimeStamps;
+                                      that.setState({showTimeStamps});
+                                    }}
+                              // thumbSwitchedStyle={styles.thumbSwitched}
+                              // trackSwitchedStyle={styles.trackSwitched}
+                              // style={{fontSize: 20, width: '50%'}}
+                            />
+                            <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Show episode publication dates</span>
                         </div>
-                        <div style={styles.inputTitleWrapper}>
-                          <textarea
-                              type="text"
-                              style={styles.inputDescription}
-                              placeholder={'A short description of this soundcast (300 characters max)'}
-                              onChange={(e) => {this.setState({short_description: e.target.value})}}
-                              value={this.state.short_description}
+                        <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                            <Toggle
+                              id='charging-status'
+                              aria-labelledby='charging-label'
+                              // label="Charge subscribers for this soundcast?"
+                              checked={this.state.showSubscriberCount}
+                              onChange={() => {
+                                      const showSubscriberCount = !that.state.showSubscriberCount;
+                                      that.setState({showSubscriberCount});
+                                    }}
+                            />
+                            <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Show subscriber count</span>
+                        </div>
+                      </div>
+                      {/*Invitations*/}
+                      <div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
+                        <div>
+                          <span style={styles.titleText}>
+                            Subsciption Confirmation Message
+                          </span>
+                          <Editor
+                            editorState = {this.state.confirmationEmail}
+                            editorStyle={styles.editorStyle}
+                            wrapperStyle={styles.wrapperStyle}
+                            onEditorStateChange={this.onConfirmationStateChange.bind(this)}
                           />
                         </div>
-                        <div style={{height: 150,}}>
-                            <div style={styles.image}>
-                              <img src={imageURL} />
-                            </div>
-                            <div style={styles.loaderWrapper}>
-                                <span style={{...styles.titleText, marginLeft: 10}}>
-                                    Soundcast cover art (square image)
-                                </span>
-                                <div style={{...styles.inputFileWrapper, marginTop: 0}}>
-                                    <input
-                                        type="file"
-                                        name="upload"
-                                        id="upload_hidden_cover"
-                                        accept="image/*"
-                                        onChange={this.setFileName.bind(this, null)}
-                                        style={styles.inputFileHidden}
-                                        ref={input => this.fileInputRef = input}
-                                    />
-                                    {
-                                      fileUploaded &&
-                                      <div>
-                                        <span>{this.fileInputRef.files[0].name}</span>
-                                        <span style={styles.cancelImg}
-                                          onClick={() => {
-                                            that.setState({fileUploaded: false, imageURL: ''});
-                                            document.getElementById('upload_hidden_cover').value = null;
-                                          }}>Cancel</span>
-                                      </div>
-                                      ||
-                                      !fileUploaded &&
-                                      <div>
-                                        <button
-                                            onClick={() => {document.getElementById('upload_hidden_cover').click();}}
-                                            style={{...styles.uploadButton, backgroundColor:  Colors.link}}
-                                        >
-                                            Upload
-                                        </button>
-                                        <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
-                                      </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        {
-                            this.renderAdditionalInputs()
-                        }
-                        {/*Invitations*/}
-                        <div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
-                          <div>
-                            <span style={styles.titleText}>
-                              Subsciption Confirmation Message
-                            </span>
-                            <Editor
-                              editorState = {this.state.confirmationEmail}
-                              editorStyle={styles.editorStyle}
-                              wrapperStyle={styles.wrapperStyle}
-                              onEditorStateChange={this.onConfirmationStateChange.bind(this)}
+                      </div>
+                      <div className='row'>
+                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <OrangeSubmitButton
+                                label="Save Draft"
+                                styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
+                                onClick={this.submit.bind(this, false)}
                             />
-                          </div>
                         </div>
-                        <div className='row'>
-                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                              <OrangeSubmitButton
-                                  label="Save Draft"
-                                  styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
-                                  onClick={this.submit.bind(this, false)}
-                              />
-                          </div>
-                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                              <OrangeSubmitButton
-                                  label="Publish"
-                                  onClick={this.submit.bind(this, true)}
-                              />
-                          </div>
-                          <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                              <TransparentShortSubmitButton
-                                  label="Cancel"
-                                  onClick={() => {
-                                    history.goBack();
-                                  }}
-                              />
-                          </div>
+                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <OrangeSubmitButton
+                                label="Publish"
+                                onClick={this.submit.bind(this, true)}
+                            />
                         </div>
-                    </div>
-                </div>
+                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <TransparentShortSubmitButton
+                                label="Cancel"
+                                onClick={() => {
+                                  history.goBack();
+                                }}
+                            />
+                        </div>
+                      </div>
+                  </div>
+              </div>
             </div>
           </MuiThemeProvider>
         );
