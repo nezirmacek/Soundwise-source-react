@@ -39,6 +39,7 @@ class _EpisodePage extends Component {
       webID: `web-${moment().format('x')}`,
       startPosition: 0,
       endPosition: null,
+      showTimeStamps: false,
     };
     this.audio = null;
   }
@@ -84,6 +85,7 @@ class _EpisodePage extends Component {
                     subscribable: snapshot.val().landingPage,
                     soundcastTitle: snapshot.val().title,
                     soundcastImageURL: snapshot.val().imageURL,
+                    showTimeStamps: snapshot.val().showTimeStamps ? snapshot.val().showTimeStamps : false,
                   })
                 }
               })
@@ -178,7 +180,7 @@ class _EpisodePage extends Component {
 
   render() {
     const that = this;
-    const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, coverArtUrl, publisherImageURL, publisherID, publisherName, publicEpisode, liked } = this.state;
+    const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, coverArtUrl, publisherImageURL, publisherID, publisherName, publicEpisode, liked, showTimeStamps } = this.state;
     const playlist = [{
       url,
       displayText: title
@@ -279,7 +281,14 @@ class _EpisodePage extends Component {
                         </div>
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20}}>
-                              <h2 className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">{`${moment(date_created * 1000).format('MMM DD YYYY')} ${String.fromCharCode(183)} ${this.getTime_hoursMins(duration)}`}</h2>
+                              <h2 className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
+                                {
+                                  showTimeStamps &&
+                                  `${moment(date_created * 1000).format('MMM DD YYYY')} ${String.fromCharCode(183)} ${this.getTime_hoursMins(duration)}`
+                                  ||
+                                  `${this.getTime_hoursMins(duration)}`
+                                }
+                              </h2>
                             </div>
                         </div>
                         <div className="row">
@@ -318,7 +327,7 @@ class _EpisodePage extends Component {
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-9 col-sm-9 col-xs-12  center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20, marginBottom: 10}}>
+                          <div className="col-md-9 col-sm-9 col-xs-12  center-col" style={{ marginTop: 20, marginBottom: 10}}>
                             <p className="text-large text-dark-gray" style={{whiteSpace: 'pre-wrap', textAligh: 'left'}}>{description}</p>
                           </div>
                         </div>
