@@ -989,7 +989,7 @@ class _CreateEpisode extends Component {
                         {
                             this.state.publicEpisode &&
                             <div style={{marginBottom: 25,}}>
-                                <span style={{fontSize: 20, fontWeight: 800,}}>Episode link for sharing: </span><span ><a style={{color: Colors.mainOrange, fontSize: 18,}}>{`https://mywoundwise.com/episodes/${this.episodeId}`}</a></span>
+                                <span style={{fontSize: 20, fontWeight: 800,}}>Episode link for sharing: </span><span ><a style={{color: Colors.mainOrange, fontSize: 18,}}>{`https://mysoundwise.com/episodes/${this.episodeId}`}</a></span>
                             </div>
                             || null
                         }

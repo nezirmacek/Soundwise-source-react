@@ -237,7 +237,7 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
     const { userInfo, isLoggedIn, content_saved } = state.user;
     return {
-        userInfo, isLoggedIn
+        userInfo, isLoggedIn, content_saved,
     }
 };
 

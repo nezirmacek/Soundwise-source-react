@@ -4,7 +4,7 @@ import * as firebase from 'firebase';
 export function handleContentSaving(id, saved) {
   return {
     type: types.CONTENT_SAVED,
-    payload: {id: saved},
+    payload: {[id]: true},
   }
 }
 
