@@ -970,7 +970,7 @@ class _CreateEpisode extends Component {
                                   // trackSwitchedStyle={styles.trackSwitched}
                                   // style={{fontSize: 20, width: '50%'}}
                                 />
-                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly sharable</span>
+                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly shareable</span>
                             </div>
                             <div style={{display: 'flex', alignItems: 'center', marginTop: 15,}}>
                                 <Toggle

@@ -3,6 +3,7 @@ var Raven = require('raven');
 // var sendinblue = require('sendinblue-api');
 // var sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 var firebase = require("firebase-admin");
+var moment = require('moment');
 
 // var parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
 // var sendinObj = new sendinblue(parameters);
@@ -50,6 +51,42 @@ const sendTransactionalEmails = (req, res) => {
     }
   );
 };
+
+const sendCommentNotification = async (req, res) => {
+  const {userID, content, soundcastId, announcementID, episodeID} = req.body.comment;
+  const publisherID = await firebase.database().ref(`soundcasts/${soundcastId}/publisherID`).once('value');
+  const admins = await firebase.database().ref(`publishers/${publisherID.val()}/administrators`).once('value');
+  const adminsArr = Object.keys(admins.val());
+  if(adminsArr.indexOf(userID) < 0) { // send notification only if commentor is not one of the admins
+    const commentor = await firebase.database().ref(`users/${userID}`).once('value');
+    const commentorName = `${commentor.val().firstName} ${commentor.val().lastName}`;
+    let adminsEmails = [], email;
+    for(var i = 0; i < adminsArr.length; i++) {
+      email = await firebase.database().ref(`users/${adminsArr[i]}/email`).once('value');
+      adminsEmails.push(email.val()[0]);
+    }
+    let episodeTitle, announcement, announcementDate;
+    if(episodeID) {
+      episodeTitle = await firebase.database().ref(`episodes/${episodeID}/title`).once('value');
+      episodeTitle = episodeTitle.val();
+    }
+    if(announcementID) {
+      announcement = await firebase.database().ref(`soundcasts/${soundcastId}/announcements/${announcementID}`).once('value');
+      announcementDate = moment(announcement.val().data_created * 1000).format('MMM DD YYYY');
+    }
+    const subject = episodeTitle ? episodeTitle : `your announcement made on ${announcementDate}`;
+    const msg = {
+      to: adminsEmails,
+      from: 'support@mysoundwise.com',
+      subject: `There's a new comment posted for ${subject}`,
+      html: `<p>Hi!</p><p></p><p>${commentorName} just made a new comment on ${subject}.</p><p></p><p>Check it out and reply on the Soundwise app.</p><p></p><p>Folks at Soundwise</p>`,
+    };
+    const response = await sgMail.send(msg);
+    res.status(200).send({});
+  } else {
+    res.status(200).send({});
+  }
+}
 
 const addToEmailList = (req, res) => {
   // req.body: {soundcastId: [string], emailListId: [number], emailAddressArr: [array]}
@@ -206,9 +243,11 @@ const sendMarketingEmails = (req, res) => {
   });
 };
 
+
 module.exports = {
   sendTransactionalEmails,
   addToEmailList,
   deleteFromEmailList,
   sendMarketingEmails,
+  sendCommentNotification,
 };

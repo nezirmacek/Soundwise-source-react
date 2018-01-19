@@ -88,6 +88,7 @@ app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);
 
 app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;
+app.post('/api/comment_notify', Emails.sendCommentNotification);
 app.post('/api/send_marketing_emails', Emails.sendMarketingEmails);
 app.post('/api/delete_emails', Emails.deleteFromEmailList);
 app.post('/api/add_emails', Emails.addToEmailList);
