@@ -11,16 +11,6 @@ import {orange50} from 'material-ui/styles/colors';
 export default class SoundcastFooter extends Component {
   constructor(props) {
     super(props);
-
-    this.checkOut = this.checkOut.bind(this);
-    this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
-  }
-
-  addSoundcastToUser() {
-  }
-
-  checkOut() {
-
   }
 
   render() {

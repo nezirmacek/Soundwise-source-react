@@ -15,6 +15,7 @@ import Footer from '../../components/footer'
 
 import SoundcastBody  from './components/soundcast_body'
 import SoundcastFooter from './components/soundcast_footer'
+import Banner from './components/banner'
 import {PricingModal} from './components/pricing_modal'
 
 import  PageHeader  from './components/page_header'
@@ -36,7 +37,10 @@ class _SoundcastPage extends Component {
         modalOpen: false
       },
       cardHeight: 0,
+      showBanner: false,
     }
+    this.nv = null;
+    this.handleScroll = this.handleScroll.bind(this);
   }
 
   componentDidMount() {
@@ -54,7 +58,9 @@ class _SoundcastPage extends Component {
         } else {
             history.push('/notfound');
         }
-      })
+      });
+    // this.nv.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('scroll', this.handleScroll);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -77,6 +83,25 @@ class _SoundcastPage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    // Make sure to remove the DOM listener when the component is unmounted.
+    window.removeEventListener("scroll", this.handleScroll);
+  }
+
+  handleScroll(e) {
+    const headerHeight = this.header.clientHeight;
+    const bodyHeigher = this.body.clientHeight;
+    if(window.pageYOffset > headerHeight && window.pageYOffset < bodyHeigher) {
+      this.setState({
+        showBanner: true,
+      });
+    } else {
+      this.setState({
+        showBanner: false,
+      });
+    }
+  }
+
   setMaxCardHeight (height) {
     if (height > this.state.cardHeight) {
       this.setState({ cardHeight: height });
@@ -92,7 +117,7 @@ class _SoundcastPage extends Component {
 
   render() {
     const soundcastID = this.props.match.params.id;
-    const {soundcast, modalOpen} = this.state;
+    const {soundcast, modalOpen, showBanner} = this.state;
     if(!soundcastID || !soundcast || (soundcast && soundcast.title && !soundcast.landingPage)) {
       return (
         <Redirect to="/notfound"/>
@@ -116,27 +141,40 @@ class _SoundcastPage extends Component {
         </Helmet>
         <MuiThemeProvider >
           <div>
+            <div ref={(elem) => this.header = elem}>
             <SoundwiseHeader
-              soundcastID={soundcastID}
-            />
-            <PricingModal
-              soundcast={soundcast}
-              soundcastID={soundcastID}
-              open={modalOpen}
-              handleModal={this.handleModal.bind(this)}/>
-            <SoundcastHeader
-              soundcast={soundcast}
-              soundcastID={soundcastID}
-              openModal={this.handleModal.bind(this)}/>
-            <SoundcastBody
-                  soundcast={soundcast}
-                  soundcastID={soundcastID}
-                  openModal={this.handleModal.bind(this)}
-                  // relatedsoundcasts={_relatedsoundcasts}
-                  cb={this.setMaxCardHeight.bind(this)}
-                  userInfo={this.props.userInfo}
-                  history={this.props.history}
+                soundcastID={soundcastID}
               />
+              <PricingModal
+                soundcast={soundcast}
+                soundcastID={soundcastID}
+                open={modalOpen}
+                handleModal={this.handleModal.bind(this)}/>
+              <SoundcastHeader
+                soundcast={soundcast}
+                soundcastID={soundcastID}
+                openModal={this.handleModal.bind(this)}/>
+            </div>
+            <div ref={(elem) => this.body = elem}>
+              <SoundcastBody
+                    showBanner={showBanner}
+                    soundcast={soundcast}
+                    soundcastID={soundcastID}
+                    openModal={this.handleModal.bind(this)}
+                    // relatedsoundcasts={_relatedsoundcasts}
+                    cb={this.setMaxCardHeight.bind(this)}
+                    userInfo={this.props.userInfo}
+                    history={this.props.history}
+              />
+            </div>
+            {
+              showBanner &&
+              <Banner
+                soundcast={soundcast}
+                soundcastID={soundcastID}
+                openModal={this.handleModal.bind(this)}/>
+              || null
+            }
             <SoundcastFooter
               soundcast={soundcast}
               soundcastID={soundcastID}

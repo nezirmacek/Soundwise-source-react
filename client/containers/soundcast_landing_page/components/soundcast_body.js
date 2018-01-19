@@ -56,6 +56,9 @@ export default class SoundcastBody extends Component {
             });
             this.retrieveRelatedSoundcasts(nextProps.soundcast, nextProps.soundcastID);
         }
+        if(nextProps.isVisible && !this.props.isVisible) {
+            console.log('is showing!');
+        }
     }
 
     retrieveRelatedSoundcasts(soundcast, soundcastID) {
@@ -141,7 +144,7 @@ export default class SoundcastBody extends Component {
         const {soundcast, relatedSoundcasts, publisher} = this.state;
         return (
             <div>
-                <section className="padding-30px-tb xs-padding-30px-tb bg-white builder-bg border-none" id="title-section1">
+                <section className="padding-30px-tb xs-padding-30px-tb bg-white border-none" >
                         {
                             soundcast.features && soundcast.features[0].length > 0 &&
                             <div className=" padding-40px-tb center-col " >
