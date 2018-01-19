@@ -53,7 +53,6 @@ const sendTransactionalEmails = (req, res) => {
 };
 
 const sendCommentNotification = async (req, res) => {
-  console.log('comment: ', req.body.comment);
   const {userID, content, soundcastId, announcementID, episodeID} = req.body.comment;
   const publisherID = await firebase.database().ref(`soundcasts/${soundcastId}/publisherID`).once('value');
   const admins = await firebase.database().ref(`publishers/${publisherID.val()}/administrators`).once('value');
