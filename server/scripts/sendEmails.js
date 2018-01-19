@@ -53,6 +53,7 @@ const sendTransactionalEmails = (req, res) => {
 };
 
 const sendCommentNotification = async (req, res) => {
+  console.log('comment: ', req.body.comment);
   const {userID, content, soundcastId, announcementID, episodeID} = req.body.comment;
   const publisherID = await firebase.database().ref(`soundcasts/${soundcastId}/publisherID`).once('value');
   const admins = await firebase.database().ref(`publishers/${publisherID.val()}/administrators`).once('value');
@@ -72,7 +73,7 @@ const sendCommentNotification = async (req, res) => {
     }
     if(announcementID) {
       announcement = await firebase.database().ref(`soundcasts/${soundcastId}/announcements/${announcementID}`).once('value');
-      announcementDate = moment(announcement.val().data_created * 1000).format('MMM DD YYYY');
+      announcementDate = moment(announcement.val().date_created * 1000).format('MMM DD YYYY');
     }
     const subject = episodeTitle ? episodeTitle : `your announcement made on ${announcementDate}`;
     const msg = {
@@ -81,8 +82,10 @@ const sendCommentNotification = async (req, res) => {
       subject: `There's a new comment posted for ${subject}`,
       html: `<p>Hi!</p><p></p><p>${commentorName} just made a new comment on ${subject}.</p><p></p><p>Check it out and reply on the Soundwise app.</p><p></p><p>Folks at Soundwise</p>`,
     };
-    const response = await sgMail.send(msg);
-    res.status(200).send({});
+    sgMail.send(msg)
+    .then(response => {
+      res.status(200).send({});
+    })
   } else {
     res.status(200).send({});
   }
