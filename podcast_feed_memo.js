@@ -181,4 +181,15 @@ const xml = feed.buildXml();
   // store the cached xml somewhere in our database (firebase or postgres)
   // set up endpoint to return the xml when `https://mysoundwise.com/rss/${soundcastId}` is requested
 
-// ****** STEP 5: finished! the end point '/api/create_feed' will be called again whenever the soundcast metadata is changed, or when a new episode is created. Upon these changes, the feed should update and generate new xml
+// ****** STEP 5: finished!
+  // if the feed is created for the first time, send an email to Soundwise admin, notifying that a new feed has been created
+var sgMail = require('@sendgrid/mail');
+var msg = {
+  to: 'support@mysoundwise.com',
+  from: 'natasha@mysoundwise.com',
+  subject: 'New podcast creation request!',
+  html: `<p>A new podcast feed as been created for ${soundcastId}</p>`,
+};
+sgMail.send(msg);
+
+// the end point '/api/create_feed' will be called again whenever the soundcast metadata is changed, or when a new episode is created. Upon these changes, the feed should update and generate and cache new xml
