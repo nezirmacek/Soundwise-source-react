@@ -56,7 +56,7 @@ class _SoundcastCheckout extends Component {
     } else {
       // totalPrice = Math.floor(soundcast.prices[checked].price * 1.03 * 100) / 100;
       // totalPrice = Math.floor(soundcast.prices[checked].price * 100) / 100;
-      totalPrice = soundcast.prices[checked].price;
+      totalPrice = Number(soundcast.prices[checked].price);
     }
 
 

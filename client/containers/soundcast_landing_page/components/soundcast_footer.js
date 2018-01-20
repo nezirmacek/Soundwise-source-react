@@ -17,34 +17,26 @@ export default class SoundcastFooter extends Component {
     const {soundcast} = this.props;
     let displayedPrice = 'Free';
     let {prices} = soundcast;
-
-    if(prices && prices.length > 0 && prices[0].price != 'free' ) {
-        prices = prices.map(price => {
-            if(price.billingCycle == 'one time' || price.billingCycle == 'monthly' ) {
-                price.measure = price.price;
-            } else if(price.billingCycle == 'quarterly') {
-                price.measure = Math.floor(price.price / 3 *100) / 100;
-            } else if(price.billingCycle == 'annual') {
-                price.measure = Math.floor(price.price / 12 *100) / 100;
-            }
-            return price;
-        });
-
-        prices.sort((a, b) => (
-            a.measure - b.measure
-        ));
-        // console.log('prices: ', prices);
-        displayedPrice = prices[0].billingCycle == 'one time' ?
-                            `$${prices[0].measure}` :
-                            `$${prices[0].measure} / month`;
+    let pre = '', post = '';
+    if(soundcast.forSale) {
+        pre = prices.length > 1 ? 'From' : '';
+        displayedPrice = `$${Number(prices[0].price).toFixed(2)}`;
+        if(prices[0].billingCycle == 'rental') {
+            post = `/ ${prices[0].rentalPeriod}-Day Access`;
+        } else if(prices[0].billingCycle == 'monthly') {
+            post = '/ month';
+        } else if(prices[0].billingCycle == 'quarterly') {
+            post = '/ quarter';
+        } else if(prices[0].billingCycle == 'annual') {
+            post = '/ year';
+        }
     }
-
     return (
             <section className=" builder-bg border-none" id="callto-action2" style={{backgroundColor: '#F76B1C', paddingBottom: '90px', paddingTop: '90px'}}>
                 <div className="container">
                     <div className="row equalize">
                         <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{height: "46px"}}>
-                            <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">{`Get This Soundcast for ${displayedPrice}`}</div>
+                            <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large"><span className="tz-text" >Get This Soundcast for</span><span><strong>{` ${displayedPrice} ${post}`}</strong></span></div>
                             <a onClick={this.props.openModal} className="btn-large btn text-white highlight-button-white-border btn-circle"><span className="tz-text" >Get Access</span></a>
                         </div>
                     </div>

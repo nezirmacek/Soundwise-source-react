@@ -88,32 +88,22 @@ class _SoundcastHeader extends Component {
   render() {
 
     const soundcastName = this.props.soundcast.title.split(' ').join('%20');
-    let displayedPrice = '___';
-    let {prices, forSale} = this.props.soundcast;
-    // console.log('soundcast: ', this.props.soundcast);
-    if(prices && prices.length > 0 ) {
-        if(prices[0].price != 'free' && prices[0].price != 0) {
-            prices = prices.map(price => {
-                if(price.billingCycle == 'one time' || price.billingCycle == 'rental' || price.billingCycle == 'monthly' || price.billingCycle == 'free' ) {
-                    price.measure = price.price;
-                } else if(price.billingCycle == 'quarterly') {
-                    price.measure = Math.floor(price.price / 3 *100) / 100;
-                } else if(price.billingCycle == 'annual') {
-                    price.measure = Math.floor(price.price / 12 *100) / 100;
-                }
-                return price;
-            });
-
-            prices.sort((a, b) => (
-                a.measure - b.measure
-            ));
-            displayedPrice = (prices[0].billingCycle == 'one time' || prices[0].billingCycle == 'rental') ?
-                                `$${prices[0].measure || '___'}` :
-                                `$${prices[0].measure || '___'} / month`;
-        } else {
-            displayedPrice = 'Free';
+    const {soundcast} = this.props;
+    let {prices, forSale} = soundcast;
+    let displayedPrice = forSale ? '___' : 'Free';
+    let pre = '', post = '';
+    if(forSale) {
+        pre = prices.length > 1 ? `From ` : '';
+        displayedPrice = `$${Number(prices[0].price).toFixed(2)}`;
+        if(prices[0].billingCycle == 'rental') {
+            post = `/ ${prices[0].rentalPeriod}-Day Access`;
+        } else if(prices[0].billingCycle == 'monthly') {
+            post = '/ month';
+        } else if(prices[0].billingCycle == 'quarterly') {
+            post = '/ quarter';
+        } else if(prices[0].billingCycle == 'annual') {
+            post = '/ year';
         }
-
     }
 
     return (
@@ -152,9 +142,7 @@ class _SoundcastHeader extends Component {
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
                                 <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center xs-margin-bottom-10px">
-                                  {displayedPrice != 'Free' && prices.length > 1 && <span className="title-medium alt-font sm-section-title-medium xs-title-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{marginRight: 10}}>FROM</span>
-                                    || null}
-                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}>{`${displayedPrice}`}</span>
+                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}><strong>{`${pre}${displayedPrice} ${post}`}</strong></span>
                                 </div>
                                 <div className="col-md-5 col-sm-6 col-xs-12 text-center ">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#F76B1C'}}

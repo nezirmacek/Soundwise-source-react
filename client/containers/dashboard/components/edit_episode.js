@@ -42,7 +42,7 @@ export default class EditEpisode extends Component {
 
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
-      const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverArtUrl} = episode;
+      const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverArtUrl, date_created} = episode;
 
       this.setState({
         id,
@@ -50,6 +50,7 @@ export default class EditEpisode extends Component {
         publicEpisode,
         isPublished,
         soundcastID,
+        date_created,
         coverartUrl: coverArtUrl ? coverArtUrl : '',
       })
       if(description) {
@@ -142,7 +143,7 @@ export default class EditEpisode extends Component {
     }
 
     submit (toPublish) {
-        const { title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverartUrl} = this.state;
+        const { title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverartUrl, date_created} = this.state;
         const { userInfo, history } = this.props;
         const { id } = history.location.state;
         const that = this;
@@ -154,6 +155,7 @@ export default class EditEpisode extends Component {
             actionstep: actionstep.length > 0 ? actionstep : null,
             notes,
             publicEpisode,
+            date_created: toPublish ? moment().format('X') : date_created,
             isPublished: toPublish ? true : isPublished,
             coverArtUrl: coverartUrl,
         };
