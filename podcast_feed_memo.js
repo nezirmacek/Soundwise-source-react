@@ -1,4 +1,4 @@
-// ****** example uses node-poscast module: https://github.com/maxnowack/node-podcast ******
+// ****** example uses node-podcast module: https://github.com/maxnowack/node-podcast ******
 // ****** An example object for creating podcast feed ******
 const podcastObj = {
   title: 'The True Voyage: A Soundcast on Inner Mastery',
@@ -156,9 +156,9 @@ episodesArr.sort((a, b) => {
 let episodeObj, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
 for(var i = startEpisode; i < episodesArr.length; i++) {
   episode = episodesArr[i];
-  const episodeObj = {
+  episodeObj = {
     title: episode.title,
-    desciption: episode.desciption, // may contain html
+    desciption: episode.description, // may contain html
     url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
     categories: [], // use the soundcast categories
     itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
@@ -175,7 +175,7 @@ for(var i = startEpisode; i < episodesArr.length; i++) {
   feed.addItem(episodeObj);
 }
 
-// ****** STEP 4: general xml and set up api endpoint for returning the xml on request
+// ****** STEP 4: generate xml and set up api endpoint for returning the xml on request
   // generate xml
 const xml = feed.buildXml();
   // store the cached xml somewhere in our database (firebase or postgres)
@@ -188,7 +188,7 @@ var msg = {
   to: 'support@mysoundwise.com',
   from: 'natasha@mysoundwise.com',
   subject: 'New podcast creation request!',
-  html: `<p>A new podcast feed as been created for ${soundcastId}</p>`,
+  html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
 };
 sgMail.send(msg);
 
