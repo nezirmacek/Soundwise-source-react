@@ -58,7 +58,7 @@ export default class BlogList extends Component {
                   <div className="row">
                     {this.state.resp.data.map((post) => {
                       return (
-                      <div key={post.slug} className="col-md-6 col-sm-6 col-xs-12 xs-margin-nineteen-bottom ">
+                      <div key={post.slug} className="col-md-6 col-sm-6 col-xs-12 margin-seven-bottom xs-margin-nineteen-bottom ">
                         <Link to={`/blog/post/${post.slug}`}>
                           <div className="blog-post">
                               <div className="blog-image">
