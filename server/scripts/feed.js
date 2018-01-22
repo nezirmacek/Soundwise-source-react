@@ -22,7 +22,6 @@ module.exports.createFeed = (req, res) => {
     if (height > 1400 && width > 1400 && height < 3000 && width < 3000 ) {
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ? short_description.slice(0, 3998) + '..' : short_description
-      debugger // check itunesCategory
       const categories = []
       itunesCategory.forEach(i => i.subcats.forEach(j => categories.push(j.text)))
       const podcastObj = {
