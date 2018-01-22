@@ -58,6 +58,7 @@
     "paypal-rest-sdk": "^1.7.1",
     "pg": "^6.4.1",
     "pg-hstore": "^2.3.2",
+    "podcast": "^1.0.1",
     "prerender-node": "^2.7.0",
     "prop-types": "^15.6.0",
     "raven": "^2.2.1",
