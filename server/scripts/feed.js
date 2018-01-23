@@ -1,15 +1,28 @@
 'use strict';
 
+const S3Strategy = require('express-fileuploader-s3');
+const awsConfig = require('../../config').awsConfig;
+const uploader = require('express-fileuploader');
+const firebase = require('firebase-admin');
 const request = require('request-promise');
 const Podcast = require('podcast');
-const firebase = require('firebase-admin');
 const sizeOf = require('image-size');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('ffmpeg');
-const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2)
+const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2);
+
+uploader.use(new S3Strategy({
+  uploadPath: 'soundcasts/',
+  headers: { 'x-amz-acl': 'public-read' },
+  options: {
+    key: awsConfig.accessKeyId,
+    secret: awsConfig.secretAccessKey,
+    bucket: 'soundwiseinc',
+  },
+}));
 
 module.exports.createFeed = async (req, res) => {
   const { soundcastId } = req.body;
@@ -67,31 +80,50 @@ module.exports.createFeed = async (req, res) => {
         episode = await firebase.database().ref(`episodes/${id}`).once('value');
         episodesArr.push({ ...episode.val(), id });
       }
-      episodesArr.forEach(i => {
-        if (!i.id3Tagged) {
+      episodesArr.forEach(episode => {
+        if (!episode.id3Tagged) {
           request.get({
             encoding: null,
-            url: i.url // 'http://www.sample-videos.com/audio/mp3/crowd-cheering.mp3'
+            url: episode.url // 'http://www.sample-videos.com/audio/mp3/crowd-cheering.mp3'
           }, body => {
-            const path = `/tmp/${makeId() + i.url.slice(-4)}`;
+            const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
             fs.writeFile(path, body, err => {
               if (err) {
                 console.log(`Error: cannot write tmp audio file ${path}`);
-              } else {
+              } else { // setting ID3
                 try {
-                  new ffmpeg(path, (err, file) => {
-                    if (file.metadata.audio.codec === 'mp3') { // 'aac' for .m4a files
-                      console.log(err, file);
-                    } else {
-                      // TODO convertation
+                  (new ffmpeg(path)).then(file => {
+                    file.addCommand('-metadata', `title="${episode.title}"`)
+                        .addCommand('-metadata', `artist="${hostName}"`)
+                        .addCommand('-metadata', `album="${title}"`)
+                        .addCommand('-metadata', `year="${new Date().getFullYear()}"`)
+                        .addCommand('-metadata', `genre="Podcast"`)
+                        .addCommand('-metadata', `cover art="${itunesImage}"`);
+                    if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
+                      file.setAudioCodec('mp3').setAudioBitRate(64);
                     }
-                  });
+                    file.save(`${path.slice(0, -4)}_updated.mp3`, (err, fileName) => {
+                      if (err) {
+                        console.log(`Error: saving fails ${path} ${err}`);
+                      } else { // saving to S3 db
+                        console.log(`File ${path} successfully saved`);
+                        uploader.upload('s3', `${episode.id}.mp3`, (err, files) => {
+                          if (err) {
+                            console.log(`Error: uploading ${episode.id}.mp3 to S3 ${err}`)
+                          } else {
+                            // after upload success, change episode tagged record in firebase:
+                            firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
+                          }
+                        });
+                      }
+                    });
+                  }, err => console.log(`Error: unable to parse file with ffmpeg ${err}`));
                 } catch(e) {
                   console.log(e);
                 }
               }
             })
-          }).catch(err => console.log(`Error: unable to obtain episode ${err.toString()}`));
+          }).catch(err => console.log(`Error: unable to obtain episode ${err}`));
         }
       })
       res.end(feed.buildXml());
@@ -99,7 +131,7 @@ module.exports.createFeed = async (req, res) => {
       res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`)
     }
   }).catch(err => {
-    console.log(`Error: unable to obtain image ${err.toString()}`)
-    res.error(`Error: unable to obtain image ${err.toString()}`)
+    console.log(`Error: unable to obtain image ${err}`)
+    res.error(`Error: unable to obtain image ${err}`)
   });
 }
