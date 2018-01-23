@@ -60,7 +60,7 @@ export default class BlogPost extends Component {
                     <img style={{}} className="img100" alt="" src={post.featured_image} data-img-size="(W)800px X (H)507px"/>
                 </div>
               </div>
-              <div className="container post-container" style={{paddingLeft: '15%', paddingRight: '15%',}}>
+              <div className="container post-container md-padding-twenty-five-left md-padding-twenty-five-right xs-padding-nine-left xs-padding-nine-right" >
                 <div className="row">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
                         <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font  tz-text">{post.title}</h2>
