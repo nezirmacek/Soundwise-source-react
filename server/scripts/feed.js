@@ -99,7 +99,9 @@ module.exports.createFeed = async (req, res) => {
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
                   file.addCommand('-metadata', `genre="Podcast"`);
                   file.addCommand('-metadata', `'cover art=${itunesImage}'`);
-                  if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
+                  if (file.metadata.audio.codec === 'mp3') {
+                    file.addCommand('-codec', 'copy');
+                  } else { // 'aac' for .m4a files
                     file.setAudioCodec('mp3').setAudioBitRate(64);
                   }
                   const updatedPath = `${path.slice(0, -4)}_updated.mp3`,
