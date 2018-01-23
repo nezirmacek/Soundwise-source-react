@@ -34,7 +34,6 @@
     "express": "^4.14.0",
     "express-fileuploader": "0.0.7",
     "express-fileuploader-s3": "0.0.1",
-    "ffmpeg": "0.0.4",
     "file-loader": "^0.10.1",
     "firebase": "^3.7.2",
     "firebase-admin": "^5.2.1",
@@ -116,7 +115,8 @@
     "tls": "0.0.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
-    "whatwg-fetch": "^2.0.3"
+    "whatwg-fetch": "^2.0.3",
+    "when": ">= 0.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.2.1",
