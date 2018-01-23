@@ -93,12 +93,12 @@ module.exports.createFeed = async (req, res) => {
               } else { // setting ID3
                 try {
                   (new ffmpeg(path)).then(file => {
-                    file.addCommand('-metadata', `title="${episode.title}"`)
-                        .addCommand('-metadata', `artist="${hostName}"`)
-                        .addCommand('-metadata', `album="${title}"`)
-                        .addCommand('-metadata', `year="${new Date().getFullYear()}"`)
-                        .addCommand('-metadata', `genre="Podcast"`)
-                        .addCommand('-metadata', `cover art="${itunesImage}"`);
+                    file.addCommand('-metadata', `title="${episode.title}"`);
+                    file.addCommand('-metadata', `artist="${hostName}"`);
+                    file.addCommand('-metadata', `album="${title}"`);
+                    file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
+                    file.addCommand('-metadata', `genre="Podcast"`);
+                    file.addCommand('-metadata', `'cover art=${itunesImage}'`);
                     if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
                       file.setAudioCodec('mp3').setAudioBitRate(64);
                     }
