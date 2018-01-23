@@ -76,9 +76,15 @@ module.exports.createFeed = async (req, res) => {
         html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
       });
       let episodesArr = [], episode;
-      for (let id of episodes) {
-        episode = await firebase.database().ref(`episodes/${id}`).once('value');
-        episodesArr.push({ ...episode.val(), id });
+      if (episodes && episodes.length) {
+        for (let id of episodes) {
+          episode = await firebase.database().ref(`episodes/${id}`).once('value');
+          episode = episode.val()
+          episode.isPublished && episodesArr.push({ ...episode, id });
+        }
+      }
+      if (episodesArr.length === 0) {
+        return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
       episodesArr.forEach(episode => {
         if (!episode.id3Tagged) {
@@ -113,11 +119,34 @@ module.exports.createFeed = async (req, res) => {
                     uploader.upload('s3' // saving to S3 db
                      , { path: updatedPath, name: `${episode.id}.mp3` } // file
                      , (err, files) => {
+                      // TODO remove temporary files
                       if (err) {
                         return console.log(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
                       }
                       // after upload success, change episode tagged record in firebase:
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
+                      episodesArr.sort((a, b) => a.index - b.index);
+                      let episodeObj, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
+                      for(var i = startEpisode; i < episodesArr.length; i++) {
+                        episode = episodesArr[i];
+                        episodeObj = {
+                          title: episode.title,
+                          desciption: episode.description, // may contain html
+                          url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
+                          categories: [], // use the soundcast categories
+                          itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
+                          author: hostName,
+                          date: moment().toDate(),
+                          enclosure : {url: episode.url}, // link to audio file
+                          itunesAuthor: hostName,
+                          itunesSubtitle: episode.title, // need to be < 255 characters
+                          itunesSummary: episode.desciption, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+                          itunesExplicit,
+                          itunesDuration: episode.duration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
+                          itunesKeywords: [], // check if episode.keywords exists, if so, use that, if not, don't add it
+                        };
+                        feed.addItem(episodeObj);
+                      }
                     });
                   });
                 }, err => console.log(`Error: unable to parse file with ffmpeg ${err}`));
@@ -130,7 +159,7 @@ module.exports.createFeed = async (req, res) => {
       })
       res.end(feed.buildXml());
     } else {
-      res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`)
+      res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
   }).catch(err => {
     console.log(`Error: unable to obtain image ${err}`)
