@@ -11,7 +11,7 @@ const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
-const ffmpeg = require('ffmpeg');
+const ffmpeg = require('./ffmpeg');
 const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2);
 
 uploader.use(new S3Strategy({
