@@ -89,38 +89,38 @@ module.exports.createFeed = async (req, res) => {
             const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
             fs.writeFile(path, body, err => {
               if (err) {
-                console.log(`Error: cannot write tmp audio file ${path}`);
-              } else { // setting ID3
-                try {
-                  (new ffmpeg(path)).then(file => {
-                    file.addCommand('-metadata', `title="${episode.title}"`);
-                    file.addCommand('-metadata', `artist="${hostName}"`);
-                    file.addCommand('-metadata', `album="${title}"`);
-                    file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
-                    file.addCommand('-metadata', `genre="Podcast"`);
-                    file.addCommand('-metadata', `'cover art=${itunesImage}'`);
-                    if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
-                      file.setAudioCodec('mp3').setAudioBitRate(64);
+                return console.log(`Error: cannot write tmp audio file ${path}`);
+              }
+              try { // setting ID3
+                (new ffmpeg(path)).then(file => {
+                  file.addCommand('-metadata', `title="${episode.title}"`);
+                  file.addCommand('-metadata', `artist="${hostName}"`);
+                  file.addCommand('-metadata', `album="${title}"`);
+                  file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
+                  file.addCommand('-metadata', `genre="Podcast"`);
+                  file.addCommand('-metadata', `'cover art=${itunesImage}'`);
+                  if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
+                    file.setAudioCodec('mp3').setAudioBitRate(64);
+                  }
+                  const updatedPath = `${path.slice(0, -4)}_updated.mp3`,
+                  file.save(updatedPath, (err, fileName) => {
+                    if (err) {
+                      return console.log(`Error: saving fails ${path} ${err}`);
                     }
-                    file.save(`${path.slice(0, -4)}_updated.mp3`, (err, fileName) => {
+                    console.log(`File ${path} successfully saved`);
+                    uploader.upload('s3' // saving to S3 db
+                     , { path: updatedPath, name: `${episode.id}.mp3` } // file
+                     , (err, files) => {
                       if (err) {
-                        console.log(`Error: saving fails ${path} ${err}`);
-                      } else { // saving to S3 db
-                        console.log(`File ${path} successfully saved`);
-                        uploader.upload('s3', `${episode.id}.mp3`, (err, files) => {
-                          if (err) {
-                            console.log(`Error: uploading ${episode.id}.mp3 to S3 ${err}`)
-                          } else {
-                            // after upload success, change episode tagged record in firebase:
-                            firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-                          }
-                        });
+                        return console.log(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
                       }
+                      // after upload success, change episode tagged record in firebase:
+                      firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
                     });
-                  }, err => console.log(`Error: unable to parse file with ffmpeg ${err}`));
-                } catch(e) {
-                  console.log(e);
-                }
+                  });
+                }, err => console.log(`Error: unable to parse file with ffmpeg ${err}`));
+              } catch(e) {
+                console.log(e);
               }
             })
           }).catch(err => console.log(`Error: unable to obtain episode ${err}`));
