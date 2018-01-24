@@ -85,11 +85,11 @@ export default class ImageCropModal extends Component {
   }
 
   upload() {
-    const {hostImg} = this.props;
+    const {imageType} = this.props;
     const {cropResult} = this.state;
     if(cropResult) {
       const fileBlob = dataURItoBlob(this.state.cropResult);
-      this.props.upload(fileBlob, hostImg);
+      this.props.upload(fileBlob, imageType);
       this.setState({
         cropped: false,
       })

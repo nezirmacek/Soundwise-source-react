@@ -8,6 +8,8 @@ import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState } from 'draft-js';
 // import Toggle from 'material-ui/Toggle';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Checkbox from 'material-ui/Checkbox';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Toggle from 'react-toggle'
 import "react-toggle/style.css"
 
@@ -15,6 +17,7 @@ import {minLengthValidator, maxLengthValidator} from '../../../helpers/validator
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
+import {itunesCategories} from '../../../helpers/itunes_categories';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
@@ -60,6 +63,9 @@ export default class EditSoundcast extends Component {
             showSubscriberCount: false,
             modalOpen: false,
             confirmationEmail: EditorState.createWithContent(confirmationEmail),
+            isPodcast: false,
+            createPodcast: false,
+            editPodcast: false,
         };
 
         this.fileInputRef = null;
@@ -76,7 +82,7 @@ export default class EditSoundcast extends Component {
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
-             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps} = soundcast;
+             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -108,6 +114,11 @@ export default class EditSoundcast extends Component {
         confirmationEmail: confirmEmailEditorState,
         showTimeStamps: showTimeStamps ? showTimeStamps : false,
         showSubscriberCount: showSubscriberCount ? showSubscriberCount : false,
+        isPodcast: isPodcast ? isPodcast : false,
+        episodes: episodes ? episodes : null,
+        itunesCategory: itunesCategory ? itunesCategory : null,
+        itunesExplicit: itunesExplicit ? itunesExplicit : false,
+        itunesImage: itunesImage ? itunesImage : null,
       });
 
       if(subscribed) {
@@ -127,15 +138,17 @@ export default class EditSoundcast extends Component {
       }
     }
 
-    _uploadToAws (file, hostImg) {
+    _uploadToAws (file, imageType) {
         const _self = this;
         const { id } = this.props;
         let data = new FormData();
         const splittedFileName = file.type.split('/');
         const ext = (splittedFileName)[splittedFileName.length - 1];
         let fileName = '';
-        if(hostImg) {
+        if(imageType == 'host') {
           fileName = `${id}-host-image-${moment().format('x')}.${ext}`;
+        } else if(imageType == 'itunes') {
+          fileName = `${id}-itunes-${moment().format('x')}.${ext}`;
         } else {
           fileName = `${id}-${moment().format('x')}.${ext}`;
         }
@@ -153,8 +166,10 @@ export default class EditSoundcast extends Component {
                     url = url.replace(/http/i, 'https');
                 }
 
-                if(hostImg) {
+                if(imageType == 'host') {
                     _self.setState({hostImageURL: url});
+                } else if(imageType == 'itunes') {
+                    _self.setState({itunesImage: url});
                 } else {
                     _self.setState({imageURL: url});
                 }
@@ -165,41 +180,87 @@ export default class EditSoundcast extends Component {
             });
     }
 
-    setFileName (hostImg, e) {
+    setFileName (imageType, e) {
         // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
-        if(hostImg) {
+        const that = this;
+        var file, img, allowedFileTypes;
+        var _URL = window.URL || window.webkitURL;
+        if(imageType=='host') {
             // this._uploadToAws(this.hostImgInputRef.files[0], true);
             if(this.hostImgInputRef.files[0]) {
                 this.setState({
                   hostImgUploaded: true,
                   hostImg: true,
+                  imageType: 'host',
                 });
+                allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
                 this.currentImageRef = this.hostImgInputRef.files[0];
+                if(allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
+                  alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+                  return;
+                }
+                that.handleModalOpen();
             }
+        } else if(imageType=='itunes') {
+            if(this.itunesInputRef.files[0]) {
+              img = new Image();
+              img.onload = function () {
+                  var width  = img.naturalWidth  || img.width;
+                  var height = img.naturalHeight || img.height;
+                  if(width < 1400 || width > 3000) {
+                    alert('iTunes/Google Play cover size must be between 1400 x 1400 px and 3000 x 3000 px. Please upload a new image.');
+                    return;
+                  } else {
+                    that.setState({
+                      itunesImgUploaded: true,
+                      imageType: 'itunes',
+                    });
+                    allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+                    that.currentImageRef = that.itunesInputRef.files[0];
+                    if(allowedFileTypes.indexOf(that.currentImageRef.type) < 0) {
+                      alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+                      return;
+                    }
+                    that.handleModalOpen();
+                  }
+              };
+              img.src = _URL.createObjectURL(this.itunesInputRef.files[0]);
+            }
+
         } else {
             // this._uploadToAws(this.fileInputRef.files[0], null)
             if (this.fileInputRef.files[0]) {
-                this.setState({
-                  fileUploaded: true,
-                  hostImg: false,
-                });
-                this.currentImageRef = this.fileInputRef.files[0];
+              img = new Image();
+              img.onload = function () {
+                  var width  = img.naturalWidth  || img.width;
+                  var height = img.naturalHeight || img.height;
+                  if(width < 1400 || width > 3000) {
+                    alert('Soundcast cover size must be between 1400 x 1400 px and 3000 x 3000 px. Please upload a new image.');
+                    return;
+                  } else {
+                    that.setState({
+                      fileUploaded: true,
+                      imageType: 'cover',
+                    });
+                    that.currentImageRef = that.fileInputRef.files[0];
+                    allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+                    if(allowedFileTypes.indexOf(that.currentImageRef.type) < 0) {
+                      alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+                      return;
+                    }
+                    that.handleModalOpen();
+                  }
+              };
+              img.src = _URL.createObjectURL(this.fileInputRef.files[0]);
             }
         }
-
-        const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
-        if(allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
-          alert('Only .png or .jpeg files are accepted. Please upload a new file.');
-          return;
-        }
-        this.handleModalOpen();
     }
 
     submit (publish) {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
-                forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps} = this.state;
+                forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesImage, itunesExplicit, itunesCategory} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
 
@@ -225,6 +286,9 @@ export default class EditSoundcast extends Component {
                       showTimeStamps,
                       showSubscriberCount,
                       published: publish,
+                      itunesImage,
+                      itunesExplicit,
+                      itunesCategory,
                   };
 
                   // edit soundcast in database
@@ -420,7 +484,7 @@ export default class EditSoundcast extends Component {
                                 name="upload"
                                 id="upload_hidden_cover_2"
                                 accept="image/*"
-                                onChange={this.setFileName.bind(this, true)}
+                                onChange={this.setFileName.bind(this, 'host')}
                                 style={styles.inputFileHidden}
                                 ref={input => this.hostImgInputRef = input}
                             />
@@ -616,6 +680,11 @@ export default class EditSoundcast extends Component {
           hostImgUploaded: false,
         });
         document.getElementById('upload_hidden_cover_2').value = null;
+      } else if(this.state.itunesImage) {
+        this.setState({
+          itunesUploaded: false,
+        });
+        document.getElementById('upload_hidden_iTunes').value = null;
       } else {
         this.setState({
           fileUploaded: false,
@@ -624,25 +693,202 @@ export default class EditSoundcast extends Component {
       }
     }
 
-    uploadViaModal(fileBlob, hostImg) {
+    uploadViaModal(fileBlob, imageType) {
+      console.log('imageType: ', imageType);
       this.setState({
         fileCropped: true,
         modalOpen: false,
       });
-      if(hostImg) {
+      if(imageType == 'host') {
         this.setState({
           hostImgUploaded: true,
+        })
+      } else if(imageType == 'itunes') {
+        console.log('itunes block called');
+        this.setState({
+          itunesUploaded: true,
         })
       } else {
         this.setState({
           fileUploaded: true,
         })
       }
-      this._uploadToAws(fileBlob, hostImg);
+      this._uploadToAws(fileBlob, imageType);
+    }
+
+    createPodcast() {
+      const {itunesImage, itunesExplicit, itunesCategory} = this.state;
+      if(!itunesCategory) {
+        alert('Please pick at least one category before submitting.');
+        return;
+      }
+      if(!itunesImage) {
+        alert('Please upload a cover image before submitting.');
+        return;
+      }
+      this.submit(true);
+    }
+
+    renderPodcastInput() {
+      const {itunesExplicit, itunesImage, itunesCategory, imageURL, itunesUploaded} = this.state;
+      const that = this;
+      const img1 = new Image();
+      img1.onload = function(){
+        var height = img1.naturalHeight || img1.height;
+        var width = img1.naturalWidth || img1.width;
+        if(height >= 1400 && height <= 3000 && !itunesImage) {
+          that.setState({
+            itunesImage: imageURL
+          });
+        }
+      }
+      img1.src = imageURL;
+      // console.log('itunesCategory: ', itunesCategory);
+      const categoryObj = itunesCategories;
+      const itunesArr = [];
+      for (let key in categoryObj) {
+        if(categoryObj[key].sub) {
+          categoryObj[key].sub.forEach(sub => {
+            itunesArr.push(`${categoryObj[key].name} - ${sub}`);
+          });
+        } else {
+          itunesArr.push(categoryObj[key].name);
+        }
+      }
+      return (
+        <div>
+          <div style={{...styles.titleText, paddingBottom: 15}}>Contains explicit language</div>
+          <MuiThemeProvider>
+            <RadioButtonGroup name="Contains explicit language"
+              defaultSelected={itunesExplicit}
+              onChange={(e,value)=> {
+                that.setState({
+                  itunesExplicit: value
+                });
+              }}
+            >
+              <RadioButton
+                value={true}
+                label='Yes'
+                labelStyle={styles.titleText}
+                style={styles.radioButton}
+              />
+              <RadioButton
+                value={false}
+                label="No"
+                labelStyle={styles.titleText}
+                style={styles.radioButton}
+              />
+            </RadioButtonGroup>
+          </MuiThemeProvider>
+          <div style={{height: 150,}}>
+              <div style={styles.image}>
+                <img src={itunesImage} />
+              </div>
+              <div style={styles.loaderWrapper}>
+                  <div style={{...styles.titleText, marginLeft: 10}}>
+                      iTunes/Google Play cover art
+                  </div>
+                  <div style={{...styles.fileTypesLabel, marginLeft: 10}}>
+                  At least 1400 x 1400 pixels in .jpg or .png format. Must not exceed 3000 x 3000 pixels
+                  </div>
+                  <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                      <input
+                          type="file"
+                          name="upload"
+                          id="upload_hidden_iTunes"
+                          accept="image/*"
+                          onChange={this.setFileName.bind(this, 'itunes')}
+                          style={styles.inputFileHidden}
+                          ref={input => this.itunesInputRef = input}
+                      />
+                      {
+                        itunesUploaded &&
+                        <div>
+                          <span>{this.itunesInputRef.files[0].name}</span>
+                          <span style={styles.cancelImg}
+                            onClick={() => {
+                              that.setState({itunesUploaded: false, itunesImage: ''});
+                              document.getElementById('upload_hidden_iTunes').value = null;
+                            }}>Cancel</span>
+                        </div>
+                        ||
+                        !itunesUploaded &&
+                        <div>
+                          <button
+                              onClick={() => {document.getElementById('upload_hidden_iTunes').click();}}
+                              style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                          >
+                              Upload
+                          </button>
+                        </div>
+                      }
+                  </div>
+              </div>
+          </div>
+          <div style={styles.soundcastSelectWrapper}>
+              <div style={{...styles.titleText, marginLeft: 10,}}><span>iTunes Category 1</span><span style={{color: 'red'}}>*</span></div>
+              <select
+                value = {itunesCategory && itunesCategory[0] && itunesCategory[0]  || ''}
+                style={styles.soundcastSelect}
+                onChange={(e) => {
+                  const itunesCategory = this.state.itunesCategory || [];
+                  itunesCategory[0] = e.target.value;
+                  that.setState({itunesCategory});
+                }}>
+                {
+                    itunesArr.map((cat, i) => {
+                        return (
+                            <option value={cat} key={i}>{cat}</option>
+                        );
+                    })
+                }
+              </select>
+          </div>
+          <div style={styles.soundcastSelectWrapper}>
+              <div style={{...styles.titleText, marginLeft: 10,}}><span>iTunes Category 2</span></div>
+              <select
+                value = {itunesCategory && itunesCategory[1] && itunesCategory[1] || ''}
+                style={styles.soundcastSelect}
+                onChange={(e) => {
+                  const itunesCategory = this.state.itunesCategory;
+                  itunesCategory[1] = e.target.value;
+                  that.setState({itunesCategory});
+                }}>
+                {
+                    itunesArr.map((cat, i) => {
+                        return (
+                            <option value={cat} key={i}>{cat}</option>
+                        );
+                    })
+                }
+              </select>
+          </div>
+          <div style={styles.soundcastSelectWrapper}>
+              <div style={{...styles.titleText, marginLeft: 10,}}><span>iTunes Category 3</span></div>
+              <select
+                value = {itunesCategory && itunesCategory[2] && itunesCategory[2]  || ''}
+                style={styles.soundcastSelect}
+                onChange={(e) => {
+                  const itunesCategory = this.state.itunesCategory;
+                  itunesCategory[2] = e.target.value;
+                  that.setState({itunesCategory});
+                }}>
+                {
+                    itunesArr.map((cat, i) => {
+                        return (
+                            <option value={cat} key={i}>{cat}</option>
+                        );
+                    })
+                }
+              </select>
+          </div>
+        </div>
+      )
     }
 
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg } = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType } = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
@@ -654,6 +900,7 @@ export default class EditSoundcast extends Component {
                 handleClose={this.handleModalClose.bind(this)}
                 upload={this.uploadViaModal.bind(this)}
                 hostImg={hostImg}
+                imageType={imageType}
                 file={this.currentImageRef}
               />
               <div className='padding-bottom-20px'>
@@ -725,9 +972,12 @@ export default class EditSoundcast extends Component {
                             <img src={imageURL} />
                           </div>
                           <div style={styles.loaderWrapper}>
-                              <span style={{...styles.titleText, marginLeft: 10}}>
-                                  Soundcast cover art (square image)
-                              </span>
+                              <div style={{...styles.titleText, marginLeft: 10}}>
+                                  Soundcast cover art
+                              </div>
+                              <div style={{...styles.fileTypesLabel, marginLeft: 10}}>
+                                  (Required: square image between 1400 x 1400 pixels and 3000 x 3000 pixels, in .jpeg or .png format)
+                              </div>
                               <div style={{...styles.inputFileWrapper, marginTop: 0}}>
                                   <input
                                       type="file"
@@ -757,7 +1007,6 @@ export default class EditSoundcast extends Component {
                                       >
                                           Upload
                                       </button>
-                                      <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                                     </div>
                                   }
                               </div>
@@ -799,6 +1048,56 @@ export default class EditSoundcast extends Component {
                             />
                             <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Show subscriber count</span>
                         </div>
+                        {
+                          !isPodcast && !forSale && episodes &&
+                          <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                              <Toggle
+                                id='charging-status'
+                                aria-labelledby='charging-label'
+                                checked={this.state.createPodcast}
+                                onChange={() => {
+                                        const createPodcast = !that.state.createPodcast;
+                                        that.setState({createPodcast});
+                                      }}
+                              />
+                              <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Create a podcast feed</span>
+                          </div>
+                          || null
+                        }
+                        {
+                          createPodcast &&
+                          <div>
+                            {this.renderPodcastInput()}
+                            <div className="col-lg-5 col-md-5 col-sm-7 col-xs-12 center-col">
+                                <OrangeSubmitButton
+                                    styles={{width: '100%'}}
+                                    label="Create Podcast Feed"
+                                    onClick={this.createPodcast.bind(this)}
+                                />
+                            </div>
+                          </div>
+                          || null
+                        }
+                        {
+                          isPodcast &&
+                          <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                              <Toggle
+                                id='charging-status'
+                                aria-labelledby='charging-label'
+                                checked={this.state.editPodcast}
+                                onChange={() => {
+                                        const editPodcast = !that.state.editPodcast;
+                                        that.setState({editPodcast});
+                                      }}
+                              />
+                              <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Modify the podcast feed</span>
+                          </div>
+                          || null
+                        }
+                        {
+                          isPodcast && editPodcast && this.renderPodcastInput()
+                          || null
+                        }
                       </div>
                       {/*Invitations*/}
                       <div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
@@ -997,5 +1296,20 @@ const styles = {
     },
     trackSwitched: {
       backgroundColor: Colors.link,
+    },
+    soundcastSelectWrapper: {
+        height: 92,
+        backgroundColor: Colors.mainWhite,
+        marginTop: 15,
+        paddingTop: 15,
+    },
+    soundcastSelect: {
+        backgroundColor: 'transparent',
+        width: 'calc(100% - 20px)',
+        height: 35,
+        marginLeft: 10,
+        marginRight: 10,
+        marginTop: 5,
+        fontSize: 16
     },
 };
