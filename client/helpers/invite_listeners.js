@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-export function inviteListeners (invitees, subject, content, publisherName, publisherImage, publisherEmail) {
+export function inviteListeners (invitees, subject, content, publisherName, publisherImage, publisherEmail, plainEmail, bcc) {
 	Axios.post('/api/send_email_invites', {
 		invitees,
 		subject,
@@ -8,6 +8,8 @@ export function inviteListeners (invitees, subject, content, publisherName, publ
 		publisherName,
 		publisherImage,
 		publisherEmail,
+		plainEmail, // if true, no not apply template
+		bcc, // add bcc email address
 	})
 		.then(res => {
 			// console.log(res);

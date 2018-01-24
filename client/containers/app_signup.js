@@ -19,6 +19,8 @@ import { signupUser, signinUser, addDefaultSoundcast } from '../actions/index';
 import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
+import { inviteListeners } from '../helpers/invite_listeners';
+import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
 
@@ -418,6 +420,9 @@ class _AppSignup extends Component {
                         }
                     )
                     .then(() => {
+                        const content = `<p>Hello ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you joining our expanding community of knowledge creators!</p><p>Would you mind sharing with me what kind of audio content you're creating? It'll help us see how we can best help you succeed using Soundwise.</p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you signed up to Soundwise to just take a look around. That's cool! Click reply and see hi anyway :)</p>`;
+                        inviteListeners([{firstName, lastName, email}], `What are you creating, ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)}?`, content,'Natasha Che', null, 'natasha@mysoundwise.com', true, 'natasha@mysoundwise.com');
+                        addToEmailList (null, [email], 'soundwise publishers', 2876261); // 2876261 is the 'soundwise publishers' list id
                         history.push('/dashboard/soundcasts');
                     });
                 } else {
