@@ -15,7 +15,7 @@ const ffmpeg = require('./ffmpeg');
 const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2);
 
 uploader.use(new S3Strategy({
-  uploadPath: 'soundcasts/',
+  uploadPath: '/',
   headers: { 'x-amz-acl': 'public-read' },
   options: {
     key: awsConfig.accessKeyId,
@@ -115,8 +115,9 @@ module.exports.createFeed = async (req, res) => {
                       return console.log(`Error: saving fails ${path} ${err}`);
                     }
                     console.log(`File ${path} successfully saved`);
+                    const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
                     uploader.upload('s3' // saving to S3 db
-                     , { path: updatedPath, name: `${episode.id}.mp3` } // file
+                     , { path: s3Path, name: `${episode.id}.mp3` } // file
                      , (err, files) => {
                       // TODO remove temporary files
                       if (err) {
@@ -157,6 +158,7 @@ module.exports.createFeed = async (req, res) => {
         feed.addItem(episodeObj);
       }
       const xml = feed.buildXml();
+      // store the cached xml somewhere in our database (firebase or postgres)
       firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
       sgMail.send({ // send email
         to: 'support@mysoundwise.com',
