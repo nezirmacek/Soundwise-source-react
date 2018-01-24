@@ -40,9 +40,9 @@ module.exports.createFeed = async (req, res) => {
     url: itunesImage
   }).then(async body => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
-    if (height > 1400 && width > 1400 && height < 3000 && width < 3000 ) {
+    if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
       // creating feed xml
-      const itunesSummary = short_description.length >= 4000 ?
+      const itunesSummary = short_description.length > 4000 ?
                             short_description.slice(0, 3998) + '..' : short_description;
       const podcastObj = {
         title,
@@ -79,12 +79,12 @@ module.exports.createFeed = async (req, res) => {
         subject: 'New podcast creation request!',
         html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
       });
-      let episodesArr = [], episode;
+      let episodesArr = [], episode, episodeNode;
       if (episodes && episodes.length) {
         for (let id of episodes) {
-          episode = await firebase.database().ref(`episodes/${id}`).once('value');
-          episode = episode.val()
-          episode.isPublished && episodesArr.push({ ...episode, id });
+          episodeNode = await firebase.database().ref(`episodes/${id}`).once('value');
+          episode = episodeNode.val();
+          episode.isPublished && episodesArr.push(Object.assign({}, episode, {id}));
         }
       }
       if (episodesArr.length === 0) {
@@ -104,6 +104,7 @@ module.exports.createFeed = async (req, res) => {
               try { // setting ID3
                 (new ffmpeg(path)).then(file => {
                   file.addCommand('-metadata', `title="${episode.title}"`);
+                  file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostName}"`);
                   file.addCommand('-metadata', `album="${title}"`);
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
@@ -114,7 +115,7 @@ module.exports.createFeed = async (req, res) => {
                   } else { // 'aac' for .m4a files
                     file.setAudioCodec('mp3').setAudioBitRate(64);
                   }
-                  const updatedPath = `${path.slice(0, -4)}_updated.mp3`,
+                  const updatedPath = `${path.slice(0, -4)}_updated.mp3`;
                   file.save(updatedPath, (err, fileName) => {
                     if (err) {
                       return console.log(`Error: saving fails ${path} ${err}`);
@@ -137,7 +138,7 @@ module.exports.createFeed = async (req, res) => {
                           title: episode.title,
                           desciption: episode.description, // may contain html
                           url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
-                          categories: [], // use the soundcast categories
+                          categories, // use the soundcast categories
                           itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
                           author: hostName,
                           date: moment().toDate(),
