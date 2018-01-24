@@ -95,9 +95,11 @@ export default class Soundcast extends Component {
         });
         this.setState({
           episodes: _episodes,
-          soundcast: _soundcast,
         })
       }
+      this.setState({
+        soundcast: _soundcast,
+      })
     };
   }
 
