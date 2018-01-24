@@ -119,7 +119,8 @@ module.exports.createFeed = async (req, res) => {
                     uploader.upload('s3' // saving to S3 db
                      , { path: s3Path, name: `${episode.id}.mp3` } // file
                      , (err, files) => {
-                      // TODO remove temporary files
+                      fs.unlink(path, err => 0); // removing original file
+                      fs.unlink(updatedPath, err => 0); // removing converted file
                       if (err) {
                         return console.log(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
                       }
