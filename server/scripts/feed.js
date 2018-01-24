@@ -25,10 +25,15 @@ uploader.use(new S3Strategy({
 }));
 
 module.exports.createFeed = async (req, res) => {
-  const { soundcastId } = req.body;
+  const { soundcastId } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-  const { title, short_description, hostName, episodes, itunesExplicit,
-          itunesCategory, itunesImage, googleplayCategory } = soundcast.val();
+  const soundcastVal = soundcast.val();
+  const { title, short_description, hostName, episodes, itunesExplicit, itunesImage } = soundcastVal;
+  const itunesCategory = soundcastVal.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
+    const [main, sub] = i.split(' - ');
+    categories.push(sub || main); // sub-categories from itunesCategory
+    return { text: main, subcats: [{ text: (sub || main) }] };
+  });
   // checking image size
   request.get({
     encoding: null, // return body as a Buffer
@@ -37,9 +42,8 @@ module.exports.createFeed = async (req, res) => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
     if (height > 1400 && width > 1400 && height < 3000 && width < 3000 ) {
       // creating feed xml
-      const itunesSummary = short_description.length >= 4000 ? short_description.slice(0, 3998) + '..' : short_description
-      const categories = []
-      itunesCategory.forEach(i => i.subcats.forEach(j => categories.push(j.text)))
+      const itunesSummary = short_description.length >= 4000 ?
+                            short_description.slice(0, 3998) + '..' : short_description;
       const podcastObj = {
         title,
         description: short_description,
@@ -50,7 +54,7 @@ module.exports.createFeed = async (req, res) => {
         author: hostName,
         copyright: `2018 ${hostName}`,
         language: 'en',
-        categories, // construct the categories array taking sub-categories from itunesCategory
+        categories,
         pubDate: moment().toDate(),
         itunesAuthor: hostName,
         itunesSubtitle: title,
@@ -62,7 +66,7 @@ module.exports.createFeed = async (req, res) => {
         customElements: [
           {'googleplay:email': 'support@mysoundwise.com'},
           {'googleplay:description': short_description}, // need to be < 4000 characters
-          {'googleplay:category': googleplayCategory},
+          {'googleplay:category': itunesCategory[0].text},
           {'googleplay:author': hostName},
           {'googleplay:explicit': itunesExplicit},
           {'googleplay:image': itunesImage}, // need to be between 1400x1400 px and 3000x3000 px
