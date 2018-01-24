@@ -28,7 +28,8 @@ module.exports.createFeed = async (req, res) => {
   const { soundcastId } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description, hostName, episodes, itunesExplicit, itunesImage } = soundcastVal;
+  const { title, short_description, hostName, itunesExplicit, itunesImage } = soundcastVal;
+  const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = soundcastVal.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
     categories.push(sub || main); // sub-categories from itunesCategory
@@ -73,14 +74,8 @@ module.exports.createFeed = async (req, res) => {
         ]
       }
       const feed = new Podcast(podcastObj);
-      sgMail.send({
-        to: 'support@mysoundwise.com',
-        from: 'natasha@mysoundwise.com',
-        subject: 'New podcast creation request!',
-        html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
-      });
       let episodesArr = [], episode;
-      if (episodes && episodes.length) {
+      if (episodes.length) {
         for (let id of episodes) {
           episode = await firebase.database().ref(`episodes/${id}`).once('value');
           episode = episode.val()
@@ -129,28 +124,6 @@ module.exports.createFeed = async (req, res) => {
                       }
                       // after upload success, change episode tagged record in firebase:
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-                      episodesArr.sort((a, b) => a.index - b.index);
-                      let episodeObj, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
-                      for(var i = startEpisode; i < episodesArr.length; i++) {
-                        episode = episodesArr[i];
-                        episodeObj = {
-                          title: episode.title,
-                          desciption: episode.description, // may contain html
-                          url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
-                          categories: [], // use the soundcast categories
-                          itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
-                          author: hostName,
-                          date: moment().toDate(),
-                          enclosure : {url: episode.url}, // link to audio file
-                          itunesAuthor: hostName,
-                          itunesSubtitle: episode.title, // need to be < 255 characters
-                          itunesSummary: episode.desciption, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
-                          itunesExplicit,
-                          itunesDuration: episode.duration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
-                          itunesKeywords: [], // check if episode.keywords exists, if so, use that, if not, don't add it
-                        };
-                        feed.addItem(episodeObj);
-                      }
                     });
                   });
                 }, err => console.log(`Error: unable to parse file with ffmpeg ${err}`));
@@ -160,8 +133,38 @@ module.exports.createFeed = async (req, res) => {
             })
           }).catch(err => console.log(`Error: unable to obtain episode ${err}`));
         }
-      })
-      res.end(feed.buildXml());
+      });
+      episodesArr.sort((a, b) => a.index - b.index); // STEP 3a
+      let episodeObj, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
+      for (let i = startEpisode; i < episodesArr.length; i++) {
+        episode = episodesArr[i];
+        episodeObj = {
+          title: episode.title,
+          desciption: episode.description, // may contain html
+          url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
+          categories: [], // use the soundcast categories
+          itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
+          author: hostName,
+          date: moment().toDate(),
+          enclosure : {url: episode.url}, // link to audio file
+          itunesAuthor: hostName,
+          itunesSubtitle: episode.title, // need to be < 255 characters
+          itunesSummary: episode.desciption, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+          itunesExplicit,
+          itunesDuration: episode.duration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
+          itunesKeywords: [], // check if episode.keywords exists, if so, use that, if not, don't add it
+        };
+        feed.addItem(episodeObj);
+      }
+      const xml = feed.buildXml();
+      firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
+      sgMail.send({ // send email
+        to: 'support@mysoundwise.com',
+        from: 'natasha@mysoundwise.com',
+        subject: 'New podcast creation request!',
+        html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
+      });
+      res.end(xml);
     } else {
       res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
