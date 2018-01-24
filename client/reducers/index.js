@@ -11,6 +11,7 @@ function user(state= {
     isLoggedIn: '',
     isEmailSent:  false,
     content_saved: {},
+    defaultSoundcastAdded: false,
 }, action) {
     const newState = JSON.parse(JSON.stringify(state));
     switch (action.type) {
@@ -31,6 +32,11 @@ function user(state= {
             return {
                 ...state,
                 isLoggedIn: false
+            };
+        case types.DEFAULT_SOUNDCAST_ADDED:
+            return {
+                ...state,
+                defaultSoundcastAdded: true,
             };
         case types.ADD_MANAGED_SOUNDCASTS:
             return {

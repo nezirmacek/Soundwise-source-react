@@ -8,6 +8,13 @@ export function handleContentSaving(id, saved) {
   }
 }
 
+export function addDefaultSoundcast() {
+  return {
+    type: types.DEFAULT_SOUNDCAST_ADDED,
+    payload: true,
+  }
+}
+
 export function signupUser(user) {
   return {
     type: types.SIGNUP,

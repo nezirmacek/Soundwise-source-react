@@ -15,7 +15,7 @@ import { withRouter } from 'react-router';
 import moment from 'moment';
 
 import {SoundwiseHeader} from '../components/soundwise_header';
-import { signupUser, signinUser } from '../actions/index';
+import { signupUser, signinUser, addDefaultSoundcast } from '../actions/index';
 import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
@@ -330,9 +330,9 @@ class _AppSignup extends Component {
     }
 
     addDefaultSoundcast() {
-        const { history } = this.props;
+        const { history, addDefaultSoundcast, defaultSoundcastAdded } = this.props;
         const that = this;
-
+        if(!defaultSoundcastAdded) {
           firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     const creatorID = user.uid;
@@ -352,6 +352,8 @@ class _AppSignup extends Component {
                         publisherID: that.publisherID,
                         prices: [{price: 'free', billingCycle: 'free'}],
                         forSale: false,
+                        published: false,
+                        landingPage: false,
                     };
 
                     let _promises = [
@@ -408,7 +410,8 @@ class _AppSignup extends Component {
                     .then(
                         res => {
                             console.log('completed adding soundcast');
-                            // that.compileUser();
+                            addDefaultSoundcast();
+                            that.compileUser();
                         },
                         err => {
                             console.log('failed to complete adding soundcast');
@@ -421,6 +424,7 @@ class _AppSignup extends Component {
                     // Raven.captureMessage('Default soundcast saving failed!')
                 }
           });
+        }
     }
 
     _validateForm (firstName, lastName, email, password, isFBauth) {
@@ -960,13 +964,13 @@ const styles = {
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ signupUser, signinUser }, dispatch)
+    return bindActionCreators({ signupUser, signinUser, addDefaultSoundcast }, dispatch)
 }
 
 const mapStateToProps = state => {
-    const { userInfo, isLoggedIn } = state.user;
+    const { userInfo, isLoggedIn, defaultSoundcastAdded } = state.user;
     return {
-        userInfo, isLoggedIn
+        userInfo, isLoggedIn, defaultSoundcastAdded
     }
 };
 
