@@ -29,7 +29,7 @@ module.exports.createFeed = async (req, res) => {
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
   const { title, short_description, hostName } = soundcastVal;
-  const episodes = Object.keys(soundcastVal.episodes || []);
+  const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
     categories.push(sub || main); // sub-categories from itunesCategory
@@ -80,8 +80,7 @@ module.exports.createFeed = async (req, res) => {
       if (episodes.length) {
         for (let id of episodes) {
           episode = await firebase.database().ref(`episodes/${id}`).once('value');
-          episode = episode.val()
-
+          episode = episode.val();
           episode.isPublished && episodesArr.push(Object.assign({}, episode, {id}));
         }
       }
@@ -106,26 +105,25 @@ module.exports.createFeed = async (req, res) => {
         }
       });
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
-        request.get({ encoding: null, url: episode.url }, body => {
+        request.get({ encoding: null, url: episode.url }).then(body => {
           const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
           fs.writeFile(path, body, err => {
             if (err) {
               return reject(`Error: cannot write tmp audio file ${path}`);
             }
-            try { // setting ID3
+            try {
               (new ffmpeg(path)).then(file => {
                 if (episode.id3Tagged) {
                   if (!episode.duration) { // tagged but don't have duration
                     resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                   }
-                } else { // not tagged
+                } else { // not tagged, setting up ID3
                   file.addCommand('-metadata', `title="${episode.title}"`);
                   file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostName}"`);
                   file.addCommand('-metadata', `album="${title}"`);
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
                   file.addCommand('-metadata', `genre="Podcast"`);
-                  file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `'cover art=${itunesImage}'`);
                   if (file.metadata.audio.codec === 'mp3') {
                     file.addCommand('-codec', 'copy');
@@ -203,8 +201,8 @@ module.exports.createFeed = async (req, res) => {
       res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
   }).catch(err => {
-    console.log(`Error: unable to obtain image ${err}`)
-    res.error(`Error: unable to obtain image ${err}`)
+    console.log(`Error: unable to obtain image ${err}`);
+    res.error(`Error: unable to obtain image ${err}`);
   });
 }
 
