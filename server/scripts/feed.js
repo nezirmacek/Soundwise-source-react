@@ -44,7 +44,7 @@ module.exports.createFeed = async (req, res) => {
     if (height > 1400 && width > 1400 && height < 3000 && width < 3000 ) {
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ?
-                            short_description.slice(0, 3998) + '..' : short_description;
+                            short_description.slice(0, 3997) + '..' : short_description;
       const podcastObj = {
         title,
         description: short_description,
@@ -66,7 +66,7 @@ module.exports.createFeed = async (req, res) => {
         itunesImage, // need to be between 1400x1400 px and 3000x3000 px
         customElements: [
           {'googleplay:email': 'support@mysoundwise.com'},
-          {'googleplay:description': short_description}, // need to be < 4000 characters
+          {'googleplay:description': itunesSummary}, // need to be < 4000 characters
           {'googleplay:category': itunesCategory[0].text},
           {'googleplay:author': hostName},
           {'googleplay:explicit': itunesExplicit},
@@ -145,18 +145,26 @@ module.exports.createFeed = async (req, res) => {
           title: episode.title,
           description, // may contain html
           url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
-          categories: [], // use the soundcast categories
+          categories, // use the soundcast categories
           itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
           author: hostName,
           date: moment().toDate(),
           enclosure : {url: episode.url}, // link to audio file
           itunesAuthor: hostName,
-          itunesSubtitle: episode.title, // need to be < 255 characters
-          itunesSummary: `<![CDATA[${(description.length >= 3988 ? description.slice(0, 3986) + '..' : description)}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
-          itunesExplicit,
-          itunesDuration: episode.duration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
-          itunesKeywords: [], // check if episode.keywords exists, if so, use that, if not, don't add it
+          itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
+          itunesSummary: `<![CDATA[${(description.length >= 3988 ? description.slice(0, 3985) + '..' : description)}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+          itunesExplicit
         };
+        // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
+        if (episode.duration) {
+          episodeObj.itunesDuration = episode.duration
+        } else {
+          // TODO set file.metadata.duration.seconds
+        }
+        // check if episode.keywords exists, if so, use that, if not, don't add it
+        if (episode.keywords && episode.keywords.length) {
+          episodeObj.itunesKeywords = episode.keywords;
+        }
         feed.addItem(episodeObj);
       }
       const xml = feed.buildXml();
