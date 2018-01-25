@@ -1,5 +1,5 @@
 'use strict';
-
+const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
 const uploader = require('express-fileuploader');
@@ -107,13 +107,15 @@ module.exports.createFeed = async (req, res) => {
       });
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
         request.get({ encoding: null, url: episode.url }, body => {
-          const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
-          fs.writeFile(path, body, err => {
+          const filePath = `/tmp/${makeId() + episode.url.slice(-4)}`;
+          fs.writeFile(filePath, body, err => {
             if (err) {
-              return reject(`Error: cannot write tmp audio file ${path}`);
+              return reject(`Error: cannot write tmp audio file ${filePath}`);
             }
             try { // setting ID3
-              (new ffmpeg(path)).then(file => {
+              console.log('processing episode: ', episode.id);
+              console.log('located at: ', filePath);
+              (new ffmpeg(`${filePath}`)).then(file => {
                 if (episode.id3Tagged) {
                   if (!episode.duration) { // tagged but don't have duration
                     resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
@@ -132,12 +134,13 @@ module.exports.createFeed = async (req, res) => {
                   } else { // 'aac' for .m4a files
                     file.setAudioCodec('mp3').setAudioBitRate(64);
                   }
-                  const updatedPath = `${path.slice(0, -4)}_updated.mp3`;
+                  console.log('episode: ', episode.id, ' tagged');
+                  const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
                   file.save(updatedPath, (err, fileName) => {
                     if (err) {
-                      return reject(`Error: saving fails ${path} ${err}`);
+                      return reject(`Error: saving fails ${filePath} ${err}`);
                     }
-                    console.log(`File ${path} successfully saved`);
+                    console.log(`File ${filePath} successfully saved`);
                     const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
                     uploader.upload('s3' // saving to S3 db
                      , { path: updatedPath, name: `${s3Path}/${episode.id}.mp3` } // file
@@ -155,7 +158,7 @@ module.exports.createFeed = async (req, res) => {
                 }
               }, err => reject(`Error: unable to parse file with ffmpeg ${err}`));
             } catch(e) {
-              reject(`Error: ffmpeg catch ${e}`);
+              reject(`Error: ffmpeg catch ${e.body || e.stack}`);
             }
           })
         }).catch(err => reject(`Error: unable to obtain episode ${err}`));
@@ -186,10 +189,12 @@ module.exports.createFeed = async (req, res) => {
           if (episode.keywords && episode.keywords.length) {
             episodeObj.itunesKeywords = episode.keywords;
           }
+          console.log('episodeObj: ', episodeObj);
           feed.addItem(episodeObj);
         });
         const xml = feed.buildXml();
         // store the cached xml somewhere in our database (firebase or postgres)
+        console.log('xml: ', xml);
         firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
         sgMail.send({ // send email
           to: 'support@mysoundwise.com',
@@ -198,7 +203,8 @@ module.exports.createFeed = async (req, res) => {
           html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
         });
         res.end(xml);
-      }).catch(console.log); // Promise.all catch
+      })
+      .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
     } else {
       res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
