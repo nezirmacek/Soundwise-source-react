@@ -12,6 +12,7 @@ import Checkbox from 'material-ui/Checkbox';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Toggle from 'react-toggle'
 import "react-toggle/style.css"
+import Dots from 'react-activity/lib/Dots';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -69,6 +70,7 @@ export default class EditSoundcast extends Component {
             podcastError: '',
             doneProcessingPodcast: false,
             startProcessingPodcast:  false,
+            podcastFeedVersion: null,
         };
 
         this.fileInputRef = null;
@@ -85,7 +87,7 @@ export default class EditSoundcast extends Component {
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
-             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage} = soundcast;
+             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -122,6 +124,7 @@ export default class EditSoundcast extends Component {
         itunesCategory: itunesCategory ? itunesCategory : null,
         itunesExplicit: itunesExplicit ? itunesExplicit : false,
         itunesImage: itunesImage ? itunesImage : null,
+        podcastFeedVersion: podcastFeedVersion ? podcastFeedVersion : null,
       });
 
       if(subscribed) {
@@ -259,7 +262,7 @@ export default class EditSoundcast extends Component {
         }
     }
 
-    submit (publish) {
+    submit (publish, noAlert) {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
@@ -310,7 +313,9 @@ export default class EditSoundcast extends Component {
                                   title
                                 })
                                 .then(() => {
-                                  alert('Soundcast changes are saved.');
+                                  if(!noAlert) {
+                                    alert('Soundcast changes are saved.');
+                                  }
                                   // history.goBack();
                                   that.firebaseListener = null;
                                 });
@@ -726,7 +731,7 @@ export default class EditSoundcast extends Component {
     createPodcast() {
       const that = this;
       const { id, soundcast } = this.props.history.location.state;
-      const {itunesImage, itunesExplicit, itunesCategory} = this.state;
+      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion} = this.state;
       if(!itunesCategory) {
         alert('Please pick at least one category before submitting.');
         return;
@@ -735,7 +740,7 @@ export default class EditSoundcast extends Component {
         alert('Please upload a cover image before submitting.');
         return;
       }
-      this.submit(true);
+      this.submit(true, true);
       this.setState({
         startProcessingPodcast: true,
         doneProcessingPodcast: false,
@@ -751,7 +756,11 @@ export default class EditSoundcast extends Component {
           startProcessingPodcast: false,
           doneProcessingPodcast: true,
         });
-        alert('Podcast feed has been submitted!');
+        if(podcastFeedVersion) {
+          alert('Podcast feed information has been edited!');
+        } else {
+          alert('Podcast feed has been created!');
+        }
       })
       .catch(err => {
         that.setState({
@@ -765,6 +774,7 @@ export default class EditSoundcast extends Component {
 
     renderPodcastInput() {
       const {itunesExplicit, itunesImage, itunesCategory, imageURL, itunesUploaded} = this.state;
+      const { id } = this.props;
       const that = this;
       const img1 = new Image();
       img1.onload = function(){
@@ -791,6 +801,7 @@ export default class EditSoundcast extends Component {
       }
       return (
         <div>
+          <div style={{...styles.titleText, paddingBottom: 15}}>The Podcast RSS feed URL: <a href={`https://mysoundwise.com/rss/${id}`} style={{color: Colors.mainOrange}}>{`https://mysoundwise.com/rss/${id}`}</a></div>
           <div style={{...styles.titleText, paddingBottom: 15}}>Contains explicit language</div>
           <MuiThemeProvider>
             <RadioButtonGroup name="Contains explicit language"
@@ -922,7 +933,7 @@ export default class EditSoundcast extends Component {
     }
 
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, } = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion} = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
@@ -1094,7 +1105,13 @@ export default class EditSoundcast extends Component {
                                         that.setState({createPodcast});
                                       }}
                               />
-                              <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Create a podcast feed</span>
+                              {
+                                podcastFeedVersion &&
+                                <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Edit the podcast feed</span>
+                                ||
+                                <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Create a podcast feed</span>
+                              }
+
                           </div>
                           || null
                         }
@@ -1105,19 +1122,28 @@ export default class EditSoundcast extends Component {
                             <div className="col-lg-5 col-md-5 col-sm-7 col-xs-12 center-col" >
                                 {
                                   startProcessingPodcast && !doneProcessingPodcast &&
-                                  <div style={{marginTop: 25, fontSize: 20}}>
-                                    Processing. Please wait...
-                                  </div>
-                                  || podcastError && doneProcessingPodcast &&
-                                  <div style={{fontSize: 20, marginTop: 25, color: 'red'}}>
-                                   {podcastError}
+                                  <div style={{marginTop: 25,}}>
+                                    <div className='col-md-12' style={{ fontSize: 20}}>
+                                      Submitting information. Please wait...
+                                    </div>
+                                    <div className='col-md-12' style={{marginTop: 10}}>
+                                      <Dots style={{}} color="#727981" size={32} speed={1}/>
+                                    </div>
                                   </div>
                                   ||
-                                  <OrangeSubmitButton
-                                      styles={{width: '100%'}}
-                                      label="Create Podcast Feed"
-                                      onClick={this.createPodcast.bind(this)}
-                                  />
+                                  <div>
+                                    <OrangeSubmitButton
+                                        styles={{width: '100%'}}
+                                        label="Create Podcast Feed"
+                                        onClick={this.createPodcast.bind(this)}
+                                    />
+                                    {
+                                    podcastError && doneProcessingPodcast &&
+                                    <div style={{fontSize: 17, marginTop: 10, color: 'red'}}>
+                                     {podcastError}
+                                    </div>
+                                    }
+                                  </div>
                                 }
                             </div>
                           </div>

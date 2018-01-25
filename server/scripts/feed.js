@@ -14,16 +14,6 @@ const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2);
 
-uploader.use(new S3Strategy({
-  uploadPath: '/',
-  headers: { 'x-amz-acl': 'public-read' },
-  options: {
-    key: awsConfig.accessKeyId,
-    secret: awsConfig.secretAccessKey,
-    bucket: 'soundwiseinc',
-  },
-}));
-
 module.exports.createFeed = async (req, res) => {
   const { soundcastId, itunesExplicit, itunesImage } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
@@ -139,8 +129,17 @@ module.exports.createFeed = async (req, res) => {
                     }
                     console.log(`File ${filePath} successfully saved`);
                     const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
+                    uploader.use(new S3Strategy({
+                      uploadPath: `${s3Path}`,
+                      headers: { 'x-amz-acl': 'public-read' },
+                      options: {
+                        key: awsConfig.accessKeyId,
+                        secret: awsConfig.secretAccessKey,
+                        bucket: 'soundwiseinc',
+                      },
+                    }));
                     uploader.upload('s3' // saving to S3 db
-                     , { path: updatedPath, name: `${s3Path}/${episode.id}.mp3` } // file
+                     , { path: updatedPath, name: `${episode.id}.mp3` } // file
                      , (err, files) => {
                       fs.unlink(filePath, err => 0); // removing original file
                       fs.unlink(updatedPath, err => 0); // removing converted file
@@ -150,6 +149,7 @@ module.exports.createFeed = async (req, res) => {
                       // after upload success, change episode tagged record in firebase:
                       console.log(episode.id, ' uploaded to: ', files[0].url);
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
+                      firebase.database().ref(`episodes/${episode.id}/url`).set(files[0].url);
                       resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                     });
                   });
