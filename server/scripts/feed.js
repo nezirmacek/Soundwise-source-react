@@ -85,19 +85,34 @@ module.exports.createFeed = async (req, res) => {
       if (episodesArr.length === 0) {
         return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
-      episodesArr.forEach(episode => {
-        if (!episode.id3Tagged) {
-          request.get({
-            encoding: null,
-            url: episode.url // 'http://www.sample-videos.com/audio/mp3/crowd-cheering.mp3'
-          }, body => {
-            const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
-            fs.writeFile(path, body, err => {
-              if (err) {
-                return console.log(`Error: cannot write tmp audio file ${path}`);
-              }
-              try { // setting ID3
-                (new ffmpeg(path)).then(file => {
+      const episodesToRequest = episodesArr.map(i => !i.id3Tagged); // not tagged, unique items
+      const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
+      // loop over the episodes, episodes with a lower index number needs to be added first
+      episodesArrSorted.sort((a, b) => b.index - a.index); // sort in reverse(!) order
+      if (episodesArrSorted.length > 50) {
+        episodesArrSorted.length = 50; // only take the most recent 50 episodes
+      }
+      episodesArrSorted.forEach(i => {
+        if (!i.duration) { // have no duration field
+          if (!episodesToRequest.some(j => j.id === i.id)) { // and not in episodesToRequest
+            episodesToRequest.push(i);
+          }
+        }
+      });
+      Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
+        request.get({ encoding: null, url: episode.url }, body => {
+          const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
+          fs.writeFile(path, body, err => {
+            if (err) {
+              return reject(`Error: cannot write tmp audio file ${path}`);
+            }
+            try { // setting ID3
+              (new ffmpeg(path)).then(file => {
+                if (episode.id3Tagged) {
+                  if (!episode.duration) { // tagged but don't have duration
+                    resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
+                  }
+                } else { // not tagged
                   file.addCommand('-metadata', `title="${episode.title}"`);
                   file.addCommand('-metadata', `artist="${hostName}"`);
                   file.addCommand('-metadata', `album="${title}"`);
@@ -112,7 +127,7 @@ module.exports.createFeed = async (req, res) => {
                   const updatedPath = `${path.slice(0, -4)}_updated.mp3`,
                   file.save(updatedPath, (err, fileName) => {
                     if (err) {
-                      return console.log(`Error: saving fails ${path} ${err}`);
+                      return reject(`Error: saving fails ${path} ${err}`);
                     }
                     console.log(`File ${path} successfully saved`);
                     const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
@@ -122,61 +137,57 @@ module.exports.createFeed = async (req, res) => {
                       fs.unlink(path, err => 0); // removing original file
                       fs.unlink(updatedPath, err => 0); // removing converted file
                       if (err) {
-                        return console.log(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
+                        return reject(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
                       }
                       // after upload success, change episode tagged record in firebase:
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
+                      resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                     });
                   });
-                }, err => console.log(`Error: unable to parse file with ffmpeg ${err}`));
-              } catch(e) {
-                console.log(e);
-              }
-            })
-          }).catch(err => console.log(`Error: unable to obtain episode ${err}`));
-        }
-      });
-      episodesArr.sort((a, b) => a.index - b.index); // STEP 3a
-      let episodeObj, description, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
-      for (let i = startEpisode; i < episodesArr.length; i++) {
-        episode = episodesArr[i];
-        description = episode.description
-        episodeObj = {
-          title: episode.title,
-          description, // may contain html
-          url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
-          categories, // use the soundcast categories
-          itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
-          author: hostName,
-          date: moment().toDate(),
-          enclosure : {url: episode.url}, // link to audio file
-          itunesAuthor: hostName,
-          itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
-          itunesSummary: `<![CDATA[${(description.length >= 3988 ? description.slice(0, 3985) + '..' : description)}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
-          itunesExplicit
-        };
-        // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
-        if (episode.duration) {
-          episodeObj.itunesDuration = episode.duration
-        } else {
-          // TODO set file.metadata.duration.seconds
-        }
-        // check if episode.keywords exists, if so, use that, if not, don't add it
-        if (episode.keywords && episode.keywords.length) {
-          episodeObj.itunesKeywords = episode.keywords;
-        }
-        feed.addItem(episodeObj);
-      }
-      const xml = feed.buildXml();
-      // store the cached xml somewhere in our database (firebase or postgres)
-      firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
-      sgMail.send({ // send email
-        to: 'support@mysoundwise.com',
-        from: 'natasha@mysoundwise.com',
-        subject: 'New podcast creation request!',
-        html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
-      });
-      res.end(xml);
+                }
+              }, err => reject(`Error: unable to parse file with ffmpeg ${err}`));
+            } catch(e) {
+              reject(`Error: ffmpeg catch ${e}`);
+            }
+          })
+        }).catch(err => reject(`Error: unable to obtain episode ${err}`));
+      }))).then(results => {
+        episodesArrSorted.forEach(episode => {
+          const description = episode.description
+          const itunesSummary = description.length >= 3988 ?
+                                description.slice(0, 3985) + '..' : description;
+          const episodeObj = {
+            title: episode.title,
+            description, // may contain html
+            url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
+            categories, // use the soundcast categories
+            itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
+            author: hostName,
+            date: moment().toDate(),
+            enclosure : {url: episode.url}, // link to audio file
+            itunesAuthor: hostName,
+            itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
+            itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+            itunesExplicit,
+            itunesDuration: episode.duration || results.find(i => i.id === episode.id).fileDuration // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
+          };
+          // check if episode.keywords exists, if so, use that, if not, don't add it
+          if (episode.keywords && episode.keywords.length) {
+            episodeObj.itunesKeywords = episode.keywords;
+          }
+          feed.addItem(episodeObj);
+        });
+        const xml = feed.buildXml();
+        // store the cached xml somewhere in our database (firebase or postgres)
+        firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
+        sgMail.send({ // send email
+          to: 'support@mysoundwise.com',
+          from: 'natasha@mysoundwise.com',
+          subject: 'New podcast creation request!',
+          html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
+        });
+        res.end(xml);
+      }).catch(console.log); // Promise.all catch
     } else {
       res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
