@@ -117,7 +117,7 @@ module.exports.createFeed = async (req, res) => {
                     console.log(`File ${path} successfully saved`);
                     const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
                     uploader.upload('s3' // saving to S3 db
-                     , { path: s3Path, name: `${episode.id}.mp3` } // file
+                     , { path: updatedPath, name: `${s3Path}/${episode.id}.mp3` } // file
                      , (err, files) => {
                       fs.unlink(path, err => 0); // removing original file
                       fs.unlink(updatedPath, err => 0); // removing converted file
