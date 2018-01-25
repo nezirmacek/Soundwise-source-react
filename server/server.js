@@ -43,7 +43,7 @@ firebase.initializeApp({
 
 // sync firebase with Algolia
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
-algoliaIndex();
+// algoliaIndex();
 
 var app = module.exports = loopback();
 app.start = function() {
