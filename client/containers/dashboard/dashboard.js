@@ -72,9 +72,9 @@ const verticalMenuItems = [
         Component: Subscriber,
     },
     {
-        path: 'announcements',
-        label: 'Announcements',
-        iconClass: 'bullhorn',
+        path: 'messages',
+        label: 'Messages',
+        iconClass: 'envelope-o',
         isMenuItemVisible: true,
         Component: Announcements,
     },

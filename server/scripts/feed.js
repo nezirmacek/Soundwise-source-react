@@ -43,6 +43,7 @@ module.exports.createFeed = async (req, res) => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
     if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
       // creating feed xml
+<<<<<<< HEAD
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
 
@@ -75,11 +76,13 @@ module.exports.createFeed = async (req, res) => {
         ]
       }
       const feed = new Podcast(podcastObj);
+
       let episodesArr = [], episode;
       if (episodes.length) {
         for (let id of episodes) {
           episode = await firebase.database().ref(`episodes/${id}`).once('value');
           episode = episode.val()
+
           episode.isPublished && episodesArr.push(Object.assign({}, episode, {id}));
         }
       }
@@ -117,6 +120,7 @@ module.exports.createFeed = async (req, res) => {
                   }
                 } else { // not tagged
                   file.addCommand('-metadata', `title="${episode.title}"`);
+                  file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostName}"`);
                   file.addCommand('-metadata', `album="${title}"`);
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);

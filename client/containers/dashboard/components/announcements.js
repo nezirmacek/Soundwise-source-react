@@ -145,7 +145,7 @@ export default class Announcements extends Component {
                 content: message,
                 date_created: moment().format('X'),
                 creatorID: creatorID,
-                publisherID: this.props.userInfo.publisherID,
+                publisherID: that.props.userInfo.publisherID,
                 soundcastID: currentSoundcastID,
                 isPublished: true,
                 id: announcementID,
@@ -182,7 +182,7 @@ export default class Announcements extends Component {
                           that.emailListeners(currentSoundcast, message)
                         }
                         alert('Announcement sent!');
-                        this.firebaseListener = null;
+                        that.firebaseListener = null;
                       }
                     })
                 },
@@ -228,7 +228,7 @@ export default class Announcements extends Component {
       <div className='padding-30px-tb'>
         <div className='padding-bottom-20px'>
           <span className='title-medium '>
-              Announcements
+              Messages
           </span>
           <div style={styles.soundcastSelectWrapper}>
               <select
@@ -265,7 +265,7 @@ export default class Announcements extends Component {
                       that.setState({sendEmails})
                     }}
                   />
-                  <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Email the announcement to subscribers and invitees</span>
+                  <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Email the message to subscribers and invitees</span>
               </div>
           </div>
           <div style={styles.publishButtonWrap}>
@@ -278,7 +278,7 @@ export default class Announcements extends Component {
         </div>
         <div style={styles.announcementsWrap}>
           <div className='title-small' style={styles.publishedTitles}>
-            Published announcements
+            Published messages
           </div>
           <div>
             {

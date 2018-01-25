@@ -17,18 +17,21 @@ var client = require('@sendgrid/client');
 client.setApiKey(sendGridApiKey);
 
 const sendTransactionalEmails = (req, res) => {
-  var content = emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
+  var content = req.body.plainEmail ? req.body.content : emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
   var email = req.body.publisherEmail ? req.body.publisherEmail : 'support@mysoundwise.com';
   var name = req.body.publisherName ? req.body.publisherName : 'Soundwise';
   // console.log('req.body.content: ', req.body.content);
   // console.log('compiled content: ', content);
   var _promises = req.body.invitees.map(invitee => {
-    var msg = {
+    let msg = {
       to: invitee,
       from: {email, name},
       subject: req.body.subject,
       html: content,
     };
+    if(req.body.bcc) {
+      msg = Object.assign({}, msg, {bcc: req.body.bcc});
+    }
     return sgMail.send(msg)
     .then(response => {
       return response;
