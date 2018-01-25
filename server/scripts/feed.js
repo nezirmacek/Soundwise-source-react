@@ -145,7 +145,7 @@ module.exports.createFeed = async (req, res) => {
           desciption: episode.description, // may contain html
           url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
           categories: [], // use the soundcast categories
-          itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
+          itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
           author: hostName,
           date: moment().toDate(),
           enclosure : {url: episode.url}, // link to audio file
