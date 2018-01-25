@@ -29,7 +29,7 @@ module.exports.createFeed = async (req, res) => {
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
   const { title, short_description, hostName, itunesExplicit, itunesImage } = soundcastVal;
-  const episodes = Object.keys(soundcastVal.episodes || {});
+  const episodes = Object.keys(soundcastVal.episodes || []);
   const itunesCategory = soundcastVal.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
     categories.push(sub || main); // sub-categories from itunesCategory
@@ -43,13 +43,9 @@ module.exports.createFeed = async (req, res) => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
     if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
       // creating feed xml
-<<<<<<< HEAD
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
-=======
-      const itunesSummary = short_description.length > 4000 ?
-                            short_description.slice(0, 3998) + '..' : short_description;
->>>>>>> some fixes in episodeObj for creating podcast feed
+
       const podcastObj = {
         title,
         description: short_description,
@@ -58,7 +54,7 @@ module.exports.createFeed = async (req, res) => {
         siteUrl: `https://mysoundwise.com/soundcasts/${soundcastId}`,
         imageUrl: itunesImage,
         author: hostName,
-        copyright: `2018 ${hostName}`,
+        copyright: `${new Date().getFullYear()} ${hostName}`,
         language: 'en',
         categories,
         pubDate: moment().toDate(),
@@ -79,22 +75,11 @@ module.exports.createFeed = async (req, res) => {
         ]
       }
       const feed = new Podcast(podcastObj);
-<<<<<<< HEAD
       let episodesArr = [], episode;
       if (episodes.length) {
-=======
-      sgMail.send({
-        to: 'support@mysoundwise.com',
-        from: 'natasha@mysoundwise.com',
-        subject: 'New podcast creation request!',
-        html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
-      });
-      let episodesArr = [], episode, episodeNode;
-      if (episodes && episodes.length) {
->>>>>>> some fixes in episodeObj for creating podcast feed
         for (let id of episodes) {
-          episodeNode = await firebase.database().ref(`episodes/${id}`).once('value');
-          episode = episodeNode.val();
+          episode = await firebase.database().ref(`episodes/${id}`).once('value');
+          episode = episode.val()
           episode.isPublished && episodesArr.push(Object.assign({}, episode, {id}));
         }
       }
@@ -102,6 +87,8 @@ module.exports.createFeed = async (req, res) => {
         return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
       const episodesToRequest = episodesArr.map(i => !i.id3Tagged); // not tagged, unique items
+      console.log('episodesToRequest: ', episodesToRequest);
+
       const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
       // loop over the episodes, episodes with a lower index number needs to be added first
       episodesArrSorted.sort((a, b) => b.index - a.index); // sort in reverse(!) order
@@ -130,11 +117,11 @@ module.exports.createFeed = async (req, res) => {
                   }
                 } else { // not tagged
                   file.addCommand('-metadata', `title="${episode.title}"`);
-                  file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostName}"`);
                   file.addCommand('-metadata', `album="${title}"`);
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
                   file.addCommand('-metadata', `genre="Podcast"`);
+                  file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `'cover art=${itunesImage}'`);
                   if (file.metadata.audio.codec === 'mp3') {
                     file.addCommand('-codec', 'copy');
@@ -158,32 +145,7 @@ module.exports.createFeed = async (req, res) => {
                       }
                       // after upload success, change episode tagged record in firebase:
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-<<<<<<< HEAD
                       resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
-=======
-                      episodesArr.sort((a, b) => a.index - b.index);
-                      let episodeObj, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
-                      for(var i = startEpisode; i < episodesArr.length; i++) {
-                        episode = episodesArr[i];
-                        episodeObj = {
-                          title: episode.title,
-                          desciption: episode.description, // may contain html
-                          url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
-                          categories, // use the soundcast categories
-                          itunesImage: '', // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
-                          author: hostName,
-                          date: moment().toDate(),
-                          enclosure : {url: episode.url}, // link to audio file
-                          itunesAuthor: hostName,
-                          itunesSubtitle: episode.title, // need to be < 255 characters
-                          itunesSummary: episode.desciption, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
-                          itunesExplicit,
-                          itunesDuration: episode.duration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
-                          itunesKeywords: [], // check if episode.keywords exists, if so, use that, if not, don't add it
-                        };
-                        feed.addItem(episodeObj);
-                      }
->>>>>>> some fixes in episodeObj for creating podcast feed
                     });
                   });
                 }
@@ -196,8 +158,9 @@ module.exports.createFeed = async (req, res) => {
       }))).then(results => {
         episodesArrSorted.forEach(episode => {
           const description = episode.description
-          const itunesSummary = description.length >= 3988 ?
-                                description.slice(0, 3985) + '..' : description;
+          // const itunesSummary = description.length >= 3988 ?
+                                // description.slice(0, 3985) + '..' : description;
+          const itunesSummary = description; // let itunes truncate it if it's longer than 4000
           const episodeObj = {
             title: episode.title,
             description, // may contain html
@@ -209,6 +172,8 @@ module.exports.createFeed = async (req, res) => {
             enclosure : {url: episode.url}, // link to audio file
             itunesAuthor: hostName,
             itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
+
+            // todo: check whether CDATA tag is actually needed
             itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
             itunesExplicit,
             itunesDuration: episode.duration || results.find(i => i.id === episode.id).fileDuration // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
