@@ -176,3 +176,12 @@ module.exports.createFeed = async (req, res) => {
     res.error(`Error: unable to obtain image ${err}`)
   });
 }
+
+module.exports.requestFeed = async (req, res) => {
+  if (req.params && req.params.id) {
+    const xml = await firebase.database().ref(`soundcastsFeedXml/${req.params.id}`).once('value');
+    req.end(xml.val());
+  } else {
+    res.error('Error: soundcast id must be provided');
+  }
+}

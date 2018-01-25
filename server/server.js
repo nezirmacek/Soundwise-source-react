@@ -25,6 +25,7 @@ var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
 var Emails = require('./scripts/sendEmails.js');
 
 // var createFeed = require('./scripts/feed.js').createFeed;
+// var requestFeed = require('./scripts/feed.js').requestFeed;
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
@@ -88,6 +89,7 @@ app.post('/api/email_signup', handleEmailSignup);
 app.post('/api/referral', handleReferral);
 app.post('/api/trial_request', handleTrialRequest);
 // app.post('/api/create_feed', createFeed);
+// app.get('/rss/:id', requestFeed);
 
 app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;
 app.post('/api/comment_notify', Emails.sendCommentNotification);
