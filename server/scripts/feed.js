@@ -137,12 +137,13 @@ module.exports.createFeed = async (req, res) => {
         }
       });
       episodesArr.sort((a, b) => a.index - b.index); // STEP 3a
-      let episodeObj, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
+      let episodeObj, description, startEpisode = episodesArr.length > 50 ? episodesArr.length - 50 : 0; // only take the most recent 50 episodes
       for (let i = startEpisode; i < episodesArr.length; i++) {
         episode = episodesArr[i];
+        description = episode.description
         episodeObj = {
           title: episode.title,
-          desciption: episode.description, // may contain html
+          description, // may contain html
           url: `https://mysoundwise.com/episodes/${episode.id}`, // '1509908899352e' is the unique episode id
           categories: [], // use the soundcast categories
           itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
@@ -151,7 +152,7 @@ module.exports.createFeed = async (req, res) => {
           enclosure : {url: episode.url}, // link to audio file
           itunesAuthor: hostName,
           itunesSubtitle: episode.title, // need to be < 255 characters
-          itunesSummary: episode.desciption, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+          itunesSummary: `<![CDATA[${(description.length >= 3988 ? description.slice(0, 3986) + '..' : description)}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
           itunesExplicit,
           itunesDuration: episode.duration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
           itunesKeywords: [], // check if episode.keywords exists, if so, use that, if not, don't add it
