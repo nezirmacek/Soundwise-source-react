@@ -155,7 +155,7 @@ module.exports.createFeed = async (req, res) => {
             } catch(e) {
               reject(`Error: ffmpeg catch ${e}`);
             }
-          })
+          }); // fs.writeFile
         }).catch(err => reject(`Error: unable to obtain episode ${err}`));
       }))).then(results => {
         episodesArrSorted.forEach(episode => {
