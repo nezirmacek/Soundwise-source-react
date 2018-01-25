@@ -65,13 +65,14 @@ module.exports.createFeed = async (req, res) => {
         itunesExplicit,
         itunesCategory,
         itunesImage, // need to be between 1400x1400 px and 3000x3000 px
+        customNamespaces: {googleplay: 'http://www.google.com/schemas/play-podcasts/1.0/play-podcasts.xsd'},
         customElements: [
           {'googleplay:email': 'support@mysoundwise.com'},
           {'googleplay:description': itunesSummary}, // need to be < 4000 characters
-          {'googleplay:category': itunesCategory[0].text},
+          {'googleplay:category': [{ _attr: { text: itunesCategory[0].text}}]},
           {'googleplay:author': hostName},
           {'googleplay:explicit': itunesExplicit},
-          {'googleplay:image': itunesImage}, // need to be between 1400x1400 px and 3000x3000 px
+          {'googleplay:image': [{ _attr: { href: itunesImage}}]}, // need to be between 1400x1400 px and 3000x3000 px
         ]
       }
       const feed = new Podcast(podcastObj);
@@ -105,15 +106,14 @@ module.exports.createFeed = async (req, res) => {
         }
       });
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
-<<<<<<< HEAD
         request.get({ encoding: null, url: episode.url }).then(body => {
-          const path = `/tmp/${makeId() + episode.url.slice(-4)}`;
-          fs.writeFile(path, body, err => {
+          const filePath = `/tmp/${makeId() + episode.url.slice(-4)}`;
+          fs.writeFile(filePath, body, err => {
             if (err) {
               return reject(`Error: cannot write tmp audio file ${filePath}`);
             }
             try {
-              (new ffmpeg(path)).then(file => {
+              (new ffmpeg(filePath)).then(file => {
                 if (episode.id3Tagged) {
                   if (!episode.duration) { // tagged but don't have duration
                     resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
@@ -142,12 +142,13 @@ module.exports.createFeed = async (req, res) => {
                     uploader.upload('s3' // saving to S3 db
                      , { path: updatedPath, name: `${s3Path}/${episode.id}.mp3` } // file
                      , (err, files) => {
-                      fs.unlink(path, err => 0); // removing original file
+                      fs.unlink(filePath, err => 0); // removing original file
                       fs.unlink(updatedPath, err => 0); // removing converted file
                       if (err) {
                         return reject(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
                       }
                       // after upload success, change episode tagged record in firebase:
+                      console.log(episode.id, ' uploaded to: ', files[0].url);
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
                       resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                     });
@@ -160,6 +161,7 @@ module.exports.createFeed = async (req, res) => {
           }); // fs.writeFile
         }).catch(err => reject(`Error: unable to obtain episode ${err}`));
       }))).then(results => {
+        console.log('files processed.');
         episodesArrSorted.forEach(episode => {
           const description = episode.description
           // const itunesSummary = description.length >= 3988 ?
@@ -178,7 +180,8 @@ module.exports.createFeed = async (req, res) => {
             itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
 
             // todo: check whether CDATA tag is actually needed
-            itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+            itunesSummary,
+            // itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
             itunesExplicit,
             itunesDuration: episode.duration || results.find(i => i.id === episode.id).fileDuration // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
           };
@@ -186,19 +189,27 @@ module.exports.createFeed = async (req, res) => {
           if (episode.keywords && episode.keywords.length) {
             episodeObj.itunesKeywords = episode.keywords;
           }
-          console.log('episodeObj: ', episodeObj);
+          // console.log('episodeObj: ', episodeObj);
           feed.addItem(episodeObj);
         });
-        const xml = feed.buildXml();
+        const xml = feed.buildXml('  ');
         // store the cached xml somewhere in our database (firebase or postgres)
-        console.log('xml: ', xml);
+        console.log(`xml file generated for ${soundcastId}`);
         firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
-        sgMail.send({ // send email
-          to: 'support@mysoundwise.com',
-          from: 'natasha@mysoundwise.com',
-          subject: 'New podcast creation request!',
-          html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
-        });
+        firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).once('value')
+          .then(version => {
+            if(!version.val()) {
+              firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).set(1);
+              sgMail.send({ // send email
+                to: 'support@mysoundwise.com',
+                from: 'natasha@mysoundwise.com',
+                subject: 'New podcast creation request!',
+                html: `<p>A new podcast feed has been created for ${soundcastId}</p>`,
+              });
+            } else {
+              firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).set(version.val() + 1);
+            }
+          });
         res.end(xml);
       })
       .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
@@ -214,7 +225,7 @@ module.exports.createFeed = async (req, res) => {
 module.exports.requestFeed = async (req, res) => {
   if (req.params && req.params.id) {
     const xml = await firebase.database().ref(`soundcastsFeedXml/${req.params.id}`).once('value');
-    req.end(xml.val());
+    res.end(xml.val());
   } else {
     res.error('Error: soundcast id must be provided');
   }
