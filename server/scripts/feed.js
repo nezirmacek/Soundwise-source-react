@@ -84,7 +84,7 @@ module.exports.createFeed = async (req, res) => {
 
       const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
       // loop over the episodes, episodes with a lower index number needs to be added first
-      episodesArrSorted.sort((a, b) => b.index - a.index); // sort in reverse(!) order
+      episodesArrSorted.sort((a, b) => a.index - b.index); // sort in reverse(!) order
       if (episodesArrSorted.length > 50) {
         episodesArrSorted.length = 50; // only take the most recent 50 episodes
       }
