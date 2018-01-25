@@ -25,12 +25,12 @@ uploader.use(new S3Strategy({
 }));
 
 module.exports.createFeed = async (req, res) => {
-  const { soundcastId } = req.body, categories = [];
+  const { soundcastId, itunesExplicit, itunesImage } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description, hostName, itunesExplicit, itunesImage } = soundcastVal;
+  const { title, short_description, hostName } = soundcastVal;
   const episodes = Object.keys(soundcastVal.episodes || []);
-  const itunesCategory = soundcastVal.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
+  const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
     categories.push(sub || main); // sub-categories from itunesCategory
     return { text: main, subcats: [{ text: (sub || main) }] };
@@ -43,7 +43,6 @@ module.exports.createFeed = async (req, res) => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
     if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
       // creating feed xml
-<<<<<<< HEAD
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
 
@@ -89,8 +88,9 @@ module.exports.createFeed = async (req, res) => {
       if (episodesArr.length === 0) {
         return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
-      const episodesToRequest = episodesArr.map(i => !i.id3Tagged); // not tagged, unique items
-      console.log('episodesToRequest: ', episodesToRequest);
+      const episodesToRequest = [];
+      episodesArr.forEach(i => !i.id3Tagged && episodesToRequest.push(i)); // not tagged, unique items
+      // console.log('episodesToRequest: ', episodesToRequest);
 
       const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
       // loop over the episodes, episodes with a lower index number needs to be added first

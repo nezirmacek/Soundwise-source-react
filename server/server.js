@@ -24,14 +24,9 @@ var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
 var Emails = require('./scripts/sendEmails.js');
 
-<<<<<<< HEAD
-
 var createFeed = require('./scripts/feed.js').createFeed;
 var requestFeed = require('./scripts/feed.js').requestFeed;
 
-=======
-var createFeed = require('./scripts/feed.js').createFeed;
->>>>>>> master
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;

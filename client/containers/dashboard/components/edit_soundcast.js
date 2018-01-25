@@ -66,6 +66,9 @@ export default class EditSoundcast extends Component {
             isPodcast: false,
             createPodcast: false,
             editPodcast: false,
+            podcastError: '',
+            doneProcessingPodcast: false,
+            startProcessingPodcast:  false,
         };
 
         this.fileInputRef = null;
@@ -323,6 +326,10 @@ export default class EditSoundcast extends Component {
               }
         });
         this.firebaseListener && this.firebaseListener();
+    }
+
+    componentWillUnmount() {
+      this.firebaseListener = null;
     }
 
     handleCheck() {
@@ -717,6 +724,8 @@ export default class EditSoundcast extends Component {
     }
 
     createPodcast() {
+      const that = this;
+      const { id, soundcast } = this.props.history.location.state;
       const {itunesImage, itunesExplicit, itunesCategory} = this.state;
       if(!itunesCategory) {
         alert('Please pick at least one category before submitting.');
@@ -727,6 +736,31 @@ export default class EditSoundcast extends Component {
         return;
       }
       this.submit(true);
+      this.setState({
+        startProcessingPodcast: true,
+        doneProcessingPodcast: false,
+      });
+      Axios.post('/api/create_feed', {
+        soundcastId: id,
+        itunesExplicit,
+        itunesImage,
+        itunesCategory
+      })
+      .then(response => {
+        that.setState({
+          startProcessingPodcast: false,
+          doneProcessingPodcast: true,
+        });
+        alert('Podcast feed has been submitted!');
+      })
+      .catch(err => {
+        that.setState({
+          startProcessingPodcast: false,
+          doneProcessingPodcast: true,
+          podcastError: err.toString(),
+        });
+        console.log(err);
+      });
     }
 
     renderPodcastInput() {
@@ -888,7 +922,7 @@ export default class EditSoundcast extends Component {
     }
 
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType } = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, } = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
@@ -1068,12 +1102,23 @@ export default class EditSoundcast extends Component {
                           createPodcast &&
                           <div>
                             {this.renderPodcastInput()}
-                            <div className="col-lg-5 col-md-5 col-sm-7 col-xs-12 center-col">
-                                <OrangeSubmitButton
-                                    styles={{width: '100%'}}
-                                    label="Create Podcast Feed"
-                                    onClick={this.createPodcast.bind(this)}
-                                />
+                            <div className="col-lg-5 col-md-5 col-sm-7 col-xs-12 center-col" >
+                                {
+                                  startProcessingPodcast && !doneProcessingPodcast &&
+                                  <div style={{marginTop: 25, fontSize: 20}}>
+                                    Processing. Please wait...
+                                  </div>
+                                  || podcastError && doneProcessingPodcast &&
+                                  <div style={{fontSize: 20, marginTop: 25, color: 'red'}}>
+                                   {podcastError}
+                                  </div>
+                                  ||
+                                  <OrangeSubmitButton
+                                      styles={{width: '100%'}}
+                                      label="Create Podcast Feed"
+                                      onClick={this.createPodcast.bind(this)}
+                                  />
+                                }
                             </div>
                           </div>
                           || null
