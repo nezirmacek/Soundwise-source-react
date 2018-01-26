@@ -84,10 +84,11 @@ module.exports.createFeed = async (req, res) => {
 
       const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
       // loop over the episodes, episodes with a lower index number needs to be added first
-      episodesArrSorted.sort((a, b) => a.index - b.index); // sort in reverse(!) order
+      episodesArrSorted.sort((a, b) => b.index - a.index); // sort in reverse(!) order
       if (episodesArrSorted.length > 50) {
         episodesArrSorted.length = 50; // only take the most recent 50 episodes
       }
+      episodesArrSorted.sort((a, b) => a.index - b.index); // older episodes need to go into the feed first
       episodesArrSorted.forEach(i => {
         if (!i.duration) { // have no duration field
           if (!episodesToRequest.some(j => j.id === i.id)) { // and not in episodesToRequest
@@ -174,7 +175,8 @@ module.exports.createFeed = async (req, res) => {
             categories, // use the soundcast categories
             itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
             author: hostName,
-            date: moment().toDate(),
+            date: moment(date_created).toDate(),
+            pubDate: moment(date_created).toDate(),
             enclosure : {url: episode.url}, // link to audio file
             itunesAuthor: hostName,
             itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters

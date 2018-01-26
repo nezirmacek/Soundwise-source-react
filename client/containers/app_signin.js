@@ -502,14 +502,14 @@ class _AppSignin extends Component {
 							/>
                             <div><span style={{color: 'red', fontSize: 16,}}>{message}</span></div>
 							<OrangeSubmitButton
+                                styles={{marginTop: 15, marginBottom: 15}}
 								label="SIGN IN"
 								onClick={this.signIn.bind(this)}
 							/>
                             <div style={{fontSize: 14, textDecoration: 'underline'}}>
                               <Link  to='/password_reset'>Forgot your password? </Link>
                             </div>
-							<hr />
-							<div style={{marginBottom: 10}}>
+							<div style={{marginBottom: 10, marginTop: 15,}}>
 								<span style={styles.italicText}>Don't have an account? </span>
 								<Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
 									Sign up >
@@ -526,7 +526,7 @@ class _AppSignin extends Component {
 const styles = {
 	row: {
 		backgroundColor: Colors.window,
-		paddingTop: 26,
+		paddingTop: 15,
 		paddingRight: 0,
 		paddingBottom: 0,
 		paddingLeft: 0,
@@ -551,8 +551,8 @@ const styles = {
 	fb: {
 		width: 212,
 		height: 44,
-		marginTop: 22,
-        marginBottom: 16
+		marginTop: 10,
+        marginBottom: 10
 	},
 	fbIcon: {
 		marginLeft: 0,
@@ -586,12 +586,12 @@ const styles = {
 		borderColor: Colors.link,
 	},
 	italicText: {
-		fontSize: 15,
+		fontSize: 16,
 		fontStyle: 'Italic',
 		marginBottom: 10,
 		display: 'inline-block',
-		height: 11,
-		lineHeight: '11px',
+		height: 16,
+		lineHeight: '16px',
 	},
 
 	inputLabel: {

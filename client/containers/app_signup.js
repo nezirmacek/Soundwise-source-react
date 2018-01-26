@@ -801,6 +801,7 @@ class _AppSignup extends Component {
                                     && !match.params.id
                                     &&
                                     <OrangeSubmitButton
+                                        styles={{marginTop: 15, marginBottom: 15}}
                                         label="NEXT"
                                         onClick={this.signUp.bind(this)}
                                     />
@@ -811,7 +812,7 @@ class _AppSignup extends Component {
                                         styles={styles.submitButton}
                                     />
                                 }
-                                <hr />
+
                                 <div>
                                     <span style={styles.italicText}>Already have an account? </span>
                                     {
@@ -887,7 +888,7 @@ _AppSignup.propTypes = {
 const styles = {
     row: {
         backgroundColor: Colors.window,
-        paddingTop: 26,
+        paddingTop: 15,
         paddingRight: 0,
         paddingBottom: 0,
         paddingLeft: 0,
@@ -913,8 +914,8 @@ const styles = {
     fb: {
         width: 212,
         height: 44,
-        marginTop: 22,
-        marginBottom: 16
+        marginTop: 10,
+        marginBottom: 10
     },
     fbIcon: {
         marginLeft: 0,
@@ -942,18 +943,18 @@ const styles = {
         bottom: 3,
     },
     submitButton: {
-        marginTop: 40,
-        marginBottom: 20,
+        marginTop: 15,
+        marginBottom: 15,
         backgroundColor: Colors.link,
         borderColor: Colors.link,
     },
     italicText: {
-        fontSize: 11,
+        fontSize: 16,
         fontStyle: 'Italic',
         marginBottom: 10,
         display: 'inline-block',
-        height: 11,
-        lineHeight: '11px',
+        height: 16,
+        lineHeight: '16px',
     },
 
     inputLabel: {
@@ -961,7 +962,7 @@ const styles = {
         marginBottom: 3,
         marginTop: 0,
         position: 'relative',
-        top: 10,
+        // top: 10,
     },
     greyInputText: {
         fontSize: 16,
