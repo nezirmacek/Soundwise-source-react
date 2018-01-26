@@ -78,8 +78,16 @@ class _AppSignup extends Component {
                 if(match.params.id) {
                   history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
                   return;
+                } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+                  history.push('/signin', {text: 'This account already exists. Please sign in instead',
+                      soundcast: history.location.state.soundcast,
+                      soundcastID: history.location.state.soundcastID,
+                      checked: history.location.state.checked,
+                      sumTotal: history.location.state.sumTotal,
+                  });
                 } else {
-                  history.push('/signin', {text: 'This account already exists. Please sign in instead'});
+                  history.push('/signin', {text: 'This account already exists. Please sign in instead'
+                  });
                 }
             } else {
                 if (match.params.mode !== 'admin') { // listener case
@@ -809,7 +817,7 @@ class _AppSignup extends Component {
                                     <OrangeSubmitButton
                                         label="CREATE ACCOUNT"
                                         onClick={this.signUp.bind(this)}
-                                        styles={styles.submitButton}
+                                        styles={{marginTop: 15, marginBottom: 15}}
                                     />
                                 }
 
@@ -870,7 +878,7 @@ class _AppSignup extends Component {
                                 <OrangeSubmitButton
                                     label="CREATE ACCOUNT"
                                     onClick={this.signUpAdmin.bind(this)}
-                                    styles={styles.submitButton}
+                                    styles={{marginTop: 15, marginBottom: 15}}
                                 />
                             </div>
                         </div>
