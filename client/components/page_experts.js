@@ -19,7 +19,7 @@ const customContentStyle = {
 
 const headerProps = {
   title: 'MONETIZE YOUR EXPERTISE WITH AUDIO',
-  tagline: 'Create custom audio subscription programs to disseminate your training materials and build a loyal following.',
+  tagline: 'Create and sell audio courses and subscription programs. Build a loyal following.',
   logoImage: "images/soundwiselogo_white.svg",
   backgroundImage: 'images/expert_bg2.png',
   gradient2: 'rgba(247,107,28,0.6)',
@@ -34,7 +34,7 @@ const bannerProps = {
     subtitle1: 'Asynchronous Delivery',
     description1: 'Audio training is flexible and can be taken anytime, anywhere.',
     subtitle3: 'Easy Dissemination',
-    description3: "Record and send audios of your training sessions directly to your audience's phones",
+    description3: "Record and send audios of your educational content directly to your audience's phones",
     subtitle2: 'Effortless Signup',
     description2: 'Easily create landing pages for your program from our optimized template and start selling.',
     subtitle4: 'Tracking & Analytics',
@@ -45,11 +45,11 @@ const bannerProps = {
 const featureProps = {
   description: 'Use Soundwise to create and sell your audio training products and subscription programs.',
   featureTitle1: 'Build / Upload',
-  feature1: 'Build your program landing page, upload your initial materials and start selling.',
+  feature1: 'Create a sales page, upload your content and start selling.',
   featureTitle2: 'Update / Download',
-  feature2: "Upload content periodically. New materials are automatically available on your subscribers' phones.",
+  feature2: "Any new materials you upload are immediately available on your audience's phones.",
   featureTitle3: 'Listen / Engage',
-  feature3: 'Audience listen to your materials at a time convenient to them. You can engage with your audience via comments & text announcements',
+  feature3: 'Audience listen to your materials at a time convenient to them. You can engage with your audience via comments & group text messages',
   featureTitle4: 'Track / Analyze',
   feature4: "Listening records down to each individual tells you who's listened to what, helping you analyze and improve your training content.",
 }
@@ -74,7 +74,7 @@ class PageExperts extends Component {
             <Header content={headerProps}></Header>
             <Banner content={bannerProps}></Banner>
             <Feature_section content={featureProps}></Feature_section>
-            <ExpertPricing></ExpertPricing>
+
             <Media_mention></Media_mention>
             <Callto_action></Callto_action>
             <Footer></Footer>

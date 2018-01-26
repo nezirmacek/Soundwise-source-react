@@ -8,10 +8,10 @@ const Banner = (props) => {
                 <div className="container-fluid">
                     <div className="row equalize">
                         <div className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten" style={{height: "755px"}}>
-                            <div className="display-table-cell-vertical-middle padding-twenty-two md-padding-seven xs-no-padding-lr">
+                            <div className="display-table-cell-vertical-middle padding-twenty-one-left padding-twenty-one-right md-padding-seven xs-no-padding-lr">
 
-                                <div className="col-md-12 col-sm-12 col-xs-12 margin-nine-top xs-no-padding-lr">
-                                    <h2 className="title-extra-large-2 sm-title-extra-large xs-title-extra-large font-weight-300 text-dark-gray margin-three-bottom xs-margin-fifteen-bottom tz-text">{title}</h2>
+                                <div className="col-md-12 col-sm-12 col-xs-12 xs-no-padding-lr">
+                                    <div className="title-extra-large-2 sm-title-extra-large xs-title-extra-large font-weight-300 text-dark-gray margin-three-bottom xs-margin-fifteen-bottom tz-text">{title}</div>
                                     <div className="text-extra-large sm-text-extra-large font-weight-300 width-85 md-width-100 margin-twenty-bottom sm-margin-fifteen-bottom tz-text"><p>{tagline}</p></div>
                                 </div>
                                 <div className="two-column">

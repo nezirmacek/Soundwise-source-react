@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom'
 
 const Callto_action = () => (
-  <section className=" bg-dark-blue footer-top builder-bg xs-padding-60px-tb border-none" style={{paddingTop: 110, paddingBottom: 70}}>
+  <section className=" bg-dark-blue footer-top builder-bg xs-padding-60px-tb border-none" style={{paddingTop: 50, paddingBottom: 70}}>
     <div className="container">
       <div className="row">
         { /* section title */ }
@@ -13,7 +13,7 @@ const Callto_action = () => (
           </div>
         </div>
         <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{marginBottom: 20}}>
-          <Link to="/signup/admin" className="btn-large btn text-dark-blue btn-3d"  style={{backgroundColor: '#61E1FB'}}><span className="tz-text">START TODAY</span></Link>
+          <Link to="/signup/admin" className="btn-large btn text-dark-blue btn-3d"  style={{backgroundColor: '#61E1FB'}}><span className="tz-text">START FOR FREE</span></Link>
         </div>
         <div className="col-md-12 col-sm-12 col-xs-12 text-center">
             <div className="offer-box-right">
