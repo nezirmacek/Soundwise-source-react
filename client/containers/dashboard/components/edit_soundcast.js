@@ -78,6 +78,7 @@ export default class EditSoundcast extends Component {
         this.currentImageRef = null;
         this.firebaseListener = null;
         this.addFeature = this.addFeature.bind(this);
+        this.submit = this.submit.bind(this);
         this.onEditorStateChange = this.onEditorStateChange.bind(this);
     }
 
@@ -1122,9 +1123,9 @@ export default class EditSoundcast extends Component {
                             <div className="col-lg-5 col-md-5 col-sm-7 col-xs-12 center-col" >
                                 {
                                   startProcessingPodcast && !doneProcessingPodcast &&
-                                  <div style={{marginTop: 25,}}>
+                                  <div className='col-md-12' style={{marginTop: 25,}}>
                                     <div className='col-md-12' style={{ fontSize: 20}}>
-                                      Submitting information. Please wait...
+                                      <span>Submitting information. Please wait...</span>
                                     </div>
                                     <div className='col-md-12' style={{marginTop: 10}}>
                                       <Dots style={{}} color="#727981" size={32} speed={1}/>
@@ -1189,13 +1190,13 @@ export default class EditSoundcast extends Component {
                             <OrangeSubmitButton
                                 label="Save Draft"
                                 styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
-                                onClick={this.submit.bind(this, false)}
+                                onClick={()=> that.submit(false, false)}
                             />
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
                                 label="Publish"
-                                onClick={this.submit.bind(this, true)}
+                                onClick={()=> that.submit(true, false)}
                             />
                         </div>
                         <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
