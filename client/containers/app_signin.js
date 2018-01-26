@@ -461,7 +461,7 @@ class _AppSignin extends Component {
 
 
 				<div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
-					<img alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
+					<img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
 					<div style={styles.containerWrapper}>
 						<div style={styles.container} className="center-col text-center">
 							<div style={{...styles.title, lineHeight: 'normal'}}>
