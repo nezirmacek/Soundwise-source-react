@@ -71,6 +71,7 @@ export default class EditSoundcast extends Component {
             doneProcessingPodcast: false,
             startProcessingPodcast:  false,
             podcastFeedVersion: null,
+            autoSubmitPodcast: true
         };
 
         this.fileInputRef = null;
@@ -88,7 +89,7 @@ export default class EditSoundcast extends Component {
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL,
-             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion} = soundcast;
+             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -126,6 +127,7 @@ export default class EditSoundcast extends Component {
         itunesExplicit: itunesExplicit ? itunesExplicit : false,
         itunesImage: itunesImage ? itunesImage : null,
         podcastFeedVersion: podcastFeedVersion ? podcastFeedVersion : null,
+        autoSubmitPodcast: autoSubmitPodcast ? autoSubmitPodcast : true,
       });
 
       if(subscribed) {
@@ -267,7 +269,7 @@ export default class EditSoundcast extends Component {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
                 features, hostName, hostBio, hostImageURL,
-                forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesImage, itunesExplicit, itunesCategory} = this.state;
+                forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
 
@@ -296,6 +298,7 @@ export default class EditSoundcast extends Component {
                       itunesImage,
                       itunesExplicit,
                       itunesCategory,
+                      autoSubmitPodcast
                   };
 
                   // edit soundcast in database
@@ -732,8 +735,8 @@ export default class EditSoundcast extends Component {
     createPodcast() {
       const that = this;
       const { id, soundcast } = this.props.history.location.state;
-      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion} = this.state;
-      if(!itunesCategory) {
+      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion, autoSubmitPodcast} = this.state;
+      if(!itunesCategory || itunesCategory.length == 0) {
         alert('Please pick at least one category before submitting.');
         return;
       }
@@ -750,7 +753,8 @@ export default class EditSoundcast extends Component {
         soundcastId: id,
         itunesExplicit,
         itunesImage,
-        itunesCategory
+        itunesCategory,
+        autoSubmitPodcast
       })
       .then(response => {
         that.setState({
@@ -774,7 +778,7 @@ export default class EditSoundcast extends Component {
     }
 
     renderPodcastInput() {
-      const {itunesExplicit, itunesImage, itunesCategory, imageURL, itunesUploaded} = this.state;
+      const {itunesExplicit, itunesImage, itunesCategory, imageURL, itunesUploaded, podcastFeedVersion, autoSubmitPodcast} = this.state;
       const { id } = this.props;
       const that = this;
       const img1 = new Image();
@@ -800,10 +804,42 @@ export default class EditSoundcast extends Component {
           itunesArr.push(categoryObj[key].name);
         }
       }
+      itunesArr.unshift('');
       return (
         <div>
-          <div style={{...styles.titleText, paddingBottom: 15}}>The Podcast RSS feed URL: <a href={`https://mysoundwise.com/rss/${id}`} style={{color: Colors.mainOrange}}>{`https://mysoundwise.com/rss/${id}`}</a></div>
-          <div style={{...styles.titleText, paddingBottom: 15}}>Contains explicit language</div>
+          <div style={{...styles.titleText, paddingBottom: 15}}>Your Podcast RSS feed URL is: <a href={`https://mysoundwise.com/rss/${id}`} style={{color: Colors.mainOrange}}>{`https://mysoundwise.com/rss/${id}`}</a></div>
+          {
+            !podcastFeedVersion &&
+            <div style={{marginBottom: 40}}>
+              <div style={{...styles.titleText, paddingBottom: 15}}>Podcast submission </div>
+              <MuiThemeProvider>
+                <RadioButtonGroup name="podcast submission"
+                  defaultSelected={autoSubmitPodcast}
+                  onChange={(e,value)=> {
+                    that.setState({
+                      autoSubmitPodcast: value
+                    });
+                  }}
+                >
+                  <RadioButton
+                    value={true}
+                    label='Submit the feed to iTunes & Google Play for me'
+                    labelStyle={styles.titleText}
+                    style={styles.radioButton}
+                  />
+                  <RadioButton
+                    value={false}
+                    label="I'll submit it myself"
+                    labelStyle={styles.titleText}
+                    style={styles.radioButton}
+                  />
+                </RadioButtonGroup>
+              </MuiThemeProvider>
+              <hr />
+            </div>
+            || null
+          }
+          <div style={{...styles.titleText, paddingBottom: 15}}>The material contains explicit language</div>
           <MuiThemeProvider>
             <RadioButtonGroup name="Contains explicit language"
               defaultSelected={itunesExplicit}
@@ -873,7 +909,7 @@ export default class EditSoundcast extends Component {
               </div>
           </div>
           <div style={styles.soundcastSelectWrapper}>
-              <div style={{...styles.titleText, marginLeft: 10,}}><span>iTunes Category 1</span><span style={{color: 'red'}}>*</span></div>
+              <div style={{...styles.titleText, marginLeft: 10,}}><span>iTunes Category 1 (required)</span><span style={{color: 'red'}}>*</span></div>
               <select
                 value = {itunesCategory && itunesCategory[0] && itunesCategory[0]  || ''}
                 style={styles.soundcastSelect}
@@ -1120,12 +1156,12 @@ export default class EditSoundcast extends Component {
                           createPodcast &&
                           <div>
                             {this.renderPodcastInput()}
-                            <div className="col-lg-5 col-md-5 col-sm-7 col-xs-12 center-col" >
+                            <div className="col-lg-5 col-md-6 col-sm-8 col-xs-12 center-col" >
                                 {
                                   startProcessingPodcast && !doneProcessingPodcast &&
-                                  <div className='col-md-12' style={{marginTop: 25,}}>
-                                    <div className='col-md-12' style={{ fontSize: 20}}>
-                                      <span>Submitting information. Please wait...</span>
+                                  <div  style={{marginTop: 25, width: '100%', marginBottom: 25}}>
+                                    <div className='' style={{ fontSize: 18, width: '100%'}}>
+                                      <span>Submitting feed information...</span>
                                     </div>
                                     <div className='col-md-12' style={{marginTop: 10}}>
                                       <Dots style={{}} color="#727981" size={32} speed={1}/>
@@ -1135,7 +1171,7 @@ export default class EditSoundcast extends Component {
                                   <div>
                                     <OrangeSubmitButton
                                         styles={{width: '100%'}}
-                                        label="Create Podcast Feed"
+                                        label={podcastFeedVersion && "Save Edited Podcast Feed" || "Create Podcast Feed"}
                                         onClick={this.createPodcast.bind(this)}
                                     />
                                     {
