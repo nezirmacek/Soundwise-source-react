@@ -32,6 +32,9 @@ class _CreateEpisode extends Component {
             isPlaying: false,
             isLoading: false,
             isSaved: false,
+            startProcessingEpisode: false,
+            doneProcessingEpisode: false,
+            podcastError: null,
 
             recordingStartTime: 0,
             currentRecordingDuration: 0,
@@ -319,7 +322,14 @@ class _CreateEpisode extends Component {
 
     saveEpisode (isPublished) {
         const that = this;
-        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode } = this.state;
+        const {podcastFeedVersion, itunesImage, itunesExplicit, itunesCategory} = this.state.currentsoundcast; // if this is a  podcast; otherwise these variables would be null
+        if(isPublished && podcastFeedVersion) {
+          this.setState({
+            startProcessingEpisode: true,
+            doneProcessingEpisode: false,
+          });
+        }
+        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
         const { userInfo, history, content_saved, handleContentSaving } = this.props;
         if(!content_saved[this.episodeId]) { // prevent unnecessary rerendering of component
             if(!recordedAudioUrl && !uploadedAudioUrl) {
@@ -394,9 +404,39 @@ class _CreateEpisode extends Component {
                                     // console.log('episode saved to db', res);
                                     if(isPublished) {
                                       that.notifySubscribers();
-                                      alert('Episode published.');
-                                      handleContentSaving(that.episodeId, true);
-                                      history.goBack();
+                                      if(podcastFeedVersion) {
+                                          Axios.post('/api/create_feed', {
+                                            soundcastId: that.currentSoundcastId,
+                                            itunesExplicit,
+                                            itunesImage,
+                                            itunesCategory,
+                                          })
+                                          .then(response => {
+                                            that.setState({
+                                              startProcessingEpisode: false,
+                                              doneProcessingEpisode: true,
+                                            });
+                                            alert('Episode has been processed and published.');
+                                            handleContentSaving(that.episodeId, true);
+                                            history.goBack();
+                                          })
+                                          .catch(err => {
+                                            that.setState({
+                                              startProcessingEpisode: false,
+                                              doneProcessingEpisode: true,
+                                              podcastError: err.toString(),
+                                            });
+                                            console.log(err);
+                                          });
+                                      } else {
+                                          that.setState({
+                                              startProcessingEpisode: false,
+                                              doneProcessingEpisode: true,
+                                          });
+                                          alert('Episode is published.');
+                                          handleContentSaving(that.episodeId, true);
+                                          history.goBack();
+                                      }
                                     } else {
                                       alert('Episode saved');
                                       history.goBack();
@@ -493,12 +533,12 @@ class _CreateEpisode extends Component {
             )
         } else if(isSaved && audioUploading) {
             return (
-                <div style={{textAlign: 'center'}}>
+                <div style={{textAlign: 'center', marginTop: 25}}>
                     <div className='title-small' style={{marginBottom: 5,}}>
                         {`Saving audio file`}
                     </div>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Dots style={{}} color="#727981" size={22} speed={1}/>
+                        <Dots style={{}} color={Colors.mainOrange} size={22} speed={1}/>
                     </div>
                 </div>
             )
@@ -708,7 +748,7 @@ class _CreateEpisode extends Component {
     }
 
     render() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, audioUploadProgress, notesUploadProgress, wrongFileTypeFor, audioUploadError, notesUploadError, } = this.state;
+        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, audioUploadProgress, notesUploadProgress, wrongFileTypeFor, audioUploadError, notesUploadError, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
         const { userInfo } = this.props;
         const that = this;
         const _soundcasts_managed = [];
@@ -1063,24 +1103,46 @@ class _CreateEpisode extends Component {
                         </div>
                 </div>
                     <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                            style={{textAlign: 'center'}}>
-                            <div className='btn'
-                                style={styles.draftButton}
-                                onClick={this.saveEpisode.bind(this, false)}
-                            >
-                                <span>Save draft</span>
+                        {
+                            startProcessingEpisode &&
+                            <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                                    style={{textAlign: 'center'}}>
+                                <div className='' style={{ fontSize: 17, width: '100%'}}>
+                                  <span>Processing episode...</span>
+                                </div>
+                                <div className='' style={{marginTop: 10, width: '100%'}}>
+                                  <Dots style={{}} color="#727981" size={32} speed={1}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                            style={{textAlign: 'center'}} >
-                            <div className='btn btn-default'
-                                style={{...styles.draftButton, ...styles.publishButton}}
-                                onClick={this.saveEpisode.bind(this, true)}
-                            >
-                                <span>Publish</span>
+                            ||
+                            <div>
+                                <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                                    style={{textAlign: 'center'}}>
+                                    <div className='btn'
+                                        style={styles.draftButton}
+                                        onClick={this.saveEpisode.bind(this, false)}
+                                    >
+                                        <span>Save draft</span>
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                                    style={{textAlign: 'center'}} >
+                                    <div className='btn btn-default'
+                                        style={{...styles.draftButton, ...styles.publishButton}}
+                                        onClick={this.saveEpisode.bind(this, true)}
+                                    >
+                                        <span>Publish</span>
+                                    </div>
+                                </div>
+                                {
+                                    podcastError &&
+                                    <div style={{fontSize: 16, marginTop: 10, color: 'red'}}>
+                                     {podcastError}
+                                    </div>
+                                    || null
+                                }
                             </div>
-                        </div>
+                        }
                     </div>
 
             </div>

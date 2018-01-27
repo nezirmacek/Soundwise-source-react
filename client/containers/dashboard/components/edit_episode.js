@@ -36,6 +36,9 @@ export default class EditEpisode extends Component {
             coverartUrl: '',
             coverArtUploading: false,
             sendEmails: false,
+            startProcessingEpisode : false,
+            doneProcessingEpisode: false,
+            podcastError: null,
         };
         this.uploadCoverArtInput = null;
     }
@@ -145,9 +148,16 @@ export default class EditEpisode extends Component {
     submit (toPublish) {
         const { title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverartUrl, date_created} = this.state;
         const { userInfo, history } = this.props;
+        const soundcast = userInfo.soundcasts_managed[soundcastID];
+        const {itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion} = soundcast; // only available if the soundcast has been submitted as a podcast;
         const { id } = history.location.state;
         const that = this;
-
+        if(toPublish || isPublished) {
+          this.setState({
+            startProcessingEpisode: true,
+            doneProcessingEpisode: false,
+          });
+        }
         const editedEpisode = {
             title,
             soundcastID,
@@ -175,13 +185,53 @@ export default class EditEpisode extends Component {
           .set(changedEpisode).then(
             res => {
                 // history.goBack();
-                if(toPublish && !isPublished) { // if publishing for the first time
-                  alert('Episode is published.');
-                  that.notifySubscribers();
-                  history.goBack();
-                } else  {
-                  alert('The edited episode is saved');
-                  // history.goBack();
+                if(podcastFeedVersion) {
+                  firebase.database().ref(`episodes/${id}/id3Tagged`)
+                  .set(false)
+                  .then(() => {
+                    Axios.post('/api/create_feed', {
+                      soundcastId: soundcastID,
+                      itunesExplicit,
+                      itunesImage,
+                      itunesCategory,
+                    })
+                    .then(response => {
+                      that.setState({
+                        startProcessingEpisode: false,
+                        doneProcessingEpisode: true,
+                      });
+                      alert('Episode is processed and saved.');
+                      if(toPublish && !isPublished) {
+                        that.notifySubscribers();
+                        history.goBack();
+                      }
+                    })
+                    .catch(err => {
+                      that.setState({
+                        startProcessingEpisode: false,
+                        doneProcessingEpisode: true,
+                        podcastError: err.toString(),
+                      });
+                      console.log(err);
+                    });
+                  })
+                } else {
+                  if(toPublish && !isPublished) { // if publishing for the first time
+                    that.setState({
+                      startProcessingEpisode: false,
+                      doneProcessingEpisode: true,
+                    });
+                    alert('Episode is published.');
+                    that.notifySubscribers();
+                    history.goBack();
+                  } else  {
+                    that.setState({
+                      startProcessingEpisode: false,
+                      doneProcessingEpisode: true,
+                    });
+                    alert('The edited episode is saved');
+                    // history.goBack();
+                  }
                 }
             },
             err => {
@@ -260,7 +310,7 @@ export default class EditEpisode extends Component {
     }
 
     render() {
-        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished, soundcastID } = this.state;
+        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished, soundcastID, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
         const {history, userInfo} = this.props;
         const { id } = this.props.history.location.state;
         const _soundcasts_managed = [];
@@ -484,32 +534,55 @@ export default class EditEpisode extends Component {
                                 }
                             </select>
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                            <OrangeSubmitButton
-                                label={isPublished ? "Update" : "Save draft"}
-                                onClick={this.submit.bind(this, false)}
-                                styles={{backgroundColor: Colors.link, borderWidth: 0}}
-                            />
-                        </div>
                         {
-                            !isPublished &&
+                          startProcessingEpisode &&
+                          <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                                  style={{textAlign: 'center', marginTop: 25}}>
+                              <div className='' style={{ fontSize: 17, width: '100%'}}>
+                                <span>Processing episode...</span>
+                              </div>
+                              <div className='' style={{marginTop: 10, width: '100%'}}>
+                                <Dots style={{}} color={Colors.mainOrange} size={32} speed={1}/>
+                              </div>
+                          </div>
+                          ||
+                          <div>
                             <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                              <OrangeSubmitButton
-                                label='Publish'
-                                onClick={this.submit.bind(this, true)}
-                              />
+                                <OrangeSubmitButton
+                                    label={isPublished ? "Update" : "Save draft"}
+                                    onClick={this.submit.bind(this, false)}
+                                    styles={{backgroundColor: Colors.link, borderWidth: 0}}
+                                />
                             </div>
-                            || null
+                            {
+                                !isPublished &&
+                                <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                  <OrangeSubmitButton
+                                    label='Publish'
+                                    onClick={this.submit.bind(this, true)}
+                                  />
+                                </div>
+                                || null
+                            }
+                            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <TransparentShortSubmitButton
+                                    label="Cancel"
+                                    styles={{width: 229}}
+                                    onClick={() => {
+                                      history.goBack();
+                                    }}
+                                />
+                            </div>
+                            {
+                              podcastError &&
+                              <div className='col-md-12' style={{fontSize: 16, marginTop: 10, color: 'red'}}>
+                               {podcastError}
+                              </div>
+                              || null
+                            }
+                          </div>
+
                         }
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                            <TransparentShortSubmitButton
-                                label="Cancel"
-                                styles={{width: 229}}
-                                onClick={() => {
-                                  history.goBack();
-                                }}
-                            />
-                        </div>
                     </div>
                 </div>
             </div>

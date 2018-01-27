@@ -155,12 +155,28 @@ export default class Soundcast extends Component {
     })
   }
 
-  deleteEpisode(episode) {
+  async deleteEpisode(episode) {
     const title = episode.title;
     if(confirm(`Are you sure you want to delete ${title}? You won't be able to go back.`)) {
-      firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`).remove();
-      firebase.database().ref(`episodes/${episode.id}/isPublished`).set(false);
-      firebase.database().ref(`episodes/${episode.id}`).remove();
+      await firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`).remove();
+      // firebase.database().ref(`episodes/${episode.id}/isPublished`).set(false);
+      await firebase.database().ref(`episodes/${episode.id}`).remove();
+      const episodes = await firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes`).once('value');
+      const episodesKeys = Object.keys(episodes.val());
+      let episodesArr = [], episodeIndex;
+      for(var i = 0; i < episodesKeys.length; i++) {
+        episodeIndex = await firebase.database().ref(`episodes/${episodesKeys[i]}/index`).once('value');
+        episodesArr.push({
+          id: episodesKeys[i],
+          index: episodeIndex.val()
+        });
+      }
+      episodesArr.sort((a, b) => { // sort in ascending order
+        return a.index - b.index
+      });
+      for(var j = 0; j < episodesArr.length; j++) {
+        await firebase.database().ref(`episodes/${episodesArr[j].id}/index`).set(j + 1);
+      }
       alert(`${title} has been deleted`);
       return;
     }

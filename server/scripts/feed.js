@@ -110,7 +110,9 @@ module.exports.createFeed = async (req, res) => {
                     resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                   }
                 } else { // not tagged, setting up ID3
-                  file.addCommand('-metadata', `title="${episode.title}"`);
+                  const title = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+                  const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+                  file.addCommand('-metadata', `title="${title}"`);
                   file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostName}"`);
                   file.addCommand('-metadata', `album="${title}"`);
