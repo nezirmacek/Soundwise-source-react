@@ -185,7 +185,7 @@ module.exports.createFeed = async (req, res) => {
             itunesSummary,
             // itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
             itunesExplicit,
-            itunesDuration: episode.duration || results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
+            itunesDuration: Math.round(episode.duration) || results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
             customElements: [
               {'content:encoded': `<![CDATA[${itunesSummary}]]>`}
             ]
