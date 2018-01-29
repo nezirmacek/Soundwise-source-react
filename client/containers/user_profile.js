@@ -6,6 +6,9 @@ import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 
 import ImageCropModal from './dashboard/components/image_crop_modal';
 import Footer from '../components/footer';
@@ -19,13 +22,20 @@ class _UserProfile extends Component {
         this.state = {
             firstName: '',
             lastName: '',
+            email: '',
             pic_url: false,
             profileImgUploaded: false,
             profileSaved: false,
+            providerId: '',
+            passwordPopUpOpen: false,
+            password: '',
+            newPassword: '',
+            newPassword2: '',
         };
         this.profileImgInputRef = null;
         this.currentImageRef = null;
         this.submit = this.submit.bind(this);
+        this.changePassword = this.changePassword.bind(this);
     }
 
   componentDidMount() {
@@ -37,8 +47,16 @@ class _UserProfile extends Component {
                     firstName: that.props.userInfo.firstName,
                     lastName: that.props.userInfo.lastName,
                     pic_url: that.props.userInfo.pic_url,
+                    email: that.props.userInfo.email[0],
+                    stripe_id: that.props.userInfo.stripe_id,
                 });
+                if(that.props.userInfo.stripe_id) {
+                  that.retrieveCustomer(that.props.userInfo.stripe_id);
+                }
             }
+            that.setState({
+              providerId: user.providerId,
+            });
         } else {
             that.props.history.push('/signin');
         }
@@ -51,8 +69,28 @@ class _UserProfile extends Component {
           firstName: nextProps.userInfo.firstName,
           lastName: nextProps.userInfo.lastName,
           pic_url: nextProps.userInfo.pic_url,
+          email: nextProps.userInfo.email[0],
+          stripe_id: nextProps.userInfo.stripe_id,
       });
+      if(!this.state.stripe_id && nextProps.userInfo.stripe_id) {
+        this.retrieveCustomer(nextProps.userInfo.stripe_id);
+      }
     }
+  }
+
+  retrieveCustomer(stripe_id) {
+    const that = this;
+    Axios.get('/api/retrieveCustomer', {params: {stripe_id}})
+    .then(response => {
+      const customer = response.customer;
+      console.log('customer: ', customer);
+      that.setState({
+        exp_month: customer.sources.data[0].exp_month,
+        exp_year: customer.sources.data[0].exp_year,
+        last4: customer.sources.data[0].last4,
+        brand: customer.sources.data[0].brand,
+      });
+    })
   }
 
   _uploadToAws (file) {
@@ -99,8 +137,147 @@ class _UserProfile extends Component {
       }
   }
 
+  changePassword() {
+    this.setState({
+      passwordError: '',
+    });
+    const {email, password, newPassword, newPassword2} = this.state;
+    if(newPassword != newPassword2 ) {
+      this.setState({
+        passwordError: 'Please make sure you enter the same new password twice.',
+        newPassword: '',
+        newPassword2: '',
+      });
+      return;
+    } else if(!newPassword.length) {
+      this.setState({
+        passwordError: 'New password cannot be empty.',
+        newPassword: '',
+        newPassword2: '',
+      });
+      return;
+    } else {
+      this.setState({
+        passwordPopUpOpen: false,
+      });
+    }
+    const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+    const user = firebase.auth().currentUser;
+    if(user) {
+      user.reauthenticateWithCredential(credential).then(() => {
+        user.updatePassword(newPassword).then(function() {
+          const newCredential = firebase.auth.EmailAuthProvider.credential(email, newPassword);
+          user.reauthenticateWithCredential(newCredential).then(() => {
+            alert('Password changed.');
+            that.setState({
+              password: '',
+              newPassword: '',
+              newPassword2: '',
+            });
+          });
+        }).catch(function(error) {
+          alert(`Failed to change password: ${error}`);
+          that.setState({
+            password: '',
+            newPassword: '',
+            newPassword2: '',
+          });
+        });
+      })
+      .catch(err => {
+        alert(`Failed to change password: ${err}`);
+        that.setState({
+          password: '',
+          newPassword: '',
+          newPassword2: '',
+        });
+      })
+    }
+  }
+
+  passwordPopUp() {
+    const {password, newPassword, newPassword2, passwordError} = this.state;
+    const that = this;
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={false}
+        onClick={() => that.setState({
+          passwordPopUpOpen: false,
+          passwordError: '',
+        })}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onClick={this.changePassword}
+      />,
+    ];
+
+    return (
+      <div>
+        <MuiThemeProvider>
+          <Dialog
+            title="Change password"
+            actions={actions}
+            modal={false}
+            open={this.state.passwordPopUpOpen}
+            onRequestClose={() => that.setState({
+              passwordPopUpOpen: false,
+              passwordError: '',
+            })}
+          >
+            <div >
+                <span style={styles.titleText}>
+                    Current password
+                </span>
+                <div style={{...styles.inputTitleWrapper}}>
+                  <input
+                      type="password"
+                      style={styles.inputTitle}
+                      onChange={(e) => {this.setState({password: e.target.value})}}
+                      value={password}
+                  />
+                </div>
+            </div>
+            <div >
+                <span style={styles.titleText}>
+                    New password
+                </span>
+                <div style={{...styles.inputTitleWrapper}}>
+                  <input
+                      type="password"
+                      style={styles.inputTitle}
+                      onChange={(e) => {this.setState({newPassword: e.target.value})}}
+                      value={newPassword}
+                  />
+                </div>
+            </div>
+            <div >
+                <span style={styles.titleText}>
+                    Re-enter new password
+                </span>
+                <div style={{...styles.inputTitleWrapper}}>
+                  <input
+                      type="password"
+                      style={styles.inputTitle}
+                      onChange={(e) => {this.setState({newPassword2: e.target.value})}}
+                      value={newPassword2}
+                  />
+                </div>
+                <div>
+                  <span style={{...styles.inputTitle, color: 'red'}}>{passwordError}</span>
+                </div>
+            </div>
+          </Dialog>
+        </MuiThemeProvider>
+      </div>
+    );
+  }
+
   submit () {
-      const {firstName, lastName, pic_url} = this.state;
+      const {firstName, lastName, pic_url, providerId,} = this.state;
       const { userInfo, history } = this.props;
       const that = this;
       // const userID = firebase.auth().currentUser.uid;
@@ -142,7 +319,7 @@ class _UserProfile extends Component {
   }
 
   render() {
-    const {firstName, lastName, pic_url, profileImgUploaded, profileSaved, modalOpen} = this.state;
+    const {firstName, lastName, pic_url, profileImgUploaded, profileSaved, modalOpen, email, providerId, stripe_id} = this.state;
     const that = this;
     return (
             <div>
@@ -193,7 +370,7 @@ class _UserProfile extends Component {
                                   />
                                 </div>
                             </div>
-                            <div className='col-md-12 col-sm-12 col-xs-12' style={{height: 150, paddingTop: 30}}>
+                            <div className='col-md-12 col-sm-12 col-xs-12' style={{paddingTop: 30}}>
                                 <div style={{marginBottom: 10}}>
                                     <span style={styles.titleText}>
                                         Profile Picture
@@ -237,6 +414,70 @@ class _UserProfile extends Component {
                                     </div>
                                 </div>
                             </div>
+                            <div className='col-md-12 col-sm-12 col-xs-12' style={{ paddingTop: 30}}>
+                              <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10, paddingLeft: 0}}>
+                                  <div style={styles.titleText}>
+                                      Email
+                                  </div>
+                                  <div style={styles.inputTitleWrapper}>
+                                    <div style={styles.inputTitle}>
+                                      {email}
+                                    </div>
+                                  </div>
+                              </div>
+                              {
+                                providerId == 'facebook.com' &&
+                                <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10}}>
+                                    <div style={styles.titleText}>
+                                        Login Provider
+                                    </div>
+                                    <div style={styles.inputTitleWrapper}>
+                                      <div style={styles.inputTitle}>
+                                        <span>Facebook</span>
+                                      </div>
+                                    </div>
+                                </div>
+                                ||
+                                <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10}}>
+                                    <div style={styles.titleText}>
+                                        Password
+                                    </div>
+                                    <div style={styles.inputTitleWrapper}>
+                                    <div style={styles.inputTitle}>
+                                      <span>******</span>
+                                      <span onClick={() => {
+                                          that.setState({
+                                            passwordPopUpOpen: true,
+                                          });
+                                        }} style={{paddingLeft: 20, color: Colors.mainOrange, cursor: 'pointer'}}>change</span>
+                                    </div>
+                                    </div>
+                                </div>
+                              }
+                              <div className='col-md-12 col-sm-12 col-xs-12' style={{marginBottom: 10, paddingLeft: 0}}>
+                                  <div style={styles.titleText}>
+                                      Billing Information
+                                  </div>
+                                  {
+                                    stripe_id &&
+                                    <div style={styles.inputTitleWrapper}>
+                                      <div style={styles.inputTitle}>
+                                        {}
+                                      </div>
+                                      <div style={{...styles.inputTitle, color: Colors.mainOrange}}>
+                                        Update credit card
+                                      </div>
+                                    </div>
+                                    ||
+                                    <div style={styles.inputTitleWrapper}>
+                                      <div style={{...styles.inputTitle, color: Colors.mainOrange}}>
+                                        Add a credit card
+                                      </div>
+                                    </div>
+                                  }
+                              </div>
+                            </div>
+                            {this.passwordPopUp()}
                           </div>
                         </div>
                         <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 center-col text-center" style={{paddingTop: 35}}>

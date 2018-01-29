@@ -19,6 +19,7 @@ var request = require('request');
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
+var retrieveCustomer = require('./scripts/payment.js').retrieveCustomer;
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
@@ -44,7 +45,7 @@ firebase.initializeApp({
 
 // sync firebase with Algolia
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
-algoliaIndex();
+// algoliaIndex();
 
 var app = module.exports = loopback();
 app.start = function() {
@@ -92,7 +93,7 @@ app.post('/api/trial_request', handleTrialRequest);
 
 app.post('/api/create_feed', createFeed);
 app.get('/rss/:id', requestFeed);
-
+app.get('/api/retrieveCustomer', retrieveCustomer);
 
 app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;
 app.post('/api/comment_notify', Emails.sendCommentNotification);

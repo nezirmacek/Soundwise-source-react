@@ -152,7 +152,7 @@ module.exports.createFeed = async (req, res) => {
                       // after upload success, change episode tagged record in firebase:
                       console.log(episode.id, ' uploaded to: ', files[0].url);
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-                      firebase.database().ref(`episodes/${episode.id}/url`).set(files[0].url);
+                      firebase.database().ref(`episodes/${episode.id}/url`).set(files[0].url.replace('http', 'https'));
                       resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                     });
                   });

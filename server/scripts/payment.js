@@ -127,6 +127,19 @@ module.exports.handleRecurringPayment = (req, res) => {
   });
 };
 
+module.exports.retrieveCustomer = (req, res) => {
+  stripe.customers.retrieve(
+    req.params.stripe_id,
+    (err, customer) => {
+      if (err) {
+        console.log(err);
+        return res.status(err.raw.statusCode).send(err.raw.message);
+      }
+      res.send({customer});
+    }
+  );
+};
+
 function createCustomer(req) {
   return new Promise((resolve, reject) => {
     console.log('req.body.customer: ', req.body.customer);
@@ -208,4 +221,6 @@ function createCustomer(req) {
     }
   });
 };
+
+
 

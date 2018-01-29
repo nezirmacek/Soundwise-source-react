@@ -21,7 +21,7 @@ module.exports.createStripeAccount = (req, res) => {
   .then(response => {
     stripe.accounts.update(stripe_user_id, {
       'payout_schedule': { // monthly payouts, with two week delay
-        'delay_days': 14,
+        'delay_days': 0,
         'interval': 'monthly',
         'monthly_anchor': 1,
       },
@@ -29,6 +29,7 @@ module.exports.createStripeAccount = (req, res) => {
         'publisherId': req.body.publisherId,
       },
       'payout_statement_descriptor': 'Soundwise transfer',
+      'debit_negative_balances': true,
     });
     res.send(response);
   })
