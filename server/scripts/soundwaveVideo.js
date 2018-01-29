@@ -7,8 +7,13 @@ const uploader = require('express-fileuploader');
 // const firebase = require('firebase-admin');
 const request = require('request-promise');
 const moment = require('moment');
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(require('../../config').sendGridApiKey);
+
+var sgMail = require('@sendgrid/mail');
+var sendGridApiKey = require('../../config').sendGridApiKey;
+sgMail.setApiKey(sendGridApiKey);
+var client = require('@sendgrid/client');
+client.setApiKey(sendGridApiKey);
+
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 
@@ -36,10 +41,36 @@ module.exports.createAudioWaveVid = async (req, res) => {
   // **** step 3: upload the video created to AWS s3
 
   // **** step 4: email the user the download link of the video file. If there is a processing error, notify user by email that there is an error.
+  sgMail.send({ // send email
+    to: email,
+    from: 'support@mysoundwise.com',
+    subject: 'Your soundwave video is ready for download!',
+    html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p>`,
+  });
 
   // **** step 5: save user email in our email contact database
+  const options = {
+    method: 'POST',
+    url: '/v3/contactdb/recipients',
+    body: [{email}],
+  };
+  client.request(options)
+  .then(([response, body]) => {
+    recipients = body.persisted_recipients; // array of recipient IDs
+    const data = {
+      method: 'POST',
+      url: `/v3/contactdb/lists/2910467/recipients`,
+      body: recipients,
+    };
+    client.request(data)
+    .then(([response, body]) => {
+      console.log(body);
+    })
+    .catch(err => {
+      console.log('error: ', err.message);
+    });
 
   // **** step 6: delete the image, audio and video files from temp folder.
 
-  // **** step 7: Delete the video file from s3 in 24 hours.
+  // **** step 7: Delete the video file from AWS s3 in 24 hours.
 };
