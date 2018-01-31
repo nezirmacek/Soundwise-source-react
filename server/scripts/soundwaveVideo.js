@@ -33,7 +33,7 @@ const videoPath = `video-${position}.mp4`;
 fs.readFile('ep-18-square.png', (err, image) => { // load image as Buffer
   module.exports.createAudioWaveVid( // run test
     { body: { image, audio: 'test.mp3' // 'ep-18-clip.mp3'
-      , color: 'pink', position, email: 'test@gmail.com' }}, // req
+      , color: 'blue', position, email: 'test@gmail.com' }}, // req
     { end: f => 0, error: f => 0 } // res
   );
 });
@@ -98,14 +98,11 @@ module.exports.createAudioWaveVid = async (req, res) => {
           // **** step 2: create audio waveform from the audio file and combine it with the image file to create a .mp4 video, using the color and waveform position settings from the request body.
           // example commandline command for image size == 1080x1080, color == 'orange', and position == 'bottom':
           // ffmpeg -i audioFile.mp3 -loop 1 -i image.png -filter_complex "[0:a]showwaves=s=1080x150:colors=orange:mode=cline[sw];[1:v]scale=1080:-1,crop=iw:1080[bg];[bg][sw]overlay=0:780:shortest=1:format=auto,format=yuv420p[vid]" -map "[vid]" -map 0:a -codec:v libx264 -crf 18 -preset fast -codec:a aac -strict -2 -b:a 192k video.mp4
-
-//ffmpeg -i ep-18-clip.mp3 -loop 1 -i /tmp/78127593593186539352258370396023_updated.png -filter_complex "[0:a]showwaves=s=1080x150:colors=orange:mode=cline[sw];[1:v]scale=600:-1,crop=iw:600[bg];[bg][sw]overlay=0:780:shortest=1:format=auto,format=yuv420p[vid]" -map "[vid]" -map 0:a -codec:v libx264 -crf 18 -preset fast -codec:a aac -strict 2 -b:a 192k video.mp4
-
           const scale = doResize[0] || width;
           const crop  = doResize[1] || height;
           const isSquare = crop !== 720;
           const marginLeft = isSquare ? 0 : 100; // no margin if square
-          let marginTop;  // top position (default)
+          let marginTop;
           if (position === 'top') {
             marginTop = isSquare ? 150 : 100;
           } else if (position === 'middle') {
