@@ -25,11 +25,15 @@ const makeId = f => Math.random().toString().slice(2) + Math.random().toString()
 
 
 //// TEST EXEC
-fs.readFile('test.jpg', (err, image) => { // load image as Buffer
-// fs.readFile('ep-18-square.png', (err, image) => { // load image as Buffer
+// const position = 'top';
+// const position = 'middle';
+const position = 'bottom';
+const videoPath = `video-${position}.mp4`;
+// fs.readFile('test.jpg', (err, image) => { // load image as Buffer
+fs.readFile('ep-18-square.png', (err, image) => { // load image as Buffer
   module.exports.createAudioWaveVid( // run test
-    { body: { image, audio: 'ep-18-clip.mp3'
-      , pink: 'blue', position: 'top', email: 'test@gmail.com' }}, // req
+    { body: { image, audio: 'test.mp3' // 'ep-18-clip.mp3'
+      , color: 'pink', position, email: 'test@gmail.com' }}, // req
     { end: f => 0, error: f => 0 } // res
   );
 });
@@ -55,23 +59,23 @@ module.exports.createAudioWaveVid = async (req, res) => {
         if (err) {
           return sendError(res, `Error: cannot save image file ${imagePath} ${err}`);
         }
+        const doResize = [];
         new Promise(resolve => {
           // **** step 1b: check image size: If it's a square image, dimensions need to be at least 1080px x 1080px. If it's a rectangular image, dimensions need to be at least 1280 px x 720 px. If image is smaller than required size, return error to front end saying "image is too small."
-          let doResize;
           if (height === width) { // square
             if (height < 1080) {
               return res.error(`Error: image is too small.`);
             } else if (height > 1080) {
-              doResize = [1080, 1080]; // if image is larger than the required size, it needs to be scaled back to either 1080x1080 or 1280x720.
+              doResize.push(1080, 1080); // if image is larger than the required size, it needs to be scaled back to either 1080x1080 or 1280x720.
             }
           } else {  // rectangular
             if (width < 1280 || height < 720) {
               return res.error(`Error: image is too small.`);
             } else if (width > 1280 || height > 720) {
-              doResize = [1280, 720];
+              doResize.push(1280, 720);
             }
           }
-          if (doResize) { // resizing
+          if (doResize.length) { // resizing
             (new ffmpeg(imagePath)).then(imageFile => {
               const updatedImagePath = `${imagePath.slice(0, -4)}_updated.png`;
               // ffmpeg -i ep-18-square.png -vf scale=1080:1080 out.png
@@ -97,8 +101,21 @@ module.exports.createAudioWaveVid = async (req, res) => {
 
 //ffmpeg -i ep-18-clip.mp3 -loop 1 -i /tmp/78127593593186539352258370396023_updated.png -filter_complex "[0:a]showwaves=s=1080x150:colors=orange:mode=cline[sw];[1:v]scale=600:-1,crop=iw:600[bg];[bg][sw]overlay=0:780:shortest=1:format=auto,format=yuv420p[vid]" -map "[vid]" -map 0:a -codec:v libx264 -crf 18 -preset fast -codec:a aac -strict 2 -b:a 192k video.mp4
 
-          // const filter_complex = `"[0:a]showwaves=s=1080x150:colors=${color}:mode=cline[sw];[1:v]scale=1080:-1,crop=iw:1080[bg];[bg][sw]overlay=0:780:shortest=1:format=auto,format=yuv420p[vid]"`;
-          `"[0:a]showwaves=s=600x150:colors=${color}:mode=cline[sw];[1:v]scale=600:-1,crop=iw:600[bg];[bg][sw]overlay=0:780:shortest=1:format=auto,format=yuv420p[vid]"`;
+          const scale = doResize[0] || width;
+          const crop  = doResize[1] || height;
+          const isSquare = crop !== 720;
+          const marginLeft = isSquare ? 0 : 100; // no margin if square
+          let marginTop;  // top position (default)
+          if (position === 'top') {
+            marginTop = isSquare ? 150 : 100;
+          } else if (position === 'middle') {
+            marginTop = crop / 2 - 75; // 75 - half of wavesHeight (150)
+          } else { // default bottom
+            marginTop = crop - ((isSquare ? 150 : 100) + 150); // + 150 - wavesHeight
+          }
+          const filter_complex = `"[0:a]showwaves=s=1080x150:colors=${color}:mode=cline[sw];`
+            + `[1:v]scale=${scale}:-1,crop=iw:${crop}[bg];[bg][sw]overlay=`
+            + `${marginLeft}:${marginTop}:shortest=1:format=auto,format=yuv420p[vid]"`;
           audioFile.addCommand('-loop'          , '1'           );
           audioFile.addCommand('-i'             , imagePath     );
           audioFile.addCommand('-filter_complex', filter_complex);
@@ -110,7 +127,6 @@ module.exports.createAudioWaveVid = async (req, res) => {
           audioFile.addCommand('-codec:a'       , 'aac'         );
           audioFile.addCommand('-strict'        , '2'           );
           audioFile.addCommand('-b:a'           , '192k'        );
-          const videoPath = 'video.mp4';
           audioFile.save(videoPath, (err, fileName) => {
             if (err) {
               return console.log(`Error: video saving fails ${videoPath} ${err}`);
