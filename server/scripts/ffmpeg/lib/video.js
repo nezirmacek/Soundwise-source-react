@@ -31,7 +31,7 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	 */
 	this.addCommand = function (command, argument) {
 		// Check if exists the current command
-		if (utils.in_array(command, commands) === false || command === '-metadata') {
+		if (utils.in_array(command, commands) === false || command === '-metadata' || command === '-map') {
 			// Add the new command
 			commands.push(command);
 			// Add the argument to new command
