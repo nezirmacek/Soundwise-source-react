@@ -170,7 +170,7 @@ module.exports.createFeed = async (req, res) => {
           const description = `${episode.description || ''}<br /><p>Subscribe to ${title} on <a href="https://mysoundwise.com/soundcasts/${soundcastId}">Soundwise</a></p>`; ;
           // const itunesSummary = description.length >= 3988 ?
                                 // description.slice(0, 3985) + '..' : description;
-          const itunesSummary = `${episode.description || ''}<p></p><p></p><p>Subscribe to ${title} on <a href="https://mysoundwise.com/soundcasts/${soundcastId}">Soundwise</a></p>`; // let itunes truncate it if it's longer than 4000
+          const itunesSummary = `${episode.description || ''}<p></p><p>Subscribe to <a href="https://mysoundwise.com/soundcasts/${soundcastId}">${title}</a> on <a href="https://mysoundwise.com/soundcasts/${soundcastId}">Soundwise</a></p>`; // let itunes truncate it if it's longer than 4000
           const episodeObj = {
             title: episode.title,
             description, // may contain html
@@ -185,12 +185,17 @@ module.exports.createFeed = async (req, res) => {
             itunesAuthor: hostName,
             itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
             // todo: check whether CDATA tag is actually needed
-            // itunesSummary,
-            itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
+            itunesSummary,
+            // itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
             itunesExplicit,
             itunesDuration: Math.round(episode.duration) || results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
             customElements: [
-              {'content:encoded': `<![CDATA[${itunesSummary}]]>`}
+              {
+                'content:encoded':
+                  {
+                    _cdata: itunesSummary
+                  }
+              }
             ]
           };
           // check if episode.keywords exists, if so, use that, if not, don't add it

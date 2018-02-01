@@ -86,8 +86,24 @@ class _MySoundcasts extends Component {
                             if(soundcasts[id].subscribed && soundcasts[id].current_period_end < moment().format('X')) {
                                 userSoundcasts[i].subscribed = false;
                                 firebase.database().ref(`users/${userId}/soundcasts/${id}/subscribed`).set(false);
+                                firebase.database().ref(`soundcasts/${id}/subscribed/${userId}`).remove();
+                                firebase.database().ref(`publishers/${snapshot.val().publisherID}/freeSubscribers/${userId}/${id}`).remove();
                             }
                          })
+                        .then(() => {
+                            firebase.database().ref(`publishers/${snapshot.val().publisherID}/freeSubscribers/${userId}`).once('value')
+                            .then(freeSubsObj => {
+                                if(!freeSubsObj.val()) {
+                                    firebase.database().ref(`publishers/${snapshot.val().publisherID}/freeSubscriberCount`).once('value')
+                                    .then(subsCountObj => {
+                                        if(subsCountObj.val()) {
+                                            const count = subsCountObj.val();
+                                            firebase.database().ref(`publishers/${snapshot.val().publisherID}/freeSubscriberCount`).set(count - 1);
+                                        }
+                                    })
+                                }
+                            });
+                        })
                         .then(res => res, err => console.log(err));
                 });
 

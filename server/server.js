@@ -19,6 +19,7 @@ var request = require('request');
 
 var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
+var updateCreditCard = require('./scripts/payment.js').updateCreditCard;
 var retrieveCustomer = require('./scripts/payment.js').retrieveCustomer;
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
@@ -94,6 +95,7 @@ app.post('/api/trial_request', handleTrialRequest);
 app.post('/api/create_feed', createFeed);
 app.get('/rss/:id', requestFeed);
 app.get('/api/retrieveCustomer', retrieveCustomer);
+app.post('/api/updateCreditCard', updateCreditCard);
 
 app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;
 app.post('/api/comment_notify', Emails.sendCommentNotification);
@@ -182,6 +184,18 @@ var sendGridApiKey = require('../config').sendGridApiKey;
 
 const client = require('@sendgrid/client');
 client.setApiKey(sendGridApiKey);
+// let listId;
+// const data1 = {
+//   method: 'POST',
+//   url: '/v3/contactdb/lists',
+//   body: {'name': 'platform-listeners'},
+// };
+// // console.log('data1: ', data1);
+// client.request(data1)
+// .then(([response, body]) => {
+//   listId = body.id;
+//   console.log(listId);
+// });
 // const options = {
 //   method: 'POST',
 //   url: '/v3/contactdb/recipients',
@@ -201,4 +215,3 @@ client.setApiKey(sendGridApiKey);
 //   current_period_end: 4638902400,
 //   date_subscribed: 1515181960
 // });
-
