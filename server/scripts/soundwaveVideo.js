@@ -3,6 +3,9 @@
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
+const AWS = require('aws-sdk');
+AWS.config.update(awsConfig);
+const s3 = new AWS.S3();
 const uploader = require('express-fileuploader');
 // const firebase = require('firebase-admin');
 const request = require('request-promise');
@@ -105,7 +108,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
           audioFile.addCommand('-codec:a'       , 'aac'         );
           audioFile.addCommand('-strict'        , '2'           );
           audioFile.addCommand('-b:a'           , '192k'        );
-          const videoPath = `/tmp/${audioPath.slice(-4)}.mp4`;
+          const videoPath = `${audioPath.slice(0, -4)}.mp4`;
           audioFile.save(videoPath, (err, fileName) => {
             if (err) {
               return console.log(`Error: video saving fails ${videoPath} ${err}`);
@@ -153,9 +156,6 @@ module.exports.createAudioWaveVid = async (req, res) => {
                 fs.unlink(audioPath, err => 0); // remove audio file
                 fs.unlink(imagePath, err => 0); // remove image file
                 fs.unlink(videoPath, err => 0); // remove video file
-
-                // **** step 7: Delete the video file from AWS s3 in 24 hours.
-                // TODO
               }).catch(err => console.log(`Error: wavevideo Sendgrid ${err}`));
             });
           });
@@ -166,3 +166,25 @@ module.exports.createAudioWaveVid = async (req, res) => {
     }
   });
 };
+
+// **** step 7: Delete the video file from AWS s3 in 24 hours.
+const timer = f => {
+  // from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjectsV2-property
+  s3.listObjectsV2({ Bucket: 'soundwiseinc', Prefix: 'wavevideo' }, (err, data) => {
+    if (err) {
+      return console.log(`Error: soundwaveVideo cannot access s3 bucket ${err}`);
+    }
+    data.Contents.forEach(el => {
+      if (moment().diff(el.LastModified, 'minutes') > 1440) { // 24 hours
+        s3.deleteObject({ Bucket: 'soundwiseinc', Key: el.Key }, (err, data) => {
+          if (err) {
+            return console.log(`Error: soundwaveVideo cannot delete object ${el.Key} ${err}`);
+          }
+          console.log(`SoundwaveVideo Successfully deleted ${el.Key}`)
+        });
+      }
+    });
+  });
+  setTimeout(timer, 15 * 60 * 1000); // check each 15 minutes
+};
+timer();
