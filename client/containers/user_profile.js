@@ -37,15 +37,16 @@ class _UserProfile extends Component {
             brand: '',
             cvc: '',
             newCard: '',
-            exp_year_new: '',
-            exp_month_new: '',
+            exp_year_new: new Date().getFullYear(),
+            exp_month_new: 0,
+            creditCardError: '',
         };
         this.profileImgInputRef = null;
         this.currentImageRef = null;
         this.submit = this.submit.bind(this);
         this.changePassword = this.changePassword.bind(this);
         this.changeCreditCard = this.changeCreditCard.bind(this);
-        this.stripeTokenHandler = this.stripeTokenHandler.bind(this);
+        // this.stripeTokenHandler = this.stripeTokenHandler.bind(this);
     }
 
   componentDidMount() {
@@ -297,6 +298,7 @@ class _UserProfile extends Component {
         monthOptions.push(<option value={i} key={i}>{moment().month(i).format('MMM (MM)')}</option>);
         yearOptions.push(<option value={i + +moment().format('YYYY')} key={i}>{i + +moment().format('YYYY')}</option>);
     }
+
     const actions = [
       <FlatButton
         label="Cancel"
@@ -331,7 +333,7 @@ class _UserProfile extends Component {
               creditCardError: '',
             })}
           >
-            <div style={styles.relativeBlock}>
+            <div className='col-md-12' style={{...styles.relativeBlock, paddingLeft: 0}}>
                 <input
                     onChange={(e) => {that.setState({newCard: e.target.value})}}
                     required
@@ -347,7 +349,7 @@ class _UserProfile extends Component {
             </div>
 
             {/*Expiration*/}
-            <div className=''>
+            <div className='col-md-9 col-xs-12' style={{paddingLeft: 0, paddingRight: 0}}>
                 {/*month*/}
                 <div style={styles.selectBlock} className="border-radius-4" >
                     <label style={styles.selectLabel}>Exp Month</label>
@@ -355,7 +357,7 @@ class _UserProfile extends Component {
                         onChange={(e) => {that.setState({exp_month_new: e.target.value})}}
                         name="exp_month"
                         id="expiry-month"
-                        value={that.state.exp_month_new}
+                        value={that.state.exp_month_new }
                         style={styles.select}
                     >
                         {
@@ -378,7 +380,8 @@ class _UserProfile extends Component {
                         }
                     </select>
                 </div>
-
+            </div>
+            <div className='col-md-3 col-xs-12' style={{paddingLeft: 0}}>
                 {/*cvv/cvc*/}
                 <input
                     onChange={(e) => {that.setState({cvc: e.target.value})}}
@@ -392,13 +395,13 @@ class _UserProfile extends Component {
                     style={Object.assign({}, styles.input, styles.cvc)}
                 />
             </div>
-
+            {
+                this.state.creditCardError &&
+                <div className='col-md-12' style={{color: 'red'}}>{ this.state.creditCardError }</div>
+                || null
+            }
             {/*button*/}
             <div style={styles.buttonWrapper}>
-                {
-                    this.state.paymentError &&
-                    <span style={{color: 'red'}}>{ this.state.creditCardError }</span>
-                }
                 <div style={styles.securedTextWrapper}>
                     <i className="ti-lock" style={styles.securedTextIcon} />
                     Transactions are secure and encrypted.
@@ -413,45 +416,71 @@ class _UserProfile extends Component {
     );
   }
 
-  changeCreditCard() {
-    const {newCard, cvc, exp_year_new, exp_month_new} = this.state;
-    Stripe.card.createToken({
-      number: newCard,
-      cvc,
-      exp_month: exp_month_new,
-      exp_year: exp_year_new
-    }, this.stripeTokenHandler);
-  }
+  // changeCreditCard() {
+  //   const {newCard, cvc, exp_year_new, exp_month_new} = this.state;
+  //   Stripe.card.createToken({
+  //     number: newCard,
+  //     cvc,
+  //     exp_month: exp_month_new,
+  //     exp_year: exp_year_new
+  //   }, this.stripeTokenHandler);
+  // }
 
-  stripeTokenHandler(status, response) {
-    const {stripe_id, newCard, exp_month_new, exp_year_new} = this.state;
+  changeCreditCard() {
+    const {stripe_id, cvc, newCard, exp_month_new, exp_year_new} = this.state;
     const that = this;
-    if(response.error) {
-        this.setState({
-            creditCardError: response.error.message,
-        });
-    } else {
-        Axios.post('/api/updateCreditCard', {
-            source: response.id,
-            customer: stripe_id,
-        })
-        .then(res => {
-          console.log(res.data);
-          that.retrieveCustomer(that.props.userInfo.stripe_id);
-          that.setState({
-            creditCardPopUpOpen: false,
-          });
-          alert('Credit card is updated');
-        })
-        .catch(err => {
-          console.log('error from stripe: ', err)
-          that.setState({
-              creditCardError: err,
-              creditCardPopUpOpen: false,
-          });
-          alert('Credit card update failed. Please try again later.');
-        });
+    if(newCard.length == 0) {
+      this.setState({
+        creditCardError: 'Please enter a card number.'
+      });
+      return;
     }
+    if(cvc.length == 0) {
+      this.setState({
+        creditCardError: 'Please enter the 3-digit security code (cvc).'
+      });
+      return;
+    }
+    Axios.post('/api/updateCreditCard', {
+        // source: response.id,
+        source: {
+          object: 'card',
+          exp_month: Number(exp_month_new) + 1,
+          exp_year: Number(exp_year_new),
+          number: Number(newCard),
+          cvc: Number(cvc),
+        },
+        customer: stripe_id,
+        email: stripe_id ? '' : that.props.userInfo.email[0]
+    })
+    .then(res => {
+      // console.log(res.data);
+      if(!stripe_id) {
+        that.setState({
+          stripe_id: res.data.id,
+        });
+        firebase.database().ref(`users/${that.props.userInfo.id}/stripe_id`).set(res.data.id);
+      }
+      that.retrieveCustomer(stripe_id);
+      that.setState({
+        creditCardPopUpOpen: false,
+        creditCardError: '',
+        newCard: '',
+        exp_month_new: '',
+        exp_year_new: '',
+        cvc: '',
+      });
+      alert('Credit card is updated');
+    })
+    .catch(err => {
+      console.log('error from stripe: ', err)
+      that.setState({
+          creditCardError: err,
+          creditCardPopUpOpen: false,
+      });
+      alert('Credit card update failed. Please try again later.');
+    });
+
   }
 
   submit () {
@@ -605,7 +634,7 @@ class _UserProfile extends Component {
                               </div>
                               {
                                 providerId == 'facebook.com' &&
-                                <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10}}>
+                                <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10, paddingLeft: 0}}>
                                     <div style={styles.titleText}>
                                         Login Provider
                                     </div>
@@ -616,7 +645,7 @@ class _UserProfile extends Component {
                                     </div>
                                 </div>
                                 ||
-                                <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10}}>
+                                <div className='col-md-6 col-sm-12 col-xs-12' style={{marginBottom: 10, paddingLeft: 0}}>
                                     <div style={styles.titleText}>
                                         Password
                                     </div>
@@ -775,7 +804,7 @@ const styles = {
     },
     cardsImage: {
         position: 'absolute',
-        right: 4,
+        right: 20,
         top: 10,
         width: 179,
         height: 26,
@@ -791,7 +820,7 @@ const styles = {
         margin: '10px 0 0 0',
     },
     selectBlock: {
-        width: '35%',
+        width: '45%',
         height: 46,
         float: 'left',
         marginTop: 9,
@@ -817,7 +846,7 @@ const styles = {
         right: 3,
     },
     cvc: {
-        width: '20%',
+        width: '100%',
         marginTop: 9,
     },
     buttonWrapper: {
