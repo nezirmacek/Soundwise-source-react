@@ -24,7 +24,7 @@ export default class Payment extends Component {
             submitDisabled: false,
             number: '',
             cvc: '',
-            exp_month: '0',
+            exp_month: 0,
             exp_year: new Date().getFullYear(),
             totalPay: 0,
             paid: false,

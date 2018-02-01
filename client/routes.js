@@ -67,7 +67,7 @@ class _Routes extends Component {
                     if (snapshot.val()) {
                         let _user = JSON.parse(JSON.stringify(snapshot.val()));
                         // console.log('_user: ', _user);
-                        that.props.signinUser(_user);
+                        that.props.signinUser({..._user, id: userId});
 
                         if (_user.admin) {
                             if (_user.publisherID) {

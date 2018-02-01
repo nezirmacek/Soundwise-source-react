@@ -143,18 +143,34 @@ module.exports.retrieveCustomer = (req, res) => {
 };
 
 module.exports.updateCreditCard = (req, res) => {
-  const {source, customer} = req.body;
-  stripe.customers.update(customer, {
-    source,
-  })
-  .then(response => {
-    console.log(response);
-    res.send(response);
-  })
-  .catch(err => {
-    console.log('err: ', err);
-    return res.status(500).send(err.message);
-  });
+  const {source, customer, email} = req.body;
+  // console.log('source: ', source);
+  if (customer) { // if it's existing customer
+    stripe.customers.update(customer, {
+      source,
+    })
+    .then(response => {
+      // console.log(response);
+      res.send(response);
+    })
+    .catch(err => {
+      console.log('err: ', err);
+      return res.status(500).send(err.message);
+    });
+  } else if (email) { // if it's a new customer
+    stripe.customers.create({
+      email,
+      source,
+      description: `platform customer from ${email}`,
+    })
+    .then(response => {
+      res.send(response);
+    })
+    .catch(err => {
+      console.log('err: ', err);
+      return res.status(500).send(err.message);
+    });
+  }
 };
 
 function createCustomer(req) {
