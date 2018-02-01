@@ -123,10 +123,11 @@ module.exports.createAudioWaveVid = async (req, res) => {
               return console.log(`Error: video saving fails ${videoPath} ${err}`);
             }
             console.log(`Video file ${videoPath} successfully saved`);
+
             // **** step 3: upload the video created to AWS s3
             uploader.use(new S3Strategy({
               uploadPath: `wavevideo`,
-              headers: { 'x-amz-acl': 'public-read' },
+              headers: { 'x-amz-acl': 'public-read', 'Content-Disposition': 'attachment' },
               options: {
                 key: awsConfig.accessKeyId,
                 secret: awsConfig.secretAccessKey,
