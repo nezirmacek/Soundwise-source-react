@@ -17,7 +17,6 @@ client.setApiKey(sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
-const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2);
 const sendError = (res, err) => {
   console.log(err);
   res.error(err);
@@ -27,32 +26,19 @@ const sendError = (res, err) => {
 // example output: https://twitter.com/RealNatashaChe/status/957752354841022464
 
 module.exports.createAudioWaveVid = async (req, res) => {
-  const {image, audio, color, position, email} = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
-  new Promise(resolve => { // obtaining and saving audio and image files
-    request.get({ encoding: null, url: image }).then(imageBuffer => {
-      const { height, width, type } = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
-      const imagePath = `/tmp/${makeId()}.${type}`;
-      fs.writeFile(imagePath, imageBuffer, err => { // save audio
-        if (err) {
-          return sendError(`Error: cannot write tmp image file ${imagePath}`);
-        }
-        request.get({ encoding: null, url: audio }).then(audioBuffer => {
-          const audioPath = `/tmp/${makeId() + episode.url.slice(-4)}`;
-          fs.writeFile(audioPath, audioBuffer, err => { // save audio
-            if (err) {
-              return sendError(`Error: cannot write tmp audio file ${audioPath}`);
-            }
-            resolve(audioPath, imagePath, height, width);
-          });
-        }).catch(err => sendError(res, `Error: unable to obtain audio ${err}`));
-      });
-    }).catch(err => sendError(res, `Error: unable to obtain image ${err}`));
-  }).then((audioPath, imagePath, height, width) => {
+  if (!req.files.audio || !req.files.image) {
+    return sendError(res, `Error: image and audio file must be provided`);
+  }
+  const audioPath = req.files.audio.path;
+  const imagePath = req.files.image.path;
+  const { color, position, email } = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
+  fs.readFile(imagePath, (err, imageBuffer) => {
+    const { height, width } = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
     try {
       (new ffmpeg(audioPath)).then(audioFile => { // loading audio file
         // **** step 1a: check if audio file is <= 60 seconds long. If it's > 60 seconds, return error to the front end saying "audio length needs to be under 60 seconds.".
         if (audioFile.metadata.duration.seconds > 60) {
-          return sendError(res, `Error: audio file ${audio} length larger than 60 seconds`);
+          return sendError(res, `Error: audio file ${audioPath} length larger than 60 seconds`);
         }
         const doResize = [];
         new Promise(resolve => {
@@ -119,13 +105,15 @@ module.exports.createAudioWaveVid = async (req, res) => {
           audioFile.addCommand('-codec:a'       , 'aac'         );
           audioFile.addCommand('-strict'        , '2'           );
           audioFile.addCommand('-b:a'           , '192k'        );
+          const videoPath = `/tmp/${audioPath.slice(-4)}.mp4`;
           audioFile.save(videoPath, (err, fileName) => {
             if (err) {
               return console.log(`Error: video saving fails ${videoPath} ${err}`);
             }
             console.log(`Video file ${videoPath} successfully saved`);
-            // fs.unlink(audio, err => 0); // removing audio file
+            fs.unlink(audioPath, err => 0); // removing audio file
             fs.unlink(imagePath, err => 0); // removing image file
+            // fs.unlink(videoPath, err => 0); // removing video file
           });
 
           // if (file.metadata.audio.codec !== 'mp3') {
@@ -136,7 +124,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
     } catch(e) {
       sendError(res, `Error: soundwaveVideo ffmpeg catch ${e.body || e.stack}`);
     }
-  }).catch(err => sendError(res, `Error: Promise catch soundwaveVideo ${err}`));
+  });
 
 
   // **** step 3: upload the video created to AWS s3
