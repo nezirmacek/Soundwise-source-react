@@ -128,16 +128,33 @@ module.exports.handleRecurringPayment = (req, res) => {
 };
 
 module.exports.retrieveCustomer = (req, res) => {
+  // console.log('stripe_id: ', req);
   stripe.customers.retrieve(
-    req.params.stripe_id,
+    req.query.stripe_id,
     (err, customer) => {
       if (err) {
         console.log(err);
         return res.status(err.raw.statusCode).send(err.raw.message);
       }
+      // console.log('customer: ', customer);
       res.send({customer});
     }
   );
+};
+
+module.exports.updateCreditCard = (req, res) => {
+  const {source, customer} = req.body;
+  stripe.customers.update(customer, {
+    source,
+  })
+  .then(response => {
+    console.log(response);
+    res.send(response);
+  })
+  .catch(err => {
+    console.log('err: ', err);
+    return res.status(500).send(err.message);
+  });
 };
 
 function createCustomer(req) {
@@ -221,6 +238,7 @@ function createCustomer(req) {
     }
   });
 };
+
 
 
 

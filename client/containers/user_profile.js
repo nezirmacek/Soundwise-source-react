@@ -31,15 +31,26 @@ class _UserProfile extends Component {
             password: '',
             newPassword: '',
             newPassword2: '',
+            exp_month: '',
+            exp_year: '',
+            last4: '',
+            brand: '',
+            cvc: '',
+            newCard: '',
+            exp_year_new: '',
+            exp_month_new: '',
         };
         this.profileImgInputRef = null;
         this.currentImageRef = null;
         this.submit = this.submit.bind(this);
         this.changePassword = this.changePassword.bind(this);
+        this.changeCreditCard = this.changeCreditCard.bind(this);
+        this.stripeTokenHandler = this.stripeTokenHandler.bind(this);
     }
 
   componentDidMount() {
     const that = this;
+    Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             if(that.props.userInfo.firstName) {
@@ -80,17 +91,18 @@ class _UserProfile extends Component {
 
   retrieveCustomer(stripe_id) {
     const that = this;
-    Axios.get('/api/retrieveCustomer', {params: {stripe_id}})
-    .then(response => {
-      const customer = response.customer;
-      console.log('customer: ', customer);
-      that.setState({
-        exp_month: customer.sources.data[0].exp_month,
-        exp_year: customer.sources.data[0].exp_year,
-        last4: customer.sources.data[0].last4,
-        brand: customer.sources.data[0].brand,
-      });
-    })
+    if(stripe_id) {
+      Axios.get('/api/retrieveCustomer', {params: {stripe_id}})
+      .then(response => {
+        const customer = response.data.customer;
+        that.setState({
+          exp_month: customer.sources.data[0].exp_month,
+          exp_year: customer.sources.data[0].exp_year,
+          last4: customer.sources.data[0].last4,
+          brand: customer.sources.data[0].brand,
+        });
+      })
+    }
   }
 
   _uploadToAws (file) {
@@ -198,6 +210,7 @@ class _UserProfile extends Component {
   passwordPopUp() {
     const {password, newPassword, newPassword2, passwordError} = this.state;
     const that = this;
+
     const actions = [
       <FlatButton
         label="Cancel"
@@ -274,6 +287,171 @@ class _UserProfile extends Component {
         </MuiThemeProvider>
       </div>
     );
+  }
+
+  creditCardPopUp() {
+    const that = this;
+    const monthOptions = [];
+    const yearOptions = [];
+    for (let i=0; i<12; i++) {
+        monthOptions.push(<option value={i} key={i}>{moment().month(i).format('MMM (MM)')}</option>);
+        yearOptions.push(<option value={i + +moment().format('YYYY')} key={i}>{i + +moment().format('YYYY')}</option>);
+    }
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={false}
+        onClick={() => that.setState({
+          creditCardPopUpOpen: false,
+          creditCardError: '',
+          newCard: '',
+          exp_month_new: '',
+          exp_year_new: '',
+          cvc: '',
+        })}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onClick={this.changeCreditCard}
+      />,
+    ];
+
+    return (
+      <div>
+        <MuiThemeProvider>
+          <Dialog
+            title='Update Credit Card'
+            actions={actions}
+            modal={false}
+            open={this.state.creditCardPopUpOpen}
+            onRequestClose={() => that.setState({
+              creditCardPopUpOpen: false,
+              creditCardError: '',
+            })}
+          >
+            <div style={styles.relativeBlock}>
+                <input
+                    onChange={(e) => {that.setState({newCard: e.target.value})}}
+                    required
+                    className='border-radius-4'
+                    size='20'
+                    type='text'
+                    name='number'
+                    value={that.state.newCard}
+                    placeholder="Card Number"
+                    style={styles.input}
+                />
+                <img className='hidden-xs' src="../../../images/card_types.png" style={styles.cardsImage} />
+            </div>
+
+            {/*Expiration*/}
+            <div className=''>
+                {/*month*/}
+                <div style={styles.selectBlock} className="border-radius-4" >
+                    <label style={styles.selectLabel}>Exp Month</label>
+                    <select
+                        onChange={(e) => {that.setState({exp_month_new: e.target.value})}}
+                        name="exp_month"
+                        id="expiry-month"
+                        value={that.state.exp_month_new}
+                        style={styles.select}
+                    >
+                        {
+                            monthOptions.map(item => item)
+                        }
+                    </select>
+                </div>
+
+                {/*year*/}
+                <div style={styles.selectBlock} className="border-radius-4" >
+                    <label style={styles.selectLabel}>Exp Year</label>
+                    <select
+                        onChange={(e) => {that.setState({exp_year_new: e.target.value})}}
+                        name="exp_year"
+                        value={that.state.exp_year_new}
+                        style={styles.select}
+                    >
+                        {
+                            yearOptions.map(item => item)
+                        }
+                    </select>
+                </div>
+
+                {/*cvv/cvc*/}
+                <input
+                    onChange={(e) => {that.setState({cvc: e.target.value})}}
+                    required
+                    className='border-radius-4'
+                    size='3'
+                    type='password'
+                    name='cvc'
+                    placeholder="CVC"
+                    value={that.state.cvc}
+                    style={Object.assign({}, styles.input, styles.cvc)}
+                />
+            </div>
+
+            {/*button*/}
+            <div style={styles.buttonWrapper}>
+                {
+                    this.state.paymentError &&
+                    <span style={{color: 'red'}}>{ this.state.creditCardError }</span>
+                }
+                <div style={styles.securedTextWrapper}>
+                    <i className="ti-lock" style={styles.securedTextIcon} />
+                    Transactions are secure and encrypted.
+                </div>
+                <div style={styles.stripeImageWrapper}>
+                    <img src="../../../images/powered_by_stripe.png" style={styles.stripeImage}/>
+                </div>
+            </div>
+          </Dialog>
+        </MuiThemeProvider>
+      </div>
+    );
+  }
+
+  changeCreditCard() {
+    const {newCard, cvc, exp_year_new, exp_month_new} = this.state;
+    Stripe.card.createToken({
+      number: newCard,
+      cvc,
+      exp_month: exp_month_new,
+      exp_year: exp_year_new
+    }, this.stripeTokenHandler);
+  }
+
+  stripeTokenHandler(status, response) {
+    const {stripe_id, newCard, exp_month_new, exp_year_new} = this.state;
+    const that = this;
+    if(response.error) {
+        this.setState({
+            creditCardError: response.error.message,
+        });
+    } else {
+        Axios.post('/api/updateCreditCard', {
+            source: response.id,
+            customer: stripe_id,
+        })
+        .then(res => {
+          console.log(res.data);
+          that.retrieveCustomer(that.props.userInfo.stripe_id);
+          that.setState({
+            creditCardPopUpOpen: false,
+          });
+          alert('Credit card is updated');
+        })
+        .catch(err => {
+          console.log('error from stripe: ', err)
+          that.setState({
+              creditCardError: err,
+              creditCardPopUpOpen: false,
+          });
+          alert('Credit card update failed. Please try again later.');
+        });
+    }
   }
 
   submit () {
@@ -462,19 +640,24 @@ class _UserProfile extends Component {
                                     stripe_id &&
                                     <div style={styles.inputTitleWrapper}>
                                       <div style={styles.inputTitle}>
-                                        {}
+                                        <span><strong>{this.state.brand}</strong></span>
+                                        <span>{` **** ***** ${this.state.last4}`}</span>
                                       </div>
-                                      <div style={{...styles.inputTitle, color: Colors.mainOrange}}>
+                                      <div style={styles.inputTitle}>
+                                        {`Exp: ${this.state.exp_month}/${this.state.exp_year}`}
+                                      </div>
+                                      <div onClick={() => {that.setState({creditCardPopUpOpen: true})}} style={{...styles.inputTitle, color: Colors.mainOrange, cursor: 'pointer'}}>
                                         Update credit card
                                       </div>
                                     </div>
                                     ||
                                     <div style={styles.inputTitleWrapper}>
-                                      <div style={{...styles.inputTitle, color: Colors.mainOrange}}>
+                                      <div onClick={() => {that.setState({creditCardPopUpOpen: true})}} style={{...styles.inputTitle, color: Colors.mainOrange, cursor: 'pointer'}}>
                                         Add a credit card
                                       </div>
                                     </div>
                                   }
+                                  {this.creditCardPopUp()}
                               </div>
                             </div>
                             {this.passwordPopUp()}
@@ -586,6 +769,90 @@ const styles = {
         fontSize: 11,
         marginLeft: 0,
         display: 'block',
+    },
+    relativeBlock: {
+        position: 'relative',
+    },
+    cardsImage: {
+        position: 'absolute',
+        right: 4,
+        top: 10,
+        width: 179,
+        height: 26,
+    },
+    input: {
+        height: 46,
+        fontSize: 14,
+        margin: '0px 0 0 0',
+    },
+    input2: {
+        height: 46,
+        fontSize: 14,
+        margin: '10px 0 0 0',
+    },
+    selectBlock: {
+        width: '35%',
+        height: 46,
+        float: 'left',
+        marginTop: 9,
+        border: `1px solid ${Colors.mainGrey}`,
+        paddingLeft: 10,
+        marginRight: '5%',
+    },
+    selectLabel: {
+        fontWeight: 'normal',
+        display: 'block',
+        marginBottom: 0,
+        color: Colors.fontBlack,
+        fontSize: 14,
+    },
+    select: {
+        border: 0,
+        backgroundColor: Colors.mainWhite,
+        padding: 0,
+        margin: 0,
+        color: Colors.fontGrey,
+        fontSize: 14,
+        position: 'relative',
+        right: 3,
+    },
+    cvc: {
+        width: '20%',
+        marginTop: 9,
+    },
+    buttonWrapper: {
+        margin: '20px 0 0 0',
+    },
+    stripeImageWrapper: {
+        backgroundColor: Colors.mainOrange,
+        overflow: 'hidden',
+        position: 'relative',
+        width: 138,
+        height: 32,
+        margin: '10px 10px',
+        float: 'left',
+        borderRadius: 5,
+    },
+    stripeImage: {
+        width: 138,
+        height: 32,
+        position: 'relative',
+        bottom: 0,
+    },
+    button: {
+        height: 46,
+        backgroundColor: Colors.mainOrange,
+        fontSize: 14,
+    },
+    securedTextWrapper: {
+        marginTop: 15,
+        float: 'left',
+    },
+    securedTextIcon: {
+        fontSize: 16,
+    },
+    securedText: {
+        fontSize: 14,
     },
 }
 
