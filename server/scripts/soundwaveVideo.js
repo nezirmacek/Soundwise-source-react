@@ -10,13 +10,11 @@ const uploader = require('express-fileuploader');
 // const firebase = require('firebase-admin');
 const request = require('request-promise');
 const moment = require('moment');
-
-var sgMail = require('@sendgrid/mail');
-var sendGridApiKey = require('../../config').sendGridApiKey;
+const sgMail = require('@sendgrid/mail');
+const sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
-var client = require('@sendgrid/client');
+const client = require('@sendgrid/client');
 client.setApiKey(sendGridApiKey);
-
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
@@ -27,7 +25,6 @@ const sendError = (res, err) => {
 
 // **** The task: generate video combing audio wave and picture with audio file and picture uploaded from front end
 // example output: https://twitter.com/RealNatashaChe/status/957752354841022464
-
 module.exports.createAudioWaveVid = async (req, res) => {
   if (!req.files.audio || !req.files.image) {
     return sendError(res, `Error: image and audio file must be provided`);
@@ -178,7 +175,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
 };
 
 // **** step 7: Delete the video file from AWS s3 in 24 hours.
-// from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjectsV2-property
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjectsV2-property
 setInterval(f => s3.listObjectsV2({ Bucket: 'soundwiseinc', Prefix: 'wavevideo' }, (err, data) => {
   if (err) {
     return console.log(`Error: soundwaveVideo cannot access s3 bucket ${err}`);
