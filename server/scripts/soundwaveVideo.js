@@ -62,7 +62,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
           const audioTrimmedPath = audioPath.slice(0, -4) + '_trimmed.mp3';
           audioFile.save(audioTrimmedPath, err => {
             if (err) {
-              return console.log(`Error: video saving fails ${videoPath} ${err}`);
+              return console.log(`Error: trimmed audio saving fails ${audioTrimmedPath} ${err}`);
             }
             fs.unlink(audioPath, err => 0); // remove original
             (new ffmpeg(audioTrimmedPath)).then(audioTrimmedFile => {
