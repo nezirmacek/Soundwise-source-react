@@ -111,57 +111,58 @@ module.exports.createAudioWaveVid = async (req, res) => {
               return console.log(`Error: video saving fails ${videoPath} ${err}`);
             }
             console.log(`Video file ${videoPath} successfully saved`);
-            fs.unlink(audioPath, err => 0); // removing audio file
-            fs.unlink(imagePath, err => 0); // removing image file
-            // fs.unlink(videoPath, err => 0); // removing video file
+            // **** step 3: upload the video created to AWS s3
+            uploader.use(new S3Strategy({
+              uploadPath: `wavevideo`,
+              headers: { 'x-amz-acl': 'public-read' },
+              options: {
+                key: awsConfig.accessKeyId,
+                secret: awsConfig.secretAccessKey,
+                bucket: 'soundwiseinc',
+              },
+            }));
+            uploader.upload('s3'
+             , { path: videoPath, name: `${videoPath.replace('/tmp/', '')}` }
+             , (err, files) => {
+              if (err) {
+                return console.log(`Error: uploading wavevideo ${videoPath} to S3 ${err}`);
+              }
+              const videoUrl = files[0].url.replace('http', 'https');
+              console.log(`Wavevideo ${videoPath} uploaded to: ${videoUrl}`);
+              // **** step 4: email the user the download link of the video file. If there is a processing error, notify user by email that there is an error.
+              sgMail.send({ // send email
+                to: email,
+                from: 'support@mysoundwise.com',
+                subject: 'Your soundwave video is ready for download!',
+                html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p>`,
+              });
+
+              // **** step 5: save user email in our email contact database
+              client.request({
+                method: 'POST',
+                url: '/v3/contactdb/recipients',
+                body: [{email}],
+              }).then(([response, body]) => client.request({
+                method: 'POST',
+                url: `/v3/contactdb/lists/2910467/recipients`,
+                body: body.persisted_recipients, // array of recipient IDs
+              })).then(([response, body]) => {
+                console.log(`Sendgrid Success: ${body}`);
+
+                // **** step 6: delete the image, audio and video files from temp folder.
+                fs.unlink(audioPath, err => 0); // remove audio file
+                fs.unlink(imagePath, err => 0); // remove image file
+                fs.unlink(videoPath, err => 0); // remove video file
+
+                // **** step 7: Delete the video file from AWS s3 in 24 hours.
+                // TODO
+              }).catch(err => console.log(`Error: wavevideo Sendgrid ${err}`));
+            });
           });
-
-          // if (file.metadata.audio.codec !== 'mp3') {
-          //   file.setAudioCodec('mp3').setAudioBitRate(64);
-
         }).catch(err => sendError(res, `Error: Promise resize catch soundwaveVideo ${err}`));;
       }, err => sendError(res, `Error: soundwaveVideo unable to parse file with ffmpeg ${err}`));
     } catch(e) {
       sendError(res, `Error: soundwaveVideo ffmpeg catch ${e.body || e.stack}`);
     }
   });
-
-
-  // **** step 3: upload the video created to AWS s3
-
-  // **** step 4: email the user the download link of the video file. If there is a processing error, notify user by email that there is an error.
-
-  // sgMail.send({ // send email
-  //   to: email,
-  //   from: 'support@mysoundwise.com',
-  //   subject: 'Your soundwave video is ready for download!',
-  //   html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p>`,
-  // });
-
-  // **** step 5: save user email in our email contact database
-
-  // const options = {
-  //   method: 'POST',
-  //   url: '/v3/contactdb/recipients',
-  //   body: [{email}],
-  // };
-  // client.request(options)
-  // .then(([response, body]) => {
-  //     recipients = body.persisted_recipients; // array of recipient IDs
-  //     const data = {
-  //       method: 'POST',
-  //       url: `/v3/contactdb/lists/2910467/recipients`,
-  //       body: recipients,
-  //     };
-  //     client.request(data)
-  //   }).then(([response, body]) => {
-  //     console.log(body);
-  //   })
-  //   .catch(err => {
-  //     console.log('error: ', err.message);
-  //   });
-
-  // **** step 6: delete the image, audio and video files from temp folder.
-
-  // **** step 7: Delete the video file from AWS s3 in 24 hours.
 };
