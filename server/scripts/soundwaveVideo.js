@@ -168,23 +168,19 @@ module.exports.createAudioWaveVid = async (req, res) => {
 };
 
 // **** step 7: Delete the video file from AWS s3 in 24 hours.
-const timer = f => {
-  // from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjectsV2-property
-  s3.listObjectsV2({ Bucket: 'soundwiseinc', Prefix: 'wavevideo' }, (err, data) => {
-    if (err) {
-      return console.log(`Error: soundwaveVideo cannot access s3 bucket ${err}`);
+// from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjectsV2-property
+setInterval(f => s3.listObjectsV2({ Bucket: 'soundwiseinc', Prefix: 'wavevideo' }, (err, data) => {
+  if (err) {
+    return console.log(`Error: soundwaveVideo cannot access s3 bucket ${err}`);
+  }
+  data.Contents.forEach(el => {
+    if (moment().diff(el.LastModified, 'minutes') > 1440) { // 24 hours
+      s3.deleteObject({ Bucket: 'soundwiseinc', Key: el.Key }, (err, data) => {
+        if (err) {
+          return console.log(`Error: soundwaveVideo cannot delete object ${el.Key} ${err}`);
+        }
+        console.log(`SoundwaveVideo Successfully deleted ${el.Key}`)
+      });
     }
-    data.Contents.forEach(el => {
-      if (moment().diff(el.LastModified, 'minutes') > 1440) { // 24 hours
-        s3.deleteObject({ Bucket: 'soundwiseinc', Key: el.Key }, (err, data) => {
-          if (err) {
-            return console.log(`Error: soundwaveVideo cannot delete object ${el.Key} ${err}`);
-          }
-          console.log(`SoundwaveVideo Successfully deleted ${el.Key}`)
-        });
-      }
-    });
   });
-  setTimeout(timer, 15 * 60 * 1000); // check each 15 minutes
-};
-timer();
+}), 15 * 60 * 1000); // 15 minutes
