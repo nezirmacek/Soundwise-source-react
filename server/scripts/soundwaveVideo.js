@@ -39,10 +39,6 @@ module.exports.createAudioWaveVid = async (req, res) => {
     const { height, width } = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
     try {
       (new ffmpeg(audioPath)).then(audioFile => { // loading audio file
-        // **** step 1a: check if audio file is <= 60 seconds long. If it's > 60 seconds, return error to the front end saying "audio length needs to be under 60 seconds.".
-        if (audioFile.metadata.duration.seconds > 60) {
-          return sendError(res, `Error: audio file ${audioPath} length larger than 60 seconds`);
-        }
         const doResize = [];
         new Promise(resolve => {
           // **** step 1b: check image size: If it's a square image, dimensions need to be at least 1080px x 1080px. If it's a rectangular image, dimensions need to be at least 1280 px x 720 px. If image is smaller than required size, return error to front end saying "image is too small."
@@ -59,23 +55,36 @@ module.exports.createAudioWaveVid = async (req, res) => {
               doResize.push(1280, 720);
             }
           }
-          if (doResize.length) { // resizing
-            (new ffmpeg(imagePath)).then(imageFile => {
-              const updatedImagePath = `${imagePath.slice(0, -4)}_updated.png`;
-              // ffmpeg -i ep-18-square.png -vf scale=1080:1080 out.png
-              imageFile.addCommand('-vf', `scale=${doResize[0]}:${doResize[1]}`);
-              imageFile.save(updatedImagePath, (err, fileName) => {
-                if (err) {
-                  return sendError(res, `Error: cannot save updated image ${imagePath} ${err}`);
-                }
-                fs.unlink(imagePath, err => 0); // removing original image file
-                resolve(updatedImagePath);
-              });
+          // **** step 1a: trim audio file silence and cut to 60 seconds.
+          // https://stackoverflow.com/a/29411973/2154075
+          audioFile.addCommand('-af', 'silenceremove=1:0:-50dB');
+          audioFile.addCommand('-t' , '60'); // cut
+          const audioTrimmedPath = audioPath.slice(0, -4) + '_trimmed.mp3';
+          audioFile.save(audioTrimmedPath, err => {
+            if (err) {
+              return console.log(`Error: video saving fails ${videoPath} ${err}`);
+            }
+            fs.unlink(audioPath, err => 0); // remove original
+            (new ffmpeg(audioTrimmedPath)).then(audioTrimmedFile => {
+              if (doResize.length) { // resizing
+                (new ffmpeg(imagePath)).then(imageFile => {
+                  const updatedImagePath = `${imagePath.slice(0, -4)}_updated.png`;
+                  // ffmpeg -i ep-18-square.png -vf scale=1080:1080 out.png
+                  imageFile.addCommand('-vf', `scale=${doResize[0]}:${doResize[1]}`);
+                  imageFile.save(updatedImagePath, err => {
+                    if (err) {
+                      return sendError(res, `Error: cannot save updated image ${imagePath} ${err}`);
+                    }
+                    fs.unlink(imagePath, err => 0); // removing original image file
+                    resolve([updatedImagePath, audioTrimmedPath, audioTrimmedFile]);
+                  });
+                });
+              } else {
+                resolve([imagePath, audioTrimmedPath, audioTrimmedFile]);
+              }
             });
-          } else {
-            resolve(imagePath);
-          }
-        }).then(imagePath => { // resized image
+          });
+        }).then(([imagePath, audioTrimmedPath, audioFile]) => { // resized image and audio
           // **** step 1c: If audio and image are good, store image and audio in temp file and return 200 ok to front end.
           res.end('OK');
 
@@ -108,8 +117,8 @@ module.exports.createAudioWaveVid = async (req, res) => {
           audioFile.addCommand('-codec:a'       , 'aac'         );
           audioFile.addCommand('-strict'        , '2'           );
           audioFile.addCommand('-b:a'           , '192k'        );
-          const videoPath = `${audioPath.slice(0, -4)}.mp4`;
-          audioFile.save(videoPath, (err, fileName) => {
+          const videoPath = `${audioPath.slice(0, -4)}.mp4`; // path without '_trimmed' postfix
+          audioFile.save(videoPath, err => {
             if (err) {
               return console.log(`Error: video saving fails ${videoPath} ${err}`);
             }
@@ -153,13 +162,13 @@ module.exports.createAudioWaveVid = async (req, res) => {
                 console.log(`Sendgrid Success: ${body}`);
 
                 // **** step 6: delete the image, audio and video files from temp folder.
-                fs.unlink(audioPath, err => 0); // remove audio file
-                fs.unlink(imagePath, err => 0); // remove image file
-                fs.unlink(videoPath, err => 0); // remove video file
-              }).catch(err => console.log(`Error: wavevideo Sendgrid ${err}`));
+                fs.unlink(audioTrimmedPath, err => 0);
+                fs.unlink(imagePath, err => 0);
+                fs.unlink(videoPath, err => 0);
+              }).catch(err => console.log(`Error: soundwaveVideo sendgrid ${err}`));
             });
           });
-        }).catch(err => sendError(res, `Error: Promise resize catch soundwaveVideo ${err}`));;
+        }).catch(err => sendError(res, `Error: soundwaveVideo resize trim catch ${err}`));
       }, err => sendError(res, `Error: soundwaveVideo unable to parse file with ffmpeg ${err}`));
     } catch(e) {
       sendError(res, `Error: soundwaveVideo ffmpeg catch ${e.body || e.stack}`);
