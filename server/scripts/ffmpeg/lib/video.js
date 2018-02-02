@@ -386,9 +386,9 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	/**
 	 * Save all set commands
 	 */
-	this.save = function (destionationFileName, callback) {
-    const item = [destionationFileName, (err, result) => {
-      if (videoQueue.length) { // running next item
+	this.save = function (destinationFileName, callback) {
+    const item = [destinationFileName, (err, result) => {
+      if (videoQueue.length) { // have items to run
         this.saveOriginal(videoQueue.shift());
       } else {
         runningCount--;
@@ -404,7 +404,7 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
   }
 
 	this.saveOriginal = function (item) { // original save function
-		var [destionationFileName, callback] = item;
+		var [destinationFileName, callback] = item;
 		// Check if the 'video' is present in the options
 		if (options.hasOwnProperty('video')) {
 			// Check if video is disabled
@@ -463,7 +463,7 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 			}
 		}
 
-		setOutput(destionationFileName);
+		setOutput(destinationFileName);
 
 		return execCommand.call(this, callback);
 	}
@@ -624,14 +624,14 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	/**
 	 * Extracting sound from a video, and save it as Mp3
 	 */
-	this.fnExtractSoundToMP3 = function (destionationFileName, callback) {
+	this.fnExtractSoundToMP3 = function (destinationFileName, callback) {
 		// Check if file already exists. In this case will remove it
-		if (fs.existsSync(destionationFileName))
-			fs.unlinkSync(destionationFileName);
+		if (fs.existsSync(destinationFileName))
+			fs.unlinkSync(destinationFileName);
 
 		// Building the final path
-		var destinationDirName		= path.dirname(destionationFileName)
-		  , destinationFileNameWE	= path.basename(destionationFileName, path.extname(destionationFileName)) + '.mp3'
+		var destinationDirName		= path.dirname(destinationFileName)
+		  , destinationFileNameWE	= path.basename(destinationFileName, path.extname(destinationFileName)) + '.mp3'
 		  , finalPath				= path.join(destinationDirName, destinationFileNameWE);
 
 		resetCommands(this);
