@@ -387,24 +387,24 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	 * Save all set commands
 	 */
 	this.save = function (destionationFileName, callback) {
-    const callbackPrepared = (err, result) => {
+    const item = [destionationFileName, (err, result) => {
       if (videoQueue.length) { // running next item
-        const [destionationFileName, callbackPrepared] = videoQueue.shift();
-        this.saveOriginal(destionationFileName, callbackPrepared);
+        this.saveOriginal(videoQueue.shift());
       } else {
         runningCount--;
       }
       callback(err, result); // return value
-    }
+    }];
     if (runningCount < maxThreads) {
       runningCount++;
-      this.saveOriginal(destionationFileName, callbackPrepared); // run
+      this.saveOriginal(item); // run
     } else {
-      videoQueue.push([destionationFileName, callbackPrepared]);
+      videoQueue.push(item);
     }
   }
 
-  this.saveOriginal = function (destionationFileName, callback) { // original save function
+	this.saveOriginal = function (item) { // original save function
+		var [destionationFileName, callback] = item;
 		// Check if the 'video' is present in the options
 		if (options.hasOwnProperty('video')) {
 			// Check if video is disabled
