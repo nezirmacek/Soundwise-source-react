@@ -6,6 +6,8 @@ var errors		= require('./errors')
   , presets		= require('./presets')
   , utils		= require('./utils');
 
+var videoQueue = [];
+
 module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 
 	// Public info about file and ffmpeg configuration
@@ -383,6 +385,27 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	 * Save all set commands
 	 */
 	this.save = function (destionationFileName, callback) {
+    // destionationFileName - expected to be unique value, used as a key
+    const callbackPrepared = (err, result) => {
+      // remove this element after execution from videoQueue
+      videoQueue = videoQueue.filter(i => i.destionationFileName !== destionationFileName);
+      // checking after execution
+      if (videoQueue.length >= 3) { // if having next element for execution
+        // videoQueue[0], videoQueue[1] - will be running elements
+        // videoQueue[2] - will be fresh (not running) element
+        const { destionationFileName, callbackPrepared } = videoQueue[2];
+        this.saveOriginal(destionationFileName, callbackPrepared);
+      }
+      callback(err, result); // return value
+    }
+    videoQueue.push({ destionationFileName, callbackPrepared });
+    // checking after pushing element to videoQueue
+    if (videoQueue.length <= 3) { // running queue not filled
+      this.saveOriginal(destionationFileName, callbackPrepared); // run
+    }
+  }
+
+  this.saveOriginal = function (destionationFileName, callback) { // original save function
 		// Check if the 'video' is present in the options
 		if (options.hasOwnProperty('video')) {
 			// Check if video is disabled
