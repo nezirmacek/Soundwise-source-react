@@ -8,6 +8,7 @@ var errors		= require('./errors')
 
 var videoQueue = [];
 var maxThreads = 3;
+var runningCount = 0;
 
 module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 
@@ -386,20 +387,20 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	 * Save all set commands
 	 */
 	this.save = function (destionationFileName, callback) {
-    // destionationFileName - expected to be unique value, used as a key
     const callbackPrepared = (err, result) => {
-      // remove this element after execution from videoQueue
-      videoQueue = videoQueue.filter(i => i.destionationFileName !== destionationFileName);
-      if (videoQueue.length >= maxThreads) { // if having next element for execution
-        // videoQueue[maxThreads - 1] - should be fresh (not running) element
-        const { destionationFileName, callbackPrepared } = videoQueue[maxThreads - 1];
+      if (videoQueue.length) { // running next item
+        const [destionationFileName, callbackPrepared] = videoQueue.shift();
         this.saveOriginal(destionationFileName, callbackPrepared);
+      } else {
+        runningCount--;
       }
       callback(err, result); // return value
     }
-    videoQueue.push({ destionationFileName, callbackPrepared });
-    if (videoQueue.length <= maxThreads) {
+    if (runningCount < maxThreads) {
+      runningCount++;
       this.saveOriginal(destionationFileName, callbackPrepared); // run
+    } else {
+      videoQueue.push([destionationFileName, callbackPrepared]);
     }
   }
 
