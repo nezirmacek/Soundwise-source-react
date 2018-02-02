@@ -481,17 +481,17 @@ header .row { align-items: center; display: flex; height: auto;}
 
 /* blog style 1 */
 .blog-style1 .post-details { padding: 35px; text-align: center;}
-.blog-style1 .post-author { color: #fff; display: block; font-size: 11px; font-weight: 600; letter-spacing: 1px; line-height: 18px; padding: 4px 5px !important; text-align: center;}
+.blog-style1 .post-author { color: #fff; display: block; font-size: 11px; font-weight: 600; letter-spacing: 1px; line-height: 18px; padding: 4px 5px ; text-align: center;}
 
 
-.blog-style1  h1, h2, h3, h4, h5 {
+.blog-style1 > h1, h2, h3, h4, h5 {
     font-weight: 600;
-    margin-bottom: 1em !important;
-    margin-top: 1.5em !important;
+    margin-bottom: 1em ;
+    margin-top: 1.5em ;
 }
 
-.blog-style1  ul, ol {
-    margin-bottom: 1.25em !important;
+.blog-style1 > ul, ol {
+    margin-bottom: 1.25em ;
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 18px;
     color: #202123;
@@ -500,8 +500,8 @@ header .row { align-items: center; display: flex; height: auto;}
     font-weight: 400;
     letter-spacing: -.003em;
 }
-.blog-style1    li {
-    margin-bottom: 0.25em !important;
+.blog-style1  >  li {
+    margin-bottom: 0.25em ;
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 18px;
     color: #202123;
@@ -512,7 +512,7 @@ header .row { align-items: center; display: flex; height: auto;}
 }
 
 
-.blog-style1  p {
+.blog-style1 > p {
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 18px;
     color: #202123;
@@ -523,7 +523,7 @@ header .row { align-items: center; display: flex; height: auto;}
   }
 
   /* Responsive default image width */
-.blog-style1  img {
+.blog-style1 > img {
     max-width: 100%;
     height: auto;
   }

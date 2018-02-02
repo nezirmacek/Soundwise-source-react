@@ -17,6 +17,7 @@ import { loadCourses, subscribeToCategories, signinUser } from './actions/index'
 import Page from './components/page';
 import PageRealEstate from './components/page_realestate';
 import PageExperts from './components/page_experts';
+import PricingPage from './containers/pricing_page';
 import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
@@ -229,6 +230,7 @@ class _Routes extends Component {
                 <Route path="/publishers/:id" component={Publisher} />
                 <Route path="/episodes/:id" component={EpisodePage} />
                 <Route path="/soundcast_checkout" component={SoundcastCheckout} />
+                <Route path="/pricing" component={PricingPage} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>
