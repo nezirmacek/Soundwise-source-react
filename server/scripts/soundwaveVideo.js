@@ -62,7 +62,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
               return console.log(`Error: trimmed audio saving fails ${audioTrimmedPath} ${err}`);
             }
             fs.unlink(audioPath, err => 0); // remove original
-            (new ffmpeg(audioTrimmedPath)).then(audioTrimmedFile => {
+            (new ffmpeg(audioTrimmedPath, { timeout: 10*60*1000 })).then(audioTrimmedFile => {
               if (doResize.length) { // resizing
                 (new ffmpeg(imagePath)).then(imageFile => {
                   const updatedImagePath = `${imagePath.slice(0, -4)}_updated.png`;
@@ -117,10 +117,20 @@ module.exports.createAudioWaveVid = async (req, res) => {
           const videoPath = `${audioPath.slice(0, -4)}.mp4`; // path without '_trimmed' postfix
           audioFile.save(videoPath, err => {
             if (err) {
-              return console.log(`Error: video saving fails ${videoPath} ${err}`);
+              if (err.killed === true && err.signal === 'SIGTERM') { // killed by timeout
+                // if the process is dropped, need to send user an email letting them know they need to try uploading again later.
+                sgMail.send({ // send email
+                  to: email,
+                  from: 'support@mysoundwise.com',
+                  subject: 'Your soundwave video was dropped by timeout!',
+                  html: `<p>Hi!</p><p>Your soundwave video was dropped by timeout!</p><p>Please, try to upload it again.</p><p>Folks at Soundwise</p>`,
+                });
+                return console.log(`Error: video saving timeout ${videoPath} ${err}`)
+              } else {
+                return console.log(`Error: video saving fails ${videoPath} ${err}`);
+              }
             }
             console.log(`Video file ${videoPath} successfully saved`);
-
             // **** step 3: upload the video created to AWS s3
             uploader.use(new S3Strategy({
               uploadPath: `wavevideo`,
