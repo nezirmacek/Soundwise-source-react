@@ -11,21 +11,21 @@ module.exports.exec = function (commands, settings, callback) {
 	// Create final command line
 	var finalCommand = commands.join(" ");
 	// Create the timeoutId for stop the timeout at the end the process
-	var timeoutID = null;
+	// var timeoutID = null;
 	// Exec the command
 	var process = exec(finalCommand, settings, function (error, stdout, stderr) {
 		// Clear timeout if 'timeoutID' are setted
-		if (timeoutID !== null) clearTimeout(timeoutID);
+		// if (timeoutID !== null) clearTimeout(timeoutID);
 		// Call the callback function
 		callback(error, stdout, stderr);
 	});
 	// Verify if the timeout are setting
-	if (settings.timeout > 0) {
-		// Set the timeout
-		timeoutID = setTimeout(function () {
-			process.kill();
-		}, 100);		
-	}
+	// if (settings.timeout > 0) {
+	// 	// Set the timeout
+	// 	timeoutID = setTimeout(function () {
+	// 		process.kill();
+	// 	}, 100);
+	// }
 }
 
 /**
@@ -70,7 +70,7 @@ module.exports.durationToSeconds = function(duration) {
 /**
  * Calculate the greatest common divisor
  */
-module.exports.gcd = function (a, b) { 
+module.exports.gcd = function (a, b) {
 	if (b === 0) return a;
 	return module.exports.gcd(b, a % b);
 }
@@ -82,17 +82,17 @@ module.exports.mkdir = function (dirpath, mode, callback, position) {
 	// Split all directories
     var parts = path.normalize(dirpath).split('/');
 	// If the first part is empty then remove this part
-	if (parts[0] == "") 
+	if (parts[0] == "")
 		parts = parts.slice(1);
-	
+
 	// Set the initial configuration
     mode = mode || 0777;
     position = position || 0;
-	
+
 	// Check se current position is greater than the list of folders
 	if (position > parts.length) {
 		// If isset the callback then it will be invoked
-		if (callback) 
+		if (callback)
 			callback();
 		// Exit and return a positive value
 		return true;
@@ -107,7 +107,7 @@ module.exports.mkdir = function (dirpath, mode, callback, position) {
 	} else {
 		if (fs.mkdirSync(directory, mode)) {
 			// If isset the callback then it will be invoked
-			if (callback) 
+			if (callback)
 				callback(errors.renderError('mkdir', directory));
 			// Send the new exception
 			throw errors.renderError('mkdir', directory);
