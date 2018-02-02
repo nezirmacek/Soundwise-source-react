@@ -7,6 +7,7 @@ var errors		= require('./errors')
   , utils		= require('./utils');
 
 var videoQueue = [];
+var maxThreads = 3;
 
 module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 
@@ -389,18 +390,15 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
     const callbackPrepared = (err, result) => {
       // remove this element after execution from videoQueue
       videoQueue = videoQueue.filter(i => i.destionationFileName !== destionationFileName);
-      // checking after execution
-      if (videoQueue.length >= 3) { // if having next element for execution
-        // videoQueue[0], videoQueue[1] - will be running elements
-        // videoQueue[2] - will be fresh (not running) element
-        const { destionationFileName, callbackPrepared } = videoQueue[2];
+      if (videoQueue.length >= maxThreads) { // if having next element for execution
+        // videoQueue[maxThreads - 1] - should be fresh (not running) element
+        const { destionationFileName, callbackPrepared } = videoQueue[maxThreads - 1];
         this.saveOriginal(destionationFileName, callbackPrepared);
       }
       callback(err, result); // return value
     }
     videoQueue.push({ destionationFileName, callbackPrepared });
-    // checking after pushing element to videoQueue
-    if (videoQueue.length <= 3) { // running queue not filled
+    if (videoQueue.length <= maxThreads) {
       this.saveOriginal(destionationFileName, callbackPrepared); // run
     }
   }
