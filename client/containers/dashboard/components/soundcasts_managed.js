@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import moment from 'moment';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import EditSoundcast from './edit_soundcast';
 import InviteSubscribersModal from './invite_subscribers_modal';
@@ -29,6 +31,7 @@ export default class SoundcastsManaged extends Component {
     this.handleModal = this.handleModal.bind(this);
     this.handleStatsModal = this.handleStatsModal.bind(this);
     this.deleteEpisode = this.deleteEpisode.bind(this);
+    this.deleteSoundcast = this.deleteSoundcast.bind(this);
   }
 
   componentDidMount() {
@@ -115,10 +118,25 @@ export default class SoundcastsManaged extends Component {
     }
   }
 
+  async deleteSoundcast(soundcastId) {
+    const soundcastTitle = this.props.userInfo.soundcasts_managed[soundcastId].title;
+    const confirmText =  `Are you sure you want to delete ${soundcastTitle}? All information about this soundcast will be deleted, including subscribers' emails and audio files.`;
+    if(confirm(confirmText)) {
+      await firebase.database().ref(`soundcasts/${soundcastId}`).remove();
+      const admins = this.props.userInfo.publisher.administrators;
+      for(var key in admins) {
+        await firebase.database().ref(`users/${key}/soundcasts_managed/${soundcastId}`).remove();
+      }
+      const publisherId = this.props.userInfo.publisherID;
+      await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).remove();
+      alert('Soundcast has been deleted.');
+    }
+  }
+
   render() {
     const { userInfo } = this.state;
     const { history, id } = this.props;
-
+    const that = this;
 			const _soundcasts_managed = [];
 			for (let id in userInfo.soundcasts_managed) {
 				const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -180,11 +198,14 @@ export default class SoundcastsManaged extends Component {
                               style={{cursor: 'pointer'}}>
                             <span
                               dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
-                              style={{color: Colors.mainOrange}}>View</span>
+                              style={{color: Colors.mainOrange}}><strong>View</strong></span>
                             </a>
+                            <span onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 20, color: Colors.link, cursor: 'pointer'}}>Delete</span>
                           </div>
                           ||
-                          null
+                          <div style={{...styles.soundcastUpdated, }}>
+                            <span onClick={() => that.deleteSoundcast(soundcast.id)}  style={{color: Colors.link, cursor: 'pointer'}}>Delete</span>
+                          </div>
                         }
   										</div>
   										<div className='col-md-3 col-sm-4 col-xs-12'
