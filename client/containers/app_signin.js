@@ -473,7 +473,7 @@ class _AppSignin extends Component {
 								style={styles.fb}
 							>
 								<i
-									className="fa fa-facebook icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
+									className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
 									style={styles.fbIcon}
 								></i>
 								<span className="tz-text">SIGN IN with FACEBOOK</span>

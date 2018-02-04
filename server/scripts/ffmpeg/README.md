@@ -65,13 +65,13 @@ Each time you create a new instance, this library provides a new object to retri
 
 The video object contains a set of functions that allow you to perform specific operations independent of the settings for the conversion. In all the functions you can use the approach with the callback function or with the promise object
 
-### *video.fnExtractSoundToMP3 (destionationFileName, callback)*
+### *video.fnExtractSoundToMP3 (destinationFileName, callback)*
 
 This function extracts the audio stream of a video into an mp3 file
 
 Params:
 
-*	__destionationFileName__: Full path of the new file:
+*	__destinationFileName__: Full path of the new file:
 	> /path/to/your_audio_file.mp3
 
 *	__callback__: *(optional)* If specified at the end of the process it will return the path of the new audio file:
@@ -323,7 +323,7 @@ Example:
 
 After setting the desired parameters have to start the conversion process. To do this you must call the function 'save'. This method takes as input the final destination of the file and optionally a callback function. If the function callback is not specified it's possible use the promise object.
 
-**video.save(destionationFileName, callback)**
+**video.save(destinationFileName, callback)**
 
 Example:
 

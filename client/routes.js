@@ -50,6 +50,7 @@ import {SoundcastCheckout} from './containers/soundcast_landing_page/soundcast_c
 import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
+import {WaveVideoInputs} from './containers/wave_video_inputs';
 
 class _Routes extends Component {
     constructor(props) {
@@ -209,6 +210,7 @@ class _Routes extends Component {
                 <Route path="/creator_terms" component={CreatorTerms} />
                 <Route path="/privacy" component={Privacy} />
                 <Route path="/terms" component={Terms} />
+                <Route path="/wave_video" component={WaveVideoInputs} />
                 <Route exact={true} path="/blog" component={BlogList} />
                 <Route path="/blog/p/:page" component={BlogList} />
                 <Route exact={true} path="/blog/post/:slug" component={BlogPost} />

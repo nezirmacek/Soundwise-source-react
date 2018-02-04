@@ -130,8 +130,8 @@ export default class SoundcastBody extends Component {
                 <ul className=" row" style={{paddingBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
                     {features.map((feature, i) => {
                         return (
-                            <li key={i} className=" text-dark-gray text-extra-large  margin-lr-auto col-md-5 col-sm-6 col-xs-12 tz-text" style={{paddingLeft: '0em', paddingRight: '1em', paddingTop: '1em', paddingBottom: '1em', listStyleType: 'none', display: 'flex', alignItems: 'center', }}>
-                                <strong><i className="fa fa-sun-o fa-lg" aria-hidden="true" style={{paddingRight: '1em', color: '#F76B1C'}}></i></strong>{feature}
+                            <li key={i} className=" text-dark-gray text-extra-large  margin-lr-auto col-md-5 col-sm-6 col-xs-12 tz-text" style={{paddingLeft: '0em', paddingRight: '1em', paddingTop: '1em', paddingBottom: '1em', listStyleType: 'none', display: 'flex', alignItems: 'center', }}><span style={{paddingRight: 10}}>
+                                ⭐</span>{feature}
                             </li>
                         )
                     })}

@@ -416,7 +416,7 @@ export default class Subscribers extends Component {
                                       soundcast: currentSoundcast,
                                     }
                                   })}
-                                  className="fa fa-line-chart" style={styles.itemChartIcon}></i>
+                                  className="far fa-chart-bar" style={styles.itemChartIcon}></i>
                               </td>
                               <td style={{...styles.td, }}>
                                 <input

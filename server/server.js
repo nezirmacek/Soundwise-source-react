@@ -4,7 +4,7 @@
 var express = require('express');
 var loopback = require('loopback');
 var boot = require('loopback-boot');
-var mutilpart = require('connect-multiparty');
+var multipart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
@@ -28,6 +28,7 @@ var Emails = require('./scripts/sendEmails.js');
 
 var createFeed = require('./scripts/feed.js').createFeed;
 var requestFeed = require('./scripts/feed.js').requestFeed;
+var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
 
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
@@ -106,7 +107,7 @@ app.post('/api/add_emails', Emails.addToEmailList);
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', subscriptionRenewal);
 app.post('/api/unsubscribe', unsubscribe);
-app.use('/api/upload', mutilpart());
+app.use('/api/upload', multipart());
 app.post('/api/upload', function(req, res, next) {
   uploader.upload('s3', req.files.file, function(err, files) {
     if (err) {
@@ -115,6 +116,7 @@ app.post('/api/upload', function(req, res, next) {
     res.send(files);
   });
 });
+app.post('/api/upload/audiowave', multipart(), createAudioWaveVid);
 
 app.use('/s3', require('react-s3-uploader/s3router')({
   bucket: 'soundwiseinc',
