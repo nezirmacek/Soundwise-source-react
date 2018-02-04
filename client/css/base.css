@@ -277,33 +277,33 @@ h6 { font-size:18px; line-height:23px}
 .social-icon a:hover .fa {opacity:.6}
 .social-icon .fa-pinterest {background-color: #cb2027;}
 .social-icon .fa-rss {background-color: #f26522;}
-.social-icon .fa-facebook {background-color: #3b5998;}
+.social-icon .fa-facebook-f {background-color: #3b5998;}
 .social-icon .fa-twitter {background-color: #00aced;}
 .social-icon .fa-flickr {background-color: #ff0084;}
 .social-icon .fa-dribbble {background-color: #ea4c89;}
 .social-icon .fa-behance {background-color: #42a9fb;}
-.social-icon .fa-linkedin {background-color: #007bb6;}
+.social-icon .fa-linkedin-in {background-color: #007bb6;}
 .social-icon .fa-vimeo-square {background-color: #23b6ea;}
 .social-icon .fa-youtube {background-color: #bb0000;}
 .social-icon .fa-tumblr {background-color: #32506d;}
 .social-icon .fa-github-alt {background-color: #333333;}
-.social-icon .fa-google-plus {background-color: #dd4b39;}
+.social-icon .fa-google-plus-g {background-color: #dd4b39;}
 .social-icon .fa-instagram  {background-color: #517fa4;}
 .social-icon .fa-soundcloud {background-color: #f80;}
 
 .social-icon-color .fa-pinterest, .social-icon-color .ti-pinterest-alt, .social-icon-color .ti-pinterest {color: #cb2027;}
 .social-icon-color .fa-rss {color: #f26522;}
-.social-icon-color .fa-facebook, .social-icon-color .ti-facebook {color: #3b5998;}
+.social-icon-color .fa-facebook-f, .social-icon-color .ti-facebook {color: #3b5998;}
 .social-icon-color .fa-twitter, .social-icon-color .ti-twitter-alt {color: #00aced;}
 .social-icon-color .fa-flickr, .social-icon-color .ti-flickr-alt {color: #ff0084;}
 .social-icon-color .fa-dribbble, .social-icon-color .ti-dribbble {color: #ea4c89;}
 .social-icon-color .fa-behance {color: #42a9fb;}
-.social-icon-color .fa-linkedin, .social-icon-color .ti-linkedin {color: #007bb6;}
+.social-icon-color .fa-linkedin-in, .social-icon-color .ti-linkedin {color: #007bb6;}
 .social-icon-color .fa-vimeo-square, .social-icon-color .ti-vimeo-alt {color: #23b6ea;}
 .social-icon-color .fa-youtube {color: #bb0000;}
 .social-icon-color .fa-tumblr, .social-icon-color .ti-tumblr-alt {color:#32506d;}
 .social-icon-color .fa-github-alt {color: #333333;}
-.social-icon-color .fa-google-plus, .social-icon-color .ti-google {color:#dd4b39;}
+.social-icon-color .fa-google-plus-g, .social-icon-color .ti-google {color:#dd4b39;}
 .social-icon-color .fa-instagram, .social-icon-color .ti-instagram {color:#517fa4;}
 .social-icon-color .fa-soundcloud, .social-icon-color .ti-soundcloud {color: #f80;}
 
@@ -1289,19 +1289,19 @@ section {border-bottom:0  }
 .gallery-img a { display: block; position: relative; z-index: 2;}
 .grid-gallery ul { list-style: outside none none; padding: 0;}
 .grid-gallery figure { margin: 0; position: relative; overflow: hidden}
-.grid-gallery figure img { cursor: pointer; display: block; opacity: 1; width: 100%;}
+.grid-gallery figure img { display: block;  width: 100%;}
 .grid { margin: 0 auto;}
 .grid li { box-sizing: border-box; display: inline-table; float: left; margin: 0; width: 25%;}
 .grid-gallery ul { margin-left: 1px;}
-.grid figure { transition: opacity 0.2s ease 0s;}
+/*.grid figure { transition: opacity 0.2s ease 0s;}*/
 .grid figcaption { bottom: 70px; opacity: 0; position: absolute; text-align: center; transition: all 0.3s ease 0s; width: 100%;}
 .gallery-img { opacity: 1; overflow: hidden; transition: all 0.3s ease 0s;}
-.grid figure:hover .gallery-img { background-color: #000;}
+/*.grid figure:hover .gallery-img { background-color: #000;}*/
 .no-hover figure:hover .gallery-img { background-color: transparent !important;}
 .no-hover figure:hover img { opacity: 1 !important; transform: none;}
-figure:hover img { cursor: url("../images/icon/icon-zoom-white.png"), pointer; opacity: 0.15; transform: scale(1.1, 1.1); transition: all 0.3s ease 0s;}
+/*figure:hover img { cursor: url("../images/icon/icon-zoom-white.png"), pointer; opacity: 0.15; transform: scale(1.1, 1.1); transition: all 0.3s ease 0s;}*/
 .mfp-figure figure:hover img { cursor: pointer;}
-.grid figure:hover figcaption { opacity: 1; transition: all 0.3s ease 0s;}
+/*.grid figure:hover figcaption { opacity: 1; transition: all 0.3s ease 0s;}*/
 .revolution-masonry-portfolio-list .portfolio-item { padding: 10px;}
 
 /* portfolio grid - 2 column  */

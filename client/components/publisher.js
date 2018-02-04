@@ -89,25 +89,25 @@ export default class Publisher extends Component {
                               {
                                 publisher.facebook &&
                                 <a href={publisher.facebook} target='_blank' className='margin-eight-right'>
-                                  <i className="icon-small sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                                  <i className="icon-small sm-icon-extra-small fab fa-facebook-f tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.twitter &&
                                 <a href={publisher.twitter} target='_blank' className='margin-eight-right'>
-                                  <i className="icon-small sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                                  <i className="icon-small sm-icon-extra-small fab fa-twitter tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.linkedin &&
                                 <a href={publisher.linkedin} target='_blank' className='margin-eight-right'>
-                                  <i className="icon-small sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                                  <i className="icon-small sm-icon-extra-small fab fa-linkedin-in tz-icon-color"></i>
                                 </a>
                               }
                               {
                                 publisher.instagram &&
                                 <a href={publisher.instagram} target='_blank' className='margin-eight-right'>
-                                  <i className="icon-small sm-icon-extra-small fa fa-instagram tz-icon-color"></i>
+                                  <i className="icon-small sm-icon-extra-small fab fa-instagram tz-icon-color"></i>
                                 </a>
                               }
                             </div>

@@ -126,16 +126,16 @@ class _SoundcastHeader extends Component {
                                           Share this soundcast:
                                         </span>
                                         <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/Soundcasts/${this.props.soundcastID}`} className="margin-eight-right">
-                                            <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                                            <i className="icon-large sm-icon-extra-small fab fa-facebook-f tz-icon-color"></i>
                                         </a>
                                         <a target="_blank" href={`https://twitter.com/intent/tweet?text=${soundcastName}. https://mysoundwise.com/soundcasts/${this.props.soundcastID}`} className="margin-eight-right">
-                                            <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                                            <i className="icon-large sm-icon-extra-small fab fa-twitter tz-icon-color"></i>
                                         </a>
                                         <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/Soundcasts/${this.props.soundcastID}`} className="margin-eight-right">
-                                            <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                                            <i className="icon-large sm-icon-extra-small fab fa-google-plus-g tz-icon-color"></i>
                                         </a>
                                         <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/Soundcasts/${this.props.soundcastID}&amp;title=${soundcastName}&amp;source=`} className="margin-eight-right">
-                                            <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                                            <i className="icon-large sm-icon-extra-small fab fa-linkedin-in tz-icon-color"></i>
                                         </a>
                                     </div>
                                 </div>

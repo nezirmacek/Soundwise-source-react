@@ -21,7 +21,7 @@ const headerProps = {
   title: 'MONETIZE YOUR EXPERTISE WITH AUDIO',
   tagline: 'Create and sell audio courses and subscription programs. Build a loyal following.',
   logoImage: "images/soundwiselogo_white.svg",
-  backgroundImage: 'images/expert_bg2.png',
+  backgroundImage: 'images/expert_bg2.jpg',
   gradient2: 'rgba(247,107,28,0.6)',
   // gradient2: 'rgba(97,225,251,0.8)',
   gradient1: 'rgba(0,0,0,0.1)',

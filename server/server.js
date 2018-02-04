@@ -28,7 +28,7 @@ var Emails = require('./scripts/sendEmails.js');
 
 var createFeed = require('./scripts/feed.js').createFeed;
 var requestFeed = require('./scripts/feed.js').requestFeed;
-var createAudioWaveVid = require('./soundwaveVideo').createAudioWaveVid;
+var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
 
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;

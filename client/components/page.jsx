@@ -21,7 +21,7 @@ const headerProps = {
   title: 'SPREAD YOUR KNOWLEDGE FAST WITH AUDIO',
   tagline: 'On-demand audio training solution for organizations and experts to efficiently engage and educate audience on the go.',
   logoImage: "images/soundwiselogo_white.svg",
-  backgroundImage: 'images/header_img_3.png',
+  backgroundImage: 'images/header_img_3.jpg',
   gradient1: 'rgba(247,107,28,0.4)',
   gradient2: 'rgba(97,225,251,0.8)',
   // gradient1: 'rgba(0,0,0,0.1)',

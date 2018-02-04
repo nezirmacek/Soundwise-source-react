@@ -20,7 +20,7 @@ const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendError = (res, err) => {
   console.log(err);
-  res.error(err);
+  res.status(500).send({error: err});
 };
 
 // **** The task: generate video combing audio wave and picture with audio file and picture uploaded from front end
@@ -37,17 +37,17 @@ module.exports.createAudioWaveVid = async (req, res) => {
     try {
       (new ffmpeg(audioPath)).then(audioFile => { // loading audio file
         const doResize = [];
-        new Promise(resolve => {
+        new Promise((resolve, reject) => {
           // **** step 1b: check image size: If it's a square image, dimensions need to be at least 1080px x 1080px. If it's a rectangular image, dimensions need to be at least 1280 px x 720 px. If image is smaller than required size, return error to front end saying "image is too small."
           if (height === width) { // square
             if (height < 1080) {
-              return res.error(`Error: image is too small.`);
+              return reject(`Error: image is too small! Square image should be at least 1080px by 1080px. Rectangular image should be at least 1280px by 720px.`);
             } else if (height > 1080) {
               doResize.push(1080, 1080); // if image is larger than the required size, it needs to be scaled back to either 1080x1080 or 1280x720.
             }
           } else {  // rectangular
             if (width < 1280 || height < 720) {
-              return res.error(`Error: image is too small.`);
+              return reject(`Error: image is too small! Square image should be at least 1080px by 1080px. Rectangular image should be at least 1280px by 720px.`);
             } else if (width > 1280 || height > 720) {
               doResize.push(1280, 720);
             }
@@ -100,7 +100,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
           } else { // default bottom
             marginTop = crop - ((isSquare ? 150 : 100) + 150); // + 150 - wavesHeight
           }
-          const filter_complex = `"[0:a]showwaves=s=1080x150:colors=${color}:mode=cline[sw];`
+          const filter_complex = `"[0:a]showwaves=s=1080x150:colors=${color}:scale=cbrt:mode=cline[sw];`
             + `[1:v]scale=${scale}:-1,crop=iw:${crop}[bg];[bg][sw]overlay=`
             + `${marginLeft}:${marginTop}:shortest=1:format=auto,format=yuv420p[vid]"`;
           audioFile.addCommand('-loop'          , '1'           );
@@ -122,8 +122,9 @@ module.exports.createAudioWaveVid = async (req, res) => {
                 sgMail.send({ // send email
                   to: email,
                   from: 'support@mysoundwise.com',
-                  subject: 'Your soundwave video was dropped by timeout!',
-                  html: `<p>Hi!</p><p>Your soundwave video was dropped by timeout!</p><p>Please, try to upload it again.</p><p>Folks at Soundwise</p>`,
+                  subject: 'There\'s a problem with your soundwave video!',
+                  bcc: 'natasha@mysoundwise.com',
+                  html: `<p>Hi!</p><p>There was a glitch in creating your soundwave video.</p><p>Please try uploading the audio clip and image again later.</p><p>Folks at Soundwise</p>`,
                 });
                 return console.log(`Error: video saving timeout ${videoPath} ${err}`)
               } else {
@@ -176,7 +177,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
               }).catch(err => console.log(`Error: soundwaveVideo sendgrid ${err}`));
             });
           });
-        }).catch(err => sendError(res, `Error: soundwaveVideo resize trim catch ${err}`));
+        }).catch(err => sendError(res, `${err}`));
       }, err => sendError(res, `Error: soundwaveVideo unable to parse file with ffmpeg ${err}`));
     } catch(e) {
       sendError(res, `Error: soundwaveVideo ffmpeg catch ${e.body || e.stack}`);
@@ -200,4 +201,4 @@ setInterval(f => s3.listObjectsV2({ Bucket: 'soundwiseinc', Prefix: 'wavevideo' 
       });
     }
   });
-}), 15 * 60 * 1000); // 15 minutes
+}), 60 * 60 * 1000); // check every hour

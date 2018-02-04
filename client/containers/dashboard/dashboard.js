@@ -43,7 +43,7 @@ const verticalMenuItems = [
     {
         path: 'add_episode',
         label: 'Add Episode',
-        iconClass: 'plus-square-o',
+        iconClass: 'plus-square',
         isMenuItemVisible: true,
         Component: CreateEpisode,
     },
@@ -55,7 +55,7 @@ const verticalMenuItems = [
     {
         path: 'analytics',
         label: 'Analytics',
-        iconClass: 'bar-chart',
+        iconClass: 'chart-bar',
         isMenuItemVisible: true,
         Component: Analytics,
     },
@@ -74,7 +74,7 @@ const verticalMenuItems = [
     {
         path: 'messages',
         label: 'Messages',
-        iconClass: 'envelope-o',
+        iconClass: 'envelope',
         isMenuItemVisible: true,
         Component: Announcements,
     },
