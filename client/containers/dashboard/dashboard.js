@@ -148,10 +148,16 @@ class _Dashboard extends Component {
                                             onClick={() => match.params.tab !== item.path && history.push(`/dashboard/${item.path}`)}
                                         >
                                             <div className='col-md-1 col-sm-2 col-xs-12'>
-                                                <i
-                                                    className={`fa fa-${item.iconClass}`}
-                                                    style={{...styles.verticalMenuItemIcon, ...(match.params.tab === item.path && {color: '#F76B1C'} || {})}}
+                                              {
+                                                match.params.tab === item.path &&
+                                                <i className={`fa fa-${item.iconClass}`}
+                                                    style={styles.activeVerticalMenuItemIcon}
                                                 ></i>
+                                                ||
+                                                <i className={`fa fa-${item.iconClass}`}
+                                                    style={styles.verticalMenuItemIcon}
+                                                ></i>
+                                              }
                                             </div>
                                             <div className='col-md-9 col-sm-9 hidden-xs'>
                                                {item.label}
@@ -215,6 +221,12 @@ const styles = {
     verticalMenuItemIcon: {
         fontSize: '20px',
         color: '#687178',
+        marginRight: 5,
+        width: 25,
+    },
+    activeVerticalMenuItemIcon: {
+        fontSize: '20px',
+        color: '#F76B1C',
         marginRight: 5,
         width: 25,
     },

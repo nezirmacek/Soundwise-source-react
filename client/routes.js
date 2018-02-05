@@ -25,6 +25,7 @@ import CreatorTerms from './components/creator_terms';
 import Privacy from './components/privacy';
 import Publisher from './components/publisher';
 import Terms from './components/terms_of_use';
+import ContentDownload from './components/content_download';
 import TermsFreeContent from './components/terms_free_content_May2017';
 import { OrderConfirmation } from './components/order_confirmation';
 import {Notice} from './components/notice';
@@ -233,6 +234,7 @@ class _Routes extends Component {
                 <Route path="/episodes/:id" component={EpisodePage} />
                 <Route path="/soundcast_checkout" component={SoundcastCheckout} />
                 <Route path="/pricing" component={PricingPage} />
+                <Route path="/content_download" component={ContentDownload} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>

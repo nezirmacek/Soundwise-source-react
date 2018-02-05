@@ -409,14 +409,17 @@ export default class Subscribers extends Component {
                                 '__'
                               }</td>
                               <td style={{...styles.td,}}>
-                                <i onClick={() => history.push({
+                                <span onClick={() => {
+                                  history.push({
                                     pathname: `/dashboard/subscriber/${subscriber.id}`,
                                     state: {
                                       subscriber,
                                       soundcast: currentSoundcast,
                                     }
-                                  })}
-                                  className="far fa-chart-bar" style={styles.itemChartIcon}></i>
+                                  });
+                                }}>
+                                  <i className="far fa-chart-bar" style={styles.itemChartIcon}></i>
+                                </span>
                               </td>
                               <td style={{...styles.td, }}>
                                 <input
