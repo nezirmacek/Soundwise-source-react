@@ -23,8 +23,9 @@ const styles = {
   },
   navlink: {
     fontSize: 16,
-    float: 'right',
-    marginTop: 6,
+    paddingTop: 17,
+    // float: 'right',
+    // marginTop: 6,
   },
   aboutLink: {
     marginTop: 6,
@@ -86,13 +87,13 @@ class _Header extends Component {
                           <div className="col-md-2 col-sm-2 col-xs-3">
                               <Link to='/' className="inner-link"><img alt="" src={logoImage} data-img-size="(W)163px X (H)40px"/></Link>
                           </div>
-                          <div className='col-md-6 col-sm-6 col-xs-7'>
+                          <div className='col-md-4 col-sm-4 col-xs-7'>
 
                               <div className="nav-button propClone no-margin-tb  btn-medium margin-twelve-left xs-no-margin-right text-white font-weight-600" >
                                 <Link className="text-white font-weight-600" style={styles.aboutLink} to='/experts'>Expert Trainers</Link>
                               </div>
                           </div>
-                          <div className="col-md-5 col-sm-5 col-xs-2 position-inherit">
+                          <div className="col-md-7 col-sm-7 col-xs-2 position-inherit">
                               <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
                                   <span className="sr-only">Toggle navigation</span>
                                   <span className="icon-bar"></span>
@@ -100,8 +101,8 @@ class _Header extends Component {
                                   <span className="icon-bar"></span>
                               </button>
                               <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
-                                  <ul className="nav navbar-nav" style={{display: 'flex', alignItems: 'center'}}>
-                                      <li className="propClone"><Link className="inner-link" to="/blog" style={styles.navlink}>Blog</Link></li>
+                                  <ul className="nav navbar-nav" style={{}}>
+                                      <li className="propClone"><Link className="inner-link" to="/wave_video" style={styles.navlink}>Soundwave Video Maker</Link></li>
                                       <li className="propClone"><Link className="inner-link" to="/signin" style={styles.navlink}>Log In</Link></li>
                                       <li className="propClone  float-left sm-no-margin-tb"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>START FOR FREE</span></Link></li>
                                   </ul>

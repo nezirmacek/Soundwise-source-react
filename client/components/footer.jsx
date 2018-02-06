@@ -18,10 +18,15 @@ const Footer = (props) => (
         </div>
         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12 xs-text-center xs-margin-four-bottom display-table text-left">
           <ul className='link' style={{float: 'right'}}>
-            <li className="text-medium margin-seven-bottom font-weight-600 text-white tz-text xs-margin-one-half-bottom">Company</li>
+            <li className="text-medium margin-seven-bottom font-weight-600 text-white tz-text xs-margin-one-half-bottom">Resources</li>
+            <li className="tz-text text-medium-gray">
+              <Link to='/wave_video'>
+                <span className='text-light-gray tz-text'>Sound Wave Video Maker</span>
+              </Link>
+            </li>
             <li className="tz-text text-medium-gray">
               <Link to='/blog'>
-                <span className='text-light-gray tz-text'>Blog</span>
+                <span className='text-light-gray tz-text'>Articles</span>
               </Link>
             </li>
           </ul>
