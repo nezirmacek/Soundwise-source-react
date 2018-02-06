@@ -70,11 +70,11 @@ export default class ContentDownload extends Component {
               <div className="container position-relative" style={{}}>
                   <div className="row">
                       <div className='col-md-6 col-sm-6 col-xs-12 ' style={{}}>
-                        <div className='center-col'>
-                        <img src={`images/${image}`} style={{width: '80%'}}/>
+                        <div className='col-md-12 center-col' style={{display: 'flex', justifyContent: 'center'}}>
+                        <img src={`images/${image}`} style={{height: '60%', width: '60%'}}/>
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6 col-xs-12 builder-bg  xs-height-auto display-table xs-text-center" style={{height: 500}}>
+                      <div className="col-md-6 col-sm-6 col-xs-12 builder-bg  xs-height-auto display-table xs-text-center" style={{}}>
                           <div className="display-table-cell-vertical-middle  no-padding-tb xs-no-padding-lr">
                               <div className=" title-small sm-title-small xs-title-small line-height-34 font-weight-600 tz-text margin-twelve-top sm-margin-six-bottom xs-margin-eleven-bottom sm-margin-nine-bottom">{content.subTitle1}</div>
                               <div className="alt-font title-extra-large-3 md-title-extra-large-3 sm-title-extra-large-3 xs-title-extra-large-2 margin-five-top margin-five-bottom width-90 md-width-100 sm-width-100 tz-text">{content.title}</div>
