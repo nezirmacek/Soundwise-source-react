@@ -73,16 +73,16 @@ export default class BlogPost extends Component {
                           Share this:
                         </span>
                         <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
-                            <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                            <i className="icon-large sm-icon-extra-small fab fa-facebook-f tz-icon-color"></i>
                         </a>
                         <a target="_blank" href={`https://twitter.com/intent/tweet?text=${post.title}. https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
-                            <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                            <i className="icon-large sm-icon-extra-small fab fa-twitter tz-icon-color"></i>
                         </a>
                         <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
-                            <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                            <i className="icon-large sm-icon-extra-small fab fa-google-plus-g tz-icon-color"></i>
                         </a>
                         <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/blog/post/${post.slug}&amp;title=${post.seo_title}&amp;source=`} className="margin-eight-right">
-                            <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                            <i className="icon-large sm-icon-extra-small fab fa-linkedin-in tz-icon-color"></i>
                         </a>
                     </div>
                 </div>
@@ -93,16 +93,16 @@ export default class BlogPost extends Component {
                         Share this:
                       </span>
                       <a target="_blank" href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
-                          <i className="icon-large sm-icon-extra-small fa fa-facebook tz-icon-color"></i>
+                          <i className="icon-large sm-icon-extra-small fab fa-facebook-f tz-icon-color"></i>
                       </a>
                       <a target="_blank" href={`https://twitter.com/intent/tweet?text=${post.title}. https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
-                          <i className="icon-large sm-icon-extra-small fa fa-twitter tz-icon-color"></i>
+                          <i className="icon-large sm-icon-extra-small fab fa-twitter tz-icon-color"></i>
                       </a>
                       <a target="_blank" href={`https://plus.google.com/share?url=https://mysoundwise.com/blog/post/${post.slug}`} className="margin-eight-right">
-                          <i className="icon-large sm-icon-extra-small fa fa-google-plus tz-icon-color"></i>
+                          <i className="icon-large sm-icon-extra-small fab fa-google-plus-g tz-icon-color"></i>
                       </a>
                       <a target="_blank" href={`https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A//mysoundwise.com/blog/post/${post.slug}&amp;title=${post.seo_title}&amp;source=`} className="margin-eight-right">
-                          <i className="icon-large sm-icon-extra-small fa fa-linkedin tz-icon-color"></i>
+                          <i className="icon-large sm-icon-extra-small fab fa-linkedin-in tz-icon-color"></i>
                       </a>
                   </div>
                 </div>
