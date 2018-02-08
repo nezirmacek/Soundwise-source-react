@@ -48,7 +48,7 @@ function addOrUpdateIndexRecord(soundcast) {
     index
       .saveObject(record)
       .then(() => {
-        console.log('Firebase object indexed in Algolia', record.objectID);
+        // console.log('Firebase object indexed in Algolia', record.objectID);
       })
       .catch(error => {
         console.error('Error when indexing soundcast into Algolia', error);

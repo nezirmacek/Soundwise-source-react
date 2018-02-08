@@ -47,7 +47,7 @@ firebase.initializeApp({
 
 // sync firebase with Algolia
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
-// algoliaIndex();
+algoliaIndex();
 
 var app = module.exports = loopback();
 app.start = function() {
@@ -128,6 +128,19 @@ app.use('/s3', require('react-s3-uploader/s3router')({
   },
   uniquePrefix: false, // (4.0.2 and above) default is true, setting the attribute to false preserves the original filename in S3
 }));
+
+app.get('/api/custom_token', (req, res) => {
+  // console.log(req);
+  firebase.auth().createCustomToken(req.query.uid)
+    .then(function(customToken) {
+      // console.log('customToken: ', customToken);
+      res.send({customToken});
+    })
+    .catch(function(error) {
+      console.log("Error creating custom token:", error);
+      res.status(500).send(error);
+    });
+});
 
 // database API routes:
 require('../database/routes.js')(app);

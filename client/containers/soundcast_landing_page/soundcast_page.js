@@ -43,10 +43,17 @@ class _SoundcastPage extends Component {
     this.handleScroll = this.handleScroll.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const that = this;
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
+
+    const params = new URLSearchParams(this.props.location.search);
+    if(params.get('custom_token')) {
+        const customToken = params.get('custom_token');
+        // console.log('customToken: ', customToken);
+        await firebase.auth().signInWithCustomToken(customToken);
+    }
 
     firebase.database().ref('soundcasts/' + soundcastID)
       .once('value', snapshot => {

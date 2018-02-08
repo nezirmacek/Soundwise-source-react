@@ -60,8 +60,9 @@ class _Routes extends Component {
       props.subscribeToCategories();
     }
 
-    componentDidMount() {
-        const that = this
+    async componentDidMount() {
+        const that = this;
+
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
                 const userId = user.uid;
