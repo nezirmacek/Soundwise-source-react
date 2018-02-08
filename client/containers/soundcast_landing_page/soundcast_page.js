@@ -47,25 +47,24 @@ class _SoundcastPage extends Component {
     const that = this;
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
-
     const params = new URLSearchParams(this.props.location.search);
+
+    const soundcast =  await firebase.database().ref('soundcasts/' + soundcastID).once('value');
+    if(soundcast.val()) {
+      that.setState({
+        soundcast: soundcast.val(),
+        soundcastID
+      });
+    } else {
+      history.push('/notfound');
+    }
+
     if(params.get('custom_token')) {
         const customToken = params.get('custom_token');
         // console.log('customToken: ', customToken);
         await firebase.auth().signInWithCustomToken(customToken);
     }
 
-    firebase.database().ref('soundcasts/' + soundcastID)
-      .once('value', snapshot => {
-        if(snapshot.val()) {
-          that.setState({
-            soundcast: snapshot.val(),
-            soundcastID
-          });
-        } else {
-            history.push('/notfound');
-        }
-      });
     // this.nv.addEventListener('scroll', this.handleScroll);
     window.addEventListener('scroll', this.handleScroll);
   }
