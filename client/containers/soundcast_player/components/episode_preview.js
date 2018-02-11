@@ -99,11 +99,14 @@ export default class EpisodePreview extends Component {
               playing && currentEpisode && (episode.id == currentEpisode.id) &&
               <Levels color="#F76B1C" size={mobile ? 13 : 16} speed={1} />
               ||
-              <div style={{cursor: 'pointer',}}>
+              <div
+                onClick={this.handlePlay.bind(this, episode)}
+                style={{cursor: 'pointer',}}>
                 <i
-                  className="fa fa-play-circle fa-3x" aria-hidden="true"
-                  style={{color: '#61E1FB', cursor: 'pointer'}}
-                  onClick={this.handlePlay.bind(this, episode)}>
+                  className="material-icons" aria-hidden="true"
+                  style={{color: '#61E1FB', cursor: 'pointer', fontSize: '3em'}}
+                  >
+                  play_circle_filled
                 </i>
               </div>
             }
@@ -114,13 +117,16 @@ export default class EpisodePreview extends Component {
               <div className='col-md-6 text-large sm-text-large xs-text-large font-weight-400 alt-font margin-three-bottom margin-three-top tz-text' style={{paddingLeft: 0}}>
                 {`${moment(episode.date_created * 1000).format('ddd MMM DD')}`}
               </div>
-              <div className='col-md-6 margin-three-top' style={{display: 'flex', alignItems: 'center', paddingLeft: 0,}}>
+              <div className='col-md-6 margin-three-top margin-three-bottom' style={{ paddingLeft: 0,}}>
                 {
-                  <span className="text-large sm-text-large xs-text-large text-dark-gray font-weight-400 alt-font margin-three-bottom margin-three-top tz-text" style={{marginRight: 35}}>
+                  <span
+                    onClick={this.changeLike.bind(this)}
+                    className="text-large sm-text-large xs-text-large text-dark-gray font-weight-400 alt-font margin-three-bottom margin-three-top tz-text" style={{marginRight: 35}}>
                     <i
-                      className="fa fa-heart" aria-hidden="true"
-                      style={{color: liked ? 'red': 'black', cursor: 'pointer'}}
-                      onClick={this.changeLike.bind(this)}>
+                      className="material-icons" aria-hidden="true"
+                      style={{fontSize: 16, color: liked ? 'red': 'black', cursor: 'pointer'}}
+                      >
+                    favorite
                     </i>
                     {` ${likes} ${likes > 1 ? 'likes' : 'like'} ` }
                   </span>

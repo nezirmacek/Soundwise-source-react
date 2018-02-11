@@ -232,7 +232,7 @@ export default class Payment extends Component {
             .once('value')
             .then(snapshot => {
                if(snapshot.val() && snapshot.val().stripe_user_id) {
-                    const stripe_user_id = snapshot.val().stripe_user_id;
+                    const stripe_user_id = snapshot.val().stripe_user_id; // publisher's id for stripe connected account
                     if(billingCycle == 'one time' || billingCycle == 'rental') { //if purchase or rental, post to api/charge
                         Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
                             amount,

@@ -24,7 +24,7 @@ const verticalMenuItems = [
     {
         path: 'soundcasts',
         label: 'Soundcasts',
-        iconClass: 'headphones',
+        iconClass: 'headset',
         isMenuItemVisible: true,
         Component: SoundcastsManaged,
     },
@@ -43,7 +43,7 @@ const verticalMenuItems = [
     {
         path: 'add_episode',
         label: 'Add Episode',
-        iconClass: 'plus-square',
+        iconClass: 'settings_voice',
         isMenuItemVisible: true,
         Component: CreateEpisode,
     },
@@ -55,14 +55,14 @@ const verticalMenuItems = [
     {
         path: 'analytics',
         label: 'Analytics',
-        iconClass: 'chart-bar',
+        iconClass: 'assessment',
         isMenuItemVisible: true,
         Component: Analytics,
     },
     {
         path: 'subscribers',
         label: 'Subscribers',
-        iconClass: 'users',
+        iconClass: 'people',
         isMenuItemVisible: true,
         Component: Subscribers,
     },
@@ -74,14 +74,14 @@ const verticalMenuItems = [
     {
         path: 'messages',
         label: 'Messages',
-        iconClass: 'envelope',
+        iconClass: 'message',
         isMenuItemVisible: true,
         Component: Announcements,
     },
     {
         path: 'publisher',
         label: 'Publisher',
-        iconClass: 'cog',
+        iconClass: 'work',
         isMenuItemVisible: true,
         Component: Publisher,
     },
@@ -150,13 +150,13 @@ class _Dashboard extends Component {
                                             <div className='col-md-1 col-sm-2 col-xs-12'>
                                               {
                                                 match.params.tab === item.path &&
-                                                <i className={`fa fa-${item.iconClass}`}
+                                                <i className='material-icons'
                                                     style={styles.activeVerticalMenuItemIcon}
-                                                ></i>
+                                                >{item.iconClass}</i>
                                                 ||
-                                                <i className={`fa fa-${item.iconClass}`}
+                                                <i className='material-icons'
                                                     style={styles.verticalMenuItemIcon}
-                                                ></i>
+                                                >{item.iconClass}</i>
                                               }
                                             </div>
                                             <div className='col-md-9 col-sm-9 hidden-xs'>

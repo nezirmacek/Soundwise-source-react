@@ -6,6 +6,7 @@ import {Helmet} from 'react-helmet';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import Colors from '../styles/colors';
 
 import {SoundwiseHeader} from '../components/soundwise_header';
 import Footer from '../components/footer'
@@ -18,134 +19,44 @@ export default class PricingPage extends Component {
       popupOpen: false,
       creditCardError: '',
       planChosen: null,
+      frequency: 'annual',
+      priceChosen: null,
+      prices: {
+        annual: {
+            pro: 68,
+            plus: 28,
+        },
+        monthly: {
+            pro: 113,
+            plus: 47,
+        }
+      }
     };
-    this.paymentPopup = this.paymentPopup.bind(this);
+    this.goToCheckout = this.goToCheckout.bind(this);
+    this.changeFrequency = this.changeFrequency.bind(this);
   }
 
-  paymentPopup() {
-    const that = this;
-    const monthOptions = [];
-    const yearOptions = [];
-    for (let i=0; i<12; i++) {
-        monthOptions.push(<option value={i} key={i}>{moment().month(i).format('MMM (MM)')}</option>);
-        yearOptions.push(<option value={i + +moment().format('YYYY')} key={i}>{i + +moment().format('YYYY')}</option>);
+  goToCheckout(plan, frequency, price) {
+    this.props.history.push({
+      pathname: '/buy',
+      state: {
+        plan,
+        frequency,
+        price,
+      }
+    });
+  }
+
+  changeFrequency() {
+    if(this.state.frequency == 'annual') {
+      this.setState({
+        frequency: 'monthly'
+      });
+    } else if (this.state.frequency == 'monthly') {
+      this.setState({
+        frequency: 'annual'
+      });
     }
-
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={false}
-        onClick={() => that.setState({
-          popupOpen: false,
-          creditCardError: '',
-          card: '',
-          exp_month: '',
-          exp_year: '',
-          cvc: '',
-        })}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.submitPayment}
-      />,
-    ];
-
-    return (
-      <div>
-        <MuiThemeProvider>
-          <Dialog
-            title='Update Credit Card'
-            actions={actions}
-            modal={false}
-            open={this.state.popupOpen}
-            onRequestClose={() => that.setState({
-              popupOpen: false,
-              creditCardError: '',
-            })}
-          >
-            <div className='col-md-12' style={{...styles.relativeBlock, paddingLeft: 0}}>
-                <input
-                    onChange={(e) => {that.setState({newCard: e.target.value})}}
-                    required
-                    className='border-radius-4'
-                    size='20'
-                    type='text'
-                    name='number'
-                    value={that.state.newCard}
-                    placeholder="Card Number"
-                    style={styles.input}
-                />
-                <img className='hidden-xs' src="../../../images/card_types.png" style={styles.cardsImage} />
-            </div>
-
-            {/*Expiration*/}
-            <div className='col-md-9 col-xs-12' style={{paddingLeft: 0, paddingRight: 0}}>
-                {/*month*/}
-                <div style={styles.selectBlock} className="border-radius-4" >
-                    <label style={styles.selectLabel}>Exp Month</label>
-                    <select
-                        onChange={(e) => {that.setState({exp_month_new: e.target.value})}}
-                        name="exp_month"
-                        id="expiry-month"
-                        value={that.state.exp_month_new }
-                        style={styles.select}
-                    >
-                        {
-                            monthOptions.map(item => item)
-                        }
-                    </select>
-                </div>
-
-                {/*year*/}
-                <div style={styles.selectBlock} className="border-radius-4" >
-                    <label style={styles.selectLabel}>Exp Year</label>
-                    <select
-                        onChange={(e) => {that.setState({exp_year_new: e.target.value})}}
-                        name="exp_year"
-                        value={that.state.exp_year_new}
-                        style={styles.select}
-                    >
-                        {
-                            yearOptions.map(item => item)
-                        }
-                    </select>
-                </div>
-            </div>
-            <div className='col-md-3 col-xs-12' style={{paddingLeft: 0}}>
-                {/*cvv/cvc*/}
-                <input
-                    onChange={(e) => {that.setState({cvc: e.target.value})}}
-                    required
-                    className='border-radius-4'
-                    size='3'
-                    type='password'
-                    name='cvc'
-                    placeholder="CVC"
-                    value={that.state.cvc}
-                    style={Object.assign({}, styles.input, styles.cvc)}
-                />
-            </div>
-            {
-                this.state.creditCardError &&
-                <div className='col-md-12' style={{color: 'red'}}>{ this.state.creditCardError }</div>
-                || null
-            }
-            {/*button*/}
-            <div style={styles.buttonWrapper}>
-                <div style={styles.securedTextWrapper}>
-                    <i className="ti-lock" style={styles.securedTextIcon} />
-                    Transactions are secure and encrypted.
-                </div>
-                <div style={styles.stripeImageWrapper}>
-                    <img src="../../../images/powered_by_stripe.png" style={styles.stripeImage}/>
-                </div>
-            </div>
-          </Dialog>
-        </MuiThemeProvider>
-      </div>
-    );
   }
 
   render() {
@@ -166,10 +77,123 @@ export default class PricingPage extends Component {
           <meta name="twitter:card" content="https://mysoundwise.com/images/soundwise_homepage.png" />
         </Helmet>
         <SoundwiseHeader />
-        <Pricing />
-        {this.paymentPopup()}
+        <Pricing
+           goToCheckout={this.goToCheckout}
+           changeFrequency={this.changeFrequency}
+           prices={this.state.prices}
+           frequency={this.state.frequency}
+        />
         <Footer />
       </div>
     )
   }
 }
+
+const styles = {
+    totalRow: {
+        borderTop: `1px solid ${Colors.mainGrey}`,
+        height: 22,
+    },
+    totalWrapper: {
+        float: 'right',
+        marginRight: 10,
+        fontWeight: 'bold',
+        fontSize: 14,
+        color: Colors.fontBlack,
+    },
+    totalText: {
+        width: 40,
+        marginRight: 50,
+        float: 'left',
+    },
+    totalPriceText: {
+        width: 53,
+        float: 'right',
+        textAlign: 'right',
+    },
+    cardsImage: {
+        position: 'absolute',
+        right: 4,
+        top: 10,
+        width: 179,
+        height: 26,
+    },
+    input: {
+        height: 46,
+        fontSize: 14,
+        margin: '40px 0 0 0',
+    },
+    input2: {
+        height: 46,
+        fontSize: 14,
+        margin: '10px 0 0 0',
+    },
+    selectBlock: {
+        width: '35%',
+        height: 46,
+        float: 'left',
+        marginTop: 9,
+        border: `1px solid ${Colors.mainGrey}`,
+        paddingLeft: 10,
+        marginRight: '5%',
+    },
+    selectLabel: {
+        fontWeight: 'normal',
+        display: 'block',
+        marginBottom: 0,
+        color: Colors.fontBlack,
+        fontSize: 14,
+    },
+    select: {
+        border: 0,
+        backgroundColor: Colors.mainWhite,
+        padding: 0,
+        margin: 0,
+        color: Colors.fontGrey,
+        fontSize: 14,
+        position: 'relative',
+        right: 3,
+    },
+    cvc: {
+        width: '20%',
+        marginTop: 9,
+    },
+    buttonWrapper: {
+        margin: '20px 0 0 0',
+    },
+    stripeImageWrapper: {
+        backgroundColor: Colors.mainOrange,
+        overflow: 'hidden',
+        position: 'relative',
+        width: 138,
+        height: 32,
+        margin: '10px 10px',
+        float: 'left',
+        borderRadius: 5,
+    },
+    stripeImage: {
+        width: 138,
+        height: 32,
+        position: 'relative',
+        bottom: 0,
+    },
+    button: {
+        height: 46,
+        backgroundColor: Colors.mainOrange,
+        fontSize: 14,
+    },
+    securedTextWrapper: {
+        marginTop: 15,
+        float: 'left',
+    },
+    securedTextIcon: {
+        fontSize: 16,
+    },
+    securedText: {
+        fontSize: 14,
+    },
+
+    relativeBlock: {
+        position: 'relative',
+    },
+};

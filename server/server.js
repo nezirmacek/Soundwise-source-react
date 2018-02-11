@@ -21,6 +21,8 @@ var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
 var updateCreditCard = require('./scripts/payment.js').updateCreditCard;
 var retrieveCustomer = require('./scripts/payment.js').retrieveCustomer;
+var createSubscription = require('./scripts/createPlatformCharges.js').createSubscription;
+var renewSubscription = require('./scripts/createPlatformCharges.js').renewSubscription;
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
@@ -31,7 +33,7 @@ var requestFeed = require('./scripts/feed.js').requestFeed;
 var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
 
 var sendNotification = require('./scripts/messaging.js').sendNotification;
-var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
+// var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 var createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
 var requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
@@ -97,6 +99,7 @@ app.post('/api/create_feed', createFeed);
 app.get('/rss/:id', requestFeed);
 app.get('/api/retrieveCustomer', retrieveCustomer);
 app.post('/api/updateCreditCard', updateCreditCard);
+app.post('/api/buy', createSubscription);
 
 app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;
 app.post('/api/comment_notify', Emails.sendCommentNotification);
@@ -105,7 +108,7 @@ app.post('/api/delete_emails', Emails.deleteFromEmailList);
 app.post('/api/add_emails', Emails.addToEmailList);
 
 app.post('/api/send_notification', sendNotification);
-app.post('/api/subscription_renewal', subscriptionRenewal);
+app.post('/api/subscription_renewal', renewSubscription);
 app.post('/api/unsubscribe', unsubscribe);
 app.use('/api/upload', multipart());
 app.post('/api/upload', function(req, res, next) {

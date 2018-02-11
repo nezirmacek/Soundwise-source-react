@@ -185,7 +185,7 @@ export default class Soundcast extends Component {
   render() {
     const { userInfo, episodes, soundcast } = this.state;
     const { history, id } = this.props;
-
+    const that = this;
     return (
         <div className='' style={styles.itemContainer}>
           <EpisodeStatsModal
@@ -272,8 +272,11 @@ export default class Soundcast extends Component {
                                   </div>
                                   <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.isPublished &&moment(episode.date_created * 1000).format('MMM DD YYYY') || 'draft'}</div>
                                   <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</div>
-                                  <div className='col-md-2' style={{...styles.td, textAlign: 'center'}} dataToggle="tooltip" dataPlacement="top" title="episode analytics">
-                                    <i onClick={() => this.setCurrentEpisode(episode)} className="fa fa-2x fa-line-chart" style={styles.itemChartIcon}></i>
+                                  <div
+                                    onClick={() => that.setCurrentEpisode(episode)}
+                                    className='col-md-2' style={{...styles.td, textAlign: 'center'}} dataToggle="tooltip" dataPlacement="top" title="episode analytics">
+
+                                    <i  className="fas fa-2x fa-chart-bar" style={styles.itemChartIcon}></i>
                                   </div>
                                 </div>
                               {provided.placeholder}

@@ -18,6 +18,7 @@ import Page from './components/page';
 import PageRealEstate from './components/page_realestate';
 import PageExperts from './components/page_experts';
 import PricingPage from './containers/pricing_page';
+import {SoundwiseCheckout} from './containers/soundwise_checkout';
 import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest'
@@ -52,6 +53,7 @@ import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
 import {WaveVideoInputs} from './containers/wave_video_inputs';
+
 
 class _Routes extends Component {
     constructor(props) {
@@ -235,6 +237,7 @@ class _Routes extends Component {
                 <Route path="/episodes/:id" component={EpisodePage} />
                 <Route path="/soundcast_checkout" component={SoundcastCheckout} />
                 <Route path="/pricing" component={PricingPage} />
+                <Route path="/buy" component={SoundwiseCheckout} />
                 <Route path="/content_download" component={ContentDownload} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />

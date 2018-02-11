@@ -121,12 +121,12 @@ export default class EpisodePlayer extends Component {
         let iconClass = '';
         if (episode.publicEpisode) {
             if (isPlaying && this.props.isPlaying) {
-                iconClass = 'fa-pause-circle';
+                iconClass = 'pause_circle_filled';
             } else {
-                iconClass = 'fa-play-circle';
+                iconClass = 'play_circle_filled';
             }
         } else {
-            iconClass = 'fa-play-circle-o';
+            iconClass = 'play_circle_outline';
         }
 
         return (
@@ -135,11 +135,11 @@ export default class EpisodePlayer extends Component {
               style={styles.wrapper}>
                 <td>
                     <i
-                        className={`fa ${iconClass} table-cell`}
+                        className={`material-icons table-cell`}
                         style={{fontSize: '38px', color: episode.publicEpisode && '#61E1FB' || '#ccc'}}
                         aria-hidden="true"
 
-                    >
+                    >{iconClass}
                     </i>
                 </td>
                 <td style={{verticalAlign: 'middle'}}>

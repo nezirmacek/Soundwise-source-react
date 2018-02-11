@@ -3,9 +3,11 @@ const moment = require('moment');
 var stripe_key = require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 var admin = require("firebase-admin");
-const sendinblue = require('sendinblue-api');
-const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
-
+// const sendinblue = require('sendinblue-api');
+// const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
+const sgMail = require('@sendgrid/mail');
+const sendGridApiKey = require('../../config').sendGridApiKey;
+sgMail.setApiKey(sendGridApiKey);
 const stripeFeeFixed = 30; // 30 cents fixed fee
 const stripeFeePercent = (2.9 + 0.5); // 2.9% transaction fee, 0.5% fee on payout volume
 const soundwiseFeePercent = 0;
@@ -123,24 +125,14 @@ module.exports = function(Transaction) {
 
             break;
         case 'invoice.payment_failed':
-          const parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
-          const sendinObj = new sendinblue(parameters);
-          const input = {'to': {['natasha@mysoundwise.com']: 'Natasha Che'},
-            'from': ['support@mysoundwise.com', 'Soundwise'],
+          const input = {'to': 'natasha@mysoundwise.com',
+            'from': 'support@mysoundwise.com',
             'subject': `Payment failed for invoice #${data.data.object.id}`,
             'html': `<p>Webhook notice from Stripe:</p>
               <div>${JSON.stringify(data)}</div>`,
           };
-
-          sendinObj.send_email(input, function(err, response) {
-            if (err) {
-              console.log('email admin error: ', err);
-              return cb(null, {});
-            } else {
-              // console.log('email sent to: ', invitee);
-              return cb(null, {});
-            }
-          });
+          sgMail.send(input);
+          return cb(null, {});
           break;
         default:
             cb(null, {});

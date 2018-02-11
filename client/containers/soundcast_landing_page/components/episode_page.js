@@ -157,6 +157,7 @@ class _EpisodePage extends Component {
   }
 
   changeLike() {
+    console.log('changeLike called');
     const {episodeID, likes, webID, liked} = this.state;
 
     if(!liked) {
@@ -164,7 +165,7 @@ class _EpisodePage extends Component {
       .set(moment().format('X'))
       .then(() => {
 
-          // console.log('success set like');
+          console.log('success set like');
       })
       .catch((err) => {
           alert('ERROR: like save: ' + err.toString());
@@ -294,11 +295,13 @@ class _EpisodePage extends Component {
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 10}}>
                               {
-                                <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text" style={{marginRight: 35}}>
+                                <span
+                                  onClick={this.changeLike.bind(this)}
+                                  className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text" style={{marginRight: 35, cursor: 'pointer'}}>
                                   <i
-                                    className="fa fa-heart" aria-hidden="true"
+                                    className="fas fa-heart" aria-hidden="true"
                                     style={{color: liked ? 'red' : 'black'}}
-                                    onClick={this.changeLike.bind(this)}></i>
+                                    ></i>
                                   {` ${likes || 0} ${likes && likes > 1 ? 'likes' : 'like'}` }
                                 </span>
                               }

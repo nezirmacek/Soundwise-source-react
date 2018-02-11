@@ -7,7 +7,7 @@ import rp from 'request-promise';
 import Axios from 'axios';
 import moment from 'moment';
 import { withRouter } from 'react-router';
-import Toggle from 'react-toggle'
+import Toggle from 'react-toggle';
 import Dots from 'react-activity/lib/Dots';
 import ReactS3Uploader from 'react-s3-uploader'
 import LinearProgress from 'material-ui/LinearProgress';
