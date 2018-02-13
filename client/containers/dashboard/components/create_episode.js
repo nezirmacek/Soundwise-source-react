@@ -38,8 +38,8 @@ class AudiojsRecordPlayer extends React.Component {
             plugins: {
                 wavesurfer: {
                     src: "live",
-                    waveColor: "#36393b",
-                    progressColor: "#black",
+                    waveColor: "#ffffff",
+                    progressColor: "#ffffff",
                     debug: true,
                     cursorWidth: 1,
                     msDisplayMax: 20,
@@ -89,8 +89,8 @@ class AudiojsRecordPlayer extends React.Component {
     // see https://github.com/videojs/video.js/pull/3856
     render() {
         return (
-            <div data-vjs-player>
-                <audio id="myAudio" ref={ node => this.videoNode = node } className="video-js vjs-default-skin"></audio>
+            <div>
+                <audio id='myAudio' ref={ node => this.videoNode = node } className='video-js vjs-default-skin video-js-audio-custom'></audio>
             </div>
         )
     }
@@ -623,16 +623,16 @@ class _CreateEpisode extends Component {
                     {
                         !isRecording
                         &&
-                        <div style={styles.recordButton}   onClick={(e) => this.record(e)}>
+                        <div style={styles.recordButton} onClick={(e) => this.record(e)}>
                             <span className="fa-stack fa-2x">
-                              <i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i>
-                              <i className="fa fa-microphone fa-stack-1x fa-inverse"></i>
+                              <div><i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i></div>
+                              <div><i className="fa fa-microphone fa-stack-1x fa-inverse"></i></div>
                             </span>
                         </div>
                         ||
                         <div style={styles.recordButton} onClick={(e) => this.stop(e)}>
                             <span className="fa-stack fa-2x">
-                              <i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i>
+                              <div key="stopRecord"><i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i></div>
                             </span>
                         </div>
                     }

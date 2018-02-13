@@ -823,12 +823,9 @@ footer .social-icon a:last-child{ margin-right:0;}
     padding-right: 26px;
 }
 
-/*styles for react-mic component*/
-.sound-wave {
-    height: 50px;
-    width: 138px;
-    position: relative;
-    bottom: 15px;
+/* Video js styles */
+.video-js-audio-custom {
+  background-color: #acb3bc !important;
 }
 
 /*center a div*/
