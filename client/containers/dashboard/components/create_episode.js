@@ -30,10 +30,10 @@ window.URL = window.URL || window.webkitURL;
 class AudiojsRecordPlayer extends React.Component {
     componentDidMount() {
         // instantiate Video.js
-        this.player = videojs("myAudio", {
+        const player = this.player = videojs("myAudio", {
             controls: true,
-            width: 600,
-            height: 300,
+            width: 200,
+            height: 100,
             fluid: false,
             plugins: {
                 wavesurfer: {
@@ -59,18 +59,18 @@ class AudiojsRecordPlayer extends React.Component {
                 '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
                 'and recordrtc', RecordRTC.version);
         });
-        this.player.on('deviceError', function() { // error handling
+        player.on('deviceError', function() { // error handling
             console.log('device error:', player.deviceErrorCode);
         });
-        this.player.on('error', function(error) {
+        player.on('error', function(error) {
             console.log('error:', error);
         });
         // user clicked the record button and started recording
-        this.player.on('startRecord', function() {
+        player.on('startRecord', function() {
             console.log('started recording!');
         });
         // user completed recording and stream is available
-        this.player.on('finishRecord', function() {
+        player.on('finishRecord', function() {
             // the blob object contains the recorded data that
             // can be downloaded by the user, stored on server etc.
             console.log('finished recording: ', player.recordedData);
@@ -1287,8 +1287,8 @@ const styles = {
         // paddingLeft: 15,
     },
     micWrapper: {
-        width: 138,
-        height: 30,
+        width: 200,
+        height: 100,
         position: 'relative',
         top: 10,
         overflow: 'hidden',
