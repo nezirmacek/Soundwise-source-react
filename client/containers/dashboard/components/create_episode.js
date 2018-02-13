@@ -30,7 +30,7 @@ window.URL = window.URL || window.webkitURL;
 class AudiojsRecordPlayer extends React.Component {
     componentDidMount() {
         // instantiate Video.js
-        const player = this.player = videojs("myAudio", {
+        const audioRecord = this.audioRecord = videojs('myAudio', {
             controls: true,
             width: 200,
             height: 100,
@@ -59,37 +59,35 @@ class AudiojsRecordPlayer extends React.Component {
                 '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
                 'and recordrtc', RecordRTC.version);
         });
-        player.on('deviceError', function() { // error handling
-            console.log('device error:', player.deviceErrorCode);
+        audioRecord.on('deviceError', function() { // error handling
+            console.log('device error:', audioRecord.deviceErrorCode);
         });
-        player.on('error', function(error) {
+        audioRecord.on('error', function(error) {
             console.log('error:', error);
         });
         // user clicked the record button and started recording
-        player.on('startRecord', function() {
+        audioRecord.on('startRecord', function() {
             console.log('started recording!');
         });
         // user completed recording and stream is available
-        player.on('finishRecord', function() {
+        audioRecord.on('finishRecord', function() {
             // the blob object contains the recorded data that
             // can be downloaded by the user, stored on server etc.
-            console.log('finished recording: ', player.recordedData);
+            console.log('finished recording: ', audioRecord.recordedData);
         });
+        this.props.setAudioRecord(audioRecord);
     }
-
-    // destroy player on unmount
     componentWillUnmount() {
-        if (this.player) {
-            this.player.dispose();
+        if (this.audioRecord) {
+            this.audioRecord.dispose(); // destroy on unmount
         }
     }
-
     // wrap the player in a div with a `data-vjs-player` attribute
     // so videojs won't create additional wrapper in the DOM
     // see https://github.com/videojs/video.js/pull/3856
     render() {
         return (
-            <div>
+            <div data-vjs-player>
                 <audio id='myAudio' ref={ node => this.videoNode = node } className='video-js vjs-default-skin video-js-audio-custom'></audio>
             </div>
         )
@@ -148,6 +146,7 @@ class _CreateEpisode extends Component {
         this.audio = null;
         this.notes = null;
 		this.player = null;
+        this.audioRecord = null;
         this.recordingInterval = null;
         this.playingInterval = null;
         this.uploadAudioInput = null;
@@ -596,6 +595,10 @@ class _CreateEpisode extends Component {
         }
     }
 
+    setAudioRecord(audioRecord) {
+        this.audioRecord = audioRecord;
+    }
+
     renderRecorder() {
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, notesUrl, isSaved, audioUploading, currentRecordingDuration, currentPlayingDuration } = this.state;
         if(isSaved && !audioUploading) {
@@ -637,7 +640,7 @@ class _CreateEpisode extends Component {
                         </div>
                     }
                     <div style={styles.micWrapper}>
-                      <AudiojsRecordPlayer/>
+                      <AudiojsRecordPlayer setAudioRecord={this.setAudioRecord.bind(this)} />
                     </div>
                     <div style={styles.time}>
                         <span>{!isPlaying && currentRecordingDuration && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss') || moment.utc(0).format('HH:mm:ss')}</span>
