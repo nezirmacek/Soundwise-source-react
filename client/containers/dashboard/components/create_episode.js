@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
-import { ReactMic } from 'react-mic';
+import 'videojs-record';
+import WaveSurfer from 'wavesurfer.js';
+import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
+WaveSurfer.microphone = MicrophonePlugin;
+import 'videojs-wavesurfer';
 import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
@@ -20,6 +24,75 @@ import {sendNotifications} from '../../../helpers/send_notifications';
 import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 window.URL = window.URL || window.webkitURL;
+
+class AudiojsRecordPlayer extends React.Component {
+    componentDidMount() {
+        // instantiate Video.js
+        this.player = videojs("myAudio", {
+            controls: true,
+            width: 600,
+            height: 300,
+            fluid: false,
+            plugins: {
+                wavesurfer: {
+                    src: "live",
+                    waveColor: "#36393b",
+                    progressColor: "#black",
+                    debug: true,
+                    cursorWidth: 1,
+                    msDisplayMax: 20,
+                    hideScrollbar: true
+                },
+                record: {
+                    audio: true,
+                    video: false,
+                    maxLength: 20,
+                    debug: true
+                }
+            }
+        }, function() {
+            // print version information at startup
+            videojs.log('Using video.js', videojs.VERSION,
+                'with videojs-record', videojs.getPluginVersion('record'),
+                '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
+                'and recordrtc', RecordRTC.version);
+        });
+        this.player.on('deviceError', function() { // error handling
+            console.log('device error:', player.deviceErrorCode);
+        });
+        this.player.on('error', function(error) {
+            console.log('error:', error);
+        });
+        // user clicked the record button and started recording
+        this.player.on('startRecord', function() {
+            console.log('started recording!');
+        });
+        // user completed recording and stream is available
+        this.player.on('finishRecord', function() {
+            // the blob object contains the recorded data that
+            // can be downloaded by the user, stored on server etc.
+            console.log('finished recording: ', player.recordedData);
+        });
+    }
+
+    // destroy player on unmount
+    componentWillUnmount() {
+        if (this.player) {
+            this.player.dispose();
+        }
+    }
+
+    // wrap the player in a div with a `data-vjs-player` attribute
+    // so videojs won't create additional wrapper in the DOM
+    // see https://github.com/videojs/video.js/pull/3856
+    render() {
+        return (
+            <div data-vjs-player>
+                <audio id="myAudio" ref={ node => this.videoNode = node } className="video-js vjs-default-skin"></audio>
+            </div>
+        )
+    }
+}
 
 class _CreateEpisode extends Component {
     constructor(props) {
@@ -562,15 +635,7 @@ class _CreateEpisode extends Component {
                         </div>
                     }
                     <div style={styles.micWrapper}>
-                        <ReactMic
-                            record={isRecording}
-                            className="sound-wave"
-                            onStart={this.record.bind(this)}
-                            onStop={this.stop.bind(this)}
-                            strokeColor={Colors.mainWhite}
-                            backgroundColor={Colors.lightGrey}
-                            audioBitsPerSecond={128000}
-                        />
+                      <AudiojsRecordPlayer/>
                     </div>
                     <div style={styles.time}>
                         <span>{!isPlaying && currentRecordingDuration && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss') || moment.utc(0).format('HH:mm:ss')}</span>
@@ -1089,7 +1154,7 @@ class _CreateEpisode extends Component {
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
                             <select
-                              value = {this.currentSoundcastId}
+                              value = {this.currentSoundcastId || ''}
                               style={styles.soundcastSelect}
                               onChange={(e) => {this.changeSoundcastId(e.target.value);}}>
                                 {

@@ -80,7 +80,6 @@
     "react-helmet": "^5.0.2",
     "react-icons": "^2.2.5",
     "react-loader": "^2.4.2",
-    "react-mic": "^8.0.0",
     "react-on-screen": "^2.0.1",
     "react-pdf-js": "^3.0.3",
     "react-progress-label": "^1.2.2",
@@ -118,6 +117,7 @@
     "tls": "0.0.1",
     "url-loader": "^0.5.7",
     "video-react": "^0.9.4",
+    "videojs-record": "^2.1.0",
     "webpack": "^1.13.2",
     "whatwg-fetch": "^2.0.3",
     "when": ">= 0.0.1"
