@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as _ from 'lodash';
 import firebase from 'firebase';
+import moment from 'moment';
 
 import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
@@ -55,6 +56,7 @@ const verticalMenuItems = [
     {
         path: 'analytics',
         label: 'Analytics',
+        pro: true,
         iconClass: 'assessment',
         isMenuItemVisible: true,
         Component: Analytics,
@@ -62,6 +64,7 @@ const verticalMenuItems = [
     {
         path: 'subscribers',
         label: 'Subscribers',
+        pro: true,
         iconClass: 'people',
         isMenuItemVisible: true,
         Component: Subscribers,
@@ -74,6 +77,7 @@ const verticalMenuItems = [
     {
         path: 'messages',
         label: 'Messages',
+        pro: true,
         iconClass: 'message',
         isMenuItemVisible: true,
         Component: Announcements,
@@ -130,6 +134,15 @@ class _Dashboard extends Component {
     render() {
         const { history, match, isLoggedIn, handleContentSaving, content_saved } = this.props;
         let userInfo = this.state.userInfo;
+        let plan, proUser;
+        if(userInfo.publisher && userInfo.publisher.plan) {
+            plan = userInfo.publisher.plan;
+            proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+        }
+        if(userInfo.publisher && userInfo.publisher.beta) {
+            proUser = true;
+        }
+
         const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
 
         return (
@@ -160,7 +173,12 @@ class _Dashboard extends Component {
                                               }
                                             </div>
                                             <div className='col-md-9 col-sm-9 hidden-xs'>
-                                               {item.label}
+                                               <span>{item.label}</span>
+                                               {
+                                                item.pro && !proUser &&
+                                                <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+                                                || <span></span>
+                                               }
                                             </div>
                                         </div>
                                     );

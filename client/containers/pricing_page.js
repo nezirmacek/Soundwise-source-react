@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import firebase from 'firebase';
 import moment from 'moment';
 import {Helmet} from 'react-helmet';
@@ -12,7 +13,7 @@ import {SoundwiseHeader} from '../components/soundwise_header';
 import Footer from '../components/footer'
 import Pricing from '../components/pricing'
 
-export default class PricingPage extends Component {
+ class _PricingPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,6 +61,7 @@ export default class PricingPage extends Component {
   }
 
   render() {
+    const {userInfo, isLoggedIn} = this.props;
     return (
       <div>
         <Helmet>
@@ -82,6 +84,8 @@ export default class PricingPage extends Component {
            changeFrequency={this.changeFrequency}
            prices={this.state.prices}
            frequency={this.state.frequency}
+           isLoggedIn={isLoggedIn}
+           userInfo={userInfo}
         />
         <Footer />
       </div>
@@ -197,3 +201,10 @@ const styles = {
         position: 'relative',
     },
 };
+
+const mapStateToProps = state => {
+    const { userInfo, isLoggedIn } = state.user;
+    return { userInfo, isLoggedIn, };
+};
+
+export const PricingPage = connect(mapStateToProps, null)(_PricingPage);

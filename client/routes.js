@@ -17,7 +17,7 @@ import { loadCourses, subscribeToCategories, signinUser } from './actions/index'
 import Page from './components/page';
 import PageRealEstate from './components/page_realestate';
 import PageExperts from './components/page_experts';
-import PricingPage from './containers/pricing_page';
+import {PricingPage} from './containers/pricing_page';
 import {SoundwiseCheckout} from './containers/soundwise_checkout';
 import About from './components/about';
 import Referral from './components/referral';

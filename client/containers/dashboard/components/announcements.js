@@ -24,6 +24,7 @@ export default class Announcements extends Component {
       message: '',
       announcementsArr: [],
       sendEmails: false,
+      modalOpen: false,
     }
 
     this.firebaseListener = null;
@@ -34,6 +35,14 @@ export default class Announcements extends Component {
   }
 
   componentDidMount() {
+    const { userInfo } = this.props;
+    if(userInfo.publisher) {
+      if((!userInfo.publisher.plan && !userInfo.publisher.beta) || (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))) {
+        this.setState({
+          modalOpen: true,
+        })
+      }
+    }
     if(this.props.userInfo.soundcasts_managed) {
       const { userInfo } = this.props;
       // console.log('userInfo: ', userInfo);
@@ -42,6 +51,15 @@ export default class Announcements extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const that = this;
+    const {userInfo} = nextProps;
+    if(userInfo.publisher) {
+      if((!userInfo.publisher.plan && !userInfo.publisher.beta) || (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))) {
+        this.setState({
+          modalOpen: true,
+        })
+      }
+    }
     if(nextProps.userInfo.soundcasts_managed) {
       if(typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
         const { userInfo } = nextProps;
@@ -222,10 +240,25 @@ export default class Announcements extends Component {
   }
 
   render() {
-    const { soundcasts_managed, announcementsArr } = this.state;
+    const { soundcasts_managed, announcementsArr, modalOpen } = this.state;
     const that = this;
     return (
       <div className='padding-30px-tb'>
+        <div style={{display: modalOpen ? '' : 'none', background: 'rgba(0, 0, 0, 0.3)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
+          <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 150, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+            <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to send messages</div>
+            <div className='title-small' style={{margin: 25}}>
+              Message sending to subscribers is available on PLUS and PRO plans. Please upgrade to access the feature.
+            </div>
+            <div className="center-col">
+              <OrangeSubmitButton
+                label='Upgrade'
+                onClick={() => that.props.history.push({pathname: '/pricing'})}
+                styles={{width: '60%'}}
+              />
+            </div>
+          </div>
+        </div>
         <div className='padding-bottom-20px'>
           <span className='title-medium '>
               Messages

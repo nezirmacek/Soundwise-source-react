@@ -26,6 +26,7 @@ export default class Subscribers extends Component {
       toBeUnsubscribed: [],
       showModal: false,
       showPendingInvite: false,
+      modalOpen: false,
     }
 
     this.subscribers = [];
@@ -39,6 +40,14 @@ export default class Subscribers extends Component {
 
   componentDidMount() {
     const that = this;
+    const { userInfo } = this.props;
+    if(userInfo.publisher) {
+      if((!userInfo.publisher.plan && !userInfo.publisher.beta) || (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))) {
+        this.setState({
+          modalOpen: true,
+        })
+      }
+    }
     if(this.props.userInfo.soundcasts_managed && this.props.userInfo.publisher) {
       if(typeof Object.values(this.props.userInfo.soundcasts_managed)[0] == 'object') {
         const that = this;
@@ -85,6 +94,14 @@ export default class Subscribers extends Component {
 
   componentWillReceiveProps(nextProps) {
     const that = this;
+    const {userInfo} = nextProps;
+    if(userInfo.publisher) {
+      if((!userInfo.publisher.plan && !userInfo.publisher.beta) || (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))) {
+        this.setState({
+          modalOpen: true,
+        })
+      }
+    }
     if(nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
       if(typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
         const that = this;
@@ -281,7 +298,8 @@ export default class Subscribers extends Component {
 
 
   render() {
-    const { soundcasts_managed, subscribers, checked, currentSoundcast, currentSoundcastID } = this.state;
+    const { soundcasts_managed, subscribers, checked, currentSoundcast, currentSoundcastID, modalOpen } = this.state;
+    const that = this;
     const { history } = this.props;
     // const _subscribers = [];
     // for (let id in _soundcast.subscribed) {
@@ -311,6 +329,21 @@ export default class Subscribers extends Component {
           userInfo={this.props.userInfo}
           onClose={this.handlePendingInvite}
         />
+        <div style={{display: modalOpen ? '' : 'none', background: 'rgba(0, 0, 0, 0.3)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
+          <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 150, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+            <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to view subscribers</div>
+            <div className='title-small' style={{margin: 25}}>
+              Subscriber data is available on PLUS and PRO plans. Please upgrade to access the feature.
+            </div>
+            <div className="center-col">
+              <OrangeSubmitButton
+                label='Upgrade'
+                onClick={() => that.props.history.push({pathname: '/pricing'})}
+                styles={{width: '60%'}}
+              />
+            </div>
+          </div>
+        </div>
         <div style={{}}>
           <row className='padding-bottom-20px '>
               <div className='col-md-2 col-sm-4 col-xs-12'>

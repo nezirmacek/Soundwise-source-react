@@ -64,9 +64,14 @@ class _SoundwiseCheckout extends Component {
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/plan`).set(plan);
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/frequency`).set(frequency);
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/current_period_end`).set(charge.data.current_period_end);
-      firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/subscriptionID`).set(charge.id);
+      firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/auto_renewal`).set(true);
+      firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/subscriptionID`).set(charge.data.id);
+      firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/stripe_customer_id`).set(charge.data.customer);
       if(promoCode && !promoCodeError) {
-        firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/coupon`).set(promoCode);
+        firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/coupon`).set({
+          code: promoCode,
+          expires_on: charge.data.current_period_end
+        });
       }
       this.props.history.push({
         pathname: '/dashboard/soundcasts',

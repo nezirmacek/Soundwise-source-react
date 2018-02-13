@@ -33,7 +33,7 @@ var parseQueryString = function( queryString ) {
 // production
 var redirectURI = 'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
 
-export default class Settings extends Component {
+export default class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -325,9 +325,10 @@ export default class Settings extends Component {
                     </Link>
                 </div>
                 <ul className="nav nav-pills">
-                  <li role="presentation" className="active"><Link style={{backgroundColor: Colors.mainOrange}}   to='/dashboard/publisher'><span style={{fontSize: 15, fontWeight: 600}}>Settings</span></Link></li>
+                  <li role="presentation" className="active"><Link style={{backgroundColor: 'transparent'}}   to='/dashboard/publisher'><span style={{fontSize: 15, fontWeight: 600, color: Colors.mainOrange}}>Profile</span></Link></li>
                   <li role="presentation"><Link to="/dashboard/publisher/transactions"><span style={{fontSize: 15, fontWeight: 600}}>Transactions</span></Link></li>
                   <li role="presentation"><Link to="/dashboard/publisher/payouts"><span style={{fontSize: 15, fontWeight: 600}}>Payouts</span></Link></li>
+                  <li role="presentation" ><Link to="/dashboard/publisher/settings"><span style={{fontSize: 15, fontWeight: 600}}>Settings</span></Link></li>
                 </ul>
                 <div className='container'>
                   <ImageCropModal
@@ -338,7 +339,7 @@ export default class Settings extends Component {
                     file={this.currentImageRef}
                   />
                   <div  className="row">
-                    <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={{minHeight: 700}}>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>
                                 Publisher Name

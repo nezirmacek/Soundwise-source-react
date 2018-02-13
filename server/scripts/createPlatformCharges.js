@@ -1,6 +1,6 @@
 'use strict';
 
-// handle payments for pro and plus plans on Soundwise
+// handle payments, renewal and cancellation for pro and plus plans on Soundwise
 
 var stripe_key =  require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
@@ -101,4 +101,16 @@ module.exports.renewSubscription = (req, res) => {
     sgMail.send(input);
     res.send({});
   }
+};
+
+module.exports.cancelSubscription = (req, res) => {
+  const {subscriptionID} = req.body;
+  stripe.subscriptions.del(subscriptionID)
+  .then(response => {
+    res.send(response);
+  })
+  .catch(err => {
+    console.log('error: ', err);
+    res.status(500).send(err);
+  });
 };

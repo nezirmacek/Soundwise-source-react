@@ -67,18 +67,22 @@ export default class Payouts extends Component {
   }
 
   render() {
-
+    const {userInfo} = this.props;
     return (
-            <div className='padding-30px-tb'>
+            <div className='padding-30px-tb' style={{minHeight: 700}}>
                 <div className='padding-bottom-20px'>
                     <span className='title-medium '>
                         Publisher
                     </span>
+                    <Link to={`/publishers/${userInfo.publisherID}`}>
+                      <span className='text-medium' style={{marginLeft: 15, color: Colors.mainOrange}}><strong>View Publisher Page</strong></span>
+                    </Link>
                 </div>
                 <ul className="nav nav-pills">
-                  <li role="presentation" ><Link to='/dashboard/publisher'><span style={{fontSize: 15, fontWeight: 600}}>Settings</span></Link></li>
+                  <li role="presentation" ><Link to='/dashboard/publisher'><span style={{fontSize: 15, fontWeight: 600}}>Profile</span></Link></li>
                   <li role="presentation" ><Link to="/dashboard/publisher/transactions"><span style={{fontSize: 15, fontWeight: 600}}>Transactions</span></Link></li>
-                  <li role="presentation" className="active"><Link style={{backgroundColor: Colors.mainOrange}}  to="/dashboard/publisher/payouts"><span style={{fontSize: 15, fontWeight: 600}}>Payouts</span></Link></li>
+                  <li role="presentation" className="active"><Link style={{backgroundColor: 'transparent'}}  to="/dashboard/publisher/payouts"><span style={{fontSize: 15, fontWeight: 600, color: Colors.mainOrange}}>Payouts</span></Link></li>
+                  <li role="presentation" ><Link to="/dashboard/publisher/settings"><span style={{fontSize: 15, fontWeight: 600}}>Settings</span></Link></li>
                 </ul>
                 {
                   this.state.payouts.length > 0 &&

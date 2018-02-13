@@ -342,6 +342,7 @@ class _AppSignup extends Component {
     addDefaultSoundcast() {
         const { history, addDefaultSoundcast, defaultSoundcastAdded } = this.props;
         const that = this;
+        const params = new URLSearchParams(this.props.location.search);
         if(!defaultSoundcastAdded) {
           firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -431,7 +432,18 @@ class _AppSignup extends Component {
                         const content = `<p>Hello ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you joining our expanding community of knowledge creators!</p><p>Would you mind sharing with me what kind of audio content you're creating? It'll help us see how we can best help you succeed using Soundwise.</p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you signed up to Soundwise to just take a look around. That's cool! Click reply and see hi anyway :)</p>`;
                         inviteListeners([{firstName, lastName, email}], `What are you creating, ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)}?`, content,'Natasha Che', null, 'natasha@mysoundwise.com', true, 'natasha@mysoundwise.com');
                         addToEmailList (null, [email], 'soundwise publishers', 2876261); // 2876261 is the 'soundwise publishers' list id
-                        history.push('/dashboard/soundcasts');
+                        if(params.get('frequency') && params.get('plan')) {
+                            history.push({
+                              pathname: '/buy',
+                              state: {
+                                plan: params.get('plan'),
+                                frequency: params.get('frequency'),
+                                price: params.get('price')
+                              }
+                            });
+                        } else {
+                            history.push('/dashboard/soundcasts');
+                        }
                     });
                 } else {
                     // Raven.captureMessage('Default soundcast saving failed!')

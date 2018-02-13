@@ -23,6 +23,7 @@ var updateCreditCard = require('./scripts/payment.js').updateCreditCard;
 var retrieveCustomer = require('./scripts/payment.js').retrieveCustomer;
 var createSubscription = require('./scripts/createPlatformCharges.js').createSubscription;
 var renewSubscription = require('./scripts/createPlatformCharges.js').renewSubscription;
+var cancelSubscription = require('./scripts/createPlatformCharges.js').cancelSubscription;
 var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
 var handleReferral = require('./scripts/emailSignup.js').handleReferral;
 var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
@@ -109,6 +110,7 @@ app.post('/api/add_emails', Emails.addToEmailList);
 
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', renewSubscription);
+app.post('/api/cancel_plan', cancelSubscription);
 app.post('/api/unsubscribe', unsubscribe);
 app.use('/api/upload', multipart());
 app.post('/api/upload', function(req, res, next) {

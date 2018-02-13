@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
-import Settings from './settings';
+import Profile from './settings';
 import Transactions from './transactions';
 import Payouts from './payouts';
+import Billing from './billing';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -51,8 +52,14 @@ export default class Publisher extends Component {
                 userInfo={userInfo}
                 id={this.props.match.params.id}
              />
+    } else if(this.props.match.params.id == 'settings') {
+        return <Billing
+                {...this.props}
+                userInfo={userInfo}
+                id={this.props.match.params.id}
+             />
     } else {
-      return <Settings
+      return <Profile
                 {...this.props}
                 userInfo={userInfo}
                 history={this.props.history}
