@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
+import '!style!css!video.js/dist/video-js.min.css';
+import '!style!css!videojs-record/dist/css/videojs.record.css';
 import 'videojs-record';
 import WaveSurfer from 'wavesurfer.js';
 import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';

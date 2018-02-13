@@ -49,10 +49,14 @@ module.exports = {
             test: /Draft\.css$/,
             loader: 'style-loader!css-loader',
           },
+          {
+            test: /\.(eot|svg|ttf|woff|woff2)$/,
+            loader: 'url-loader'
+          }
       ]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.jsx', '.json']
   },
   devServer: {
     historyApiFallback: true,
