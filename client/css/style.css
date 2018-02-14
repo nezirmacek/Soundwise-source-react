@@ -827,6 +827,9 @@ footer .social-icon a:last-child{ margin-right:0;}
 .video-js-audio-custom {
   background-color: #acb3bc !important;
 }
+button.vjs-device-button.vjs-control.vjs-icon-audio-perm {
+    display: none;
+}
 
 /*center a div*/
 .parent {

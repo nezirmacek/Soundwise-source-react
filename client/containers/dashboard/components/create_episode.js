@@ -31,15 +31,15 @@ class AudiojsRecordPlayer extends React.Component {
     componentDidMount() {
         // instantiate Video.js
         const audioRecord = this.audioRecord = videojs('myAudio', {
-            controls: true,
-            width: 200,
-            height: 100,
+            controls: false,
+            width: 138,
+            height: 30,
             fluid: false,
             plugins: {
                 wavesurfer: {
-                    src: "live",
-                    waveColor: "#ffffff",
-                    progressColor: "#ffffff",
+                    src: 'live',
+                    waveColor: '#ffffff',
+                    progressColor: '#ffffff',
                     debug: true,
                     cursorWidth: 1,
                     msDisplayMax: 20,
@@ -1290,8 +1290,8 @@ const styles = {
         // paddingLeft: 15,
     },
     micWrapper: {
-        width: 200,
-        height: 100,
+        width: 138,
+        height: 30,
         position: 'relative',
         top: 10,
         overflow: 'hidden',
