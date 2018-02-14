@@ -87,7 +87,7 @@ class _Header extends Component {
                           <div className="col-md-2 col-sm-2 col-xs-3">
                               <Link to='/' className="inner-link"><img alt="" src={logoImage} data-img-size="(W)163px X (H)40px"/></Link>
                           </div>
-                          <div className='col-md-4 col-sm-4 col-xs-7'>
+                          <div className='col-md-3 col-sm-4 col-xs-7'>
 
                               <div className="nav-button propClone no-margin-tb  btn-medium margin-twelve-left xs-no-margin-right text-white font-weight-600" >
                                 <Link className="text-white font-weight-600" style={styles.aboutLink} to='/experts'>Expert Trainers</Link>
@@ -102,6 +102,7 @@ class _Header extends Component {
                               </button>
                               <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
                                   <ul className="nav navbar-nav" style={{}}>
+                                      <li className="propClone"><Link className="inner-link" to="/pricing" style={styles.navlink}>Pricing</Link></li>
                                       <li className="propClone"><Link className="inner-link" to="/wave_video" style={styles.navlink}>Soundwave Video Maker</Link></li>
                                       <li className="propClone"><Link className="inner-link" to="/signin" style={styles.navlink}>Log In</Link></li>
                                       <li className="propClone  float-left sm-no-margin-tb"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>START FOR FREE</span></Link></li>

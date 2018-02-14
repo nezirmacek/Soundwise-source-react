@@ -132,9 +132,10 @@ module.exports.createFeed = async (req, res) => {
                       return reject(`Error: saving fails ${filePath} ${err}`);
                     }
                     console.log(`File ${filePath} successfully saved`);
-                    const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
+                    const s3Path = episode.url.split('/')[3]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
                     uploader.use(new S3Strategy({
                       uploadPath: `${s3Path}`,
+                      // uploadPath: 'soundcasts',
                       headers: { 'x-amz-acl': 'public-read' },
                       options: {
                         key: awsConfig.accessKeyId,

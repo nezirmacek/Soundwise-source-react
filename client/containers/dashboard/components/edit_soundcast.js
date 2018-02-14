@@ -53,11 +53,18 @@ export default class EditSoundcast extends Component {
             fileUploaded: false,
             landingPage: false,
             features: [''],
+
             hostName: '',
             hostBio: '',
             hostImageURL: '',
             hostImg: false,
             hostImgUploaded: '',
+            hostName2: '',
+            hostBio2: '',
+            hostImageURL2: '',
+            hostImg2: false,
+            hostImgUploaded2: '',
+
             forSale: false,
             prices: [],
             showTimeStamps: false,
@@ -76,6 +83,7 @@ export default class EditSoundcast extends Component {
 
         this.fileInputRef = null;
         this.hostImgInputRef = null;
+        this.hostImgInputRef2 = null;
         this.currentImageRef = null;
         this.firebaseListener = null;
         this.addFeature = this.addFeature.bind(this);
@@ -88,8 +96,7 @@ export default class EditSoundcast extends Component {
       const { id, soundcast } = this.props.history.location.state;
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
-             features, hostName, hostBio, hostImageURL,
-             forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
+             features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -116,6 +123,9 @@ export default class EditSoundcast extends Component {
         hostName: hostName ? hostName : null,
         hostBio: hostBio ? hostBio : null,
         hostImageURL: hostImageURL ? hostImageURL : null,
+        hostName2: hostName2 ? hostName2 : null,
+        hostBio2: hostBio2 ? hostBio2 : null,
+        hostImageURL2: hostImageURL2 ? hostImageURL2 : null,
         forSale: forSale ? forSale : false,
         long_description: editorState ,
         confirmationEmail: confirmEmailEditorState,
@@ -156,6 +166,8 @@ export default class EditSoundcast extends Component {
         let fileName = '';
         if(imageType == 'host') {
           fileName = `${id}-host-image-${moment().format('x')}.${ext}`;
+        } else if(imageType == 'host2') {
+          fileName= `${id}-host2-image-${moment().format('x')}.${ext}`;
         } else if(imageType == 'itunes') {
           fileName = `${id}-itunes-${moment().format('x')}.${ext}`;
         } else {
@@ -177,6 +189,8 @@ export default class EditSoundcast extends Component {
 
                 if(imageType == 'host') {
                     _self.setState({hostImageURL: url});
+                } else if(imageType == 'host2') {
+                    _self.setState({hostImageURL2: url});
                 } else if(imageType == 'itunes') {
                     _self.setState({itunesImage: url});
                 } else {
@@ -194,14 +208,21 @@ export default class EditSoundcast extends Component {
         const that = this;
         var file, img, allowedFileTypes;
         var _URL = window.URL || window.webkitURL;
-        if(imageType=='host') {
-            // this._uploadToAws(this.hostImgInputRef.files[0], true);
+        if(imageType=='host' || imageType=='host2') {
             if(this.hostImgInputRef.files[0]) {
+              if(imageType=='host2') {
+                this.setState({
+                  hostImgUploaded2: true,
+                  hostImg2: true,
+                  imageType: 'host2',
+                });
+              } else {
                 this.setState({
                   hostImgUploaded: true,
                   hostImg: true,
                   imageType: 'host',
                 });
+              }
                 allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
                 this.currentImageRef = this.hostImgInputRef.files[0];
                 if(allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
@@ -268,8 +289,7 @@ export default class EditSoundcast extends Component {
     submit (publish, noAlert) {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
-                features, hostName, hostBio, hostImageURL,
-                forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
+                features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
 
@@ -290,6 +310,9 @@ export default class EditSoundcast extends Component {
                       hostName,
                       hostBio,
                       hostImageURL,
+                      hostName2,
+                      hostBio2,
+                      hostImageURL2,
                       forSale,
                       prices,
                       showTimeStamps,
@@ -405,7 +428,7 @@ export default class EditSoundcast extends Component {
 
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
-        const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices} = this.state;
+        const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices, instructor2Input, hostName2} = this.state;
         const that = this;
         return (
             <div style={{marginTop: 25, marginBottom: 25,}}>
@@ -458,7 +481,7 @@ export default class EditSoundcast extends Component {
                 </div>
                 <div>
                     <span style={styles.titleText}>
-                        Host/Instructor Name
+                        Instructor Name
                     </span>
                     <div style={{...styles.inputTitleWrapper, width: '35%'}}>
                       <input
@@ -473,7 +496,7 @@ export default class EditSoundcast extends Component {
                 <div>
                     <div >
                         <span style={styles.titleText}>
-                            Host/Instructor Bio
+                            Instructor Bio
                         </span>
                     </div>
                     <textarea
@@ -487,7 +510,7 @@ export default class EditSoundcast extends Component {
                 <div style={{height: 150, width: '100%'}}>
                     <div style={{marginBottom: 10}}>
                         <span style={styles.titleText}>
-                            Host/Instructor Profile Picture
+                            Instructor Profile Picture
                         </span>
                     </div>
                     <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}}>
@@ -529,6 +552,22 @@ export default class EditSoundcast extends Component {
                         </div>
                     </div>
                 </div>
+                {
+                  !hostName2 && !instructor2Input &&
+                  <div
+                    onClick={() => that.setState({
+                      instructor2Input: true
+                    })}
+                    style={{...styles.addFeature, marginLeft: 0, marginBottom: 25}}>
+                   <span >Add A Second Instructor</span>
+                  </div>
+                  || null
+                }
+                {
+                  (hostName2 || instructor2Input) &&
+                  this.renderInstructor2Input()
+                  || null
+                }
                 { landingPage &&
                     <div>
                       <span style={styles.titleText}>Pricing</span>
@@ -643,6 +682,87 @@ export default class EditSoundcast extends Component {
 
     }
 
+    renderInstructor2Input() {
+      const {hostName2, hostBio2, hostImageURL2, hostImgUploaded2} = this.state;
+      return (
+        <div>
+          <div>
+              <span style={styles.titleText}>
+                  Instructor 2 Name
+              </span>
+              <div style={{...styles.inputTitleWrapper, width: '35%'}}>
+                <input
+                    type="text"
+                    style={styles.inputTitle}
+                    placeholder={''}
+                    onChange={(e) => {this.setState({hostName2: e.target.value})}}
+                    value={this.state.hostName2}
+                />
+              </div>
+          </div>
+          <div>
+              <div >
+                  <span style={styles.titleText}>
+                      Instructor 2 Bio
+                  </span>
+              </div>
+              <textarea
+                  style={styles.inputDescription}
+                  placeholder={'Who will be teaching?'}
+                  onChange={(e) => {this.setState({hostBio2: e.target.value})}}
+                  value={this.state.hostBio2}
+              >
+              </textarea>
+          </div>
+          <div style={{height: 150, width: '100%'}}>
+              <div style={{marginBottom: 10}}>
+                  <span style={styles.titleText}>
+                      Instructor 2 Profile Picture
+                  </span>
+              </div>
+              <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL2})`}}>
+
+              </div>
+              <div style={styles.loaderWrapper}>
+                  <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                      <input
+                          type="file"
+                          name="upload"
+                          id="upload_hidden_cover_3"
+                          accept="image/*"
+                          onChange={this.setFileName.bind(this, 'host2')}
+                          style={styles.inputFileHidden}
+                          ref={input => this.hostImgInputRef = input}
+                      />
+                      {
+                        hostImgUploaded2 &&
+                        <div>
+                          <span>{this.hostImgInputRef.files[0].name}</span>
+                          <span style={styles.cancelImg}
+                            onClick={() => {
+                              that.setState({hostImgUploaded2: false, hostImageURL2: ''});
+                              document.getElementById('upload_hidden_cover_3').value = null;
+                            }}>Cancel</span>
+                        </div>
+                        ||
+                        !hostImgUploaded2 &&
+                        <div>
+                          <button
+                              onClick={() => {document.getElementById('upload_hidden_cover_3').click();}}
+                              style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                          >
+                              Upload
+                          </button>
+                          <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
+                        </div>
+                      }
+                  </div>
+              </div>
+          </div>
+        </div>
+      )
+    }
+
     handlePriceInputs(i, e) {
         let prices = [...this.state.prices];
         prices[i][e.target.name] = e.target.value;
@@ -696,6 +816,11 @@ export default class EditSoundcast extends Component {
           hostImgUploaded: false,
         });
         document.getElementById('upload_hidden_cover_2').value = null;
+      } else if(this.state.hostImg2) {
+        this.setState({
+          hostImgUploaded2: false,
+        });
+        document.getElementById('upload_hidden_cover_3').value = null;
       } else if(this.state.itunesImage) {
         this.setState({
           itunesUploaded: false,
@@ -710,7 +835,6 @@ export default class EditSoundcast extends Component {
     }
 
     uploadViaModal(fileBlob, imageType) {
-      console.log('imageType: ', imageType);
       this.setState({
         fileCropped: true,
         modalOpen: false,
@@ -718,6 +842,10 @@ export default class EditSoundcast extends Component {
       if(imageType == 'host') {
         this.setState({
           hostImgUploaded: true,
+        })
+      } else if(imageType == 'host2') {
+        this.setState({
+          hostImgUploaded2: true,
         })
       } else if(imageType == 'itunes') {
         console.log('itunes block called');
@@ -970,7 +1098,7 @@ export default class EditSoundcast extends Component {
     }
 
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion} = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion, hostImg2} = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
@@ -982,6 +1110,7 @@ export default class EditSoundcast extends Component {
                 handleClose={this.handleModalClose.bind(this)}
                 upload={this.uploadViaModal.bind(this)}
                 hostImg={hostImg}
+                hostImg2={hostImg2}
                 imageType={imageType}
                 file={this.currentImageRef}
               />
