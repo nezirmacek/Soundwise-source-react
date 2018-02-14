@@ -689,7 +689,7 @@ class _CreateEpisode extends Component {
                             }
                         </div>
                         ||
-                        <div style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
+                        <div key='stopPlaying' style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
                             <i
                                 className="fa fa-stop-circle"
                                 style={{
