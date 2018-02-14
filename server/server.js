@@ -174,6 +174,7 @@ app.all(/^\/(?!api|explorer)/, function(request, response) {
 	response.sendFile(path.resolve('./client/index.html'));
 });
 
+console.log('hello world');
 
 // var sgMail = require('@sendgrid/mail');
 var sendGridApiKey = require('../config').sendGridApiKey;
