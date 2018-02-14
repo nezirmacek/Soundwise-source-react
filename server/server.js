@@ -165,16 +165,14 @@ boot(app, __dirname, function(err) {
 
 app.use(express.static('./client'));
 app.all(/^\/(?!api|explorer)/, function(request, response) {
-  console.log('we are here!');
-  console.log(String(request.query.domain));
   var domain = String(request.query.domain);
-  response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + domain);
+  var host = request.get('host');
+  console.log('host: ', host);
+  response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + String(host));
   // response.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  response.setHeader('Content-Security-Policy', 'frame-src ' + domain);
+  response.setHeader('Content-Security-Policy', 'frame-src ' + String(host));
 	response.sendFile(path.resolve('./client/index.html'));
 });
-
-console.log('hello world');
 
 // var sgMail = require('@sendgrid/mail');
 var sendGridApiKey = require('../config').sendGridApiKey;
