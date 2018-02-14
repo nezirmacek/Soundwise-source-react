@@ -129,8 +129,9 @@ class _CreateEpisode extends Component {
 
         this.audio = null;
         this.notes = null;
-		this.player = null;
-        this.audioRecord = null;
+        this.player = null;
+        this.recorder = null;
+        this.mediaObject = null;
         this.recordingInterval = null;
         this.playingInterval = null;
         this.uploadAudioInput = null;
@@ -172,7 +173,6 @@ class _CreateEpisode extends Component {
                 }
             });
         }
-		// this.player.onended = () => this.setState({isPlaying: false});
 
         if(this.props.location.state && this.props.location.state.soundcastID) {
             if(this.props.userInfo.soundcasts_managed) {
@@ -226,7 +226,7 @@ class _CreateEpisode extends Component {
         this.player = this.mediaObject.player();
         this.player.src({
             type:'video/mp4', src: URL.createObjectURL(this.mediaObject.recordedData)
-        })
+        });
 		this.player.play();
 
         if (this.state.isRecorded) {
@@ -589,13 +589,10 @@ class _CreateEpisode extends Component {
         mediaObject.on('deviceError', () => { // error handling
             console.log('device error:', mediaObject.deviceErrorCode);
         });
-        mediaObject.on('error', error => {
-            console.log('error:', error);
-        });
+        mediaObject.on('error', error => console.log('error:', error));
         // user clicked the record button and started recording
-        mediaObject.on('startRecord', () => {
-            console.log('started recording!');
-        });
+        mediaObject.on('startRecord', () => console.log('started recording!'));
+        mediaObject.on('ended', () => this.setState({isPlaying: false}));
         // user completed recording and stream is available
         mediaObject.on('finishRecord', () => {
             // the blob object contains the recorded data that
@@ -658,11 +655,6 @@ class _CreateEpisode extends Component {
                         <span>{!isPlaying && currentRecordingDuration && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss') || moment.utc(0).format('HH:mm:ss')}</span>
                     </div>
                     {this.renderPlayAndSave()}
-                    { /*
-                    <div style={{width: 0, height: 0, overflow: 'hidden'}}>
-                        <audio ref={player => this.player = player} controls="controls" src={this.state.blob.blobURL}></audio>
-                    </div>
-                    */ }
                 </div>
             )
         }
