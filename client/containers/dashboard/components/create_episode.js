@@ -30,7 +30,7 @@ window.URL = window.URL || window.webkitURL;
 class AudiojsRecordPlayer extends React.Component {
     componentDidMount() {
         // instantiate Video.js
-        const audioRecord = this.audioRecord = videojs('myAudio', {
+        this.mediaObject = videojs('myAudio', {
             controls: false,
             width: 138,
             height: 30,
@@ -38,10 +38,10 @@ class AudiojsRecordPlayer extends React.Component {
             plugins: {
                 wavesurfer: {
                     src: 'live',
-                    waveColor: '#ffffff',
-                    progressColor: '#ffffff',
+                    waveColor: 'white',
+                    progressColor: 'white',
                     debug: true,
-                    cursorWidth: 1,
+                    cursorWidth: 0,
                     msDisplayMax: 20,
                     hideScrollbar: true
                 },
@@ -59,11 +59,11 @@ class AudiojsRecordPlayer extends React.Component {
                 '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
                 'and recordrtc', RecordRTC.version);
         });
-        this.props.setAudioRecord(audioRecord);
+        this.props.setMediaObject(this.mediaObject);
     }
     componentWillUnmount() {
-        if (this.audioRecord) {
-            this.audioRecord.dispose(); // destroy on unmount
+        if (this.mediaObject) {
+            this.mediaObject.dispose(); // destroy on unmount
         }
     }
     // wrap the player in a div with a `data-vjs-player` attribute
@@ -194,8 +194,8 @@ class _CreateEpisode extends Component {
     record () {
         const that = this;
 
-        this.player = this.audioRecord.record();
-        this.player.getDevice();
+        this.recorder = this.mediaObject.record();
+        this.recorder.getDevice(); // triggers 'deviceReady'
 
         this.recordingInterval = setInterval(() => {
             const { recordingStartTime } = that.state;
@@ -214,7 +214,8 @@ class _CreateEpisode extends Component {
 
     stop (blobObject) {
         const that = this;
-        this.player.stop();
+        this.recorder.stop(); // triggers 'finishRecord'
+
         // clearInterval(recordingInterval);
         // console.log('interval cleared')
     }
@@ -222,7 +223,12 @@ class _CreateEpisode extends Component {
     play () {
         const that = this;
 
+        this.player = this.mediaObject.player();
+        this.player.src({
+            type:'video/mp4', src: URL.createObjectURL(this.mediaObject.recordedData)
+        })
 		this.player.play();
+
         if (this.state.isRecorded) {
             this.setState({
                 isPlaying: true,
@@ -571,32 +577,33 @@ class _CreateEpisode extends Component {
         }
     }
 
-    setAudioRecord(audioRecord) {
-        this.audioRecord = audioRecord;
-        audioRecord.on('deviceReady', () => {
-            this.player.start();
+    setMediaObject(mediaObject) {
+        this.mediaObject = mediaObject;
+        mediaObject.on('deviceReady', () => {
+            this.recorder.start(); // start recording
             this.setState({
                 isRecording: true,
                 recordingStartTime: moment()
             });
         });
-        audioRecord.on('deviceError', () => { // error handling
-            console.log('device error:', audioRecord.deviceErrorCode);
+        mediaObject.on('deviceError', () => { // error handling
+            console.log('device error:', mediaObject.deviceErrorCode);
         });
-        audioRecord.on('error', error => {
+        mediaObject.on('error', error => {
             console.log('error:', error);
         });
         // user clicked the record button and started recording
-        audioRecord.on('startRecord', () => {
+        mediaObject.on('startRecord', () => {
             console.log('started recording!');
         });
         // user completed recording and stream is available
-        audioRecord.on('finishRecord', () => {
+        mediaObject.on('finishRecord', () => {
             // the blob object contains the recorded data that
             // can be downloaded by the user, stored on server etc.
-            console.log('finished recording: ', audioRecord.recordedData);
+            console.log('finished recording: ', mediaObject.recordedData);
+            this.recorder.stopDevice();
             this.setState({
-                blob: { blob: audioRecord.recordedData }, // blobObject,
+                blob: { blob: mediaObject.recordedData }, // blobObject,
                 isRecorded: true,
                 isLoading: false,
                 isRecording: false,
@@ -645,7 +652,7 @@ class _CreateEpisode extends Component {
                         </div>
                     }
                     <div style={styles.micWrapper}>
-                      <AudiojsRecordPlayer setAudioRecord={this.setAudioRecord.bind(this)} />
+                      <AudiojsRecordPlayer setMediaObject={this.setMediaObject.bind(this)} />
                     </div>
                     <div style={styles.time}>
                         <span>{!isPlaying && currentRecordingDuration && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss') || moment.utc(0).format('HH:mm:ss')}</span>
@@ -847,7 +854,7 @@ class _CreateEpisode extends Component {
                 </div>
                 <div className="row">
                     <div className="col-lg-7 col-md-7 col-sm-12 col-xs-12 ">
-                        <div style={styles.recorder}>
+                        <div style={styles.audioRecorder}>
                             <div style={styles.recordTitleText}>Record</div>
                             {this.renderRecorder()}
                         </div>
@@ -856,7 +863,7 @@ class _CreateEpisode extends Component {
                         OR
                     </div>
                     <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <div style={styles.recorder}>
+                        <div style={styles.audioRecorder}>
                             <div style={{...styles.recordTitleText, paddingBottom: 0,}}>Upload</div>
                             <div style={{...styles.inputFileWrapper, width: '100%'}}>
                                 <input
@@ -1259,7 +1266,7 @@ const styles = {
         fontSize: 20,
         fontWeight: 600,
     },
-    recorder: {
+    audioRecorder: {
         boxShadow: '0 0 8px rgba(0, 0, 0, 0.5)',
         borderRadius: 8,
         height: 120,
@@ -1315,8 +1322,8 @@ const styles = {
     },
     playButtonWrapper: {
         backgroundColor: 'transparent',
-        width: 45,
-        height: 45,
+        width: 50,
+        height: 50,
         overflow: 'hidden',
         float: 'left',
         marginLeft: 15,
