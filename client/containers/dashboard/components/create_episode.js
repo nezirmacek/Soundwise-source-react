@@ -678,7 +678,7 @@ class _CreateEpisode extends Component {
                                 !isLoading
                                 &&
                                 <i
-                                    className="fa fa-play-circle-o"
+                                    className="fa fa-play-circle"
                                     style={{
                                         ...styles.playIcon,
                                         color: isRecorded && Colors.mainOrange || Colors.fontGrey
@@ -691,7 +691,7 @@ class _CreateEpisode extends Component {
                         ||
                         <div style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
                             <i
-                                className="fa fa-stop-circle-o"
+                                className="fa fa-stop-circle"
                                 style={{
                                     ...styles.playIcon,
                                     color: isRecorded && Colors.mainOrange || Colors.fontGrey
