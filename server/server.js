@@ -147,6 +147,12 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
+// app.get('/tracks/:id', (request, response) => {
+//   const path = String(request.path).slice(8);
+//   console.log('path: ', path);
+//   response.redirect(200, `https://s3.amazonaws.com/soundwiseinc/soundcasts/${path}`);
+// });
+
 // database API routes:
 require('../database/routes.js')(app);
 
@@ -164,13 +170,13 @@ boot(app, __dirname, function(err) {
 });
 
 app.use(express.static('./client'));
+
 app.all(/^\/(?!api|explorer)/, function(request, response) {
   var domain = String(request.query.domain);
   var host = request.get('host');
-  console.log('host: ', host);
-  response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + String(host));
+  // response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + String(host));
   // response.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  response.setHeader('Content-Security-Policy', 'frame-src ' + String(host));
+  // response.setHeader('Content-Security-Policy', 'frame-src ' + String(host));
 	response.sendFile(path.resolve('./client/index.html'));
 });
 

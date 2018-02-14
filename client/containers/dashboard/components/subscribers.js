@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 import {CSVLink, CSVDownload} from 'react-csv';
 
@@ -76,6 +76,12 @@ export default class Subscribers extends Component {
 
             Promise.all(promises)
             .then(res => {
+              const currentSoundcastID = _soundcasts_managed[0].id;
+              res.sort((a, b) => {
+                if(a.soundcasts && b.soundcasts && b.soundcasts[currentSoundcastID] && a.soundcasts[currentSoundcastID]) {
+                  return b.soundcasts[currentSoundcastID].date_subscribed - a.soundcasts[currentSoundcastID].date_subscribed;
+                }
+              });
               that.setState({
                 soundcasts_managed: _soundcasts_managed,
                 currentSoundcastID: _soundcasts_managed[0].id,
@@ -129,8 +135,16 @@ export default class Subscribers extends Component {
 
             Promise.all(promises)
             .then(res => {
+              const currentSoundcastID = _soundcasts_managed[0].id;
+              res.sort((a, b) => {
+                if(a.soundcasts && b.soundcasts && b.soundcasts[currentSoundcastID] && a.soundcasts[currentSoundcastID]) {
+                  return b.soundcasts[currentSoundcastID].date_subscribed - a.soundcasts[currentSoundcastID].date_subscribed;
+                } else {
+                  return -1;
+                }
+              });
               that.setState({
-                currentSoundcastID: _soundcasts_managed[0].id,
+                currentSoundcastID,
                 currentSoundcast: _soundcasts_managed[0],
                 // subscribers: that.subscribers,
                 subscribers: res,
@@ -168,7 +182,7 @@ export default class Subscribers extends Component {
     }
   }
 
- retrieveSubscriberInfo(userId) {
+  retrieveSubscriberInfo(userId) {
     const that = this;
     const {currentSoundcastID} = this.state;
     return firebase.database().ref('users/'+userId)
@@ -182,12 +196,13 @@ export default class Subscribers extends Component {
 
   changeSoundcastId (e) {
     const that = this;
+    const currentSoundcastID = e.target.value;
     this.setState({
-      currentSoundcastID: e.target.value,
+      currentSoundcastID,
       toBeUnsubscribed: [],
     });
 
-    const { soundcasts_managed, currentSoundcastID } = this.state;
+    const { soundcasts_managed } = this.state;
     let currentSoundcast;
 
     soundcasts_managed.forEach(soundcast => {
@@ -203,6 +218,13 @@ export default class Subscribers extends Component {
 
     Promise.all(promises)
     .then(res => {
+      res.sort((a, b) => {
+        if(a.soundcasts && b.soundcasts && b.soundcasts[currentSoundcastID] && a.soundcasts[currentSoundcastID]) {
+          return b.soundcasts[currentSoundcastID].date_subscribed - a.soundcasts[currentSoundcastID].date_subscribed;
+        } else {
+          return -1;
+        }
+      });
       that.setState({
         subscribers: res,
         currentSoundcast
@@ -283,6 +305,13 @@ export default class Subscribers extends Component {
             this.subscribers.splice(i,1);
           }
         }
+        this.subscribers.sort((a, b) => {
+          if(a.soundcasts && b.soundcasts && b.soundcasts[currentSoundcastID] && a.soundcasts[currentSoundcastID]) {
+            return b.soundcasts[currentSoundcastID].date_subscribed - a.soundcasts[currentSoundcastID].date_subscribed;
+          } else {
+            return -1;
+          }
+        });
         this.setState({
           subscribers: this.subscribers,
           checked: false,
@@ -301,10 +330,7 @@ export default class Subscribers extends Component {
     const { soundcasts_managed, subscribers, checked, currentSoundcast, currentSoundcastID, modalOpen } = this.state;
     const that = this;
     const { history } = this.props;
-    // const _subscribers = [];
-    // for (let id in _soundcast.subscribed) {
-    //   _subscribers.push(id);
-    // }
+
     let csvData = [
       ['First Name', 'Last Name', 'Email']
     ];
@@ -428,13 +454,13 @@ export default class Subscribers extends Component {
                 </thead>
                 <tbody>
                   {
-                    this.state.subscribers.map((subscriber, i) => {
+                    subscribers.map((subscriber, i) => {
                       if(subscriber.email) {
                         return (
                             <tr key={i} style={styles.tr}>
                               <td style={{...styles.td, }}></td>
                               <td style={{...styles.td, }}>{`${subscriber.firstName} ${subscriber.lastName}`}</td>
-                              <td style={{...styles.td, }}>{subscriber.email[0]}</td>
+                              <td style={{...styles.td, }}><a style={{color: 'blue', textDecoration: 'underline'}} href={`mailto:${subscriber.email[0]}`}>{subscriber.email[0]}</a></td>
                               <td style={{...styles.td, }}>{
                                 subscriber.soundcasts && subscriber.soundcasts[currentSoundcastID] && subscriber.soundcasts[currentSoundcastID].date_subscribed &&
                                 moment(subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000).format('YYYY-MM-DD')

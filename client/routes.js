@@ -239,6 +239,10 @@ class _Routes extends Component {
                 <Route path="/pricing" component={PricingPage} />
                 <Route path="/buy" component={SoundwiseCheckout} />
                 <Route path="/content_download" component={ContentDownload} />
+                <Route exact={true} path="/tracks/:id" component={(props) => {
+                    const id = props.match.params.id;
+                    window.location.replace(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${id}`);
+                }} />
                 <Route path ="/notfound" component={NotFound} />
                 <Route component={NotFound} />
             </Switch>

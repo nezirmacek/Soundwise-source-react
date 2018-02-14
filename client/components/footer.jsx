@@ -35,6 +35,11 @@ const Footer = (props) => (
           <ul className='link' style={{float: 'right'}}>
             <li className="text-medium margin-seven-bottom font-weight-600 text-white tz-text xs-margin-one-half-bottom">Useful Links</li>
             <li className="tz-text text-medium-gray">
+              <Link to='/pricing'>
+                <span className="text-light-gray tz-text">Plans and Pricing</span>
+              </Link>
+            </li>
+            <li className="tz-text text-medium-gray">
               <Link to='/terms'>
                 <span className="text-light-gray tz-text">Terms of Use</span>
               </Link>
