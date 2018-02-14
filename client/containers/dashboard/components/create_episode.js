@@ -59,22 +59,6 @@ class AudiojsRecordPlayer extends React.Component {
                 '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
                 'and recordrtc', RecordRTC.version);
         });
-        audioRecord.on('deviceError', function() { // error handling
-            console.log('device error:', audioRecord.deviceErrorCode);
-        });
-        audioRecord.on('error', function(error) {
-            console.log('error:', error);
-        });
-        // user clicked the record button and started recording
-        audioRecord.on('startRecord', function() {
-            console.log('started recording!');
-        });
-        // user completed recording and stream is available
-        audioRecord.on('finishRecord', function() {
-            // the blob object contains the recorded data that
-            // can be downloaded by the user, stored on server etc.
-            console.log('finished recording: ', audioRecord.recordedData);
-        });
         this.props.setAudioRecord(audioRecord);
     }
     componentWillUnmount() {
@@ -87,9 +71,9 @@ class AudiojsRecordPlayer extends React.Component {
     // see https://github.com/videojs/video.js/pull/3856
     render() {
         return (
-            <div data-vjs-player>
+            <div><div data-vjs-player>
                 <audio id='myAudio' ref={ node => this.videoNode = node } className='video-js vjs-default-skin video-js-audio-custom'></audio>
-            </div>
+            </div></div>
         )
     }
 }
@@ -188,7 +172,7 @@ class _CreateEpisode extends Component {
                 }
             });
         }
-		this.player.onended = () => this.setState({isPlaying: false});
+		// this.player.onended = () => this.setState({isPlaying: false});
 
         if(this.props.location.state && this.props.location.state.soundcastID) {
             if(this.props.userInfo.soundcasts_managed) {
@@ -210,15 +194,13 @@ class _CreateEpisode extends Component {
     record () {
         const that = this;
 
-		this.setState({
-			isRecording: true,
-            recordingStartTime: moment()
-		});
+        this.player = this.audioRecord.record();
+        this.player.getDevice();
 
         this.recordingInterval = setInterval(() => {
-            const { recordingStartTime } = that.state
+            const { recordingStartTime } = that.state;
 
-            if(that.state.isRecording == false) {
+            if (that.state.isRecording == false) {
                 clearInterval(that.recordingInterval);
                 return;
             }
@@ -232,13 +214,7 @@ class _CreateEpisode extends Component {
 
     stop (blobObject) {
         const that = this;
-		this.setState({
-			blob : blobObject,
-			isRecorded: true,
-			isLoading: false,
-			isRecording: false,
-		});
-
+        this.player.stop();
         // clearInterval(recordingInterval);
         // console.log('interval cleared')
     }
@@ -597,6 +573,35 @@ class _CreateEpisode extends Component {
 
     setAudioRecord(audioRecord) {
         this.audioRecord = audioRecord;
+        audioRecord.on('deviceReady', () => {
+            this.player.start();
+            this.setState({
+                isRecording: true,
+                recordingStartTime: moment()
+            });
+        });
+        audioRecord.on('deviceError', () => { // error handling
+            console.log('device error:', audioRecord.deviceErrorCode);
+        });
+        audioRecord.on('error', error => {
+            console.log('error:', error);
+        });
+        // user clicked the record button and started recording
+        audioRecord.on('startRecord', () => {
+            console.log('started recording!');
+        });
+        // user completed recording and stream is available
+        audioRecord.on('finishRecord', () => {
+            // the blob object contains the recorded data that
+            // can be downloaded by the user, stored on server etc.
+            console.log('finished recording: ', audioRecord.recordedData);
+            this.setState({
+                blob: { blob: audioRecord.recordedData }, // blobObject,
+                isRecorded: true,
+                isLoading: false,
+                isRecording: false,
+            });
+        });
     }
 
     renderRecorder() {
@@ -626,14 +631,14 @@ class _CreateEpisode extends Component {
                     {
                         !isRecording
                         &&
-                        <div style={styles.recordButton} onClick={(e) => this.record(e)}>
+                        <div style={styles.recordButton} onClick={e => this.record(e)}>
                             <span className="fa-stack fa-2x">
                               <div><i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i></div>
                               <div><i className="fa fa-microphone fa-stack-1x fa-inverse"></i></div>
                             </span>
                         </div>
                         ||
-                        <div style={styles.recordButton} onClick={(e) => this.stop(e)}>
+                        <div style={styles.recordButton} onClick={e => this.stop(e)}>
                             <span className="fa-stack fa-2x">
                               <div key="stopRecord"><i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i></div>
                             </span>
@@ -646,9 +651,11 @@ class _CreateEpisode extends Component {
                         <span>{!isPlaying && currentRecordingDuration && moment.utc(currentRecordingDuration).format('HH:mm:ss') || moment.utc(currentPlayingDuration).format('HH:mm:ss') || moment.utc(0).format('HH:mm:ss')}</span>
                     </div>
                     {this.renderPlayAndSave()}
+                    { /*
                     <div style={{width: 0, height: 0, overflow: 'hidden'}}>
                         <audio ref={player => this.player = player} controls="controls" src={this.state.blob.blobURL}></audio>
                     </div>
+                    */ }
                 </div>
             )
         }
