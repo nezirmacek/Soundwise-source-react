@@ -48,7 +48,7 @@ class AudiojsRecordPlayer extends React.Component {
                 record: {
                     audio: true,
                     video: false,
-                    maxLength: 20,
+                    maxLength: 120, // seconds
                     debug: true
                 }
             }
