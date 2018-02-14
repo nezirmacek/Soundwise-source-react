@@ -223,10 +223,6 @@ class _CreateEpisode extends Component {
     play () {
         const that = this;
 
-        this.player = this.mediaObject.player();
-        this.player.src({
-            type:'video/mp4', src: URL.createObjectURL(this.mediaObject.recordedData)
-        });
 		this.player.play();
 
         if (this.state.isRecorded) {
@@ -250,12 +246,12 @@ class _CreateEpisode extends Component {
     }
 
     pause () {
-		this.player.pause();
+		this.player.pause(); // triggers 'ended'
         this.setState({
             isPlaying: false,
             currentPlayingDuration: 0
         });
-        this.player.currentTime = 0;
+        this.player.currentTime(0);
     }
 
     save () {
@@ -268,7 +264,7 @@ class _CreateEpisode extends Component {
         clearInterval(this.recordingInterval);
         clearInterval(this.playingInterval);
         this.player.pause();
-        this.player.currentTime = 0;
+        this.player.currentTime(0);
 		//upload file to aws s3
 		this._uploadToAws(this.state.blob.blob, 'audio');
         this.setState({
@@ -599,6 +595,10 @@ class _CreateEpisode extends Component {
             // can be downloaded by the user, stored on server etc.
             console.log('finished recording: ', mediaObject.recordedData);
             this.recorder.stopDevice();
+            this.player.src({
+                type: 'video/mp4',
+                src: URL.createObjectURL(this.mediaObject.recordedData)
+            });
             this.setState({
                 blob: { blob: mediaObject.recordedData }, // blobObject,
                 isRecorded: true,
@@ -606,6 +606,7 @@ class _CreateEpisode extends Component {
                 isRecording: false,
             });
         });
+        this.player = this.mediaObject.player();
     }
 
     renderRecorder() {
@@ -709,7 +710,7 @@ class _CreateEpisode extends Component {
                             clearInterval(that.recordingInterval);
                             clearInterval(that.playingInterval);
                             that.player.pause();
-                            that.player.currentTime = 0;
+                            that.player.currentTime(0);
                             return;
                         }}>
                         Discard
