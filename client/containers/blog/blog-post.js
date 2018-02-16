@@ -109,7 +109,7 @@ export default class BlogPost extends Component {
               </div>
           </section>
           <div style={{bottom: 0, width: '100%', position: 'static'}}>
-            <Footer />
+            <Footer showPricing={true}/>
           </div>
         </div>
       );

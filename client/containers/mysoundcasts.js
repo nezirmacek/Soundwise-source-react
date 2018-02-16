@@ -341,7 +341,7 @@ class _MySoundcasts extends Component {
                     </div>
                 </section>
                 <div style={styles.footer}>
-                  <Footer />
+                  <Footer showPricing={false}/>
                 </div>
             </div>
         )

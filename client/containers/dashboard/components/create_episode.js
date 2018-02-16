@@ -549,16 +549,15 @@ class _CreateEpisode extends Component {
                         !isRecording
                         &&
                         <div style={styles.recordButton}   onClick={(e) => this.record(e)}>
-                            <span className="fa-stack fa-2x">
-                              <i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i>
-                              <i className="fa fa-microphone fa-stack-1x fa-inverse"></i>
-                            </span>
+                            <div className="" style={{backgroundColor: Colors.mainOrange, borderRadius: '50%' , height: 40, width: 40, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                  <i style={{color: 'white'}} className="material-icons">mic</i>
+                            </div>
                         </div>
                         ||
                         <div style={styles.recordButton} onClick={(e) => this.stop(e)}>
-                            <span className="fa-stack fa-2x">
-                              <i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i>
-                            </span>
+                            <div className="" style={{backgroundColor: Colors.mainOrange, borderRadius: '50%' , height: 40, width: 40, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                              <i style={{color: 'white'}} className="material-icons">stop</i>
+                            </div>
                         </div>
                     }
                     <div style={styles.micWrapper}>
@@ -601,13 +600,10 @@ class _CreateEpisode extends Component {
                             {
                                 !isLoading
                                 &&
-                                <i
-                                    className="fa fa-play-circle-o"
-                                    style={{
-                                        ...styles.playIcon,
+                                <i style={{
+                                        ...styles.playIcon, right: '1px', fontSize: '45px',
                                         color: isRecorded && Colors.mainOrange || Colors.fontGrey
-                                    }}
-                                ></i>
+                                    }} className="material-icons">play_circle_filled</i>
                                 ||
                                 <Loader loaded={!isLoading} options={loaderOptions}></Loader>
                             }

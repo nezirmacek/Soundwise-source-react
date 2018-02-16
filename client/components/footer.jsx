@@ -34,11 +34,14 @@ const Footer = (props) => (
         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12 xs-text-center xs-margin-four-bottom display-table text-left">
           <ul className='link' style={{float: 'right'}}>
             <li className="text-medium margin-seven-bottom font-weight-600 text-white tz-text xs-margin-one-half-bottom">Useful Links</li>
-            <li className="tz-text text-medium-gray">
-              <Link to='/pricing'>
-                <span className="text-light-gray tz-text">Plans and Pricing</span>
-              </Link>
-            </li>
+            {
+              props.showPricing &&
+              <li className="tz-text text-medium-gray">
+                <Link to='/pricing'>
+                  <span className="text-light-gray tz-text">Plans and Pricing</span>
+                </Link>
+              </li>
+            }
             <li className="tz-text text-medium-gray">
               <Link to='/terms'>
                 <span className="text-light-gray tz-text">Terms of Use</span>

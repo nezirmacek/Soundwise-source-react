@@ -87,7 +87,7 @@ import Pricing from '../components/pricing'
            isLoggedIn={isLoggedIn}
            userInfo={userInfo}
         />
-        <Footer />
+        <Footer showPricing={true}/>
       </div>
     )
   }
