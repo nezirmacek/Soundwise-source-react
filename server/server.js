@@ -199,7 +199,6 @@ app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
   var domain = String(request.query.domain);
   var host = request.get('host');
   // response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + String(host));
-  // response.setHeader('X-Frame-Options', 'SAMEORIGIN');
   // response.setHeader('Content-Security-Policy', 'frame-src ' + String(host));
 	response.sendFile(path.resolve('./client/index.html'));
 });
