@@ -41,6 +41,15 @@ class _AppSignin extends Component {
         if(this.props.match.params.id) {
             this.publisherID = this.props.match.params.id;
         }
+        if(this.props.history.location.state) {
+            const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
+            this.setState({
+                soundcast,
+                soundcastID,
+                checked,
+                sumTotal
+            });
+        }
     }
 
     async signIn() {
@@ -363,7 +372,7 @@ class _AppSignin extends Component {
 
 
     render() {
-        const { firstName, lastName, email, password, redirectToReferrer, message } = this.state
+        const { firstName, lastName, email, password, redirectToReferrer, message, soundcast, checked, sumTotal } = this.state
         const { from } = this.props.location.state || { from: { pathname: '/courses' } }
         const {history} = this.props;
 
@@ -374,150 +383,127 @@ class _AppSignin extends Component {
         }
         return (
 			<div className="row" style={{...styles.row, height: window.innerHeight}}>
-                {/*<section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg" id="subscribe-section6">*/}
-                    {/*<div className="container">*/}
-                        {/*<div className="row">*/}
-                            {/*<div className="col-md-8 center-col col-sm-12 text-center">*/}
-                                {/*<h2*/}
-                                    {/*className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text"*/}
-                                    {/*style={styles.headerText}*/}
-                                {/*>*/}
-                                    {/*Log In*/}
-                                {/*</h2>*/}
-                                {/*<div*/}
-                                    {/*className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"*/}
-                                {/*>*/}
-                                    {/*Need a Soundwise account?*/}
-                                    {/*<Link to="/signup/user" className="text-decoration-underline">*/}
-                                        {/*Get started here.*/}
-                                    {/*</Link>*/}
-                                {/*</div>*/}
-                            {/*</div>*/}
-                            {/*<div*/}
-                                {/*className="col-md-6 col-sm-11 col-xs-11 center-col text-center"*/}
-                                {/*style={{padding: '1.5em', margin: '2em'}}*/}
-                            {/*>*/}
-                                {/*<button*/}
-                                    {/*onClick={() => this.handleFBAuth()}*/}
-                                    {/*className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text bg-blue tz-background-color"*/}
-                                {/*>*/}
-                                    {/*<i className="fa fa-facebook icon-medium margin-four-right tz-icon-color vertical-align-sub"></i>*/}
-                                    {/*<span className="tz-text">Log in with Facebook</span>*/}
-                                {/*</button>*/}
-                            {/*</div>*/}
-                            {/*<div className="col-md-6 center-col col-sm-12 text-center">*/}
-                                {/*<div*/}
-                                    {/*className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"*/}
-                                {/*>*/}
-                                    {/*Or*/}
-                                {/*</div>*/}
-                                {/*<h4*/}
-                                    {/*className="title-extra-large xs-title-large width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"*/}
-                                {/*>*/}
-                                    {/*Sign in with email*/}
-                                {/*</h4>*/}
-                            {/*</div>*/}
-                            {/*<div className="col-md-6 center-col col-sm-12 text-center">*/}
-                                {/*<input*/}
-                                    {/*onChange={this.handleChange}*/}
-                                    {/*value={email}*/}
-                                    {/*type="email"*/}
-                                    {/*name="email"*/}
-                                    {/*id="email"*/}
-                                    {/*data-email="required"*/}
-                                    {/*placeholder="Email"*/}
-                                    {/*className="big-input bg-light-gray alt-font border-radius-4"*/}
-                                {/*/>*/}
-                                {/*<input*/}
-                                    {/*onChange={this.handleChange}*/}
-                                    {/*value={password}*/}
-                                    {/*type="password"*/}
-                                    {/*name="password"*/}
-                                    {/*id="password"*/}
-                                    {/*data-email="required"*/}
-                                    {/*placeholder="Password"*/}
-                                    {/*className="big-input bg-light-gray alt-font border-radius-4"*/}
-                                {/*/>*/}
-                                {/*<button*/}
-                                    {/*onClick={this.signIn}*/}
-                                    {/*type="submit"*/}
-                                    {/*className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text"*/}
-                                    {/*style={styles.button}*/}
-                                {/*>*/}
-                                    {/*Log In*/}
-                                {/*</button>*/}
-                                {/*<div className="pull-right">*/}
-                                    {/*<a href="https://mysoundwise.com/password_reset" target="_blank">Forgot your password?</a>*/}
-                                {/*</div>*/}
-                                {/*<div style={styles.error}>*/}
-                                    {/*{this.state.message}*/}
-                                {/*</div>*/}
-                            {/*</div>*/}
-                        {/*</div>*/}
-                    {/*</div>*/}
-                {/*</section>*/}
-
-
-
-
-				<div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
-					<img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
-					<div style={styles.containerWrapper}>
-						<div style={styles.container} className="center-col text-center">
-							<div style={{...styles.title, lineHeight: 'normal'}}>
-                              {history.location.state && history.location.state.text || 'Hello!'}
+                {
+                    soundcast &&
+                    <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
+                        <img className='hidden-xs' alt="Soundwise Logo" src={soundcast.imageURL} style={{...styles.logo, height: 120}}/>
+                        <div style={styles.containerWrapper}>
+                            <div style={styles.container} className="center-col text-center">
+                                <div style={{...styles.title, fontSize: 20, lineHeight: 'normal'}}>
+                                  {soundcast.title}
+                                </div>
+                                <button
+                                    onClick={() => this.handleFBAuth()}
+                                    className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
+                                    style={styles.fb}
+                                >
+                                    <i
+                                        className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
+                                        style={styles.fbIcon}
+                                    ></i>
+                                    <span className="tz-text">SIGN IN with FACEBOOK</span>
+                                </button>
+                                <hr />
+                                <span style={styles.withEmailText}>or with email</span>
                             </div>
-							<button
-								onClick={() => this.handleFBAuth()}
-								className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
-								style={styles.fb}
-							>
-								<i
-									className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
-									style={styles.fbIcon}
-								></i>
-								<span className="tz-text">SIGN IN with FACEBOOK</span>
-							</button>
-							<hr />
-							<span style={styles.withEmailText}>or with email</span>
-						</div>
-						<div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<GreyInput
-								type="email"
-								styles={{}}
-								wrapperStyles={styles.inputTitleWrapper}
-								placeholder={'Email'}
-								onChange={this.handleChange.bind(this, 'email')}
-								value={email}
-								validators={[minLengthValidator.bind(null, 1), emailValidator]}
-							/>
-							<GreyInput
-								type="password"
-								styles={{}}
-								wrapperStyles={styles.inputTitleWrapper}
-								placeholder={'Password'}
-								onChange={this.handleChange.bind(this, 'password')}
-								value={password}
-								validators={[minLengthValidator.bind(null, 1)]}
-							/>
-                            <div><span style={{color: 'red', fontSize: 16,}}>{message}</span></div>
-							<OrangeSubmitButton
-                                styles={{marginTop: 15, marginBottom: 15}}
-								label="SIGN IN"
-								onClick={this.signIn.bind(this)}
-							/>
-                            <div style={{fontSize: 14, textDecoration: 'underline'}}>
-                              <Link  to='/password_reset'>Forgot your password? </Link>
+                            <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <GreyInput
+                                    type="email"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Email'}
+                                    onChange={this.handleChange.bind(this, 'email')}
+                                    value={email}
+                                    validators={[minLengthValidator.bind(null, 1), emailValidator]}
+                                />
+                                <GreyInput
+                                    type="password"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Password'}
+                                    onChange={this.handleChange.bind(this, 'password')}
+                                    value={password}
+                                    validators={[minLengthValidator.bind(null, 1)]}
+                                />
+                                <div><span style={{color: 'red', fontSize: 16,}}>{message}</span></div>
+                                <OrangeSubmitButton
+                                    styles={{marginTop: 15, marginBottom: 15}}
+                                    label="Get Access"
+                                    onClick={this.signIn.bind(this)}
+                                />
+                                <div style={{fontSize: 14, textDecoration: 'underline'}}>
+                                  <Link  to='/password_reset'>Forgot your password? </Link>
+                                </div>
+                                <div style={{marginBottom: 10, marginTop: 15,}}>
+                                    <span style={styles.italicText}>Don't have an account? </span>
+                                    <Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+                                        Sign up >
+                                    </Link>
+                                </div>
                             </div>
-							<div style={{marginBottom: 10, marginTop: 15,}}>
-								<span style={styles.italicText}>Don't have an account? </span>
-								<Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
-									Sign up >
-								</Link>
-							</div>
-						</div>
-					</div>
-				</div>
+                        </div>
+                    </div>
+                    ||
+                    <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
+                        <img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
+                        <div style={styles.containerWrapper}>
+                            <div style={styles.container} className="center-col text-center">
+                                <div style={{...styles.title, lineHeight: 'normal'}}>
+                                  {history.location.state && history.location.state.text || 'Hello!'}
+                                </div>
+                                <button
+                                    onClick={() => this.handleFBAuth()}
+                                    className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
+                                    style={styles.fb}
+                                >
+                                    <i
+                                        className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
+                                        style={styles.fbIcon}
+                                    ></i>
+                                    <span className="tz-text">SIGN IN with FACEBOOK</span>
+                                </button>
+                                <hr />
+                                <span style={styles.withEmailText}>or with email</span>
+                            </div>
+                            <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <GreyInput
+                                    type="email"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Email'}
+                                    onChange={this.handleChange.bind(this, 'email')}
+                                    value={email}
+                                    validators={[minLengthValidator.bind(null, 1), emailValidator]}
+                                />
+                                <GreyInput
+                                    type="password"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Password'}
+                                    onChange={this.handleChange.bind(this, 'password')}
+                                    value={password}
+                                    validators={[minLengthValidator.bind(null, 1)]}
+                                />
+                                <div><span style={{color: 'red', fontSize: 16,}}>{message}</span></div>
+                                <OrangeSubmitButton
+                                    styles={{marginTop: 15, marginBottom: 15}}
+                                    label="SIGN IN"
+                                    onClick={this.signIn.bind(this)}
+                                />
+                                <div style={{fontSize: 14, textDecoration: 'underline'}}>
+                                  <Link  to='/password_reset'>Forgot your password? </Link>
+                                </div>
+                                <div style={{marginBottom: 10, marginTop: 15,}}>
+                                    <span style={styles.italicText}>Don't have an account? </span>
+                                    <Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+                                        Sign up >
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
             </div>
         )
     }
