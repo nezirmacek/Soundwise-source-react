@@ -309,11 +309,11 @@ class _CreateEpisode extends Component {
 
                 if(type == 'audio' && !uploadedAudio) {
                     _self.setState({
-                        recordedAudioUrl: url,
+                        recordedAudioUrl: `https://mysoundwise.com/tracks/${_self.episodeId}.${ext}`,
                     })
                 } else if(type == 'audio' && uploadedAudio) {
                     _self.setState({
-                        uploadedAudioUrl: url,
+                        uploadedAudioUrl: `https://mysoundwise.com/tracks/${_self.episodeId}.${ext}`,
                     })
                 } else if(type == 'notes' || type == 'coverart') {
                     _self.setState({
@@ -765,11 +765,14 @@ class _CreateEpisode extends Component {
     }
 
     onFinish(signResult) {
+        const awsUrl = signResult.signedUrl.split('?')[0];
+        const aux = awsUrl.split('.');
+        const ext = aux[aux.length - 1];
         this.setState({
             audioUploading: false,
             audioUploaded: true,
             audioUploadProgress: 0,
-            uploadedAudioUrl: signResult.signedUrl.split('?')[0],
+            uploadedAudioUrl: `https://mysoundwise.com/tracks/${this.episodeId}.${ext}`
         });
     }
 
