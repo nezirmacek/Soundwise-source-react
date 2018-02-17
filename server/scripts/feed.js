@@ -133,6 +133,7 @@ module.exports.createFeed = async (req, res) => {
                     }
                     console.log(`File ${filePath} successfully saved`);
                     const s3Path = episode.url.split('/')[3]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
+                    const episodeFileName = episode.url.split('/')[4];
                     uploader.use(new S3Strategy({
                       uploadPath: `${s3Path}`,
                       // uploadPath: 'soundcasts',
@@ -154,7 +155,7 @@ module.exports.createFeed = async (req, res) => {
                       // after upload success, change episode tagged record in firebase:
                       console.log(episode.id, ' uploaded to: ', files[0].url.replace('http', 'https'));
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-                      firebase.database().ref(`episodes/${episode.id}/url`).set(files[0].url.replace('http', 'https'));
+                      firebase.database().ref(`episodes/${episode.id}/url`).set(`https://mysoundwise.com/tracks/${episodeFileName}`); // use the proxy
                       resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                     });
                   });
