@@ -10,7 +10,6 @@ var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
 var awsConfig = require('../config').awsConfig;
 var S3 = require('aws-sdk').S3;
-var S3S = require('s3-streams');
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
@@ -76,6 +75,20 @@ app.use(require('prerender-node').set('prerenderToken',
         'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
 
 AWS.config.update(awsConfig);
+AWS.Request.prototype.forwardToExpress = function forwardToExpress(res, next) {
+  this
+  .on('httpHeaders', function(code, headers) {
+    if (code < 300) {
+      res.set('Content-Length', headers['content-length']);
+      res.set('Content-Type', headers['content-type']);
+      res.set('Last-Modified', headers['last-modified']);
+      res.set('ETag', headers['etag']);
+    }
+  })
+  .createReadStream()
+  .on('error', next)
+  .pipe(res);
+};
 
 uploader.use(new S3Strategy({
   uploadPath: 'soundcasts/',
@@ -149,15 +162,19 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
-app.get('/tracks/:id', (request, response) => {
+app.get('/tracks/:id', (request, response, next) => {
   const path = String(request.path).slice(8);
-  console.log('path: ', path);
-  // response.redirect(200, `https://s3.amazonaws.com/soundwiseinc/soundcasts/${path}`);
-  var src = S3S.ReadStream(new S3(), {
+  const s3 = new S3();
+  // var audioStream = s3.getObject({
+  //     Bucket: 'soundwiseinc',
+  //     Key: `soundcasts/${path}`,
+  // }).createReadStream();
+
+  s3.getObject({
     Bucket: 'soundwiseinc',
-    Key: `/soundcasts/${path}`,
-  });
-  src.pipe(response);
+    Key: `soundcasts/${path}`,
+  })
+  .forwardToExpress(response, next);
 });
 
 // database API routes:

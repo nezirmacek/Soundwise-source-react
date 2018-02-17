@@ -757,11 +757,6 @@ class _AppSignup extends Component {
 
     render() {
         const { match, history } = this.props;
-        // console.log('history.location.state: ', history.location.state);
-
-        // if(history.location.state) {
-        //     let {soundcast, checked, sumTotal} = history.location.state;
-        // }
 
         const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name, soundcast, checked, sumTotal, soundcastID } = this.state;
         const { from } = this.props.location.state || { from: { pathname: '/courses' } };
@@ -990,13 +985,13 @@ class _AppSignup extends Component {
                         <div className="center-col text-center">
                             <img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
                         </div>
-                        <div style={styles.containerWrapper}>
+                        <div style={{...styles.containerWrapper, padding: 15}}>
                             <div style={styles.container} className="center-col text-center">
                                 <div style={{...styles.title, marginBottom: 10}}>Create Your Publisher Account</div>
                             </div>
-                            <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div style={styles.inputLabel}>Publisher name</div>
-                                <div style={styles.italicText}>(this can be the name of your company, team, group, etc)</div>
+                            <div style={{...styles.container, paddding: 15}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div style={{...styles.inputLabel, fontWeight: 700, marginBottom: 15}}>Publisher name</div>
+                                <div style={{...styles.italicText, marginBottom: 20, height: 36}}>(this can be the name of your business, brand, team. You can always change it later.)</div>
                                 <GreyInput
                                     type="email"
                                     styles={styles.greyInputText}
@@ -1005,13 +1000,6 @@ class _AppSignup extends Component {
                                     onChange={this.handleChange.bind(this, 'publisher_name')}
                                     value={publisher_name}
                                     validators={[minLengthValidator.bind(null, 1)]}
-                                />
-                                <div style={styles.inputLabel}>Upload a publisher picture</div>
-                                <div style={styles.italicText}>(i.e. your company logo, at least 133px by 133px)</div>
-                                <ImageS3Uploader
-                                    cb={this.getUrl.bind(this)}
-                                    fileName={this.publisherID}
-                                    title={'Publisher Image'}
                                 />
                                 <OrangeSubmitButton
                                     label="CREATE ACCOUNT"

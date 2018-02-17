@@ -92,16 +92,24 @@ class _SoundwiseCheckout extends Component {
   applyPromoCode() {
     this.setState({
       promoCodeError: '',
+      promoApplied: false,
     });
     const {promoCode, total} = this.state;
     const {plan, frequency, price} = this.props.history.location.state;
     if(promoCode == 'OFF50') {
-      this.setState({
-        total: frequency == 'annual' ? price * 12 / 2 : price,
-      });
+      if(frequency == 'annual') {
+        this.setState({
+          total: frequency == 'annual' ? price * 12 / 2 : price,
+          promoApplied: true,
+        });
+      } else {
+        this.setState({
+          promoCodeError: "This promo code only applies to annual plans!",
+        });
+      }
     } else {
       this.setState({
-        promoCodeError: 'Hmm...this promo code doesn\'t exist',
+        promoCodeError: "Hmm...this promo code doesn't exist",
       });
     }
   }
@@ -165,7 +173,7 @@ class _SoundwiseCheckout extends Component {
     const {plan, frequency, price} = this.props.history.location.state;
     const title = plan == 'pro' ? 'Pro Plan' : 'Plus Plan';
     const interval = frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
-    const {total, submitted} = this.state;
+    const {total, submitted, promoApplied} = this.state;
     const displayedPrice = `$${price}/month`;
     const {userInfo} = this.props;
     const monthOptions = [];
@@ -229,11 +237,20 @@ class _SoundwiseCheckout extends Component {
                                               value={this.state.promoCode}
                                               style={{width: '50%', fontSize: 14, height: 35}}
                                           />
-                                          <button
-                                            onClick={this.applyPromoCode}
-                                            type="button"
-                                            className="btn"
-                                            style={{color: Colors.link}}>Apply</button>
+                                          {
+                                            promoApplied &&
+                                            <button
+                                              onClick={this.applyPromoCode}
+                                              type="button"
+                                              className="btn"
+                                              style={{color: Colors.mainOrange}}>Applied!</button>
+                                            ||
+                                            <button
+                                              onClick={this.applyPromoCode}
+                                              type="button"
+                                              className="btn"
+                                              style={{color: Colors.link}}>Apply</button>
+                                          }
                                           <div style={{color: 'red'}}>{this.state.promoCodeError}</div>
                                         </div>
                                       }
