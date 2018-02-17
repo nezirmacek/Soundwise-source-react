@@ -37,7 +37,7 @@ class GetStartedSteps extends React.Component {
       case 0:
         return 'Think of a soundcast as an ablum, course, or training series. You may want to create a free soundcast to generate lead and collect emails, along with paid ones. Once you fill in the content info and set your pricing, we will automatically generate a landing page for each of your soundcasts. You can also bundle several or all of your soundcasts together and create your own on-demand audio streaming library.';
       case 1:
-        return 'Upload audio files to your soundcasts or directly record from your dashboard. Your updated soundcast content will immediately show up in the Soundwise app on your audience\'s phones. Audience will receive push notification whenever you publish new content.';
+        return "Upload audio files to your soundcasts or directly record from your dashboard. Your updated soundcast content will immediately show up in the Soundwise app on your audience's phones. Audience will receive push notification whenever you publish new content.";
       case 2:
         return 'Grab your soundcast signup url link from dashboard. Share it on your website and social media to encourage signups. Audience can also find your soundcasts by searching for your soundcast title or your name on the Soundwise mobile app. Additionally, we feature your free soundcasts on the app to attract new audience for you.';
       case 3:
@@ -85,7 +85,7 @@ class GetStartedSteps extends React.Component {
                     </Step>
                   </Stepper>
                   <div style={contentStyle}>
-                    <div className='text-dark-gray text-large'>{this.getStepContent(stepIndex)}</div>
+                    <div className='text-dark-gray text-extra-large'>{this.getStepContent(stepIndex)}</div>
                   </div>
                 </div>
               </div>

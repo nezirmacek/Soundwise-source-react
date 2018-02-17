@@ -45,7 +45,7 @@ export default class PassRecovery extends Component {
       })
     }, function(error) {
       that.setState({
-        error: error
+        error: 'Failed to send password reset email. Did you enter a valid email?'
       })
     })
   }

@@ -9,7 +9,8 @@ const Callto_action = () => (
         <div className="col-md-12 col-sm-12 col-xs-12 margin-two-bottom text-center xs-margin-fifteen-bottom">
           <h2 className="text-white alt-font center-col title-extra-large sm-title-medium text-center tz-text font-weight-300">Get started today</h2>
           <div className="width-50 sm-width-90 text-blue-gray text-extra-large center-col margin-three-top tz-text">
-            <p>Try Soundwise's innovative audio training dissemination for free. Cancel anytime.</p>
+            <p>Let Soundwise help you get a real audience and make money from your knowledge.</p>
+            <p>Start for free. Cancel anytime.</p>
           </div>
         </div>
         <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{marginBottom: 20}}>
