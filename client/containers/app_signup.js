@@ -29,7 +29,6 @@ var provider = new firebase.auth.FacebookAuthProvider();
 class _AppSignup extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             firstName: '',
             lastName: '',
@@ -42,6 +41,7 @@ class _AppSignup extends Component {
             redirectToReferrer: false,
             isPublisherFormShown: false,
             isFBauth: false,
+            soundcast: props.match.params.mode == 'soundcast_user' && props.match.params.id ? {} : null,
         };
 
         this.publisherID = moment().format('x') + 'p';
@@ -49,10 +49,42 @@ class _AppSignup extends Component {
         this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
     }
 
+    componentWillMount() {
+        const that = this;
+        const params = new URLSearchParams(this.props.location.search);
+        const checked = params.get('checked');
+        if(this.props.match.params.mode == 'soundcast_user' && this.props.match.params.id) {
+            firebase.database().ref(`soundcasts/${this.props.match.params.id}`).once('value')
+            .then(snapshot => {
+                if(snapshot.val()) {
+                    that.setState({
+                        soundcast: snapshot.val(),
+                        soundcastID: that.props.match.params.id,
+                        checked: checked ? checked : 0,
+                        sumTotal: checked ? snapshot.val().prices[checked].price : snapshot.val().prices[0].price,
+                    });
+                }
+            })
+        }
+    }
+
     componentDidMount() {
-        if(this.props.match.params.id) {
+        const that = this;
+        const params = new URLSearchParams(this.props.location.search);
+        const checked = params.get('checked');
+        if(this.props.match.params.mode == 'admin' && this.props.match.params.id) {
             this.publisherID = this.props.match.params.id;
         }
+        if(this.props.history.location.state) {
+            const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
+            this.setState({
+                soundcast,
+                soundcastID,
+                checked,
+                sumTotal
+            });
+        }
+
     }
 
     setStatePromise(that, newState) {
@@ -64,7 +96,7 @@ class _AppSignup extends Component {
     }
 
     signUp() {
-        const {firstName, lastName, email, password, pic_url} = this.state;
+        const {firstName, lastName, email, password, pic_url, soundcast, checked, sumTotal, soundcastID} = this.state;
         const {history, match} = this.props;
         const that = this;
 
@@ -75,15 +107,15 @@ class _AppSignup extends Component {
         .then(authArr => {
             // console.log('authArr: ', authArr);
             if(authArr.length > 0) {
-                if(match.params.id) {
+                if(match.params.mode == 'admin' && match.params.id) {
                   history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
                   return;
-                } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+                } else if(match.params.mode == 'soundcast_user' && (history.location.state || match.params.id)) {
                   history.push('/signin', {text: 'This account already exists. Please sign in instead',
-                      soundcast: history.location.state.soundcast,
-                      soundcastID: history.location.state.soundcastID,
-                      checked: history.location.state.checked,
-                      sumTotal: history.location.state.sumTotal,
+                      soundcast,
+                      soundcastID,
+                      checked,
+                      sumTotal,
                   });
                 } else {
                   history.push('/signin', {text: 'This account already exists. Please sign in instead'
@@ -92,7 +124,7 @@ class _AppSignup extends Component {
             } else {
                 if (match.params.mode !== 'admin') { // listener case
                     that._signUp();
-                } else if (match.params.id) { // admin from invitation with publisher id
+                } else if (match.params.mode == 'admin' && match.params.id) { // admin from invitation with publisher id
                     that.signUpInvitedAdmin();
                 } else { // admin case
                     that.setState({isPublisherFormShown: true});
@@ -480,7 +512,7 @@ class _AppSignup extends Component {
         // console.log('authArr: ', authArr);
 
         if(authArr.length > 0) {
-            if(match.params.id) {
+            if(match.params.mode == 'admin' && match.params.id) {
               history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
               return;
             } else {
@@ -626,7 +658,7 @@ class _AppSignup extends Component {
 
                                         if (_user.admin && !match.params.id) {
                                             history.push('/dashboard/soundcasts');
-                                        } else if (match.params.id) {
+                                        } else if (match.params.mode == 'admin' && match.params.id) {
                                             that.signUpInvitedAdmin();
                                         } else  if (_user.soundcasts) {
                                             history.push('/mysoundcasts');
@@ -650,7 +682,7 @@ class _AppSignup extends Component {
                                                 pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                                                 isPublisherFormShown: true,
                                             });
-                                        } else if(match.params.id) {
+                                        } else if(match.params.mode == 'admin' && match.params.id) {
                                             that.signUpInvitedAdmin(user);
                                         } else {
                                             that.signUpUser(user);
@@ -705,7 +737,7 @@ class _AppSignup extends Component {
                                                     that.setState({ firstName, lastName, email, pic_url });
                                                     if (match.params.mode === 'admin' && !match.params.id) {
                                                         that.setState({isPublisherFormShown: true});
-                                                    } else if(match.params.id) {
+                                                    } else if(match.params.mode == 'admin' && match.params.id) {
                                                         that.signUpInvitedAdmin(user);
                                                     } else {
                                                         that.signUpUser(user);
@@ -727,12 +759,11 @@ class _AppSignup extends Component {
         const { match, history } = this.props;
         // console.log('history.location.state: ', history.location.state);
 
-        if(history.location.state) {
-            let {soundcast, checked, sumTotal} = history.location.state;
-            // console.log('soundcast: ', soundcast);
-        }
+        // if(history.location.state) {
+        //     let {soundcast, checked, sumTotal} = history.location.state;
+        // }
 
-        const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name } = this.state;
+        const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name, soundcast, checked, sumTotal, soundcastID } = this.state;
         const { from } = this.props.location.state || { from: { pathname: '/courses' } };
 
         if(redirectToReferrer) {
@@ -743,13 +774,12 @@ class _AppSignup extends Component {
 		return (
             <div className="row" style={{...styles.row, height: window.innerHeight}}>
 				{
-					!isPublisherFormShown
-					&&
+                    soundcast &&
                     <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
-                        <img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
+                        <img className='hidden-xs' alt="Soundcast cover art" src={soundcast.imageURL} style={{...styles.logo, height: 120}}/>
                         <div style={styles.containerWrapper}>
                             <div style={styles.container} className="center-col text-center">
-                                <div style={styles.title}>Let's get started!</div>
+                                <div style={{...styles.title, fontSize: 20, lineHeight: 'normal',}}>{soundcast.title}</div>
                                 <button
                                     onClick={() => this.handleFBAuth()}
                                     className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
@@ -812,6 +842,102 @@ class _AppSignup extends Component {
                                         {/*checked={isAccepted}*/}
                                         {/*style={styles.checkbox}*/}
                                     {/*/>*/}
+                                    <span style={styles.acceptText}>
+                                        By signing up I accept the terms of use and <Link to="/privacy">privacy policy</Link>.
+                                    </span>
+                                </div>
+                                {
+                                    <OrangeSubmitButton
+                                        label="Get Access"
+                                        onClick={this.signUp.bind(this)}
+                                        styles={{marginTop: 15, marginBottom: 15}}
+                                    />
+                                }
+
+                                <div>
+                                    <span style={styles.italicText}>Already have an account? </span>
+                                    {
+                                        <Link
+                                          to={{
+                                            pathname: '/signin',
+                                            state: {
+                                                soundcast,
+                                                soundcastID,
+                                                checked,
+                                                sumTotal
+                                            }
+                                          }}
+                                          style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in >
+                                        </Link>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ||
+					!isPublisherFormShown && !soundcast
+					&&
+                    <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
+                        <img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
+                        <div style={styles.containerWrapper}>
+                            <div style={styles.container} className="center-col text-center">
+                                <div style={styles.title}>Let's get started!</div>
+                                <button
+                                    onClick={() => this.handleFBAuth()}
+                                    className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
+                                    style={styles.fb}
+                                >
+                                    <i
+                                        className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
+                                        style={styles.fbIcon}
+                                    ></i>
+                                    <span className="tz-text">SIGN UP with FACEBOOK</span>
+                                </button>
+                                <hr />
+                                <span style={styles.withEmailText}>or with email</span>
+                            </div>
+                            <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <GreyInput
+                                    type="text"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'First name'}
+                                    onChange={this.handleChange.bind(this, 'firstName')}
+                                    value={firstName}
+                                    validators={[minLengthValidator.bind(null, 1)]}
+                                />
+                            </div>
+                            <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <GreyInput
+                                    type="text"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Last name'}
+                                    onChange={this.handleChange.bind(this, 'lastName')}
+                                    value={lastName}
+                                    validators={[minLengthValidator.bind(null, 1)]}
+                                />
+                            </div>
+                            <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <GreyInput
+                                    type="email"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Email'}
+                                    onChange={this.handleChange.bind(this, 'email')}
+                                    value={email}
+                                    validators={[minLengthValidator.bind(null, 1), emailValidator]}
+                                />
+                                <GreyInput
+                                    type="password"
+                                    styles={{}}
+                                    wrapperStyles={styles.inputTitleWrapper}
+                                    placeholder={'Password'}
+                                    onChange={this.handleChange.bind(this, 'password')}
+                                    value={password}
+                                    validators={[minLengthValidator.bind(null, 1)]}
+                                />
+                                <div>
                                     <span style={styles.acceptText}>
                                         By signing up I accept the terms of use and <Link to="/privacy">privacy policy</Link>.
                                     </span>
@@ -915,6 +1041,7 @@ const styles = {
     },
     logo: {
         marginBottom: 18,
+        height: 50,
     },
     containerWrapper: {
         overflow: 'hidden',
