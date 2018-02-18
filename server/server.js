@@ -198,8 +198,8 @@ app.use(express.static('./client'));
 app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
   var domain = String(request.query.domain);
   var host = request.get('host');
-  // response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + String(host));
-  // response.setHeader('Content-Security-Policy', 'frame-src ' + String(host));
+  response.set('X-Frame-Options', 'ALLOW-FROM ' + String(host));
+  response.set('Content-Security-Policy', 'frame-src ' + String(host));
 	response.sendFile(path.resolve('./client/index.html'));
 });
 
@@ -269,3 +269,8 @@ client.setApiKey(sendGridApiKey);
 //   current_period_end: 4638902400,
 //   date_subscribed: 1515181960
 // });
+firebase.database().ref('soundcasts/1514429829515s/long_description')
+.once('value')
+.then(snapshot => {
+  console.log(JSON.parse(snapshot.val()));
+})

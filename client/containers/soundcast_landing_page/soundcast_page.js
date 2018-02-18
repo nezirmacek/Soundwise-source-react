@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import 'url-search-params-polyfill'
 import {Helmet} from "react-helmet"
 import firebase from 'firebase'
 import { withRouter } from 'react-router'
