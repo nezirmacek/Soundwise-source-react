@@ -4,6 +4,7 @@ import moment from 'moment';
 import Axios from 'axios';
 import {Helmet} from "react-helmet"
 import firebase from 'firebase';
+import 'url-search-params-polyfill';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 // import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import { RadioGroup, RadioButton, ReversedRadioButton } from 'react-radio-buttons';

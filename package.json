@@ -116,6 +116,7 @@
     "sw-toolbox": "^3.6.0",
     "tls": "0.0.1",
     "url-loader": "^0.5.7",
+    "url-search-params-polyfill": "^2.0.3",
     "video-react": "^0.9.4",
     "videojs-record": "^2.1.0",
     "webpack": "^1.13.2",
