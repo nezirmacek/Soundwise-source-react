@@ -13,8 +13,8 @@ import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
-import Toggle from 'material-ui/Toggle';
-
+// import Toggle from 'material-ui/Toggle';
+import Toggle from 'react-toggle';
 import ImageCropModal from './image_crop_modal';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -776,30 +776,15 @@ export default class AddSoundcast extends Component {
 	                  </span>
 					</div>
 					<div className="col-lg-10 col-md-11 col-sm-12 col-xs-12">
-						{/*The landing page*/}
-						<div style={{marginTop: 15, marginBottom: 15}}>
-		          <Toggle
-		            label="Add a public landing page for this soundcast"
-		            toggled={this.state.landingPage}
-		            onClick={this.handleCheck.bind(this)}
-		            thumbSwitchedStyle={styles.thumbSwitched}
-		            trackSwitchedStyle={styles.trackSwitched}
-		            style={{fontSize: 20, width: '60%'}}
-		          />
-						</div>
-						{landingPage &&
-						<div style={{marginBottom: 20, fontSize: 20}}>
-							<span>The landing page will be published at </span>
-							<span >
-								<a
-									target="_blank"
-									style={{color: Colors.mainOrange}}
-									href={`https://mysoundwise.com/soundcasts/${this.soundcastId}`}>
-									{`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
-		                        </a>
-		                    </span>
-						</div>}
-
+            <div className=''  style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                <Toggle
+                  id='landing-status'
+                  aria-labelledby='landing-label'
+                  checked={this.state.landingPage}
+                  onChange={this.handleCheck.bind(this)}
+                />
+                <span id='landing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>This is a public soundcast</span>
+            </div>
 						{/*Title*/}
 						<span style={styles.titleText}>Title</span>
 						<span style={{...styles.titleText, color: 'red'}}>*</span>

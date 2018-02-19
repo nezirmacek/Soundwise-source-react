@@ -244,7 +244,7 @@ export default class Announcements extends Component {
     const that = this;
     return (
       <div className='padding-30px-tb'>
-        <div style={{display: modalOpen ? '' : 'none', background: 'rgba(0, 0, 0, 0.3)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
+        <div style={{display: modalOpen ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
           <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 150, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
             <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to send messages</div>
             <div className='title-small' style={{margin: 25}}>

@@ -432,14 +432,8 @@ class _AppSignin extends Component {
                                     label="Get Access"
                                     onClick={this.signIn.bind(this)}
                                 />
-                                <div style={{fontSize: 14, textDecoration: 'underline'}}>
+                                <div style={{fontSize: 14, textDecoration: 'underline', marginBottom: 20}}>
                                   <Link  to='/password_reset'>Forgot your password? </Link>
-                                </div>
-                                <div style={{marginBottom: 10, marginTop: 15,}}>
-                                    <span style={styles.italicText}>Don't have an account? </span>
-                                    <Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
-                                        Sign up >
-                                    </Link>
                                 </div>
                             </div>
                         </div>

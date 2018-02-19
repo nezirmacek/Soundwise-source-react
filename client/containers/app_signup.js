@@ -768,7 +768,7 @@ class _AppSignup extends Component {
 			)
 		}
 		return (
-            <div className="row" style={{...styles.row, height: window.innerHeight}}>
+            <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700)}}>
 				{
                     soundcast &&
                     <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
@@ -850,7 +850,7 @@ class _AppSignup extends Component {
                                     />
                                 }
 
-                                <div>
+                                <div style={{marginBottom: 15}}>
                                     <span style={styles.italicText}>Already have an account? </span>
                                     {
                                         <Link
@@ -955,7 +955,7 @@ class _AppSignup extends Component {
                                     />
                                 }
 
-                                <div>
+                                <div style={{marginBottom: 15}}>
                                     <span style={styles.italicText}>Already have an account? </span>
                                     {
                                         !history.location.state &&

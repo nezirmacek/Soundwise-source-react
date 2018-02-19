@@ -1119,31 +1119,23 @@ export default class EditSoundcast extends Component {
                       Edit Soundcast
                   </span>
               </div>
-              <div className=''
-                style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+              <div className=''  style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
                   <Toggle
                     id='landing-status'
                     aria-labelledby='landing-label'
                     checked={this.state.landingPage}
                     onChange={this.handleCheck.bind(this)}
                   />
-                  <span id='landing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Add a public landing page for this soundcast</span>
+                  <span id='landing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>This is a public soundcast</span>
+                {
+                  landingPage &&
+                  <ul className="nav nav-pills col-md-6" style={{marginLeft: 25}}>
+                    <li role="presentation"  ><a target="_blank" href={`https://mysoundwise.com/soundcasts/${id}`} style={{backgroundColor: 'transparent'}}><span style={{fontSize: 18, fontWeight: 600, color: Colors.mainOrange}}>View Landing Page</span></a></li>
+                    <li role="presentation" ><a target="_blank" href={`https://mysoundwise.com/signup/soundcast_user/${id}`}><span style={{fontSize: 18, fontWeight: 600, color: Colors.link}}>View Signup Form</span></a></li>
+                  </ul>
+                  || null
+                }
               </div>
-              {
-                landingPage &&
-                <div style={{marginBottom: 20, fontSize: 20}}>
-                    <span>The landing page will be published at </span>
-                    <span >
-                      <a
-                        target="_blank"
-                        style={{color: Colors.mainOrange}}
-                        href={`https://mysoundwise.com/soundcasts/${id}`}>
-                        {`https://mysoundwise.com/soundcasts/${id}`}
-                      </a>
-                    </span>
-                </div>
-                || null
-              }
               <div className="row">
                   <div className="col-lg-9 col-md-9 col-sm-12 col-xs-12">
                       <div style={{marginBottom: 15}}>

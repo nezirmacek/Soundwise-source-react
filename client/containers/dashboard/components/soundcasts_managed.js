@@ -204,15 +204,23 @@ export default class SoundcastsManaged extends Component {
                                 target='_blank'
                                 href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
                                 style={{cursor: 'pointer'}}>
-                              <span
-                                dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
-                                style={{color: Colors.mainOrange}}><strong>View</strong></span>
+                                <span
+                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
+                                  style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
                               </a>
-                              <span onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 20, color: Colors.link, cursor: 'pointer'}}>Delete</span>
+                              <a
+                                target='_blank'
+                                href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
+                                style={{paddingLeft: 15}}>
+                                <span
+                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast signup form"
+                                  style={{color: Colors.link}}><strong>Signup form</strong></span>
+                              </a>
+                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
                             </div>
                             ||
                             <div style={{...styles.soundcastUpdated, }}>
-                              <span onClick={() => that.deleteSoundcast(soundcast.id)}  style={{color: Colors.link, cursor: 'pointer'}}>Delete</span>
+                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)}  style={{ cursor: 'pointer'}}>Delete</span>
                             </div>
                           }
                         </div>
