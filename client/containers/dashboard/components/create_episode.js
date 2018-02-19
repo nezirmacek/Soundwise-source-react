@@ -225,8 +225,7 @@ class _CreateEpisode extends Component {
     play () {
         const that = this;
 
-        // this.player.play();
-        this.wavesurfer.play();
+        this.wavesurfer.surfer.play();
 
         if (this.state.isRecorded) {
             this.setState({
@@ -249,7 +248,7 @@ class _CreateEpisode extends Component {
     }
 
     pause () {
-		this.player.pause(); // triggers 'ended'
+		this.wavesurfer.surfer.pause(); // triggers 'ended'
         this.setState({
             isPlaying: false,
             currentPlayingDuration: 0
@@ -610,7 +609,7 @@ class _CreateEpisode extends Component {
             });
         });
         this.player = this.mediaObject.player();
-        this.wavesurfer = this.player.wavesurfer();
+        this.wavesurfer = this.mediaObject.wavesurfer();
     }
 
     renderRecorder() {
