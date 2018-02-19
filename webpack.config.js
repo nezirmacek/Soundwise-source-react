@@ -68,7 +68,7 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
         videojs: 'video.js', 'window.videojs': 'video.js',
-        RecordRTC: 'recordrtc', 'window.RecordRTC': 'recordrtc'
+        RecordRTC: 'recordrtc', 'window.RecordRTC': 'recordrtc',
     }),
     // new webpack.optimize.UglifyJsPlugin(),
     // new webpack.DefinePlugin({

@@ -41,7 +41,7 @@ class AudiojsRecordPlayer extends React.Component {
                     waveColor: 'white',
                     progressColor: 'white',
                     debug: true,
-                    cursorWidth: 0,
+                    cursorWidth: 1,
                     cursorColor: 'white',
                     msDisplayMax: 20,
                     hideScrollbar: true
@@ -50,7 +50,8 @@ class AudiojsRecordPlayer extends React.Component {
                     audio: true,
                     video: false,
                     maxLength: 120, // seconds
-                    debug: true
+                    debug: true,
+                    audioSampleRate: 96000
                 }
             }
         }, function() {
@@ -224,8 +225,8 @@ class _CreateEpisode extends Component {
     play () {
         const that = this;
 
-        this.player.play();
-        // this.wavesurfer.play();
+        // this.player.play();
+        this.wavesurfer.play();
 
         if (this.state.isRecorded) {
             this.setState({
