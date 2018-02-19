@@ -91,7 +91,7 @@ export default class EditEpisode extends Component {
           alert('Only png, jpg, or pdf files are accepted. please upload a new file.');
           return;
         }
-        data.append('file', file, `${this.id}.${ext}`);
+        data.append('file', file, `${id}.${ext}`);
         // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
         Axios.post('/api/upload', data)
             .then(function (res) {
