@@ -234,7 +234,7 @@ class _WaveVideoInputs extends Component {
     data.append('color', waveColor);
     data.append('position', wavePosition);
     data.append('email', email);
-    Axios.post('/api/upload/audiowave', data)
+    Axios.post('/api/audiowave', data)
     .then(res => {
       that.setState({
         audioName: null,
