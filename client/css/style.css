@@ -827,6 +827,12 @@ footer .social-icon a:last-child{ margin-right:0;}
 .video-js-audio-custom {
   background-color: #acb3bc !important;
 }
+.video-js-audio-custom * {
+  transition-duration: 0s;
+  -o-transition-duration: 0s;
+  -moz-transition-duration: 0s;
+  -webkit-transition-duration: 0s;
+}
 button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
 .vjs-record-indicator.vjs-control  {
     display: none; /* hide big record button and rec label while recording */
