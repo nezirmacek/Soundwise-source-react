@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import '!style!css!video.js/dist/video-js.min.css';
 import '!style!css!videojs-record/dist/css/videojs.record.css';
 import 'videojs-record';
+import 'videojs-record/dist/plugins/videojs.record.lamejs.min.js';
 import WaveSurfer from 'wavesurfer.js';
 import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
 WaveSurfer.microphone = MicrophonePlugin;
@@ -51,6 +52,8 @@ class AudiojsRecordPlayer extends React.Component {
                     video: false,
                     maxLength: 120, // seconds
                     debug: true,
+                    audioEngine: 'lamejs',
+                    audioWorkerURL: '/js/lamejs/worker-example/worker-realtime.js',
                     audioSampleRate: 96000
                 }
             }
@@ -248,7 +251,7 @@ class _CreateEpisode extends Component {
     }
 
     pause () {
-		this.wavesurfer.surfer.pause(); // triggers 'ended'
+		this.wavesurfer.surfer.pause();
         this.setState({
             isPlaying: false,
             currentPlayingDuration: 0
