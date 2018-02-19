@@ -13,6 +13,7 @@ import InviteSubscribersModal from './invite_subscribers_modal';
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton } from '../../../components/buttons/buttons';
+import SoundcastsBundles from './soundcasts_bundles';
 
 export default class SoundcastsManaged extends Component {
   constructor(props) {
@@ -154,107 +155,114 @@ export default class SoundcastsManaged extends Component {
 				}
 			}
 
-			return (
-				<div className='padding-30px-tb '>
-          <InviteSubscribersModal
-            isShown={this.state.showModal}
-            soundcast={this.state.currentSoundcast}
-            onClose={this.handleModal}
-            userInfo={userInfo}
-          />
-          <div className='padding-bottom-20px row'>
-              <span className='title-medium '>
-                  Soundcasts
-              </span>
-          </div>
-					{
-						_soundcasts_managed.map((soundcast, i) => {
-							return (
-								<div className="row" key={i} style={{...styles.row,        }}>
-									<div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+      if(this.props.match.params.id == 'bundles') {
+        return <SoundcastsBundles {...this.props}/>
+      } else {
+        return (
+          <div className='padding-30px-tb ' style={{minHeight: 700}}>
+            <InviteSubscribersModal
+              isShown={this.state.showModal}
+              soundcast={this.state.currentSoundcast}
+              onClose={this.handleModal}
+              userInfo={userInfo}
+            />
+            <div className='padding-bottom-20px' style={{display: 'flex', alignItems: 'center'}}>
+                <span className='title-medium '>
+                    Soundcasts
+                </span>
+            </div>
+            <ul className="nav nav-pills">
+              <li role="presentation" className="active" ><Link to='/dashboard/soundcasts' style={{backgroundColor: 'transparent'}}><span style={{fontSize: 15, fontWeight: 600, color: Colors.mainOrange}}>Individuals</span></Link></li>
+              <li role="presentation" ><Link  to="/dashboard/soundcasts/bundles"><span style={{fontSize: 15, fontWeight: 600}}>Bundles</span></Link></li>
+            </ul>
+            {
+              _soundcasts_managed.map((soundcast, i) => {
+                return (
+                  <div className="row" key={i} style={{...styles.row,        }}>
+                    <div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
 
-                      <div className='col-md-2 col-sm-2 col-xs-2'>
-  										  <img src={soundcast.imageURL} style={styles.soundcastImage} />
-                      </div>
-  										<div className='col-md-7 col-sm-6 col-xs-10'
-                        style={styles.soundcastDescription}>
-  											<span style={styles.soundcastTitle}>{soundcast.title}</span>
-  											{
-  												soundcast.last_update
-  												&&
-  												<div style={styles.soundcastUpdated}>
-                                                  Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
-                          </div>
-  												||
-  												null
-  											}
-                        {
-                          soundcast.landingPage
-                          &&
-                          <div style={{...styles.soundcastUpdated, }}>
-                            <a
-                              target='_blank'
-                              href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
-                              style={{cursor: 'pointer'}}>
-                            <span
-                              dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
-                              style={{color: Colors.mainOrange}}><strong>View</strong></span>
-                            </a>
-                            <span onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 20, color: Colors.link, cursor: 'pointer'}}>Delete</span>
-                          </div>
-                          ||
-                          <div style={{...styles.soundcastUpdated, }}>
-                            <span onClick={() => that.deleteSoundcast(soundcast.id)}  style={{color: Colors.link, cursor: 'pointer'}}>Delete</span>
-                          </div>
-                        }
-  										</div>
-  										<div className='col-md-3 col-sm-4 col-xs-12'
-                        style={{...styles.subscribers, textAlign:'center'}}>
-                        <span style={styles.soundcastUpdated}>
-                            {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
-                        </span>
-  											<span
-                          dataToggle="tooltip" dataPlacement="top" title="invite listeners"
-                          onClick={() => this.handleModal(soundcast)}
-                          style={styles.addLink}>
-                          Invite
-                        </span>
-  										</div>
+                        <div className='col-md-2 col-sm-2 col-xs-2'>
+                          <img src={soundcast.imageURL} style={styles.soundcastImage} />
+                        </div>
+                        <div className='col-md-7 col-sm-6 col-xs-10'
+                          style={styles.soundcastDescription}>
+                          <span style={styles.soundcastTitle}>{soundcast.title}</span>
+                          {
+                            soundcast.last_update
+                            &&
+                            <div style={styles.soundcastUpdated}>
+                                                    Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
+                            </div>
+                            ||
+                            null
+                          }
+                          {
+                            soundcast.landingPage
+                            &&
+                            <div style={{...styles.soundcastUpdated, }}>
+                              <a
+                                target='_blank'
+                                href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
+                                style={{cursor: 'pointer'}}>
+                              <span
+                                dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
+                                style={{color: Colors.mainOrange}}><strong>View</strong></span>
+                              </a>
+                              <span onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 20, color: Colors.link, cursor: 'pointer'}}>Delete</span>
+                            </div>
+                            ||
+                            <div style={{...styles.soundcastUpdated, }}>
+                              <span onClick={() => that.deleteSoundcast(soundcast.id)}  style={{color: Colors.link, cursor: 'pointer'}}>Delete</span>
+                            </div>
+                          }
+                        </div>
+                        <div className='col-md-3 col-sm-4 col-xs-12'
+                          style={{...styles.subscribers, textAlign:'center'}}>
+                          <span style={styles.soundcastUpdated}>
+                              {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
+                          </span>
+                          <span
+                            dataToggle="tooltip" dataPlacement="top" title="invite listeners"
+                            onClick={() => this.handleModal(soundcast)}
+                            style={styles.addLink}>
+                            Invite
+                          </span>
+                        </div>
 
-									</div>
-									<div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-										<div className="col-md-4 col-sm-4 col-xs-12"
-                      dataToggle="tooltip" dataPlacement="top" title="existing episodes"
-                      style={{...styles.button, borderColor: Colors.link, color: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}><span>Episodes</span></div>
-										<div className="col-md-4 col-sm-4 col-xs-12"
-                      dataToggle="tooltip" dataPlacement="top" title="show soundcast analytics"
-                      onClick={() => history.push({
-                      pathname: '/dashboard/analytics',
-                      state: {
-                        soundcastId: soundcast.id,
-                      }
-                    })} style={{...styles.button, borderColor: Colors.mainOrange, color: Colors.mainOrange}}><span>Analytics</span></div>
-                    <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
-                      <span dataToggle="tooltip" dataPlacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
-                        Edit
-                      </span>
                     </div>
-									</div>
-								</div>
-							);
-						})
-					}
-					<div className="row" style={{...styles.row, backgroundColor: 'transparent'}}>
-						<div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<OrangeSubmitButton
-								label="Add New Soundcast"
-								onClick={() => {history.push('/dashboard/add_soundcast');}}
-							/>
-						</div>
-					</div>
-				</div>
-			);
-
+                    <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+                      <div className="col-md-4 col-sm-4 col-xs-12"
+                        dataToggle="tooltip" dataPlacement="top" title="existing episodes"
+                        style={{...styles.button, borderColor: Colors.link, color: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}><span>Episodes</span></div>
+                      <div className="col-md-4 col-sm-4 col-xs-12"
+                        dataToggle="tooltip" dataPlacement="top" title="show soundcast analytics"
+                        onClick={() => history.push({
+                        pathname: '/dashboard/analytics',
+                        state: {
+                          soundcastId: soundcast.id,
+                        }
+                      })} style={{...styles.button, borderColor: Colors.mainOrange, color: Colors.mainOrange}}><span>Analytics</span></div>
+                      <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
+                        <span dataToggle="tooltip" dataPlacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
+                          Edit
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            }
+            <div className="row" style={{...styles.row, backgroundColor: 'transparent'}}>
+              <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <OrangeSubmitButton
+                  label="Add New Soundcast"
+                  onClick={() => {history.push('/dashboard/add_soundcast');}}
+                />
+              </div>
+            </div>
+          </div>
+        );
+      }
   }
 };
 

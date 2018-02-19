@@ -11,6 +11,10 @@ import Callto_action from './callto_action'
 import Footer from './footer'
 import Pricing from './pricing'
 import Video from './video'
+import Problems from './problems'
+import PodcasterBlock from './podcaster_block'
+import AudioCourseCreator from './audio_course_creator'
+import TeamTrainingBlock from './team_training_block'
 
 const customContentStyle = {
   width: '100%',
@@ -19,7 +23,7 @@ const customContentStyle = {
 
 const headerProps = {
   title: 'SPREAD YOUR KNOWLEDGE FAST WITH AUDIO',
-  tagline: 'On-demand audio training solution for organizations and experts to efficiently engage and educate audience on the go.',
+  tagline: 'The easiest way to sell and deliver your on-demand audio content.',
   logoImage: "images/soundwiselogo_white.svg",
   backgroundImage: 'images/header_img_3.jpg',
   gradient1: 'rgba(247,107,28,0.4)',
@@ -29,16 +33,16 @@ const headerProps = {
 }
 
 const bannerProps = {
-    title: 'Lower Training Cost, Higher Impact',
-    tagline: 'Maximize training efficiency by letting your audience consume your content wherever they go.',
-    subtitle1: 'Asynchronous Delivery',
-    description1: 'Audio training is flexible and can be taken anytime, anywhere.',
-    subtitle2: 'Easy Dissemination',
-    description2: "Record and send your audio training programs directly to your audience's phones.",
-    subtitle3: 'Engage & Interact',
-    description3: 'Interact with your audience through comments, likes, and text messages.',
-    subtitle4: 'Complete Tracking',
-    description4: "Listening analytics down to each student let you know exactly who's listened to what.",
+    title: 'A BETTER WAY TO DELIVER & MONETIZE YOUR AUDIOS',
+    tagline: 'Soundwise offers everything you need to make the most out of your audio content.',
+    subtitle1: 'Use audio content to build an audience and expand your email list.',
+    description1: '',
+    subtitle2: 'Flexible ways to package your audios for sale.',
+    description2: "",
+    subtitle3: 'Control who can access your content and know exactly who listened to what.',
+    description3: '',
+    subtitle4: 'Clean, distraction-free mobile app that delivers content to your audience on-the-go ',
+    description4: '',
     image: 'images/section_img_2.png',
 }
 
@@ -72,12 +76,17 @@ class Page extends Component {
         return (
           <div id="page" className="page ao-font-lato">
             <Header content={headerProps}></Header>
+            <Problems />
             <Banner content={bannerProps}></Banner>
-            <Feature_section content={featureProps}></Feature_section>
+            <PodcasterBlock />
+            <AudioCourseCreator />
+            <TeamTrainingBlock />
 
             <Media_mention></Media_mention>
             <Callto_action></Callto_action>
-            <Footer></Footer>
+            <Footer
+              showPricing={true}
+            ></Footer>
           </div>
         )
     }

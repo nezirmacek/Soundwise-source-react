@@ -582,7 +582,7 @@ export default class EditSoundcast extends Component {
                             // trackSwitchedStyle={styles.trackSwitched}
                             // style={{fontSize: 20, width: '50%'}}
                           />
-                          <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge subscribers for this soundcast</span>
+                          <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge for this soundcast</span>
                       </div>
                       {
                         forSale &&

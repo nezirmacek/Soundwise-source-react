@@ -122,7 +122,7 @@ class _Header extends Component {
                           <div className="slider-text-middle text-left padding-left-right-px">
                               <div className="col-md-6 no-padding margin-twenty-top sm-margin-twenty-three-top header-banner" >
                                   <h1 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large   text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text text-white" style={{fontWeight: 800}} >{title}</h1>
-                                  <div className=" text-extra-large margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text text-white font-weight-700"><p>{tagline}</p></div>
+                                  <div className=" title-medium margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text text-white font-weight-700"><div>{tagline}</div></div>
                                   <div className="float-left width-100" style={{paddingBottom: 45}}>
                                       <Link to="/signup/admin" className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left"  style={{backgroundColor: '#F76B1C'}}><span className="tz-text">START FOR FREE</span></Link>
 

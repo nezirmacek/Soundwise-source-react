@@ -12,6 +12,7 @@ import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
 import SoundcastsManaged from './components/soundcasts_managed';
 import AddSoundcast from "./components/add_soundcast";
+import CreateBundle from "./components/create_bundle";
 import Subscribers from "./components/subscribers";
 import Subscriber from "./components/subscriber";
 import Announcements from "./components/announcements";
@@ -52,6 +53,11 @@ const verticalMenuItems = [
         path: 'add_soundcast',
         isMenuItemVisible: false,
         Component: AddSoundcast,
+    },
+    {
+        path: 'create_bundle',
+        isMenuItemVisible: false,
+        Component: CreateBundle,
     },
     {
         path: 'analytics',

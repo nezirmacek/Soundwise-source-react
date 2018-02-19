@@ -564,7 +564,7 @@ export default class AddSoundcast extends Component {
 					<span style={styles.titleText}>Pricing</span>
 					<div style={{marginTop: 15, marginBottom: 15,}}>
             <Toggle
-              label="Charge subscribers for this soundcast?"
+              label="Charge for this soundcast?"
               toggled={this.state.forSale}
               onClick={this.handleChargeOption.bind(this)}
               thumbSwitchedStyle={styles.thumbSwitched}

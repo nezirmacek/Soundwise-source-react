@@ -569,7 +569,7 @@ class _WaveVideoInputs extends Component {
                   </div>
               </div>
           </section>
-        <Footer />
+        <Footer showPricing={true}/>
       </div>
     )
   }

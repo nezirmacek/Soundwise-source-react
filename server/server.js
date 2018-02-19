@@ -9,6 +9,8 @@ var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
 var awsConfig = require('../config').awsConfig;
+var S3 = require('aws-sdk').S3;
+var S3S = require('s3-streams');
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
@@ -147,11 +149,16 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
-// app.get('/tracks/:id', (request, response) => {
-//   const path = String(request.path).slice(8);
-//   console.log('path: ', path);
-//   response.redirect(200, `https://s3.amazonaws.com/soundwiseinc/soundcasts/${path}`);
-// });
+app.get('/tracks/:id', (request, response) => {
+  const path = String(request.path).slice(8);
+  console.log('path: ', path);
+  // response.redirect(200, `https://s3.amazonaws.com/soundwiseinc/soundcasts/${path}`);
+  var src = S3S.ReadStream(new S3(), {
+    Bucket: 'soundwiseinc',
+    Key: `/soundcasts/${path}`,
+  });
+  src.pipe(response);
+});
 
 // database API routes:
 require('../database/routes.js')(app);
@@ -171,7 +178,7 @@ boot(app, __dirname, function(err) {
 
 app.use(express.static('./client'));
 
-app.all(/^\/(?!api|explorer)/, function(request, response) {
+app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
   var domain = String(request.query.domain);
   var host = request.get('host');
   // response.setHeader('X-Frame-Options', 'ALLOW-FROM ' + String(host));

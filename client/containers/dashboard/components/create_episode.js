@@ -686,8 +686,7 @@ class _CreateEpisode extends Component {
                                     style={{
                                         ...styles.playIcon,
                                         color: isRecorded && Colors.mainOrange || Colors.fontGrey
-                                    }}
-                                ></i>
+                                    }} className="material-icons">play_circle_filled</i>
                                 ||
                                 <Loader loaded={!isLoading} options={loaderOptions}></Loader>
                             }

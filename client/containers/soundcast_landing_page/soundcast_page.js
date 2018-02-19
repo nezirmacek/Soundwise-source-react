@@ -187,6 +187,7 @@ class _SoundcastPage extends Component {
               openModal={this.handleModal.bind(this)}/>
             <Footer
               soundcastID={soundcastID}
+              showPricing={false}
             />
           </div>
         </MuiThemeProvider>
