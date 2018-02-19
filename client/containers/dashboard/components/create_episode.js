@@ -50,8 +50,8 @@ class AudiojsRecordPlayer extends React.Component {
                 record: {
                     audio: true,
                     video: false,
-                    maxLength: 120, // seconds
-                    debug: true,
+                    maxLength: 7200, // in seconds, = max 2 hrs
+                    debug: false,
                     audioEngine: 'lamejs',
                     audioWorkerURL: '/js/lamejs/worker-example/worker-realtime.js',
                     audioSampleRate: 96000
