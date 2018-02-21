@@ -35,9 +35,9 @@ class GetStartedSteps extends React.Component {
   getStepContent(stepIndex) {
     switch (stepIndex) {
       case 0:
-        return 'Think of a soundcast as an ablum, podcast, audio course, or training series. You may want to create a free soundcast to generate lead and collect emails, along with paid ones. Once you fill in the content info and set your pricing, we will automatically generate a landing page for each of your soundcasts. You can also bundle several or all of your soundcasts together and create your own on-demand audio streaming library.';
+        return 'Think of a soundcast as an ablum, podcast, audio course, or training series. You may want to create a free soundcast to generate lead and collect emails, even if most of your series are paid ones. Once you fill in the content info and set your pricing, we will automatically generate a landing page for each of your soundcasts that is optimized to get listeners to sign up. You can also bundle several or all of your soundcasts together and create your own on-demand audio streaming library.';
       case 1:
-        return "Upload audio files to your soundcasts or directly record from your dashboard. For your free soundcasts, you can publishe them to iTunes and Google Play as a podcast with one click. Your updated soundcast content will immediately show up in the Soundwise app on your audience's phones. Audience will receive push notification whenever you publish new content.";
+        return "Upload audio files to your soundcasts or directly record from your dashboard. For your free soundcasts, we can publish them to iTunes and Google Play automaticaly as a podcast. Your updated soundcast content will immediately show up in the Soundwise app on your audience's phones. Audience will receive push notification whenever you publish new content.";
       case 2:
         return 'Grab your soundcast signup url link from dashboard. Share it on your website and social media to encourage signups. Audience can also find your soundcasts by searching for your soundcast title or your name on the Soundwise mobile app. Additionally, we feature your free soundcasts on the app to attract new audience for you.';
       case 3:
