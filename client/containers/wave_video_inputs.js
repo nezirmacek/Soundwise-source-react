@@ -227,6 +227,14 @@ class _WaveVideoInputs extends Component {
       submitting: true,
     });
     const {audioFile, imageFile, imageShape, wavePosition, waveColor, email} = this.state;
+    if(!audioFile) {
+      alert('Please upload an audio clip before submitting!');
+      return;
+    }
+    if(!imageFile) {
+      alert('Please upload an image before submitting!');
+      return;
+    }
     const that = this;
     let data = new FormData();
     data.append('audio', audioFile[0], audioFile[0].name);
@@ -264,7 +272,7 @@ class _WaveVideoInputs extends Component {
         wavePosition: 'bottom',
         waveColor: '#333',
         email: null,
-        submitted: true,
+        submitted: false,
         submitting: false,
         error: err.response.data.error
       });
