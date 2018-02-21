@@ -94,9 +94,10 @@ class _SoundwiseCheckout extends Component {
       promoCodeError: '',
       promoApplied: false,
     });
+    const validPromoCodes = ['OFF50', 'MARCH50'];
     const {promoCode, total} = this.state;
     const {plan, frequency, price} = this.props.history.location.state;
-    if(promoCode == 'OFF50') {
+    if(validPromoCodes.indexOf(promoCode) > -1) {
       if(frequency == 'annual') {
         this.setState({
           total: frequency == 'annual' ? price * 12 / 2 : price,
