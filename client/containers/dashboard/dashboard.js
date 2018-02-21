@@ -60,6 +60,11 @@ const verticalMenuItems = [
         Component: CreateBundle,
     },
     {
+        path: 'edit_bundle',
+        isMenuItemVisible: false,
+        Component: CreateBundle,
+    },
+    {
         path: 'analytics',
         label: 'Analytics',
         pro: true,

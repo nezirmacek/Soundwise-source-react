@@ -19,6 +19,7 @@ export default class SoundcastsBundles extends Component {
     super(props)
 
     this.state = {
+      soundcasts: [],
       showModal: false,
       currentSoundcastID: '',
       currentSoundcast: null,
@@ -38,7 +39,7 @@ export default class SoundcastsBundles extends Component {
       const { userInfo } = this.props;
       this.setState({
         userInfo
-      })
+      });
     }
   }
 
@@ -47,17 +48,17 @@ export default class SoundcastsBundles extends Component {
       const { userInfo } = nextProps;
       this.setState({
         userInfo
-      })
+      });
     }
   }
 
   editSoundcast(soundcastId, soundcast) {
     const { userInfo, history, id } = this.props;
     history.push({
-      pathname: `/dashboard/edit/${soundcastId}`,
+      pathname: `/dashboard/edit_bundle/${soundcastId}`,
       state: {
         id: soundcastId,
-        soundcast
+        bundle: soundcast
       }
     })
   }
@@ -109,20 +110,12 @@ export default class SoundcastsBundles extends Component {
     const { userInfo } = this.state;
     const { history, id } = this.props;
     const that = this;
-      const _soundcasts_managed = [];
+      const _bundles_managed = [];
       for (let id in userInfo.soundcasts_managed) {
         const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
-        if (_soundcast.title) {
+        if (_soundcast.title && _soundcast.bundle) {
           _soundcast.id = id;
-          if (_soundcast.episodes) {
-            _soundcast.last_update = 0;
-            for (let episodeId in _soundcast.episodes) {
-              if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
-                _soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
-              }
-            }
-          }
-          _soundcasts_managed.push(_soundcast);
+          _bundles_managed.push(_soundcast);
         }
       }
 
@@ -143,11 +136,91 @@ export default class SoundcastsBundles extends Component {
             <li role="presentation" ><Link to='/dashboard/soundcasts'><span style={{fontSize: 15, fontWeight: 600}}>Individuals</span></Link></li>
             <li role="presentation" className="active"><Link style={{backgroundColor: 'transparent'}} to="/dashboard/soundcasts/bundles"><span style={{fontSize: 15, fontWeight: 600, color: Colors.mainOrange}}>Bundles</span></Link></li>
           </ul>
+            {
+              _bundles_managed.map((soundcast, i) => {
+                return (
+                  <div className="row" key={i} style={{...styles.row,        }}>
+                    <div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+
+                        <div className='col-md-2 col-sm-2 col-xs-2'>
+                          <img src={soundcast.imageURL} style={styles.soundcastImage} />
+                        </div>
+                        <div className='col-md-7 col-sm-6 col-xs-10'
+                          style={styles.soundcastDescription}>
+                          <span style={styles.soundcastTitle}>{soundcast.title}</span>
+                          {
+                            soundcast.last_update
+                            &&
+                            <div style={styles.soundcastUpdated}>
+                                                    Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
+                            </div>
+                            ||
+                            null
+                          }
+                          {
+                            soundcast.landingPage
+                            &&
+                            <div style={{...styles.soundcastUpdated, }}>
+                              <a
+                                target='_blank'
+                                href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
+                                style={{cursor: 'pointer'}}>
+                                <span
+                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
+                                  style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
+                              </a>
+                              <a
+                                target='_blank'
+                                href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
+                                style={{paddingLeft: 15}}>
+                                <span
+                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast signup form"
+                                  style={{color: Colors.link}}><strong>Signup form</strong></span>
+                              </a>
+                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
+                            </div>
+                            ||
+                            <div style={{...styles.soundcastUpdated, }}>
+                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)}  style={{ cursor: 'pointer'}}>Delete</span>
+                            </div>
+                          }
+                        </div>
+                        <div className='col-md-3 col-sm-4 col-xs-12'
+                          style={{...styles.subscribers, textAlign:'center'}}>
+                          <span style={styles.soundcastUpdated}>
+                              {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
+                          </span>
+                          <span
+                            dataToggle="tooltip" dataPlacement="top" title="invite listeners"
+                            onClick={() => this.handleModal(soundcast)}
+                            style={styles.addLink}>
+                            Invite
+                          </span>
+                        </div>
+
+                    </div>
+                    <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
+                      <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
+                        <span dataToggle="tooltip" dataPlacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
+                          Edit
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            }
           <div className="row" style={{...styles.row, backgroundColor: 'transparent'}}>
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
                 label="Create New Bundle"
-                onClick={() => {history.push('/dashboard/create_bundle');}}
+                onClick={() => {
+                  if(Object.keys(userInfo.soundcasts_managed).length > 1) {
+                    history.push('/dashboard/create_bundle');
+                  } else {
+                    alert('You need at least 2 individual soundcasts before creating a bundle!');
+                  }
+                }}
               />
             </div>
           </div>

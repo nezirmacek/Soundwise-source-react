@@ -1,13 +1,11 @@
-/**
- * Created by developer on 10.08.17.
- */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import { Link } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import Checkbox from 'material-ui/Checkbox';
+import {Checkbox, CheckboxGroup} from 'react-checkbox-group';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
@@ -24,7 +22,7 @@ import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../compo
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
-<p>Thanks for signing up to [title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p>
+<p>Thanks for signing up to [title]. If you don't have the Soundwise mobile app installed on your phone, please access your program by downloading the app first--</p>
 <p><strong>
 <span>iPhone user: Download the app </span>
 <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8"><span style="border-bottom: 2px solid currentColor;">here</span></a>.
@@ -33,7 +31,7 @@ const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscr
 <span>Android user: Download the app <span>
 <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"><span style="border-bottom: 2px solid currentColor;" >here</span></a>.
 </strong></p><p></p>
-<p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
+<p>...and then sign in to the app with the same credential you used to sign up to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
 </div>`;
 const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
 const confirmationEmail = ContentState.createFromBlockArray(
@@ -46,31 +44,119 @@ export default class CreateBundle extends Component {
     super(props);
 
     this.state = {
+      soundcasts: [{}],
+      selectedSoundcasts: [],
+      selectedSoundcastsArr: [],
       title: '',
-      subscribers: '',
       short_description: '',
       long_description: EditorState.createEmpty(),
       imageURL: '',
       fileUploaded: false,
       landingPage: true,
       features: [''],
-      hostName: '',
-      hostBio: '',
-      hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
-      hostImgUploaded: '',
       forSale: false,
       prices: [],
       modalOpen: false,
-      paypalEmail: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
+      submitted: false,
     };
 
     this.soundcastId = `${moment().format('x')}s`;
     this.fileInputRef = null;
-    this.hostImgInputRef = null;
     this.currentImageRef = null;
     this.firebaseListener = null;
+    this.fetchSoundcasts = this.fetchSoundcasts.bind(this);
+    this.selectSoundcasts = this.selectSoundcasts.bind(this);
     this.addFeature = this.addFeature.bind(this);
+  }
+
+  componentDidMount() {
+    if(this.props.history.location.state) {
+      const { id, bundle } = this.props.history.location.state;
+      if(bundle) {
+        this.soundcastId = id;
+        let editorState, confirmEmailEditorState;
+        const {title, imageURL, short_description,
+               long_description, landingPage,
+               features, forSale, prices, soundcastsIncluded, confirmationEmail} = bundle;
+        if(long_description) {
+          let contentState = convertFromRaw(JSON.parse(long_description));
+          editorState = EditorState.createWithContent(contentState);
+        } else {
+          editorState = EditorState.createEmpty();
+        }
+
+        if(confirmationEmail) {
+          let confirmEmailText = convertFromRaw(JSON.parse(confirmationEmail.replace('[soundcast title]', title)));
+          confirmEmailEditorState = EditorState.createWithContent(confirmEmailText);
+        } else {
+          confirmEmailEditorState = this.state.confirmationEmail;
+        }
+        this.setState({
+          title,
+          short_description,
+          landingPage,
+          imageURL: imageURL ? imageURL : null,
+          long_description: editorState ,
+          confirmationEmail: confirmEmailEditorState,
+          features,
+          forSale,
+          prices,
+          selectedSoundcastsArr: soundcastsIncluded,
+        });
+      }
+    }
+    if(this.props.userInfo) {
+      const { userInfo } = this.props;
+      this.setState({
+        userInfo
+      });
+      if(userInfo.publisherID) {
+        this.fetchSoundcasts(userInfo.publisherID);
+      }
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.userInfo) {
+      const { userInfo } = nextProps;
+      this.setState({
+        userInfo
+      });
+      if(userInfo.publisherID && !this.props.userInfo.publisherID) {
+        this.fetchSoundcasts(userInfo.publisherID);
+      }
+    }
+  }
+
+  async fetchSoundcasts(publisherID) {
+    let soundcasts = [], soundcast;
+    const soundcastsObj = await firebase.database().ref(`publishers/${publisherID}/soundcasts`).once('value');
+    const soundcastsArr = Object.keys(soundcastsObj.val());
+    for(var i = 0; i < soundcastsArr.length; i++) {
+      soundcast = await firebase.database().ref(`soundcasts/${soundcastsArr[i]}`).once('value');
+      if(soundcast.val() && soundcast.val().published) {
+        soundcasts.push({title: soundcast.val().title, id: soundcastsArr[i]});
+      }
+    }
+    let selectedSoundcasts = [];
+    if(this.state.selectedSoundcastsArr) {
+      soundcasts.forEach(soundcast => {
+        if(this.state.selectedSoundcastsArr.indexOf(soundcast.id) > -1) {
+          selectedSoundcasts.push(soundcast);
+        }
+      })
+    }
+    this.setState({
+      soundcasts,
+      selectedSoundcasts: selectedSoundcasts.length > 0 ? selectedSoundcasts : soundcasts,
+    });
+  }
+
+  selectSoundcasts(selectedSoundcasts) {
+    this.setState({
+      selectedSoundcasts,
+    })
   }
 
   _uploadToAws (file, hostImg) {
@@ -160,7 +246,7 @@ export default class CreateBundle extends Component {
   submit (publish) {
     let { title, imageURL, subscribers, short_description,
       long_description, landingPage,
-      features, hostName, hostBio, hostImageURL,
+      features, selectedSoundcasts,
       forSale, prices, confirmationEmail} = this.state;
     if(title.length == 0) {
       alert('Please enter a bundle title before saving.');
@@ -170,56 +256,36 @@ export default class CreateBundle extends Component {
       alert('Please enter a short description for the bundle before saving.');
       return;
     }
+    if(selectedSoundcasts.length < 2) {
+      alert('Please select at least two soundcasts to form the bundle.');
+      return;
+    }
     if(prices.length === 0) { //if pricing isn't specified, then this is a free soundcast
       prices = [{price: 'free'}];
     }
+    const soundcastsArr = selectedSoundcasts.map(soundcast => soundcast.id);
     const { userInfo, history } = this.props;
     // const host = [{hostName, hostBio, hostImageURL}];
     const that = this;
-
-    // need to remove all spaces
-    subscribers = subscribers.replace(/\s/g, '');
-
-    const subscribersArr = subscribers.split(',');
-    for(var i = subscribersArr.length -1; i >= 0; i--) {
-      if (subscribersArr[i].indexOf('@') === -1) {
-        subscribersArr.splice(i, 1);
-      }
-    }
-
-    // send email invitations to invited listeners
-    const subject = `${userInfo.publisher.name} invites you to subscribe to ${title}`;
-   const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+that.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
-    inviteListeners(subscribersArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
-
-    const invited = {};
-    const inviteeArr = [];
-    subscribersArr.map((email, i) => {
-      let _email = email.replace(/\./g, "(dot)");
-      _email = _email.trim().toLowerCase();
-      invited[_email] = moment().format('X');  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
-      inviteeArr[i] = _email;
-    });
-
+    this.setState({
+      submitted: true,
+    })
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
           if (user && that.firebaseListener) {
               const creatorID = user.uid;
               const newSoundcast = {
                 title,
                 bundle: true,
-                imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
                 creatorID,
+                soundcastsIncluded: soundcastsArr,
+                imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
                 short_description,
                 long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
                 confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
                 date_created: moment().format('X'),
                 publisherID: userInfo.publisherID,
-                invited,
                 landingPage,
                 features,
-                hostName,
-                hostBio,
-                hostImageURL,
                 forSale,
                 prices,
                 published: publish,
@@ -247,17 +313,6 @@ export default class CreateBundle extends Component {
                     console.log('ERROR add soundcast to publisher: ', err);
                     Promise.reject(err);
                   }
-                ),
-                // add soundcast to admin
-                firebase.database().ref(`users/${creatorID}/soundcasts_managed/${that.soundcastId}`).set(true).then(
-                    res => {
-                        // console.log('success add soundcast to admin.soundcasts_managed: ', res);
-                        return res;
-                    },
-                    err => {
-                        console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-                        Promise.reject(err);
-                    }
                 ),
                 Axios.post('/api/soundcast', {
                   soundcastId: that.soundcastId,
@@ -296,10 +351,17 @@ export default class CreateBundle extends Component {
               Promise.all(_promises).then(
                 res => {
                   console.log('completed adding soundcast');
-                  alert('New bundle created.');
+                  if(that.props.match.params.tab == 'edit_bundle') {
+                    alert('Bundle information saved.');
+                  } else {
+                    alert('New bundle created.');
+                  }
                   history.goBack();
                 },
                 err => {
+                  that.setState({
+                    submitted: false,
+                  })
                   console.log('failed to complete adding soundcast');
                 }
               );
@@ -427,7 +489,7 @@ export default class CreateBundle extends Component {
                 </span>
         <span>
           <i>
-            {` (list the main benefits and features of this soundcast)`}
+            {` (list the main benefits and features of this bundle)`}
           </i>
                 </span>
         <div style={{width: '100%', marginBottom: 30}}>
@@ -675,7 +737,7 @@ export default class CreateBundle extends Component {
   }
 
   render() {
-    const { imageURL, title, subscribers, fileUploaded,landingPage, modalOpen, hostImg } = this.state;
+    const { imageURL, title, subscribers, fileUploaded,landingPage, modalOpen, hostImg, soundcasts, selectedSoundcasts, submitted } = this.state;
     const { userInfo, history } = this.props;
     const that = this;
 
@@ -742,7 +804,7 @@ export default class CreateBundle extends Component {
               <i> (300 characters max)</i>
             </span>
 
-            <div style={styles.inputTitleWrapper}>
+            <div style={{...styles.inputTitleWrapper, marginBottom: 0}}>
               <textarea
                 type="text"
                 style={styles.inputDescription}
@@ -750,6 +812,46 @@ export default class CreateBundle extends Component {
                 onChange={(e) => {this.setState({short_description: e.target.value})}}
                 value={this.state.short_description}
               />
+            </div>
+            <div>
+              <span style={styles.titleText}>Soundcasts included in the bundle</span>
+              <span style={{...styles.titleText, color: 'red'}}>*</span>
+              <div style={{marginTop: 10, marginBottom: 10, paddingLeft: 10}}>
+                <label style={{fontSize: 17, display: 'flex', alignItems: 'center'}}>
+                <input onChange={() => {
+                    if(selectedSoundcasts.length == soundcasts.length) {
+                      that.setState({selectedSoundcasts: []})
+                    } else {
+                      that.setState({selectedSoundcasts: soundcasts})
+                    }
+                  }}
+                  type="checkbox"
+                  value={soundcasts}
+                  checked={selectedSoundcasts.length == soundcasts.length}
+                  style={{width: 50, height: 30}}/>
+                Select all</label>
+              </div>
+              <div style={{maxHeight: 250, overflowY: 'auto', padding: 10, border: '0.5px solid #9b9b9b'}}>
+                <CheckboxGroup
+                  checkboxDepth={3}
+                  name="soundcasts"
+                  value={selectedSoundcasts}
+                  onChange={this.selectSoundcasts}>
+                  {
+                    soundcasts.map((soundcast, i) => {
+                      return (
+                        <div key={i}>
+                          <label style={{fontSize: 17, display: 'flex', alignItems: 'center'}}>
+                           <Checkbox
+                             style={{width: 50, height: 30}}
+                             value={soundcast}/>
+                           {soundcast.title}</label>
+                        </div>
+                      )
+                    })
+                  }
+                </CheckboxGroup>
+              </div>
             </div>
 
             {/*Soundcast cover art*/}
@@ -807,7 +909,7 @@ export default class CreateBundle extends Component {
             <div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
               <div>
                 <span style={styles.titleText}>
-                  Subsciption Confirmation Message
+                  Sales Confirmation Email
                 </span>
                 <Editor
                   editorState = {this.state.confirmationEmail}
@@ -824,13 +926,13 @@ export default class CreateBundle extends Component {
                   <OrangeSubmitButton
                       label="Save Draft"
                       styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
-                      onClick={this.submit.bind(this, false)}
+                      onClick={!submitted ? this.submit.bind(this, false) : () => {}}
                   />
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <OrangeSubmitButton
                   label="Publish"
-                  onClick={this.submit.bind(this, true)}
+                  onClick={!submitted ? this.submit.bind(this, true) : () => {}}
                 />
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
