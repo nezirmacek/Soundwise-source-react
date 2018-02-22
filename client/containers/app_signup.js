@@ -46,7 +46,8 @@ class _AppSignup extends Component {
         };
 
         this.publisherID = moment().format('x') + 'p';
-
+        this.firebaseListener = null;
+        this.firebaseListener2 = null;
         this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
     }
 
@@ -86,6 +87,11 @@ class _AppSignup extends Component {
             });
         }
 
+    }
+
+    componentWillUnmount() {
+      this.firebaseListener = null;
+      this.firebaseListener2 = null;
     }
 
     setStatePromise(that, newState) {
@@ -228,8 +234,8 @@ class _AppSignup extends Component {
                     const publisherNameEncode = encodeURIComponent(publisher_name);
                     const imageLink = `https://dummyimage.com/300.png/F76B1C/ffffff&text=${publisherNameEncode}`;
 
-                      firebase.auth().onAuthStateChanged(function(user) {
-                            if (user) {
+                      that.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+                            if (user && that.firebaseListener) {
                                 let _newPublisher = {
                                     name: publisher_name,
                                     imageUrl: publisherImage || imageLink,
@@ -265,6 +271,7 @@ class _AppSignup extends Component {
                                 // Raven.captureMessage('admin saving failed!')
                             }
                       });
+                      that.firebaseListener && that.firebaseListener();
                 }
             }
         );
@@ -377,8 +384,8 @@ class _AppSignup extends Component {
         const that = this;
         const params = new URLSearchParams(this.props.location.search);
         if(!defaultSoundcastAdded) {
-          firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
+          this.firebaseListener2 = firebase.auth().onAuthStateChanged(function(user) {
+                if (user && that.firebaseListener2) {
                     const creatorID = user.uid;
                     const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = that.state;
                     const subscribed = {};
@@ -454,6 +461,7 @@ class _AppSignup extends Component {
                     .then(
                         res => {
                             console.log('completed adding soundcast');
+                            that.firebaseListener = null;
                             addDefaultSoundcast();
                             that.compileUser();
                         },
@@ -482,6 +490,7 @@ class _AppSignup extends Component {
                     // Raven.captureMessage('Default soundcast saving failed!')
                 }
           });
+          this.firebaseListener2 && this.firebaseListener2();
         }
     }
 

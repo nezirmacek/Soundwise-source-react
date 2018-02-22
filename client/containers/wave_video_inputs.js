@@ -101,10 +101,14 @@ class _WaveVideoInputs extends Component {
 
   onDrop(acceptedFiles, rejectedFiles) {
     console.log('accepted files: ', acceptedFiles);
-    this.setState({
-      audioFile: acceptedFiles,
-      audioName: acceptedFiles[0].name,
-    });
+    if(acceptedFiles[0]) {
+      this.setState({
+        audioFile: acceptedFiles,
+        audioName: acceptedFiles[0].name,
+      });
+    } else {
+      alert('Please upload a valid .mp3 or .m4a file!');
+    }
   }
 
   onImageDrop(acceptedFiles, rejectedFiles) {
