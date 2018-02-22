@@ -443,7 +443,7 @@ class _WaveVideoInputs extends Component {
                       <div className='center-col col-xs-12 col-md-6 col-sm-10 text-center margin-three-bottom margin-three-top' style={{padding: '3em', backgroundColor: Colors.mainGreen,}}>
                         <Dropzone
                            style={{width: '100%', height: '100%'}}
-                           accept='audio/mp3, audio/m4a'
+                           accept='audio/mp3, audio/mpeg, audio/m4a, audio/x-m4a'
                            onDrop={this.onDrop.bind(this)}>
                             <div>
                               <div className='text-center'><i className="fas fa-5x fa-volume-up" style={{cursor: 'pointer'}}></i></div>
