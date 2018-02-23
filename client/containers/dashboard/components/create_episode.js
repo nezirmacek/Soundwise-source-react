@@ -301,6 +301,7 @@ class _CreateEpisode extends Component {
 
                 //replace 'http' with 'https'
                 let url = res.data[0].url;
+                // console.log('url: ', url);
                 if(url.slice(0, 5) !== 'https') {
                     url = url.replace(/http/i, 'https');
                 }
@@ -592,13 +593,13 @@ class _CreateEpisode extends Component {
         });
         mediaObject.on('error', error => console.log('error:', error));
         // user clicked the record button and started recording
-        mediaObject.on('startRecord', () => console.log('started recording!'));
+        mediaObject.on('startRecord', () => {});
         mediaObject.on('ended', () => this.setState({isPlaying: false}));
         // user completed recording and stream is available
         mediaObject.on('finishRecord', () => {
             // the blob object contains the recorded data that
             // can be downloaded by the user, stored on server etc.
-            console.log('finished recording: ', mediaObject.recordedData);
+            // console.log('finished recording: ', mediaObject.recordedData);
             this.recorder.stopDevice();
             this.player.src({
                 type: 'video/mp4',

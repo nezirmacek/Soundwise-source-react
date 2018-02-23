@@ -90,18 +90,6 @@ AWS.Request.prototype.forwardToExpress = function forwardToExpress(res, next) {
   .pipe(res);
 };
 
-uploader.use(new S3Strategy({
-  uploadPath: 'soundcasts/',
-  headers: {
-    'x-amz-acl': 'public-read',
-  },
-  options: {
-    key: awsConfig.accessKeyId,
-    secret: awsConfig.secretAccessKey,
-    bucket: 'soundwiseinc',
-  },
-}));
-
 // use part
 // app.post('/api/charge', handlePayment);
 app.post('/api/create_stripe_account', createStripeAccount);
@@ -129,6 +117,17 @@ app.post('/api/cancel_plan', cancelSubscription);
 app.post('/api/unsubscribe', unsubscribe);
 app.use('/api/upload', multipart());
 app.post('/api/upload', function(req, res, next) {
+  uploader.use(new S3Strategy({
+    uploadPath: 'soundcasts/',
+    headers: {
+      'x-amz-acl': 'public-read',
+    },
+    options: {
+      key: awsConfig.accessKeyId,
+      secret: awsConfig.secretAccessKey,
+      bucket: 'soundwiseinc',
+    },
+  }));
   uploader.upload('s3', req.files.file, function(err, files) {
     if (err) {
       return next(err);

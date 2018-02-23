@@ -6,7 +6,7 @@ const awsConfig = require('../../config').awsConfig;
 const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
-const uploader = require('express-fileuploader');
+const uploader1 = require('express-fileuploader');
 // const firebase = require('firebase-admin');
 const request = require('request-promise');
 const moment = require('moment');
@@ -133,7 +133,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
             }
             console.log(`Video file ${videoPath} successfully saved`);
             // **** step 3: upload the video created to AWS s3
-            uploader.use(new S3Strategy({
+            uploader1.use(new S3Strategy({
               uploadPath: `wavevideo`,
               headers: { 'x-amz-acl': 'public-read', 'Content-Disposition': 'attachment' },
               options: {
@@ -142,7 +142,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                 bucket: 'soundwiseinc',
               },
             }));
-            uploader.upload('s3'
+            uploader1.upload('s3'
              , { path: videoPath, name: `${videoPath.replace('/tmp/', '')}` }
              , (err, files) => {
               if (err) {
