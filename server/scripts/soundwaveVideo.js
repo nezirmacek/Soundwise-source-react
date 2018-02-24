@@ -34,6 +34,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
   const { color, position, email } = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
   fs.readFile(imagePath, (err, imageBuffer) => {
     const { height, width } = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
+    console.log(`height: ${height}, width: ${width}`);
     try {
       (new ffmpeg(audioPath)).then(audioFile => { // loading audio file
         const doResize = [];

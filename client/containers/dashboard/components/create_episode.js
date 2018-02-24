@@ -54,7 +54,8 @@ class AudiojsRecordPlayer extends React.Component {
                     debug: false,
                     audioEngine: 'lamejs',
                     audioWorkerURL: '/js/lamejs/worker-example/worker-realtime.js',
-                    audioSampleRate: 96000
+                    audioSampleRate: 44100,
+                    audioBitRate: 64
                 }
             }
         }, function() {

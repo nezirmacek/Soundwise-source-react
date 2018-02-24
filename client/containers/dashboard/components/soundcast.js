@@ -4,6 +4,7 @@ import moment from 'moment';
 import axios from 'axios';
 import firebase from 'firebase';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
@@ -261,10 +262,18 @@ export default class Soundcast extends Component {
                                           episode.publicEpisode &&
                                           <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
                                             <span className='text-dark-gray'
-                                              style={{cursor: 'pointer', fontSize: 15}}>
+                                              style={{marginRight: 10, cursor: 'pointer', fontSize: 15}}>
                                               View
                                             </span>
                                           </a>
+                                          || null
+                                        }
+                                        {
+                                          episode.publicEpisode &&
+                                          <CopyToClipboard text={episode.url}
+                                            onCopy={() => {alert('Audio file URL copied to clipboard.')}}>
+                                            <span style={{cursor: 'pointer', fontSize: 15, color: Colors.mainGreen}}>Copy audio file URL</span>
+                                          </CopyToClipboard>
                                           || null
                                         }
                                       </div>
