@@ -277,18 +277,15 @@ client.setApiKey(sendGridApiKey);
 //   console.log(response.body);
 // });
 
-// firebase.database().ref('users/K8R91q4BXpeY3sw2tB2bjMBvqOK2/soundcasts/1514431713134s')
-// .set({
-//   subscribed: true,
-//   current_period_end: 4638902400,
-//   date_subscribed: 1515181960
-// });
-// const unTag = async () => {
+
+// const changeUrl = async () => {
 //   const episodes = await firebase.database().ref('soundcasts/1508293913676s/episodes').once('value');
 //   const episodesArr = Object.keys(episodes.val());
 //   for(var i = 0; i < episodesArr.length; i++) {
+//     // await firebase.database().ref(`episodes/${episodesArr[i]}/url`).set(`https://mysoundwise.com/tracks/${episodesArr[i]}.mp3`);
+//     // console.log('episode: ', episodesArr[i], ' url changed');
 //     await firebase.database().ref(`episodes/${episodesArr[i]}/id3Tagged`).set(false);
-//     console.log('episode: ', episodesArr[i], ' untagged');
+//     console.log('episode: ', episodesArr[i], ' untagged')
 //   }
 // }
-// unTag();
+// changeUrl();
