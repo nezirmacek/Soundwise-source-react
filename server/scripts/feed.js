@@ -1,5 +1,6 @@
 'use strict';
 const path = require('path');
+const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
 const uploader = require('express-fileuploader');
@@ -12,11 +13,46 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
-const makeId = () => Math.random().toString().slice(2) + Math.random().toString().slice(2);
+
+// https://github.com/heroicyang/express-fileuploader/blob/master/lib/index.js#L78-L118
+uploader.upload = function(strategy, files, callback) {
+  var name = strategy;
+  strategy = this._strategies[name];
+  if (!strategy) {
+    return callback(new Error('no upload strategy: ' + name));
+  }
+  if (!util.isArray(files)) {
+    files = [files];
+  }
+  var fileCount = files.length;
+  files.forEach(function(file) {
+    // removing uid setting
+    strategy.upload(file, function(err, fileUploaded) {
+      if (err) {
+        file.error = err;
+      }
+      if (fileUploaded) {
+        Object.keys(fileUploaded)
+          .forEach(function(key) {
+            if (!file[key]) {
+              file[key] = fileUploaded[key];
+            }
+          });
+      }
+      fs.unlink(file.path, function(err) {
+        /* jshint unused:false */
+        fileCount -= 1;
+        if (fileCount === 0) {
+          callback(null, files);
+        }
+      });
+    });
+  });
+};
+
 
 module.exports.createFeed = async (req, res) => {
   const { soundcastId, itunesExplicit, itunesImage, autoSubmitPodcast } = req.body, categories = [];
-  console.log('soundcastId: ', soundcastId);
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
   const { title, short_description, hostName } = soundcastVal;
@@ -33,7 +69,6 @@ module.exports.createFeed = async (req, res) => {
   }).then(async body => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
     if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
-      res.status(200).send({});
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
@@ -72,17 +107,19 @@ module.exports.createFeed = async (req, res) => {
       const episodesArr = [];
       if (episodes.length) {
         await Promise.all(episodes.map(id => new Promise(async resolve => {
-          let episode = await firebase.database().ref(`episodes/${id}`).once('value');
-          let episodeVal = episode.val();
-          episodeVal.isPublished && episodeVal.publicEpisode && episodesArr.push(Object.assign({}, episodeVal, {id}));
+          const episode = await firebase.database().ref(`episodes/${id}`).once('value');
+          const val = episode.val();
+          val.isPublished && val.publicEpisode && episodesArr.push(Object.assign({}, val, {id}));
           resolve();
         })));
       }
       if (episodesArr.length === 0) {
         return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
+      res.status(200).send({});
+
       const episodesToRequest = [];
-      episodesArr.forEach(i => !i.id3Tagged && episodesToRequest.push(i)); // not tagged, unique items
+      episodesArr.forEach(i => i.id3Tagged && episodesToRequest.push(i)); // not tagged, unique items
       // console.log('episodesToRequest: ', episodesToRequest);
 
       const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
@@ -102,17 +139,16 @@ module.exports.createFeed = async (req, res) => {
       // console.log('episodesToRequest: ', episodesToRequest);
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
         request.get({ encoding: null, url: episode.url }).then(body => {
-          const filePath = `/tmp/${episode.id + episode.url.slice(-4)}`;
+          const id = episode.id;
+          const filePath = `/tmp/${id + episode.url.slice(-4)}`;
           fs.writeFile(filePath, body, err => {
             if (err) {
               return reject(`Error: cannot write tmp audio file ${filePath}`);
             }
             try {
               (new ffmpeg(filePath)).then(file => {
-                if (episode.id3Tagged) {
-                  if (!episode.duration) { // tagged but don't have duration
-                    resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
-                  }
+                if (!episode.id3Tagged) { // tagged
+                  resolve({ id, fileDuration: (Math.round(episode.duration) || file.metadata.duration.seconds) });
                 } else { // not tagged, setting up ID3
                   const title = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
                   const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
@@ -128,7 +164,7 @@ module.exports.createFeed = async (req, res) => {
                   } else { // 'aac' for .m4a files
                     file.setAudioCodec('mp3').setAudioBitRate(64);
                   }
-                  console.log('episode: ', episode.id, ' tagged');
+                  console.log(`Episode: ${id} tagged, path ${filePath}`);
                   const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
                   file.save(updatedPath, (err, fileName) => {
                     if (err) {
@@ -138,8 +174,7 @@ module.exports.createFeed = async (req, res) => {
                     const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
                     const episodeFileName = episode.url.split('/')[5];
                     uploader.use(new S3Strategy({
-                      uploadPath: 'soundcasts',
-                      // uploadPath: 'soundcasts',
+                      uploadPath: 'soundcasts', // `${s3Path}`,
                       headers: { 'x-amz-acl': 'public-read' },
                       options: {
                         key: awsConfig.accessKeyId,
@@ -147,20 +182,20 @@ module.exports.createFeed = async (req, res) => {
                         bucket: 'soundwiseinc',
                       },
                     }));
-                    console.log('CHECK: ', updatedPath, episode.id);
+                    console.log('CHECK: ', updatedPath, id);
                     uploader.upload('s3' // saving to S3 db
-                     , { path: updatedPath, name: `${episode.id}.mp3` } // file
+                     , { path: updatedPath, name: `${soundcastId}-${episode.index}.mp3` } // file
                      , (err, files) => {
                       fs.unlink(filePath, err => 0); // removing original file
                       fs.unlink(updatedPath, err => 0); // removing converted file
                       if (err) {
-                        return reject(`Error: uploading ${episode.id}.mp3 to S3 ${err}`);
+                        return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
                       }
                       // after upload success, change episode tagged record in firebase:
-                      console.log(episode.id, ' uploaded to: ', files[0].url.replace('http', 'https'));
-                      firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-                      firebase.database().ref(`episodes/${episode.id}/url`).set(`https://mysoundwise.com/tracks/${episode.id}.mp3`); // use the proxy
-                      resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
+                      console.log(id, ' uploaded to: ', files[0].url.replace('http', 'https'));
+                      firebase.database().ref(`episodes/${id}/id3Tagged`).set(true);
+                      firebase.database().ref(`episodes/${id}/url`).set(`https://mysoundwise.com/tracks/${id}.mp3`); // use the proxy
+                      resolve({ id, fileDuration: file.metadata.duration.seconds });
                     });
                   });
                 }
@@ -195,14 +230,7 @@ module.exports.createFeed = async (req, res) => {
             // itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
             itunesExplicit,
             itunesDuration: Math.round(episode.duration) || results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
-            customElements: [
-              {
-                'content:encoded':
-                  {
-                    _cdata: itunesSummary
-                  }
-              }
-            ]
+            customElements: [{ 'content:encoded': { _cdata: itunesSummary }}]
           };
           // check if episode.keywords exists, if so, use that, if not, don't add it
           if (episode.keywords && episode.keywords.length) {
@@ -229,7 +257,7 @@ module.exports.createFeed = async (req, res) => {
               firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).set(version.val() + 1);
             }
           });
-        // res.end(xml);
+          res.end(xml);
       })
       .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
     } else {
