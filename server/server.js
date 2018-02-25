@@ -56,7 +56,7 @@ algoliaIndex();
 var app = module.exports = loopback();
 app.start = function() {
   // start the web server
-  return app.listen(function() {
+  var server = app.listen(function() {
     app.emit('started');
     var baseUrl = app.get('url').replace(/\/$/, '');
     console.log('Web server listening at: %s', baseUrl);
@@ -65,6 +65,7 @@ app.start = function() {
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
     }
   });
+  // server.timeout = 10*60*1000; // 10 minutes
 };
 
 app.use(cors());
@@ -192,6 +193,18 @@ boot(app, __dirname, function(err) {
   }
 });
 
+// app.use(express.static('./client'));
+
+// app.use(/^\/(?!api|explorer|tracks)/, function(request, response) {
+//   // var domain = String(request.query.domain);
+//   var host = request.get('host');
+//   console.log("here")
+//   response.set('X-Frame-Options', "ALLOW-FROM "+ request.hostname);
+//   // response.set('Content-Security-Policy', 'frame-src ' + String(host));
+//   // next();
+// 	response.sendFile(path.resolve('./client/index.html'));
+// });
+
 app.use(express.static('./client'));
 
 app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
@@ -199,8 +212,10 @@ app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
   // var host = request.get('host');
   // response.set('X-Frame-Options', 'ALLOW-FROM ' + String(host));
   // response.set('Content-Security-Policy', 'frame-src ' + String(host));
-	response.sendFile(path.resolve('./client/index.html'));
+  response.sendFile(path.resolve('./client/index.html'));
 });
+
+
 
 // var sgMail = require('@sendgrid/mail');
 var sendGridApiKey = require('../config').sendGridApiKey;
@@ -268,3 +283,12 @@ client.setApiKey(sendGridApiKey);
 //   current_period_end: 4638902400,
 //   date_subscribed: 1515181960
 // });
+// const unTag = async () => {
+//   const episodes = await firebase.database().ref('soundcasts/1508293913676s/episodes').once('value');
+//   const episodesArr = Object.keys(episodes.val());
+//   for(var i = 0; i < episodesArr.length; i++) {
+//     await firebase.database().ref(`episodes/${episodesArr[i]}/id3Tagged`).set(false);
+//     console.log('episode: ', episodesArr[i], ' untagged');
+//   }
+// }
+// unTag();

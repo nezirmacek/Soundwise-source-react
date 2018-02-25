@@ -54,6 +54,8 @@ function addOrUpdateIndexRecord(soundcast) {
         console.error('Error when indexing soundcast into Algolia', error);
         process.exit(1);
       });
+  } else if(soundcast.val().published == false) {
+    deleteIndexRecord(soundcast);
   }
 }
 
@@ -64,7 +66,7 @@ function deleteIndexRecord(soundcast) {
   index
     .deleteObject(objectID)
     .then(() => {
-      console.log('Firebase object deleted from Algolia', objectID);
+      // console.log('Firebase object deleted from Algolia', objectID);
     })
     .catch(error => {
       console.error('Error when deleting soundcast from Algolia', error);

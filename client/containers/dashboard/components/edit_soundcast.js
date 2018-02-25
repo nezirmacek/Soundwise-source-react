@@ -890,9 +890,9 @@ export default class EditSoundcast extends Component {
           doneProcessingPodcast: true,
         });
         if(podcastFeedVersion) {
-          alert('Podcast feed information has been edited!');
+          alert('Podcast information is submitted. We will email you when the feed processing is done.');
         } else {
-          alert('Podcast feed has been created!');
+          alert('Podcast information is submitted. We will email you when the feed processing is done.');
         }
       })
       .catch(err => {

@@ -12,10 +12,11 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
-const makeId = f => Math.random().toString().slice(2) + Math.random().toString().slice(2);
+const makeId = () => Math.random().toString().slice(2) + Math.random().toString().slice(2);
 
 module.exports.createFeed = async (req, res) => {
   const { soundcastId, itunesExplicit, itunesImage, autoSubmitPodcast } = req.body, categories = [];
+  console.log('soundcastId: ', soundcastId);
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
   const { title, short_description, hostName } = soundcastVal;
@@ -32,6 +33,7 @@ module.exports.createFeed = async (req, res) => {
   }).then(async body => {
     const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
     if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
+      res.status(200).send({});
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
@@ -67,13 +69,14 @@ module.exports.createFeed = async (req, res) => {
       }
       const feed = new Podcast(podcastObj);
 
-      let episodesArr = [], episode;
+      const episodesArr = [];
       if (episodes.length) {
-        for (let id of episodes) {
-          episode = await firebase.database().ref(`episodes/${id}`).once('value');
-          episode = episode.val();
-          episode.isPublished && episode.publicEpisode && episodesArr.push(Object.assign({}, episode, {id}));
-        }
+        await Promise.all(episodes.map(id => new Promise(async resolve => {
+          let episode = await firebase.database().ref(`episodes/${id}`).once('value');
+          let episodeVal = episode.val();
+          episodeVal.isPublished && episodeVal.publicEpisode && episodesArr.push(Object.assign({}, episodeVal, {id}));
+          resolve();
+        })));
       }
       if (episodesArr.length === 0) {
         return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
@@ -99,7 +102,7 @@ module.exports.createFeed = async (req, res) => {
       // console.log('episodesToRequest: ', episodesToRequest);
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
         request.get({ encoding: null, url: episode.url }).then(body => {
-          const filePath = `/tmp/${makeId() + episode.url.slice(-4)}`;
+          const filePath = `/tmp/${episode.id + episode.url.slice(-4)}`;
           fs.writeFile(filePath, body, err => {
             if (err) {
               return reject(`Error: cannot write tmp audio file ${filePath}`);
@@ -115,7 +118,7 @@ module.exports.createFeed = async (req, res) => {
                   const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
                   file.addCommand('-metadata', `title="${title}"`);
                   file.addCommand('-metadata', `track="${episode.index}"`);
-                  file.addCommand('-metadata', `artist="${hostName}"`);
+                  file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
                   file.addCommand('-metadata', `album="${title}"`);
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
                   file.addCommand('-metadata', `genre="Podcast"`);
@@ -132,10 +135,10 @@ module.exports.createFeed = async (req, res) => {
                       return reject(`Error: saving fails ${filePath} ${err}`);
                     }
                     console.log(`File ${filePath} successfully saved`);
-                    const s3Path = episode.url.split('/')[3]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
-                    const episodeFileName = episode.url.split('/')[4];
+                    const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
+                    const episodeFileName = episode.url.split('/')[5];
                     uploader.use(new S3Strategy({
-                      uploadPath: `${s3Path}`,
+                      uploadPath: 'soundcasts',
                       // uploadPath: 'soundcasts',
                       headers: { 'x-amz-acl': 'public-read' },
                       options: {
@@ -144,6 +147,7 @@ module.exports.createFeed = async (req, res) => {
                         bucket: 'soundwiseinc',
                       },
                     }));
+                    console.log('CHECK: ', updatedPath, episode.id);
                     uploader.upload('s3' // saving to S3 db
                      , { path: updatedPath, name: `${episode.id}.mp3` } // file
                      , (err, files) => {
@@ -155,7 +159,7 @@ module.exports.createFeed = async (req, res) => {
                       // after upload success, change episode tagged record in firebase:
                       console.log(episode.id, ' uploaded to: ', files[0].url.replace('http', 'https'));
                       firebase.database().ref(`episodes/${episode.id}/id3Tagged`).set(true);
-                      firebase.database().ref(`episodes/${episode.id}/url`).set(`https://mysoundwise.com/tracks/${episodeFileName}`); // use the proxy
+                      firebase.database().ref(`episodes/${episode.id}/url`).set(`https://mysoundwise.com/tracks/${episode.id}.mp3`); // use the proxy
                       resolve({ id: episode.id, fileDuration: file.metadata.duration.seconds });
                     });
                   });
@@ -165,7 +169,7 @@ module.exports.createFeed = async (req, res) => {
               reject(`Error: ffmpeg catch ${e.body || e.stack}`);
             }
           }); // fs.writeFile
-        }).catch(err => reject(`Error: unable to obtain episode ${err}`));
+        }).catch(err => reject(`Error: unable to obtain episode ${episode.url}`));
       }))).then(results => {
         console.log('files processed.');
         episodesArrSorted.forEach(episode => {
@@ -225,7 +229,7 @@ module.exports.createFeed = async (req, res) => {
               firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).set(version.val() + 1);
             }
           });
-        res.end(xml);
+        // res.end(xml);
       })
       .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
     } else {

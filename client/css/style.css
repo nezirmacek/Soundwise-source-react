@@ -995,3 +995,9 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   -moz-box-shadow: 0px 0px 5px 5px #0099E0;
   box-shadow: 0px 0px 5px 5px #0099E0;
 }
+
+.toggle-green.react-toggle--checked .react-toggle-track {
+  background-color: #44ffd1;
+}
+
+

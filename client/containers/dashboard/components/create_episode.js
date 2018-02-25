@@ -130,6 +130,13 @@ class _CreateEpisode extends Component {
             coverArtUploading: false,
             wrongFileTypeFor: null,
 
+            audioNormalization: true,
+            trimSilence: false,
+            reduceSilence: false,
+            addIntroOutro: false,
+            silentPeriod: 0.5,
+            immediatePublish: true,
+
             sendEmails: false,
         };
 
@@ -855,6 +862,21 @@ class _CreateEpisode extends Component {
                         Add New Episode
                     </span>
                 </div>
+                <div className='col-md-10 col-sm-12' style={styles.soundcastSelectWrapper}>
+                    <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
+                    <select
+                      value = {this.currentSoundcastId || ''}
+                      style={styles.soundcastSelect}
+                      onChange={(e) => {this.changeSoundcastId(e.target.value);}}>
+                        {
+                            _soundcasts_managed.map((soundcast, i) => {
+                                return (
+                                    <option value={soundcast.id} key={i}>{soundcast.title}</option>
+                                );
+                            })
+                        }
+                    </select>
+                </div>
                 <div className="row">
                     <div className="col-lg-7 col-md-7 col-sm-12 col-xs-12 ">
                         <div style={styles.audioRecorder}>
@@ -990,7 +1012,7 @@ class _CreateEpisode extends Component {
                         >
                         </textarea>
                         <div style={styles.notes}>
-                            <div style={{...styles.notesLabel, fontWeight: 600}}>Notes</div>
+                            <div style={{...styles.recordTitleText, fontWeight: 800}}>Notes</div>
                             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
                                 <input
                                     type="file"
@@ -1097,7 +1119,7 @@ class _CreateEpisode extends Component {
                                   // trackSwitchedStyle={styles.trackSwitched}
                                   // style={{fontSize: 20, width: '50%'}}
                                 />
-                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly shareable</span>
+                                <span id='share-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly shareable</span>
                             </div>
                             <div style={{display: 'flex', alignItems: 'center', marginTop: 15,}}>
                                 <Toggle
@@ -1110,21 +1132,21 @@ class _CreateEpisode extends Component {
                                     that.setState({sendEmails})
                                   }}
                                 />
-                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Send email notification to subscribers and invitees</span>
+                                <span id='share-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Send email notification to subscribers and invitees after publishing</span>
                             </div>
                         </div>
                         {
                             this.state.publicEpisode &&
                             <div style={{marginBottom: 25,}}>
-                                <span style={{fontSize: 20, fontWeight: 800,}}>Episode link for sharing: </span><span ><a style={{color: Colors.mainOrange, fontSize: 18,}}>{`https://mysoundwise.com/episodes/${this.episodeId}`}</a></span>
+                                <span style={{fontSize: 16, fontWeight: 800,}}>Episode link for sharing: </span><span ><a style={{color: Colors.mainOrange, fontSize: 18,}}>{`https://mysoundwise.com/episodes/${this.episodeId}`}</a></span>
                             </div>
                             || null
                         }
                         {
                             this.state.publicEpisode &&
-                            <div style={{height: 165, marginBottom: 10,}}>
+                            <div style={{ marginBottom: 10, minHeight: 133}}>
                                 <div>
-                                    <span style={{fontSize: 16, fontWeight: 800,}}>
+                                    <span style={{...styles.recordTitleText, fontWeight: 800,}}>
                                         Episode cover art (for social sharing)
                                     </span>
                                 </div>
@@ -1136,7 +1158,7 @@ class _CreateEpisode extends Component {
                                     || null
                                 }
                                 <div style={styles.loaderWrapper}>
-                                    <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                                    <div style={{...styles.inputFileWrapper, marginTop: 0, display: 'block', float: 'none'}}>
                                         <input
                                             type="file"
                                             name="upload"
@@ -1173,65 +1195,134 @@ class _CreateEpisode extends Component {
                             </div>
                             || null
                         }
-                        <div style={styles.soundcastSelectWrapper}>
-                            <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
-                            <select
-                              value = {this.currentSoundcastId || ''}
-                              style={styles.soundcastSelect}
-                              onChange={(e) => {this.changeSoundcastId(e.target.value);}}>
-                                {
-                                    _soundcasts_managed.map((soundcast, i) => {
-                                        return (
-                                            <option value={soundcast.id} key={i}>{soundcast.title}</option>
-                                        );
-                                    })
-                                }
-                            </select>
+                        <div style={{marginTop: 50}}>
+                          <hr style={{border: '0.5px solid lightgray'}}/>
+                          <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing Options</span>
+                          <div style={{marginTop: 15}}>
+                            <label className='text-dark-gray' style={{fontSize: 16, display: 'flex', alignItems: 'center'}}>
+                              <input style={{height: 30, width: 30}} type="checkbox" value={this.state.immediatePublish} checked onChange={() => that.setState({
+                                  immediatePublish: that.state.immediatePublish
+                              })}/>Automatically publish the episode after processing is done
+                            </label>
+                          </div>
+                          <div style={{marginTop: 20, marginBottom: 25, }}>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <Toggle
+                                  className='toggle-green'
+                                  id='audio-edit-1'
+                                  aria-labelledby='audio-edit-1-label'
+                                  // label="Charge subscribers for this soundcast?"
+                                  checked={this.state.audioNormalization}
+                                  onChange={() => {
+                                    const audioNormalization = !that.state.audioNormalization;
+                                    that.setState({audioNormalization})
+                                  }}
+                                />
+                                <span id='audio-edit-1-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Optimize volume</span><span>(This is to make sure different parts of your audio have consistent volume, and adjust the volume to the most suitable level for mobile and web playing )</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                                <Toggle
+                                  className='toggle-green'
+                                  id='audio-edit-2'
+                                  aria-labelledby='audio-edit-2-label'
+                                  checked={this.state.trimSilence}
+                                  onChange={() => {
+                                    const trimSilence = !that.state.trimSilence;
+                                    that.setState({trimSilence})
+                                  }}
+                                />
+                                <span id='audio-edit-2-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Trim silience at the beginning</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                                <Toggle
+                                  className='toggle-green'
+                                  id='audio-edit-3'
+                                  aria-labelledby='audio-edit-3-label'
+                                  checked={this.state.reduceSilence}
+                                  onChange={() => {
+                                    const reduceSilence = !that.state.reduceSilence;
+                                    that.setState({reduceSilence})
+                                  }}
+                                />
+                                <span id='audio-edit-3-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Remove excessive silence/pauses throughout</span><span>(This option will remove all silent periods in the recording that're longer than specified seconds. It's good for tightening up your recording. But don't use this if you have silent periods in your recording on purpose.)</span>
+                            </div>
+                            {
+                                this.state.reduceSilence &&
+                                <div>
+                                  <span style={{fontSize: 14, marginRight: 5}}>Remove silent periods longer than </span>
+                                  <input style={{width: 70}} type='text'
+                                    value={this.state.silentPeriod}
+                                    onChange={(e) => {
+                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
+                                        that.setState({silentPeriod: Number(e.target.value)});
+                                      } else {
+                                        alert('Please enter a number >=0.1 and <= 10.');
+                                      }
+                                    }}
+                                  />
+                                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                                </div>
+                                || null
+                            }
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                                <Toggle
+                                  className='toggle-green'
+                                  id='audio-edit-4'
+                                  aria-labelledby='audio-edit-4-label'
+                                  // label="Charge subscribers for this soundcast?"
+                                  checked={this.state.addIntroOutro}
+                                  onChange={() => {
+                                    const addIntroOutro = !that.state.addIntroOutro;
+                                    that.setState({addIntroOutro})
+                                  }}
+                                />
+                                <span id='audio-edit-4-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Attach intro and outro</span><span> (Please upload an intro and/or outro for your soundcast first)</span>
+                            </div>
+                          </div>
                         </div>
                 </div>
-                    <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                        {
-                            startProcessingEpisode &&
+                <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    {
+                        startProcessingEpisode &&
+                        <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                                style={{textAlign: 'center'}}>
+                            <div className='' style={{ fontSize: 17, width: '100%'}}>
+                              <span>Processing episode...</span>
+                            </div>
+                            <div className='' style={{marginTop: 10, width: '100%'}}>
+                              <Dots style={{}} color="#727981" size={32} speed={1}/>
+                            </div>
+                        </div>
+                        ||
+                        <div>
                             <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                                    style={{textAlign: 'center'}}>
-                                <div className='' style={{ fontSize: 17, width: '100%'}}>
-                                  <span>Processing episode...</span>
-                                </div>
-                                <div className='' style={{marginTop: 10, width: '100%'}}>
-                                  <Dots style={{}} color="#727981" size={32} speed={1}/>
+                                style={{textAlign: 'center'}}>
+                                <div className='btn'
+                                    style={styles.draftButton}
+                                    onClick={this.saveEpisode.bind(this, false)}
+                                >
+                                    <span>Save draft</span>
                                 </div>
                             </div>
-                            ||
-                            <div>
-                                <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                                    style={{textAlign: 'center'}}>
-                                    <div className='btn'
-                                        style={styles.draftButton}
-                                        onClick={this.saveEpisode.bind(this, false)}
-                                    >
-                                        <span>Save draft</span>
-                                    </div>
+                            <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
+                                style={{textAlign: 'center'}} >
+                                <div className='btn btn-default'
+                                    style={{...styles.draftButton, ...styles.publishButton}}
+                                    onClick={this.saveEpisode.bind(this, true)}
+                                >
+                                    <span>Publish</span>
                                 </div>
-                                <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                                    style={{textAlign: 'center'}} >
-                                    <div className='btn btn-default'
-                                        style={{...styles.draftButton, ...styles.publishButton}}
-                                        onClick={this.saveEpisode.bind(this, true)}
-                                    >
-                                        <span>Publish</span>
-                                    </div>
-                                </div>
-                                {
-                                    podcastError &&
-                                    <div style={{fontSize: 16, marginTop: 10, color: 'red'}}>
-                                     {podcastError}
-                                    </div>
-                                    || null
-                                }
                             </div>
-                        }
-                    </div>
-
+                            {
+                                podcastError &&
+                                <div style={{fontSize: 16, marginTop: 10, color: 'red'}}>
+                                 {podcastError}
+                                </div>
+                                || null
+                            }
+                        </div>
+                    }
+                </div>
             </div>
         );
     }
@@ -1283,6 +1374,7 @@ const styles = {
         fontSize: 18,
         // textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)',
         color: Colors.black,
+        fontWeight: 800,
         width: '100%',
         paddingTop: 10,
         paddingBottom: 10,
@@ -1367,13 +1459,13 @@ const styles = {
         marginLeft: 10,
     },
     loaderWrapper: {
-        height: 133,
+        // height: 133,
         paddingTop: 20,
         paddingRight: 0,
         paddingBottom: 0,
         paddingLeft: 0,
         // width: 'calc(100% - 133px)',
-        float: 'left',
+        // float: 'left',
     },
     image: {
         height: 133,

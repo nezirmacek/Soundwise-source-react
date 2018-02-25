@@ -120,7 +120,7 @@
     "url-loader": "^0.5.7",
     "url-search-params-polyfill": "^2.0.3",
     "video-react": "^0.9.4",
-    "videojs-record": "^2.1.0",
+    "videojs-record": "^2.1.2",
     "webpack": "^1.13.2",
     "whatwg-fetch": "^2.0.3",
     "when": ">= 0.0.1"
