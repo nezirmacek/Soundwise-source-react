@@ -119,7 +119,7 @@ module.exports.createFeed = async (req, res) => {
       res.status(200).send({});
 
       const episodesToRequest = [];
-      episodesArr.forEach(i => i.id3Tagged && episodesToRequest.push(i)); // not tagged, unique items
+      episodesArr.forEach(i => !i.id3Tagged && episodesToRequest.push(i)); // not tagged, unique items
       // console.log('episodesToRequest: ', episodesToRequest);
 
       const episodesArrSorted = episodesArr.slice(); // make copy, STEP 3a
@@ -147,7 +147,7 @@ module.exports.createFeed = async (req, res) => {
             }
             try {
               (new ffmpeg(filePath)).then(file => {
-                if (!episode.id3Tagged) { // tagged
+                if (episode.id3Tagged) { // tagged
                   resolve({ id, fileDuration: (Math.round(episode.duration) || file.metadata.duration.seconds) });
                 } else { // not tagged, setting up ID3
                   const title = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
@@ -184,7 +184,7 @@ module.exports.createFeed = async (req, res) => {
                     }));
                     console.log('CHECK: ', updatedPath, id);
                     uploader.upload('s3' // saving to S3 db
-                     , { path: updatedPath, name: `${soundcastId}-${episode.index}.mp3` } // file
+                     , { path: updatedPath, name: `${id}.mp3` } // file
                      , (err, files) => {
                       fs.unlink(filePath, err => 0); // removing original file
                       fs.unlink(updatedPath, err => 0); // removing converted file
