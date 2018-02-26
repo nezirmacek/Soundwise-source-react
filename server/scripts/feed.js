@@ -52,7 +52,7 @@ uploader.upload = function(strategy, files, callback) {
 
 
 module.exports.createFeed = async (req, res) => {
-  const { soundcastId, itunesExplicit, itunesImage, autoSubmitPodcast } = req.body, categories = [];
+  const { soundcastId, soundcastTitle, itunesExplicit, itunesImage, autoSubmitPodcast, email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
   const { title, short_description, hostName } = soundcastVal;
@@ -251,13 +251,19 @@ module.exports.createFeed = async (req, res) => {
                 to: 'support@mysoundwise.com',
                 from: 'natasha@mysoundwise.com',
                 subject: 'New podcast creation request!',
-                html: `<p>A new podcast feed has been created for ${soundcastId}</p><p>${autoSubmitPodcast && 'Please submit the feed to iTunes & google play'}</p>`,
+                html: `<p>A new podcast feed has been created for ${soundcastId}.</p><p>${autoSubmitPodcast && 'Please submit the feed to iTunes & google play' || null}</p>`,
+              });
+              sgMail.send({
+                to: email,
+                from: 'support@mysoundwise.com',
+                subject: 'Your podcast feed has been created!',
+                html: `<p>Hello ${firstName},</p><p>We have created a podcast feed for ${soundcastTitle}. The feed url link is <a href=${`https://mysoundwise.com/rss/${soundcastId}`}>${`https://mysoundwise.com/rss/${soundcastId}`}</a>.</p><p>If you've opted to have us submit your podcast to iTunes and Google Play for you, we'll let you know when that's done. If you've opted for self submission, please go ahead and submit your feed url to any podcast aggregators you like.</p><p>Folks at Soundwise</p>`,
               });
             } else {
               firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).set(version.val() + 1);
             }
           });
-          res.end(xml);
+          // res.end(xml);
       })
       .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
     } else {

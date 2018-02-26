@@ -476,6 +476,9 @@ class _CreateEpisode extends Component {
                                             itunesExplicit,
                                             itunesImage,
                                             itunesCategory,
+                                            soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].title,
+                                            firstName: userInfo.firstName,
+                                            email: userInfo.email[0],
                                           })
                                           .then(response => {
                                             that.setState({

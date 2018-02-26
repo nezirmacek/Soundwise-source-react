@@ -481,7 +481,7 @@ export default class EditSoundcast extends Component {
                 </div>
                 <div>
                     <span style={styles.titleText}>
-                        Instructor Name
+                        Host/Instructor Name
                     </span>
                     <div style={{...styles.inputTitleWrapper, width: '35%'}}>
                       <input
@@ -496,7 +496,7 @@ export default class EditSoundcast extends Component {
                 <div>
                     <div >
                         <span style={styles.titleText}>
-                            Instructor Bio
+                            Host/Instructor Bio
                         </span>
                     </div>
                     <textarea
@@ -510,7 +510,7 @@ export default class EditSoundcast extends Component {
                 <div style={{height: 150, width: '100%'}}>
                     <div style={{marginBottom: 10}}>
                         <span style={styles.titleText}>
-                            Instructor Profile Picture
+                            Host/Instructor Profile Picture
                         </span>
                     </div>
                     <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}}>
@@ -559,7 +559,7 @@ export default class EditSoundcast extends Component {
                       instructor2Input: true
                     })}
                     style={{...styles.addFeature, marginLeft: 0, marginBottom: 25}}>
-                   <span >Add A Second Instructor</span>
+                   <span >Add A Second Host/Instructor</span>
                   </div>
                   || null
                 }
@@ -688,7 +688,7 @@ export default class EditSoundcast extends Component {
         <div>
           <div>
               <span style={styles.titleText}>
-                  Instructor 2 Name
+                  Host/Instructor #2: Name
               </span>
               <div style={{...styles.inputTitleWrapper, width: '35%'}}>
                 <input
@@ -703,7 +703,7 @@ export default class EditSoundcast extends Component {
           <div>
               <div >
                   <span style={styles.titleText}>
-                      Instructor 2 Bio
+                      Host/Instructor #2: Bio
                   </span>
               </div>
               <textarea
@@ -717,7 +717,7 @@ export default class EditSoundcast extends Component {
           <div style={{height: 150, width: '100%'}}>
               <div style={{marginBottom: 10}}>
                   <span style={styles.titleText}>
-                      Instructor 2 Profile Picture
+                      Host/Instructor #2: Profile Picture
                   </span>
               </div>
               <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL2})`}}>
@@ -863,7 +863,8 @@ export default class EditSoundcast extends Component {
     createPodcast() {
       const that = this;
       const { id, soundcast } = this.props.history.location.state;
-      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion, autoSubmitPodcast} = this.state;
+      const {firstName, email} = this.props.userInfo;
+      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion, autoSubmitPodcast, title} = this.state;
       if(!itunesCategory || itunesCategory.length == 0) {
         alert('Please pick at least one category before submitting.');
         return;
@@ -882,7 +883,10 @@ export default class EditSoundcast extends Component {
         itunesExplicit,
         itunesImage,
         itunesCategory,
-        autoSubmitPodcast
+        autoSubmitPodcast,
+        firstName,
+        email: email[0],
+        soundcastTitle: title,
       })
       .then(response => {
         that.setState({
@@ -890,9 +894,9 @@ export default class EditSoundcast extends Component {
           doneProcessingPodcast: true,
         });
         if(podcastFeedVersion) {
-          alert('Podcast information is submitted. We will email you when the feed processing is done.');
+          alert('Your podcast feed information has been edited!');
         } else {
-          alert('Podcast information is submitted. We will email you when the feed processing is done.');
+          alert('Your podcast information is submitted. We will email you when the feed processing is done.');
         }
       })
       .catch(err => {
