@@ -1195,7 +1195,7 @@ class _CreateEpisode extends Component {
                             </div>
                             || null
                         }
-                        <div style={{marginTop: 50}}>
+                        <div style={{marginTop: 50, display: 'none'}}>
                           <hr style={{border: '0.5px solid lightgray'}}/>
                           <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing Options</span>
                           <div style={{marginTop: 15}}>
