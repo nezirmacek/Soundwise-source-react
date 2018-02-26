@@ -77,6 +77,11 @@ app.use(require('prerender-node').set('prerenderToken',
 
 AWS.config.update(awsConfig);
 AWS.Request.prototype.forwardToExpress = function forwardToExpress(res, next) {
+  var range = request.headers.range;
+  var total = content.length;
+  var parts = range.replace(/bytes=/, "").split("-");
+  var partialstart = parts[0];
+  var partialend = parts[1];
   this
   .on('httpHeaders', function(code, headers) {
     if (code < 300) {
@@ -84,6 +89,7 @@ AWS.Request.prototype.forwardToExpress = function forwardToExpress(res, next) {
       res.set('Content-Type', headers['content-type']);
       res.set('Last-Modified', headers['last-modified']);
       res.set('ETag', headers['etag']);
+      res.set('Accept-Ranges', 'bytes');
     }
   })
   .createReadStream()
