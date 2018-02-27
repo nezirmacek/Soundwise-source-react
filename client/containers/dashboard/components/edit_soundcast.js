@@ -78,7 +78,7 @@ export default class EditSoundcast extends Component {
             doneProcessingPodcast: false,
             startProcessingPodcast:  false,
             podcastFeedVersion: null,
-            autoSubmitPodcast: true
+            autoSubmitPodcast: false
         };
 
         this.fileInputRef = null;

@@ -72,7 +72,8 @@ module.exports.createFeed = async (req, res) => {
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
-
+      const itunesOwner = autoSubmitPodcast ? {name: 'Soundwise', email: 'support@mysoundwise.com'} : {name: hostName, email};
+      const googleplayEmail = autoSubmitPodcast ? 'support@mysoundwise.com' : email;
       const podcastObj = {
         title,
         description: short_description,
@@ -88,13 +89,13 @@ module.exports.createFeed = async (req, res) => {
         itunesAuthor: hostName,
         itunesSubtitle: title,
         itunesSummary, // need to be < 4000 characters
-        itunesOwner: {name: 'Soundwise', email: 'support@mysoundwise.com'},
+        itunesOwner,
         itunesExplicit,
         itunesCategory,
         itunesImage, // need to be between 1400x1400 px and 3000x3000 px
         customNamespaces: {googleplay: 'http://www.google.com/schemas/play-podcasts/1.0/play-podcasts.xsd'},
         customElements: [
-          {'googleplay:email': 'support@mysoundwise.com'},
+          {'googleplay:email': googleplayEmail},
           {'googleplay:description': itunesSummary}, // need to be < 4000 characters
           {'googleplay:category': [{ _attr: { text: itunesCategory[0].text}}]},
           {'googleplay:author': hostName},
