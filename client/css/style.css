@@ -485,16 +485,17 @@ header .row { align-items: center; display: flex; height: auto;}
 
 
 .blog-style1 > h1, h2, h3, h4, h5 {
-    font-weight: 600;
+    font-weight: 800;
     margin-bottom: 1em ;
     margin-top: 1.5em ;
+    color: #1e1e1e;
 }
 
 .blog-style1  ul, ol {
     margin-bottom: 1.25em ;
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 18px;
-    color: #202123;
+    color: #1e1e1e;
     line-height: 1.58;
     margin-bottom: 1.25em;
     font-weight: 400;
@@ -504,7 +505,7 @@ header .row { align-items: center; display: flex; height: auto;}
     margin-bottom: 0.25em ;
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 18px;
-    color: #202123;
+    color: color: #1e1e1e;
     line-height: 1.58;
     margin-bottom: 1.25em;
     font-weight: 400;
@@ -515,7 +516,7 @@ header .row { align-items: center; display: flex; height: auto;}
 .blog-style1  p {
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 18px;
-    color: #202123;
+    color: #1e1e1e;
     line-height: 1.58;
     margin-bottom: 1.25em;
     font-weight: 400;

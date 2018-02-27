@@ -15,8 +15,14 @@ import {signoutUser} from '../actions/index';
 
 const styles = {
   navItem: {
-    display: 'inline',
-  }
+    // display: 'inline',
+  },
+  navlink: {
+    // fontSize: 16,
+    // paddingTop: 17,
+    // float: 'right',
+    // marginTop: 6,
+  },
 };
 
 class _SoundwiseHeader extends Component {
@@ -151,7 +157,17 @@ class _SoundwiseHeader extends Component {
         } else {
             return (
                 <ul className="nav navbar-nav">
-                    <li className="propClone sm-no-border" style={styles.navItem}>
+                    {
+                      (this.props.match.path.slice(0, 5) == '/blog' || this.props.match.path == '/wave_video' || this.props.match.path == '/content_download' || this.props.match.path == '/pricing') &&
+                      <li className="propClone"><Link className="inner-link" to="/pricing" style={styles.navlink}>Pricing</Link></li>
+                      || null
+                    }
+                    {
+                      (this.props.match.path.slice(0, 5) == '/blog' || this.props.match.path == '/wave_video' || this.props.match.path == '/content_download' || this.props.match.path == '/pricing') &&
+                      <li className="propClone"><Link className="inner-link" to="/wave_video" style={styles.navlink}>Soundwave Video Maker</Link></li>
+                      || null
+                    }
+                    <li className="propClone " style={styles.navItem}>
                         <Link className="inner-link" to="/signin">LOG IN</Link>
                     </li>
                 </ul>

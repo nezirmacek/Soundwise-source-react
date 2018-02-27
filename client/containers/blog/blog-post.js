@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Butter from 'buttercms'
 import { Helmet } from "react-helmet";
 import moment from 'moment';
+import Colors from '../../styles/colors';
 
 import {SoundwiseHeader} from '../../components/soundwise_header';
 import Footer from '../../components/footer'
@@ -28,12 +29,12 @@ export default class BlogPost extends Component {
         post: resp.data.data
       });
     });
-
   }
 
   render() {
     if (this.state.loaded) {
       const post = this.state.post;
+      const author = post.author;
       const tags = post.tags.map(tag => tag.name).join(',');
       return (
         <div>
@@ -66,7 +67,14 @@ export default class BlogPost extends Component {
                         <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font  tz-text">{post.title}</h2>
                     </div>
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
-                      <div className= 'text-large text-dark-gray margin-thirteen-bottom  xs-margin-nineteen-bottom'>{moment(post.published).format('MMMM Do YYYY')}</div>
+                      <div className= 'margin-five-bottom  xs-margin-nine-bottom' style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                        <div style={{...styles.profileImage, backgroundImage: `url(${author.profile_image || ''})`}}>
+                        </div>
+                        <div style={{marginLeft: 15, textAlign: 'left'}}>
+                          <div className='text-large text-dark-gray font-weight-800' style={{fontWeight: 800}}>{`${author.first_name} ${author.last_name}`}</div>
+                          <div className= 'text-large text-dark-gray '>{moment(post.published).format('MMMM Do YYYY')}</div>
+                        </div>
+                      </div>
                     </div>
                     <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center " style={{}}>
                         <span className="margin-eight-right title-small sm-title-small">
@@ -128,3 +136,19 @@ export default class BlogPost extends Component {
     }
   }
 }
+
+const styles = {
+    profileImage: {
+        width: 60,
+        height: 60,
+        float: 'left',
+        borderRadius: '50%',
+        backgroundColor: Colors.mainWhite,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: Colors.lightGrey,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center center',
+        backgroundSize: 'cover',
+    },
+};
