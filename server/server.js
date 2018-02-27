@@ -76,24 +76,45 @@ app.use(require('prerender-node').set('prerenderToken',
         'XJx822Y4hyTUV1mn6z9k').set('protocol', 'https'));
 
 AWS.config.update(awsConfig);
-AWS.Request.prototype.forwardToExpress = function forwardToExpress(res, next) {
-  var range = request.headers.range;
-  var total = content.length;
-  var parts = range.replace(/bytes=/, "").split("-");
-  var partialstart = parts[0];
-  var partialend = parts[1];
+AWS.Request.prototype.forwardToExpress = function forwardToExpress(req, res, next) {
   this
   .on('httpHeaders', function(code, headers) {
+    //console.log(code, headers);
     if (code < 300) {
+      //var range = req.headers.range;
+      var total = headers['content-range'].split('/')[1];
+      var parts = headers['content-range'].split('/')[0]
+                  .replace(/bytes /, '').split('-');
+      var partialstart = parts[0];
+      var partialend = parts[1];
+
+      var start = parseInt(partialstart);
+      var end = partialend ? parseInt(partialend) : total;
+      //var chunksize = (end - start);
+
       res.set('Content-Length', headers['content-length']);
+      //res.set('Content-Length', total);
+      res.set('Content-Range', 'bytes ' + start + '-' + end + '/' + total);
       res.set('Content-Type', headers['content-type']);
       res.set('Last-Modified', headers['last-modified']);
-      res.set('ETag', headers['etag']);
+      //res.set('ETag', headers['etag']);
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', 0);
       res.set('Accept-Ranges', 'bytes');
+      res.status(206);
+      // console.log('headers: ', headers, 'code:', code, 'total:', total, 'bytes ' + start + '-' + end + '/' + total);
+
     }
   })
   .createReadStream()
   .on('error', next)
+  /*.on('data', data => {
+    res.write(data);
+  })
+  .on('end', () => {
+   res.end();
+  });*/
   .pipe(res);
 };
 
@@ -171,16 +192,27 @@ app.get('/api/custom_token', (req, res) => {
 app.get('/tracks/:id', (request, response, next) => {
   const path = String(request.path).slice(8);
   const s3 = new S3();
-  // var audioStream = s3.getObject({
-  //     Bucket: 'soundwiseinc',
-  //     Key: `soundcasts/${path}`,
-  // }).createReadStream();
 
+  var Range;
+  var parts = [0, 100*1024]; // defa
+  var range = request.headers['range'] ?
+    request.headers['range'].split('bytes=')[1] : null;
+  if (range) {
+    parts = range.split('-');
+    if (!parseInt(parts[1]) || parseInt(parts[1]) < parseInt(parts[0])) {
+      parts[1] = parseInt(parts[0]) + 100*1024;
+    }
+  }
+  Range = 'bytes='+parts[0]+'-'+parts[1];
+
+
+  console.log(Range);
   s3.getObject({
     Bucket: 'soundwiseinc',
     Key: `soundcasts/${path}`,
+    Range
   })
-  .forwardToExpress(response, next);
+  .forwardToExpress(request, response, next);
 });
 
 // database API routes:

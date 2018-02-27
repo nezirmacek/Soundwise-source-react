@@ -183,7 +183,7 @@ class _EpisodePage extends Component {
     const that = this;
     const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, coverArtUrl, publisherImageURL, publisherID, publisherName, publicEpisode, liked, showTimeStamps } = this.state;
     const playlist = [{
-      url,
+      url: 'http://localhost:3000/tracks/1519588434364e.mp3',
       displayText: title
     }];
 
