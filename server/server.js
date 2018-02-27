@@ -197,6 +197,7 @@ app.get('/tracks/:id', (request, response, next) => {
   var parts = [0, 100*1024]; // defa
   var range = request.headers['range'] ?
     request.headers['range'].split('bytes=')[1] : null;
+  console.log('range: ', range);
   if (range) {
     parts = range.split('-');
     if (!parseInt(parts[1]) || parseInt(parts[1]) < parseInt(parts[0])) {
@@ -205,8 +206,6 @@ app.get('/tracks/:id', (request, response, next) => {
   }
   Range = 'bytes='+parts[0]+'-'+parts[1];
 
-
-  console.log(Range);
   s3.getObject({
     Bucket: 'soundwiseinc',
     Key: `soundcasts/${path}`,
