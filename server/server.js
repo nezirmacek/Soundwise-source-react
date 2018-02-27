@@ -79,9 +79,7 @@ AWS.config.update(awsConfig);
 AWS.Request.prototype.forwardToExpress = function forwardToExpress(req, res, next) {
   this
   .on('httpHeaders', function(code, headers) {
-    //console.log(code, headers);
     if (code < 300) {
-      //var range = req.headers.range;
       var total = headers['content-range'].split('/')[1];
       var parts = headers['content-range'].split('/')[0]
                   .replace(/bytes /, '').split('-');
@@ -115,6 +113,20 @@ AWS.Request.prototype.forwardToExpress = function forwardToExpress(req, res, nex
   .on('end', () => {
    res.end();
   });*/
+  .pipe(res);
+};
+AWS.Request.prototype.forwardToExpressNoStream = function forwardToExpressNoStream(res, next) {
+  this
+  .on('httpHeaders', function(code, headers) {
+    if (code < 300) {
+      res.set('Content-Length', headers['content-length']);
+      res.set('Content-Type', headers['content-type']);
+      res.set('Last-Modified', headers['last-modified']);
+      res.set('ETag', headers['etag']);
+    }
+  })
+  .createReadStream()
+  .on('error', next)
   .pipe(res);
 };
 
@@ -192,26 +204,31 @@ app.get('/api/custom_token', (req, res) => {
 app.get('/tracks/:id', (request, response, next) => {
   const path = String(request.path).slice(8);
   const s3 = new S3();
-  console.log('mp3 request header: ', request.headers);
+  // console.log('mp3 request header: ', request.headers);
   var Range;
   var parts = [0, 100*1024]; // defa
   var range = request.headers['range'] ?
     request.headers['range'].split('bytes=')[1] : null;
-  console.log('range: ', range);
+  // console.log('range: ', range);
   if (range) {
     parts = range.split('-');
     if (!parseInt(parts[1]) || parseInt(parts[1]) < parseInt(parts[0])) {
       parts[1] = parseInt(parts[0]) + 100*1024;
     }
+    Range = 'bytes='+parts[0]+'-'+parts[1];
+    s3.getObject({
+      Bucket: 'soundwiseinc',
+      Key: `soundcasts/${path}`,
+      Range
+    })
+    .forwardToExpress(request, response, next);
+  } else {
+    s3.getObject({
+      Bucket: 'soundwiseinc',
+      Key: `soundcasts/${path}`,
+    })
+    .forwardToExpressNoStream(response, next);
   }
-  Range = 'bytes='+parts[0]+'-'+parts[1];
-
-  s3.getObject({
-    Bucket: 'soundwiseinc',
-    Key: `soundcasts/${path}`,
-    Range
-  })
-  .forwardToExpress(request, response, next);
 });
 
 // database API routes:
