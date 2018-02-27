@@ -192,7 +192,7 @@ app.get('/api/custom_token', (req, res) => {
 app.get('/tracks/:id', (request, response, next) => {
   const path = String(request.path).slice(8);
   const s3 = new S3();
-
+  console.log('mp3 request header: ', request.headers);
   var Range;
   var parts = [0, 100*1024]; // defa
   var range = request.headers['range'] ?
