@@ -5,12 +5,14 @@ import Axios from 'axios';
 import {Helmet} from "react-helmet"
 import firebase from 'firebase';
 import 'url-search-params-polyfill';
+import Dots from 'react-activity/lib/Dots';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 // import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import { RadioGroup, RadioButton, ReversedRadioButton } from 'react-radio-buttons';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 
+import {inviteListeners} from '../helpers/invite_listeners';
 import Colors from '../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../components/buttons/buttons';
 import {SoundwiseHeader} from '../components/soundwise_header';
@@ -26,6 +28,7 @@ export default class ContentDownload extends Component {
       firstName: '',
       lastName: '',
       submitted: false,
+      submitting: false,
       content: {},
     }
   }
@@ -43,6 +46,9 @@ export default class ContentDownload extends Component {
   }
 
   submit() {
+    this.setState({
+      submitting: true
+    });
     const {firstName, lastName, email, content} = this.state;
     const that = this;
     Axios.post('/api/add_emails', {
@@ -52,8 +58,11 @@ export default class ContentDownload extends Component {
     .then(res => {
       that.setState({
         submitted: true,
+        submitting: false,
       });
-      window.open(content.link);
+      const subject = `Download link for ${content.title}`;
+      const body = `<p>Hi ${firstName},</p><p>Please click <a href="${content.link}">here</a> to download your ${content.title}. Thanks.</p><p>Folks at Soundwise</p>`;
+      inviteListeners ([email], subject, body, null, null, null, true, 'support@mysoundwise.com');
     })
     .catch(err => {
       console.log('error: ', err);
@@ -118,12 +127,24 @@ export default class ContentDownload extends Component {
                       </div>
                   </div>
                   <div className='row'>
-                    <div className='col-md-6 col-sm-6 col-xs-12 center-col' style={{marginTop: 25}}>
-                      <OrangeSubmitButton
-                        label="Submit"
-                        onClick={!submitted && this.submit.bind(this) ||null}
-                      />
-                    </div>
+                    {
+                      !this.state.submitted && !this.state.submitting &&
+                      <div className='col-md-6 col-sm-6 col-xs-12 center-col' style={{marginTop: 25}}>
+                        <OrangeSubmitButton
+                          label="Submit"
+                          onClick={!submitted && this.submit.bind(this) ||null}
+                        />
+                      </div>
+                      || this.state.submitted && !this.state.submitting &&
+                      <div className='col-md-6 col-sm-6 col-xs-12 center-col' style={{marginTop: 25}}>
+                        <div className='text-dark-gray tz-text title-large text-center'><span>Thanks! We just sent you an email with the download link 😊</span></div>
+                      </div>
+                      || !this.state.submitted && this.state.submitting &&
+                      <div className='col-md-6 col-sm-6 col-xs-12 center-col text-center' style={{marginTop: 25}}>
+                          <div className='title-large'>Submitting</div>
+                          <Dots style={{marginLeft: 15}} color={Colors.mainOrange} size={32} speed={1}/>
+                      </div>
+                    }
                   </div>
               </div>
           </section>
