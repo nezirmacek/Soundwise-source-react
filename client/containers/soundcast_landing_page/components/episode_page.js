@@ -274,9 +274,9 @@ class _EpisodePage extends Component {
                         </div>
                         <div className="row">
                           <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col " style={{display: 'flex', justifyContent: 'center', marginTop: 20}}>
-                            <a href={`https://mysoundwise.com/soundcasts/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#61E1FB'}}
+                            <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#61E1FB'}}
                             >
-                              <span className="text-extra-large sm-text-extra-large tz-text">SUBSCRIBE</span>
+                              <span className="text-extra-large sm-text-extra-large tz-text">ACCESS ENTIRE SERIES</span>
                             </a>
                           </div>
                         </div>
@@ -337,9 +337,6 @@ class _EpisodePage extends Component {
                     </div>
                 </section>
             </div>
-            <Footer
-              soundcastID = {soundcastID}
-            />
           </div>
         </MuiThemeProvider>
       </div>

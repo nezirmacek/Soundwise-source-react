@@ -20,6 +20,7 @@ import { Player, PosterImage, ControlBar, PlayToggle, BigPlayButton } from 'vide
 import { CirclePicker, CompactPicker } from 'react-color'
 
 import Colors from '../styles/colors';
+import {emailValidator} from '../helpers/validators';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../components/buttons/buttons';
 import {SoundwiseHeader} from '../components/soundwise_header';
 import Footer from '../components/footer'
@@ -237,6 +238,11 @@ class _WaveVideoInputs extends Component {
     }
     if(!imageFile) {
       alert('Please upload an image before submitting!');
+      return;
+    }
+    const confirmIsEmail = emailValidator(email);
+    if(!confirmIsEmail) {
+      alert('Please enter a valid email!');
       return;
     }
     const that = this;

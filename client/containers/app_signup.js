@@ -498,7 +498,7 @@ class _AppSignup extends Component {
         if(firstName.length < 1 || lastName.length < 1) {
             alert('Please enter your name!');
             return false;
-        } else if (email.indexOf('@') < 0) {
+        } else if (!emailValidator(email)) {
             alert ('Please enter a valid email!');
             return false;
         } else if (password.length < 1 && !isFBauth ) {
@@ -777,106 +777,121 @@ class _AppSignup extends Component {
 			)
 		}
 		return (
-            <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700)}}>
+            <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700), overflow: 'auto'}}>
 				{
                     soundcast &&
-                    <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
-                        <img className='hidden-xs' alt="Soundcast cover art" src={soundcast.imageURL} style={{...styles.logo, height: 120}}/>
-                        <div style={styles.containerWrapper}>
-                            <div style={styles.container} className="center-col text-center">
-                                <div style={{...styles.title, fontSize: 20, lineHeight: 'normal',}}>{soundcast.title}</div>
-                                <button
-                                    onClick={() => this.handleFBAuth()}
-                                    className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
-                                    style={styles.fb}
-                                >
-                                    <i
-                                        className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
-                                        style={styles.fbIcon}
-                                    ></i>
-                                    <span className="tz-text">SIGN UP with FACEBOOK</span>
-                                </button>
-                                <hr />
-                                <span style={styles.withEmailText}>or with email</span>
-                            </div>
-                            <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                <GreyInput
-                                    type="text"
-                                    styles={{}}
-                                    wrapperStyles={styles.inputTitleWrapper}
-                                    placeholder={'First name'}
-                                    onChange={this.handleChange.bind(this, 'firstName')}
-                                    value={firstName}
-                                    validators={[minLengthValidator.bind(null, 1)]}
-                                />
-                            </div>
-                            <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                <GreyInput
-                                    type="text"
-                                    styles={{}}
-                                    wrapperStyles={styles.inputTitleWrapper}
-                                    placeholder={'Last name'}
-                                    onChange={this.handleChange.bind(this, 'lastName')}
-                                    value={lastName}
-                                    validators={[minLengthValidator.bind(null, 1)]}
-                                />
-                            </div>
-                            <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <GreyInput
-                                    type="email"
-                                    styles={{}}
-                                    wrapperStyles={styles.inputTitleWrapper}
-                                    placeholder={'Email'}
-                                    onChange={this.handleChange.bind(this, 'email')}
-                                    value={email}
-                                    validators={[minLengthValidator.bind(null, 1), emailValidator]}
-                                />
-                                <GreyInput
-                                    type="password"
-                                    styles={{}}
-                                    wrapperStyles={styles.inputTitleWrapper}
-                                    placeholder={'Password'}
-                                    onChange={this.handleChange.bind(this, 'password')}
-                                    value={password}
-                                    validators={[minLengthValidator.bind(null, 1)]}
-                                />
-                                <div>
-                                    {/*<input*/}
-                                        {/*type="checkbox"*/}
-                                        {/*onChange={(e) => {this.setState({isAccepted: e.target.checked});}}*/}
-                                        {/*checked={isAccepted}*/}
-                                        {/*style={styles.checkbox}*/}
-                                    {/*/>*/}
-                                    <span style={styles.acceptText}>
-                                        By signing up I accept the terms of use and <Link to="/privacy">privacy policy</Link>.
-                                    </span>
-                                </div>
-                                {
-                                    <OrangeSubmitButton
-                                        label="Get Access"
-                                        onClick={this.signUp.bind(this)}
-                                        styles={{marginTop: 15, marginBottom: 15}}
-                                    />
-                                }
+                    <div className='col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col'>
+                        <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12  text-center">
+                            <img className='hidden-xs' alt="Soundcast cover art" src={soundcast.imageURL} style={{...styles.logo, height: 120}}/>
+                            <div style={styles.containerWrapper}>
+                                <div style={styles.container} className="center-col text-center">
 
-                                <div style={{marginBottom: 15}}>
-                                    <span style={styles.italicText}>Already have an account? </span>
+                                    <button
+                                        onClick={() => this.handleFBAuth()}
+                                        className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
+                                        style={{...styles.fb, marginTop: 30}}
+                                    >
+                                        <i
+                                            className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
+                                            style={styles.fbIcon}
+                                        ></i>
+                                        <span className="tz-text">SIGN UP with FACEBOOK</span>
+                                    </button>
+                                    <hr />
+                                    <span style={styles.withEmailText}>or with email</span>
+                                </div>
+                                <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <GreyInput
+                                        type="text"
+                                        styles={{}}
+                                        wrapperStyles={styles.inputTitleWrapper}
+                                        placeholder={'First name'}
+                                        onChange={this.handleChange.bind(this, 'firstName')}
+                                        value={firstName}
+                                        validators={[minLengthValidator.bind(null, 1)]}
+                                    />
+                                </div>
+                                <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <GreyInput
+                                        type="text"
+                                        styles={{}}
+                                        wrapperStyles={styles.inputTitleWrapper}
+                                        placeholder={'Last name'}
+                                        onChange={this.handleChange.bind(this, 'lastName')}
+                                        value={lastName}
+                                        validators={[minLengthValidator.bind(null, 1)]}
+                                    />
+                                </div>
+                                <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <GreyInput
+                                        type="email"
+                                        styles={{}}
+                                        wrapperStyles={styles.inputTitleWrapper}
+                                        placeholder={'Email'}
+                                        onChange={this.handleChange.bind(this, 'email')}
+                                        value={email}
+                                        validators={[minLengthValidator.bind(null, 1)]}
+                                    />
+                                    <GreyInput
+                                        type="password"
+                                        styles={{}}
+                                        wrapperStyles={styles.inputTitleWrapper}
+                                        placeholder={'Password'}
+                                        onChange={this.handleChange.bind(this, 'password')}
+                                        value={password}
+                                        validators={[minLengthValidator.bind(null, 1)]}
+                                    />
+                                    <div>
+                                        {/*<input*/}
+                                            {/*type="checkbox"*/}
+                                            {/*onChange={(e) => {this.setState({isAccepted: e.target.checked});}}*/}
+                                            {/*checked={isAccepted}*/}
+                                            {/*style={styles.checkbox}*/}
+                                        {/*/>*/}
+                                        <span style={styles.acceptText}>
+                                            By signing up I accept the terms of use and <Link to="/privacy">privacy policy</Link>.
+                                        </span>
+                                    </div>
                                     {
-                                        <Link
-                                          to={{
-                                            pathname: '/signin',
-                                            state: {
-                                                soundcast,
-                                                soundcastID,
-                                                checked,
-                                                sumTotal
-                                            }
-                                          }}
-                                          style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in >
-                                        </Link>
+                                        <OrangeSubmitButton
+                                            label="Get Access"
+                                            onClick={this.signUp.bind(this)}
+                                            styles={{marginTop: 15, marginBottom: 15}}
+                                        />
                                     }
+
+                                    <div style={{marginBottom: 15}}>
+                                        <span style={styles.italicText}>Already have an account? </span>
+                                        {
+                                            <Link
+                                              to={{
+                                                pathname: '/signin',
+                                                state: {
+                                                    soundcast,
+                                                    soundcastID,
+                                                    checked,
+                                                    sumTotal
+                                                }
+                                              }}
+                                              style={{...styles.italicText, color: Colors.link, marginLeft: 5}}> Sign in >
+                                            </Link>
+                                        }
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className='col-lg-6 col-md-6 col-sm-6 col-xs-12'>
+                            <div className='margin-twenty-one-top sm-margin-nineteen-top title-medium text-dark-gray' style={{paddingBottom: 35, textAlign: 'center'}}><span>{soundcast.title}</span></div>
+                            <div style={{marginBottom: 20, fontSize: 15}} className='text-large text-center text-dark-gray'>{soundcast.short_description}</div>
+                            <ul className="" style={{paddingBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
+                                {soundcast.features && soundcast.features.map((feature, i) => {
+                                    return (
+                                        <li key={i} className=" text-dark-gray text-large  margin-lr-auto col-md-12 col-sm-12 col-xs-12 tz-text" style={{paddingLeft: '0em', paddingRight: '1em', paddingTop: '1em', paddingBottom: '1em', listStyleType: 'none', display: 'flex', alignItems: 'center', }}><span style={{paddingRight: 10}}>
+                                            ⭐</span>{feature}
+                                        </li>
+                                    )
+                                })}
+                            </ul>
                         </div>
                     </div>
                     ||
@@ -1067,7 +1082,7 @@ const styles = {
         marginRight: 20,
         position: 'relative',
         bottom: 2,
-        right: '10%',
+        right: '10px',
     },
     withEmailText: {
         fontSize: 14,
