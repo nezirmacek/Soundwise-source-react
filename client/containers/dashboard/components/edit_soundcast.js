@@ -137,7 +137,7 @@ export default class EditSoundcast extends Component {
         itunesExplicit: itunesExplicit ? itunesExplicit : false,
         itunesImage: itunesImage ? itunesImage : null,
         podcastFeedVersion: podcastFeedVersion ? podcastFeedVersion : null,
-        autoSubmitPodcast: autoSubmitPodcast ? autoSubmitPodcast : true,
+        autoSubmitPodcast: autoSubmitPodcast ? autoSubmitPodcast : false,
       });
 
       if(subscribed) {

@@ -7,12 +7,13 @@ import { withRouter } from 'react-router'
 import { Redirect } from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Modal from 'react-responsive-modal'
 import Axios from 'axios'
 import Footer from '../../../components/footer'
 import  PageHeader  from './page_header'
 import AudioPlayer from 'react-responsive-audio-player'
 import {SoundwiseHeader} from '../../../components/soundwise_header'
-import Colors from '../../../styles/colors';
+import Colors from '../../../styles/colors'
 
 class _EpisodePage extends Component {
   constructor(props) {
@@ -40,8 +41,12 @@ class _EpisodePage extends Component {
       startPosition: 0,
       endPosition: null,
       showTimeStamps: false,
+      open: false,
+      modalShown: false,
     };
     this.audio = null;
+    this.modalScheduler = null;
+    this.onCloseModal = this.onCloseModal.bind(this);
   }
 
   componentDidMount() {
@@ -84,9 +89,11 @@ class _EpisodePage extends Component {
                   that.setState({
                     subscribable: snapshot.val().landingPage,
                     soundcastTitle: snapshot.val().title,
+                    soundcastDescription: snapshot.val().short_description,
+                    soundcastFeatures: snapshot.val().features || null,
                     soundcastImageURL: snapshot.val().imageURL,
                     showTimeStamps: snapshot.val().showTimeStamps ? snapshot.val().showTimeStamps : false,
-                  })
+                  });
                 }
               })
             })
@@ -107,17 +114,35 @@ class _EpisodePage extends Component {
 
   recordPlaying() {
     // console.log('recordPlaying fired');
+    const that = this;
     const {episodeID, listens, startPosition} = this.state;
     if(this.audio) {
       this.setState({
         startPosition: this.audio.currentTime,
-      })
+      });
+      if(!this.state.duration) {
+        this.setState({
+          duration: this.audio.duration,
+        });
+        this.modalScheduler = setTimeout(() => {
+          that.setState({
+            open: true,
+            modalShown: true,
+          });
+        }, this.audio.duration / 2 * 1000);
+      }
     }
 
   }
 
+  compoenentWillUnmount() {
+    if(this.modalScheduler) {
+      clearTimeout(this.modalScheduler);
+    }
+  }
+
   sendToDatabase(event) {
-    const {soundcastID, publisherID, episodeID, startPosition, listens} = this.state;
+    const {soundcastID, publisherID, episodeID, startPosition, listens, modalShown} = this.state;
     const _date = moment().utc().format();
 
     firebase.database().ref(`episodes/${episodeID}/totalListens`)
@@ -131,6 +156,14 @@ class _EpisodePage extends Component {
       this.setState({
         endPosition: this.audio.duration,
       })
+    }
+
+    if(!modalShown) {
+      this.setState({
+        open: true,
+        modalShown: true
+      });
+      clearTimeout(this.modalScheduler);
     }
 
     const listeningSession = {
@@ -147,13 +180,13 @@ class _EpisodePage extends Component {
             updatedAt: _date,
     };
 
-        if (this.state.endPosition - startPosition > 0) { // save only with positive duration
-            Axios.post('/api/listening_session', listeningSession)
-                .then(res => {
-                    // console.log('success save listeningSessions: ', res)
-                })
-                .catch(err => console.log(err));
-        }
+    if (this.state.endPosition - startPosition > 0) { // save only with positive duration
+        Axios.post('/api/listening_session', listeningSession)
+            .then(res => {
+                // console.log('success save listeningSessions: ', res)
+            })
+            .catch(err => console.log(err));
+    }
   }
 
   changeLike() {
@@ -179,9 +212,15 @@ class _EpisodePage extends Component {
     });
   }
 
+  onCloseModal() {
+    this.setState({
+      open: false
+    })
+  }
+
   render() {
     const that = this;
-    const { episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, subscribable, soundcastImageURL, coverArtUrl, publisherImageURL, publisherID, publisherName, publicEpisode, liked, showTimeStamps } = this.state;
+    const { open, episodeID, title, url, date_created, description, duration, likes, listens, soundcastID, soundcastTitle, soundcastDescription, soundcastFeatures, subscribable, soundcastImageURL, coverArtUrl, publisherImageURL, publisherID, publisherName, publicEpisode, liked, showTimeStamps } = this.state;
     const playlist = [{
       url,
       displayText: title
@@ -191,6 +230,7 @@ class _EpisodePage extends Component {
       return (
         <div>
           <PageHeader/>
+
           <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
               <div className="container">
                   <div className="row">
@@ -228,6 +268,40 @@ class _EpisodePage extends Component {
               soundcastID = {soundcastID}
             />
             <div>
+            <Modal open={open} onClose={this.onCloseModal} styles={{modal: {maxWidth: '100%'}}}>
+              <div className='padding-five xs-padding-six' style={{ padding: '3em'}}>
+                <div className='col-md-6 col-xs-12'>
+                  <img  src={soundcastImageURL} style={{width: '100%'}}/>
+                </div>
+                <div className='col-md-6 col-xs-12'>
+                  <div style={{marginBottom: '2em', marginTop: '2em'}}>
+                    <span className='title-large xs-title-large' style={{fontWeight: 800, }}>{soundcastTitle}</span>
+                  </div>
+                  <div style={{marginBottom: '2em'}}>
+                    <span className='text-large xc-text-large'>{soundcastDescription}</span>
+                  </div>
+                  {
+                    soundcastFeatures &&
+                    <div className="" style={{paddingBottom: '2em', display: 'flex', flexWrap: 'wrap'}}>
+                        {soundcastFeatures.map((feature, i) => {
+                            return (
+                                <div key={i} className=" text-dark-gray text-large xs-text-large margin-lr-auto col-md-12 col-sm-12 col-xs-12 tz-text" style={{paddingLeft: '0em', paddingRight: '1em', paddingTop: '0.2em', paddingBottom: '0.2em', listStyleType: 'none', display: 'flex', alignItems: 'center', }}><span style={{paddingRight: 10}}>
+                                    ⭐</span>{feature}
+                                </div>
+                            )
+                        })}
+                    </div>
+                    || null
+                  }
+                  <div style={{textAlign: 'center', marginBottom: 25}}>
+                    <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" style={{backgroundColor: '#61E1FB'}}
+                    >
+                      <span className="text-extra-large xs-text-extra-large tz-text">ACCESS ENTIRE SERIES</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </Modal>
                 <section className="padding-90px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                     <div className="container">
                         <div className="row">
@@ -274,7 +348,7 @@ class _EpisodePage extends Component {
                         </div>
                         <div className="row">
                           <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col " style={{display: 'flex', justifyContent: 'center', marginTop: 20}}>
-                            <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#61E1FB'}}
+                            <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" style={{backgroundColor: '#61E1FB'}}
                             >
                               <span className="text-extra-large sm-text-extra-large tz-text">ACCESS ENTIRE SERIES</span>
                             </a>

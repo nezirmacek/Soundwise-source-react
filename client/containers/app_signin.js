@@ -483,7 +483,7 @@ class _AppSignin extends Component {
                                     placeholder={'Email'}
                                     onChange={this.handleChange.bind(this, 'email')}
                                     value={email}
-                                    validators={[minLengthValidator.bind(null, 1), emailValidator]}
+                                    validators={[minLengthValidator.bind(null, 1)]}
                                 />
                                 <GreyInput
                                     type="password"
