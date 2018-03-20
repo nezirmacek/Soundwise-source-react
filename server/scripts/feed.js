@@ -151,9 +151,9 @@ module.exports.createFeed = async (req, res) => {
                 if (episode.id3Tagged) { // tagged
                   resolve({ id, fileDuration: (Math.round(episode.duration) || file.metadata.duration.seconds) });
                 } else { // not tagged, setting up ID3
-                  const title = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+                  const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
                   const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-                  file.addCommand('-metadata', `title="${title}"`);
+                  file.addCommand('-metadata', `title="${episodeTitle}"`);
                   file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
                   file.addCommand('-metadata', `album="${title}"`);
