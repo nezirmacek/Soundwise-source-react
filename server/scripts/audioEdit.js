@@ -12,6 +12,7 @@
           tagging: true,
           intro: 'https://mysoundwise.com/tracks/intro12345s.mp3',
           outro: 'https://mysoundwise.com/tracks/outro12345s.mp3',
+          overlayDuration: 2, // how many seconds intro/outro should overlay the main audio,
           setVolume: true,
           trim: true,
           removeSilence: 0.7 // the number is the silence remove threshold. e.g. remove silence longer than 0.7 second
@@ -78,6 +79,8 @@ ffmpeg -i intro.mp3 -af 'afade=t=out:st=885:d=5' intro-fadeout.mp3
 ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
 
 // c. concat intro, main audio, and outro together (it looks like concat demuxer is the one we should use. I tried it on a few files. Sometimes it works. But I haven't got it to work reliably.): https://trac.ffmpeg.org/wiki/Concatenate
+
+// d. if request.body.overlayDuration > 0, we need to overlay intro/outro with main audio for the specified overlay duration.
 
 // *** Set volume target and harmonize loudness level ***
 // set Integrated loudness to -14: I=-14
