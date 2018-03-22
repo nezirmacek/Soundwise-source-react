@@ -33,6 +33,7 @@ var Emails = require('./scripts/sendEmails.js');
 var createFeed = require('./scripts/feed.js').createFeed;
 var requestFeed = require('./scripts/feed.js').requestFeed;
 var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
+var audioProcessing = require('./scripts/audioProcessing').audioProcessing;
 
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
@@ -176,6 +177,7 @@ app.post('/api/upload', function(req, res, next) {
   });
 });
 app.post('/api/audiowave', multipart(), createAudioWaveVid);
+app.post('/api/audio_processing', audioProcessing);
 
 app.use('/s3', require('react-s3-uploader/s3router')({
   bucket: 'soundwiseinc',
