@@ -54,7 +54,25 @@ module.exports.audioProcessing = async (req, res) => {
 				try {
 					(new ffmpeg(filePath)).then(file => {
 						if (tagging) {
-							
+						  const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+							const { title, hostName } = soundcast.val();
+							const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+					    const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+					    file.addCommand('-metadata', `title="${episodeTitle}"`);
+					    file.addCommand('-metadata', `track="${episode.index}"`);
+					    file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
+					    file.addCommand('-metadata', `album="${title}"`);
+					    file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
+					    file.addCommand('-metadata', `genre="Podcast"`);
+
+							// TODO Question: is 'file.addCommand('-metadata', `'cover art=${itunesImage}'`)' the right way to add cover art to audio files? This seems more correct: https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
+					    // file.addCommand('-metadata', `'cover art=${itunesImage}'`);
+
+					    if (file.metadata.audio.codec === 'mp3') {
+					      file.addCommand('-codec', 'copy');
+					    } else { // 'aac' for .m4a files
+					      file.setAudioCodec('mp3').setAudioBitRate(64);
+					    }
 						}
 						if (trim) {
 							
