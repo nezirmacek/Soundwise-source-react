@@ -167,7 +167,7 @@ module.exports.createFeed = async (req, res) => {
                   }
                   console.log(`Episode: ${id} tagged, path ${filePath}`);
                   const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
-                  file.save(updatedPath, (err, fileName) => {
+                  file.save(updatedPath, err => {
                     if (err) {
                       return reject(`Error: saving fails ${filePath} ${err}`);
                     }
