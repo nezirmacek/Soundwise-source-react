@@ -6,6 +6,17 @@ sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 
+const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
+		.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': ')); // *
+		// * example return: [
+		//   ["silence_start"   , "-0.0150208"],
+		//   ["silence_end"     , "5.08898"   ],
+		//   ["silence_duration", "5.104"     ],
+		//   ["silence_start"   , "10.041"    ],
+		//   ["silence_end"     , "15.553"    ],
+		//   ["silence_duration", "5.512"     ],
+		//   ["silence_start"   , "17.481"    ] ]
+
 module.exports.audioProcessing = async (req, res) => {
 	// 1. Client make post request to /api/audio_processing, with episode ID and processing options
 	// request example: {
@@ -61,18 +72,11 @@ module.exports.audioProcessing = async (req, res) => {
 								if (err) {
 									return console.log(`Error: audio processing trim running silencedetect ${filePath} ${err}`);
 								}
-								const output = (stdout + '\n' + stderr).split('\n')
-								  .filter(i => i.slice(0, 14) === '[silencedetect')
-									.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': '));
-								// example output: [
-								// ["silence_start","-0.0150208"],["silence_end","5.08898"],
-								// ["silence_duration","5.104"], ["silence_start","10.041"],
-								// ["silence_end","15.553"],["silence_duration","5.512"],
-								// ["silence_start","17.481"] ]
-								let start = 0, end = 0;
+								const output = parseSilenceDetect(stdout + '\n' + stderr);
+								let start = 0, end = file.metadata.duration.seconds + 1;
 								if (output[0][0] === 'silence_start') {
 									const silenceStart = Number(output[0][1]);
-									if (silenceStart > -0.5 && silenceStart < 0.5) { // +/- 0.5 second
+									if (silenceStart > -0.2 && silenceStart < 0.2) { // +/- 0.2 second
 										start = Number(output[1][1]).toFixed(3);
 									}
 								}
@@ -95,29 +99,34 @@ module.exports.audioProcessing = async (req, res) => {
 						removeSilenceProcessing(filePath);
 					}
 					function removeSilenceProcessing(filePath) {
-						debugger
 						if (removeSilence) {
-							// (new ffmpeg(filePath)).then(file => {
-							(new ffmpeg(`/tmp/audio_processing_out.mp3`)).then(file => {
+							(new ffmpeg(filePath)).then(file => {
 								file.addCommand('-af', `silencedetect=n=-60dB:d=${ removeSilence }`);
 								file.addCommand('-f', `null`);
 								file.save('-', (err, fileName, stdout, stderr) => {
 									if (err) {
-										return console.log(`Error: running silencedetect ${filePath} ${err}`);
+										return console.log(`Error: audio processing removeSilence running silencedetect ${filePath} ${err}`);
 									}
-									let output = stdout + '\n' + stderr;
-									output = output.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
-										.map(i => i.split('] ')[1]).join(' | ').split(' | ');
-									nextProcessing(filePath);
+									const output = parseSilenceDetect(stdout + '\n' + stderr);
+									debugger
+									(new ffmpeg(filePath)).then(file => {
+										file.addCommand('-af', `atrim=${start}:${end}`);
+										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed.mp3`;
+										file.save(silenceRemovedPath, err => {
+											if (err) {
+												return console.log(`Error: removing silence fails ${filePath} ${err}`);
+											}
+											nextProcessing(silenceRemovedPath);
+										});
+									}, err => console.log(`Error: audio processing removeSilence unable to parse file ${err}`));
 								});
-							});
+							}, err => console.log(`Error: audio processing removeSilence unable to run silencedetect ${err}`));
 						} else {
 							nextProcessing(filePath);
 						}
 					}
-					function nextProcessing(filePath) {
-						// (new ffmpeg(filePath)).then(async file => {
-						(new ffmpeg(`/tmp/audio_processing_out.mp3`)).then(async file => {
+					function nextProcessing(filePath) { // final stage
+						(new ffmpeg(filePath)).then(async file => {
 							if (tagging) {
 							  const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
 								const { title, hostName } = soundcast.val();
