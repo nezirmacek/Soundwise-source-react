@@ -108,19 +108,63 @@ module.exports.audioProcessing = async (req, res) => {
 										return console.log(`Error: audio processing removeSilence running silencedetect ${filePath} ${err}`);
 									}
 									const output = parseSilenceDetect(stdout + '\n' + stderr);
-									debugger
 									(new ffmpeg(filePath)).then(file => {
-										file.addCommand('-af', `atrim=${start}:${end}`);
+										let chunksCount = 0;
+										let filterComplex = '';
+										let filterComplexEnd = '';
+										output.forEach(i => {
+											if (i[0] === 'silence_end') { // not empty block
+												chunksCount++;
+												filterComplex += `[0]atrim=start=${Number(i[1]).toFixed(3)}`;
+											}
+											if (i[0] === 'silence_start') {
+												filterComplex += `:end=${Number(i[1]).toFixed(3)}[a${chunksCount}];`;
+												filterComplexEnd += `[a${chunksCount}]`;
+											}
+										});
+										filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1`;
+										console.log(filterComplex);
+										debugger
+										file.addCommand('-filter_complex', filterComplex);
+										// *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
 										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed.mp3`;
 										file.save(silenceRemovedPath, err => {
 											if (err) {
 												return console.log(`Error: removing silence fails ${filePath} ${err}`);
 											}
-											nextProcessing(silenceRemovedPath);
+											introProcessing(silenceRemovedPath);
 										});
 									}, err => console.log(`Error: audio processing removeSilence unable to parse file ${err}`));
 								});
 							}, err => console.log(`Error: audio processing removeSilence unable to run silencedetect ${err}`));
+						} else {
+							introProcessing(filePath);
+						}
+					}
+					function introProcessing(filePath) {
+						if (intro) {
+							request.get({ url: intro, encoding: null }).then(async body => {
+								fs.writeFile(filePath, body, err => {
+									if (err) {
+										return console.log(`Error: audio processing intro write file ${filePath}`);
+									}
+									outroProcessing();
+								});
+							}).catch(err => console.log(`Error: audio processing intro request ${err}`));
+						} else {
+							outroProcessing(filePath);
+						}
+					}
+					function outroProcessing(filePath) {
+						if (outro) {
+							request.get({ url: outro, encoding: null }).then(async body => {
+								fs.writeFile(filePath, body, err => {
+									if (err) {
+										return console.log(`Error: audio processing outro write file ${filePath}`);
+									}
+									nextProcessing();
+								});
+							}).catch(err => console.log(`Error: audio processing outro request ${err}`));
 						} else {
 							nextProcessing(filePath);
 						}
@@ -147,12 +191,6 @@ module.exports.audioProcessing = async (req, res) => {
 						    } else { // 'aac' for .m4a files
 						      file.setAudioCodec('mp3').setAudioBitRate(64);
 						    }
-							}
-							if (intro) {
-								
-							}
-							if (outro) {
-								
 							}
 							if (setVolume) {
 								
