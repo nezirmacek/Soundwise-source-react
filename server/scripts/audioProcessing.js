@@ -34,13 +34,13 @@ module.exports.audioProcessing = async (req, res) => {
 		res.end('ok');
 
 		// 3. Get the episode url from firebase 'episodes/[episode id]/url', fetch the audio file
-		const episode = await firebase.database().ref(`episodes/${epsiodeId}`).once('value');
-		const episodeVal = episode.val();
+		const episodeObj = await firebase.database().ref(`episodes/${epsiodeId}`).once('value');
+		const episode = episodeObj.val();
 		request.get({
-			url: episodeVal.url,
+			url: episode.url,
 			encoding: null // return body as a Buffer
 		}).then(async body => {
-			const filePath = `/tmp/audio_processing_${episode.id + episode.url.slice(-4)}`;
+			/* const */ let filePath = `/tmp/audio_processing_${episode.id + episode.url.slice(-4)}`;
 			fs.writeFile(filePath, body, err => {
 				if (err) {
 					return console.log(`Error: audio processing cannot write tmp audio file ${filePath}`);
@@ -52,44 +52,104 @@ module.exports.audioProcessing = async (req, res) => {
 				//    D: [setVolume] harmonize volume and set loudness to desired level
 				//    E: [removeSilence] remove excessively long silence throughout the audio file (e.g. any silence longer than 0.7 second)
 				try {
-					(new ffmpeg(filePath)).then(file => {
-						if (tagging) {
-						  const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-							const { title, hostName } = soundcast.val();
-							const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-					    const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-					    file.addCommand('-metadata', `title="${episodeTitle}"`);
-					    file.addCommand('-metadata', `track="${episode.index}"`);
-					    file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
-					    file.addCommand('-metadata', `album="${title}"`);
-					    file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
-					    file.addCommand('-metadata', `genre="Podcast"`);
-
-							// TODO Question: is 'file.addCommand('-metadata', `'cover art=${itunesImage}'`)' the right way to add cover art to audio files? This seems more correct: https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
-					    // file.addCommand('-metadata', `'cover art=${itunesImage}'`);
-
-					    if (file.metadata.audio.codec === 'mp3') {
-					      file.addCommand('-codec', 'copy');
-					    } else { // 'aac' for .m4a files
-					      file.setAudioCodec('mp3').setAudioBitRate(64);
-					    }
-						}
-						if (trim) {
-							
-						}
-						if (intro) {
-							
-						}
-						if (outro) {
-							
-						}
-						if (setVolume) {
-							
-						}
+					filePath = `/tmp/audio_processing_out.mp3`; // Testing
+					if (trim) {
+						(new ffmpeg(filePath)).then(file => {
+							file.addCommand('-af', `silencedetect=n=-60dB:d=1`);
+							file.addCommand('-f', `null`);
+							file.save('-', (err, fileName, stdout, stderr) => {
+								if (err) {
+									return console.log(`Error: audio processing trim running silencedetect ${filePath} ${err}`);
+								}
+								const output = (stdout + '\n' + stderr).split('\n')
+								  .filter(i => i.slice(0, 14) === '[silencedetect')
+									.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': '));
+								// example output: [
+								// ["silence_start","-0.0150208"],["silence_end","5.08898"],
+								// ["silence_duration","5.104"], ["silence_start","10.041"],
+								// ["silence_end","15.553"],["silence_duration","5.512"],
+								// ["silence_start","17.481"] ]
+								let start = 0, end = 0;
+								if (output[0][0] === 'silence_start') {
+									const silenceStart = Number(output[0][1]);
+									if (silenceStart > -0.5 && silenceStart < 0.5) { // +/- 0.5 second
+										start = Number(output[1][1]).toFixed(3);
+									}
+								}
+								if (output[output.length - 1][0] === 'silence_start') {
+									end = Number(output[output.length - 1][1]).toFixed(3);
+								}
+								(new ffmpeg(filePath)).then(file => {
+									file.addCommand('-af', `atrim=${start}:${end}`);
+									const trimmedPath = `${filePath.slice(0, -4)}_trimmed.mp3`;
+									file.save(trimmedPath, err => {
+										if (err) {
+											return console.log(`Error: trimming fails ${filePath} ${err}`);
+										}
+										removeSilenceProcessing(trimmedPath);
+									});
+								}, err => console.log(`Error: audio processing trim unable to parse file ${err}`));
+							});
+						}, err => console.log(`Error: audio processing trim unable to run silencedetect ${err}`));
+					} else {
+						removeSilenceProcessing(filePath);
+					}
+					function removeSilenceProcessing(filePath) {
+						debugger
 						if (removeSilence) {
-							
+							// (new ffmpeg(filePath)).then(file => {
+							(new ffmpeg(`/tmp/audio_processing_out.mp3`)).then(file => {
+								file.addCommand('-af', `silencedetect=n=-60dB:d=${ removeSilence }`);
+								file.addCommand('-f', `null`);
+								file.save('-', (err, fileName, stdout, stderr) => {
+									if (err) {
+										return console.log(`Error: running silencedetect ${filePath} ${err}`);
+									}
+									let output = stdout + '\n' + stderr;
+									output = output.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
+										.map(i => i.split('] ')[1]).join(' | ').split(' | ');
+									nextProcessing(filePath);
+								});
+							});
+						} else {
+							nextProcessing(filePath);
 						}
-					}, err => console.log(`Error: audio processing unable to parse file with ffmpeg ${err}`));
+					}
+					function nextProcessing(filePath) {
+						// (new ffmpeg(filePath)).then(async file => {
+						(new ffmpeg(`/tmp/audio_processing_out.mp3`)).then(async file => {
+							if (tagging) {
+							  const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+								const { title, hostName } = soundcast.val();
+								const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+						    const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+						    file.addCommand('-metadata', `title="${episodeTitle}"`);
+						    file.addCommand('-metadata', `track="${episode.index}"`);
+						    file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
+						    file.addCommand('-metadata', `album="${title}"`);
+						    file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
+						    file.addCommand('-metadata', `genre="Podcast"`);
+
+								// TODO Question: is 'file.addCommand('-metadata', `'cover art=${itunesImage}'`)' the right way to add cover art to audio files? This seems more correct: https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
+						    // file.addCommand('-metadata', `'cover art=${itunesImage}'`);
+
+						    if (file.metadata.audio.codec === 'mp3') {
+						      file.addCommand('-codec', 'copy');
+						    } else { // 'aac' for .m4a files
+						      file.setAudioCodec('mp3').setAudioBitRate(64);
+						    }
+							}
+							if (intro) {
+								
+							}
+							if (outro) {
+								
+							}
+							if (setVolume) {
+								
+							}
+						}, err => console.log(`Error: audio processing unable to parse file with ffmpeg ${err}`));
+					}
 				} catch(e) {
 					console.log(`Error: audio processing ffmpeg catch ${e.body || e.stack}`);
 				}
