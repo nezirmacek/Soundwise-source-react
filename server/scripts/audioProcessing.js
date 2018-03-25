@@ -17,6 +17,8 @@ const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[s
 		//   ["silence_duration", "5.512"     ],
 		//   ["silence_start"   , "17.481"    ] ]
 
+const logErr = errMsg => console.log(`Error: audio processing ${errMsg}`);
+
 module.exports.audioProcessing = async (req, res) => {
 	// 1. Client make post request to /api/audio_processing, with episode ID and processing options
 	// request example: {
@@ -55,7 +57,7 @@ module.exports.audioProcessing = async (req, res) => {
 			/* const */ let filePath = `/tmp/audio_processing_${episode.id + ext}`;
 			fs.writeFile(filePath, body, err => {
 				if (err) {
-					return console.log(`Error: audio processing cannot write tmp audio file ${filePath}`);
+					return logErr(`cannot write tmp audio file ${filePath}`);
 				}
 				// 4. Run some or all of the following processing options, depending on what options are requested from the client:
 				//    A: [tagging] add metadata tags to the episode audio file
@@ -71,7 +73,7 @@ module.exports.audioProcessing = async (req, res) => {
 							file.addCommand('-f', `null`);
 							file.save('-', (err, fileName, stdout, stderr) => {
 								if (err) {
-									return console.log(`Error: audio processing trim running silencedetect ${filePath} ${err}`);
+									return logErr(`trim running silencedetect ${filePath} ${err}`);
 								}
 								const output = parseSilenceDetect(stdout + '\n' + stderr);
 								let start = 0, end = file.metadata.duration.seconds + 1;
@@ -89,13 +91,13 @@ module.exports.audioProcessing = async (req, res) => {
 									const trimmedPath = `${filePath.slice(0, -4)}_trimmed${ext}`;
 									file.save(trimmedPath, err => {
 										if (err) {
-											return console.log(`Error: trimming fails ${filePath} ${err}`);
+											return logErr(`trimming fails ${filePath} ${err}`);
 										}
 										removeSilenceProcessing(trimmedPath);
 									});
-								}, err => console.log(`Error: audio processing trim unable to parse file ${err}`));
+								}, err => logErr(`trim unable to parse file ${err}`));
 							});
-						}, err => console.log(`Error: audio processing trim unable to run silencedetect ${err}`));
+						}, err => logErr(`trim unable to run silencedetect ${err}`));
 					} else {
 						removeSilenceProcessing(filePath);
 					}
@@ -106,7 +108,7 @@ module.exports.audioProcessing = async (req, res) => {
 								file.addCommand('-f', `null`);
 								file.save('-', (err, fileName, stdout, stderr) => {
 									if (err) {
-										return console.log(`Error: audio processing removeSilence running silencedetect ${filePath} ${err}`);
+										return logErr(`removeSilence running silencedetect ${filePath} ${err}`);
 									}
 									const output = parseSilenceDetect(stdout + '\n' + stderr);
 									(new ffmpeg(filePath)).then(file => {
@@ -137,13 +139,13 @@ module.exports.audioProcessing = async (req, res) => {
 										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${ext}`;
 										file.save(silenceRemovedPath, err => {
 											if (err) {
-												return console.log(`Error: removing silence fails ${filePath} ${err}`);
+												return logErr(`removing silence fails ${filePath} ${err}`);
 											}
 											introProcessing(silenceRemovedPath);
 										});
-									}, err => console.log(`Error: audio processing removeSilence unable to parse file ${err}`));
+									}, err => logErr(`removeSilence unable to parse file ${err}`));
 								});
-							}, err => console.log(`Error: audio processing removeSilence unable to run silencedetect ${err}`));
+							}, err => logErr(`removeSilence unable to run silencedetect ${err}`));
 						} else {
 							introProcessing(filePath);
 						}
@@ -157,7 +159,7 @@ module.exports.audioProcessing = async (req, res) => {
 								const introPath = `/tmp/file_1.mp3`; // TODO remove
 								// fs.writeFile(introPath, body, err => {
 								// 	if (err) {
-								// 		return console.log(`Error: audio processing intro write file ${filePath}`);
+								// 		return logErr(`intro write file ${introPath}`);
 								// 	}
 									(new ffmpeg(introPath)).then(file => {
 										const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
@@ -172,16 +174,16 @@ module.exports.audioProcessing = async (req, res) => {
 											const introFadePath = `${introPath.slice(0, -4)}_fade${intro.slice(-4)}`;
 											file.save(introFadePath, err => {
 												if (err) {
-													return console.log(`Error: audio processing intro fade fails ${introPath} ${err}`);
+													return logErr(`intro fade fails ${introPath} ${err}`);
 												}
 												outroProcessing(filePath, introFadePath, introDuration);
 											});
 										} else {
 											outroProcessing(filePath, introPath, introDuration);
 										}
-									}, err => console.log(`Error: audio processing ffmpeg intro ${introPath} ${err}`));
+									}, err => logErr(`ffmpeg intro ${introPath} ${err}`));
 							// 	});
-							// }).catch(err => console.log(`Error: audio processing intro request ${err}`));
+							// }).catch(err => logErr(`intro request ${err}`));
 							
 						} else {
 							outroProcessing(filePath); // no intro
@@ -194,7 +196,7 @@ module.exports.audioProcessing = async (req, res) => {
 								const outroPath = `/tmp/file_2.mp3`; // TODO remove
 								// fs.writeFile(outroPath, body, err => {
 								// 	if (err) {
-								// 		return console.log(`Error: audio processing outro write file ${filePath}`);
+								// 		return logErr(`outro write file ${filePath}`);
 								// 	}
 								(new ffmpeg(outroPath)).then(file => {
 									if (overlayDuration) { // make fading
@@ -204,16 +206,16 @@ module.exports.audioProcessing = async (req, res) => {
 										const outroFadePath = `${outroPath.slice(0, -4)}_fade${outro.slice(-4)}`;
 										file.save(outroFadePath, err => {
 											if (err) {
-												return console.log(`Error: audio processing outro fade fails ${outroFadePath} ${err}`);
+												return logErr(`outro fade fails ${outroFadePath} ${err}`);
 											}
 											concat(filePath, introPath, introDuration, outroFadePath);
 										});
 									} else {
 										concat(filePath, introPath, introDuration, outroPath);
 									}
-								}, err => console.log(`Error: audio processing ffmpeg intro ${outroPath} ${err}`));
+								}, err => logErr(`ffmpeg intro ${outroPath} ${err}`));
 							// 	});
-							// }).catch(err => console.log(`Error: audio processing outro request ${err}`));
+							// }).catch(err => logErr(`outro request ${err}`));
 						} else {
 							concat(filePath, introPath, introDuration); // no outro
 						}
@@ -244,13 +246,12 @@ module.exports.audioProcessing = async (req, res) => {
 							file.addCommand('-filter_complex', `${filterComplex}`);
 							const concatPath = `${filePath.slice(0, -4)}_concat${intro.slice(-4)}`;
 							file.save(concatPath, err => {
-								debugger
 								if (err) {
-									return console.log(`Error: removing silence fails ${filePath} ${err}`);
+									return logErr(`concat save fails ${concatPath} ${err}`);
 								}
 								nextProcessing(concatPath);
 							});
-						}, err => console.log(`Error: audio processing ffmpeg main file ${filePath} ${err}`));
+						}, err => logErr(`ffmpeg main file ${filePath} ${err}`));
 					}
 					function nextProcessing(filePath) { // final stage
 						debugger
@@ -279,14 +280,14 @@ module.exports.audioProcessing = async (req, res) => {
 							if (setVolume) {
 								
 							}
-						}, err => console.log(`Error: audio processing unable to parse file with ffmpeg ${err}`));
+						}, err => logErr(`unable to parse file with ffmpeg ${err}`));
 					}
 				} catch(e) {
-					console.log(`Error: audio processing ffmpeg catch ${e.body || e.stack}`);
+					logErr(`ffmpeg catch ${e.body || e.stack}`);
 				}
 			}); // fs.writeFile
 		}).catch(err => {
-	    console.log(`Error: audio processing unable to obtain episode ${err}`);
+	    logErr(`unable to obtain episode ${err}`);
 	    // res.error(`Error: unable to obtain episode ${err}`);
 	  });
 	} else {
