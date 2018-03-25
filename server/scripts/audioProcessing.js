@@ -111,8 +111,12 @@ module.exports.audioProcessing = async (req, res) => {
 									const output = parseSilenceDetect(stdout + '\n' + stderr);
 									(new ffmpeg(filePath)).then(file => {
 										let chunksCount = 0;
-										let filterComplex = '';
+										let filterComplex = '"';
 										let filterComplexEnd = '';
+										if (output[0][0] === 'silence_start') { // not starting with silence (trimmed)
+											chunksCount++;
+											filterComplex += `[0]atrim=start=0`;
+										}
 										output.forEach(i => {
 											if (i[0] === 'silence_end') { // not empty block
 												chunksCount++;
@@ -123,9 +127,11 @@ module.exports.audioProcessing = async (req, res) => {
 												filterComplexEnd += `[a${chunksCount}]`;
 											}
 										});
-										filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1`;
-										console.log(filterComplex);
-										debugger
+										if (output[output.length - 1][0] === 'silence_duration') { // not ending with silence
+											filterComplex += `:end=${file.metadata.duration.seconds + 1}[a${chunksCount}];`;
+											filterComplexEnd += `[a${chunksCount}]`;
+										}
+										filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1"`;
 										file.addCommand('-filter_complex', filterComplex);
 										// *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
 										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${ext}`;
@@ -145,17 +151,20 @@ module.exports.audioProcessing = async (req, res) => {
 					// *** Add intro and outro ***
 					// Intro needs to be faded out at the end. And outro needs to be faded in.
 					function introProcessing(filePath) {
+						debugger
 						if (intro) {
-							request.get({ url: intro, encoding: null }).then(async body => {
-								const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
-								fs.writeFile(introPath, body, err => {
-									if (err) {
-										return console.log(`Error: audio processing intro write file ${filePath}`);
-									}
-									(new ffmpeg(introPath)).then(file => {
+							// request.get({ url: intro, encoding: null }).then(async body => {
+							// 	const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
+							// 	fs.writeFile(introPath, body, err => {
+							// 		if (err) {
+							// 			return console.log(`Error: audio processing intro write file ${filePath}`);
+							// 		}
+							// 		(new ffmpeg(introPath)).then(file => {
+									(new ffmpeg(`/tmp/file_1.mp3`)).then(file => {
 										// a. fade out an intro for the last 5 seconds of the intro clip if the intro duration == 885. (need to get the intro duration first)
 										// ffmpeg -i intro.mp3 -af 'afade=t=out:st=885:d=5' intro-fadeout.mp3
 										const duration = file.metadata.duration.seconds;
+										debugger
 										file.addCommand('-af', `afade=t=out:st=${duration}:d=5`);
 										const fadeoutPath = `${filePath.slice(0, -4)}_fadeout${intro.slice(-4)}`;
 										file.save(fadeoutPath, err => {
@@ -165,23 +174,35 @@ module.exports.audioProcessing = async (req, res) => {
 											outroProcessing(filePath, fadeoutPath);
 										});
 									}, err => console.log(`Error: audio processing ffmpeg intro ${introPath} ${err}`));
-								});
-							}).catch(err => console.log(`Error: audio processing intro request ${err}`));
+							// 	});
+							// }).catch(err => console.log(`Error: audio processing intro request ${err}`));
 						} else {
 							outroProcessing(filePath);
 						}
 					}
-					function outroProcessing(filePath, introFadeoutPath) {
+					function outroProcessing(filePath, fadeoutPath) {
 						if (outro) {
-							request.get({ url: outro, encoding: null }).then(async body => {
-								const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
-								fs.writeFile(outroPath, body, err => {
-									if (err) {
-										return console.log(`Error: audio processing outro write file ${filePath}`);
-									}
-									nextProcessing(filePath, introFadeoutPath, outroFadeinPath);
-								});
-							}).catch(err => console.log(`Error: audio processing outro request ${err}`));
+							// request.get({ url: outro, encoding: null }).then(async body => {
+							// 	const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
+							// 	fs.writeFile(outroPath, body, err => {
+							// 		if (err) {
+							// 			return console.log(`Error: audio processing outro write file ${filePath}`);
+							// 		}
+							// 		(new ffmpeg(outroPath)).then(file => {
+									(new ffmpeg(`/tmp/file_2.mp3`)).then(file => {
+										// a. fade in an outro clip for 5 seconds
+										// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
+										file.addCommand('-af', `afade=t=in:st=0:d=5`);
+										const fadeinPath = `${filePath.slice(0, -4)}_fadein${intro.slice(-4)}`;
+										file.save(fadeinPath, err => {
+											if (err) {
+												return console.log(`Error: removing silence fails ${filePath} ${err}`);
+											}
+											nextProcessing(filePath, fadeoutPath);
+										});
+									}, err => console.log(`Error: audio processing ffmpeg intro ${introPath} ${err}`));
+							// 	});
+							// }).catch(err => console.log(`Error: audio processing outro request ${err}`));
 						} else {
 							nextProcessing(filePath, introFadeoutPath);
 						}
