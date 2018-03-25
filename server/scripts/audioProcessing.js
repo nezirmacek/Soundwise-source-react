@@ -51,7 +51,8 @@ module.exports.audioProcessing = async (req, res) => {
 			url: episode.url,
 			encoding: null // return body as a Buffer
 		}).then(async body => {
-			/* const */ let filePath = `/tmp/audio_processing_${episode.id + episode.url.slice(-4)}`;
+			const ext = episode.url.slice(-4);
+			/* const */ let filePath = `/tmp/audio_processing_${episode.id + ext}`;
 			fs.writeFile(filePath, body, err => {
 				if (err) {
 					return console.log(`Error: audio processing cannot write tmp audio file ${filePath}`);
@@ -85,7 +86,7 @@ module.exports.audioProcessing = async (req, res) => {
 								}
 								(new ffmpeg(filePath)).then(file => {
 									file.addCommand('-af', `atrim=${start}:${end}`);
-									const trimmedPath = `${filePath.slice(0, -4)}_trimmed.mp3`;
+									const trimmedPath = `${filePath.slice(0, -4)}_trimmed${ext}`;
 									file.save(trimmedPath, err => {
 										if (err) {
 											return console.log(`Error: trimming fails ${filePath} ${err}`);
@@ -127,7 +128,7 @@ module.exports.audioProcessing = async (req, res) => {
 										debugger
 										file.addCommand('-filter_complex', filterComplex);
 										// *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
-										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed.mp3`;
+										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${ext}`;
 										file.save(silenceRemovedPath, err => {
 											if (err) {
 												return console.log(`Error: removing silence fails ${filePath} ${err}`);
@@ -141,35 +142,51 @@ module.exports.audioProcessing = async (req, res) => {
 							introProcessing(filePath);
 						}
 					}
+					// *** Add intro and outro ***
+					// Intro needs to be faded out at the end. And outro needs to be faded in.
 					function introProcessing(filePath) {
 						if (intro) {
 							request.get({ url: intro, encoding: null }).then(async body => {
-								fs.writeFile(filePath, body, err => {
+								const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
+								fs.writeFile(introPath, body, err => {
 									if (err) {
 										return console.log(`Error: audio processing intro write file ${filePath}`);
 									}
-									outroProcessing();
+									(new ffmpeg(introPath)).then(file => {
+										// a. fade out an intro for the last 5 seconds of the intro clip if the intro duration == 885. (need to get the intro duration first)
+										// ffmpeg -i intro.mp3 -af 'afade=t=out:st=885:d=5' intro-fadeout.mp3
+										const duration = file.metadata.duration.seconds;
+										file.addCommand('-af', `afade=t=out:st=${duration}:d=5`);
+										const fadeoutPath = `${filePath.slice(0, -4)}_fadeout${intro.slice(-4)}`;
+										file.save(fadeoutPath, err => {
+											if (err) {
+												return console.log(`Error: removing silence fails ${filePath} ${err}`);
+											}
+											outroProcessing(filePath, fadeoutPath);
+										});
+									}, err => console.log(`Error: audio processing ffmpeg intro ${introPath} ${err}`));
 								});
 							}).catch(err => console.log(`Error: audio processing intro request ${err}`));
 						} else {
 							outroProcessing(filePath);
 						}
 					}
-					function outroProcessing(filePath) {
+					function outroProcessing(filePath, introFadeoutPath) {
 						if (outro) {
 							request.get({ url: outro, encoding: null }).then(async body => {
-								fs.writeFile(filePath, body, err => {
+								const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
+								fs.writeFile(outroPath, body, err => {
 									if (err) {
 										return console.log(`Error: audio processing outro write file ${filePath}`);
 									}
-									nextProcessing();
+									nextProcessing(filePath, introFadeoutPath, outroFadeinPath);
 								});
 							}).catch(err => console.log(`Error: audio processing outro request ${err}`));
 						} else {
-							nextProcessing(filePath);
+							nextProcessing(filePath, introFadeoutPath);
 						}
 					}
-					function nextProcessing(filePath) { // final stage
+					function nextProcessing(filePath, introFadeoutPath, outroFadeinPath) { // final stage
 						(new ffmpeg(filePath)).then(async file => {
 							if (tagging) {
 							  const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
