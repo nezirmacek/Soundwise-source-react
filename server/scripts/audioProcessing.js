@@ -151,62 +151,86 @@ module.exports.audioProcessing = async (req, res) => {
 					// *** Add intro and outro ***
 					// Intro needs to be faded out at the end. And outro needs to be faded in.
 					function introProcessing(filePath) {
-						debugger
 						if (intro) {
+							
 							// request.get({ url: intro, encoding: null }).then(async body => {
-							// 	const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
-							// 	fs.writeFile(introPath, body, err => {
-							// 		if (err) {
-							// 			return console.log(`Error: audio processing intro write file ${filePath}`);
-							// 		}
-							// 		(new ffmpeg(introPath)).then(file => {
-									(new ffmpeg(`/tmp/file_1.mp3`)).then(file => {
-										// a. fade out an intro for the last 5 seconds of the intro clip if the intro duration == 885. (need to get the intro duration first)
-										// ffmpeg -i intro.mp3 -af 'afade=t=out:st=885:d=5' intro-fadeout.mp3
-										const duration = file.metadata.duration.seconds;
-										debugger
-										file.addCommand('-af', `afade=t=out:st=${duration}:d=5`);
-										const fadeoutPath = `${filePath.slice(0, -4)}_fadeout${intro.slice(-4)}`;
-										file.save(fadeoutPath, err => {
-											if (err) {
-												return console.log(`Error: removing silence fails ${filePath} ${err}`);
-											}
-											outroProcessing(filePath, fadeoutPath);
-										});
+								const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
+								// fs.writeFile(introPath, body, err => {
+								// 	if (err) {
+								// 		return console.log(`Error: audio processing intro write file ${filePath}`);
+								// 	}
+								// 	(new ffmpeg(introPath)).then(file => {
+									(new ffmpeg(`/tmp/file_1.mp3`)).then(file => { // TODO remove
+										const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
+										const introDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
+										if (overlayDuration) { // make fading
+											// a. fade out an intro
+											// ffmpeg -i intro.mp3 -af 'afade=t=out:st=885:d=5' intro-fadeout.mp3
+											// One thing to note is that if overlayDuration > 0, the intro fade out duration should be overlayDuration x 2
+											const fadeDuration = overlayDuration * 2;
+											const fadeStartPosition = introDuration - fadeDuration;
+											file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
+											const introFadePath = `${filePath.slice(0, -4)}_fade${intro.slice(-4)}`;
+											file.save(introFadePath, err => {
+												if (err) {
+													return console.log(`Error: removing silence fails ${filePath} ${err}`);
+												}
+												outroProcessing(filePath, introFadePath, introDuration - overlayDuration);
+											});
+										} else {
+											outroProcessing(filePath, introPath, introDuration); // no fading
+										}
 									}, err => console.log(`Error: audio processing ffmpeg intro ${introPath} ${err}`));
 							// 	});
 							// }).catch(err => console.log(`Error: audio processing intro request ${err}`));
+							
 						} else {
-							outroProcessing(filePath);
+							outroProcessing(filePath); // no intro
 						}
 					}
-					function outroProcessing(filePath, fadeoutPath) {
+					function outroProcessing(filePath, introPath, introDelay) {
 						if (outro) {
 							// request.get({ url: outro, encoding: null }).then(async body => {
-							// 	const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
-							// 	fs.writeFile(outroPath, body, err => {
-							// 		if (err) {
-							// 			return console.log(`Error: audio processing outro write file ${filePath}`);
-							// 		}
-							// 		(new ffmpeg(outroPath)).then(file => {
-									(new ffmpeg(`/tmp/file_2.mp3`)).then(file => {
-										// a. fade in an outro clip for 5 seconds
+								const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
+								// fs.writeFile(outroPath, body, err => {
+								// 	if (err) {
+								// 		return console.log(`Error: audio processing outro write file ${filePath}`);
+								// 	}
+								// 	(new ffmpeg(outroPath)).then(file => {
+								(new ffmpeg(`/tmp/file_2.mp3`)).then(file => { // TODO remove
+									const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
+									if (overlayDuration) { // make fading
+										// a. fade in an outro clip
 										// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
-										file.addCommand('-af', `afade=t=in:st=0:d=5`);
-										const fadeinPath = `${filePath.slice(0, -4)}_fadein${intro.slice(-4)}`;
-										file.save(fadeinPath, err => {
+										file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
+										const outroFadePath = `${filePath.slice(0, -4)}_fade${intro.slice(-4)}`;
+										file.save(outroFadePath, err => {
 											if (err) {
 												return console.log(`Error: removing silence fails ${filePath} ${err}`);
 											}
-											nextProcessing(filePath, fadeoutPath);
+											concat(filePath, introPath, introDelay, outroFadePath);
 										});
-									}, err => console.log(`Error: audio processing ffmpeg intro ${introPath} ${err}`));
+									} else {
+										concat(filePath, introPath, introDelay, outroPath); // no fading
+									}
+								}, err => console.log(`Error: audio processing ffmpeg intro ${outroPath} ${err}`));
 							// 	});
 							// }).catch(err => console.log(`Error: audio processing outro request ${err}`));
 						} else {
-							nextProcessing(filePath, introFadeoutPath);
+							concat(filePath, introPath, introDelay); // no outro
 						}
 					}
+					
+					function concat(filePath, introPath, introDelay, outroPath) {
+						debugger
+						// *because adelay can't accept all= option to delay all channels in -filter_complex
+						// - using approach from https://trac.ffmpeg.org/ticket/5855#comment:4 ("3000|3000|3000|...")
+						// ffmpeg -i intro.mp3 -i /tmp/audio_processing_out_trimmed_silence_removed.mp3 -filter_complex "[1]adelay=3000|3000|3000|3000|3000|3000[a];[0][a]amix=2" out_test.mp3
+						
+						nextProcessing(filePath);
+					}
+					
+					
 					function nextProcessing(filePath, introFadeoutPath, outroFadeinPath) { // final stage
 						(new ffmpeg(filePath)).then(async file => {
 							if (tagging) {
