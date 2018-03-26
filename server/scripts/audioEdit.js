@@ -9,6 +9,8 @@
           soundcastId: '987654321s', // need to retrieve soundcast info from firebase for tagging
           publisherEmail: 'john@awesomepublisher.com',
           publisherFirstName: 'John',
+          publisherName: 'Awesome publisher',
+          publisherImageUrl: 'https://image.link.png',
           tagging: true,
           intro: 'https://mysoundwise.com/tracks/intro12345s.mp3',
           outro: 'https://mysoundwise.com/tracks/outro12345s.mp3',
@@ -31,10 +33,90 @@
 //    D: [setVolume] harmonize volume and set loudness to desired level
 //    E: [removeSilence] remove excessively long silence throughout the audio file (e.g. any silence longer than 0.7 second)
 
-// 5. If 'autoPublish == true', send text messages/emails to listeners (I will post more instructions on how to do this), and then do
-      firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+// 5a. If 'autoPublish == true', save processed audio file to AWS S3 to replace the original file
+//     If 'autoPublish == false', save processed audio file to AWS S3 under 'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
+//     and then do
+       firebase.database().ref(`episodes/${episodeId}/editedUrl`).set(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`);
 
-// If 'autoPublish == false', do nothing.
+// 5b. If 'autoPublish == false', do nothing.
+//     If 'autoPublish == true', publish the episode
+//     To publish the episode:
+//     step 1: save episode metadata in our sql database
+       const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+       const soundcast = soundcastObj.val();
+       // and then save data. The equivalent from front end:
+       // request.post({
+       //  url: '/api/episode',
+       //  body: {
+       //    episodeId,
+       //    soundcastId,
+       //    publisherId: soundcast.publisherID,
+       //    title: episode.title,
+       //    soundcastTitle: soundcast.title,
+       //  }
+       // });
+//     step 2: notify subscribed listeners by text and email
+//       text notification:
+          let registrationTokens = [];
+          if(soundcast.subscribed) {
+              Object.keys(soundcast.subscribed).forEach(user => {
+                if(typeof soundcast.subscribed[user] == 'object') {
+                    registrationTokens.push(soundcast.subscribed[user][0]) //basic version: only allow one devise per user
+                }
+              });
+              const payload = {
+                notification: {
+                  title: `${soundcast.title} just published:`,
+                  body: `${episode.title}`,
+                  sound: 'default',
+                  badge: '1'
+                }
+              };
+              sendNotifications(registrationTokens, payload);//sent push notificaiton
+              var admin = require("firebase-admin");
+
+              function sendNotification (registrationTokens, payload, options) {
+                var options = {
+                  priority: "high"
+                };
+                admin.messaging().sendToDevice(registrationTokens, payload, options)
+                  .then(function(response) {
+                    //...
+                  })
+                  .catch(function(error) {
+                    //...
+                  });
+              }
+          }
+
+//        send email notification:
+          if(req.body.emailListeners) {
+            emailListeners(soundcast);
+          }
+
+          function emailListeners(soundcast) {
+              let subscribers = [];
+              const subject = `${episode.title} was just published on ${soundcast.title}`;
+              if(soundcast.subscribed) {
+                  // send notification email to subscribers
+                  const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${req.body.publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+                  sendMarketingEmails([soundcast.subscriberEmailList], subject, content, req.body.publisherName, req.body.publisherImageUrl, publisherEmail, 4383);
+              }
+
+              // send notification email to invitees
+              if(soundcast.invited) {
+                  const content = `<p>Hi there!</p><p></p><p>${req.body.publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
+                  sendMarketingEmails([soundcast.inviteeEmailList], subject, content, req.body.publisherName, req.body.publisherImageUrl, publisherEmail, 4383);
+              }
+
+              function sendMarketingEmails() {
+                // this should be similar to the sendMarketingEmails function under ./sendEmails.js
+              }
+          }
+
+//     step 3: update firebase
+       firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+
 
 // 6. Notify the publisher by email.
       sgMail.send({
@@ -63,7 +145,12 @@
       file.setAudioCodec('mp3').setAudioBitRate(64);
     }
 
-// Question: is 'file.addCommand('-metadata', `'cover art=${itunesImage}'`)' the right way to add cover art to audio files? This seems more correct: https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
+// to add cover art to audio file:
+// 1) check if episode.coverArtUrl exsits, if so, use that as the cover art
+// 2) if it doesn't exist, get the soundcast cover art from firebase and use that:
+      const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+      const soundcast = soundcastObj.val();
+//    and use souncast.imageURL as the cover art
 
 // *** trim silence at beginning and end ***
 // trim silence at beginning and set output bitrate to 64kbps
