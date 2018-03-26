@@ -54,7 +54,7 @@ module.exports.audioProcessing = async (req, res) => {
 			encoding: null // return body as a Buffer
 		}).then(async body => {
 			const ext = episode.url.slice(-4);
-			/* const */ let filePath = `/tmp/audio_processing_${episode.id + ext}`;
+			const filePath = `/tmp/audio_processing_${episode.id + ext}`;
 			fs.writeFile(filePath, body, err => {
 				if (err) {
 					return logErr(`cannot write tmp audio file ${filePath}`);
@@ -66,7 +66,6 @@ module.exports.audioProcessing = async (req, res) => {
 				//    D: [setVolume] harmonize volume and set loudness to desired level
 				//    E: [removeSilence] remove excessively long silence throughout the audio file (e.g. any silence longer than 0.7 second)
 				try {
-					filePath = `/tmp/audio_processing_out.mp3`; // Testing
 					if (trim) {
 						(new ffmpeg(filePath)).then(file => {
 							file.addCommand('-af', `silencedetect=n=-60dB:d=1`);
@@ -154,13 +153,12 @@ module.exports.audioProcessing = async (req, res) => {
 					// Intro needs to be faded out at the end. And outro needs to be faded in.
 					function introProcessing(filePath) {
 						if (intro) {
-							// request.get({ url: intro, encoding: null }).then(async body => {
-								// const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
-								const introPath = `/tmp/file_1.mp3`; // TODO remove
-								// fs.writeFile(introPath, body, err => {
-								// 	if (err) {
-								// 		return logErr(`intro write file ${introPath}`);
-								// 	}
+							request.get({ url: intro, encoding: null }).then(async body => {
+								const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
+								fs.writeFile(introPath, body, err => {
+									if (err) {
+										return logErr(`intro write file ${introPath}`);
+									}
 									(new ffmpeg(introPath)).then(file => {
 										const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
 										const introDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
@@ -182,47 +180,45 @@ module.exports.audioProcessing = async (req, res) => {
 											outroProcessing(filePath, introPath, introDuration);
 										}
 									}, err => logErr(`ffmpeg intro ${introPath} ${err}`));
-							// 	});
-							// }).catch(err => logErr(`intro request ${err}`));
-							
+								});
+							}).catch(err => logErr(`intro request ${err}`));
 						} else {
 							outroProcessing(filePath); // no intro
 						}
 					}
 					function outroProcessing(filePath, introPath, introDuration) {
 						if (outro) {
-							// request.get({ url: outro, encoding: null }).then(async body => {
-								// const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
-								const outroPath = `/tmp/file_2.mp3`; // TODO remove
-								// fs.writeFile(outroPath, body, err => {
-								// 	if (err) {
-								// 		return logErr(`outro write file ${filePath}`);
-								// 	}
-								(new ffmpeg(outroPath)).then(file => {
-									if (overlayDuration) { // make fading
-										// a. fade in an outro clip
-										// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
-										file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
-										const outroFadePath = `${outroPath.slice(0, -4)}_fade${outro.slice(-4)}`;
-										file.save(outroFadePath, err => {
-											if (err) {
-												return logErr(`outro fade fails ${outroFadePath} ${err}`);
-											}
-											concat(filePath, introPath, introDuration, outroFadePath);
-										});
-									} else {
-										concat(filePath, introPath, introDuration, outroPath);
+							request.get({ url: outro, encoding: null }).then(async body => {
+								const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
+								fs.writeFile(outroPath, body, err => {
+									if (err) {
+										return logErr(`outro write file ${filePath}`);
 									}
-								}, err => logErr(`ffmpeg intro ${outroPath} ${err}`));
-							// 	});
-							// }).catch(err => logErr(`outro request ${err}`));
+									(new ffmpeg(outroPath)).then(file => {
+										if (overlayDuration) { // make fading
+											// a. fade in an outro clip
+											// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
+											file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
+											const outroFadePath = `${outroPath.slice(0, -4)}_fade${outro.slice(-4)}`;
+											file.save(outroFadePath, err => {
+												if (err) {
+													return logErr(`outro fade fails ${outroFadePath} ${err}`);
+												}
+												concat(filePath, introPath, introDuration, outroFadePath);
+											});
+										} else {
+											concat(filePath, introPath, introDuration, outroPath);
+										}
+									}, err => logErr(`ffmpeg intro ${outroPath} ${err}`));
+								});
+							}).catch(err => logErr(`outro request ${err}`));
 						} else {
 							concat(filePath, introPath, introDuration); // no outro
 						}
 					}
 					function concat(filePath, introPath, introDuration, outroPath) {
 						if (introPath || outroPath) {
-							(new ffmpeg(filePath)).then(file => { // TODO remove
+							(new ffmpeg(filePath)).then(file => {
 								const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
 								const mainFileDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
 								let adelay1, adelay2;
@@ -280,7 +276,6 @@ module.exports.audioProcessing = async (req, res) => {
 						}
 					}
 					function nextProcessing(filePath) { // final stage
-						debugger
 						(new ffmpeg(filePath)).then(async file => {
 							if (tagging) {
 							  const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
@@ -294,8 +289,8 @@ module.exports.audioProcessing = async (req, res) => {
 						    file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
 						    file.addCommand('-metadata', `genre="Podcast"`);
 
-								// TODO Question: is 'file.addCommand('-metadata', `'cover art=${itunesImage}'`)' the right way to add cover art to audio files? This seems more correct: https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
-						    // file.addCommand('-metadata', `'cover art=${itunesImage}'`);
+						    // https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
+								// ffmpeg -i in.mp3 -i test.jpeg -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" out.mp3
 
 						    if (file.metadata.audio.codec === 'mp3') {
 						      file.addCommand('-codec', 'copy');
@@ -304,7 +299,30 @@ module.exports.audioProcessing = async (req, res) => {
 						    }
 							}
 							if (setVolume) {
-								
+								// *** Set volume target and harmonize loudness level ***
+								// set Integrated loudness to -14: I=-14
+								// set True peak value to -3: TP=-2
+								// set Loudness range to 11: LRA=11
+								// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
+						    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary`);
+						    file.addCommand('-af', `44.1k`);
+								const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
+								file.save(outputPath, err => {
+									if (err) {
+										return logErr(`output save fails ${outputPath} ${err}`);
+									}
+									// 5. If 'autoPublish == true', send text messages/emails to listeners (I will post more instructions on how to do this), and then do
+									if (autoPublish) {
+										firebase.database().ref(`episodes/${episode.id}/isPublished`).set(true);
+									}
+									// 6. Notify the publisher by email.
+						      sgMail.send({
+						        to: publisherEmail,
+						        from: 'support@mysoundwise.com',
+						        subject: 'Your episode has been processed!',
+						        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
+						      });
+								});
 							}
 						}, err => logErr(`unable to parse file with ffmpeg ${err}`));
 					}
