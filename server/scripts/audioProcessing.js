@@ -221,37 +221,63 @@ module.exports.audioProcessing = async (req, res) => {
 						}
 					}
 					function concat(filePath, introPath, introDuration, outroPath) {
-						(new ffmpeg(filePath)).then(file => { // TODO remove
-							const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
-							const mainFileDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
-							let introDelay = introDuration;
-							let outroDelay = introDuration + mainFileDuration;
-							if (overlayDuration) { // have fading effect
-								introDelay = introDuration - overlayDuration;
-								outroDelay = introDuration + mainFileDuration - 2*overlayDuration;
-							}
-							introDelay = Math.floor(introDelay * 1000); // converting to milliseconds
-							outroDelay = Math.floor(outroDelay * 1000);
-							let adelay1 = introDelay, adelay2 = outroDelay;
-							// *because adelay can't accept all= option to delay all channels in -filter_complex
-							// we use approach from https://trac.ffmpeg.org/ticket/5855#comment:4 ("4000|4000|4000|...")
-							// ffmpeg -i main.mp3 -i intro.mp3 -i outro.mp3 -filter_complex "[0]adelay=4000|4000|4000|4000[a];[2]adelay=7000|7000|7000|7000[b];[1][a][b]amix=3" out_test.mp3
-							for (var i = 0; i < 8; i++) { // 8 audio channels
-								adelay1 += '|' + introDelay;
-								adelay2 += '|' + outroDelay;
-							}
-							let filterComplex = `"[0]adelay=${adelay1}[a];[2]adelay=${adelay2}[b];[1][a][b]amix=3"`;
-							file.addCommand('-i', `${introPath}`);
-							file.addCommand('-i', `${outroPath}`);
-							file.addCommand('-filter_complex', `${filterComplex}`);
-							const concatPath = `${filePath.slice(0, -4)}_concat${intro.slice(-4)}`;
-							file.save(concatPath, err => {
-								if (err) {
-									return logErr(`concat save fails ${concatPath} ${err}`);
+						if (introPath || outroPath) {
+							(new ffmpeg(filePath)).then(file => { // TODO remove
+								const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
+								const mainFileDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
+								let adelay1, adelay2;
+								if (introPath) {
+									let introDelay = introDuration;
+									if (overlayDuration) { // have fading
+										introDelay = introDuration - overlayDuration;
+									}
+									introDelay = Math.floor(introDelay * 1000); // converting to milliseconds
+									adelay1 = introDelay;
+									// *because adelay can't accept all= option to delay all channels in -filter_complex
+									// we use approach from https://trac.ffmpeg.org/ticket/5855#comment:4 ("4000|4000|4000|...")
+									// ffmpeg -i main.mp3 -i intro.mp3 -i outro.mp3 -filter_complex "[0]adelay=4000|4000|4000|4000[a];[2]adelay=7000|7000|7000|7000[b];[1][a][b]amix=3" out_test.mp3
+									for (var i = 0; i < 8; i++) { // 8 audio channels
+										adelay1 += '|' + introDelay;
+									}
+									file.addCommand('-i', `${introPath}`);
 								}
-								nextProcessing(concatPath);
-							});
-						}, err => logErr(`ffmpeg main file ${filePath} ${err}`));
+								if (outroPath) {
+									file.addCommand('-i', `${outroPath}`);
+								}
+								let filterComplex = '';
+								if (introPath && outroPath) {
+									let outroDelay = introDuration + mainFileDuration; // includes intro duration
+									if (overlayDuration) { // have fading
+										outroDelay = introDuration + mainFileDuration - 2*overlayDuration;
+									}
+									outroDelay = Math.floor(outroDelay * 1000);
+									adelay2 = outroDelay;
+									for (var i = 0; i < 8; i++) { adelay2 += '|' + outroDelay; }
+									filterComplex= `"[0]adelay=${adelay1}[a];[2]adelay=${adelay2}[b];[1][a][b]amix=3"`;
+								} else if (introPath && !outroPath) { // only intro
+									filterComplex= `"[0]adelay=${adelay1}[a];[1][a]amix=2"`;
+								} else if (!introPath && outroPath) { // only outro
+									let outroDelay = mainFileDuration;
+									if (overlayDuration) { // have fading
+										outroDelay = mainFileDuration - overlayDuration;
+									}
+									outroDelay = Math.floor(outroDelay * 1000);
+									adelay2 = outroDelay;
+									for (var i = 0; i < 8; i++) { adelay2 += '|' + outroDelay; }
+									filterComplex= `"[1]adelay=${adelay2}[a];[0][a]amix=2"`;
+								}
+								file.addCommand('-filter_complex', `${filterComplex}`);
+								const concatPath = `${filePath.slice(0, -4)}_concat${intro.slice(-4)}`;
+								file.save(concatPath, err => {
+									if (err) {
+										return logErr(`concat save fails ${concatPath} ${err}`);
+									}
+									nextProcessing(concatPath);
+								});
+							}, err => logErr(`ffmpeg main file ${filePath} ${err}`));
+						} else {
+							nextProcessing(filePath);
+						}
 					}
 					function nextProcessing(filePath) { // final stage
 						debugger
