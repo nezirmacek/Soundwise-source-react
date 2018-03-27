@@ -424,13 +424,13 @@ module.exports.audioProcessing = async (req, res) => {
 		                  const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
 		                  sendMarketingEmails({
 												body: {  // req.body
-													[soundcast.subscriberEmailList],
+													listIds: [soundcast.subscriberEmailList],
 													subject,
 													content,
 													publisherName,
 													publisherImage: publisherImageUrl,
 													publisherEmail,
-													4383
+													unsubscribeGroup: 4383
 												}
 											}, responseObject); // this should be similar to the sendMarketingEmails function under ./sendEmails.js
 			              }
@@ -440,13 +440,13 @@ module.exports.audioProcessing = async (req, res) => {
 		                  const content = `<p>Hi there!</p><p></p><p>${publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
 		                  sendMarketingEmails({
 												body {  // req.body
-													[soundcast.inviteeEmailList],
+													listIds: [soundcast.inviteeEmailList],
 													subject,
 													content,
 													publisherName,
 													publisherImage: publisherImageUrl,
 													publisherEmail,
-													4383
+													unsubscribeGroup: 4383
 												}
 											}, responseObject);
 			              }
