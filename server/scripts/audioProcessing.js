@@ -309,52 +309,125 @@ module.exports.audioProcessing = async (req, res) => {
 								// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
 						    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary`);
 						    file.addCommand('-af', `44.1k`);
-								const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
-								file.save(outputPath, err => {
+							}
+							const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
+							file.save(outputPath, err => {
+								if (err) {
+									return logErr(`output save fails ${outputPath} ${err}`);
+								}
+								uploader.use(new S3Strategy({
+									uploadPath: 'soundcasts',
+									headers: { 'x-amz-acl': 'public-read' },
+									options: {
+										key: awsConfig.accessKeyId,
+										secret: awsConfig.secretAccessKey,
+										bucket: 'soundwiseinc',
+									},
+								}));
+								console.log('CHECK: audio processing ', filePath, id);
+								uploader.upload('s3' // saving to S3 db
+									// 5a. If 'autoPublish == true', save processed audio file to AWS S3
+									//         to replace the original file
+									//     If 'autoPublish == false', save processed audio file to AWS S3 under
+									//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
+								 , { path: outputPath, name: `${id + (autoPublish ? '' : '-edited')}.mp3` } // file
+								 , (err, files) => {
+									fs.unlink(filePath, err => 0); // remove original file
+									fs.unlink(outputPath, err => 0); // remove tagged file
 									if (err) {
-										return logErr(`output save fails ${outputPath} ${err}`);
+										return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
 									}
-									uploader.use(new S3Strategy({
-										uploadPath: 'soundcasts',
-										headers: { 'x-amz-acl': 'public-read' },
-										options: {
-											key: awsConfig.accessKeyId,
-											secret: awsConfig.secretAccessKey,
-											bucket: 'soundwiseinc',
-										},
-									}));
-									console.log('CHECK: audio processing ', filePath, id);
-									uploader.upload('s3' // saving to S3 db
-										// 5a. If 'autoPublish == true', save processed audio file to AWS S3
-										//         to replace the original file
-										//     If 'autoPublish == false', save processed audio file to AWS S3 under
-										//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
-									 , { path: outputPath, name: `${id + (autoPublish ? '' : '-edited')}.mp3` } // file
-									 , (err, files) => {
-										fs.unlink(filePath, err => 0); // remove original file
-										fs.unlink(outputPath, err => 0); // remove tagged file
-										if (err) {
-											return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
-										}
+									if (!autoPublish) {
+										// 5a. - and then do // TODO - review
+										firebase.database().ref(`episodes/${episodeId}/editedUrl`).set(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`);
+									} else {
 										// 5b. If 'autoPublish == false', do nothing.
 										//     If 'autoPublish == true', publish the episode
-										if (autoPublish) {
-											firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
-										} else {
-											// 5a - and then do // TODO - review
-											firebase.database().ref(`episodes/${episodeId}/editedUrl`).set(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`);
-										}
-										// 6. Notify the publisher by email.
-							      sgMail.send({
-							        to: publisherEmail,
-							        from: 'support@mysoundwise.com',
-							        subject: 'Your episode has been processed!',
-							        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
-							      });
-									});
-								});
-							}
-						}, err => logErr(`unable to parse file with ffmpeg ${err}`));
+										//     To publish the episode:
+										//     step 1: save episode metadata in our sql database
+										const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+										const soundcast = soundcastObj.val();
+										       // and then save data. The equivalent from front end:
+										       // request.post({
+										       //  url: '/api/episode',
+										       //  body: {
+										       //    episodeId,
+										       //    soundcastId,
+										       //    publisherId: soundcast.publisherID,
+										       //    title: episode.title,
+										       //    soundcastTitle: soundcast.title,
+										       //  }
+										       // });
+										//     step 2: notify subscribed listeners by text and email
+										//       text notification:
+					          let registrationTokens = [];
+					          if(soundcast.subscribed) {
+					              Object.keys(soundcast.subscribed).forEach(user => {
+					                if(typeof soundcast.subscribed[user] == 'object') {
+					                    registrationTokens.push(soundcast.subscribed[user][0]) //basic version: only allow one devise per user
+					                }
+					              });
+					              const payload = {
+					                notification: {
+					                  title: `${soundcast.title} just published:`,
+					                  body: `${episode.title}`,
+					                  sound: 'default',
+					                  badge: '1'
+					                }
+					              };
+					              sendNotifications(registrationTokens, payload);//sent push notificaiton
+					              var admin = require("firebase-admin");
+
+					              function sendNotification (registrationTokens, payload, options) {
+					                var options = {
+					                  priority: "high"
+					                };
+					                admin.messaging().sendToDevice(registrationTokens, payload, options)
+					                  .then(function(response) {
+					                    //...
+					                  })
+					                  .catch(function(error) {
+					                    //...
+					                  });
+					              }
+					          }
+
+										//        send email notification:
+					          if(req.body.emailListeners) {
+					            emailListeners(soundcast);
+					          }
+					          function emailListeners(soundcast) {
+				              let subscribers = [];
+				              const subject = `${episode.title} was just published on ${soundcast.title}`;
+				              if(soundcast.subscribed) {
+			                  // send notification email to subscribers
+			                  const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${req.body.publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+			                  sendMarketingEmails([soundcast.subscriberEmailList], subject, content, req.body.publisherName, req.body.publisherImageUrl, publisherEmail, 4383);
+				              }
+
+				              // send notification email to invitees
+				              if(soundcast.invited) {
+			                  const content = `<p>Hi there!</p><p></p><p>${req.body.publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
+			                  sendMarketingEmails([soundcast.inviteeEmailList], subject, content, req.body.publisherName, req.body.publisherImageUrl, publisherEmail, 4383);
+				              }
+
+				              function sendMarketingEmails() {
+				                // this should be similar to the sendMarketingEmails function under ./sendEmails.js
+				              }
+					          }
+										//     step 3: update firebase
+										firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+									}
+									// 6. Notify the publisher by email.
+						      sgMail.send({
+						        to: publisherEmail,
+						        from: 'support@mysoundwise.com',
+						        subject: 'Your episode has been processed!',
+						        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
+						      });
+								}); // s3 upload
+							}); // file.save outputPath
+						}, err => logErr(`nextProcessing unable to parse file with ffmpeg ${err}`));
 					}
 				} catch(e) {
 					logErr(`ffmpeg catch ${e.body || e.stack}`);
