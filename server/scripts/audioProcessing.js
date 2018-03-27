@@ -9,7 +9,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
-const sendMarketingEmails = require('./scripts/sendEmails.js').sendMarketingEmails;
+const sendMarketingEmails = require('./sendEmails').sendMarketingEmails;
 
 const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
 		.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': ')); // *
@@ -439,7 +439,7 @@ module.exports.audioProcessing = async (req, res) => {
 			              if (soundcast.invited) {
 		                  const content = `<p>Hi there!</p><p></p><p>${publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
 		                  sendMarketingEmails({
-												body {  // req.body
+												body: {  // req.body
 													listIds: [soundcast.inviteeEmailList],
 													subject,
 													content,
