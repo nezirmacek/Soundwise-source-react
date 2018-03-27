@@ -1,4 +1,7 @@
 'use strict';
+const S3Strategy = require('express-fileuploader-s3');
+const awsConfig = require('../../config').awsConfig;
+const uploader = require('./express-fileuploader-updated');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const sgMail = require('@sendgrid/mail');
@@ -39,7 +42,7 @@ module.exports.audioProcessing = async (req, res) => {
 					tagging, intro, outro, overlayDuration, setVolume, trim,
 					removeSilence, autoPublish, emailListeners } = req.body;
 	if (epsiodeId && soundcastId && publisherEmail && publisherFirstName &&
-			typeof tagging         === 'boolean' && intro && outro &&
+			typeof tagging         === 'boolean' && publisherName && publisherImageUrl  &&
 			typeof overlayDuration === 'number'  && typeof setVolume      === 'boolean' &&
 			typeof trim            === 'boolean' && typeof removeSilence  === 'number'  &&
 			typeof autoPublish     === 'boolean' && typeof emailListeners === 'boolean') {
@@ -311,9 +314,42 @@ module.exports.audioProcessing = async (req, res) => {
 									if (err) {
 										return logErr(`output save fails ${outputPath} ${err}`);
 									}
-									// 5. If 'autoPublish == true', send text messages/emails to listeners (I will post more instructions on how to do this), and then do
+									// 5a. If 'autoPublish == true', save processed audio file to AWS S3
+									//         to replace the original file
+									//     If 'autoPublish == false', save processed audio file to AWS S3 under
+									//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
+									// 5b. If 'autoPublish == false', do nothing.
+									//     If 'autoPublish == true', publish the episode
 									if (autoPublish) {
+										const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
+										const episodeFileName = episode.url.split('/')[5];
+										uploader.use(new S3Strategy({
+											uploadPath: 'soundcasts', // `${s3Path}`,
+											headers: { 'x-amz-acl': 'public-read' },
+											options: {
+												key: awsConfig.accessKeyId,
+												secret: awsConfig.secretAccessKey,
+												bucket: 'soundwiseinc',
+											},
+										}));
+										console.log('CHECK: ', updatedPath, id);
+										uploader.upload('s3' // saving to S3 db
+										 , { path: updatedPath, name: `${id}.mp3` } // file
+										 , (err, files) => {
+											fs.unlink(filePath, err => 0); // removing original file
+											fs.unlink(updatedPath, err => 0); // removing converted file
+											if (err) {
+												return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
+											}
+											// after upload success, change episode tagged record in firebase:
+											console.log(id, ' uploaded to: ', files[0].url.replace('http', 'https'));
+											firebase.database().ref(`episodes/${id}/id3Tagged`).set(true);
+											firebase.database().ref(`episodes/${id}/url`).set(`https://mysoundwise.com/tracks/${id}.mp3`); // use the proxy
+											resolve({ id, fileDuration: file.metadata.duration.seconds });
+										});
 										firebase.database().ref(`episodes/${episode.id}/isPublished`).set(true);
+									} else {
+										firebase.database().ref(`episodes/${episode.id}/editedUrl`).set(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`);
 									}
 									// 6. Notify the publisher by email.
 						      sgMail.send({

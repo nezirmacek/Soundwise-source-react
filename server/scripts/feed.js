@@ -3,7 +3,7 @@ const path = require('path');
 const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const uploader = require('express-fileuploader');
+const uploader = require('./express-fileuploader-updated');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const Podcast = require('podcast');
@@ -13,43 +13,6 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
-
-// https://github.com/heroicyang/express-fileuploader/blob/master/lib/index.js#L78-L118
-uploader.upload = function(strategy, files, callback) {
-  var name = strategy;
-  strategy = this._strategies[name];
-  if (!strategy) {
-    return callback(new Error('no upload strategy: ' + name));
-  }
-  if (!util.isArray(files)) {
-    files = [files];
-  }
-  var fileCount = files.length;
-  files.forEach(function(file) {
-    // removing uid setting
-    strategy.upload(file, function(err, fileUploaded) {
-      if (err) {
-        file.error = err;
-      }
-      if (fileUploaded) {
-        Object.keys(fileUploaded)
-          .forEach(function(key) {
-            if (!file[key]) {
-              file[key] = fileUploaded[key];
-            }
-          });
-      }
-      fs.unlink(file.path, function(err) {
-        /* jshint unused:false */
-        fileCount -= 1;
-        if (fileCount === 0) {
-          callback(null, files);
-        }
-      });
-    });
-  });
-};
-
 
 module.exports.createFeed = async (req, res) => {
   const { soundcastId, soundcastTitle, itunesExplicit, itunesImage, autoSubmitPodcast, email, firstName } = req.body, categories = [];
