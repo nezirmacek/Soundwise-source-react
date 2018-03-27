@@ -8,6 +8,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
+const sendMarketingEmails = require('./scripts/sendEmails.js').sendMarketingEmails;
 
 const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
 		.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': ')); // *
@@ -40,12 +41,11 @@ module.exports.audioProcessing = async (req, res) => {
 		// emailListeners: false }
 	const { episodeId, soundcastId, publisherEmail, publisherFirstName,
 					tagging, intro, outro, overlayDuration, setVolume, trim,
-					removeSilence, autoPublish, emailListeners } = req.body;
-	if (episodeId && soundcastId && publisherEmail && publisherFirstName &&
-			typeof tagging         === 'boolean' && publisherName && publisherImageUrl  &&
-			typeof overlayDuration === 'number'  && typeof setVolume      === 'boolean' &&
-			typeof trim            === 'boolean' && typeof removeSilence  === 'number'  &&
-			typeof autoPublish     === 'boolean' && typeof emailListeners === 'boolean') {
+					removeSilence, autoPublish, emailListeners, publisherImageUrl } = req.body;
+	if (episodeId && soundcastId &&
+			typeof tagging       === 'boolean' && typeof overlayDuration === 'number'  &&
+			typeof setVolume     === 'boolean' && typeof trim            === 'boolean' &&
+			typeof removeSilence === 'number'  && typeof autoPublish     === 'boolean') {
 	  // 2. return 200 ok to client if request body includes all necessary information
 		res.end('ok');
 
@@ -280,14 +280,14 @@ module.exports.audioProcessing = async (req, res) => {
 					}
 					function setTags(filePath) {
 						(new ffmpeg(filePath)).then(async file => {
+							const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+							const soundcast = soundcast.val();
 							if (tagging) {
 								// to add cover art to audio file:
 								// 1) check if episode.coverArtUrl exsits, if so, use that as the cover art
 								// 2) if it doesn't exist, get the soundcast cover art from firebase and use that:
 								//    and use soundcast.imageURL as the cover art
-								const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-								const { title, hostName, imageURL } = soundcast.val();
-								const url = episode.coverArtUrl || imageURL;
+								const url = episode.coverArtUrl || soundcast.imageURL;
 								request.get({ url, encoding: null }).then(async body => {
 									const coverPath = `/tmp/audio_processing_${episodeId}_cover${url.slice(-4)}`;
 									fs.writeFile(coverPath, body, err => { // save cover image file
@@ -304,22 +304,22 @@ module.exports.audioProcessing = async (req, res) => {
 										file.addCommand('-metadata:s:v', `title="Album cover"`);
 										file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
 										const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-										const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+										const hostNameEscaped = soundcast.hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
 										file.addCommand('-metadata', `title="${episodeTitle}"`);
 										file.addCommand('-metadata', `track="${episode.index}"`);
 										file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
-										file.addCommand('-metadata', `album="${title}"`);
+										file.addCommand('-metadata', `album="${soundcast.title}"`);
 										file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
 										file.addCommand('-metadata', `genre="Podcast"`);
-										nextProcessing(filePath, file);
+										nextProcessing(filePath, soundcast, file);
 									});
 								}).catch(err => logErr(`unable to obtain cover ${err}`));
 							} else {
-								nextProcessing(filePath, file);
+								nextProcessing(filePath, soundcast, file);
 							}
 						}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 					}
-					function nextProcessing(filePath, file) { // final stage
+					function nextProcessing(filePath, soundcast, file) { // final stage
 						if (file.metadata.audio.codec === 'mp3') {
 							file.addCommand('-codec', 'copy');
 						} else { // 'aac' for .m4a files
@@ -362,7 +362,7 @@ module.exports.audioProcessing = async (req, res) => {
 									return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
 								}
 								if (!autoPublish) {
-									// 5a. - and then do // TODO - review
+									// 5a. - and then do
 									const url = `https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`;
 									await firebase.database().ref(`episodes/${episodeId}/editedUrl`).set(url);
 								} else {
@@ -370,76 +370,85 @@ module.exports.audioProcessing = async (req, res) => {
 									//     If 'autoPublish == true', publish the episode
 									//     To publish the episode:
 									//     step 1: save episode metadata in our sql database
-									const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-									const soundcast = soundcastObj.val();
-									       // and then save data. The equivalent from front end:
-									       // request.post({
-									       //  url: '/api/episode',
-									       //  body: {
-									       //    episodeId,
-									       //    soundcastId,
-									       //    publisherId: soundcast.publisherID,
-									       //    title: episode.title,
-									       //    soundcastTitle: soundcast.title,
-									       //  }
-									       // });
+					        //             and then save data. The equivalent from front end:
+						      request.post({
+						        url: '/api/episode', // TODO can we post directly to localhost ??
+						        body: {
+						          episodeId,
+						          soundcastId,
+						          publisherId: soundcast.publisherID,
+						          title: episode.title,
+						          soundcastTitle: soundcast.title,
+						        }
+						      });
 									//     step 2: notify subscribed listeners by text and email
 									//       text notification:
-				          let registrationTokens = [];
-				          if(soundcast.subscribed) {
-				              Object.keys(soundcast.subscribed).forEach(user => {
-				                if(typeof soundcast.subscribed[user] == 'object') {
-				                    registrationTokens.push(soundcast.subscribed[user][0]) //basic version: only allow one devise per user
-				                }
-				              });
-				              const payload = {
-				                notification: {
-				                  title: `${soundcast.title} just published:`,
-				                  body: `${episode.title}`,
-				                  sound: 'default',
-				                  badge: '1'
-				                }
-				              };
-				              sendNotifications(registrationTokens, payload);//sent push notificaiton
-				              var admin = require("firebase-admin");
-
-				              function sendNotification (registrationTokens, payload, options) {
-				                var options = {
-				                  priority: "high"
-				                };
-				                admin.messaging().sendToDevice(registrationTokens, payload, options)
-				                  .then(function(response) {
-				                    //...
-				                  })
-				                  .catch(function(error) {
-				                    //...
-				                  });
-				              }
+				          const registrationTokens = [];
+				          if (soundcast.subscribed) {
+			              Object.keys(soundcast.subscribed).forEach(user => {
+			                if (typeof soundcast.subscribed[user] === 'object') {
+												registrationTokens.push(soundcast.subscribed[user][0]) // basic version: only allow one device per user
+			                }
+			              });
+			              const payload = {
+			                notification: {
+			                  title: `${soundcast.title} just published:`,
+			                  body: `${episode.title}`,
+			                  sound: 'default',
+			                  badge: '1'
+			                }
+			              };
+										const options = { priority: 'high' };
+										// send push notificaiton
+		                firebase.messaging().sendToDevice(registrationTokens, payload, options)
+										.then(response => {
+											console.log('audio processing sendToDevice Response');
+	                    //...
+	                  }).catch(err => logErr(`sendToDevice ${err}`));
 				          }
 
-									//        send email notification:
-				          if(req.body.emailListeners) {
-				            emailListeners(soundcast);
-				          }
-				          function emailListeners(soundcast) {
-			              let subscribers = [];
+									//   send email notification:
+				          if (emailListeners) {
+										const responseObject = {
+											status: status => ({
+												send: msg => console.log(`audio processing sendMarketingEmails ${status} ${msg}`)
+											})
+										};
+			              // let subscribers = [];
 			              const subject = `${episode.title} was just published on ${soundcast.title}`;
-			              if(soundcast.subscribed) {
+			              if (soundcast.subscribed) {
 		                  // send notification email to subscribers
-		                  const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${req.body.publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
-		                  sendMarketingEmails([soundcast.subscriberEmailList], subject, content, req.body.publisherName, req.body.publisherImageUrl, publisherEmail, 4383);
+		                  const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
+		                  sendMarketingEmails({
+												body: {  // req.body
+													[soundcast.subscriberEmailList],
+													subject,
+													content,
+													publisherName,
+													publisherImage: publisherImageUrl,
+													publisherEmail,
+													4383
+												}
+											}, responseObject); // this should be similar to the sendMarketingEmails function under ./sendEmails.js
 			              }
 
 			              // send notification email to invitees
-			              if(soundcast.invited) {
-		                  const content = `<p>Hi there!</p><p></p><p>${req.body.publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
-		                  sendMarketingEmails([soundcast.inviteeEmailList], subject, content, req.body.publisherName, req.body.publisherImageUrl, publisherEmail, 4383);
+			              if (soundcast.invited) {
+		                  const content = `<p>Hi there!</p><p></p><p>${publisherName} just published <strong>${episode.title}</strong> in <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcastId : ''}" target="_blank">${soundcast.title}</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${soundcast.title}</i> on the Soundwise app!</p>`;
+		                  sendMarketingEmails({
+												body {  // req.body
+													[soundcast.inviteeEmailList],
+													subject,
+													content,
+													publisherName,
+													publisherImage: publisherImageUrl,
+													publisherEmail,
+													4383
+												}
+											}, responseObject);
 			              }
+				          } // if emailListeners
 
-			              function sendMarketingEmails() {
-			                // this should be similar to the sendMarketingEmails function under ./sendEmails.js
-			              }
-				          }
 									//     step 3: update firebase
 									firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
 								}
