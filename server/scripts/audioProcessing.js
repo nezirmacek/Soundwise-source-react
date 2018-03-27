@@ -4,6 +4,7 @@ const awsConfig = require('../../config').awsConfig;
 const uploader = require('./express-fileuploader-updated');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
+const database = require('../../database/index');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
@@ -371,16 +372,18 @@ module.exports.audioProcessing = async (req, res) => {
 									//     To publish the episode:
 									//     step 1: save episode metadata in our sql database
 					        //             and then save data. The equivalent from front end:
-						      request.post({
-						        url: '/api/episode', // TODO can we post directly to localhost ??
-						        body: {
+									database.Episode.findOrCreate({
+										where: { episodeId },
+										defaults: {
 						          episodeId,
 						          soundcastId,
 						          publisherId: soundcast.publisherID,
 						          title: episode.title,
 						          soundcastTitle: soundcast.title,
 						        }
-						      });
+									})
+									.then(data => console.log('audio response DB response: ', data))
+									.catch(err => console.log('error: ', err));
 									//     step 2: notify subscribed listeners by text and email
 									//       text notification:
 				          const registrationTokens = [];
