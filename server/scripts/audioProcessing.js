@@ -25,7 +25,7 @@ const logErr = errMsg => console.log(`Error: audio processing ${errMsg}`);
 module.exports.audioProcessing = async (req, res) => {
 	// 1. Client make post request to /api/audio_processing, with episode ID and processing options
 	// request example: {
-		// epsiodeId: '1519588329916e', // need to retrieve episode info from firebase for tagging
+		// episodeId: '1519588329916e', // need to retrieve episode info from firebase for tagging
 		// soundcastId: '1508293913676s', // need to retrieve soundcast info from firebase for tagging
 		// publisherEmail: 'john@awesomepublisher.com',
 		// publisherFirstName: 'John',
@@ -38,10 +38,10 @@ module.exports.audioProcessing = async (req, res) => {
 		// removeSilence: 0.7, // the number is the silence remove threshold. e.g. remove silence longer than 0.7 second
 		// autoPublish: false, // if true, automatically publish the episode after processing, otherwise, save the episode as draft and notify user by email
 		// emailListeners: false }
-	const { epsiodeId, soundcastId, publisherEmail, publisherFirstName,
+	const { episodeId, soundcastId, publisherEmail, publisherFirstName,
 					tagging, intro, outro, overlayDuration, setVolume, trim,
 					removeSilence, autoPublish, emailListeners } = req.body;
-	if (epsiodeId && soundcastId && publisherEmail && publisherFirstName &&
+	if (episodeId && soundcastId && publisherEmail && publisherFirstName &&
 			typeof tagging         === 'boolean' && publisherName && publisherImageUrl  &&
 			typeof overlayDuration === 'number'  && typeof setVolume      === 'boolean' &&
 			typeof trim            === 'boolean' && typeof removeSilence  === 'number'  &&
@@ -50,14 +50,14 @@ module.exports.audioProcessing = async (req, res) => {
 		res.end('ok');
 
 		// 3. Get the episode url from firebase 'episodes/[episode id]/url', fetch the audio file
-		const episodeObj = await firebase.database().ref(`episodes/${epsiodeId}`).once('value');
+		const episodeObj = await firebase.database().ref(`episodes/${episodeId}`).once('value');
 		const episode = episodeObj.val();
 		request.get({
 			url: episode.url,
 			encoding: null // return body as a Buffer
 		}).then(async body => {
 			const ext = episode.url.slice(-4);
-			const filePath = `/tmp/audio_processing_${episode.id + ext}`;
+			const filePath = `/tmp/audio_processing_${episodeId + ext}`;
 			fs.writeFile(filePath, body, err => {
 				if (err) {
 					return logErr(`cannot write tmp audio file ${filePath}`);
@@ -314,50 +314,44 @@ module.exports.audioProcessing = async (req, res) => {
 									if (err) {
 										return logErr(`output save fails ${outputPath} ${err}`);
 									}
-									// 5a. If 'autoPublish == true', save processed audio file to AWS S3
-									//         to replace the original file
-									//     If 'autoPublish == false', save processed audio file to AWS S3 under
-									//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
-									// 5b. If 'autoPublish == false', do nothing.
-									//     If 'autoPublish == true', publish the episode
-									if (autoPublish) {
-										const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
-										const episodeFileName = episode.url.split('/')[5];
-										uploader.use(new S3Strategy({
-											uploadPath: 'soundcasts', // `${s3Path}`,
-											headers: { 'x-amz-acl': 'public-read' },
-											options: {
-												key: awsConfig.accessKeyId,
-												secret: awsConfig.secretAccessKey,
-												bucket: 'soundwiseinc',
-											},
-										}));
-										console.log('CHECK: ', updatedPath, id);
-										uploader.upload('s3' // saving to S3 db
-										 , { path: updatedPath, name: `${id}.mp3` } // file
-										 , (err, files) => {
-											fs.unlink(filePath, err => 0); // removing original file
-											fs.unlink(updatedPath, err => 0); // removing converted file
-											if (err) {
-												return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
-											}
-											// after upload success, change episode tagged record in firebase:
-											console.log(id, ' uploaded to: ', files[0].url.replace('http', 'https'));
-											firebase.database().ref(`episodes/${id}/id3Tagged`).set(true);
-											firebase.database().ref(`episodes/${id}/url`).set(`https://mysoundwise.com/tracks/${id}.mp3`); // use the proxy
-											resolve({ id, fileDuration: file.metadata.duration.seconds });
-										});
-										firebase.database().ref(`episodes/${episode.id}/isPublished`).set(true);
-									} else {
-										firebase.database().ref(`episodes/${episode.id}/editedUrl`).set(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`);
-									}
-									// 6. Notify the publisher by email.
-						      sgMail.send({
-						        to: publisherEmail,
-						        from: 'support@mysoundwise.com',
-						        subject: 'Your episode has been processed!',
-						        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
-						      });
+									uploader.use(new S3Strategy({
+										uploadPath: 'soundcasts',
+										headers: { 'x-amz-acl': 'public-read' },
+										options: {
+											key: awsConfig.accessKeyId,
+											secret: awsConfig.secretAccessKey,
+											bucket: 'soundwiseinc',
+										},
+									}));
+									console.log('CHECK: audio processing ', filePath, id);
+									uploader.upload('s3' // saving to S3 db
+										// 5a. If 'autoPublish == true', save processed audio file to AWS S3
+										//         to replace the original file
+										//     If 'autoPublish == false', save processed audio file to AWS S3 under
+										//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
+									 , { path: outputPath, name: `${id + (autoPublish ? '' : '-edited')}.mp3` } // file
+									 , (err, files) => {
+										fs.unlink(filePath, err => 0); // remove original file
+										fs.unlink(outputPath, err => 0); // remove tagged file
+										if (err) {
+											return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
+										}
+										// 5b. If 'autoPublish == false', do nothing.
+										//     If 'autoPublish == true', publish the episode
+										if (autoPublish) {
+											firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+										} else {
+											// 5a - and then do // TODO - review
+											firebase.database().ref(`episodes/${episodeId}/editedUrl`).set(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`);
+										}
+										// 6. Notify the publisher by email.
+							      sgMail.send({
+							        to: publisherEmail,
+							        from: 'support@mysoundwise.com',
+							        subject: 'Your episode has been processed!',
+							        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
+							      });
+									});
 								});
 							}
 						}, err => logErr(`unable to parse file with ffmpeg ${err}`));
