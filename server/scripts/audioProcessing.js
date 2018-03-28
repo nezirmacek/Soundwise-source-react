@@ -55,6 +55,7 @@ module.exports.audioProcessing = async (req, res) => {
 		const episodeObj = await firebase.database().ref(`episodes/${episodeId}`).once('value');
 		const episode = episodeObj.val();
 		request.get({
+			// url: 'https://soundwiseinc.s3.amazonaws.com/soundcasts/1522235784847e.mp3', // testing
 			url: episode.url,
 			encoding: null // return body as a Buffer
 		}).then(body => {
@@ -97,6 +98,7 @@ module.exports.audioProcessing = async (req, res) => {
 										if (err) {
 											return logErr(`trimming fails ${filePath} ${err}`);
 										}
+										fs.unlink(filePath, err => 0); // remove original
 										removeSilenceProcessing(trimmedPath);
 									});
 								}, err => logErr(`trim unable to parse file ${err}`));
@@ -145,6 +147,7 @@ module.exports.audioProcessing = async (req, res) => {
 											if (err) {
 												return logErr(`removing silence fails ${filePath} ${err}`);
 											}
+											fs.unlink(filePath, err => 0); // remove original
 											introProcessing(silenceRemovedPath);
 										});
 									}, err => logErr(`removeSilence unable to parse file ${err}`));
@@ -210,13 +213,13 @@ module.exports.audioProcessing = async (req, res) => {
 												if (err) {
 													return logErr(`outro fade fails ${outroFadePath} ${err}`);
 												}
-												fs.unlink(outputPath, err => 0); // remove original outro
+												fs.unlink(outroPath, err => 0); // remove original outro
 												concat(filePath, introPath, introDuration, outroFadePath);
 											});
 										} else {
 											concat(filePath, introPath, introDuration, outroPath);
 										}
-									}, err => logErr(`ffmpeg intro ${outroPath} ${err}`));
+									}, err => logErr(`ffmpeg outro ${outroPath} ${err}`));
 								});
 							}).catch(err => logErr(`outro request ${err}`));
 						} else {
@@ -278,9 +281,32 @@ module.exports.audioProcessing = async (req, res) => {
 									fs.unlink(filePath, err => 0); // remove main
 									introPath && fs.unlink(introPath, err => 0); // remove intro
 									outroPath && fs.unlink(outroPath, err => 0); // remove outro
-									setTags(concatPath);
+									volumeProccessing(concatPath);
 								});
 							}, err => logErr(`ffmpeg main file ${filePath} ${err}`));
+						} else {
+							volumeProccessing(filePath);
+						}
+					}
+					function volumeProccessing(filePath) {
+						if (setVolume) {
+							(new ffmpeg(filePath)).then(file => {
+								// *** Set volume target and harmonize loudness level ***
+								// set Integrated loudness to -14: I=-14
+								// set True peak value to -3: TP=-2
+								// set Loudness range to 11: LRA=11
+								// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
+						    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary`);
+						    file.addCommand('-ar', `44.1k`);
+								const setVolumePath = `${filePath.slice(0, -4)}_set_volume${intro.slice(-4)}`;
+								file.save(setVolumePath, err => {
+									if (err) {
+										return logErr(`volumeProccessing save fails ${setVolumePath} ${err}`);
+									}
+									fs.unlink(filePath, err => 0); // remove original
+									setTags(setVolumePath);
+								});
+							}, err => logErr(`volumeProccessing unable to parse file with ffmpeg ${err}`));
 						} else {
 							setTags(filePath);
 						}
@@ -351,20 +377,13 @@ module.exports.audioProcessing = async (req, res) => {
 						} else { // 'aac' for .m4a files
 							file.setAudioCodec('mp3').setAudioBitRate(64);
 						}
-						if (setVolume) {
-							// *** Set volume target and harmonize loudness level ***
-							// set Integrated loudness to -14: I=-14
-							// set True peak value to -3: TP=-2
-							// set Loudness range to 11: LRA=11
-							// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
-					    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary`);
-					    file.addCommand('-af', `44.1k`);
-						}
 						const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
 						file.save(outputPath, err => { // ffmpeg save
 							if (err) {
 								return logErr(`output save fails ${outputPath} ${err}`);
 							}
+							fs.unlink(filePath, err => 0); // remove original file
+							coverPath && fs.unlink(coverPath, err => 0); // remove cover
 							uploader.use(new S3Strategy({
 								uploadPath: 'soundcasts',
 								headers: { 'x-amz-acl': 'public-read' },
@@ -382,12 +401,10 @@ module.exports.audioProcessing = async (req, res) => {
 								//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
 							 , { path: outputPath, name: `${id + (autoPublish ? '' : '-edited')}.mp3` } // file
 							 , async (err, files) => {
-								fs.unlink(filePath, err => 0); // remove original file
-								fs.unlink(outputPath, err => 0); // remove tagged file
-								coverPath && fs.unlink(coverPath, err => 0); // remove cover
 								if (err) {
 									return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
 								}
+								fs.unlink(outputPath, err => 0); // remove tagged file
 								if (!autoPublish) {
 									// 5a. - and then do
 									const url = `https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`;
