@@ -41,7 +41,7 @@ module.exports.audioProcessing = async (req, res) => {
 		// removeSilence: 0.7, // the number is the silence remove threshold. e.g. remove silence longer than 0.7 second
 		// autoPublish: false, // if true, automatically publish the episode after processing, otherwise, save the episode as draft and notify user by email
 		// emailListeners: false }
-	const { episodeId, soundcastId, publisherEmail, publisherFirstName,
+	const { episodeId, soundcastId, publisherEmail, publisherName,
 					tagging, intro, outro, overlayDuration, setVolume, trim,
 					removeSilence, autoPublish, emailListeners, publisherImageUrl } = req.body;
 	if (episodeId && soundcastId &&

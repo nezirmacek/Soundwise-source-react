@@ -1198,7 +1198,7 @@ class _CreateEpisode extends Component {
                             </div>
                             || null
                         }
-                        <div style={{marginTop: 50, display: 'none'}}>
+                        <div style={{marginTop: 50, }}>
                           <hr style={{border: '0.5px solid lightgray'}}/>
                           <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing Options</span>
                           <div style={{marginTop: 15}}>
@@ -1275,8 +1275,12 @@ class _CreateEpisode extends Component {
                                   // label="Charge subscribers for this soundcast?"
                                   checked={this.state.addIntroOutro}
                                   onChange={() => {
-                                    const addIntroOutro = !that.state.addIntroOutro;
-                                    that.setState({addIntroOutro})
+                                    if(((that.state.currentsoundcast.intro || that.state.currentsoundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
+                                        const addIntroOutro = !that.state.addIntroOutro;
+                                        that.setState({addIntroOutro})
+                                    } else {
+                                        alert('Please upload intro/outro clip(s) to your soundcast first!');
+                                    }
                                   }}
                                 />
                                 <span id='audio-edit-4-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Attach intro and outro</span><span> (Please upload an intro and/or outro for your soundcast first)</span>
@@ -1290,7 +1294,7 @@ class _CreateEpisode extends Component {
                         <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
                                 style={{textAlign: 'center'}}>
                             <div className='' style={{ fontSize: 17, width: '100%'}}>
-                              <span>Processing episode...</span>
+                              <span>Please wait...</span>
                             </div>
                             <div className='' style={{marginTop: 10, width: '100%'}}>
                               <Dots style={{}} color="#727981" size={32} speed={1}/>
