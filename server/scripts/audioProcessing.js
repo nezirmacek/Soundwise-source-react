@@ -304,12 +304,29 @@ module.exports.audioProcessing = async (req, res) => {
 										return logErr(`volumeProccessing save fails ${setVolumePath} ${err}`);
 									}
 									fs.unlink(filePath, err => 0); // remove original
-									setTags(setVolumePath);
+									setMP3Codec(setVolumePath);
 								});
 							}, err => logErr(`volumeProccessing unable to parse file with ffmpeg ${err}`));
 						} else {
-							setTags(filePath);
+							setMP3Codec(filePath);
 						}
+					}
+					function setMP3Codec(filePath) {
+						(new ffmpeg(filePath)).then(file => {
+					    if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
+								file.setAudioCodec('mp3').setAudioBitRate(64); // convert to mp3
+								const mp3codecPath = `${filePath.slice(0, -4)}_mp3codec${intro.slice(-4)}`;
+								file.save(mp3codecPath, err => {
+									if (err) {
+										return logErr(`setMP3Codec save fails ${mp3codecPath} ${err}`);
+									}
+									fs.unlink(filePath, err => 0); // remove original
+									setTags(mp3codecPath);
+								});
+							} else {
+								setTags(filePath);
+							}
+						}, err => logErr(`setMP3Codec unable to parse file with ffmpeg ${err}`));
 					}
 					function setTags(filePath) {
 						(new ffmpeg(filePath)).then(async file => {
@@ -340,7 +357,7 @@ module.exports.audioProcessing = async (req, res) => {
 													fs.unlink(coverPath, err => 0); // removing original image file
 													tagging(updatedImagePath);
 												});
-											});
+											}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 										} else {
 											tagging(coverPath);
 										}
@@ -350,7 +367,7 @@ module.exports.audioProcessing = async (req, res) => {
 											file.addCommand('-i', coverPath);
 											file.addCommand('-map', '0:0');
 											file.addCommand('-map', '1:0');
-											file.addCommand('-c', 'copy');
+											file.addCommand('-codec', 'copy');
 											file.addCommand('-id3v2_version', '3');
 											file.addCommand('-metadata:s:v', `title="Album cover"`);
 											file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
@@ -372,11 +389,6 @@ module.exports.audioProcessing = async (req, res) => {
 						}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 					}
 					function nextProcessing(filePath, soundcast, file, coverPath) { // final stage
-						if (file.metadata.audio.codec === 'mp3') {
-							file.addCommand('-codec', 'copy');
-						} else { // 'aac' for .m4a files
-							file.setAudioCodec('mp3').setAudioBitRate(64);
-						}
 						const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
 						file.save(outputPath, err => { // ffmpeg save
 							if (err) {
