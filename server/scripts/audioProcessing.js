@@ -9,6 +9,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
+const sizeOf = require('image-size');
 const sendMarketingEmails = require('./sendEmails').sendMarketingEmails;
 
 const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
@@ -56,7 +57,7 @@ module.exports.audioProcessing = async (req, res) => {
 		request.get({
 			url: episode.url,
 			encoding: null // return body as a Buffer
-		}).then(async body => {
+		}).then(body => {
 			const ext = episode.url.slice(-4);
 			const filePath = `/tmp/audio_processing_${episodeId + ext}`;
 			fs.writeFile(filePath, body, err => {
@@ -157,7 +158,7 @@ module.exports.audioProcessing = async (req, res) => {
 					// Intro needs to be faded out at the end. And outro needs to be faded in.
 					function introProcessing(filePath) {
 						if (intro) {
-							request.get({ url: intro, encoding: null }).then(async body => {
+							request.get({ url: intro, encoding: null }).then(body => {
 								const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
 								fs.writeFile(introPath, body, err => {
 									if (err) {
@@ -192,7 +193,7 @@ module.exports.audioProcessing = async (req, res) => {
 					}
 					function outroProcessing(filePath, introPath, introDuration) {
 						if (outro) {
-							request.get({ url: outro, encoding: null }).then(async body => {
+							request.get({ url: outro, encoding: null }).then(body => {
 								const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
 								fs.writeFile(outroPath, body, err => {
 									if (err) {
@@ -282,37 +283,56 @@ module.exports.audioProcessing = async (req, res) => {
 					function setTags(filePath) {
 						(new ffmpeg(filePath)).then(async file => {
 							const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-							const soundcast = soundcast.val();
+							const soundcast = soundcastObj.val();
 							if (tagging) {
 								// to add cover art to audio file:
 								// 1) check if episode.coverArtUrl exsits, if so, use that as the cover art
 								// 2) if it doesn't exist, get the soundcast cover art from firebase and use that:
 								//    and use soundcast.imageURL as the cover art
 								const url = episode.coverArtUrl || soundcast.imageURL;
-								request.get({ url, encoding: null }).then(async body => {
+								request.get({ url, encoding: null }).then(body => {
+									const { height, width } = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
 									const coverPath = `/tmp/audio_processing_${episodeId}_cover${url.slice(-4)}`;
 									fs.writeFile(coverPath, body, err => { // save cover image file
 										if (err) {
 											return logErr(`cannot save cover image file ${coverPath}`);
 										}
-										// from https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
-										// ffmpeg -i in.mp3 -i test.jpeg -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" out.mp3
-										file.addCommand('-i', coverPath);
-										file.addCommand('-map', '0:0');
-										file.addCommand('-map', '1:0');
-										file.addCommand('-c', 'copy');
-										file.addCommand('-id3v2_version', '3');
-										file.addCommand('-metadata:s:v', `title="Album cover"`);
-										file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
-										const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-										const hostNameEscaped = soundcast.hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-										file.addCommand('-metadata', `title="${episodeTitle}"`);
-										file.addCommand('-metadata', `track="${episode.index}"`);
-										file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
-										file.addCommand('-metadata', `album="${soundcast.title}"`);
-										file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
-										file.addCommand('-metadata', `genre="Podcast"`);
-										nextProcessing(filePath, soundcast, file);
+										if (height > 300 || width > 300) { // resizing
+											(new ffmpeg(coverPath)).then(imageFile => {
+												const updatedImagePath = `${coverPath.slice(0, -4)}_updated.png`;
+												// ffmpeg -i img.png -vf scale=300:300 img_updated.png
+												imageFile.addCommand('-vf', `scale=300:300`);
+												imageFile.save(updatedImagePath, err => {
+													if (err) {
+														return logErr(`cannot save updated image ${coverPath} ${err}`);
+													}
+													fs.unlink(coverPath, err => 0); // removing original image file
+													tagging(updatedImagePath);
+												});
+											});
+										} else {
+											tagging(coverPath);
+										}
+										function tagging(coverPath) {
+											// from https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
+											// ffmpeg -i in.mp3 -i test.jpeg -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" out.mp3
+											file.addCommand('-i', coverPath);
+											file.addCommand('-map', '0:0');
+											file.addCommand('-map', '1:0');
+											file.addCommand('-c', 'copy');
+											file.addCommand('-id3v2_version', '3');
+											file.addCommand('-metadata:s:v', `title="Album cover"`);
+											file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
+											const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+											const hostNameEscaped = soundcast.hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+											file.addCommand('-metadata', `title="${episodeTitle}"`);
+											file.addCommand('-metadata', `track="${episode.index}"`);
+											file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
+											file.addCommand('-metadata', `album="${soundcast.title}"`);
+											file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
+											file.addCommand('-metadata', `genre="Podcast"`);
+											nextProcessing(filePath, soundcast, file);
+										}
 									});
 								}).catch(err => logErr(`unable to obtain cover ${err}`));
 							} else {
@@ -336,7 +356,7 @@ module.exports.audioProcessing = async (req, res) => {
 					    file.addCommand('-af', `44.1k`);
 						}
 						const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
-						file.save(outputPath, err => {
+						file.save(outputPath, err => { // ffmpeg save
 							if (err) {
 								return logErr(`output save fails ${outputPath} ${err}`);
 							}
