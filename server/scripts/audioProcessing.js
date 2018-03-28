@@ -296,7 +296,7 @@ module.exports.audioProcessing = async (req, res) => {
 								// set True peak value to -3: TP=-2
 								// set Loudness range to 11: LRA=11
 								// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
-						    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary`);
+						    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20:linear=true:print_format=summary`);
 						    file.addCommand('-ar', `44.1k`);
 								const setVolumePath = `${filePath.slice(0, -4)}_set_volume${intro.slice(-4)}`;
 								file.save(setVolumePath, err => {
@@ -315,7 +315,7 @@ module.exports.audioProcessing = async (req, res) => {
 						(new ffmpeg(filePath)).then(file => {
 					    if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
 								file.setAudioCodec('mp3').setAudioBitRate(64); // convert to mp3
-								const mp3codecPath = `${filePath.slice(0, -4)}_mp3codec${intro.slice(-4)}`;
+								const mp3codecPath = `${filePath.slice(0, -4)}_mp3codec.mp3`;
 								file.save(mp3codecPath, err => {
 									if (err) {
 										return logErr(`setMP3Codec save fails ${mp3codecPath} ${err}`);
@@ -389,7 +389,7 @@ module.exports.audioProcessing = async (req, res) => {
 						}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 					}
 					function nextProcessing(filePath, soundcast, file, coverPath) { // final stage
-						const outputPath = `${filePath.slice(0, -4)}_output${intro.slice(-4)}`;
+						const outputPath = `${filePath.slice(0, -4)}_output.mp3`;
 						file.save(outputPath, err => { // ffmpeg save
 							if (err) {
 								return logErr(`output save fails ${outputPath} ${err}`);
