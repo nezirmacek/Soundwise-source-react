@@ -179,6 +179,7 @@ module.exports.audioProcessing = async (req, res) => {
 												if (err) {
 													return logErr(`intro fade fails ${introPath} ${err}`);
 												}
+												fs.unlink(introPath, err => 0); // remove original intro
 												outroProcessing(filePath, introFadePath, introDuration);
 											});
 										} else {
@@ -209,6 +210,7 @@ module.exports.audioProcessing = async (req, res) => {
 												if (err) {
 													return logErr(`outro fade fails ${outroFadePath} ${err}`);
 												}
+												fs.unlink(outputPath, err => 0); // remove original outro
 												concat(filePath, introPath, introDuration, outroFadePath);
 											});
 										} else {
@@ -273,6 +275,9 @@ module.exports.audioProcessing = async (req, res) => {
 									if (err) {
 										return logErr(`concat save fails ${concatPath} ${err}`);
 									}
+									fs.unlink(filePath, err => 0); // remove main
+									introPath && fs.unlink(introPath, err => 0); // remove intro
+									outroPath && fs.unlink(outroPath, err => 0); // remove outro
 									setTags(concatPath);
 								});
 							}, err => logErr(`ffmpeg main file ${filePath} ${err}`));
@@ -331,7 +336,7 @@ module.exports.audioProcessing = async (req, res) => {
 											file.addCommand('-metadata', `album="${soundcast.title}"`);
 											file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
 											file.addCommand('-metadata', `genre="Podcast"`);
-											nextProcessing(filePath, soundcast, file);
+											nextProcessing(filePath, soundcast, file, coverPath);
 										}
 									});
 								}).catch(err => logErr(`unable to obtain cover ${err}`));
@@ -340,7 +345,7 @@ module.exports.audioProcessing = async (req, res) => {
 							}
 						}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 					}
-					function nextProcessing(filePath, soundcast, file) { // final stage
+					function nextProcessing(filePath, soundcast, file, coverPath) { // final stage
 						if (file.metadata.audio.codec === 'mp3') {
 							file.addCommand('-codec', 'copy');
 						} else { // 'aac' for .m4a files
@@ -379,6 +384,7 @@ module.exports.audioProcessing = async (req, res) => {
 							 , async (err, files) => {
 								fs.unlink(filePath, err => 0); // remove original file
 								fs.unlink(outputPath, err => 0); // remove tagged file
+								coverPath && fs.unlink(coverPath, err => 0); // remove cover
 								if (err) {
 									return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
 								}
