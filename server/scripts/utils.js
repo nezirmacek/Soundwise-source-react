@@ -38,10 +38,13 @@ uploader.upload = function(strategy, files, callback) {
   });
 };
 
-const logErr = (msg, res, resolve) {
-	console.log(`Error: feed.js ${msg}`);
-	res && res.error(`Error: feed.js ${msg}`);
+const logErr = prefix =>(msg, res, resolve) => {
+	console.log(`Error: ${prefix} ${msg}`);
+	res && res.error(`Error: ${prefix} ${msg}`);
 	resolve && resolve();
 }
 
-module.export = { uploader, logErr };
+module.exports = prefix => ({
+	uploader,
+	logErr: logErr(prefix) // set prefix
+});

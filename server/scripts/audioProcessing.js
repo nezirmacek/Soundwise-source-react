@@ -1,7 +1,7 @@
 'use strict';
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const { uploader, logErr } = require('./utils');
+const { uploader, logErr } = require('./utils')('audioProcessing');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const database = require('../../database/index');
