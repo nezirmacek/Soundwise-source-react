@@ -1,4 +1,5 @@
 'use strict';
+const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
 const { uploader, logErr, setAudioTags } = require('./utils')('audioProcessing');
@@ -57,8 +58,7 @@ module.exports.audioProcessing = async (req, res) => {
 			url: episode.url,
 			encoding: null // return body as a Buffer
 		}).then(body => {
-			const ext = episode.url.slice(-4);
-			const filePath = `/tmp/audio_processing_${episodeId + ext}`;
+			const filePath = `/tmp/audio_processing_${episodeId + path.extname(episode.url)}`;
 			fs.writeFile(filePath, body, err => {
 				if (err) {
 					return logErr(`cannot write tmp audio file ${filePath}`);
@@ -91,7 +91,7 @@ module.exports.audioProcessing = async (req, res) => {
 								}
 								(new ffmpeg(filePath)).then(file => {
 									file.addCommand('-af', `atrim=${start}:${end}`);
-									const trimmedPath = `${filePath.slice(0, -4)}_trimmed${ext}`;
+									const trimmedPath = `${filePath.slice(0, -4)}_trimmed${path.extname(episode.url)}`;
 									file.save(trimmedPath, err => {
 										if (err) {
 											return logErr(`trimming fails ${filePath} ${err}`);
@@ -140,7 +140,7 @@ module.exports.audioProcessing = async (req, res) => {
 										filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1"`;
 										file.addCommand('-filter_complex', filterComplex);
 										// *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
-										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${ext}`;
+										const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${path.extname(episode.url)}`;
 										file.save(silenceRemovedPath, err => {
 											if (err) {
 												return logErr(`removing silence fails ${filePath} ${err}`);
@@ -160,7 +160,7 @@ module.exports.audioProcessing = async (req, res) => {
 					function introProcessing(filePath) {
 						if (intro) {
 							request.get({ url: intro, encoding: null }).then(body => {
-								const introPath = `${filePath.slice(0, -4)}_intro${intro.slice(-4)}`;
+								const introPath = `${filePath.slice(0, -4)}_intro${path.extname(intro)}`;
 								fs.writeFile(introPath, body, err => {
 									if (err) {
 										return logErr(`intro write file ${introPath}`);
@@ -175,7 +175,7 @@ module.exports.audioProcessing = async (req, res) => {
 											const fadeDuration = overlayDuration * 2;
 											const fadeStartPosition = introDuration - fadeDuration;
 											file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
-											const introFadePath = `${introPath.slice(0, -4)}_fade${intro.slice(-4)}`;
+											const introFadePath = `${introPath.slice(0, -4)}_fade${path.extname(intro)}`;
 											file.save(introFadePath, err => {
 												if (err) {
 													return logErr(`intro fade fails ${introPath} ${err}`);
@@ -196,7 +196,7 @@ module.exports.audioProcessing = async (req, res) => {
 					function outroProcessing(filePath, introPath, introDuration) {
 						if (outro) {
 							request.get({ url: outro, encoding: null }).then(body => {
-								const outroPath = `${filePath.slice(0, -4)}_outro${outro.slice(-4)}`;
+								const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(outro)}`;
 								fs.writeFile(outroPath, body, err => {
 									if (err) {
 										return logErr(`outro write file ${filePath}`);
@@ -206,7 +206,7 @@ module.exports.audioProcessing = async (req, res) => {
 											// a. fade in an outro clip
 											// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
 											file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
-											const outroFadePath = `${outroPath.slice(0, -4)}_fade${outro.slice(-4)}`;
+											const outroFadePath = `${outroPath.slice(0, -4)}_fade${path.extname(outro)}`;
 											file.save(outroFadePath, err => {
 												if (err) {
 													return logErr(`outro fade fails ${outroFadePath} ${err}`);
@@ -271,7 +271,7 @@ module.exports.audioProcessing = async (req, res) => {
 									filterComplex= `"[1]adelay=${adelay2}[a];[0][a]amix=2"`;
 								}
 								file.addCommand('-filter_complex', `${filterComplex}`);
-								const concatPath = `${filePath.slice(0, -4)}_concat${intro.slice(-4)}`;
+								const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(intro)}`;
 								file.save(concatPath, err => {
 									if (err) {
 										return logErr(`concat save fails ${concatPath} ${err}`);
@@ -296,7 +296,7 @@ module.exports.audioProcessing = async (req, res) => {
 								// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
 						    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20:linear=true:print_format=summary`);
 						    file.addCommand('-ar', `44.1k`);
-								const setVolumePath = `${filePath.slice(0, -4)}_set_volume${intro.slice(-4)}`;
+								const setVolumePath = `${filePath.slice(0, -4)}_set_volume${path.extname(intro)}`;
 								file.save(setVolumePath, err => {
 									if (err) {
 										return logErr(`volumeProccessing save fails ${setVolumePath} ${err}`);
@@ -338,7 +338,7 @@ module.exports.audioProcessing = async (req, res) => {
 								const url = episode.coverArtUrl || soundcast.imageURL;
 								request.get({ url, encoding: null }).then(body => {
 									const { height, width } = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
-									const coverPath = `/tmp/audio_processing_${episodeId}_cover${url.slice(-4)}`;
+									const coverPath = `/tmp/audio_processing_${episodeId}_cover${path.extname(url)}`;
 									fs.writeFile(coverPath, body, err => { // save cover image file
 										if (err) {
 											return logErr(`cannot save cover image file ${coverPath}`);

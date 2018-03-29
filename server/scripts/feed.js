@@ -106,7 +106,7 @@ module.exports.createFeed = async (req, res) => {
       if (untagged.some(i => !i.coverArtUrl)) { // if have untagged episodes with empty coverArtUrl
         await new Promise(resolve => {
           const uid = Math.random().toString().slice(2); // unique id
-          itunesImagePath = `/tmp/${soundcastId + uid + itunesImage.slice(-4)}`;
+          itunesImagePath = `/tmp/${soundcastId + uid + path.extname(itunesImage)}`;
           fs.writeFile(itunesImagePath, imageBody, err => { // save itunes image
             if (err) {
               return logErr(`unable to save itunesImage ${err}`, res, resolve);
@@ -132,7 +132,7 @@ module.exports.createFeed = async (req, res) => {
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
         request.get({ encoding: null, url: episode.url }).then(body => {
           const id = episode.id;
-          const filePath = `/tmp/${id + episode.url.slice(-4)}`;
+          const filePath = `/tmp/${id + path.extname(episode.url)}`;
           fs.writeFile(filePath, body, async err => {
             if (err) {
               return reject(`Error: cannot write tmp audio file ${filePath}`);
@@ -162,7 +162,7 @@ module.exports.createFeed = async (req, res) => {
                 await new Promise(resolve => { // download coverArtUrl image
                   request.get({ url: episode.coverArtUrl, encoding: null }).then(body => {
                     const { height, width } = sizeOf(body);
-                    coverPath = `/tmp/${id}_cover${episode.coverArtUrl.slice(-4)}`;
+                    coverPath = `/tmp/${id}_cover${path.extname(episode.coverArtUrl)}`;
                     fs.writeFile(coverPath, body, err => {
                       if (err) {
                         reject(`Error: feed.js unable to save coverArtUrl ${err}`);
