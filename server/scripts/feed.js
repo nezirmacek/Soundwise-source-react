@@ -3,7 +3,7 @@ const path = require('path');
 const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const uploader = require('./express-fileuploader-updated');
+const { uploader, logErr } = require('./utils')('feed.js');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const Podcast = require('podcast');
@@ -29,8 +29,8 @@ module.exports.createFeed = async (req, res) => {
   request.get({
     encoding: null, // return body as a Buffer
     url: itunesImage
-  }).then(async body => {
-    const { height, width } = sizeOf(body); // {height: 1400, width: 1400, type: "jpg"}
+  }).then(async imageBody => {
+    const { height, width } = sizeOf(imageBody); // {height: 1400, width: 1400, type: "jpg"}
     if (height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000 ) {
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ?
@@ -100,20 +100,111 @@ module.exports.createFeed = async (req, res) => {
           }
         }
       });
+
+      let itunesImagePath;
+      const untagged = episodesToRequest.filter(i => !i.id3Tagged); // array
+      if (untagged.some(i => !i.coverArtUrl)) { // if have untagged episodes with empty coverArtUrl
+        await new Promise(resolve => {
+          const uid = Math.random().toString().slice(2); // unique id
+          itunesImagePath = `/tmp/${soundcastId + uid + itunesImage.slice(-4)}`;
+          fs.writeFile(itunesImagePath, imageBody, err => { // save itunes image
+            if (err) {
+              return logErr(`unable to save itunesImage ${err}`, res, resolve);
+            }
+            (new ffmpeg(itunesImagePath)).then(file => { // resize itunes image
+              const resizedPath = `${itunesImagePath.slice(0, -4)}_resized.png`;
+              file.addCommand('-vf', `scale=300:300`);
+              file.save(resizedPath, err => {
+                if (err) {
+                  logErr(`ffmpeg cannot save updated image ${itunesImagePath} ${err}`, res);
+                } else {
+                  fs.unlink(itunesImagePath, err => 0); // remove original file
+                  itunesImagePath = resizedPath;
+                }
+                resolve();
+              });
+            }, err => logErr(`itunesImage unable to parse file with ffmpeg ${err}`, res, resolve));
+          });
+        });
+      }
+
       // console.log('episodesToRequest: ', episodesToRequest);
       Promise.all(episodesToRequest.map(episode => new Promise((resolve, reject) => {
         request.get({ encoding: null, url: episode.url }).then(body => {
           const id = episode.id;
           const filePath = `/tmp/${id + episode.url.slice(-4)}`;
-          fs.writeFile(filePath, body, err => {
+          fs.writeFile(filePath, body, async err => {
             if (err) {
               return reject(`Error: cannot write tmp audio file ${filePath}`);
             }
             try {
-              (new ffmpeg(filePath)).then(file => {
+
+              let mp3codecPath;
+              await new Promise(resolve => { // check audio codec
+                (new ffmpeg(filePath)).then(file => {
+                  if (file.metadata.audio.codec === 'mp3') {
+                    return resolve();
+                  }
+                  file.setAudioCodec('mp3').setAudioBitRate(64); // convert to mp3
+                  mp3codecPath = `${filePath.slice(0, -4)}_mp3codec.mp3}`;
+                  file.save(mp3codecPath, err => {
+                    if (err) {
+                      return reject(`feed.js setMP3Codec save fails ${mp3codecPath} ${err}`);
+                    }
+                    fs.unlink(filePath, err => 0); // remove original
+                    resolve();
+                  });
+                }, err => reject(`feed.js setMP3Codec unable to parse file with ffmpeg ${err}`));
+              });
+
+              let coverPath;
+              if (!episode.id3Tagged && episode.coverArtUrl) {
+                await new Promise(resolve => { // download coverArtUrl image
+                  request.get({ url: episode.coverArtUrl, encoding: null }).then(body => {
+                    const { height, width } = sizeOf(body);
+                    coverPath = `/tmp/${id}_cover${episode.coverArtUrl.slice(-4)}`;
+                    fs.writeFile(coverPath, body, err => {
+                      if (err) {
+                        reject(`Error: feed.js unable to save coverArtUrl ${err}`);
+                        return resolve();
+                      }
+                      if (height > 300 || width > 300) {
+                        (new ffmpeg(coverPath)).then(imageFile => {
+                          const resizedPath = `${coverPath.slice(0, -4)}_resized.png`;
+                          imageFile.addCommand('-vf', `scale=300:300`);
+                          imageFile.save(resizedPath, err => {
+                            if (err) {
+                              reject(`cannot save resized episode image ${coverPath} ${err}`);
+                            } else {
+                              fs.unlink(coverPath, err => 0); // removing original image file
+                              coverPath = resizedPath;
+                            }
+                            resolve();
+                          });
+                        }, err => {
+                          reject(`unable to parse file with ffmpeg ${err}`);
+                          resolve();
+                        });
+                      }
+                    });
+                  }).catch(err => {
+                    reject(`unable to obtain coverArtUrl ${err}`);
+                    resolve();
+                  });
+                });
+              }
+
+              (new ffmpeg(mp3codecPath || filePath)).then(file => {
                 if (episode.id3Tagged) { // tagged
                   resolve({ id, fileDuration: (Math.round(episode.duration) || file.metadata.duration.seconds) });
                 } else { // not tagged, setting up ID3
+                  file.addCommand('-i', coverPath || itunesImagePath); // coverArtUrl || itunesImage
+                  file.addCommand('-map', '0:0');
+                  file.addCommand('-map', '1:0');
+                  file.addCommand('-codec', 'copy');
+                  file.addCommand('-id3v2_version', '3');
+                  file.addCommand('-metadata:s:v', `title="Album cover"`);
+                  file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
                   const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
                   const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
                   file.addCommand('-metadata', `title="${episodeTitle}"`);
@@ -123,11 +214,6 @@ module.exports.createFeed = async (req, res) => {
                   file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
                   file.addCommand('-metadata', `genre="Podcast"`);
                   file.addCommand('-metadata', `'cover art=${itunesImage}'`);
-                  if (file.metadata.audio.codec === 'mp3') {
-                    file.addCommand('-codec', 'copy');
-                  } else { // 'aac' for .m4a files
-                    file.setAudioCodec('mp3').setAudioBitRate(64);
-                  }
                   console.log(`Episode: ${id} tagged, path ${filePath}`);
                   const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
                   file.save(updatedPath, err => {
