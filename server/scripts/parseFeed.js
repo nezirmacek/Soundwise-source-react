@@ -1,6 +1,15 @@
 'use strict';
 
-// Purpose: automatically create and update souncast and episodes from a podcast user hosted elsewhere. i.e. import user's podcast RSS feed and create soundcast listed on Soundwise from the feed. Also regularly check the feed to see if there're updates.
+// Purpose:
+// automatically create and update souncast and episodes from a podcast user hosted elsewhere. i.e. import user's podcast RSS feed and create soundcast listed on Soundwise from the feed. Also regularly check the feed to see if there're updates.
+
+// How it works:
+// 1. user creates a publisher account on Soundwise. But she already has a podcast published on other platforms. So she submits the RSS feed url on client to request backend to create a soundcast from it.
+// 2. server takes the feed url, parses the content, creates a soundcast from the feed information, and also creates episodes from the feed items.
+// 3. server sends email to the feed owner's email address listed in the feed with a verification code.
+// 4. user gets the code, inputs it on front end to prove she's the owner.
+// 5. front end makes the new soundcast public.
+// 6. server checks the feed url every hour to see if there are new episodes. If so, update the soundcast with new episodes.
 
 const request = require ("request");
 const FeedParser = require ("feedparser");
