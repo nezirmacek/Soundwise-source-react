@@ -130,7 +130,7 @@ class _CreateEpisode extends Component {
             coverArtUploading: false,
             wrongFileTypeFor: null,
 
-            audioNormalization: true,
+            audioNormalization: false,
             trimSilence: false,
             reduceSilence: false,
             addIntroOutro: false,
@@ -396,6 +396,7 @@ class _CreateEpisode extends Component {
           });
         }
         const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
+        const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, immediatePublish} = this.state;
         const { userInfo, history, content_saved, handleContentSaving } = this.props;
         if(!content_saved[this.episodeId]) { // prevent unnecessary rerendering of component
             if(!recordedAudioUrl && !uploadedAudioUrl) {
@@ -408,7 +409,7 @@ class _CreateEpisode extends Component {
                 return;
             }
 
-            if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check ifsoundcast in soundcasts_managed
+            if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check if soundcast in soundcasts_managed
 
               this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
                     if (user && that.firebaseListener) {
@@ -425,7 +426,7 @@ class _CreateEpisode extends Component {
                             notes: notesUrl,
                             publicEpisode,
                             soundcastID: that.currentSoundcastId,
-                            isPublished: isPublished,
+                            isPublished: isPublished && immediatePublish ? true : false,
                             coverArtUrl: coverartUrl,
                         };
 
@@ -467,7 +468,41 @@ class _CreateEpisode extends Component {
                                 soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].title,
                             }).then(
                                 res => {
-                                    // console.log('episode saved to db', res);
+                                    if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
+                                        Axios.post('/api/audio_processing', {
+                                          epsiodeId: that.episodeId,
+                                          soundcastId: that.currentSoundcastId,
+                                          publisherEmail: userInfo.publisher.email,
+                                          publisherFirstName: userInfo.firstName,
+                                          publisherName: userInfo.publisher.name,
+                                          publisherImageUrl: userInfo.publisher.imageUrl,
+                                          tagging: true,
+                                          intro: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].intro) || null,
+                                          outro: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].outro) || null,
+                                          overlayDuration: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].introOutroOverlay) || 0,
+                                          setVolume: audioNormalization,
+                                          trim: trimSilence,
+                                          removeSilence: (reduceSilence && Number(silentPeriod)|| false),
+                                          autoPublish: immediatePublish,
+                                          emailListeners: that.state.sendEmails,
+                                        }).then(res => {
+                                            that.setState({
+                                              startProcessingEpisode: false,
+                                              doneProcessingEpisode: true,
+                                            });
+                                            alert('Episode is submitted and will be published after processing is done.');
+                                            handleContentSaving(that.episodeId, true);
+                                            history.goBack();
+                                        })
+                                        .catch(err => {
+                                            that.setState({
+                                              startProcessingEpisode: false,
+                                              doneProcessingEpisode: true,
+                                              podcastError: err.toString(),
+                                            })
+                                            console.log(err);
+                                        });
+                                    } else { // if audio processing is not requested
                                     if(isPublished) {
                                       that.notifySubscribers();
                                       if(podcastFeedVersion) {
@@ -509,6 +544,7 @@ class _CreateEpisode extends Component {
                                     } else {
                                       alert('Episode saved');
                                       history.goBack();
+                                    }
                                     }
 
                                 }
@@ -1201,7 +1237,7 @@ class _CreateEpisode extends Component {
                         <div style={{marginTop: 50, }}>
                           <hr style={{border: '0.5px solid lightgray'}}/>
                           <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing Options</span>
-                          <div style={{marginTop: 15}}>
+                          <div style={{marginTop: 15, display: 'none'}}>
                             <label className='text-dark-gray' style={{fontSize: 16, display: 'flex', alignItems: 'center'}}>
                               <input style={{height: 30, width: 30}} type="checkbox" value={this.state.immediatePublish} checked onChange={() => that.setState({
                                   immediatePublish: that.state.immediatePublish
