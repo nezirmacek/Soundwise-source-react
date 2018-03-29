@@ -114,7 +114,7 @@ AWS.Request.prototype.forwardToExpress = function forwardToExpress(req, res, nex
   .on('end', () => {
    res.end();
   });*/
-  .pipe(res);
+  .checkTimeoutPipe(res);
 };
 AWS.Request.prototype.forwardToExpressNoStream = function forwardToExpressNoStream(res, next) {
   this
@@ -128,8 +128,12 @@ AWS.Request.prototype.forwardToExpressNoStream = function forwardToExpressNoStre
   })
   .createReadStream()
   .on('error', next)
-  .pipe(res);
+  .checkTimeoutPipe(res);
 };
+AWS.Request.prototype.checkTimeoutPipe = function (res) {
+  clearTimeout(res.awsTimeout);
+  this.pipe(res);
+}
 
 // use part
 // app.post('/api/charge', handlePayment);
@@ -203,7 +207,7 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
-app.get('/tracks/:id', (request, response, next) => {
+const getTrack = (request, response, next) => {
   const path = String(request.path).slice(8);
   const s3 = new S3();
   // console.log('mp3 request header: ', request.headers);
@@ -231,6 +235,13 @@ app.get('/tracks/:id', (request, response, next) => {
     })
     .forwardToExpressNoStream(response, next);
   }
+}
+
+app.get('/tracks/:id', (request, response, next) => {
+  response.awsTimeout = setTimeout(() => {
+    getTrack(request, response, next); // run again
+  }, 20000); // 20 sec
+  getTrack(request, response, next);
 });
 
 // database API routes:
