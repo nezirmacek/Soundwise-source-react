@@ -1,6 +1,6 @@
 'use strict';
 
-// Purpose: automatically create and update souncast and episodes from a podcast user hosted elsewhere. i.e. import user's podcast feed and create soundcast listed on Soundwise from the feed
+// Purpose: automatically create and update souncast and episodes from a podcast user hosted elsewhere. i.e. import user's podcast RSS feed and create soundcast listed on Soundwise from the feed. Also regularly check the feed to see if there're updates.
 
 const request = require ("request");
 const FeedParser = require ("feedparser");
