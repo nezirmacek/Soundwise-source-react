@@ -511,10 +511,7 @@ module.exports.audioProcessing = async (req, res) => {
 					logErr(`ffmpeg catch ${e.body || e.stack}`);
 				}
 			}); // fs.writeFile
-		}).catch(err => {
-	    logErr(`unable to obtain episode ${err}`);
-	    // res.error(`Error: unable to obtain episode ${err}`);
-	  });
+		}).catch(err => logErr(`unable to obtain episode ${err}`));
 	} else {
 		res.error('Error: audio processing undefined parameters');
 	}

@@ -207,10 +207,8 @@ module.exports.createFeed = async (req, res) => {
                       return reject(`Error: saving fails ${filePath} ${err}`);
                     }
                     console.log(`File ${filePath} successfully saved`);
-                    const s3Path = episode.url.split('/')[4]; // example https://s3.amazonaws.com/soundwiseinc/demo/1508553920539e.mp3 > demo
-                    const episodeFileName = episode.url.split('/')[5];
                     uploader.use(new S3Strategy({
-                      uploadPath: 'soundcasts', // `${s3Path}`,
+                      uploadPath: 'soundcasts',
                       headers: { 'x-amz-acl': 'public-read' },
                       options: {
                         key: awsConfig.accessKeyId,
@@ -222,8 +220,9 @@ module.exports.createFeed = async (req, res) => {
                     uploader.upload('s3' // saving to S3 db
                      , { path: updatedPath, name: `${id}.mp3` } // file
                      , (err, files) => {
-                      fs.unlink(filePath, err => 0); // removing original file
-                      fs.unlink(updatedPath, err => 0); // removing converted file
+                      fs.unlink(filePath, err => 0); // remove original file
+                      fs.unlink(updatedPath, err => 0); // remove converted file
+                      coverPath && fs.unlink(coverPath, err => 0) // remove cover image
                       if (err) {
                         return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
                       }
@@ -241,7 +240,8 @@ module.exports.createFeed = async (req, res) => {
             }
           }); // fs.writeFile
         }).catch(err => reject(`Error: unable to obtain episode ${episode.url}`));
-      }))).then(results => {
+      }))).then(results => { // Promise.all then
+        itunesImagePath && fs.unlink(itunesImagePath, err => 0) // remove itunes image
         console.log('files processed.');
         episodesArrSorted.forEach(episode => {
           const description = `${episode.description || ''}<br /><p>Subscribe to ${title} on <a href="https://mysoundwise.com/soundcasts/${soundcastId}">Soundwise</a></p>`; ;
@@ -277,7 +277,7 @@ module.exports.createFeed = async (req, res) => {
         });
         const xml = feed.buildXml('  ');
         // store the cached xml somewhere in our database (firebase or postgres)
-        console.log(`xml file generated for ${soundcastId}`);
+        console.log(`feed.js xml file generated for ${soundcastId}`);
         firebase.database().ref(`soundcastsFeedXml/${soundcastId}`).set(xml);
         firebase.database().ref(`soundcasts/${soundcastId}/podcastFeedVersion`).once('value')
           .then(version => {
@@ -301,14 +301,11 @@ module.exports.createFeed = async (req, res) => {
           });
           // res.end(xml);
       })
-      .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
+      .catch(err => logErr(`Promise.all failed: ${err}`)); // Promise.all catch
     } else {
       res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
-  }).catch(err => {
-    console.log(`Error: unable to obtain image ${err}`);
-    res.error(`Error: unable to obtain image ${err}`);
-  });
+  }).catch(err => logErr(`unable to obtain image ${err}`, res));
 }
 
 module.exports.requestFeed = async (req, res) => {
