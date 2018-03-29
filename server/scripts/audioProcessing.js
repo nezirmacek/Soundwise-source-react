@@ -1,7 +1,7 @@
 'use strict';
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const { uploader, logErr } = require('./utils')('audioProcessing');
+const { uploader, logErr, setAudioTags } = require('./utils')('audioProcessing');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const database = require('../../database/index');
@@ -345,38 +345,22 @@ module.exports.audioProcessing = async (req, res) => {
 										}
 										if (height > 300 || width > 300) { // resizing
 											(new ffmpeg(coverPath)).then(imageFile => {
-												const updatedImagePath = `${coverPath.slice(0, -4)}_updated.png`;
+												const resizedPath = `${coverPath.slice(0, -4)}_resized.png`;
 												// ffmpeg -i img.png -vf scale=300:300 img_updated.png
 												imageFile.addCommand('-vf', `scale=300:300`);
-												imageFile.save(updatedImagePath, err => {
+												imageFile.save(resizedPath, err => {
 													if (err) {
 														return logErr(`cannot save updated image ${coverPath} ${err}`);
 													}
 													fs.unlink(coverPath, err => 0); // removing original image file
-													tagging(updatedImagePath);
+													tagging(resizedPath);
 												});
 											}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 										} else {
 											tagging(coverPath);
 										}
 										function tagging(coverPath) {
-											// from https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
-											// ffmpeg -i in.mp3 -i test.jpeg -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" out.mp3
-											file.addCommand('-i', coverPath);
-											file.addCommand('-map', '0:0');
-											file.addCommand('-map', '1:0');
-											file.addCommand('-codec', 'copy');
-											file.addCommand('-id3v2_version', '3');
-											file.addCommand('-metadata:s:v', `title="Album cover"`);
-											file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
-											const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-											const hostNameEscaped = soundcast.hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-											file.addCommand('-metadata', `title="${episodeTitle}"`);
-											file.addCommand('-metadata', `track="${episode.index}"`);
-											file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
-											file.addCommand('-metadata', `album="${soundcast.title}"`);
-											file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
-											file.addCommand('-metadata', `genre="Podcast"`);
+											setAudioTags(file, coverPath, episode.title, episode.index, soundcast.hostName);
 											nextProcessing(filePath, soundcast, file, coverPath);
 										}
 									});

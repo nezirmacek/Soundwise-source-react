@@ -3,7 +3,7 @@ const path = require('path');
 const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const { uploader, logErr } = require('./utils')('feed.js');
+const { uploader, logErr, setAudioTags } = require('./utils')('feed.js');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const Podcast = require('podcast');
@@ -198,22 +198,8 @@ module.exports.createFeed = async (req, res) => {
                 if (episode.id3Tagged) { // tagged
                   resolve({ id, fileDuration: (Math.round(episode.duration) || file.metadata.duration.seconds) });
                 } else { // not tagged, setting up ID3
-                  file.addCommand('-i', coverPath || itunesImagePath); // coverArtUrl || itunesImage
-                  file.addCommand('-map', '0:0');
-                  file.addCommand('-map', '1:0');
-                  file.addCommand('-codec', 'copy');
-                  file.addCommand('-id3v2_version', '3');
-                  file.addCommand('-metadata:s:v', `title="Album cover"`);
-                  file.addCommand('-metadata:s:v', `comment="Cover (front)"`);
-                  const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-                  const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-                  file.addCommand('-metadata', `title="${episodeTitle}"`);
-                  file.addCommand('-metadata', `track="${episode.index}"`);
-                  file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
-                  file.addCommand('-metadata', `album="${title}"`);
-                  file.addCommand('-metadata', `year="${new Date().getFullYear()}"`);
-                  file.addCommand('-metadata', `genre="Podcast"`);
-                  file.addCommand('-metadata', `'cover art=${itunesImage}'`);
+                  const imgPath = coverPath || itunesImagePath;
+                  setAudioTags(file, imgPath, episode.title, episode.index, hostName);
                   console.log(`Episode: ${id} tagged, path ${filePath}`);
                   const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
                   file.save(updatedPath, err => {
