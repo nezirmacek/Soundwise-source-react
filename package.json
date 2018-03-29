@@ -34,6 +34,7 @@
     "express": "^4.14.0",
     "express-fileuploader": "0.0.7",
     "express-fileuploader-s3": "0.0.1",
+    "feedparser": "^2.2.9",
     "file-loader": "^0.10.1",
     "firebase": "^3.7.2",
     "firebase-admin": "^5.2.1",
