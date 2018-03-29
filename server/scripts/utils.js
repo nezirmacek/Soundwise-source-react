@@ -1,7 +1,7 @@
 'use strict';
 const uploader = require('express-fileuploader');
 
-// Fix to prevent setting uid in filename
+// Fix to prevent setting uid as a filename
 // https://github.com/heroicyang/express-fileuploader/blob/master/lib/index.js#L78-L118
 uploader.upload = function(strategy, files, callback) {
   var name = strategy;
@@ -38,7 +38,7 @@ uploader.upload = function(strategy, files, callback) {
   });
 };
 
-const setAudioTags = (file, imgPath, title, track, artist) = {
+const setAudioTags = (file, imgPath, title, track, artist) => {
 	// from https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
 	// ffmpeg -i in.mp3 -i test.jpeg -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" out.mp3
 	file.addCommand('-i', imgPath);
@@ -58,7 +58,7 @@ const setAudioTags = (file, imgPath, title, track, artist) = {
 	file.addCommand('-metadata', `genre="Podcast"`);
 }
 
-const logErr = prefix =>(msg, res, resolve) => {
+const logErr = prefix => (msg, res, resolve) => {
 	console.log(`Error: ${prefix} ${msg}`);
 	res && res.error(`Error: ${prefix} ${msg}`);
 	resolve && resolve();

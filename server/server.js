@@ -271,6 +271,17 @@ app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
   response.sendFile(path.resolve('./client/index.html'));
 });
 
+app.use(function (err, req, res, next) { // error handler
+  if (err) {
+    if (err.hostname === 'soundwiseinc.s3.amazonaws.com'
+     && err.message  === 'Connection timed out after 120000ms') {
+      return res.end(); // ignore aws-sdk timeout error
+    }
+    console.log(err);
+    return res.end(`Error ${err.message}`);
+  }
+  res.end();
+});
 
 
 // var sgMail = require('@sendgrid/mail');
