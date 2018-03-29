@@ -1,7 +1,7 @@
 'use strict';
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const uploader = require('./express-fileuploader-updated');
+const { uploader, logErr } = require('./utils');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const database = require('../../database/index');
@@ -22,8 +22,6 @@ const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[s
 		//   ["silence_end"     , "15.553"    ],
 		//   ["silence_duration", "5.512"     ],
 		//   ["silence_start"   , "17.481"    ] ]
-
-const logErr = errMsg => console.log(`Error: audio processing ${errMsg}`);
 
 module.exports.audioProcessing = async (req, res) => {
 	// 1. Client make post request to /api/audio_processing, with episode ID and processing options
@@ -509,6 +507,11 @@ module.exports.audioProcessing = async (req, res) => {
 
 									//     step 3: update firebase
 									firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+
+									// If autoPublish == true and if soundcast.podcastFeedVersion, then we need to update the podcast feed after the episode is processed and ready to be published
+									if (soundcast.podcastFeedVersion) {
+										// run feed.js
+									}
 								}
 								// 6. Notify the publisher by email.
 					      sgMail.send({
