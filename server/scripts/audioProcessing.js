@@ -172,6 +172,7 @@ module.exports.audioProcessing = async (req, res) => {
 						(new ffmpeg(introPath)).then(file => {
 							const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
 							const introDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
+							const originalIntroPath = intro === outro ? introPath : '';
 							if (overlayDuration) { // make fading
 								// a. fade out an intro
 								// ffmpeg -i intro.mp3 -af 'afade=t=out:st=885:d=5' intro-fadeout.mp3
@@ -186,13 +187,11 @@ module.exports.audioProcessing = async (req, res) => {
 									}
 									if (intro !== outro) { // outro intro urls differ
 										fs.unlink(introPath, err => 0); // remove original intro
-										outroProcessing(filePath, introFadePath, introDuration);
-									} else {
-										outroProcessing(filePath, introFadePath, introDuration, introPath);
 									}
+									outroProcessing(filePath, introFadePath, introDuration, originalIntroPath);
 								});
 							} else {
-								outroProcessing(filePath, introPath, introDuration);
+								outroProcessing(filePath, introPath, introDuration, originalIntroPath);
 							}
 						}, err => logErr(`ffmpeg intro ${introPath} ${err}`));
 					});
