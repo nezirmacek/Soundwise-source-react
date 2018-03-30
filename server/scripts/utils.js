@@ -9,7 +9,7 @@ uploader.upload = function(strategy, files, callback) {
   if (!strategy) {
     return callback(new Error('no upload strategy: ' + name));
   }
-  if (!util.isArray(files)) {
+  if (!Array.isArray(files)) {
     files = [files];
   }
   var fileCount = files.length;
