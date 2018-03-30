@@ -58,6 +58,35 @@ const setAudioTags = (file, imgPath, title, track, artist) => {
 	file.addCommand('-metadata', `genre="Podcast"`);
 }
 
+/* parseSilenceDetect
+	example input: (String)
+		...
+		Metadata:
+			encoder         : Lavc57.107.100 pcm_s16le
+		Side data:
+			replaygain: track gain - -4.500000, track peak - unknown, album gain - unknown, album peak - unknown, 
+		size=N/A time=00:02:48.51 bitrate=N/A speed= 337x    
+		[silencedetect @ 0x55e8040] silence_start: 335.262
+		[silencedetect @ 0x55e8040] silence_end: 336.249 | silence_duration: 0.987347
+		size=N/A time=00:05:37.00 bitrate=N/A speed= 337x    
+		[silencedetect @ 0x55e8040] silence_start: 459.03
+		[silencedetect @ 0x55e8040] silence_end: 460.148 | silence_duration: 1.11796
+		size=N/A time=00:08:16.09 bitrate=N/A speed= 337x    
+		video:0kB audio:85460kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown
+
+  example output: (Array)
+	  [ ["silence_start"   , "-0.0150208"],
+		  ["silence_end"     , "5.08898"   ],
+		  ["silence_duration", "5.104"     ],
+		  ["silence_start"   , "10.041"    ],
+		  ["silence_end"     , "15.553"    ],
+		  ["silence_duration", "5.512"     ],
+		  ["silence_start"   , "17.481"    ] ]
+*/
+const parseSilenceDetect = s => s.replace(/\[silencedetect/g, '\n[silencedetect')
+		.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
+		.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': ')); // *
+
 const logErr = prefix => (msg, res, resolve) => {
 	console.log(`Error: ${prefix} ${msg}`);
 	res && res.error(`Error: ${prefix} ${msg}`);
@@ -65,7 +94,6 @@ const logErr = prefix => (msg, res, resolve) => {
 }
 
 module.exports = prefix => ({
-	uploader,
-	setAudioTags,
+	uploader, setAudioTags, parseSilenceDetect,
 	logErr: logErr(prefix) // set prefix
 });

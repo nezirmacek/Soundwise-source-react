@@ -2,7 +2,7 @@
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const { uploader, logErr, setAudioTags } = require('./utils')('audioProcessing');
+const { uploader, logErr, setAudioTags, parseSilenceDetect } = require('./utils')('audioProcessing');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const database = require('../../database/index');
@@ -12,17 +12,6 @@ const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendMarketingEmails = require('./sendEmails').sendMarketingEmails;
-
-const parseSilenceDetect = s => s.split('\n').filter(i => i.slice(0, 14) === '[silencedetect')
-		.map(i => i.split('] ')[1]).join(' | ').split(' | ').map(i => i.split(': ')); // *
-		// * example return: [
-		//   ["silence_start"   , "-0.0150208"],
-		//   ["silence_end"     , "5.08898"   ],
-		//   ["silence_duration", "5.104"     ],
-		//   ["silence_start"   , "10.041"    ],
-		//   ["silence_end"     , "15.553"    ],
-		//   ["silence_duration", "5.512"     ],
-		//   ["silence_start"   , "17.481"    ] ]
 
 module.exports.audioProcessing = async (req, res) => {
 	// 1. Client make post request to /api/audio_processing, with episode ID and processing options
@@ -61,7 +50,6 @@ module.exports.audioProcessing = async (req, res) => {
 	let filePath;
 	await new Promise(resolve => {
 		request.get({
-			// url: 'https://soundwiseinc.s3.amazonaws.com/soundcasts/1522235784847e.mp3', // testing
 			url: episode.url,
 			encoding: null // return body as a Buffer
 		}).then(body => {
@@ -403,16 +391,16 @@ module.exports.audioProcessing = async (req, res) => {
 						bucket: 'soundwiseinc',
 					},
 				}));
-				console.log('CHECK: audio processing ', filePath, id);
+				console.log('CHECK: audio processing ', outputPath, episodeId);
 				uploader.upload('s3' // saving to S3 db
 					// 5a. If 'autoPublish == true', save processed audio file to AWS S3
 					//         to replace the original file
 					//     If 'autoPublish == false', save processed audio file to AWS S3 under
 					//         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
-				 , { path: outputPath, name: `${id + (autoPublish ? '' : '-edited')}.mp3` } // file
+				 , { path: outputPath, name: `${episodeId + (autoPublish ? '' : '-edited')}.mp3` } // file
 				 , async (err, files) => {
 					if (err) {
-						return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
+						return reject(`Error: uploading ${episodeId}.mp3 to S3 ${err}`);
 					}
 					fs.unlink(outputPath, err => 0); // remove tagged file
 					if (!autoPublish) {
