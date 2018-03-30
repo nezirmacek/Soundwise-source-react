@@ -96,6 +96,7 @@ module.exports.audioProcessing = async (req, res) => {
 					}
 					(new ffmpeg(filePath)).then(file => {
 						file.addCommand('-af', `atrim=${start}:${end}`);
+						file.addCommand('-q:a', '0');
 						const trimmedPath = `${filePath.slice(0, -4)}_trimmed${path.extname(episode.url)}`;
 						file.save(trimmedPath, err => {
 							if (err) {
@@ -145,6 +146,7 @@ module.exports.audioProcessing = async (req, res) => {
 							filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1"`;
 							file.addCommand('-filter_complex', filterComplex);
 							// *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
+							file.addCommand('-q:a', '0');
 							const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${path.extname(episode.url)}`;
 							file.save(silenceRemovedPath, err => {
 								if (err) {
@@ -181,6 +183,7 @@ module.exports.audioProcessing = async (req, res) => {
 								const fadeDuration = overlayDuration * 2;
 								const fadeStartPosition = introDuration - fadeDuration;
 								file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
+								file.addCommand('-q:a', '0');
 								const introFadePath = `${introPath.slice(0, -4)}_fadeintro${path.extname(intro)}`;
 								file.save(introFadePath, err => {
 									if (err) {
@@ -222,6 +225,7 @@ module.exports.audioProcessing = async (req, res) => {
 							// a. fade in an outro clip
 							// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
 							file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
+							file.addCommand('-q:a', '0');
 							const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(outro)}`;
 							file.save(outroFadePath, err => {
 								if (err) {
@@ -286,6 +290,7 @@ module.exports.audioProcessing = async (req, res) => {
 						filterComplex= `"[1]adelay=${adelay2}[a];[0][a]amix=2"`;
 					}
 					file.addCommand('-filter_complex', `${filterComplex}`);
+					file.addCommand('-q:a', '0');
 					const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(intro)}`;
 					file.save(concatPath, err => {
 						if (err) {
@@ -311,6 +316,7 @@ module.exports.audioProcessing = async (req, res) => {
 					// ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
 			    file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20:linear=true:print_format=summary`);
 			    file.addCommand('-ar', `44.1k`);
+					file.addCommand('-q:a', '0');
 					const setVolumePath = `${filePath.slice(0, -4)}_set_volume${path.extname(intro)}`;
 					file.save(setVolumePath, err => {
 						if (err) {
@@ -328,6 +334,7 @@ module.exports.audioProcessing = async (req, res) => {
 			(new ffmpeg(filePath)).then(file => {
 		    if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
 					file.setAudioCodec('mp3').setAudioBitRate(64); // convert to mp3
+					file.addCommand('-q:a', '0');
 					const mp3codecPath = `${filePath.slice(0, -4)}_mp3codec.mp3`;
 					file.save(mp3codecPath, err => {
 						if (err) {
