@@ -179,13 +179,17 @@ module.exports.audioProcessing = async (req, res) => {
 								const fadeDuration = overlayDuration * 2;
 								const fadeStartPosition = introDuration - fadeDuration;
 								file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
-								const introFadePath = `${introPath.slice(0, -4)}_fade${path.extname(intro)}`;
+								const introFadePath = `${introPath.slice(0, -4)}_fadeintro${path.extname(intro)}`;
 								file.save(introFadePath, err => {
 									if (err) {
 										return logErr(`intro fade fails ${introPath} ${err}`);
 									}
-									fs.unlink(introPath, err => 0); // remove original intro
-									outroProcessing(filePath, introFadePath, introDuration);
+									if (intro !== outro) { // outro intro urls differ
+										fs.unlink(introPath, err => 0); // remove original intro
+										outroProcessing(filePath, introFadePath, introDuration);
+									} else {
+										outroProcessing(filePath, introFadePath, introDuration, introPath);
+									}
 								});
 							} else {
 								outroProcessing(filePath, introPath, introDuration);
@@ -197,33 +201,40 @@ module.exports.audioProcessing = async (req, res) => {
 				outroProcessing(filePath); // no intro
 			}
 		}
-		function outroProcessing(filePath, introPath, introDuration) {
+		function outroProcessing(filePath, introPath, introDuration, originalIntroPath) {
 			if (outro) {
-				request.get({ url: outro, encoding: null }).then(body => {
-					const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(outro)}`;
-					fs.writeFile(outroPath, body, err => {
-						if (err) {
-							return logErr(`outro write file ${filePath}`);
-						}
-						(new ffmpeg(outroPath)).then(file => {
-							if (overlayDuration) { // make fading
-								// a. fade in an outro clip
-								// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
-								file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
-								const outroFadePath = `${outroPath.slice(0, -4)}_fade${path.extname(outro)}`;
-								file.save(outroFadePath, err => {
-									if (err) {
-										return logErr(`outro fade fails ${outroFadePath} ${err}`);
-									}
-									fs.unlink(outroPath, err => 0); // remove original outro
-									concat(filePath, introPath, introDuration, outroFadePath);
-								});
-							} else {
-								concat(filePath, introPath, introDuration, outroPath);
+				if (!originalIntroPath) {
+					request.get({ url: outro, encoding: null }).then(body => {
+						const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(outro)}`;
+						fs.writeFile(outroPath, body, err => {
+							if (err) {
+								return logErr(`outro write file ${filePath}`);
 							}
-						}, err => logErr(`ffmpeg outro ${outroPath} ${err}`));
-					});
-				}).catch(err => logErr(`outro request ${err}`));
+							fadeOutro(outroPath);
+						});
+					}).catch(err => logErr(`outro request ${err}`));
+				} else {
+					fadeOutro(originalIntroPath); // use already obtained intro file
+				}
+				function fadeOutro(outroPath) {
+					(new ffmpeg(outroPath)).then(file => {
+						if (overlayDuration) { // make fading
+							// a. fade in an outro clip
+							// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
+							file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
+							const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(outro)}`;
+							file.save(outroFadePath, err => {
+								if (err) {
+									return logErr(`outro fade fails ${outroFadePath} ${err}`);
+								}
+								fs.unlink(outroPath, err => 0); // remove original outro
+								concat(filePath, introPath, introDuration, outroFadePath);
+							});
+						} else {
+							concat(filePath, introPath, introDuration, outroPath);
+						}
+					}, err => logErr(`ffmpeg outro ${outroPath} ${err}`));
+				}
 			} else {
 				concat(filePath, introPath, introDuration); // no outro
 			}
@@ -357,13 +368,11 @@ module.exports.audioProcessing = async (req, res) => {
 											return logErr(`cannot save updated image ${coverPath} ${err}`);
 										}
 										fs.unlink(coverPath, err => 0); // removing original image file
-										tagging(resizedPath);
+										setAudioTags(file, resizedPath, episode.title, episode.index, soundcast.hostName);
+										nextProcessing(filePath, soundcast, file, resizedPath);
 									});
 								}, err => logErr(`setTags unable to parse file with ffmpeg ${err}`));
 							} else {
-								tagging(coverPath);
-							}
-							function tagging(coverPath) {
 								setAudioTags(file, coverPath, episode.title, episode.index, soundcast.hostName);
 								nextProcessing(filePath, soundcast, file, coverPath);
 							}
