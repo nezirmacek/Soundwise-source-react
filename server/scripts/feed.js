@@ -38,7 +38,7 @@ module.exports.createFeed = async (req, res) => {
       }
       imageBody = body;
       resolve();
-    }).catch(err => logErr(`unable to obtain image ${err}`, res, resolve);
+    }).catch(err => logErr(`unable to obtain image ${err}`, res, resolve));
   });
   if (!imageBody) {
     return logErr('required imageBody variable not set', res);
