@@ -33,7 +33,7 @@ module.exports.audioProcessing = async (req, res) => {
 					tagging, intro, outro, overlayDuration, setVolume, trim,
 					removeSilence, autoPublish, emailListeners, publisherImageUrl } = req.body;
 
-	logErr('req.body: ' + JSON.stringify(req.body));
+	console.log('INFO audio processing req.body: ' + JSON.stringify(req.body));
 	if (!(episodeId && soundcastId &&
 			typeof tagging       === 'boolean' && typeof overlayDuration === 'number'  &&
 			typeof setVolume     === 'boolean' && typeof trim            === 'boolean' &&
