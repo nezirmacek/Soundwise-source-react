@@ -223,8 +223,14 @@ module.exports.audioProcessing = async (req, res) => {
 					(new ffmpeg(outroPath)).then(file => {
 						if (overlayDuration) { // make fading
 							// a. fade in an outro clip
-							// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5' outro-fadein.mp3
-							file.addCommand('-af', `afade=t=in:st=0:d=${overlayDuration * 2}`);
+							// ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5,afade=out:st=885:d=5' outro-fadein.mp3
+							const fadein = `afade=t=in:st=0:d=${overlayDuration * 2}`;
+							const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
+							const outroDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
+							const fadeDuration = overlayDuration * 2;
+							const fadeStartPosition = outroDuration - fadeDuration;
+							const fadeout = `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`;
+							file.addCommand('-af', `${fadein},${fadeout}`);
 							file.addCommand('-q:a', '0');
 							const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(outro)}`;
 							file.save(outroFadePath, err => {
