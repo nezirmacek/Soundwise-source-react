@@ -12,6 +12,7 @@ const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendMarketingEmails = require('./sendEmails').sendMarketingEmails;
+const createFeed = require('./feed').createFeed;
 
 module.exports.audioProcessing = async (req, res) => {
 	// 1. Client make post request to /api/audio_processing, with episode ID and processing options
@@ -19,7 +20,7 @@ module.exports.audioProcessing = async (req, res) => {
 		// episodeId: '1519588329916e', // need to retrieve episode info from firebase for tagging
 		// soundcastId: '1508293913676s', // need to retrieve soundcast info from firebase for tagging
 		// publisherEmail: 'john@awesomepublisher.com',
-		// publisherFirstName: 'John',
+		// publisherName: 'John',
 		// tagging: true,
 		// intro: 'https://mysoundwise.com/tracks/intro12345s.mp3',
 		// outro: 'https://mysoundwise.com/tracks/outro12345s.mp3',
@@ -412,13 +413,10 @@ module.exports.audioProcessing = async (req, res) => {
 					}
 					fs.unlink(outputPath, err => 0); // remove tagged file
 					if (!autoPublish) {
-						// 5a. - and then do
 						const url = `https://s3.amazonaws.com/soundwiseinc/soundcasts/${episodeId}-edited.mp3`;
 						await firebase.database().ref(`episodes/${episodeId}/editedUrl`).set(url);
 					} else {
-						// 5b. If 'autoPublish == false', do nothing.
-						//     If 'autoPublish == true', publish the episode
-						//     To publish the episode:
+						// 5b. If 'autoPublish == true', publish the episode:
 						//     step 1: save episode metadata in our sql database
 		        //             and then save data. The equivalent from front end:
 						database.Episode.findOrCreate({
@@ -502,19 +500,30 @@ module.exports.audioProcessing = async (req, res) => {
 	          } // if emailListeners
 
 						//     step 3: update firebase
-						firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+						await firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+						await firebase.database().ref(`episodes/${episodeId}/id3Tagged`).set(true);
 
 						// If autoPublish == true and if soundcast.podcastFeedVersion, then we need to update the podcast feed after the episode is processed and ready to be published
 						if (soundcast.podcastFeedVersion) {
-							// run feed.js
+							createFeed({ body: { // req.body
+								soundcastId,
+								soundcastTitle: soundcast.title,
+								itunesExplicit: soundcast.itunesExplicit,
+								itunesImage: soundcast.itunesImage,
+								autoSubmitPodcast: false,
+								email: publisherEmail,
+								firstName: publisherName
+							}}, { // res mocking object
+								error: logErr, status: status => ({ send: () => 0 })
+							});
 						}
-					}
+					} // if autoPublish
 					// 6. Notify the publisher by email.
 		      sgMail.send({
 		        to: publisherEmail,
 		        from: 'support@mysoundwise.com',
 		        subject: 'Your episode has been processed!',
-		        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
+		        html: `<p>Hello ${publisherName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
 		      });
 				}); // uploader.upload s3
 			}); // file.save outputPath
