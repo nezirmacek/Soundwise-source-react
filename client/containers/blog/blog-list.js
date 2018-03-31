@@ -14,18 +14,25 @@ export default class BlogList extends Component {
 
     this.state = {
       loaded: false,
+      posts: null,
       resp: null,
     };
   }
 
   fetchPosts(page) {
     butter.post.list({page: page, page_size: 10}).then((resp) => {
-      console.log('resp: ', resp.data);
+      const posts = resp.data.data;
+      const filteredPosts = []; // select the posts that are not help docs
+      posts.forEach(post => {
+        if(post.categories[0].name != 'help-docs') {
+          filteredPosts.push(post);
+        }
+      })
       this.setState({
         loaded: true,
+        posts: filteredPosts,
         resp: resp.data,
       });
-      console.log('resp.data: ', resp.data);
     });
   }
 
@@ -56,7 +63,7 @@ export default class BlogList extends Component {
                       </div>
                   </div>
                   <div className="row">
-                    {this.state.resp.data.map((post) => {
+                    {this.state.posts.map((post) => {
                       return (
                       <div key={post.slug} className="col-md-6 col-sm-6 col-xs-12 margin-seven-bottom xs-margin-nineteen-bottom ">
                         <Link to={`/blog/post/${post.slug}`}>

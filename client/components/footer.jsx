@@ -25,6 +25,11 @@ const Footer = (props) => (
               </Link>
             </li>
             <li className="tz-text text-medium-gray">
+              <Link to='/knowledge'>
+                <span className='text-light-gray tz-text'>Knowledge Base</span>
+              </Link>
+            </li>
+            <li className="tz-text text-medium-gray">
               <Link to='/blog'>
                 <span className='text-light-gray tz-text'>Articles</span>
               </Link>

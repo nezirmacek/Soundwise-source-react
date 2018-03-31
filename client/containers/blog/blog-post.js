@@ -16,7 +16,7 @@ export default class BlogPost extends Component {
     super(props);
 
     this.state = {
-      loaded: false
+      loaded: false,
     };
   }
 
@@ -26,7 +26,8 @@ export default class BlogPost extends Component {
     butter.post.retrieve(slug).then((resp) => {
       this.setState({
         loaded: true,
-        post: resp.data.data
+        post: resp.data.data,
+        category: resp.data.data.categories[0].name,
       });
     });
   }
@@ -66,16 +67,20 @@ export default class BlogPost extends Component {
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
                         <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font  tz-text">{post.title}</h2>
                     </div>
-                    <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
-                      <div className= 'margin-five-bottom  xs-margin-nine-bottom' style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <div style={{...styles.profileImage, backgroundImage: `url(${author.profile_image || ''})`}}>
-                        </div>
-                        <div style={{marginLeft: 15, textAlign: 'left'}}>
-                          <div className='text-large text-dark-gray font-weight-800' style={{fontWeight: 800}}>{`${author.first_name} ${author.last_name}`}</div>
-                          <div className= 'text-large text-dark-gray '>{moment(post.published).format('MMMM Do YYYY')}</div>
+                    {
+                      this.state.category !== 'help-docs' &&
+                      <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
+                        <div className= 'margin-five-bottom  xs-margin-nine-bottom' style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                          <div style={{...styles.profileImage, backgroundImage: `url(${author.profile_image || ''})`}}>
+                          </div>
+                          <div style={{marginLeft: 15, textAlign: 'left'}}>
+                            <div className='text-large text-dark-gray font-weight-800' style={{fontWeight: 800}}>{`${author.first_name} ${author.last_name}`}</div>
+                            <div className= 'text-large text-dark-gray '>{moment(post.published).format('MMMM Do YYYY')}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                      || null
+                    }
                     <div className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center " style={{}}>
                         <span className="margin-eight-right title-small sm-title-small">
                           Share this:

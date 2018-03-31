@@ -595,7 +595,7 @@ export default class EditSoundcast extends Component {
                                     <div style={{width: '100%'}}>
                                       <span style={styles.titleText}>{`${i + 1}. `}</span>
                                       <div style={{width: '45%', display: 'inline-block', marginRight: 10,}}>
-                                        <span>Payment Plan Name</span>
+                                        <span><strong>Payment Plan Name</strong></span>
                                         <input
                                           type="text"
                                           style={styles.inputTitle}
@@ -606,7 +606,7 @@ export default class EditSoundcast extends Component {
                                         />
                                       </div>
                                       <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                                        <span>Billing</span>
+                                        <span><strong>Billing</strong></span>
                                         <select
                                           type="text"
                                           style={styles.inputTitle}
@@ -623,7 +623,7 @@ export default class EditSoundcast extends Component {
                                         </select>
                                       </div>
                                       <div style={{width: '20%', display: 'inline-block',}}>
-                                        <span>Price</span>
+                                        <span><strong>Price</strong></span>
                                         <div>
                                           <span style={{fontSize: 18}}>{`$ `}</span>
                                           <input
@@ -662,13 +662,75 @@ export default class EditSoundcast extends Component {
                                       </div>
                                       || null
                                     }
+                                    {
+                                      price.coupons &&
+                                      <div className='' style={{marginLeft: 23, width: '100%',marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
+                                        <div className=' ' style={{marginRight: 10,}}>
+                                          <span>Coupon Code</span>
+                                          <div>
+                                            <input
+                                              type="text"
+                                              style={{...styles.inputTitle}}
+                                              name="couponCode"
+                                              onChange={(e) => {
+                                                prices[i].coupons[0].code = e.target.value;
+                                                that.setState({prices});
+                                              }}
+                                              value={price.coupons[0].code}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className=' ' style={{marginRight: 10,}}>
+                                          <span>Discount Percent</span>
+                                          <div>
+                                            <input
+                                              type="text"
+                                              style={{...styles.inputTitle, width: '70%'}}
+                                              name="discountPercent"
+                                              onChange={(e) => {
+                                                prices[i].coupons[0].percentOff = e.target.value;
+                                                that.setState({prices});
+                                              }}
+                                              value={price.coupons[0].percentOff}
+                                            />
+                                            <span style={{fontSize: 18,}}>{` % off`}</span>
+                                          </div>
+                                        </div>
+                                        <div className=' ' style={{marginRight: 10,}}>
+                                          <span>Price After Discount</span>
+                                          <div style={{display: 'flex', alignItems: 'center', marginTop: 5}}>
+                                            <span style={{fontSize: 18,}}>{`$${(Math.round(price.price * (100 - price.coupons[0].percentOff)) / 100).toFixed(2)}`}</span>
+                                          </div>
+                                        </div>
+                                        <div style={{marginTop: 30}}>
+                                          <span
+                                            style={{marginLeft: 5, cursor: 'pointer', fontSize: 20, }}
+                                            onClick={() => {
+                                              prices[i].coupons = null;
+                                              that.setState({prices});
+                                            }}>
+                                              <i className="fa fa-times " aria-hidden="true"></i>
+                                          </span>
+                                        </div>
+                                      </div>
+                                      ||
+                                      !price.coupons && priceTag > 0 &&
+                                      <div style={{marginLeft: 25, marginTop: 5, marginBottom: 5, fontSize: 14, color: Colors.mainOrange, cursor: 'pointer'}}>
+                                        <span onClick={() => {
+                                          prices[i].coupons = [{code: '', percentOff: 0, expiration: 4670438400}]; //default is coupon never expires
+                                          that.setState({prices});
+                                        }}>Add a coupon</span>
+                                      </div>
+                                      || null
+                                    }
+
                                   </div>
                                 )
                             } )
                         }
-                        <div
+                        <div className=''
                             onClick={this.addPriceOption.bind(this)}
-                            style={styles.addFeature}
+                            style={{...styles.addFeature, marginTop: 25, marginBottom: 30, width: '100%'}}
                         >
                             Add another price option
                         </div>
@@ -765,7 +827,7 @@ export default class EditSoundcast extends Component {
 
     handlePriceInputs(i, e) {
         let prices = [...this.state.prices];
-        prices[i][e.target.name] = e.target.value;
+        prices[i][e.target.name] = Number(e.target.value).toFixed(2);
         this.setState({
             prices
         })
