@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as firebase from 'firebase';
+import moment from 'moment';
 import Colors from '../../../styles/colors';
 
 export default class SoundcastInCart extends Component {
@@ -9,7 +10,11 @@ export default class SoundcastInCart extends Component {
         super(props);
 
         this.state = {
+            enterPromoCode: false,
+            promoCode: null,
+            price: props.soundcast.prices[props.checked].price
         };
+        this.applyPromoCode = this.applyPromoCode.bind(this);
     }
 
     handleChange(e) {
@@ -18,53 +23,123 @@ export default class SoundcastInCart extends Component {
         })
     }
 
+    applyPromoCode() {
+        this.setState({
+          promoCodeError: '',
+          promoApplied: false,
+        });
+        const {soundcast, checked, setTotalPrice} = this.props;
+        const {promoCode, price} = this.state;
+        const validPromoCodes = soundcast.prices[checked].coupons.map(coupon => coupon.code);
+        if(validPromoCodes.indexOf(promoCode) > -1) {
+            const index = validPromoCodes.indexOf(promoCode);
+            if(moment().format('X') < soundcast.prices[checked].coupons[index].expiration) {
+                this.setState({
+                    price: (price * (100 - soundcast.prices[checked].coupons[index].percentOff) / 100).toFixed(2),
+                    promoApplied: true,
+                });
+                setTotalPrice((price * (100 - soundcast.prices[checked].coupons[index].percentOff) / 100).toFixed(2));
+            } else {
+              this.setState({
+                promoCodeError: "This promo code has expired.",
+              });
+            }
+        } else {
+          this.setState({
+            promoCodeError: "Hmm...this promo code doesn't exist",
+          });
+        }
+    }
+
     render () {
         const { soundcast, sumTotal, checked } = this.props;
-        let fee = soundcast.prices[checked].price == 'free' ? 0 : Math.floor(soundcast.prices[checked].price * 0.03 *100) / 100;
+        const that = this;
+        const {price, promoCode, promoApplied} = this.state;
+        let fee = price == 'free' ? 0 : Math.floor(price * 0.03 *100) / 100;
         fee = 0.00;
         return (
             <div className="row" style={styles.course}>
-                <div className="col-md-12 col-sm-12 col-xs-12">
-                    <img src={soundcast.imageURL}
-                         alt=""
-                         style={styles.courseImage}
-                    />
-                    <div style={styles.courseText}>
-                        <p style={styles.courseName}>
-                            {soundcast.title}
-                        </p>
-                        <div style={styles.underName}>
-                            <div>
-                                <span>{soundcast.prices[checked].paymentPlan}</span>
+              <div className="col-md-12 col-sm-12 col-xs-12">
+                <img src={soundcast.imageURL}
+                     alt=""
+                     style={styles.courseImage}
+                />
+                <div style={styles.courseText}>
+                    <p style={styles.courseName}>
+                        {soundcast.title}
+                    </p>
+                    <div style={styles.underName}>
+                        <div>
+                            <span>{soundcast.prices[checked].paymentPlan}</span>
+                        </div>
+                        <div style={styles.feeRow}>
+                            <div className="" style={styles.priceWrapper}>
+                                <span
+                                    className="margin-five-bottom"
+                                    style={styles.price}
+                                >
+                                    {price == 'free' ? Number(0).toFixed(0) : `$${Number(price).toFixed(2)}`}
+                                </span>
                             </div>
-                            <div style={styles.feeRow}>
-                                <div className="" style={styles.priceWrapper}>
+                        </div>
+                        <div style={styles.feeRow}>
+                            <div className="" style={styles.feeWrapper}>
+                                <div style={styles.feePriceText}>
                                     <span
                                         className="margin-five-bottom"
                                         style={styles.price}
                                     >
-                                        {soundcast.prices[checked].price == 'free' ? 0 : `$${soundcast.prices[checked].price}`}
+                                        {`$${fee.toFixed(2)}`}
                                     </span>
                                 </div>
-                            </div>
-                            <div style={styles.feeRow}>
-                                <div className="" style={styles.feeWrapper}>
-                                    <div style={styles.feePriceText}>
-                                        <span
-                                            className="margin-five-bottom"
-                                            style={styles.price}
-                                        >
-                                            {`$${fee}`}
-                                        </span>
-                                    </div>
-                                    <div style={styles.feeText}>
-                                        Processing fee:
-                                    </div>
+                                <div style={styles.feeText}>
+                                    Processing fee:
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+              </div>
+              <div className="col-md-12 col-sm-12 col-xs-12">
+              {
+                !this.state.enterPromoCode &&
+                <span
+                  style={{cursor: 'pointer'}}
+                  onClick={() => that.setState({
+                    enterPromoCode: true
+                  })}>Have a promo code?</span>
+                ||
+                <div>
+                  <input
+                      onChange={(e) => that.setState({
+                        promoCode: e.target.value,
+                      })}
+                      className='border-radius-4'
+                      size='20'
+                      type='text'
+                      name='promo'
+                      placeholder="Enter promo code"
+                      value={this.state.promoCode}
+                      style={{width: '50%', fontSize: 14, height: 35}}
+                  />
+                  {
+                    promoApplied &&
+                    <button
+                      onClick={this.applyPromoCode}
+                      type="button"
+                      className="btn"
+                      style={{color: Colors.mainOrange}}>Applied!</button>
+                    ||
+                    <button
+                      onClick={this.applyPromoCode}
+                      type="button"
+                      className="btn"
+                      style={{color: Colors.link}}>Apply</button>
+                  }
+                  <div style={{color: 'red'}}>{this.state.promoCodeError}</div>
+                </div>
+              }
+              </div>
             </div>
         );
     }

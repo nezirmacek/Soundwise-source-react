@@ -13,11 +13,20 @@ import {sendEmail} from '../../actions/index';
 class _SoundcastCheckout extends Component {
   constructor(props) {
     super(props);
+    const {soundcast, soundcastID, checked, sumTotal} = props.history.location.state;
+    let totalPrice;
+    if(soundcast.prices[checked].price == 'free') {
+      totalPrice = 0;
+    } else {
+      totalPrice = Number(soundcast.prices[checked].price);
+    }
     this.state = {
       success: false,
+      totalPrice,
     }
 
     this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
+    this.setTotalPrice = this.setTotalPrice.bind(this);
   }
 
   componentDidMount() {
@@ -45,20 +54,17 @@ class _SoundcastCheckout extends Component {
     });
   }
 
+  setTotalPrice(price) {
+    this.setState({
+      totalPrice: price,
+    });
+  }
+
   render() {
 
     const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
     const {userInfo} = this.props;
-
-    let totalPrice;
-    if(soundcast.prices[checked].price == 'free') {
-      totalPrice = 0;
-    } else {
-      // totalPrice = Math.floor(soundcast.prices[checked].price * 1.03 * 100) / 100;
-      // totalPrice = Math.floor(soundcast.prices[checked].price * 100) / 100;
-      totalPrice = Number(soundcast.prices[checked].price);
-    }
-
+    const {totalPrice} = this.state;
 
     if(!soundcast) {
       return (
@@ -90,6 +96,7 @@ class _SoundcastCheckout extends Component {
                                                     soundcast={soundcast}
                                                     checked={checked}
                                                     sumTotal={sumTotal}
+                                                    setTotalPrice={this.setTotalPrice}
                                                 />
                                             </div>
                                             <div className="row">
