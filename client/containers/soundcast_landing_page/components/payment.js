@@ -73,7 +73,7 @@ export default class Payment extends Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        if(  this.props.isEmailSent != nextProps.isEmailSent ){
+        if(  this.props.isEmailSent != nextProps.isEmailSent || this.props.total != nextProps.total ){
             // this.setState({confirmationEmailSent : true})
             return true;
         }
@@ -345,7 +345,7 @@ export default class Payment extends Component {
                                 <div style={styles.totalRow}>
                                     <div style={styles.totalWrapper}>
                                         <div style={styles.totalText}>Total:</div>
-                                        <div style={styles.totalPriceText}>{`$${total}`}</div>
+                                        <div style={styles.totalPriceText}>{`$${Number(total).toFixed(2)}`}</div>
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
