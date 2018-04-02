@@ -52,10 +52,10 @@ uploader.upload = function(strategy, files, callback) {
 
 
 module.exports.createFeed = async (req, res) => {
-  const { soundcastId, soundcastTitle, itunesExplicit, itunesImage, autoSubmitPodcast, email, firstName } = req.body, categories = [];
+  const { soundcastId, soundcastTitle, soundcastHost, itunesExplicit, itunesImage, autoSubmitPodcast, email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description, hostName } = soundcastVal;
+  const { title, short_description } = soundcastVal;
   const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
@@ -72,7 +72,7 @@ module.exports.createFeed = async (req, res) => {
       // creating feed xml
       const itunesSummary = short_description.length >= 4000 ?
                             short_description.slice(0, 3997) + '..' : short_description;
-      const itunesOwner = autoSubmitPodcast ? {name: 'Soundwise', email: 'support@mysoundwise.com'} : {name: hostName, email};
+      const itunesOwner = autoSubmitPodcast ? {name: 'Soundwise', email: 'support@mysoundwise.com'} : {name: soundcastHost, email};
       const googleplayEmail = autoSubmitPodcast ? 'support@mysoundwise.com' : email;
       const podcastObj = {
         title,
@@ -81,12 +81,12 @@ module.exports.createFeed = async (req, res) => {
         feedUrl: `https://mysoundwise.com/rss/${soundcastId}`, // '1508293913676s' is the soundcast id
         siteUrl: `https://mysoundwise.com/soundcasts/${soundcastId}`,
         imageUrl: itunesImage,
-        author: hostName,
-        copyright: `${new Date().getFullYear()} ${hostName}`,
+        author: soundcastHost,
+        copyright: `${new Date().getFullYear()} ${soundcastHost}`,
         language: 'en',
         categories,
         pubDate: moment().toDate(),
-        itunesAuthor: hostName,
+        itunesAuthor: soundcastHost,
         itunesSubtitle: title,
         itunesSummary, // need to be < 4000 characters
         itunesOwner,
@@ -98,7 +98,7 @@ module.exports.createFeed = async (req, res) => {
           {'googleplay:email': googleplayEmail},
           {'googleplay:description': itunesSummary}, // need to be < 4000 characters
           {'googleplay:category': [{ _attr: { text: itunesCategory[0].text}}]},
-          {'googleplay:author': hostName},
+          {'googleplay:author': soundcastHost},
           {'googleplay:explicit': itunesExplicit},
           {'googleplay:image': [{ _attr: { href: itunesImage}}]}, // need to be between 1400x1400 px and 3000x3000 px
         ]
@@ -152,7 +152,7 @@ module.exports.createFeed = async (req, res) => {
                   resolve({ id, fileDuration: (Math.round(episode.duration) || file.metadata.duration.seconds) });
                 } else { // not tagged, setting up ID3
                   const episodeTitle = episode.title.replace(/"/g, "'\\\\\\\\\\\\\"'").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
-                  const hostNameEscaped = hostName.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
+                  const hostNameEscaped = soundcastHost.replace(/"/g, "\\\\\\\\\\\\\"").replace(/%/g, "\\\\\\\\\\\\%").replace(":", "\\\\\\\\\\\\:");
                   file.addCommand('-metadata', `title="${episodeTitle}"`);
                   file.addCommand('-metadata', `track="${episode.index}"`);
                   file.addCommand('-metadata', `artist="${hostNameEscaped}"`);
@@ -220,11 +220,11 @@ module.exports.createFeed = async (req, res) => {
             categories, // use the soundcast categories
             itunesTitle: episode.title,
             itunesImage: episode.coverArtUrl || itunesImage, // check if episode.coverArtUrl exists, if so, use that, if not, use the soundcast cover art
-            author: hostName,
+            author: soundcastHost,
             date: moment(episode.date_created * 1000).toDate(),
             pubDate: moment(episode.date_created * 1000).toDate(),
             enclosure : {url: episode.url}, // link to audio file
-            itunesAuthor: hostName,
+            itunesAuthor: soundcastHost,
             itunesSubtitle: episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
             // todo: check whether CDATA tag is actually needed
             itunesSummary,

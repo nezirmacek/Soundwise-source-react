@@ -9,6 +9,8 @@ import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromB
 // import Toggle from 'material-ui/Toggle';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Checkbox from 'material-ui/Checkbox';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Toggle from 'react-toggle'
 import "react-toggle/style.css"
@@ -96,7 +98,7 @@ export default class EditSoundcast extends Component {
       const { id, soundcast } = this.props.history.location.state;
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
-             features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
+             features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesTitle, itunesHost, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -133,6 +135,8 @@ export default class EditSoundcast extends Component {
         showSubscriberCount: showSubscriberCount ? showSubscriberCount : false,
         isPodcast: isPodcast ? isPodcast : false,
         episodes: episodes ? episodes : null,
+        itunesTitle: itunesTitle ? itunesTitle : title,
+        itunesHost: itunesHost ? itunesHost : hostName,
         itunesCategory: itunesCategory ? itunesCategory : null,
         itunesExplicit: itunesExplicit ? itunesExplicit : false,
         itunesImage: itunesImage ? itunesImage : null,
@@ -289,7 +293,7 @@ export default class EditSoundcast extends Component {
     submit (publish, noAlert) {
         const { title, imageURL, subscribed, short_description,
                 long_description, landingPage,
-                features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
+                features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesTitle, itunesHost, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
 
@@ -318,6 +322,8 @@ export default class EditSoundcast extends Component {
                       showTimeStamps,
                       showSubscriberCount,
                       published: publish,
+                      itunesTitle,
+                      itunesHost,
                       itunesImage,
                       itunesExplicit,
                       itunesCategory,
@@ -401,11 +407,19 @@ export default class EditSoundcast extends Component {
 
     handleChargeOption() {
         const {forSale} = this.state;
+        const {userInfo} = this.props;
         if(!forSale) {
+          if(!userInfo.publisher.stripe_user_id) {
+            this.submit.bind(this, false);
             this.setState({
-                forSale: !forSale,
-                prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}]
+              paypalModalOpen: true,
+            });
+          } else {
+            this.setState({
+              forSale: !forSale,
+              prices: [{paymentPlan: '', billingCycle: '', price: '0'}]
             })
+          }
         } else {
             this.setState({
                 forSale: !forSale,
@@ -426,10 +440,26 @@ export default class EditSoundcast extends Component {
         })
     }
 
+    handlePaypalModalClose() {
+      if(this.state.paypalModalOpen) {
+        this.setState({
+          paypalModalOpen: false,
+        })
+      }
+    }
+
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
         const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices, instructor2Input, hostName2} = this.state;
         const that = this;
+        const {userInfo} = this.props;
+        const actions = [
+          <FlatButton
+            label="OK"
+            labelStyle={{color: Colors.mainOrange, fontSize: 17}}
+            onClick={this.handlePaypalModalClose.bind(this)}
+          />,
+        ];
         return (
             <div style={{marginTop: 25, marginBottom: 25,}}>
                 <span style={{...styles.titleText, marginBottom: 5}}>
@@ -583,6 +613,17 @@ export default class EditSoundcast extends Component {
                             // style={{fontSize: 20, width: '50%'}}
                           />
                           <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge for this soundcast</span>
+                          <Dialog
+                            title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
+                            actions={actions}
+                            modal={true}
+                            open={this.state.paypalModalOpen}
+                            onRequestClose={this.handlePaypalModalClose}
+                          >
+                            <div style={{fontSize: 17,}}>
+                              <span>You need a payout account so that we could send you your sales proceeds. Please save this soundcast, and go to publisher setting to enter your payout method, before setting up soundcast pricing.</span>
+                            </div>
+                          </Dialog>
                       </div>
                       {
                         forSale &&
@@ -723,7 +764,6 @@ export default class EditSoundcast extends Component {
                                       </div>
                                       || null
                                     }
-
                                   </div>
                                 )
                             } )
@@ -926,7 +966,7 @@ export default class EditSoundcast extends Component {
       const that = this;
       const { id, soundcast } = this.props.history.location.state;
       const {firstName, email} = this.props.userInfo;
-      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion, autoSubmitPodcast, title} = this.state;
+      const {itunesImage, itunesExplicit, itunesCategory, podcastFeedVersion, autoSubmitPodcast, title, itunesTitle, itunesHost} = this.state;
       if(!itunesCategory || itunesCategory.length == 0) {
         alert('Please pick at least one category before submitting.');
         return;
@@ -948,7 +988,8 @@ export default class EditSoundcast extends Component {
         autoSubmitPodcast,
         firstName,
         email: email[0],
-        soundcastTitle: title,
+        soundcastTitle: itunesTitle,
+        soundcastHost: itunesHost,
       })
       .then(response => {
         that.setState({
@@ -972,7 +1013,7 @@ export default class EditSoundcast extends Component {
     }
 
     renderPodcastInput() {
-      const {itunesExplicit, itunesImage, itunesCategory, imageURL, itunesUploaded, podcastFeedVersion, autoSubmitPodcast} = this.state;
+      const {itunesExplicit, itunesImage, itunesCategory, itunesTitle, itunesHost, imageURL, itunesUploaded, podcastFeedVersion, autoSubmitPodcast} = this.state;
       const { id } = this.props;
       const that = this;
       const img1 = new Image();
@@ -1033,6 +1074,34 @@ export default class EditSoundcast extends Component {
             </div>
             || null
           }
+          <div>
+              <span style={styles.titleText}>
+                  Podcast Title
+              </span>
+              <div style={{...styles.inputTitleWrapper, width: '100%'}}>
+                <input
+                    type="text"
+                    style={styles.inputTitle}
+                    placeholder={''}
+                    onChange={(e) => {this.setState({itunesTitle: e.target.value})}}
+                    value={this.state.itunesTitle || this.state.title}
+                />
+              </div>
+          </div>
+          <div>
+              <span style={styles.titleText}>
+                  Podcast Host Name
+              </span>
+              <div style={{...styles.inputTitleWrapper, width: '50%'}}>
+                <input
+                    type="text"
+                    style={styles.inputTitle}
+                    placeholder={''}
+                    onChange={(e) => {this.setState({itunesHost: e.target.value})}}
+                    value={this.state.itunesHost || this.state.hostName}
+                />
+              </div>
+          </div>
           <div style={{...styles.titleText, paddingBottom: 15}}>The material contains explicit language</div>
           <MuiThemeProvider>
             <RadioButtonGroup name="Contains explicit language"
