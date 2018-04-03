@@ -25,7 +25,7 @@ function getFeed (urlfeed, callback) {
   try {
     var req = request (urlfeed);
   } catch(err) {
-    callback(err);
+    return callback(err);
   }
   var feedparser = new FeedParser ();
   var feedItems = [];
@@ -78,6 +78,29 @@ function getFeed (urlfeed, callback) {
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
   const {feedUrl, podcastTitle, publisherId, soundcastId} = req.body;
+
+  // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
+  const podcastObj = await firebase.database().ref('importedFeeds')
+                          .orderByChild('title').equalTo(podcastTitle).once('value');
+  debugger
+  const podcast = podcastObj.val();
+
+  if (podcast) {
+    // 2. If podcast is found
+    //    - create confirmation code
+    //    - send confirmation email
+    //    - change to confirmation screen
+
+  } else {
+    // 3. If podcast is not found in firebase, make post request
+    //    to ‘api/parse_feed’ with the rss feed Url the user
+    //    submitted, and a new soundcastId and publisherId
+    // 4. server parses the rss feed (server/scripts/parseFeed.js),
+    //    create a new soundcast, and associated episodes from the feed information
+    // 5. server sends confirmation email to user with the
+    //    confirmation code, to verify that the user is the owner of the feed
+  }
+
   getFeed(feedUrl, async (err, results) => {
     if (err) {
       return res.status(400).send(`Error: ${err}`);
@@ -85,15 +108,15 @@ module.exports.parseFeed = async (req, res) => {
     // 1. create a new soundcast from the feed
     const {metadata, feedItems} = results;
     const soundcast = {
-      creatorID: userId,
+      // creatorID: userId,
+      // publisherID: publisherId,
+      // publisherName,
       fromParsedFeed: true,
       forSale: false,
       landingPage: true,
       prices: [{billingCycle: 'free', price: 'free'}],
       published: false, // set this to true from client after ownership is verified
       verified: false, // ownership verification, set to true from client after ownership is verified
-      publisherID: publisherId,
-      // publisherName,
       showSubscriberCount: true,
       showTimeStamps: true,
       subscriberEmailList: '',
@@ -175,11 +198,11 @@ module.exports.parseFeed = async (req, res) => {
       .then(data => {
         debugger
       })
-      .catch(err => console.log('error: ', err));
+      .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
     })));
 
     // 4. send an email to the feed owner's email address, to confirm that he/she is the owner of the feed
-    const verificationCode = Math.floor(Math.random() * 10000);
+    const verificationCode = (Math.random() + Math.random()).toString().slice(-4);
     sgMail.send({
       to: soundcast.publisherEmail,
       from: 'support@mysoundwise.com',

@@ -41,35 +41,12 @@ export default class SignupOptions extends Component {
   async submitFeed() {
     const that = this;
     const { podcastTitle, feedUrl } = this.state;
-    // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
-    const podcast = await firebase.database().ref('importedfeeds')
-                            .orderByChild('title').equalTo(podcastTitle).once('value');
-    debugger
-      
-      // , podcast => {
-      //   debugger
-      //   if (podcast) {
-      //     // 2. If podcast is found
-      //     //    - create confirmation code
-      //     //    - send confirmation email
-      //     //    - change to confirmation screen
-      // 
-      //   } else {
-      //     // 3. If podcast is not found in firebase, make post request
-      //     //    to ‘api/parse_feed’ with the rss feed Url the user
-      //     //    submitted, and a new soundcastId and publisherId
-      //     // 4. server parses the rss feed (server/scripts/parseFeed.js),
-      //     //    create a new soundcast, and associated episodes from the feed information
-      //     // 5. server sends confirmation email to user with the
-      //     //    confirmation code, to verify that the user is the owner of the feed
-      //     Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
-      //       debugger
-      //     }).catch(err => {
-      //       console.log('parse feed request failed', err, err && err.response && err.response.data);
-      //       alert('Hmm...there is a problem parsing the feed. Please try again later.');
-      //     });
-      //   }
-      // });
+    Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
+      debugger
+    }).catch(err => {
+      console.log('parse feed request failed', err, err && err.response && err.response.data);
+      alert('Hmm...there is a problem parsing the feed. Please try again later.');
+    });
   }
 
   render() {
