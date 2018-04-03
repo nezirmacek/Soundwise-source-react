@@ -74,7 +74,7 @@ function getFeed (urlfeed, callback) {
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
-  const {feedUrl, userId, publisherId, publisherName, soundcastId} = req.body;
+  const {feedUrl, publisherId, soundcastId} = req.body;
   getFeed(feedUrl, async (err, results) => {
     if(err) {
       res.error(`Error: ${err}`);
@@ -90,7 +90,7 @@ module.exports.parseFeed = async (req, res) => {
         published: false, // set this to true after ownership is verified
         varified: false, // ownership verification
         publisherID: publisherId,
-        publisherName,
+        // publisherName,
         showSubscriberCount: true,
         showTimeStamps: true,
         subscriberEmailList: '',
@@ -113,16 +113,17 @@ module.exports.parseFeed = async (req, res) => {
       // 2. add the new soundcast to firebase and postgreSQL
       // add to firebase
       await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
-      // 2-a. add to publisher and user node in firebase
-      await firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
-      firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+      // 2-a. add to publisher node in firebase
+      await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
 
       // 2-b. add to importedFeeds node in firebase
       await firebase.database().ref(`importedFeeds/${soundcastId}`)
       .set({
-        published: false,
+        published: true,
+        title,
         feedUrl,
         updated: moment().unix(),
+        publisherId
       });
       // 2-c. add to postgres
       database.Soundcast.findOrCreate({
@@ -141,7 +142,7 @@ module.exports.parseFeed = async (req, res) => {
         const episode = {
           title,
           coverArtUrl: image.url || soundcast.imageURL,
-          creatorID: userId,
+          // creatorID: userId,
           date_created: moment(date).format('X'),
           description: description || summary,
           duration: enclosures[0].length,
@@ -157,7 +158,7 @@ module.exports.parseFeed = async (req, res) => {
         // add to episodes node in firebase
         await firebase.database().ref(`episodes/${episodeId}`).set(episode);
         // add to the soundcast
-        await firebase.database().ref(`souncasts/${soundcastId}/episodes/${episodeId}`).set(true);
+        await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
         //add to postgres
         database.Episode.findOrCreate({
           where: { episodeId },
@@ -178,13 +179,16 @@ module.exports.parseFeed = async (req, res) => {
       sgMail.send({
         to: soundcast.publisherEmail,
         from: 'support@mysoundwise.com',
-        subject: 'Your verification code for Soundwise',
+        subject: 'Your confirmation code for Soundwise',
         html: `<p>Hello,</p><p>Please enter this code on your Soundwise dashboard to confirm you are the publisher of ${soundcast.title}:</p><p><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
       });
       await firebase.database().ref(`soundcasts/${soundcastId}/verificationCode`).set(verificationCode);
       // 5. respond to front end
       res.send({
         publisherEmail: soundcast.publisherEmail,
+        soundcast,
+        soundcastId,
+        publisherId,
         verificationCode
       });
     }
