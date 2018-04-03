@@ -32,6 +32,7 @@ import { OrderConfirmation } from './components/order_confirmation';
 import {Notice} from './components/notice';
 import {AppSignup} from './containers/app_signup';
 import {AppSignin} from './containers/app_signin';
+import SignupOptions from './containers/signup_options';
 import {Courses} from './containers/courses';
 import {MyCourses} from './containers/mycourses';
 import {MySoundcasts} from './containers/mysoundcasts';
@@ -205,6 +206,7 @@ class _Routes extends Component {
                 <Route path="/realestate" component={PageRealEstate}/>
                 <Route path="/experts" component={PageExperts}/>
                 <Route exact={true} path='/signup/:mode' component={AppSignup} />
+                <Route path='/signup_options' component={SignupOptions} />
                 <Route path='/signup/:mode/:id' component={AppSignup} />
                 <Route path='/signin/:mode/:id' component={AppSignin} />
                 <Route exact={true} path='/signin' component={AppSignin} />
