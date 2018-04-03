@@ -29,12 +29,24 @@ export default class SignupOptions extends Component {
       podcastTitle: '',
       feedUrl: ''
     }
+    this.submitFeed = this.submitFeed.bind(this);
   }
 
   handleFeedSubmission(type, e) {
     this.setState({
         [type]: e.target.value
     })
+  }
+
+  submitFeed() {
+    const that = this;
+    const { podcastTitle, feedUrl } = this.state;
+    Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
+      
+    }).catch(err => {
+      console.log('parse feed request failed', err);
+      alert('Hmm...there is a problem parsing the feed. please try again later.');
+    });
   }
 
   render() {
@@ -76,7 +88,7 @@ export default class SignupOptions extends Component {
                     <OrangeSubmitButton
                         styles={{marginTop: 15, marginBottom: 15}}
                         label="Submit"
-                        onClick={() => {}}
+                        onClick={this.submitFeed.bind(this)}
                     />
                   </div>
               </div>

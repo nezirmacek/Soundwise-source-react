@@ -525,9 +525,9 @@ module.exports.audioProcessing = async (req, res) => {
 			}); // fs.writeFile
 		}).catch(err => {
 	    logErr(`unable to obtain episode ${err}`);
-	    // res.error(`Error: unable to obtain episode ${err}`);
+	    // res.status(400).send(`Error: unable to obtain episode ${err}`);
 	  });
 	} else {
-		res.error('Error: audio processing undefined parameters');
+		res.status(400).send('Error: audio processing undefined parameters');
 	}
 }

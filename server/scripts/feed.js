@@ -78,7 +78,7 @@ module.exports.createFeed = async (req, res) => {
         })));
       }
       if (episodesArr.length === 0) {
-        return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
+        return res.status(400).send(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
       res.status(200).send({});
 
@@ -231,11 +231,11 @@ module.exports.createFeed = async (req, res) => {
       })
       .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
     } else {
-      res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
+      res.status(400).send(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
   }).catch(err => {
     console.log(`Error: unable to obtain image ${err}`);
-    res.error(`Error: unable to obtain image ${err}`);
+    res.status(400).send(`Error: unable to obtain image ${err}`);
   });
 }
 
@@ -244,6 +244,6 @@ module.exports.requestFeed = async (req, res) => {
     const xml = await firebase.database().ref(`soundcastsFeedXml/${req.params.id}`).once('value');
     res.end(xml.val());
   } else {
-    res.error('Error: soundcast id must be provided');
+    res.status(400).send('Error: soundcast id must be provided');
   }
 }

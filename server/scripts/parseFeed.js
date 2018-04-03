@@ -1,7 +1,7 @@
 'use strict';
 
 // Purpose:
-// automatically create and update souncast and episodes from a podcast user hosted elsewhere. i.e. import user's podcast RSS feed and create soundcast listed on Soundwise from the feed. Also regularly check the feed to see if there're updates.
+// automatically create and update soundcast and episodes from a podcast user hosted elsewhere. i.e. import user's podcast RSS feed and create soundcast listed on Soundwise from the feed. Also regularly check the feed to see if there're updates.
 
 // How it works:
 // 1. user creates a publisher account on Soundwise. But she already has a podcast published on other platforms. So she submits the RSS feed url on client to request backend to create a soundcast from it.
@@ -22,19 +22,23 @@ const urlTestFeed = "http://feeds.feedburner.com/TheAllTurtlesPodcast";
 
 // function to parse a given feed url:
 function getFeed (urlfeed, callback) {
-  var req = request (urlfeed);
+  try {
+    var req = request (urlfeed);
+  } catch(err) {
+    callback(err);
+  }
   var feedparser = new FeedParser ();
-  var feedItems = new Array ();
+  var feedItems = [];
   var metadata = '';
   req.on ("response", function (response) {
     var stream = this;
     if (response.statusCode == 200) {
       stream.pipe (feedparser);
-      }
-    });
+    }
+  });
   req.on ("error", function (err) {
     console.log ("getFeed: err.message == " + err.message);
-    });
+  });
   feedparser.on("meta", function (meta) {
     metadata = meta;
     // console.log('metadata: ', meta);
@@ -43,21 +47,20 @@ function getFeed (urlfeed, callback) {
     try {
       var item = this.read (), flnew;
       if (item !== null) { //2/9/17 by DW
-        feedItems.push (item);
-        }
+      feedItems.push (item);
       }
-    catch (err) {
+    } catch (err) {
       console.log ("getFeed: err.message == " + err.message);
-      }
-    });
+    }
+  });
   feedparser.on ("end", function () {
     callback (undefined, {metadata, feedItems});
-    });
+  });
   feedparser.on ("error", function (err) {
     console.log ("getFeed: err.message == " + err.message);
     callback (err);
-    });
-  }
+  });
+}
 
 // Test the getFeed function:
 
@@ -74,124 +77,124 @@ function getFeed (urlfeed, callback) {
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
-  const {feedUrl, publisherId, soundcastId} = req.body;
+  const {feedUrl, podcastTitle, publisherId, soundcastId} = req.body;
   getFeed(feedUrl, async (err, results) => {
-    if(err) {
-      res.error(`Error: ${err}`);
-    } else {
-      // 1. create a new soundcast from the feed
-      const {metadata, feedItems} = results;
-      const soundcast = {
-        creatorID: userId,
-        fromParsedFeed: true,
-        forSale: false,
-        landingPage: true,
-        prices: [{billingCycle: 'free', price: 'free'}],
-        published: false, // set this to true from client after ownership is verified
-        verified: false, // ownership verification, set to true from client after ownership is verified
-        publisherID: publisherId,
-        // publisherName,
-        showSubscriberCount: true,
-        showTimeStamps: true,
-        subscriberEmailList: '',
-        hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
-      };
-      const {title, description, author, date, image, categories} = metadata;
-      soundcast.title = title;
-      soundcast.short_description = description;
-      soundcast.imageURL = image.url;
-      soundcast.hostName = author || metadata['itunes:author']['#'];
-      soundcast.publisherEmail = metadata['itunes:owner']['itunes:email']['#'] || metadata['rss:managingeditor']['email'] || null;
-      soundcast.last_update = moment(date).format('x');
+    if (err) {
+      return res.status(400).send(`Error: ${err}`);
+    }
+    // 1. create a new soundcast from the feed
+    const {metadata, feedItems} = results;
+    const soundcast = {
+      creatorID: userId,
+      fromParsedFeed: true,
+      forSale: false,
+      landingPage: true,
+      prices: [{billingCycle: 'free', price: 'free'}],
+      published: false, // set this to true from client after ownership is verified
+      verified: false, // ownership verification, set to true from client after ownership is verified
+      publisherID: publisherId,
+      // publisherName,
+      showSubscriberCount: true,
+      showTimeStamps: true,
+      subscriberEmailList: '',
+      hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
+    };
+    const {title, description, author, date, image, categories} = metadata;
+    soundcast.title = title;
+    soundcast.short_description = description;
+    soundcast.imageURL = image.url;
+    soundcast.hostName = author || metadata['itunes:author']['#'];
+    soundcast.publisherEmail = metadata['itunes:owner']['itunes:email']['#'] || metadata['rss:managingeditor']['email'] || null;
+    soundcast.last_update = moment(date).format('x');
 
-      // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
-      if(!soundcast.publisherEmail) {
-        res.error("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
-        return;
-      }
+    // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
+    if(!soundcast.publisherEmail) {
+      return res.status(400).send("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
+    }
 
-      // 2. add the new soundcast to firebase and postgreSQL
-      // add to firebase
-      await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
-      // 2-a. add to publisher node in firebase
-      await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+    // 2. add the new soundcast to firebase and postgreSQL
+    // add to firebase
+    await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
+    // 2-a. add to publisher node in firebase
+    await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
 
-      // 2-b. add to importedFeeds node in firebase
-      await firebase.database().ref(`importedFeeds/${soundcastId}`)
-      .set({
-        published: true,
-        title,
-        feedUrl,
-        updated: moment().unix(),
-        publisherId
-      });
-      // 2-c. add to postgres
-      database.Soundcast.findOrCreate({
-        where: { soundcastId },
-        defaults: {
-          soundcastId,
-          publisherId,
-          title,
-        }
-      })
-      .then(data => console.log('DB response: ', data))
-      .catch(err => console.log('error: ', err));
-      // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
-      await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-        const {title, description, summary, data, image, enclosures} = item;
-        const episode = {
-          title,
-          coverArtUrl: image.url || soundcast.imageURL,
-          // creatorID: userId,
-          date_created: moment(date).format('X'),
-          description: description || summary,
-          duration: enclosures[0].length,
-          id3Tagged: true,
-          index: feedItems.length - i,
-          isPublished: true,
-          publicEpisode: true,
-          publisherID: publisherId,
-          soundcastID: soundcastId,
-          url: enclosures[0].url,
-        };
-        const episodeId = `${moment().format('x')}e`;
-        // add to episodes node in firebase
-        await firebase.database().ref(`episodes/${episodeId}`).set(episode);
-        // add to the soundcast
-        await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
-        //add to postgres
-        database.Episode.findOrCreate({
-          where: { episodeId },
-          defaults: {
-            episodeId,
-            soundcastId,
-            publisherId: soundcast.publisherID,
-            title: episode.title,
-            soundcastTitle: soundcast.title,
-          }
-        })
-        .then(data => {}))
-        .catch(err => console.log('error: ', err));
-      })));
-
-      // 4. send an email to the feed owner's email address, to confirm that he/she is the owner of the feed
-      const verificationCode = Math.floor(Math.random() * 10000);
-      sgMail.send({
-        to: soundcast.publisherEmail,
-        from: 'support@mysoundwise.com',
-        subject: 'Your confirmation code for Soundwise',
-        html: `<p>Hello,</p><p>Please enter this code on your Soundwise dashboard to confirm you are the publisher of ${soundcast.title}:</p><p><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
-      });
-      await firebase.database().ref(`soundcasts/${soundcastId}/verificationCode`).set(verificationCode);
-      // 5. respond to front end
-      res.send({
-        publisherEmail: soundcast.publisherEmail,
-        soundcast,
+    // 2-b. add to importedFeeds node in firebase
+    await firebase.database().ref(`importedFeeds/${soundcastId}`)
+    .set({
+      published: true,
+      title,
+      feedUrl,
+      updated: moment().unix(),
+      publisherId
+    });
+    // 2-c. add to postgres
+    database.Soundcast.findOrCreate({
+      where: { soundcastId },
+      defaults: {
         soundcastId,
         publisherId,
-        verificationCode
-      });
-    }
+        title,
+      }
+    })
+    .then(data => console.log('DB response: ', data))
+    .catch(err => console.log('error: ', err));
+    // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
+    await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
+      const {title, description, summary, data, image, enclosures} = item;
+      const episode = {
+        title,
+        coverArtUrl: image.url || soundcast.imageURL,
+        // creatorID: userId,
+        date_created: moment(date).format('X'),
+        description: description || summary,
+        duration: enclosures[0].length,
+        id3Tagged: true,
+        index: feedItems.length - i,
+        isPublished: true,
+        publicEpisode: true,
+        publisherID: publisherId,
+        soundcastID: soundcastId,
+        url: enclosures[0].url,
+      };
+      const episodeId = `${moment().format('x')}e`;
+      // add to episodes node in firebase
+      await firebase.database().ref(`episodes/${episodeId}`).set(episode);
+      // add to the soundcast
+      await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
+      //add to postgres
+      database.Episode.findOrCreate({
+        where: { episodeId },
+        defaults: {
+          episodeId,
+          soundcastId,
+          publisherId: soundcast.publisherID,
+          title: episode.title,
+          soundcastTitle: soundcast.title,
+        }
+      })
+      .then(data => {
+        debugger
+      })
+      .catch(err => console.log('error: ', err));
+    })));
+
+    // 4. send an email to the feed owner's email address, to confirm that he/she is the owner of the feed
+    const verificationCode = Math.floor(Math.random() * 10000);
+    sgMail.send({
+      to: soundcast.publisherEmail,
+      from: 'support@mysoundwise.com',
+      subject: 'Your confirmation code for Soundwise',
+      html: `<p>Hello,</p><p>Please enter this code on your Soundwise dashboard to confirm you are the publisher of ${soundcast.title}:</p><p><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
+    });
+    await firebase.database().ref(`soundcasts/${soundcastId}/verificationCode`).set(verificationCode);
+    // 5. respond to front end
+    res.send({
+      publisherEmail: soundcast.publisherEmail,
+      soundcast,
+      soundcastId,
+      publisherId,
+      verificationCode
+    });
   })
 };
 
