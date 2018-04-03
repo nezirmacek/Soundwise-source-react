@@ -8,7 +8,7 @@
 // 2. server takes the feed url, parses the content, creates a soundcast from the feed information, and also creates episodes from the feed items.
 // 3. server sends email to the feed owner's email address listed in the feed with a verification code.
 // 4. user gets the code, inputs it on front end to prove she's the owner.
-// 5. front end makes the new soundcast public.
+// 5. front end assigns the newly created soundcast to the user.
 // 6. server checks the feed url every hour to see if there are new episodes. If so, update the soundcast with new episodes.
 
 const request = require ("request");
@@ -87,8 +87,8 @@ module.exports.parseFeed = async (req, res) => {
         forSale: false,
         landingPage: true,
         prices: [{billingCycle: 'free', price: 'free'}],
-        published: false, // set this to true after ownership is verified
-        varified: false, // ownership verification
+        published: false, // set this to true from client after ownership is verified
+        verified: false, // ownership verification, set to true from client after ownership is verified
         publisherID: publisherId,
         // publisherName,
         showSubscriberCount: true,
@@ -148,7 +148,7 @@ module.exports.parseFeed = async (req, res) => {
           duration: enclosures[0].length,
           id3Tagged: true,
           index: feedItems.length - i,
-          isPublished: false, // set this to true after ownership is verified
+          isPublished: true,
           publicEpisode: true,
           publisherID: publisherId,
           soundcastID: soundcastId,
