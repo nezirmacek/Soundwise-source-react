@@ -81,7 +81,7 @@ const feedUrls = {};
 module.exports.parseFeed = async (req, res) => {
   const { podcastTitle, feedUrl, publisherId, userId, submitCode } = req.body;
   const url = feedUrl && feedUrl.trim().toLowerCase();
-  if (false) { // feedUrls[url]) {
+  if (feedUrls[url]) {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
     if (submitCode) {
       if (submitCode === verificationCode) {
@@ -91,6 +91,7 @@ module.exports.parseFeed = async (req, res) => {
       }
     } else {
       sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+      res.send('Success_resend');
     }
   } else {
     getFeed(feedUrl, async (err, results) => {
