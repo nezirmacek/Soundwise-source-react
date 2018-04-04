@@ -81,11 +81,11 @@ const feedUrls = {};
 module.exports.parseFeed = async (req, res) => {
   const { podcastTitle, feedUrl, publisherId, userId, submitCode } = req.body;
   const url = feedUrl && feedUrl.trim().toLowerCase();
-  if (feedUrls[url]) {
+  if (false) { // feedUrls[url]) {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
     if (submitCode) {
       if (submitCode === verificationCode) {
-        res.send('Success');
+        res.send('Success_code');
       } else {
         res.status(400).send(`Error: incorrect verfication code`);
       }
@@ -101,8 +101,13 @@ module.exports.parseFeed = async (req, res) => {
       const verificationCode = Date.now().toString().slice(-4);
       const publisherEmail = metadata['itunes:owner']['itunes:email']['#']
                           || metadata['rss:managingeditor']['email'] || null;
+      if (!publisherEmail) {
+        // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
+        return res.status(400).send("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
+      }
       feedUrls[url] = { metadata, feedItems, publisherEmail, verificationCode };
       // sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+      res.json({ imageUrl: metadata.image.url, publisherEmail });
     });
   }
 
@@ -167,10 +172,6 @@ module.exports.parseFeed = async (req, res) => {
     soundcast.publisherEmail = metadata['itunes:owner']['itunes:email']['#'] || metadata['rss:managingeditor']['email'] || null;
     soundcast.last_update = moment(date).format('x');
 
-    // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
-    if(!soundcast.publisherEmail) {
-      return res.status(400).send("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
-    }
 
     // 2. add the new soundcast to firebase and postgreSQL
     // add to firebase
