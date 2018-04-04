@@ -47,7 +47,7 @@ function getFeed (urlfeed, callback) {
     try {
       var item = this.read (), flnew;
       if (item !== null) { //2/9/17 by DW
-      feedItems.push (item);
+        feedItems.push (item);
       }
     } catch (err) {
       console.log ("getFeed: err.message == " + err.message);
@@ -75,16 +75,53 @@ function getFeed (urlfeed, callback) {
 //     }
 // });
 
+const feedUrls = {};
+
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
-  const {feedUrl, podcastTitle, publisherId, soundcastId} = req.body;
+  const { podcastTitle, feedUrl, publisherId, userId, submitCode } = req.body;
+  const url = feedUrl && feedUrl.trim().toLowerCase();
+  if (feedUrls[url]) {
+    const { metadata, publisherEmail, verificationCode } = feedUrls[url];
+    if (submitCode) {
+      if (submitCode === verificationCode) {
+        res.send('Success');
+      } else {
+        res.status(400).send(`Error: incorrect verfication code`);
+      }
+    } else {
+      sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+    }
+  } else {
+    getFeed(feedUrl, async (err, results) => {
+      if (err) {
+        return res.status(400).send(`Error: ${err}`);
+      }
+      const { metadata, feedItems } = results;
+      const verificationCode = Date.now().toString().slice(-4);
+      const publisherEmail = metadata['itunes:owner']['itunes:email']['#']
+                          || metadata['rss:managingeditor']['email'] || null;
+      feedUrls[url] = { metadata, feedItems, publisherEmail, verificationCode };
+      // sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+    });
+  }
+
+  function sendVerificationMail(to, soundcastTitle, verificationCode) {
+    sgMail.send({
+      to, from: 'support@mysoundwise.com',
+      subject: 'Your confirmation code for Soundwise',
+      html: `<p>Hello,</p><p>Please enter this code on your Soundwise dashboard to confirm you are the publisher of ${soundcastTitle}:</p><p><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
+    });
+  }
+
+  return
 
   // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
   const podcastObj = await firebase.database().ref('importedFeeds')
                              .orderByChild('title').equalTo(podcastTitle).once('value');
   const podcasts = podcastObj.val();
   if (podcasts) { // example return: { 1522801382898s: {...}, 1522801312898s: {...}, ... }
-    const soundcastId = Object.keys(podcasts)[0]; // taking first
+    const soundcastId = Object.keys(podcasts)[0]; // take first
     const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
     const soundcast = soundcastObj.val();
     // 2. If podcast is found
@@ -108,9 +145,9 @@ module.exports.parseFeed = async (req, res) => {
     // 1. create a new soundcast from the feed
     const {metadata, feedItems} = results;
     const soundcast = {
-      // creatorID: userId,
-      // publisherID: publisherId,
-      // publisherName,
+      creatorID: userId,
+      publisherID: publisherId,
+      publisherName,
       fromParsedFeed: true,
       forSale: false,
       landingPage: true,
@@ -140,7 +177,7 @@ module.exports.parseFeed = async (req, res) => {
     const soundcastId = `${moment().format('x')}s`;
     await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
     // 2-a. add to publisher node in firebase
-    // await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+    await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
 
     // 2-b. add to importedFeeds node in firebase
     await firebase.database().ref(`importedFeeds/${soundcastId}`)
@@ -149,14 +186,14 @@ module.exports.parseFeed = async (req, res) => {
         title,
         feedUrl,
         updated: moment().unix(),
-        // publisherId
+        publisherId
       });
     // 2-c. add to postgres
     database.Soundcast.findOrCreate({
         where: { soundcastId },
         defaults: {
           soundcastId,
-          // publisherId,
+          publisherId,
           title,
         }
       })
@@ -169,7 +206,7 @@ module.exports.parseFeed = async (req, res) => {
       const episode = {
         title,
         coverArtUrl: image.url || soundcast.imageURL,
-        // creatorID: userId,
+        creatorID: userId,
         date_created: moment(date).format('X'),
         description: description || summary,
         duration: enclosures[0].length,
@@ -177,7 +214,7 @@ module.exports.parseFeed = async (req, res) => {
         index: feedItems.length - i,
         isPublished: true,
         publicEpisode: true,
-        // publisherID: publisherId,
+        publisherID: publisherId,
         soundcastID: soundcastId,
         url: enclosures[0].url,
       };
@@ -192,7 +229,7 @@ module.exports.parseFeed = async (req, res) => {
           defaults: {
             episodeId,
             soundcastId,
-            // publisherId: soundcast.publisherID,
+            publisherId: soundcast.publisherID,
             title: episode.title,
             soundcastTitle: soundcast.title,
           }
@@ -208,20 +245,14 @@ module.exports.parseFeed = async (req, res) => {
   }); // getFeed
 
   async function setVerificationCode(soundcast, soundcastId) {
-    const verificationCode = (Math.random() + Math.random()).toString().slice(-4);
-    sgMail.send({
-      to: soundcast.publisherEmail,
-      from: 'support@mysoundwise.com',
-      subject: 'Your confirmation code for Soundwise',
-      html: `<p>Hello,</p><p>Please enter this code on your Soundwise dashboard to confirm you are the publisher of ${soundcast.title}:</p><p><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
-    });
+    sendVerificationMail(soundcast.publisherEmail, soundcast.title, verificationCode);
     await firebase.database().ref(`soundcasts/${soundcastId}/verificationCode`).set(verificationCode);
     // 5. respond to front end
     res.send({
       publisherEmail: soundcast.publisherEmail,
       soundcast,
       soundcastId,
-      // publisherId,
+      publisherId,
       verificationCode
     });
   }
