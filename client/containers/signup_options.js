@@ -27,9 +27,12 @@ export default class SignupOptions extends Component {
     this.state = {
       importFeed: false,
       podcastTitle: 'Test Title',
-      feedUrl: 'http://feeds.feedburner.com/TheAllTurtlesPodcast' // test
+      feedUrl: 'http://feeds.feedburner.com/TheAllTurtlesPodcast', // test
+      imageUrl: null,
+      publisherEmail: null,
     }
     this.submitFeed = this.submitFeed.bind(this);
+    this.submitCode = this.submitCode.bind(this);
   }
 
   handleFeedSubmission(type, e) {
@@ -38,26 +41,58 @@ export default class SignupOptions extends Component {
     })
   }
 
-  async submitFeed() {
-    const that = this;
+  submitFeed() {
     const { podcastTitle, feedUrl } = this.state;
     Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
-      debugger
+      res.data && this.setState(res.data);
     }).catch(err => {
       console.log('parse feed request failed', err, err && err.response && err.response.data);
       alert('Hmm...there is a problem parsing the feed. Please try again later.');
     });
   }
 
+  submitCode() {
+    debugger
+  }
+
   render() {
-    const { importFeed, podcastTitle, feedUrl, } = this.state;
+    const { importFeed, podcastTitle, feedUrl, imageUrl, publisherEmail} = this.state;
     const that = this;
     return (
       <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700), overflow: 'auto'}}>
-        {
-          importFeed &&
-          <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
-              <img className='' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
+        <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
+          <img className='' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
+          { importFeed && (
+            (imageUrl && publisherEmail) &&
+              <div style={{...styles.containerWrapper, padding: 20}} className="container-confirmation">
+                <img style={{ width: 200, height: 200 }} className="center-col" src={imageUrl}/>
+                <div style={{...styles.container, paddingBottom: 30}} className="center-col text-center">
+                  Almost there... to verify your ownership of the podcast,
+                  we sent a confirmation code to {publisherEmail}
+                </div>
+                <div style={styles.container} className="center-col text-center">
+                  <span>Enter the confirmation code:</span>
+                  <div>
+                    <input />
+                    <input />
+                    <input />
+                    <input />
+                  </div>
+                </div>
+                <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  <OrangeSubmitButton
+                      styles={{marginTop: 15, marginBottom: 15}}
+                      label="Submit"
+                      onClick={this.submitCode.bind(this)}
+                  />
+                </div>
+                <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  <a style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+                    Resend the confirmation code
+                  </a>
+                </div>
+              </div>
+            ||
               <div style={{...styles.containerWrapper, padding: 20}}>
                   <div style={{...styles.container, paddingBottom: 30}} className="center-col text-center">
                       <div style={styles.title}>Submit your podcast feed</div>
@@ -98,10 +133,8 @@ export default class SignupOptions extends Component {
                     </Link>
                   </div>
               </div>
-          </div>
+            )
           ||
-          <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
-              <img className='' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
               <div style={{...styles.containerWrapper, padding: 20}}>
                   <div style={styles.container} className="center-col text-center">
                       <div style={styles.title}>Choose your adventure</div>
@@ -124,8 +157,8 @@ export default class SignupOptions extends Component {
                     </Link>
                   </div>
               </div>
-          </div>
-        }
+          }
+        </div>
       </div>
     )
   }

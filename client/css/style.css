@@ -1001,4 +1001,9 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   background-color: #44ffd1;
 }
 
-
+.container-confirmation input {
+  width: 43px;
+  margin: 0 2px;
+  text-align: center;
+  display: inline-block;
+}
