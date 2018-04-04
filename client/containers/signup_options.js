@@ -33,6 +33,7 @@ export default class SignupOptions extends Component {
     }
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
+    this.resend     = this.resend.bind(this);
   }
 
   handleFeedSubmission(type, e) {
@@ -52,7 +53,38 @@ export default class SignupOptions extends Component {
   }
 
   submitCode() {
-    debugger
+    const { codeSign1, codeSign2, codeSign3, codeSign4 } = this.refs;
+    const submitCode = codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
+    Axios.post('/api/parse_feed', { submitCode }).then(res => {
+      if (res.data === 'Success_code') {
+        this.props.history.push('/signup/admin');
+      } else {
+        alert('Code incorrect!');
+      }
+    }).catch(err => {
+      console.log('verification code request failed', err, err && err.response && err.response.data);
+      alert('Hmm...there is a problem sending verification code. Please try again later.');
+    });
+  }
+
+  onKeyDown(id, e) {
+    const refs = this.refs;
+    if ((/\d/).test(e.key)) { // digits only
+      setTimeout(() => refs['codeSign' + id].focus(), 100);
+    } else {
+      e.preventDefault();
+    }
+  }
+
+  resend() {
+    Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
+      if (res.data === 'Success_resend') {
+        alert('Resend Success!');
+      }
+    }).catch(err => {
+      console.log('resend code request failed', err, err && err.response && err.response.data);
+      alert('Hmm...there is a problem resending code. Please try again later.');
+    });
   }
 
   render() {
@@ -65,18 +97,19 @@ export default class SignupOptions extends Component {
           { importFeed && (
             (imageUrl && publisherEmail) &&
               <div style={{...styles.containerWrapper, padding: 20}} className="container-confirmation">
-                <img style={{ width: 200, height: 200 }} className="center-col" src={imageUrl}/>
-                <div style={{...styles.container, paddingBottom: 30}} className="center-col text-center">
+                <img style={{ width: 200, height: 200, marginTop: 20 }} className="center-col" src={imageUrl}/>
+                <div style={{...styles.container, padding: 30, width: 340, fontSize: 17}}
+                    className="center-col text-center">
                   Almost there... to verify your ownership of the podcast,
-                  we sent a confirmation code to {publisherEmail}
+                  we sent a confirmation code to <br/>{publisherEmail}
                 </div>
                 <div style={styles.container} className="center-col text-center">
-                  <span>Enter the confirmation code:</span>
+                  <div style={{paddingBottom: 18, fontSize: 21}}>Enter the confirmation code:</div>
                   <div>
-                    <input />
-                    <input />
-                    <input />
-                    <input />
+                    <input ref="codeSign1" onKeyDown={this.onKeyDown.bind(this, 2)} />
+                    <input ref="codeSign2" onKeyDown={this.onKeyDown.bind(this, 3)} />
+                    <input ref="codeSign3" onKeyDown={this.onKeyDown.bind(this, 4)} />
+                    <input ref="codeSign4" />
                   </div>
                 </div>
                 <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -87,7 +120,7 @@ export default class SignupOptions extends Component {
                   />
                 </div>
                 <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                  <a style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+                  <a style={{color: Colors.link, marginLeft: 5}} onClick={this.resend.bind(this)}>
                     Resend the confirmation code
                   </a>
                 </div>
