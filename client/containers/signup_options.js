@@ -91,6 +91,12 @@ export default class SignupOptions extends Component {
                         onClick={this.submitFeed.bind(this)}
                     />
                   </div>
+                  <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <span style={styles.italicText}>Already have a publisher account ? </span>
+                    <Link to="/signin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+                        Sign in >
+                    </Link>
+                  </div>
               </div>
           </div>
           ||
