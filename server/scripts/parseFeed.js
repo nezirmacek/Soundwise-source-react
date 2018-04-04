@@ -82,14 +82,16 @@ module.exports.parseFeed = async (req, res) => {
   // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
   const podcastObj = await firebase.database().ref('importedFeeds')
                              .orderByChild('title').equalTo(podcastTitle).once('value');
-  const podcast = podcastObj.val();
-
-  if (podcast) {
+  const podcasts = podcastObj.val();
+  if (podcasts) { // example return: { 1522801382898s: {...}, 1522801312898s: {...}, ... }
+    const soundcastId = Object.keys(podcasts)[0]; // taking first
+    const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+    const soundcast = soundcastObj.val();
     // 2. If podcast is found
     //    - create confirmation code
     //    - send confirmation email
     //    - change to confirmation screen
-    return setVerificationCode();
+    return setVerificationCode(soundcast, soundcastId);
   }
 
   // 3. If podcast is not found in firebase, make post request
