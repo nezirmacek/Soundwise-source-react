@@ -30,6 +30,7 @@ export default class SignupOptions extends Component {
       feedUrl: 'http://feeds.feedburner.com/TheAllTurtlesPodcast', // test
       imageUrl: null,
       publisherEmail: null,
+      emailNotFoundError: false,
     }
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
@@ -45,10 +46,15 @@ export default class SignupOptions extends Component {
   submitFeed() {
     const { podcastTitle, feedUrl } = this.state;
     Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
-      res.data && this.setState(res.data);
+      res.data && this.setState(res.data); // setting imageUrl, publisherEmail
     }).catch(err => {
-      console.log('parse feed request failed', err, err && err.response && err.response.data);
-      alert('Hmm...there is a problem parsing the feed. Please try again later.');
+      const errMsg = err && err.response && err.response.data
+      if (errMsg === "Error: Cannot find podcast owner's email") {
+        this.setState({ emailNotFoundError: true });
+      } else {
+        console.log('parse feed request failed', err, errMsg);
+        alert('Hmm...there is a problem parsing the feed. Please try again later.');
+      }
     });
   }
 
@@ -77,7 +83,7 @@ export default class SignupOptions extends Component {
   }
 
   resend() {
-    Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
+    Axios.post('/api/parse_feed', { feedUrl, resend: true }).then(res => {
       if (res.data === 'Success_resend') {
         alert('Resend Success!');
       }
@@ -125,7 +131,22 @@ export default class SignupOptions extends Component {
                   </a>
                 </div>
               </div>
-            ||
+            || (
+              emailNotFoundError &&
+              <div style={{...styles.containerWrapper, padding: 20}}>
+                <div style={{...styles.container, paddingBottom: 30}} className="center-col text-center">
+                  <div style={styles.title}>Ooops! There's a problem ...</div>
+                </div>
+                <div style={{...styles.container, padding: 30, width: 340, fontSize: 16}}
+                    className="center-col text-center">
+                  We cannot find the podcast owner's email address in the feed you submitted. An email address is needed to confirm your ownership of the podcast. Please edit your feed to include an owner's email address and re-submit.
+                </div>
+                <div style={{...styles.container, padding: 30, width: 340, fontSize: 16}}
+                    className="center-col text-center">
+                  If you think this is a mistak, please contact our support at <span style={{color: '#f76b1c' }}>support@mysoundwise.com</span>
+                </div>
+              </div>
+              ||
               <div style={{...styles.containerWrapper, padding: 20}}>
                   <div style={{...styles.container, paddingBottom: 30}} className="center-col text-center">
                       <div style={styles.title}>Submit your podcast feed</div>
@@ -166,6 +187,7 @@ export default class SignupOptions extends Component {
                     </Link>
                   </div>
               </div>
+              )
             )
           ||
               <div style={{...styles.containerWrapper, padding: 20}}>
