@@ -39,8 +39,8 @@ class _SoundwiseCheckout extends Component {
   }
 
   componentDidMount() {
-    Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
-    // Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+    // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+    Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     const {plan, frequency, price} = this.props.history.location.state;
     this.setState({
       total: frequency == 'annual' ? price * 12 : price,
@@ -56,7 +56,7 @@ class _SoundwiseCheckout extends Component {
   }
 
   handlePaymentSuccess(charge) {
-    const {plan, frequency, promoCodeError, promoCode} = this.state;
+    const {plan, frequency, promoCodeError, promoCode, trialPeriod} = this.state;
     this.setState({
       success: true,
       startPaymentSubmission: false,
@@ -69,8 +69,11 @@ class _SoundwiseCheckout extends Component {
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/current_period_end`).set(charge.data.current_period_end);
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/auto_renewal`).set(true);
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/subscriptionID`).set(charge.data.id);
+      if(trialPeriod) {
+        firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/trialEnd`).set(moment().add(trialPeriod, 'days').format('X'));
+      }
       firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/stripe_customer_id`).set(charge.data.customer);
-      if(promoCode && !promoCodeError) {
+      if(promoCode && !promoCodeError && !trialPeriod) {
         firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/coupon`).set({
           code: promoCode,
           expires_on: charge.data.current_period_end
@@ -100,7 +103,7 @@ class _SoundwiseCheckout extends Component {
     // const validPromoCodes = ['OFF50', 'NMS'];
     const {promoCode, total} = this.state;
     const {plan, frequency, price} = this.props.history.location.state;
-    const couponInfo = await firebase.database().ref(`coupons/${promoCode}`);
+    const couponInfo = await firebase.database().ref(`coupons/${promoCode}`).once('value');
 
     if(couponInfo.val()) {
       if(couponInfo.val().expiration > moment().format('X')) {
@@ -193,7 +196,7 @@ class _SoundwiseCheckout extends Component {
     const {plan, frequency, price} = this.props.history.location.state;
     const title = plan == 'pro' ? 'Pro Plan' : 'Plus Plan';
     const interval = frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
-    const {total, submitted, promoApplied} = this.state;
+    const {total, submitted, promoApplied, trialPeriod} = this.state;
     const displayedPrice = `$${price}/month`;
     const {userInfo} = this.props;
     const monthOptions = [];
@@ -202,6 +205,7 @@ class _SoundwiseCheckout extends Component {
         monthOptions.push(<option value={i} key={i}>{moment().month(i).format('MMM (MM)')}</option>);
         yearOptions.push(<option value={i + +moment().format('YYYY')} key={i}>{i + +moment().format('YYYY')}</option>);
     }
+    const totalDisplayed = trialPeriod ? 0 : total;
     return (
       <div>
         <SoundwiseHeader />
@@ -260,7 +264,7 @@ class _SoundwiseCheckout extends Component {
                                           {
                                             promoApplied &&
                                             <button
-                                              onClick={this.applyPromoCode}
+                                              onClick={()=> {}}
                                               type="button"
                                               className="btn"
                                               style={{color: Colors.mainOrange}}>Applied!</button>
@@ -286,8 +290,8 @@ class _SoundwiseCheckout extends Component {
                                                 <div className="col-md-6 center-col col-sm-12 ">
                                                     <div style={styles.totalRow}>
                                                         <div style={styles.totalWrapper}>
-                                                            <div style={styles.totalText}>Total:</div>
-                                                            <div style={styles.totalPriceText}>{`$${total}`}</div>
+                                                            <div style={styles.totalText}>Total today:</div>
+                                                            <div style={styles.totalPriceText}>{`$${totalDisplayed}`}</div>
                                                         </div>
                                                     </div>
                                                     <form onSubmit={!submitted ? this.onSubmit : (event)=>{event.preventDefault();}}>
@@ -498,8 +502,8 @@ const styles = {
         color: Colors.fontBlack,
     },
     totalText: {
-        width: 40,
-        marginRight: 50,
+        // width: 40,
+        marginRight: 5,
         float: 'left',
     },
     totalPriceText: {

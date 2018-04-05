@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as firebase from "firebase";
+import Dots from 'react-activity/lib/Dots';
 import Axios from 'axios';
 import 'url-search-params-polyfill';
 import {orange500, blue500} from 'material-ui/styles/colors';
@@ -28,10 +29,11 @@ class _SignupOptions extends Component {
     this.state = {
       importFeed: false,
       podcastTitle: 'Test Title',
-      feedUrl: 'http://feeds.feedburner.com/TheAllTurtlesPodcast', // test
+      feedUrl: 'http://foundersnextdoor.com/feed/podcast/', // test
       imageUrl: null,
       publisherEmail: null,
       emailNotFoundError: false,
+      feedSubmitting: false,
     }
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
@@ -45,13 +47,18 @@ class _SignupOptions extends Component {
   }
 
   submitFeed() {
+    this.setState({
+      feedSubmitting: true,
+    });
+    const that = this;
     const { podcastTitle, feedUrl } = this.state;
     Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
-      res.data && this.setState(res.data); // setting imageUrl, publisherEmail
+      res.data && that.setState({...res.data, feedSubmitting: false}); // setting imageUrl, publisherEmail
     }).catch(err => {
       const errMsg = err && err.response && err.response.data;
+      that.setState({feedSubmitting: false});
       if (errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email") {
-        this.setState({ emailNotFoundError: true });
+        that.setState({ emailNotFoundError: true });
       } else {
         console.log('parse feed request failed', err, errMsg);
         alert('Hmm...there is a problem parsing the feed. Please try again later.');
@@ -119,7 +126,7 @@ class _SignupOptions extends Component {
                 <div style={{...styles.container, padding: 30, width: 340, fontSize: 17}}
                     className="center-col text-center">
                   Almost there... to verify your ownership of the podcast,
-                  we sent a confirmation code to <br/>{publisherEmail}
+                  we sent a confirmation code to <br/><span style={{color: Colors.mainOrange}}>{publisherEmail}</span>
                 </div>
                 <div style={styles.container} className="center-col text-center">
                   <div style={{paddingBottom: 18, fontSize: 21}}>Enter the confirmation code:</div>
@@ -185,19 +192,21 @@ class _SignupOptions extends Component {
                         value={feedUrl}
                     />
                   </div>
-                  <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <OrangeSubmitButton
-                        styles={{marginTop: 15, marginBottom: 15}}
-                        label="Submit"
-                        onClick={this.submitFeed.bind(this)}
-                    />
-                  </div>
-                  <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <span style={styles.italicText}>Already have a publisher account ? </span>
-                    <Link to="/signin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
-                        Sign in >
-                    </Link>
-                  </div>
+                  {
+                    !this.state.feedSubmitting &&
+                    <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                      <OrangeSubmitButton
+                          styles={{marginTop: 15, marginBottom: 15}}
+                          label="Submit"
+                          onClick={this.submitFeed.bind(this)}
+                      />
+                    </div>
+                    ||
+                    <div style={{marginTop: 20, display: 'flex', justifyContent: 'center'}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                      <span style={{fontSize: 18, paddingRight: 15}}>Processing</span>
+                      <Dots style={{}} color={Colors.mainOrange} size={32} speed={1}/>
+                    </div>
+                  }
               </div>
               )
             )
@@ -208,12 +217,15 @@ class _SignupOptions extends Component {
                   </div>
                   <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <OrangeSubmitButton
-                      styles={{width: '100%', height: 'auto', margin: '40px auto'}}
-                      label="I have an existing podcast feed to submit"
+                      styles={{width: '100%', height: 'auto', margin: '20px auto'}}
+                      label="I have a podcast RSS feed to submit"
                       onClick={() => {that.setState({
                         importFeed: true
                       })}}
                     />
+                  </div>
+                  <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <span style={{fontSize: 20, fontWeight: 600, fontStyle: 'italic' }}>or</span>
                   </div>
                   <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <Link to='/signup/admin'>
@@ -221,6 +233,12 @@ class _SignupOptions extends Component {
                         styles={{backgroundColor: Colors.link, borderColor: Colors.link, width: '100%', height: 'auto', margin: '20px auto'}}
                         label="I'm starting a new podcast / audio program"
                       />
+                    </Link>
+                  </div>
+                  <div style={{marginTop: 20}} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <span style={styles.italicText}>Already have a publisher account ? </span>
+                    <Link to="/signin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
+                        Sign in >
                     </Link>
                   </div>
               </div>

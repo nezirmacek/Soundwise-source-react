@@ -18,7 +18,7 @@ const database = require('../../database/index');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 
-const urlTestFeed = "http://feeds.feedburner.com/TheAllTurtlesPodcast";
+const urlTestFeed = "http://foundersnextdoor.com/feed/podcast/";
 
 // function to parse a given feed url:
 function getFeed (urlfeed, callback) {
@@ -121,7 +121,7 @@ module.exports.parseFeed = async (req, res) => {
     sgMail.send({
       to, from: 'support@mysoundwise.com',
       subject: 'Your confirmation code for Soundwise',
-      html: `<p>Hello,</p><p>Please enter this code on your Soundwise dashboard to confirm you are the publisher of ${soundcastTitle}:</p><p><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
+      html: `<p>Hello,</p><p>Here's your code to verify that you are the publisher of ${soundcastTitle}:</p><p style="font-size:24px; letter-spacing: 2px;"><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
     });
   }
 
