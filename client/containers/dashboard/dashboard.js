@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import * as _ from 'lodash';
 import firebase from 'firebase';
 import moment from 'moment';
+import Axios from 'axios';
 
 import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
@@ -21,7 +22,7 @@ import EditSoundcast from './components/edit_soundcast';
 import Publisher from './components/publisher';
 import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
-import {handleContentSaving} from '../../actions/index';
+import {handleContentSaving, setFeedVerified} from '../../actions/index';
 const verticalMenuItems = [
     {
         path: 'soundcasts',
@@ -125,6 +126,17 @@ class _Dashboard extends Component {
                         userInfo: that.props.userInfo
                     });
                 }
+                if (that.props.feedVerified) {
+                  const { feedUrl } = that.props.feedVerified;
+                  Axios.post('/api/parse_feed', { feedUrl, importFeedUrl: true }).then(res => {
+                    if (res.data === 'Success_import') {
+                      that.props.setFeedVerified(false);
+                    }
+                  }).catch(err => {
+                    console.log('import feed request failed', err, err && err.response && err.response.data);
+                    alert('Hmm...there is a problem importing feed. Please try again later.');
+                  });
+                }
             } else {
                 that.props.history.push('/signin');
             }
@@ -143,7 +155,7 @@ class _Dashboard extends Component {
     }
 
     render() {
-        const { history, match, isLoggedIn, handleContentSaving, content_saved } = this.props;
+        const { history, match, isLoggedIn, handleContentSaving, content_saved, feedVerified } = this.props;
         let userInfo = this.state.userInfo;
         let plan, proUser;
         if(userInfo.publisher && userInfo.publisher.plan) {
@@ -160,6 +172,7 @@ class _Dashboard extends Component {
             <div className=''
               >
                 <SoundwiseHeader />
+                { feedVerified && <div>Importing feed... Please wait</div> }
                 <div className="" style={{minHeight: '100%', width: '100%'}}>
                     <div className="col-lg-2 col-md-3 col-sm-3 col-xs-3" style={styles.verticalMenu}>
                         {
@@ -271,7 +284,7 @@ const styles = {
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ handleContentSaving }, dispatch);
+    return bindActionCreators({ handleContentSaving, setFeedVerified }, dispatch);
 }
 
 
@@ -279,6 +292,7 @@ const mapStateToProps = state => {
     const { userInfo, isLoggedIn, content_saved } = state.user;
     return {
         userInfo, isLoggedIn, content_saved,
+        feedVerified: state.setFeedVerified.feedVerified,
     }
 };
 

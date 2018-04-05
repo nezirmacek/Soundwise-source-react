@@ -79,7 +79,7 @@ const feedUrls = {};
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
-  const { podcastTitle, feedUrl, publisherId, userId, submitCode, resend } = req.body;
+  const { podcastTitle, feedUrl, userId, submitCode, resend, importFeedUrl } = req.body;
   const url = feedUrl && feedUrl.trim().toLowerCase();
   if (feedUrls[url]) {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
@@ -94,6 +94,8 @@ module.exports.parseFeed = async (req, res) => {
       if (resend) {
         sendVerificationMail(publisherEmail, metadata.title, verificationCode);
         res.send('Success_resend');
+      } else if (importFeedUrl) {
+        runFeedImport(req, res, url);
       } else {
         res.json({ imageUrl: metadata.image.url, publisherEmail });
       }
@@ -124,8 +126,18 @@ module.exports.parseFeed = async (req, res) => {
       html: `<p>Hello,</p><p>Here's your code to verify that you are the publisher of ${soundcastTitle}:</p><p style="font-size:24px; letter-spacing: 2px;"><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
     });
   }
+} // parseFeed
 
-  return
+async function runFeedImport(req, res, url) {
+  debugger
+  const { metadata, feedItems, publisherEmail, verified } = feedUrls[url];
+  const { podcastTitle, publisherId, userId } = req.body;
+  if (!verified) {
+    return res.status(400).send('Error: not verified');
+  }
+
+  return res.send('Success_import');
+
 
   // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
   const podcastObj = await firebase.database().ref('importedFeeds')
@@ -149,107 +161,103 @@ module.exports.parseFeed = async (req, res) => {
   //    create a new soundcast, and associated episodes from the feed information
   // 5. server sends confirmation email to user with the
   //    confirmation code, to verify that the user is the owner of the feed
-  getFeed(feedUrl, async (err, results) => {
-    if (err) {
-      return res.status(400).send(`Error: ${err}`);
-    }
-    // 1. create a new soundcast from the feed
-    const {metadata, feedItems} = results;
-    const soundcast = {
-      creatorID: userId,
-      publisherID: publisherId,
-      publisherName,
-      fromParsedFeed: true,
-      forSale: false,
-      landingPage: true,
-      prices: [{billingCycle: 'free', price: 'free'}],
-      published: false, // set this to true from client after ownership is verified
-      verified: false, // ownership verification, set to true from client after ownership is verified
-      showSubscriberCount: true,
-      showTimeStamps: true,
-      subscriberEmailList: '',
-      hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
-    };
-    const {title, description, author, date, image, categories} = metadata;
-    soundcast.title = title;
-    soundcast.short_description = description;
-    soundcast.imageURL = image.url;
-    soundcast.hostName = author || metadata['itunes:author']['#'];
-    soundcast.publisherEmail = metadata['itunes:owner']['itunes:email']['#'] || metadata['rss:managingeditor']['email'] || null;
-    soundcast.last_update = moment(date).format('x');
 
 
-    // 2. add the new soundcast to firebase and postgreSQL
-    // add to firebase
-    const soundcastId = `${moment().format('x')}s`;
-    await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
-    // 2-a. add to publisher node in firebase
-    await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+  // 1. create a new soundcast from the feed
+  const soundcast = {
+    creatorID: userId,
+    publisherID: publisherId,
+    publisherName,
+    fromParsedFeed: true,
+    forSale: false,
+    landingPage: true,
+    prices: [{billingCycle: 'free', price: 'free'}],
+    published: false, // set this to true from client after ownership is verified
+    verified: false, // ownership verification, set to true from client after ownership is verified
+    showSubscriberCount: true,
+    showTimeStamps: true,
+    subscriberEmailList: '',
+    hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
+  };
+  const {title, description, author, date, image, categories} = metadata;
+  soundcast.title = title;
+  soundcast.short_description = description;
+  soundcast.imageURL = image.url;
+  soundcast.hostName = author || metadata['itunes:author']['#'];
+  soundcast.publisherEmail = metadata['itunes:owner']['itunes:email']['#'] || metadata['rss:managingeditor']['email'] || null;
+  soundcast.last_update = moment(date).format('x');
 
-    // 2-b. add to importedFeeds node in firebase
-    await firebase.database().ref(`importedFeeds/${soundcastId}`)
-      .set({
-        published: true,
+
+  // 2. add the new soundcast to firebase and postgreSQL
+  // add to firebase
+  const soundcastId = `${moment().format('x')}s`;
+  await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
+  // 2-a. add to publisher node in firebase
+  await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+
+  // 2-b. add to importedFeeds node in firebase
+  await firebase.database().ref(`importedFeeds/${soundcastId}`)
+    .set({
+      published: true,
+      title,
+      feedUrl,
+      updated: moment().unix(),
+      publisherId
+    });
+  // 2-c. add to postgres
+  database.Soundcast.findOrCreate({
+      where: { soundcastId },
+      defaults: {
+        soundcastId,
+        publisherId,
         title,
-        feedUrl,
-        updated: moment().unix(),
-        publisherId
-      });
-    // 2-c. add to postgres
-    database.Soundcast.findOrCreate({
-        where: { soundcastId },
+      }
+    })
+    .then(data => console.log('DB response: ', data))
+    .catch(err => console.log('Error: parseFeed.js Soundcast.findOrCreate ', err));
+
+  // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
+  await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
+    const {title, description, summary, data, image, enclosures} = item;
+    const episode = {
+      title,
+      coverArtUrl: image.url || soundcast.imageURL,
+      creatorID: userId,
+      date_created: moment(date).format('X'),
+      description: description || summary,
+      duration: enclosures[0].length,
+      id3Tagged: true,
+      index: feedItems.length - i,
+      isPublished: true,
+      publicEpisode: true,
+      publisherID: publisherId,
+      soundcastID: soundcastId,
+      url: enclosures[0].url,
+    };
+    const episodeId = `${moment().format('x')}e`;
+    // add to episodes node in firebase
+    await firebase.database().ref(`episodes/${episodeId}`).set(episode);
+    // add to the soundcast
+    await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
+    // add to postgres
+    database.Episode.findOrCreate({
+        where: { episodeId },
         defaults: {
+          episodeId,
           soundcastId,
-          publisherId,
-          title,
+          publisherId: soundcast.publisherID,
+          title: episode.title,
+          soundcastTitle: soundcast.title,
         }
       })
-      .then(data => console.log('DB response: ', data))
-      .catch(err => console.log('Error: parseFeed.js Soundcast.findOrCreate ', err));
+      .then(data => {
+        debugger
+      })
+      .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
+  }))); // Promise.all
 
-    // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
-    await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-      const {title, description, summary, data, image, enclosures} = item;
-      const episode = {
-        title,
-        coverArtUrl: image.url || soundcast.imageURL,
-        creatorID: userId,
-        date_created: moment(date).format('X'),
-        description: description || summary,
-        duration: enclosures[0].length,
-        id3Tagged: true,
-        index: feedItems.length - i,
-        isPublished: true,
-        publicEpisode: true,
-        publisherID: publisherId,
-        soundcastID: soundcastId,
-        url: enclosures[0].url,
-      };
-      const episodeId = `${moment().format('x')}e`;
-      // add to episodes node in firebase
-      await firebase.database().ref(`episodes/${episodeId}`).set(episode);
-      // add to the soundcast
-      await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
-      //add to postgres
-      database.Episode.findOrCreate({
-          where: { episodeId },
-          defaults: {
-            episodeId,
-            soundcastId,
-            publisherId: soundcast.publisherID,
-            title: episode.title,
-            soundcastTitle: soundcast.title,
-          }
-        })
-        .then(data => {
-          debugger
-        })
-        .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
-    }))); // Promise.all
-
-    // 4. send an email to the feed owner's email address, to confirm that he/she is the owner of the feed
-    setVerificationCode(soundcast);
-  }); // getFeed
+  // 4. send an email to the feed owner's email address, to confirm that he/she is the owner of the feed
+  setVerificationCode(soundcast);
 
   async function setVerificationCode(soundcast, soundcastId) {
     sendVerificationMail(soundcast.publisherEmail, soundcast.title, verificationCode);
@@ -263,7 +271,9 @@ module.exports.parseFeed = async (req, res) => {
       verificationCode
     });
   }
-}; // parseFeed
+} // runFeedImport
+
+
 
 // Need to update all the published soundcasts from imported feeds every hour
 
