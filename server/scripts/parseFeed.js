@@ -236,6 +236,7 @@ async function runFeedImport(req, res, url) {
       .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
   }))); // Promise.all
 
+  delete feedUrls[url];
   res.send('Success_import');
 } // runFeedImport
 
