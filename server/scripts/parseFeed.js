@@ -129,7 +129,6 @@ module.exports.parseFeed = async (req, res) => {
 } // parseFeed
 
 async function runFeedImport(req, res, url) {
-  debugger
   const { metadata, feedItems, publisherEmail, verified } = feedUrls[url];
   const { publisherId, userId, publisherName } = req.body;
 
@@ -232,14 +231,11 @@ async function runFeedImport(req, res, url) {
         }
       })
       .then(data => {
-        console.log('parseFeed.js findOrCreate then');
-        debugger
+        // console.log('parseFeed.js findOrCreate then');
       })
       .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
   }))); // Promise.all
 
-  console.log('Promise all done');
-  debugger
   res.send('Success_import');
 } // runFeedImport
 
