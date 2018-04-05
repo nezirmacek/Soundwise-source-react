@@ -79,7 +79,7 @@ const feedUrls = {};
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
-  const { podcastTitle, feedUrl, userId, submitCode, resend, importFeedUrl } = req.body;
+  const { feedUrl, submitCode, resend, importFeedUrl } = req.body;
   const url = feedUrl && feedUrl.trim().toLowerCase();
   if (feedUrls[url]) {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
@@ -131,43 +131,32 @@ module.exports.parseFeed = async (req, res) => {
 async function runFeedImport(req, res, url) {
   debugger
   const { metadata, feedItems, publisherEmail, verified } = feedUrls[url];
-  const { podcastTitle, publisherId, userId } = req.body;
+  const { publisherId, userId, publisherName } = req.body;
+
   if (!verified) {
     return res.status(400).send('Error: not verified');
   }
 
-  return res.send('Success_import');
-
-
   // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
   const podcastObj = await firebase.database().ref('importedFeeds')
-                             .orderByChild('title').equalTo(podcastTitle).once('value');
+                             .orderByChild('feedUrl').equalTo(url).once('value');
   const podcasts = podcastObj.val();
-  if (podcasts) { // example return: { 1522801382898s: {...}, 1522801312898s: {...}, ... }
-    const soundcastId = Object.keys(podcasts)[0]; // take first
-    const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-    const soundcast = soundcastObj.val();
-    // 2. If podcast is found
-    //    - create confirmation code
-    //    - send confirmation email
-    //    - change to confirmation screen
-    return setVerificationCode(soundcast, soundcastId);
+  if (podcasts) { // return: { 1522801382898s: {...} } or null
+    return res.status(400).send('Error: requested feed url already imported');
   }
 
-  // 3. If podcast is not found in firebase, make post request
-  //    to ‘api/parse_feed’ with the rss feed Url the user
-  //    submitted, and a new soundcastId and publisherId
-  // 4. server parses the rss feed (server/scripts/parseFeed.js),
-  //    create a new soundcast, and associated episodes from the feed information
-  // 5. server sends confirmation email to user with the
-  //    confirmation code, to verify that the user is the owner of the feed
-
-
   // 1. create a new soundcast from the feed
+  const {title, description, author, date, image, categories} = metadata;
   const soundcast = {
+    title,
+    publisherEmail,
     creatorID: userId,
     publisherID: publisherId,
     publisherName,
+    short_description: description,
+    imageURL: image.url,
+    hostName: author || metadata['itunes:author']['#'],
+    last_update: moment(date).format('x'),
     fromParsedFeed: true,
     forSale: false,
     landingPage: true,
@@ -179,14 +168,6 @@ async function runFeedImport(req, res, url) {
     subscriberEmailList: '',
     hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
   };
-  const {title, description, author, date, image, categories} = metadata;
-  soundcast.title = title;
-  soundcast.short_description = description;
-  soundcast.imageURL = image.url;
-  soundcast.hostName = author || metadata['itunes:author']['#'];
-  soundcast.publisherEmail = metadata['itunes:owner']['itunes:email']['#'] || metadata['rss:managingeditor']['email'] || null;
-  soundcast.last_update = moment(date).format('x');
-
 
   // 2. add the new soundcast to firebase and postgreSQL
   // add to firebase
@@ -200,7 +181,7 @@ async function runFeedImport(req, res, url) {
     .set({
       published: true,
       title,
-      feedUrl,
+      feedUrl: url,
       updated: moment().unix(),
       publisherId
     });
@@ -251,26 +232,15 @@ async function runFeedImport(req, res, url) {
         }
       })
       .then(data => {
+        console.log('parseFeed.js findOrCreate then');
         debugger
       })
       .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
   }))); // Promise.all
 
-  // 4. send an email to the feed owner's email address, to confirm that he/she is the owner of the feed
-  setVerificationCode(soundcast);
-
-  async function setVerificationCode(soundcast, soundcastId) {
-    sendVerificationMail(soundcast.publisherEmail, soundcast.title, verificationCode);
-    await firebase.database().ref(`soundcasts/${soundcastId}/verificationCode`).set(verificationCode);
-    // 5. respond to front end
-    res.send({
-      publisherEmail: soundcast.publisherEmail,
-      soundcast,
-      soundcastId,
-      publisherId,
-      verificationCode
-    });
-  }
+  console.log('Promise all done');
+  debugger
+  res.send('Success_import');
 } // runFeedImport
 
 

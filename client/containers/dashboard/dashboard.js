@@ -128,7 +128,14 @@ class _Dashboard extends Component {
                 }
                 if (that.props.feedVerified) {
                   const { feedUrl } = that.props.feedVerified;
-                  Axios.post('/api/parse_feed', { feedUrl, importFeedUrl: true }).then(res => {
+                  const reqObj = {
+                    feedUrl,
+                    userId: that.props.userInfo.id,
+                    publisherId: that.props.userInfo.publisherID,
+                    publisherName: that.props.userInfo.publisher.name,
+                    importFeedUrl: true,
+                  };
+                  Axios.post('/api/parse_feed', reqObj).then(res => {
                     if (res.data === 'Success_import') {
                       that.props.setFeedVerified(false);
                     }
