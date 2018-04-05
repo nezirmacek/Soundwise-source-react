@@ -79,7 +79,7 @@ const feedUrls = {};
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
-  const { podcastTitle, feedUrl, publisherId, userId, submitCode } = req.body;
+  const { podcastTitle, feedUrl, publisherId, userId, submitCode, resend } = req.body;
   const url = feedUrl && feedUrl.trim().toLowerCase();
   if (feedUrls[url]) {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
@@ -90,8 +90,12 @@ module.exports.parseFeed = async (req, res) => {
         res.status(400).send(`Error: incorrect verfication code`);
       }
     } else {
-      sendVerificationMail(publisherEmail, metadata.title, verificationCode);
-      res.send('Success_resend');
+      if (resend) {
+        sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+        res.send('Success_resend');
+      } else {
+        res.json({ imageUrl: metadata.image.url, publisherEmail });
+      }
     }
   } else {
     getFeed(feedUrl, async (err, results) => {
@@ -107,7 +111,7 @@ module.exports.parseFeed = async (req, res) => {
         return res.status(400).send("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
       }
       feedUrls[url] = { metadata, feedItems, publisherEmail, verificationCode };
-      // sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+      sendVerificationMail(publisherEmail, metadata.title, verificationCode);
       res.json({ imageUrl: metadata.image.url, publisherEmail });
     });
   }

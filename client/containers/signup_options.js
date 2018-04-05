@@ -39,8 +39,8 @@ export default class SignupOptions extends Component {
 
   handleFeedSubmission(type, e) {
     this.setState({
-        [type]: e.target.value
-    })
+      [type]: e.target.value
+    });
   }
 
   submitFeed() {
@@ -48,8 +48,8 @@ export default class SignupOptions extends Component {
     Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
       res.data && this.setState(res.data); // setting imageUrl, publisherEmail
     }).catch(err => {
-      const errMsg = err && err.response && err.response.data
-      if (errMsg === "Error: Cannot find podcast owner's email") {
+      const errMsg = err && err.response && err.response.data;
+      if (errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email") {
         this.setState({ emailNotFoundError: true });
       } else {
         console.log('parse feed request failed', err, errMsg);
@@ -60,21 +60,29 @@ export default class SignupOptions extends Component {
 
   submitCode() {
     const { codeSign1, codeSign2, codeSign3, codeSign4 } = this.refs;
+    const { feedUrl } = this.state;
     const submitCode = codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
-    Axios.post('/api/parse_feed', { submitCode }).then(res => {
+    codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
+    Axios.post('/api/parse_feed', { feedUrl, submitCode }).then(res => {
       if (res.data === 'Success_code') {
         this.props.history.push('/signup/admin');
-      } else {
-        alert('Code incorrect!');
       }
     }).catch(err => {
-      console.log('verification code request failed', err, err && err.response && err.response.data);
-      alert('Hmm...there is a problem sending verification code. Please try again later.');
+      const errMsg = err && err.response && err.response.data;
+      if (errMsg.slice(0, 33) === "Error: incorrect verfication code") {
+        alert('Code incorrect!');
+      } else {
+        console.log('verification code request failed', err, err && err.response && err.response.data);
+        alert('Hmm...there is a problem sending verification code. Please try again later.');
+      }
     });
   }
 
   onKeyDown(id, e) {
     const refs = this.refs;
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      return
+    }
     if ((/\d/).test(e.key)) { // digits only
       setTimeout(() => refs['codeSign' + id].focus(), 100);
     } else {
@@ -83,6 +91,7 @@ export default class SignupOptions extends Component {
   }
 
   resend() {
+    const { feedUrl } = this.state;
     Axios.post('/api/parse_feed', { feedUrl, resend: true }).then(res => {
       if (res.data === 'Success_resend') {
         alert('Resend Success!');
@@ -94,7 +103,8 @@ export default class SignupOptions extends Component {
   }
 
   render() {
-    const { importFeed, podcastTitle, feedUrl, imageUrl, publisherEmail} = this.state;
+    const { importFeed, podcastTitle, feedUrl, imageUrl,
+            publisherEmail, emailNotFoundError } = this.state;
     const that = this;
     return (
       <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700), overflow: 'auto'}}>
@@ -137,13 +147,13 @@ export default class SignupOptions extends Component {
                 <div style={{...styles.container, paddingBottom: 30}} className="center-col text-center">
                   <div style={styles.title}>Ooops! There's a problem ...</div>
                 </div>
-                <div style={{...styles.container, padding: 30, width: 340, fontSize: 16}}
+                <div style={{...styles.container, padding: '20px 30px', width: 490, fontSize: 13}}
                     className="center-col text-center">
                   We cannot find the podcast owner's email address in the feed you submitted. An email address is needed to confirm your ownership of the podcast. Please edit your feed to include an owner's email address and re-submit.
                 </div>
-                <div style={{...styles.container, padding: 30, width: 340, fontSize: 16}}
+                <div style={{...styles.container, padding: 30, width: 490, fontSize: 13}}
                     className="center-col text-center">
-                  If you think this is a mistak, please contact our support at <span style={{color: '#f76b1c' }}>support@mysoundwise.com</span>
+                  If you think this is a mistake, please contact our support at <br/><span style={{color: '#f76b1c' }}>support@mysoundwise.com</span>
                 </div>
               </div>
               ||
