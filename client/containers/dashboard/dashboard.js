@@ -136,12 +136,13 @@ class _Dashboard extends Component {
                     importFeedUrl: true,
                   };
                   Axios.post('/api/parse_feed', reqObj).then(res => {
-                    if (res.data === 'Success_import') {
+                    // if (res.data === 'Success_import') {
                       that.props.setFeedVerified(false);
-                    }
+                    // }
                   }).catch(err => {
                     console.log('import feed request failed', err, err && err.response && err.response.data);
                     alert('Hmm...there is a problem importing feed. Please try again later.');
+                    that.props.setFeedVerified(false);
                   });
                 }
             } else {
