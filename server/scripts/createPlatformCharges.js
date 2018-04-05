@@ -27,6 +27,9 @@ module.exports.createSubscription = (req, res) => {
             if (req.body.coupon) {
               options.coupon = req.body.coupon;
             }
+            if (req.body.trialPeriod) {
+              options.trial_period_days = req.body.trialPeriod;
+            }
             return stripe.subscriptions.create(options)
                   .then(subscription => {
                     res.send(subscription);

@@ -20,6 +20,9 @@ class _SoundwiseCheckout extends Component {
       enterPromoCode: false,
       promoCode: '',
       promoCodeError: null,
+      trialPeriod: null,
+      percentOff: null,
+      promoDescription: null,
       total: '',
       number: '',
       cvc: '',
@@ -89,23 +92,38 @@ class _SoundwiseCheckout extends Component {
       }
   }
 
-  applyPromoCode() {
+  async applyPromoCode() {
     this.setState({
       promoCodeError: '',
       promoApplied: false,
     });
-    const validPromoCodes = ['OFF50', 'MARCH50'];
+    // const validPromoCodes = ['OFF50', 'NMS'];
     const {promoCode, total} = this.state;
     const {plan, frequency, price} = this.props.history.location.state;
-    if(validPromoCodes.indexOf(promoCode) > -1) {
-      if(frequency == 'annual') {
-        this.setState({
-          total: frequency == 'annual' ? price * 12 / 2 : price,
-          promoApplied: true,
-        });
+    const couponInfo = await firebase.database().ref(`coupons/${promoCode}`);
+
+    if(couponInfo.val()) {
+      if(couponInfo.val().expiration > moment().format('X')) {
+        if(couponInfo.val().frequency == 'all' || couponInfo.val().frequency == frequency) {
+          this.setState({
+            total: total * (100 - couponInfo.val().percentOff) / 100 ,
+            promoApplied: true,
+            percentOff: couponInfo.val().percentOff,
+            promoDescription: couponInfo.val().description,
+          });
+          if(couponInfo.val().trialPeriod) {
+            this.setState({
+              trialPeriod: couponInfo.val().trialPeriod,
+            });
+          }
+        } else {
+          this.setState({
+            promoCodeError: `This promo code only applies to ${couponInfo.val().frequency} plans!`,
+          });
+        }
       } else {
         this.setState({
-          promoCodeError: "This promo code only applies to annual plans!",
+          promoCodeError: "This promo code has expired.",
         });
       }
     } else {
@@ -132,9 +150,9 @@ class _SoundwiseCheckout extends Component {
   stripeTokenHandler(status, response) {
     const amount = Number(this.state.total).toFixed(2) * 100; // in cents
     const {email, stripe_id, publisherID, publisher} = this.props.userInfo;
-    const {plan, frequency, promoCodeError, promoCode} = this.state;
+    const {plan, frequency, promoCodeError, promoCode, percentOff, trialPeriod} = this.state;
     const that = this;
-    const coupon = promoCode && !promoCodeError ? promoCode : null;
+    const coupon = (promoCode && !promoCodeError && percentOff && percentOff > 0) ? promoCode : null; // code for free trials may have percentOff == 0
 
     if(response.error) {
         this.setState({
@@ -151,6 +169,7 @@ class _SoundwiseCheckout extends Component {
           customer: stripe_id,
           subscriptionID: publisher.subscriptionID,
           coupon,
+          trialPeriod,
           publisherID: publisherID,
           plan: `${plan}-${frequency}`,
           statement_descriptor: `Soundwise ${plan} plan: ${frequency}`,
@@ -253,6 +272,7 @@ class _SoundwiseCheckout extends Component {
                                               style={{color: Colors.link}}>Apply</button>
                                           }
                                           <div style={{color: 'red'}}>{this.state.promoCodeError}</div>
+                                          <div>{this.state.promoDescription}</div>
                                         </div>
                                       }
                                       </div>
