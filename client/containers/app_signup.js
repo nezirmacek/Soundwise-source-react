@@ -33,7 +33,7 @@ class _AppSignup extends Component {
         this.state = {
             firstName: '',
             lastName: '',
-            email: '',
+            email: props.feedVerified ? props.feedVerified.publisherEmail : '',
             password: '',
             message: '',
             publisher_name: '',
@@ -1136,7 +1136,8 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
     const { userInfo, isLoggedIn, defaultSoundcastAdded } = state.user;
     return {
-        userInfo, isLoggedIn, defaultSoundcastAdded
+				userInfo, isLoggedIn, defaultSoundcastAdded,
+				feedVerified: state.setFeedVerified.feedVerified,
     }
 };
 

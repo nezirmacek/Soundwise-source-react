@@ -20,8 +20,9 @@ import { GreyInput } from '../components/inputs/greyInput';
 import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
+import { setFeedVerified } from '../actions/index';
 
-export default class SignupOptions extends Component {
+class _SignupOptions extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,11 +61,12 @@ export default class SignupOptions extends Component {
 
   submitCode() {
     const { codeSign1, codeSign2, codeSign3, codeSign4 } = this.refs;
-    const { feedUrl } = this.state;
+    const { feedUrl, publisherEmail } = this.state;
     const submitCode = codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
     Axios.post('/api/parse_feed', { feedUrl, submitCode }).then(res => {
       if (res.data === 'Success_code') {
+        this.props.setFeedVerified({ feedUrl, publisherEmail });
         this.props.history.push('/signup/admin');
       }
     }).catch(err => {
@@ -228,6 +230,15 @@ export default class SignupOptions extends Component {
     )
   }
 }
+
+const mapStateToProps = state => {
+  return {}
+}
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({ setFeedVerified }, dispatch)
+}
+const SignupOptions = connect(mapStateToProps, mapDispatchToProps)(_SignupOptions);
+export default SignupOptions;
 
 const styles = {
     row: {
