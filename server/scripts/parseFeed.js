@@ -236,6 +236,9 @@ async function runFeedImport(req, res, url) {
       .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
   }))); // Promise.all
 
+  firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
+  firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
+
   delete feedUrls[url];
   res.send('Success_import');
 } // runFeedImport
