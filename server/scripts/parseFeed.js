@@ -85,6 +85,7 @@ module.exports.parseFeed = async (req, res) => {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
     if (submitCode) {
       if (submitCode === verificationCode) {
+        feedUrls[url].verified = true;
         res.send('Success_code');
       } else {
         res.status(400).send(`Error: incorrect verfication code`);
