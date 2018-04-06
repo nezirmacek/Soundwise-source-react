@@ -180,7 +180,8 @@ class _Dashboard extends Component {
             <div className=''
               >
                 <SoundwiseHeader />
-                { feedVerified && <div>Importing feed... Please wait</div> }
+                { feedVerified && <div class="importing-feed-overlay">
+                            <div>Importing feed... Please wait</div></div> }
                 <div className="" style={{minHeight: '100%', width: '100%'}}>
                     <div className="col-lg-2 col-md-3 col-sm-3 col-xs-3" style={styles.verticalMenu}>
                         {

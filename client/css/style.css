@@ -1007,3 +1007,19 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   text-align: center;
   display: inline-block;
 }
+
+.importing-feed-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  z-index: 1;
+  background-color: #ffffffab;
+}
+.importing-feed-overlay > div {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+}
