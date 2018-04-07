@@ -156,7 +156,7 @@ async function runFeedImport(req, res, url) {
     imageURL: image.url,
     hostName: author || metadata['itunes:author']['#'],
     last_update: moment(date).format('x'),
-    fromParsedFeed: true,
+    fromParsedFeed: true, // this soundcast is imported from a RSS feed
     forSale: false,
     landingPage: true,
     prices: [{billingCycle: 'free', price: 'free'}],
@@ -182,7 +182,8 @@ async function runFeedImport(req, res, url) {
       title,
       feedUrl: url,
       updated: moment().unix(),
-      publisherId
+      publisherId,
+      claimed: true, // when 'claimed == true', this imported soundcast is manged by the RSS feed owner
     });
   // 2-c. add to postgres
   database.Soundcast.findOrCreate({
