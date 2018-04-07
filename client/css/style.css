@@ -1041,8 +1041,9 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   cursor: pointer;
 }
 .Collapsible__trigger::after {
-    font-family: 'Font Awesome 5 Free';
-    content: '\f107';
+    font-family: "Material Icons";
+    /*content: '\f107';*/
+    content: \E313;
     position: absolute;
     right: 10px;
     top: 10px;
