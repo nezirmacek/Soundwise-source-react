@@ -156,7 +156,7 @@ class _SoundwiseCheckout extends Component {
     const {plan, frequency, promoCodeError, promoCode, percentOff, trialPeriod} = this.state;
     const that = this;
     const coupon = (promoCode && !promoCodeError && percentOff && percentOff > 0) ? promoCode : null; // code for free trials may have percentOff == 0
-
+    const metaData = promoCode && !promoCodeError ? {promoCode} : null; // need to record the promoCode used, whether it's for discount or for free trial.
     if(response.error) {
         this.setState({
             paymentError: response.error.message,
@@ -172,6 +172,7 @@ class _SoundwiseCheckout extends Component {
           customer: stripe_id,
           subscriptionID: publisher.subscriptionID,
           coupon,
+          metaData,
           trialPeriod,
           publisherID: publisherID,
           plan: `${plan}-${frequency}`,
