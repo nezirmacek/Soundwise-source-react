@@ -198,7 +198,7 @@ class _SoundwiseCheckout extends Component {
     const interval = frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
     const {total, submitted, promoApplied, trialPeriod} = this.state;
     const displayedPrice = `$${price}/month`;
-    const {userInfo} = this.props;
+    const {userInfo, isLoggedIn} = this.props;
     const monthOptions = [];
     const yearOptions = [];
     for (let i=0; i<12; i++) {
@@ -295,6 +295,15 @@ class _SoundwiseCheckout extends Component {
                                                         </div>
                                                     </div>
                                                     <form onSubmit={!submitted ? this.onSubmit : (event)=>{event.preventDefault();}}>
+                                                        { !isLoggedIn && <div>
+                                                            <input
+                                                              style={{ margin: '21px 0 10px', fontSize: 14 }}
+                                                              ref='checkoutEmail'
+                                                              placeholder='Email'
+                                                              className='border-radius-4'
+                                                            />
+                                                          </div>
+                                                        }
                                                         {/*card number*/}
                                                         <div style={styles.relativeBlock}>
                                                             <input
