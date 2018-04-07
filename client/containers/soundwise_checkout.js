@@ -10,6 +10,7 @@ import Dots from 'react-activity/lib/Dots';
 import firebase from 'firebase';
 
 import {SoundwiseHeader} from '../components/soundwise_header';
+import {setChargeState} from '../actions/index';
 // import Payment from '../components/payment';
 
 class _SoundwiseCheckout extends Component {
@@ -81,6 +82,11 @@ class _SoundwiseCheckout extends Component {
       }
       this.props.history.push({
         pathname: '/dashboard/soundcasts',
+      });
+    } else { // not logged in
+      this.props.setChargeState({ plan, frequency, promoCodeError, promoCode, trialPeriod, charge });
+      this.props.history.push({
+        pathname: '/signup_options',
       });
     }
   }
@@ -613,10 +619,10 @@ const mapStateToProps = state => {
     return { userInfo, isLoggedIn, isEmailSent};
 };
 
-// function mapDispatchToProps(dispatch) {
-//     return bindActionCreators({ sendEmail }, dispatch);
-// }
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ /* sendEmail, */ setChargeState }, dispatch);
+}
 
-const Checkout_worouter = connect(mapStateToProps, null)(_SoundwiseCheckout);
+const Checkout_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundwiseCheckout);
 
 export const SoundwiseCheckout = withRouter(Checkout_worouter);

@@ -22,7 +22,7 @@ import EditSoundcast from './components/edit_soundcast';
 import Publisher from './components/publisher';
 import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
-import {handleContentSaving, setFeedVerified} from '../../actions/index';
+import {handleContentSaving, setFeedVerified, setChargeState} from '../../actions/index';
 const verticalMenuItems = [
     {
         path: 'soundcasts',
@@ -144,6 +144,27 @@ class _Dashboard extends Component {
                     alert('Hmm...there is a problem importing feed. Please try again later.');
                     that.props.setFeedVerified(false);
                   });
+                }
+                if (that.props.chargeState) { // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
+                  const { plan, frequency, promoCodeError, promoCode, trialPeriod, charge } = that.props.chargeState;
+                  if(that.props.userInfo.publisherID) {
+                    firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/plan`).set(plan);
+                    firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/frequency`).set(frequency);
+                    firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/current_period_end`).set(charge.data.current_period_end);
+                    firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/auto_renewal`).set(true);
+                    firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/subscriptionID`).set(charge.data.id);
+                    if(trialPeriod) {
+                      firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/trialEnd`).set(moment().add(trialPeriod, 'days').format('X'));
+                    }
+                    firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/stripe_customer_id`).set(charge.data.customer);
+                    if(promoCode && !promoCodeError && !trialPeriod) {
+                      firebase.database().ref(`publishers/${this.props.userInfo.publisherID}/coupon`).set({
+                        code: promoCode,
+                        expires_on: charge.data.current_period_end
+                      });
+                    }
+                    that.props.setChargeState(null);
+                  }
                 }
             } else {
                 that.props.history.push('/signin');
@@ -292,17 +313,17 @@ const styles = {
     },
 };
 
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ handleContentSaving, setFeedVerified }, dispatch);
-}
-
-
 const mapStateToProps = state => {
     const { userInfo, isLoggedIn, content_saved } = state.user;
     return {
         userInfo, isLoggedIn, content_saved,
         feedVerified: state.setFeedVerified.feedVerified,
+        chargeState: state.setChargeState.chargeState,
     }
 };
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ handleContentSaving, setFeedVerified, setChargeState }, dispatch);
+}
 
 export const Dashboard = connect(mapStateToProps, mapDispatchToProps)(_Dashboard);

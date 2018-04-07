@@ -306,6 +306,21 @@ function setFeedVerified(state={
   }
 }
 
+function setChargeState(state={
+  chargeState: null,
+}, action) {
+  switch(action.type) {
+    case types.CHARGE_STATE:
+        return {
+          ...state,
+          chargeState: action.payload
+        }
+        break;
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   setCourses,
   setPlayer,
@@ -317,6 +332,7 @@ const rootReducer = combineReducers({
   categories,
   checkoutProcess,
   setFeedVerified,
+  setChargeState,
 })
 
 export default rootReducer
