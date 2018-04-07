@@ -30,6 +30,9 @@ module.exports.createSubscription = (req, res) => {
             if (req.body.trialPeriod) {
               options.trial_period_days = req.body.trialPeriod;
             }
+            if (req.body.metadata) {
+              options.metadata.promoCode = req.body.metadata.promoCode;
+            }
             return stripe.subscriptions.create(options)
                   .then(subscription => {
                     res.send(subscription);
@@ -57,6 +60,9 @@ module.exports.createSubscription = (req, res) => {
       }
       if (req.body.trialPeriod) {
         options.trial_period_days = req.body.trialPeriod;
+      }
+      if (req.body.metadata) {
+        options.metadata.promoCode = req.body.metadata.promoCode;
       }
       stripe.subscriptions.create(options)
       .then(subscription => {
