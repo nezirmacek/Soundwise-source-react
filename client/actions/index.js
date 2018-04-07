@@ -144,6 +144,13 @@ export function setFeedVerified(value) {
   }
 }
 
+export function setChargeState(value) {
+  return {
+    type: types.CHARGE_STATE,
+    payload: value
+  }
+}
+
 export function subscribeToCategories () {
     return (dispatch) => {
         firebase.database().ref('categories')
