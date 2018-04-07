@@ -52,7 +52,7 @@ class GetStartedSteps extends React.Component {
     const contentStyle = {margin: '0 16px'};
 
     return (
-      <section className="padding-110px-tb feature-style4 bg-white builder-bg xs-padding-50px-tb border-none" id="feature-section6" style={{background:`linear-gradient(rgba(97,225,251,0.3), rgba(0,0,0,0.1))`,}}>
+      <section className="padding-110px-tb feature-style4 bg-white builder-bg xs-padding-50px-tb border-none" id="feature-section6" style={{background:`linear-gradient( #f7f7f7, rgba(97,225,251,0.3))`,}}>
         <MuiThemeProvider>
           <div className="container">
               <div className="row">

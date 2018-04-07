@@ -16,6 +16,7 @@ import PodcasterBlock from './podcaster_block'
 import AudioCourseCreator from './audio_course_creator'
 import TeamTrainingBlock from './team_training_block'
 import GetStartedSteps from './get_started_steps'
+import FAQs from './faqs'
 
 const customContentStyle = {
   width: '100%',
@@ -83,6 +84,7 @@ class Page extends Component {
             <AudioCourseCreator />
             <TeamTrainingBlock />
             <GetStartedSteps />
+            <FAQs />
             <Media_mention></Media_mention>
             <Callto_action></Callto_action>
             <Footer
