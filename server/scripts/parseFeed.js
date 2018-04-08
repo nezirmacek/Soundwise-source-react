@@ -205,7 +205,7 @@ async function runFeedImport(req, res, url) {
 
   // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
   await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-    addEpisode(item, soundcastId, soundcast, resolve);
+    addEpisode(item, soundcastId, soundcast, date, i, resolve);
   }))); // Promise.all
 
   firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
@@ -215,7 +215,7 @@ async function runFeedImport(req, res, url) {
   res.send('Success_import');
 } // runFeedImport
 
-async function addEpisode(item, userId, publisherId, soundcastId, soundcast, resolve) {
+async function addEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve) {
     const {title, description, summary, data, image, enclosures} = item;
     const episode = {
       title,
@@ -225,7 +225,7 @@ async function addEpisode(item, userId, publisherId, soundcastId, soundcast, res
       description: description || summary,
       duration: enclosures[0].length,
       id3Tagged: true,
-      index: feedItems.length - i,
+      index: i + 1,
       isPublished: true,
       publicEpisode: true,
       publisherID: publisherId,
@@ -274,15 +274,18 @@ async function feedInterval() {
         }
         const { metadata, feedItems } = results;
         results.feedItems.forEach(i => {
-          const pubdate = Math.floor( Number(moment(i.pubdate || i.pubDate).format('x')) / 1000 );
-          if (pubdate && pubdate > item.updated) {
+          i.pub_date = Math.floor( Number(moment(i.pubdate || i.pubDate).format('x')) / 1000 );
+        });
+        results.feedItems.sort((a, b) => a.pub_date - b.pub_date); // older first
+        results.feedItems.forEach((feed, i) => {
+          if (feed.pub_date && feed.pub_date > item.updated) {
             // 3. create new episodes from the new feed items, and add them to their respective soundcast
             //    *episode.index for the new episodes should be the number of existing episodes
             //     in the  soundcast + 1
             const soundcast = {};
             soundcast.imageURL = metadata && metadata.image && metadata.image.url;
             soundcast.title = metadata && metadata.title;
-            addEpisode(i, item.userId, item.publisherId, soundcastId, soundcast);
+            addEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, metadata.date, i);
           }
         });
       });
