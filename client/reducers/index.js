@@ -258,7 +258,6 @@ function signupBox(state= {
 
 function checkoutProcess(state={
   shoppingCart: [],
-
 }, action) {
   switch(action.type) {
     case types.ADDTOCART:
@@ -292,6 +291,36 @@ function checkoutProcess(state={
   }
 }
 
+function setFeedVerified(state={
+  feedVerified: false,
+}, action) {
+  switch(action.type) {
+    case types.FEED_VERIFIED:
+        return {
+          ...state,
+          feedVerified: action.payload
+        }
+        break;
+    default:
+      return state
+  }
+}
+
+function setChargeState(state={
+  chargeState: null,
+}, action) {
+  switch(action.type) {
+    case types.CHARGE_STATE:
+        return {
+          ...state,
+          chargeState: action.payload
+        }
+        break;
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   setCourses,
   setPlayer,
@@ -301,7 +330,9 @@ const rootReducer = combineReducers({
   reviewBox,
   user,
   categories,
-  checkoutProcess
+  checkoutProcess,
+  setFeedVerified,
+  setChargeState,
 })
 
 export default rootReducer

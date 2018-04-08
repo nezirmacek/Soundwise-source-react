@@ -3,7 +3,7 @@ const path = require('path');
 const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
-const uploader = require('express-fileuploader');
+const uploader = require('./express-fileuploader-updated');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const Podcast = require('podcast');
@@ -13,43 +13,6 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
-
-// https://github.com/heroicyang/express-fileuploader/blob/master/lib/index.js#L78-L118
-uploader.upload = function(strategy, files, callback) {
-  var name = strategy;
-  strategy = this._strategies[name];
-  if (!strategy) {
-    return callback(new Error('no upload strategy: ' + name));
-  }
-  if (!util.isArray(files)) {
-    files = [files];
-  }
-  var fileCount = files.length;
-  files.forEach(function(file) {
-    // removing uid setting
-    strategy.upload(file, function(err, fileUploaded) {
-      if (err) {
-        file.error = err;
-      }
-      if (fileUploaded) {
-        Object.keys(fileUploaded)
-          .forEach(function(key) {
-            if (!file[key]) {
-              file[key] = fileUploaded[key];
-            }
-          });
-      }
-      fs.unlink(file.path, function(err) {
-        /* jshint unused:false */
-        fileCount -= 1;
-        if (fileCount === 0) {
-          callback(null, files);
-        }
-      });
-    });
-  });
-};
-
 
 module.exports.createFeed = async (req, res) => {
   const { soundcastId, soundcastTitle, soundcastHost, itunesExplicit, itunesImage, autoSubmitPodcast, email, firstName } = req.body, categories = [];
@@ -115,7 +78,7 @@ module.exports.createFeed = async (req, res) => {
         })));
       }
       if (episodesArr.length === 0) {
-        return res.error(`RSS feed can only be created when there are published episodes in this soundcast.`);
+        return res.status(400).send(`RSS feed can only be created when there are published episodes in this soundcast.`);
       }
       res.status(200).send({});
 
@@ -167,7 +130,7 @@ module.exports.createFeed = async (req, res) => {
                   }
                   console.log(`Episode: ${id} tagged, path ${filePath}`);
                   const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
-                  file.save(updatedPath, (err, fileName) => {
+                  file.save(updatedPath, err => {
                     if (err) {
                       return reject(`Error: saving fails ${filePath} ${err}`);
                     }
@@ -268,11 +231,11 @@ module.exports.createFeed = async (req, res) => {
       })
       .catch(error => console.log('Promise.all failed: ', error)); // Promise.all catch
     } else {
-      res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
+      res.status(400).send(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
     }
   }).catch(err => {
     console.log(`Error: unable to obtain image ${err}`);
-    res.error(`Error: unable to obtain image ${err}`);
+    res.status(400).send(`Error: unable to obtain image ${err}`);
   });
 }
 
@@ -281,6 +244,6 @@ module.exports.requestFeed = async (req, res) => {
     const xml = await firebase.database().ref(`soundcastsFeedXml/${req.params.id}`).once('value');
     res.end(xml.val());
   } else {
-    res.error('Error: soundcast id must be provided');
+    res.status(400).send('Error: soundcast id must be provided');
   }
 }

@@ -137,6 +137,20 @@ export function changeSpeed(value) {
   }
 }
 
+export function setFeedVerified(value) {
+  return {
+    type: types.FEED_VERIFIED,
+    payload: value
+  }
+}
+
+export function setChargeState(value) {
+  return {
+    type: types.CHARGE_STATE,
+    payload: value
+  }
+}
+
 export function subscribeToCategories () {
     return (dispatch) => {
         firebase.database().ref('categories')

@@ -35,7 +35,9 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	 */
 	this.addCommand = function (command, argument) {
 		// Check if exists the current command
-		if (utils.in_array(command, commands) === false || command === '-metadata' || command === '-map') {
+		if (utils.in_array(command, commands) === false
+        || command === '-metadata'     || command === '-map' || command === '-i'
+        || command === '-metadata:s:v' || command === '-af') {
 			// Add the new command
 			commands.push(command);
 			// Add the argument to new command
@@ -388,13 +390,13 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 	 */
 	this.save = function (destinationFileName, callback) {
     fs.unlink(destinationFileName, () => { // removing file
-      const item = [destinationFileName, (err, result) => {
+      const item = [destinationFileName, (err, result, stdout, stderr) => {
         if (videoQueue.length) { // have items to run
           this.saveOriginal(videoQueue.shift());
         } else {
           runningCount--;
         }
-        callback(err, result); // return value
+        callback(err, result, stdout, stderr); // return value
       }];
       if (runningCount < maxThreads) {
         runningCount++;
@@ -604,7 +606,7 @@ module.exports = function (filePath, settings, infoConfiguration, infoFile) {
 			// Check if the callback is a function
 			if (typeof callback == 'function') {
 				// Call the callback to return the info
-				callback(error, result);
+				callback(error, result, stdout, stderr);
 			} else {
 				if (error) {
 					// Negative response

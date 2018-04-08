@@ -27,6 +27,12 @@ module.exports.createSubscription = (req, res) => {
             if (req.body.coupon) {
               options.coupon = req.body.coupon;
             }
+            if (req.body.trialPeriod) {
+              options.trial_period_days = req.body.trialPeriod;
+            }
+            if (req.body.metadata) {
+              options.metadata.promoCode = req.body.metadata.promoCode;
+            }
             return stripe.subscriptions.create(options)
                   .then(subscription => {
                     res.send(subscription);
@@ -43,7 +49,7 @@ module.exports.createSubscription = (req, res) => {
     } else { // if customer already exists
       const options = {
         customer: req.body.customer,
-        // customer: 'cus_B2jykv61nWoOcX',
+        // customer: 'cus_B2k4GMj8KtSkGs',
         items: [{plan: req.body.plan}],
         metadata: {
           publisherID: req.body.publisherID,
@@ -51,6 +57,12 @@ module.exports.createSubscription = (req, res) => {
       };
       if (req.body.coupon) {
         options.coupon = req.body.coupon;
+      }
+      if (req.body.trialPeriod) {
+        options.trial_period_days = req.body.trialPeriod;
+      }
+      if (req.body.metadata) {
+        options.metadata.promoCode = req.body.metadata.promoCode;
       }
       stripe.subscriptions.create(options)
       .then(subscription => {

@@ -105,7 +105,7 @@ class _Header extends Component {
                                       <li className="propClone"><Link className="inner-link" to="/pricing" style={styles.navlink}>Pricing</Link></li>
                                       <li className="propClone"><Link className="inner-link" to="/wave_video" style={styles.navlink}>Soundwave Video Maker</Link></li>
                                       <li className="propClone"><Link className="inner-link" to="/signin" style={styles.navlink}>Log In</Link></li>
-                                      <li className="propClone  float-left sm-no-margin-tb"><Link to='/signup/admin' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>START FOR FREE</span></Link></li>
+                                      <li className="propClone  float-left sm-no-margin-tb"><Link to='/signup_options' className=" btn xs-margin-lr-auto xs-float-none xs-display-block" style={styles.navButton}><span className='tz-text'>START FOR FREE</span></Link></li>
                                   </ul>
                               </div>
                           </div>
@@ -124,7 +124,7 @@ class _Header extends Component {
                                   <h1 className="title-extra-large-4 md-title-extra-large-3 line-height-65 sm-title-extra-large   text-transform-none margin-ten-bottom sm-margin-nine-bottom alt-font tz-text text-white" style={{fontWeight: 800}} >{title}</h1>
                                   <div className=" title-medium margin-fifteen-bottom sm-margin-nine-bottom width-80 sm-width-90 tz-text text-white font-weight-700"><div>{tagline}</div></div>
                                   <div className="float-left width-100" style={{paddingBottom: 45}}>
-                                      <Link to="/signup/admin" className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left"  style={{backgroundColor: '#F76B1C'}}><span className="tz-text">START FOR FREE</span></Link>
+                                      <Link to="/signup_options" className="btn btn-large propClone text-black xs-margin-ten-bottom xs-width-100 float-left"  style={{backgroundColor: '#F76B1C'}}><span className="tz-text">START FOR FREE</span></Link>
 
                                   </div>
                                   <div className="float-left width-100 xs-text-center">

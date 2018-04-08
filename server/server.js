@@ -32,7 +32,9 @@ var Emails = require('./scripts/sendEmails.js');
 
 var createFeed = require('./scripts/feed.js').createFeed;
 var requestFeed = require('./scripts/feed.js').requestFeed;
+var parseFeed = require('./scripts/parseFeed.js').parseFeed;
 var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
+var audioProcessing = require('./scripts/audioProcessing').audioProcessing;
 
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
@@ -141,6 +143,7 @@ app.post('/api/trial_request', handleTrialRequest);
 
 app.post('/api/create_feed', createFeed);
 app.get('/rss/:id', requestFeed);
+app.post('/api/parse_feed', parseFeed);
 app.get('/api/retrieveCustomer', retrieveCustomer);
 app.post('/api/updateCreditCard', updateCreditCard);
 app.post('/api/buy', createSubscription);
@@ -176,6 +179,7 @@ app.post('/api/upload', function(req, res, next) {
   });
 });
 app.post('/api/audiowave', multipart(), createAudioWaveVid);
+app.post('/api/audio_processing', audioProcessing);
 
 app.use('/s3', require('react-s3-uploader/s3router')({
   bucket: 'soundwiseinc',
@@ -343,3 +347,5 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
+
+

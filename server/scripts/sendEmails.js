@@ -208,16 +208,17 @@ const deleteFromEmailList = (req, res) => {
 const sendMarketingEmails = (req, res) => {
   // req.body: {publisherName: [string], publisherImage: [string], content: [string], publisherEmail: [string], subject: [string], listIds: [array of strings], unsubscribeGroup: [number]}
   // console.log('req.body: ', req.body);
-  var content = emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
-  var email = req.body.publisherEmail ? req.body.publisherEmail : 'support@mysoundwise.com';
-  var content = marketingEmailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
+  const { publisherName, publisherImage, publisherEmail,
+          subject, listIds, content, unsubscribeGroup } = req.body;
+  const email = publisherEmail ? publisherEmail : 'support@mysoundwise.com';
+  const html_content = marketingEmailTemplate(publisherName, publisherImage, content);
 
   const requestBody = {
-    title: req.body.subject.slice(0, 100),
-    subject: req.body.subject,
-    list_ids: req.body.listIds, // array
-    html_content: content,
-    suppression_group_id: req.body.unsubscribeGroup,
+    title: subject.slice(0, 100),
+    subject,
+    list_ids: listIds, // array
+    html_content,
+    suppression_group_id: unsubscribeGroup,
     status: 'Draft',
     sender_id: 204129,
   };

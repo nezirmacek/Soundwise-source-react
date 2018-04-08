@@ -45,7 +45,7 @@ const Pricing = (props) => (
                             <div style={{marginTop: '1em'}}>
                               {
                                 !props.isLoggedIn &&
-                                <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to="/signup/admin" style={{width: '80%', backgroundColor: Colors.mainGrey}}><span className="tz-text">GET BASIC</span></Link>
+                                <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to="/signup_options" style={{width: '80%', backgroundColor: Colors.mainGrey}}><span className="tz-text">GET BASIC</span></Link>
                                 ||
                                 props.isLoggedIn && props.userInfo.publisher && (!props.userInfo.publisher.plan || props.userInfo.publisher.current_period_end < moment().format('X')) &&
                                 <div className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" style={{width: '80%', backgroundColor: 'transparent'}}><span className="tz-text">Current Plan</span></div>
@@ -82,7 +82,7 @@ const Pricing = (props) => (
                         <li>
                           {
                             !props.isLoggedIn &&
-                            <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to="/signup/admin" style={{width: '80%', backgroundColor: Colors.mainGrey}}><span className="tz-text">GET BASIC</span></Link>
+                            <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to="/signup_options" style={{width: '80%', backgroundColor: Colors.mainGrey}}><span className="tz-text">GET BASIC</span></Link>
                             ||
                             props.isLoggedIn && props.userInfo.publisher && (!props.userInfo.publisher.plan || props.userInfo.publisher.current_period_end < moment().format('X')) &&
                             <div className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" style={{width: '80%', backgroundColor: 'transparent'}}><span className="tz-text">Current Plan</span></div>
@@ -118,7 +118,8 @@ const Pricing = (props) => (
                                   onClick={() => props.goToCheckout('plus', props.frequency, props.prices[props.frequency]['plus'])} style={{backgroundColor: Colors.link, width: '80%'}}><span className="tz-text">GET PLUS</span></div>
                                  ||
                                  !props.isLoggedIn &&
-                                  <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to={`/signup/admin?frequency=${props.frequency}&plan=plus&price=${props.prices[props.frequency]['plus']}`} style={{width: '80%', backgroundColor: Colors.link}}><span className="tz-text">GET PLUS</span></Link>
+                                  <div className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
+                                   onClick={() => props.goToCheckout('plus', props.frequency, props.prices[props.frequency]['plus'])} style={{backgroundColor: Colors.link, width: '80%'}}><span className="tz-text">GET PLUS</span></div>
                               }
                             </div>
                         </li>
@@ -157,7 +158,8 @@ const Pricing = (props) => (
                               onClick={() => props.goToCheckout('plus', props.frequency, props.prices[props.frequency]['plus'])} style={{backgroundColor: Colors.link, width: '80%'}}><span className="tz-text">GET PLUS</span></div>
                              ||
                              !props.isLoggedIn &&
-                              <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to={`/signup/admin?frequency=${props.frequency}&plan=plus&price=${props.prices[props.frequency]['plus']}`} style={{width: '80%', backgroundColor: Colors.link}}><span className="tz-text">GET PLUS</span></Link>
+                              <div className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
+                               onClick={() => props.goToCheckout('plus', props.frequency, props.prices[props.frequency]['plus'])} style={{backgroundColor: Colors.link, width: '80%'}}><span className="tz-text">GET PLUS</span></div>
                           }
                         </li>
                     </ul>
@@ -186,10 +188,11 @@ const Pricing = (props) => (
                                 ||
                                 props.isLoggedIn && props.userInfo.publisher && ((props.userInfo.publisher.plan == 'pro' && props.userInfo.publisher.current_period_end < moment().format('X')) || (props.userInfo.publisher.plan == 'plus') || !props.userInfo.publisher.plan) &&
                                 <div className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
-                                  onClick={() => props.goToCheckout('plus', props.frequency, props.prices[props.frequency]['plus'])} style={{backgroundColor: Colors.mainOrange, width: '80%'}}><span className="tz-text">GET PRO</span></div>
+                                  onClick={() => props.goToCheckout('pro', props.frequency, props.prices[props.frequency]['pro'])} style={{backgroundColor: Colors.mainOrange, width: '80%'}}><span className="tz-text">GET PRO</span></div>
                                  ||
                                  !props.isLoggedIn &&
-                                  <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to={`/signup/admin?frequency=${props.frequency}&plan=pro&price=${props.prices[props.frequency]['pro']}`} style={{width: '80%', backgroundColor: Colors.mainOrange}}><span className="tz-text">GET PRO</span></Link>
+                                  <div className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
+                                   onClick={() => props.goToCheckout('pro', props.frequency, props.prices[props.frequency]['pro'])} style={{backgroundColor: Colors.mainOrange, width: '80%'}}><span className="tz-text">GET PRO</span></div>
                               }
                             </div>
                         </li>
@@ -225,10 +228,11 @@ const Pricing = (props) => (
                             ||
                             props.isLoggedIn && props.userInfo.publisher && ((props.userInfo.publisher.plan == 'pro' && props.userInfo.publisher.current_period_end < moment().format('X')) || (props.userInfo.publisher.plan == 'plus') || !props.userInfo.publisher.plan) &&
                             <div className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
-                              onClick={() => props.goToCheckout('plus', props.frequency, props.prices[props.frequency]['plus'])} style={{backgroundColor: Colors.mainOrange, width: '80%'}}><span className="tz-text">GET PRO</span></div>
+                              onClick={() => props.goToCheckout('pro', props.frequency, props.prices[props.frequency]['pro'])} style={{backgroundColor: Colors.mainOrange, width: '80%'}}><span className="tz-text">GET PRO</span></div>
                              ||
                              !props.isLoggedIn &&
-                              <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to={`/signup/admin?frequency=${props.frequency}&plan=pro&price=${props.prices[props.frequency]['pro']}`} style={{width: '80%', backgroundColor: Colors.mainOrange}}><span className="tz-text">GET PRO</span></Link>
+                              <div className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
+                               onClick={() => props.goToCheckout('pro', props.frequency, props.prices[props.frequency]['pro'])} style={{backgroundColor: Colors.mainOrange, width: '80%'}}><span className="tz-text">GET PRO</span></div>
                           }
                         </li>
                     </ul>
