@@ -17,6 +17,7 @@ const firebase = require('firebase-admin');
 const database = require('../../database/index');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
+const nodeUrl = require('url');
 
 const urlTestFeed = "http://foundersnextdoor.com/feed/podcast/";
 
@@ -80,7 +81,12 @@ const feedUrls = {};
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
   const { feedUrl, submitCode, resend, importFeedUrl } = req.body;
-  const url = feedUrl && feedUrl.trim().toLowerCase();
+  if (!feedUrl) {
+    return res.status(400).send(`Error: empty feedUrl field`);
+  }
+  const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
+  const url = urlParsed.host + urlParsed.pathname;
+
   if (feedUrls[url]) {
     const { metadata, publisherEmail, verificationCode } = feedUrls[url];
     if (submitCode) {
@@ -101,6 +107,13 @@ module.exports.parseFeed = async (req, res) => {
       }
     }
   } else {
+    // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
+    const podcastObj = await firebase.database().ref('importedFeeds')
+                               .orderByChild('feedUrl').equalTo(url).once('value');
+    const podcasts = podcastObj.val();
+    if (podcasts) { // return: { 1522801382898s: {...} } or null
+      return res.status(400).send('Error: requested feed url already imported');
+    }
     getFeed(feedUrl, async (err, results) => {
       if (err) {
         return res.status(400).send(`Error: ${err}`);
@@ -134,14 +147,6 @@ async function runFeedImport(req, res, url) {
 
   if (!verified) {
     return res.status(400).send('Error: not verified');
-  }
-
-  // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
-  const podcastObj = await firebase.database().ref('importedFeeds')
-                             .orderByChild('feedUrl').equalTo(url).once('value');
-  const podcasts = podcastObj.val();
-  if (podcasts) { // return: { 1522801382898s: {...} } or null
-    return res.status(400).send('Error: requested feed url already imported');
   }
 
   // 1. create a new soundcast from the feed
