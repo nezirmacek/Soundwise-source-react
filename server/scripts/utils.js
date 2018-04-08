@@ -1,4 +1,5 @@
 'use strict';
+
 const util = require('util');
 const  path = require('path');
 const   fs = require('fs');
@@ -91,7 +92,7 @@ const parseSilenceDetect = s => s.replace(/\[silencedetect/g, '\n[silencedetect'
 
 const logErr = prefix => (msg, res, resolve) => {
 	console.log(`Error: ${prefix} ${msg}`);
-	res && res.status(400).send(`Error: ${prefix} ${msg}`);
+	res && res.error(`Error: ${prefix} ${msg}`);
 	resolve && resolve();
 }
 

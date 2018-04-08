@@ -19,7 +19,7 @@ const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendError = (res, err) => {
-  console.log(err);
+  console.log(`Error: soundwaveVideo ${err}`);
   res.status(500).send({error: err});
 };
 
@@ -27,7 +27,7 @@ const sendError = (res, err) => {
 // example output: https://twitter.com/RealNatashaChe/status/957752354841022464
 module.exports.createAudioWaveVid = async (req, res) => {
   if (!req.files.audio || !req.files.image) {
-    return sendError(res, `Error: image and audio file must be provided`);
+    return sendError(res, `image and audio file must be provided`);
   }
   const audioPath = req.files.audio.path;
   const imagePath = req.files.image.path;
@@ -71,7 +71,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                   imageFile.addCommand('-vf', `scale=${doResize[0]}:${doResize[1]}`);
                   imageFile.save(updatedImagePath, err => {
                     if (err) {
-                      return sendError(res, `Error: cannot save updated image ${imagePath} ${err}`);
+                      return sendError(res, `cannot save updated image ${imagePath} ${err}`);
                     }
                     fs.unlink(imagePath, err => 0); // removing original image file
                     resolve([updatedImagePath, audioTrimmedPath, audioTrimmedFile]);
@@ -180,9 +180,9 @@ module.exports.createAudioWaveVid = async (req, res) => {
             });
           });
         }).catch(err => sendError(res, `${err}`));
-      }, err => sendError(res, `Error: soundwaveVideo unable to parse file with ffmpeg ${err}`));
+      }, err => sendError(res, `unable to parse file with ffmpeg ${err}`));
     } catch(e) {
-      sendError(res, `Error: soundwaveVideo ffmpeg catch ${e.body || e.stack}`);
+      sendError(res, `ffmpeg catch ${e.body || e.stack}`);
     }
   });
 };
