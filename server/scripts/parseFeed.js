@@ -112,7 +112,15 @@ module.exports.parseFeed = async (req, res) => {
                                .orderByChild('feedUrl').equalTo(url).once('value');
     const podcasts = podcastObj.val();
     if (podcasts) { // return: { 1522801382898s: {...} } or null
-      return res.status(400).send('Error: requested feed url already imported');
+      const podcastId = Object.keys(podcasts)[0]; // take first
+      const podcast = podcasts[podcastId];
+      if (!podcast.claimed) {
+        // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
+        return res.json({ notClaimed: true, imageUrl: podcast.imageURL });
+      } else {
+        // If the feed has already been claimed, that means it's already associated with a existing active publisher on Soundwise. In that case, we need to return an error to client, which says "This feed is already on Soundwise. If you think this is a mistake, please contact support." The user submission process should continue only if the feed is NOT already imported, or if it's imported but not 'claimed'. That's why we need to move the checking step to before the submission of verification code.
+        return res.status(400).send('Error: This feed is already on Soundwise. If you think this is a mistake, please contact support.');
+      }
     }
     getFeed(feedUrl, async (err, results) => {
       if (err) {
@@ -188,6 +196,7 @@ async function runFeedImport(req, res, url) {
       title,
       feedUrl: url,
       originalUrl,
+      imageURL: image.url,
       updated: moment().unix(),
       publisherId,
       userId,
