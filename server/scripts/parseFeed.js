@@ -207,7 +207,7 @@ async function runFeedImport(req, res, url) {
 
   // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
   await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-    addEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
+    addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
   }))); // Promise.all
 
   firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
@@ -217,7 +217,7 @@ async function runFeedImport(req, res, url) {
   res.send('Success_import');
 } // runFeedImport
 
-async function addEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve) {
+async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve) {
     const {title, description, summary, data, image, enclosures} = item;
     const episode = {
       title,
@@ -288,7 +288,7 @@ async function feedInterval() {
             const soundcast = {};
             soundcast.imageURL = metadata && metadata.image && metadata.image.url;
             soundcast.title = metadata && metadata.title;
-            addEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, metadata.date, i);
+            addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, metadata.date, i);
           }
         });
       });
