@@ -188,6 +188,7 @@ async function runFeedImport(req, res, url) {
       feedUrl: url,
       updated: moment().unix(),
       publisherId,
+      userId,
       claimed: true, // when 'claimed == true', this imported soundcast is manged by the RSS feed owner
     });
   // 2-c. add to postgres
@@ -204,6 +205,17 @@ async function runFeedImport(req, res, url) {
 
   // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
   await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
+    addEpisode(item, soundcastId, soundcast, resolve);
+  }))); // Promise.all
+
+  firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
+  firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
+
+  delete feedUrls[url];
+  res.send('Success_import');
+} // runFeedImport
+
+async function addEpisode(item, userId, publisherId, soundcastId, soundcast, resolve) {
     const {title, description, summary, data, image, enclosures} = item;
     const episode = {
       title,
@@ -231,7 +243,7 @@ async function runFeedImport(req, res, url) {
         defaults: {
           episodeId,
           soundcastId,
-          publisherId: soundcast.publisherID,
+          publisherId,
           title: episode.title,
           soundcastTitle: soundcast.title,
         }
@@ -240,14 +252,9 @@ async function runFeedImport(req, res, url) {
         // console.log('parseFeed.js findOrCreate then');
       })
       .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
-  }))); // Promise.all
 
-  firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
-  firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
-
-  delete feedUrls[url];
-  res.send('Success_import');
-} // runFeedImport
+    resolve && resolve();
+}
 
 
 // Need to update all the published soundcasts from imported feeds every hour
@@ -255,9 +262,9 @@ async function feedInterval() {
   // 1. go through every item under 'importedFeeds' node in firebase
   const podcastObj = await firebase.database().ref('importedFeeds').once('value');
   const podcasts = podcastObj.val();
-  const ids = Object.keys(podcasts);
-  ids.forEach(id => {
-    const item = podcasts[id];
+  const ids = Object.keys(podcasts || {});
+  ids.forEach(soundcastId => {
+    const item = podcasts[soundcastId];
     // 2. for each item, if it's published, parse the feedUrl again,
     //    and find feed items that are created after the last time feed was parsed
     if (item.published) {
@@ -265,18 +272,23 @@ async function feedInterval() {
         if (err) {
           return console.log(`Error: feedInterval getFeed ${err}`);
         }
-        const { feedItems } = results;
-        item;
-
-        // 3. create new episodes from the new feed items, and add them to their respective soundcast
-              // episode.index for the new episodes should be the number of existing episodes in the soundcast + 1
-
-        debugger
-
+        const { metadata, feedItems } = results;
+        results.feedItems.forEach(i => {
+          const pubdate = Math.floor( Number(moment(i.pubdate || i.pubDate).format('x')) / 1000 );
+          if (pubdate && pubdate > item.updated) {
+            // 3. create new episodes from the new feed items, and add them to their respective soundcast
+            //    *episode.index for the new episodes should be the number of existing episodes
+            //     in the  soundcast + 1
+            const soundcast = {};
+            soundcast.imageURL = metadata && metadata.image && metadata.image.url;
+            soundcast.title = metadata && metadata.title;
+            addEpisode(i, item.userId, item.publisherId, soundcastId, soundcast);
+          }
+        });
       });
     }
   });
   // 4. repeat the update checking every hour (what's the best way to do this? Assuming the number of feeds that need to be updated will eventually get to around 500,000. Will it be a problem for the server?)
   setTimeout(feedInterval, 3600*1000); // hour
 }
-setTimeout(feedInterval, 3*1000); // 30 seconds after app starts
+setTimeout(feedInterval, 30*1000); // 30 seconds after app starts
