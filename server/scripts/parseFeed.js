@@ -250,14 +250,33 @@ async function runFeedImport(req, res, url) {
 } // runFeedImport
 
 
-
 // Need to update all the published soundcasts from imported feeds every hour
+async function feedInterval() {
+  // 1. go through every item under 'importedFeeds' node in firebase
+  const podcastObj = await firebase.database().ref('importedFeeds').once('value');
+  const podcasts = podcastObj.val();
+  const ids = Object.keys(podcasts);
+  ids.forEach(id => {
+    const item = podcasts[id];
+    // 2. for each item, if it's published, parse the feedUrl again,
+    //    and find feed items that are created after the last time feed was parsed
+    if (item.published) {
+      getFeed(item.feedUrl, async (err, results) => {
+        if (err) {
+          return console.log(`Error: feedInterval getFeed ${err}`);
+        }
+        const { feedItems } = results;
+        item;
 
-// 1. go through every item under 'importedFeeds' node in firebase
+        // 3. create new episodes from the new feed items, and add them to their respective soundcast
+              // episode.index for the new episodes should be the number of existing episodes in the soundcast + 1
 
-// 2. for each item, if it's published, parse the feedUrl again, and find feed items that are created after the last time feed was parsed
+        debugger
 
-// 3. create new episodes from the new feed items, and add them to their respective soundcast
-      // episode.index for the new episodes should be the number of existing episodes in the soundcast + 1
-
-// 4. repeat the update checking every hour (what's the best way to do this? Assuming the number of feeds that need to be updated will eventually get to around 500,000. Will it be a problem for the server?)
+      });
+    }
+  });
+  // 4. repeat the update checking every hour (what's the best way to do this? Assuming the number of feeds that need to be updated will eventually get to around 500,000. Will it be a problem for the server?)
+  setTimeout(feedInterval, 3600*1000); // hour
+}
+setTimeout(feedInterval, 3*1000); // 30 seconds after app starts
