@@ -277,7 +277,7 @@ async function feedInterval() {
         }
         const { metadata, feedItems } = results;
         results.feedItems.forEach(i => {
-          i.pub_date = Math.floor( Number(moment(i.pubdate || i.pubDate).format('x')) / 1000 );
+          i.pub_date = Number(moment(i.pubdate || i.pubDate).format('X'));
         });
         results.feedItems.sort((a, b) => a.pub_date - b.pub_date); // older first
         results.feedItems.forEach((feed, i) => {
