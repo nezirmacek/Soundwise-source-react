@@ -126,13 +126,14 @@ module.exports.parseFeed = async (req, res) => {
         // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
         return res.status(400).send("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
       }
-      feedUrls[url] = { metadata, feedItems, publisherEmail, verificationCode };
+      feedUrls[url] = { metadata, feedItems, publisherEmail, verificationCode, originalUrl: feedUrl };
       sendVerificationMail(publisherEmail, metadata.title, verificationCode);
       res.json({ imageUrl: metadata.image.url, publisherEmail });
     });
   }
 
   function sendVerificationMail(to, soundcastTitle, verificationCode) {
+    // console.log(verificationCode);
     sgMail.send({
       to, from: 'support@mysoundwise.com',
       subject: 'Your confirmation code for Soundwise',
@@ -142,7 +143,7 @@ module.exports.parseFeed = async (req, res) => {
 } // parseFeed
 
 async function runFeedImport(req, res, url) {
-  const { metadata, feedItems, publisherEmail, verified } = feedUrls[url];
+  const { metadata, feedItems, publisherEmail, verified, originalUrl } = feedUrls[url];
   const { publisherId, userId, publisherName } = req.body;
 
   if (!verified) {
@@ -186,6 +187,7 @@ async function runFeedImport(req, res, url) {
       published: true,
       title,
       feedUrl: url,
+      originalUrl,
       updated: moment().unix(),
       publisherId,
       userId,
@@ -205,7 +207,7 @@ async function runFeedImport(req, res, url) {
 
   // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
   await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-    addEpisode(item, soundcastId, soundcast, date, i, resolve);
+    addEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
   }))); // Promise.all
 
   firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
@@ -259,6 +261,7 @@ async function addEpisode(item, userId, publisherId, soundcastId, soundcast, dat
 
 // Need to update all the published soundcasts from imported feeds every hour
 async function feedInterval() {
+  // await firebase.database().ref('importedFeeds/1523160250142s').remove();
   // 1. go through every item under 'importedFeeds' node in firebase
   const podcastObj = await firebase.database().ref('importedFeeds').once('value');
   const podcasts = podcastObj.val();
@@ -268,7 +271,7 @@ async function feedInterval() {
     // 2. for each item, if it's published, parse the feedUrl again,
     //    and find feed items that are created after the last time feed was parsed
     if (item.published) {
-      getFeed(item.feedUrl, async (err, results) => {
+      getFeed(item.originalUrl, async (err, results) => {
         if (err) {
           return console.log(`Error: feedInterval getFeed ${err}`);
         }
