@@ -141,11 +141,12 @@ class _Dashboard extends Component {
                 userInfo: nextProps.userInfo
             });
         }
-        const publisher    = nextProps.userInfo.publisher    || this.props.userInfo.publisher;
-        const publisherID  = nextProps.userInfo.publisherID  || this.props.userInfo.publisherID;
-        const feedVerified = nextProps.userInfo.feedVerified || this.props.userInfo.feedVerified;
-        const chargeState  = nextProps.userInfo.chargeState  || this.props.userInfo.chargeState;
-        if (feedVerified && publisher && publisherID) {
+        const publisher    = nextProps.userInfo.publisher   || this.props.userInfo.publisher;
+        const publisherID  = nextProps.userInfo.publisherID || this.props.userInfo.publisherID;
+        const feedVerified = nextProps.feedVerified || this.props.feedVerified;
+        const chargeState  = nextProps.chargeState  || this.props.chargeState;
+        if (!this.runningParseFeedRequest && feedVerified && publisher && publisherID) {
+          this.runningParseFeedRequest = true;
         	const { feedUrl } = feedVerified;
         	const reqObj = {
         		feedUrl,
@@ -164,7 +165,8 @@ class _Dashboard extends Component {
         		that.props.setFeedVerified(false);
         	});
         }
-        if (publisherID && chargeState) { // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
+        if (!this.runningChargeStateRequest && publisherID && chargeState) { // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
+          this.runningChargeStateRequest = true;
         	const { plan, frequency, promoCodeError, promoCode, trialPeriod, charge } = chargeState;
         	firebase.database().ref(`publishers/${publisherID}/plan`).set(plan);
         	firebase.database().ref(`publishers/${publisherID}/frequency`).set(frequency);
