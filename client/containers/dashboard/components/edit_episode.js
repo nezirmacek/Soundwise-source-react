@@ -194,6 +194,8 @@ export default class EditEpisode extends Component {
                       itunesExplicit,
                       itunesImage,
                       itunesCategory,
+                      email: userInfo.publisher.email,
+                      firstName: userInfo.firstName,
                     })
                     .then(response => {
                       that.setState({

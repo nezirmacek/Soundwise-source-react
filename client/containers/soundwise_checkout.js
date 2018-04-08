@@ -159,7 +159,7 @@ class _SoundwiseCheckout extends Component {
   stripeTokenHandler(status, response) {
     const amount = Number(this.state.total).toFixed(2) * 100; // in cents
     const {email, stripe_id, publisherID, publisher} = this.props.userInfo;
-    const {plan, frequency, promoCodeError, promoCode, percentOff, trialPeriod} = this.state;
+    const {plan, frequency, promoCodeError, promoCode, percentOff, trialPeriod, checkoutEmail} = this.state;
     const that = this;
     const coupon = (promoCode && !promoCodeError && percentOff && percentOff > 0) ? promoCode : null; // code for free trials may have percentOff == 0
     const metaData = promoCode && !promoCodeError ? {promoCode} : null; // need to record the promoCode used, whether it's for discount or for free trial.
@@ -174,9 +174,9 @@ class _SoundwiseCheckout extends Component {
           amount,
           source: response.id,
           currency: 'usd',
-          receipt_email: email[0],
+          receipt_email: email ? email[0] : checkoutEmail,
           customer: stripe_id,
-          subscriptionID: publisher.subscriptionID,
+          subscriptionID: publisher && publisher.subscriptionID ? publisher.subscriptionID : null,
           coupon,
           metaData,
           trialPeriod,
@@ -306,7 +306,9 @@ class _SoundwiseCheckout extends Component {
                                                             <input
                                                               style={{ margin: '21px 0 10px', fontSize: 14 }}
                                                               ref='checkoutEmail'
-                                                              placeholder='Email'
+                                                              name='checkoutEmail'
+                                                              placeholder='Email address'
+                                                              onChange={this.handleChange}
                                                               className='border-radius-4'
                                                             />
                                                           </div>

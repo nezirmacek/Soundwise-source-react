@@ -15,10 +15,11 @@ const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 
 module.exports.createFeed = async (req, res) => {
-  const { soundcastId, soundcastTitle, soundcastHost, itunesExplicit, itunesImage, autoSubmitPodcast, email, firstName } = req.body, categories = [];
+  const { soundcastId, soundcastTitle, itunesExplicit, itunesImage, email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description } = soundcastVal;
+  const { title, short_description, autoSubmitPodcast } = soundcastVal;
+  const soundcastHost = soundcastVal.hostName;
   const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
@@ -37,6 +38,7 @@ module.exports.createFeed = async (req, res) => {
                             short_description.slice(0, 3997) + '..' : short_description;
       const itunesOwner = autoSubmitPodcast ? {name: 'Soundwise', email: 'support@mysoundwise.com'} : {name: soundcastHost, email};
       const googleplayEmail = autoSubmitPodcast ? 'support@mysoundwise.com' : email;
+
       const podcastObj = {
         title,
         description: short_description,

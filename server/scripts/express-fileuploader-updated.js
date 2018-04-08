@@ -1,4 +1,7 @@
 'use strict';
+const util = require('util');
+const  path = require('path');
+const   fs = require('fs');
 const uploader = require('express-fileuploader');
 
 // Fix to prevent setting uid in filename
@@ -38,4 +41,4 @@ uploader.upload = function(strategy, files, callback) {
   });
 };
 
-module.export = uploader;
+module.exports = uploader;
