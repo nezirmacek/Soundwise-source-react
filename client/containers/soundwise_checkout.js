@@ -40,8 +40,8 @@ class _SoundwiseCheckout extends Component {
   }
 
   componentDidMount() {
-    // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
-    Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+    Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+    // Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     const {plan, frequency, price} = this.props.history.location.state;
     this.setState({
       total: frequency == 'annual' ? price * 12 : price,
