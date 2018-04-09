@@ -238,12 +238,12 @@ async function runFeedImport(req, res, url) {
 } // runFeedImport
 
 async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, pub_date, i, resolve) {
-    const {title, description, summary, date, image, enclosures} = item;
+    const {title, description, summary, date, pub_date, image, enclosures} = item;
     const episode = {
       title,
       coverArtUrl: image.url || soundcast.imageURL,
       creatorID: userId,
-      date_created: moment(date).format('X'),
+      date_created: moment(date || pub_date).format('X'),
       description: description || summary,
       duration: enclosures[0].length,
       id3Tagged: true,
