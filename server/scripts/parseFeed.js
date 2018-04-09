@@ -81,33 +81,14 @@ module.exports.parseFeed = async (req, res) => {
     return res.status(400).send(`Error: empty feedUrl field`);
   }
   const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
-  const url = urlParsed.host + urlParsed.pathname;
+  const url = urlParsed.host + urlParsed.pathname; // use url as a key
 
-  if (feedUrls[url]) { // requested url already been stored in memory feedUrls object
-    const { metadata, publisherEmail, verificationCode } = feedUrls[url];
-    if (submitCode) {
-      if (submitCode === verificationCode) {
-        feedUrls[url].verified = true;
-        res.send('Success_code');
-      } else {
-        res.status(400).send(`Error: incorrect verfication code`);
-      }
-    } else {
-      if (resend) {
-        sendVerificationMail(publisherEmail, metadata.title, verificationCode);
-        res.send('Success_resend');
-      } else if (importFeedUrl) {
-        runFeedImport(req, res, url);
-      } else {
-        res.json({ imageUrl: metadata.image.url, publisherEmail });
-      }
-    }
-  } else {
+  if (!feedUrls[url]) { // wasn't obtained
     // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
     const podcastObj = await firebase.database().ref('importedFeeds')
                                .orderByChild('feedUrl').equalTo(url).once('value');
-    const podcasts = podcastObj.val();
-    if (podcasts) { // return: { 1522801382898s: {...} } or null
+    const podcasts = podcastObj.val(); // returns: { 1522801382898s: {...} } or null
+    if (podcasts) {
       const soundcastId = Object.keys(podcasts)[0]; // take first
       const podcast = podcasts[soundcastId];
       if (!podcast.claimed) {
@@ -118,7 +99,7 @@ module.exports.parseFeed = async (req, res) => {
           firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
           firebase.database().ref(`users/${userId}/publisherID`).set(publisherId)
         } else {
-          res.json({ notClaimed: true, imageUrl: podcast.imageURL });
+          res.json({ imageUrl: podcast.imageURL, notClaimed: true });
         }
       } else {
         // If the feed has already been claimed, that means it's already associated with a existing active publisher on Soundwise. In that case, we need to return an error to client, which says "This feed is already on Soundwise. If you think this is a mistake, please contact support." The user submission process should continue only if the feed is NOT already imported, or if it's imported but not 'claimed'. That's why we need to move the checking step to before the submission of verification code.
@@ -127,7 +108,7 @@ module.exports.parseFeed = async (req, res) => {
     } else { // feed url wasn't imported
       getFeed(feedUrl, async (err, results) => {
         if (err) {
-          return res.status(400).send(`Error: ${err}`);
+          return res.status(400).send(`Error: obtaining feed ${err}`);
         }
         const { metadata, feedItems } = results;
         const verificationCode = Date.now().toString().slice(-4);
@@ -148,17 +129,37 @@ module.exports.parseFeed = async (req, res) => {
         res.json({ imageUrl: metadata.image.url, publisherEmail });
       });
     }
-  }
+    return
+  } // if feedUrls[url] empty
 
-  function sendVerificationMail(to, soundcastTitle, verificationCode) {
-    // console.log(verificationCode);
-    sgMail.send({
-      to, from: 'support@mysoundwise.com',
-      subject: 'Your confirmation code for Soundwise',
-      html: `<p>Hello,</p><p>Here's your code to verify that you are the publisher of ${soundcastTitle}:</p><p style="font-size:24px; letter-spacing: 2px;"><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
-    });
+  const { metadata, publisherEmail, verificationCode } = feedUrls[url];
+  if (submitCode) { // check verification code
+    if (submitCode === verificationCode) {
+      feedUrls[url].verified = true;
+      res.send('Success_code');
+    } else {
+      res.status(400).send(`Error: incorrect verfication code`);
+    }
+    return
   }
+  if (resend) {
+    sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+    return res.send('Success_resend');
+  }
+  if (importFeedUrl) {
+    return runFeedImport(req, res, url);
+  }
+  res.json({ imageUrl: metadata.image.url, publisherEmail });
 } // parseFeed
+
+function sendVerificationMail(to, soundcastTitle, verificationCode) {
+  // console.log(verificationCode); return;
+  sgMail.send({
+    to, from: 'support@mysoundwise.com',
+    subject: 'Your confirmation code for Soundwise',
+    html: `<p>Hello,</p><p>Here's your code to verify that you are the publisher of ${soundcastTitle}:</p><p style="font-size:24px; letter-spacing: 2px;"><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
+  });
+}
 
 async function runFeedImport(req, res, url) {
   const { metadata, feedItems, publisherEmail, verified, originalUrl } = feedUrls[url];
