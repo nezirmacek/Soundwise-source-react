@@ -295,13 +295,13 @@ async function feedInterval() {
         if (err) {
           return console.log(`Error: feedInterval getFeed ${err}`);
         }
+        const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+        const soundcastVal = soundcastObj.val();
+        let i = Object.keys(soundcastVal.episodes).length; // episodes count
         const { metadata, feedItems } = results;
-        results.feedItems.forEach(i => {
-          i.pub_date = Number(moment(i.pubdate || i.pubDate).format('X'));
-        });
-        results.feedItems.sort((a, b) => a.pub_date - b.pub_date); // older first
-        results.feedItems.forEach((feed, i) => {
-          if (feed.pub_date && feed.pub_date > item.updated) {
+        results.feedItems.forEach(feed => {
+          const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
+          if (pub_date && pub_date > item.updated) {
             // 3. create new episodes from the new feed items, and add them to their respective soundcast
             //    *episode.index for the new episodes should be the number of existing episodes
             //     in the  soundcast + 1
@@ -309,6 +309,8 @@ async function feedInterval() {
             soundcast.imageURL = metadata && metadata.image && metadata.image.url;
             soundcast.title = metadata && metadata.title;
             addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, feed.pub_date, i);
+            addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, feed.pub_date, i);
+            i++;
           }
         });
       });
