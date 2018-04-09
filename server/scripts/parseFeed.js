@@ -65,11 +65,12 @@ function getFeed (urlfeed, callback) {
 
 // Test the getFeed function:
 
-getFeed (urlTestFeed, function (err, results) {
-  const {metadata, feedItems} = results;
-  // console.log('metadata: ', metadata);
-  console.log('email: ', metadata['itunes:owner']);
-});
+// getFeed (urlTestFeed, function (err, results) {
+//   const {metadata, feedItems} = results;
+//   // console.log('metadata: ', metadata);
+//   console.log('email: ', metadata['itunes:owner']);
+//   console.log('feedItems: ', feedItems[0]);
+// });
 
 const feedUrls = {};
 
@@ -165,7 +166,6 @@ async function runFeedImport(req, res, url) {
     verified: false, // ownership verification, set to true from client after ownership is verified
     showSubscriberCount: true,
     showTimeStamps: true,
-    subscriberEmailList: '',
     hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
   };
 
@@ -207,13 +207,15 @@ async function runFeedImport(req, res, url) {
 
   firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
   firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
+  firebase.database().ref(`soundcasts/${soundcastId}/published`).set(true);
+  firebase.database().ref(`soundcasts/${soundcastId}/verified`).set(true);
 
   delete feedUrls[url];
   res.send('Success_import');
 } // runFeedImport
 
 async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve) {
-    const {title, description, summary, data, image, enclosures} = item;
+    const {title, description, summary, date, image, enclosures} = item;
     const episode = {
       title,
       coverArtUrl: image.url || soundcast.imageURL,

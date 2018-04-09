@@ -511,31 +511,6 @@ module.exports.audioProcessing = async (req, res) => {
               }
 	          } // if emailListeners
 
-<<<<<<< HEAD
-									//     step 3: update firebase
-									firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
-								}
-								// 6. Notify the publisher by email.
-					      sgMail.send({
-					        to: publisherEmail,
-					        from: 'support@mysoundwise.com',
-					        subject: 'Your episode has been processed!',
-					        html: `<p>Hello ${publisherFirstName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
-					      });
-							}); // uploader.upload s3
-						}); // file.save outputPath
-					} // nextProcessing
-				} catch(e) {
-					logErr(`ffmpeg catch ${e.body || e.stack}`);
-				}
-			}); // fs.writeFile
-		}).catch(err => {
-	    logErr(`unable to obtain episode ${err}`);
-	    // res.status(400).send(`Error: unable to obtain episode ${err}`);
-	  });
-	} else {
-		res.status(400).send('Error: audio processing undefined parameters');
-=======
 						//     step 3: update firebase
 						await firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
 						await firebase.database().ref(`episodes/${episodeId}/id3Tagged`).set(true);
@@ -567,6 +542,5 @@ module.exports.audioProcessing = async (req, res) => {
 		} // nextProcessing
 	} catch(e) {
 		logErr(`ffmpeg catch ${e.body || e.stack}`);
->>>>>>> audio_processing
 	}
 }
