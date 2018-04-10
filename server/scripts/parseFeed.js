@@ -238,7 +238,7 @@ async function runFeedImport(req, res, url) {
   res.send('Success_import');
 } // runFeedImport
 
-async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, pub_date, i, resolve) {
+async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, publicationDate, i, resolve) {
     const {title, description, summary, date, pub_date, image, enclosures} = item;
     const episode = {
       title,
