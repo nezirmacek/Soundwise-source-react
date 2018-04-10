@@ -72,7 +72,7 @@ function getFeed (urlfeed, callback) {
 //   console.log('feedItems: ', feedItems[0]);
 // });
 
-const feedUrls = {};
+const feedUrls = {}; // in-memory cache object for obtained (but not imported to db) feeds
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 module.exports.parseFeed = async (req, res) => {
