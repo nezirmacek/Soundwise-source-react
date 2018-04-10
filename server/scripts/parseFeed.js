@@ -221,21 +221,23 @@ async function runFeedImport(req, res, url) {
         title,
       }
     })
-    .then(data => console.log('DB response: ', data))
-    .catch(err => console.log('Error: parseFeed.js Soundcast.findOrCreate ', err));
-
-  // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
-  await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-    addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
-  }))); // Promise.all
-
-  firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
-  firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
-  firebase.database().ref(`soundcasts/${soundcastId}/published`).set(true);
-  firebase.database().ref(`soundcasts/${soundcastId}/verified`).set(true);
-
-  delete feedUrls[url];
-  res.send('Success_import');
+    .then(async data => {
+      console.log('DB response: ', data);
+      // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
+      await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
+        addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
+      })));
+      firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
+      firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
+      firebase.database().ref(`soundcasts/${soundcastId}/published`).set(true);
+      firebase.database().ref(`soundcasts/${soundcastId}/verified`).set(true);
+      delete feedUrls[url];
+      res.send('Success_import');
+    })
+    .catch(err => {
+      console.log(`Error: parseFeed.js Soundcast.findOrCreate ${err}`);
+      res.status(400).send(`Error: parseFeed.js Soundcast.findOrCreate ${err}`);
+    });
 } // runFeedImport
 
 async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, publicationDate, i, resolve) {
