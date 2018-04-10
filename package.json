@@ -15,6 +15,9 @@
     "build": "webpack"
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.5",
+    "@fortawesome/fontawesome-free-solid": "^5.0.9",
+    "@fortawesome/react-fontawesome": "0.0.18",
     "@sendgrid/client": "^6.1.4",
     "@sendgrid/mail": "^6.1.4",
     "algoliasearch": "^3.24.9",

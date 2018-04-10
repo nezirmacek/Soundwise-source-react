@@ -13,6 +13,13 @@ import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
 import moment from 'moment';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faMicrophone from '@fortawesome/fontawesome-free-solid/faMicrophone'
+import faStop from '@fortawesome/fontawesome-free-solid/faStop'
+import faCircle from '@fortawesome/fontawesome-free-solid/faCircle'
+import faPlayCircle from '@fortawesome/fontawesome-free-solid/faPlayCircle'
+import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle'
+
 import { withRouter } from 'react-router';
 import Toggle from 'react-toggle';
 import Dots from 'react-activity/lib/Dots';
@@ -664,7 +671,13 @@ class _CreateEpisode extends Component {
         this.wavesurfer = this.mediaObject.wavesurfer();
     }
 
+    handleMicrophone(e) {
+        console.log('handleMicrophone called');
+       this.state.isRecording ? this.stop(e) : this.record(e);
+    }
+
     renderRecorder() {
+        const that = this;
         const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, notesUrl, isSaved, audioUploading, currentRecordingDuration, currentPlayingDuration } = this.state;
         if(isSaved && !audioUploading) {
             return (
@@ -688,22 +701,12 @@ class _CreateEpisode extends Component {
         } else {
             return (
                 <div>
-                    {
-                        !isRecording
-                        &&
-                        <div style={styles.recordButton} onClick={e => this.record(e)}>
-                            <span className="fa-layers  fa-4x">
-                              <div><i className="fas fa-circle " style={{color: Colors.mainOrange}}></i></div>
-                              <div><i className={isRecording ? `fa fa-stop  fa-inverse` : `fa fa-microphone  fa-inverse`} data-fa-transform="shrink-6"></i></div>
-                            </span>
-                        </div>
-                        ||
-                        <div style={styles.recordButton} onClick={e => this.stop(e)}>
-                            <span className=" fa-2x">
-                              <div key="stopRecord"><i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i></div>
-                            </span>
-                        </div>
-                    }
+                    <div style={styles.recordButton} onClick={e => that.handleMicrophone(e)}>
+                        <span className="fa-layers  fa-4x">
+                          <FontAwesomeIcon icon={faCircle} color={Colors.mainOrange}/>
+                          <FontAwesomeIcon icon={isRecording ? faStop : faMicrophone} color='white' inverse transform="shrink-8"/>
+                        </span>
+                    </div>
                     <div style={styles.micWrapper}>
                       <AudiojsRecordPlayer setMediaObject={this.setMediaObject.bind(this)} />
                     </div>
@@ -733,25 +736,14 @@ class _CreateEpisode extends Component {
                             {
                                 !isLoading
                                 &&
-                                <i
-                                    className="fa fa-play-circle"
-                                    style={{
-                                        ...styles.playIcon,
-                                        color: isRecorded && Colors.mainOrange || Colors.fontGrey
-                                    }} className="material-icons">play_circle_filled</i>
+                                <FontAwesomeIcon icon={faPlayCircle} color={Colors.mainOrange} size="4x"/>
                                 ||
                                 <Loader loaded={!isLoading} options={loaderOptions}></Loader>
                             }
                         </div>
                         ||
                         <div key='stopPlaying' style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
-                            <i
-                                className="fa fa-stop-circle"
-                                style={{
-                                    ...styles.playIcon,
-                                    color: isRecorded && Colors.mainOrange || Colors.fontGrey
-                                }}
-                            ></i>
+                            <FontAwesomeIcon icon={faStopCircle} color={isRecorded && Colors.mainOrange || Colors.fontGrey} size="4x"/>
                         </div>
                     }
                     <div style={styles.saveText} onClick={this.save.bind(this)}>Save</div>
@@ -1461,8 +1453,8 @@ const styles = {
     },
     playButtonWrapper: {
         backgroundColor: 'transparent',
-        width: 50,
-        height: 50,
+        width: 55,
+        height: 55,
         overflow: 'hidden',
         float: 'left',
         marginLeft: 15,
@@ -1481,7 +1473,7 @@ const styles = {
         float: 'left',
         width: 70,
         position: 'relative',
-        top: 10,
+        top: 15,
         marginLeft: 15,
         marginright: 15,
 		cursor: 'pointer',
@@ -1491,7 +1483,7 @@ const styles = {
         width: 15,
         fontSize: 16,
         position: 'relative',
-        top: 9,
+        top: 15,
         marginLeft: 15,
         marginright: 15,
 		cursor: 'pointer',
