@@ -692,14 +692,14 @@ class _CreateEpisode extends Component {
                         !isRecording
                         &&
                         <div style={styles.recordButton} onClick={e => this.record(e)}>
-                            <span className="fa-stack fa-2x">
-                              <div><i className="fa fa-circle fa-stack-2x" style={{color: Colors.mainOrange}}></i></div>
-                              <div><i className="fa fa-microphone fa-stack-1x fa-inverse"></i></div>
+                            <span className="fa-layers  fa-4x">
+                              <div><i className="fas fa-circle " style={{color: Colors.mainOrange}}></i></div>
+                              <div><i className={isRecording ? `fa fa-stop  fa-inverse` : `fa fa-microphone  fa-inverse`} data-fa-transform="shrink-6"></i></div>
                             </span>
                         </div>
                         ||
                         <div style={styles.recordButton} onClick={e => this.stop(e)}>
-                            <span className="fa-stack fa-2x">
+                            <span className=" fa-2x">
                               <div key="stopRecord"><i className="fa fa-stop-circle fa-2x" style={{color: Colors.mainOrange}}></i></div>
                             </span>
                         </div>
