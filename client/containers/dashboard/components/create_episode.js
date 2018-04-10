@@ -34,6 +34,7 @@ import {sendNotifications} from '../../../helpers/send_notifications';
 import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 window.URL = window.URL || window.webkitURL;
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 class AudiojsRecordPlayer extends React.Component {
     componentDidMount() {
