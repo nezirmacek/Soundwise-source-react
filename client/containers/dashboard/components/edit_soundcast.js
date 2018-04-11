@@ -867,7 +867,7 @@ export default class EditSoundcast extends Component {
 
     handlePriceInputs(i, e) {
         let prices = [...this.state.prices];
-        prices[i][e.target.name] = Number(e.target.value).toFixed(2);
+        prices[i][e.target.name] = e.target.value;
         this.setState({
             prices
         })

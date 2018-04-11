@@ -312,7 +312,6 @@ async function feedInterval() {
             soundcast.imageURL = metadata && metadata.image && metadata.image.url;
             soundcast.title = metadata && metadata.title;
             addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, feed.pub_date, i);
-            addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, feed.pub_date, i);
             i++;
           }
         });
