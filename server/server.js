@@ -32,6 +32,7 @@ var Emails = require('./scripts/sendEmails.js');
 
 var createFeed = require('./scripts/feed.js').createFeed;
 var requestFeed = require('./scripts/feed.js').requestFeed;
+var parseFeed = require('./scripts/parseFeed.js').parseFeed;
 var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
 var audioProcessing = require('./scripts/audioProcessing').audioProcessing;
 
@@ -142,6 +143,7 @@ app.post('/api/trial_request', handleTrialRequest);
 
 app.post('/api/create_feed', createFeed);
 app.get('/rss/:id', requestFeed);
+app.post('/api/parse_feed', parseFeed);
 app.get('/api/retrieveCustomer', retrieveCustomer);
 app.post('/api/updateCreditCard', updateCreditCard);
 app.post('/api/buy', createSubscription);

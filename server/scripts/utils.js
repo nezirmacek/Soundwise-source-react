@@ -64,13 +64,13 @@ const setAudioTags = (file, imgPath, title, track, artist) => {
 		Metadata:
 			encoder         : Lavc57.107.100 pcm_s16le
 		Side data:
-			replaygain: track gain - -4.500000, track peak - unknown, album gain - unknown, album peak - unknown, 
+			replaygain: track gain - -4.500000, track peak - unknown, album gain - unknown, album peak - unknown,
 		size=N/A time=00:02:48.51 bitrate=N/A speed= 337x    [silencedetect @ 0x55e8040] silence_start: 335.262
 		[silencedetect @ 0x55e8040] silence_end: 336.249 | silence_duration: 0.987347
-		size=N/A time=00:05:37.00 bitrate=N/A speed= 337x    
+		size=N/A time=00:05:37.00 bitrate=N/A speed= 337x
 		[silencedetect @ 0x55e8040] silence_start: 459.03
 		[silencedetect @ 0x55e8040] silence_end: 460.148 | silence_duration: 1.11796
-		size=N/A time=00:08:16.09 bitrate=N/A speed= 337x    
+		size=N/A time=00:08:16.09 bitrate=N/A speed= 337x
 		video:0kB audio:85460kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown
 
   example output: (Array)
