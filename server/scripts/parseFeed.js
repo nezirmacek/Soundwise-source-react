@@ -19,7 +19,7 @@ const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 
-const urlTestFeed = "http://foundersnextdoor.com/feed/podcast/";
+const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
 
 // function to parse a given feed url:
 function getFeed (urlfeed, callback) {
@@ -65,16 +65,11 @@ function getFeed (urlfeed, callback) {
 
 // Test the getFeed function:
 
-// getFeed (urlTestFeed, function (err, results) {
-//   const {metadata, feedItems} = results;
-//   if (!err) {
-//     console.log(feedItems[0]);
-//     for (var i = 0; i < feedItems.length; i++) {
-//       console.log(`Item # ${i + 1}:`);
-//       console.log(feedItems[i]);
-//       }
-//     }
-// });
+getFeed (urlTestFeed, function (err, results) {
+  const {metadata, feedItems} = results;
+  // console.log('metadata: ', metadata);
+  console.log('email: ', metadata['itunes:owner']);
+});
 
 const feedUrls = {};
 
