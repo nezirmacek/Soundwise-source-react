@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import { Link } from 'react-router-dom'
+import ReactS3Uploader from 'react-s3-uploader';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
@@ -560,10 +561,48 @@ export default class AddSoundcast extends Component {
 
         {/*Upload outro/intro*/}
         <div style={{ marginBottom: 25 }} className='row'>
+          <div style = {{display: 'none'}}>
+            <ReactS3Uploader
+                signingUrl="/s3/sign"
+                signingUrlMethod="GET"
+                accept='.mp3,.m4a'
+                preprocess={this.preProcess.bind(this)}
+                onProgress={this.onProgress.bind(this)}
+                onError={this.onError.bind(this)}
+                onFinish={this.onFinish.bind(this)}
+                uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
+                contentDisposition="auto"
+                scrubFilename={(filename) => {
+                    const original = filename.split('.');
+                    const newName = that.soundcastId;
+                    return filename.replace(filename.slice(0), `${newName}_intro.${original[original.length -1]}`);
+                }}
+                inputRef={cmp => this.uploadIntroAudioInput = cmp}
+                autoUpload={true}
+                />
+            <ReactS3Uploader
+                signingUrl="/s3/sign"
+                signingUrlMethod="GET"
+                accept='.mp3,.m4a'
+                preprocess={this.preProcess.bind(this)}
+                onProgress={this.onProgress.bind(this)}
+                onError={this.onError.bind(this)}
+                onFinish={this.onFinish.bind(this)}
+                uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
+                contentDisposition="auto"
+                scrubFilename={(filename) => {
+                    const original = filename.split('.');
+                    const newName = that.soundcastId;
+                    return filename.replace(filename.slice(0), `${newName}_outro.${original[original.length -1]}`);
+                }}
+                inputRef={cmp => this.uploadOutroAudioInput = cmp}
+                autoUpload={true}
+                />
+          </div>
           <div class="col-md-6">
             <span style={{ ...styles.fileTypesLabel, display: 'inline-block', marginRight: 5 }}>Intro file:</span>
             <button
-              onClick={() => {  }}
+              onClick={() => { that.uploadIntroAudioInput.click(); }}
               style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
             >
               Upload
@@ -572,7 +611,7 @@ export default class AddSoundcast extends Component {
           <div class="col-md-6">
             <span style={{ ...styles.fileTypesLabel, display: 'inline-block', marginRight: 5 }}>Outro file:</span>
             <button
-              onClick={() => {  }}
+              onClick={() => { that.uploadOutroAudioInput.click(); }}
               style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
             >
               Upload
