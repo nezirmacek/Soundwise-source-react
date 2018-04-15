@@ -16,6 +16,9 @@ import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
 // import Toggle from 'material-ui/Toggle';
 import Toggle from 'react-toggle';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
+import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
 import ImageCropModal from './image_crop_modal';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
@@ -69,6 +72,8 @@ export default class AddSoundcast extends Component {
       audioUploadProgress: 0,
       audioUploadError: null,
       uploadedAudioUrl: '', // TODO separate for intro / outro ?
+      showIntroOutro: false,
+      showPricingModal: false,
 		};
 
 		this.soundcastId = `${moment().format('x')}s`;
@@ -79,6 +84,22 @@ export default class AddSoundcast extends Component {
     this.uploadIntroAudioInput = null;
     this.uploadOutroAudioInput = null;
 		this.addFeature = this.addFeature.bind(this);
+		this.showIntroOutro = this.showIntroOutro.bind(this);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		let userInfo = nextProps.userInfo;
+    let plan, proUser;
+    if(userInfo.publisher && userInfo.publisher.plan) {
+        plan = userInfo.publisher.plan;
+        proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+    }
+    if(userInfo.publisher && userInfo.publisher.beta) {
+        proUser = true;
+    }
+    this.setState({
+    	proUser,
+    });
 	}
 
 	_uploadToAws (file, hostImg) {
@@ -413,11 +434,23 @@ export default class AddSoundcast extends Component {
 			})
 	}
 
+	showIntroOutro() {
+		const {showIntroOutro, proUser, showPricingModal} = this.state;
+		if(proUser) {
+			this.setState({showIntroOutro: !showIntroOutro});
+		} else {
+			this.setState({
+				showPricingModal: true,
+			})
+		}
+	}
+
 	renderAdditionalInputs() {
 		const featureNum = this.state.features.length;
-		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices, confirmationEmail} = this.state;
+		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices, confirmationEmail, proUser, showIntroOutro, showPricingModal} = this.state;
 		const {userInfo} = this.props;
 		const that = this;
+
     const actions = [
       <FlatButton
         label="OK"
@@ -567,7 +600,7 @@ export default class AddSoundcast extends Component {
 				</div>
 
         {/*Upload outro/intro*/}
-        <div style={{ marginBottom: 25 }} className='row'>
+        <div style={{ marginBottom: 40 }} className='row'>
           <div style = {{display: 'none'}}>
             <ReactS3Uploader
                 signingUrl="/s3/sign"
@@ -606,8 +639,20 @@ export default class AddSoundcast extends Component {
                 autoUpload={true}
                 />
           </div>
-          <div class="col-md-6">
-            <span style={{ ...styles.fileTypesLabel, display: 'inline-block', marginRight: 5 }}>Intro file:</span>
+          <div class="col-md-12" style={{marginBottom: 10}}>
+            <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
+              <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
+              <span>Intro And Outro</span>
+             {
+              !proUser &&
+              <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+              || <span></span>
+             }
+            </div>
+            <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
+          </div>
+          <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
+            <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
             <button
               onClick={() => { that.uploadIntroAudioInput.click(); }}
               style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
@@ -615,8 +660,8 @@ export default class AddSoundcast extends Component {
               Upload
             </button>
           </div>
-          <div class="col-md-6">
-            <span style={{ ...styles.fileTypesLabel, display: 'inline-block', marginRight: 5 }}>Outro file:</span>
+          <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
+            <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
             <button
               onClick={() => { that.uploadOutroAudioInput.click(); }}
               style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
@@ -926,13 +971,28 @@ export default class AddSoundcast extends Component {
   }
 
 	render() {
-		const { imageURL, title, subscribers, fileUploaded,landingPage, modalOpen, hostImg } = this.state;
+		const { imageURL, title, subscribers, fileUploaded,landingPage, modalOpen, hostImg, showPricingModal } = this.state;
 		const { userInfo, history } = this.props;
 		const that = this;
 
 		return (
 			<MuiThemeProvider >
 				<div className='padding-30px-tb'>
+	        <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
+	          <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+	            <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+	            <div className='title-small' style={{margin: 25}}>
+	              Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+	            </div>
+	            <div className="center-col">
+	              <OrangeSubmitButton
+	                label='Upgrade'
+	                onClick={() => that.props.history.push({pathname: '/pricing'})}
+	                styles={{width: '60%'}}
+	              />
+	            </div>
+	          </div>
+	        </div>
           <ImageCropModal
             open={modalOpen}
             handleClose={this.handleModalClose.bind(this)}
@@ -1227,6 +1287,7 @@ const styles = {
 		fontSize: 16,
 		marginLeft: 0,
 		display: 'block',
+		fontStyle: 'italic',
 	},
   radioButton: {
     marginBottom: 16,
