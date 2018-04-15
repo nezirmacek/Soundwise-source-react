@@ -311,7 +311,11 @@ async function feedInterval() {
             const soundcast = {};
             soundcast.imageURL = metadata && metadata.image && metadata.image.url;
             soundcast.title = metadata && metadata.title;
+<<<<<<< HEAD
             addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, metadata.date, i);
+=======
+            addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, feed.pub_date, i);
+>>>>>>> fix pricing edit error
             i++;
           }
         });

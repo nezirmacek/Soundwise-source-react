@@ -21,7 +21,7 @@ module.exports.createStripeAccount = (req, res) => {
   .then(response => {
     stripe.accounts.update(stripe_user_id, {
       'payout_schedule': { // monthly payouts, with two week delay
-        'delay_days': 0,
+        'delay_days': 3,
         'interval': 'monthly',
         'monthly_anchor': 1,
       },
