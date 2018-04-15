@@ -64,6 +64,11 @@ export default class AddSoundcast extends Component {
       modalOpen: false,
 			paypalEmail: '',
 			confirmationEmail: EditorState.createWithContent(confirmationEmail),
+      audioUploading: false,
+      audioUploaded: false,
+      audioUploadProgress: 0,
+      audioUploadError: null,
+      uploadedAudioUrl: '', // TODO separate for intro / outro ?
 		};
 
 		this.soundcastId = `${moment().format('x')}s`;
@@ -71,6 +76,8 @@ export default class AddSoundcast extends Component {
 		this.hostImgInputRef = null;
 		this.currentImageRef = null;
 		this.firebaseListener = null;
+    this.uploadIntroAudioInput = null;
+    this.uploadOutroAudioInput = null;
 		this.addFeature = this.addFeature.bind(this);
 	}
 
@@ -814,6 +821,41 @@ export default class AddSoundcast extends Component {
       })
     }
     this._uploadToAws(fileBlob, hostImg);
+  }
+
+  preProcess(file, next) {
+      // this.setAudioDuration(file);
+      // this.clearInputFile(this.uploadAudioInput);
+      this.setState({
+        audioName: file.name,
+        audioUploading: true,
+      })
+      next(file);
+  }
+
+  onProgress(percent, message) {
+      this.setState({
+          audioUploadProgress: percent,
+      });
+  }
+
+  onFinish(signResult) {
+      const awsUrl = signResult.signedUrl.split('?')[0];
+      const aux = awsUrl.split('.');
+      const ext = aux[aux.length - 1];
+      this.setState({
+          audioUploading: false,
+          audioUploaded: true,
+          audioUploadProgress: 0,
+          // uploadedAudioUrl: `https://mysoundwise.com/tracks/${this.episodeId}.${ext}`
+      });
+  }
+
+  onError(message) {
+      console.log(`upload error: ` + message);
+      this.setState({
+          audioUploadError: message,
+      })
   }
 
 	render() {
