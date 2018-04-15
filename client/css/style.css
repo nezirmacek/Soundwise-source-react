@@ -1,14 +1,10 @@
 @charset "utf-8";
 
 /* ----------------------------------
-
 Name: elements.css
 Version: 1.0
-
 ----------------------------------
-
 Table of Contents
-
     01. Navbar
     02. Header
     03. Hero Section
@@ -30,7 +26,7 @@ Table of Contents
     19. Testimonial
     20. Social Widget
     21. Circular Progress Bar
-
+    22. Collapsible
 */
 
 
@@ -1001,6 +997,84 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   background-color: #44ffd1;
 }
 
+/* ======= Collapsible ======== */
+/*// The main container element*/
+.Collapsible {
+  background-color: rgb(255, 255, 255);
+}
+
+
+/*//The content within the collaspable area*/
+.Collapsible__contentInner {
+  padding: 10px;
+  /*border: 1px solid lightGrey;*/
+  background: #f6f6f6;
+  border-top: 0;
+}
+.Collapsible__contentInner > p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 20px;
+}
+.Collapsible__contentInner > p:last-child {
+      margin-bottom: 0;
+}
+
+/*//The link which when clicked opens the collapsable area*/
+.Collapsible__trigger {
+  display: block;
+  font-weight: 400;
+  text-decoration: none;
+  color: rgb(51, 51, 51);
+  position: relative;
+  border: 1px solid white;
+  padding: 10px;
+  background: #f76b1c;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.Collapsible__trigger::after {
+    font-family: "Material Icons";
+    /*font-family: 'FontAwesome';*/
+    /*content: '\f107';*/
+    /*content: \E313;*/
+    content: 'keyboard_arrow_down';
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: block;
+    transition: transform 300ms;
+  }
+
+.Collapsible__trigger.is-open::after {
+      transform: rotateZ(180deg);
+}
+
+
+.Collapsible__trigger .is-disabled {
+    opacity: 0.5;
+    background-color: grey;
+  }
+
+
+.CustomTriggerCSS {
+  background-color: lightcoral;
+  transition: background-color 200ms ease;
+}
+
+.CustomTriggerCSS--open {
+  background-color: darkslateblue;
+}
+
+.Collapsible__custom-sibling {
+  padding: 5px;
+  font-size: 12px;
+  background-color: #CBB700;
+  color: black;
+}
+
 .container-confirmation input {
   width: 43px;
   margin: 0 2px;
@@ -1016,6 +1090,7 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   z-index: 1;
   background-color: #ffffffab;
 }
+
 .importing-feed-overlay > div {
   position: absolute;
   left: 50%;

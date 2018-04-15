@@ -7,7 +7,7 @@ const Banner = (props) => {
             <section className="bg-gray builder-bg border-none" id="content-section20">
                 <div className="container-fluid">
                     <div className="row equalize">
-                        <div className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten" style={{height: "755px", background:`linear-gradient(${Colors.link}, rgba(0,0,0,0.1))`,}}>
+                        <div className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten" style={{height: "755px", background: Colors.link,}}>
                             <div className="display-table-cell-vertical-middle padding-twenty-one-left padding-twenty-one-right md-padding-seven xs-no-padding-lr">
 
                                 <div className="col-md-12 col-sm-12 col-xs-12 xs-no-padding-lr">
