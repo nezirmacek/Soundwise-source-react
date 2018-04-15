@@ -558,6 +558,28 @@ export default class AddSoundcast extends Component {
 					</div>
 				</div>
 
+        {/*Upload outro/intro*/}
+        <div style={{ marginBottom: 25 }} className='row'>
+          <div class="col-md-6">
+            <span style={{ ...styles.fileTypesLabel, display: 'inline-block', marginRight: 5 }}>Intro file:</span>
+            <button
+              onClick={() => {  }}
+              style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+            >
+              Upload
+            </button>
+          </div>
+          <div class="col-md-6">
+            <span style={{ ...styles.fileTypesLabel, display: 'inline-block', marginRight: 5 }}>Outro file:</span>
+            <button
+              onClick={() => {  }}
+              style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+            >
+              Upload
+            </button>
+          </div>
+        </div>
+
 				{/*Pricing*/}
 				{ landingPage &&
 				<div>
