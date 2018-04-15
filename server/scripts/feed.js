@@ -16,10 +16,10 @@ const ffmpeg = require('./ffmpeg');
 
 module.exports.createFeed = async (req, res) => {
   const { soundcastId, soundcastTitle, itunesExplicit, itunesImage,
-          autoSubmitPodcast, email, firstName } = req.body, categories = [];
+          email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description, hostName } = soundcastVal;
+  const { title, short_description, hostName, autoSubmitPodcast } = soundcastVal;
   const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
