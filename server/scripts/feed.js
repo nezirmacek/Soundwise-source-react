@@ -19,7 +19,7 @@ module.exports.createFeed = async (req, res) => {
           email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description, hostName, autoSubmitPodcast } = soundcastVal;
+  const { title, short_description, hostName, autoSubmitPodcast, itunesHost } = soundcastVal;
   const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
@@ -57,11 +57,11 @@ module.exports.createFeed = async (req, res) => {
     siteUrl: `https://mysoundwise.com/soundcasts/${soundcastId}`,
     imageUrl: itunesImage,
     author: hostName,
-    copyright: `${new Date().getFullYear()} ${hostName}`,
+    copyright: `${new Date().getFullYear()} ${itunesHost}`,
     language: 'en',
     categories,
     pubDate: moment().toDate(),
-    itunesAuthor: hostName,
+    itunesAuthor: itunesHost,
     itunesSubtitle: title,
     itunesSummary, // need to be < 4000 characters
     itunesOwner,
@@ -73,7 +73,7 @@ module.exports.createFeed = async (req, res) => {
       {'googleplay:email': googleplayEmail},
       {'googleplay:description': itunesSummary}, // need to be < 4000 characters
       {'googleplay:category': [{ _attr: { text: itunesCategory[0].text}}]},
-      {'googleplay:author': hostName},
+      {'googleplay:author': itunesHost},
       {'googleplay:explicit': itunesExplicit},
       {'googleplay:image': [{ _attr: { href: itunesImage}}]}, // need to be between 1400x1400 px and 3000x3000 px
     ]

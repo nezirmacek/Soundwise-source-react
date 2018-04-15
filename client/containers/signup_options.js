@@ -59,10 +59,9 @@ class _SignupOptions extends Component {
       that.setState({feedSubmitting: false});
       if (errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email") {
         that.setState({ emailNotFoundError: true });
-      } else if (errMsg.slice(0, 42) === "Error: requested feed url already imported"){
+      } else if (errMsg.slice(0, 97) === "Error: This feed is already on Soundwise. If you think this is a mistake, please contact support."){
         alert("Hmm...looks like this podcast has already been managed by an existing account on Soundwise. If you think you're the owner of this feed, please contact us at support@mysoundwise.com.");
       } else {
-        console.log('parse feed request failed', err, errMsg);
         alert('Hmm...there is a problem parsing the feed. Please try again later.');
       }
     });
