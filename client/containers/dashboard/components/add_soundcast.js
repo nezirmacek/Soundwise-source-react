@@ -8,6 +8,7 @@ import Axios from 'axios';
 import { Link } from 'react-router-dom'
 import ReactS3Uploader from 'react-s3-uploader';
 import LinearProgress from 'material-ui/LinearProgress';
+import Dots from 'react-activity/lib/Dots';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
@@ -456,7 +457,12 @@ export default class AddSoundcast extends Component {
 
 	renderAdditionalInputs() {
 		const featureNum = this.state.features.length;
-		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices, confirmationEmail, proUser, showIntroOutro, showPricingModal} = this.state;
+		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices,
+       confirmationEmail, proUser, showIntroOutro, showPricingModal, audioIntroUploading,
+       audioIntroUploaded, audioIntroUploadProgress, audioIntroUploadError,
+       uploadedAudioIntroUrl, audioIntroName, audioOutroUploading, audioOutroUploaded,
+       audioOutroUploadProgress, audioOutroUploadError, uploadedAudioOutroUrl, audioOutroName
+    } = this.state;
 		const {userInfo} = this.props;
 		const that = this;
 
@@ -664,21 +670,101 @@ export default class AddSoundcast extends Component {
           </div>
           <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
             <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
-            <button
-              onClick={() => { that.uploadIntroAudioInput.click(); }}
-              style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
-            >
-              Upload
-            </button>
+            { audioIntroUploading &&
+                <div>
+                  { audioIntroUploadError &&
+                      <div>
+                        <span style={{color: 'red'}}>{audioIntroUploadError}</span>
+                      </div>
+                    ||
+                      <div>
+                        <div style={{textAlign: 'center', display:'none'}}>
+                          <div className='title-small' style={{marginBottom: 5,}}>
+                              {`Uploading audio file`}
+                          </div>
+                          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                              <Dots style={{}} color="#727981" size={22} speed={1}/>
+                          </div>
+                        </div>
+                          <div style={{display: ''}}>
+                              <MuiThemeProvider>
+                                <LinearProgress
+                                  mode="determinate"
+                                  value={audioIntroUploadProgress}
+                                  color={Colors.mainOrange}/>
+                              </MuiThemeProvider>
+                              <div className='text-medium' style={{textAlign: 'center'}}>
+                                  <span>{`uploading ${audioIntroUploadProgress} %`}</span>
+                              </div>
+                          </div>
+                      </div>
+                  }
+                </div>
+              || uploadedAudioIntroUrl &&
+                <div style={{textAlign: 'center',}} >
+                  <div className='text-medium'>{`${audioIntroName} saved`}</div>
+                  <div style={styles.cancelImg}
+                    onClick={() => this.setState({audioIntroUploaded: false, uploadedAudioIntroUrl: ''})} >
+                    Cancel
+                  </div>
+                </div>
+              || !uploadedAudioIntroUrl &&
+                <button
+                  onClick={() => { that.uploadIntroAudioInput.click(); }}
+                  style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                >
+                  Upload
+                </button>
+            }
           </div>
           <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
             <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
-            <button
-              onClick={() => { that.uploadOutroAudioInput.click(); }}
-              style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
-            >
-              Upload
-            </button>
+            { audioOutroUploading &&
+                <div>
+                  { audioOutroUploadError &&
+                      <div>
+                        <span style={{color: 'red'}}>{audioOutroUploadError}</span>
+                      </div>
+                    ||
+                      <div>
+                        <div style={{textAlign: 'center', display:'none'}}>
+                          <div className='title-small' style={{marginBottom: 5,}}>
+                              {`Uploading audio file`}
+                          </div>
+                          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                              <Dots style={{}} color="#727981" size={22} speed={1}/>
+                          </div>
+                        </div>
+                          <div style={{display: ''}}>
+                              <MuiThemeProvider>
+                                <LinearProgress
+                                  mode="determinate"
+                                  value={audioOutroUploadProgress}
+                                  color={Colors.mainOrange}/>
+                              </MuiThemeProvider>
+                              <div className='text-medium' style={{textAlign: 'center'}}>
+                                  <span>{`uploading ${audioOutroUploadProgress} %`}</span>
+                              </div>
+                          </div>
+                      </div>
+                  }
+                </div>
+              || uploadedAudioOutroUrl &&
+                <div style={{textAlign: 'center',}} >
+                  <div className='text-medium'>{`${audioOutroName} saved`}</div>
+                  <div style={styles.cancelImg}
+                    onClick={() => this.setState({audioOutroUploaded: false, uploadedAudioOutroUrl: ''})} >
+                    Cancel
+                  </div>
+                </div>
+              || !uploadedAudioOutroUrl &&
+                <button
+                  onClick={() => { that.uploadOutroAudioInput.click(); }}
+                  style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                >
+                  Upload
+                </button>
+            }
           </div>
         </div>
 
@@ -946,6 +1032,20 @@ export default class AddSoundcast extends Component {
     this._uploadToAws(fileBlob, hostImg);
   }
 
+  clearInputFile(f){
+      if(f.value){
+          try{
+              f.value = ''; //for IE11, latest Chrome/Firefox/Opera...
+          }catch(err){ }
+          if(f.value){ //for IE5 ~ IE10
+              var form = document.createElement('form'),
+                  parentNode = f.parentNode, ref = f.nextSibling;
+              form.appendChild(f);
+              form.reset();
+              parentNode.insertBefore(f,ref);
+          }
+      }
+  }
   preProcessIntro(file, next) {
       // this.setAudioDuration(file);
       this.clearInputFile(this.uploadIntroAudioInput);
