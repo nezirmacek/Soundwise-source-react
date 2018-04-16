@@ -7,6 +7,7 @@ import moment from 'moment';
 import Axios from 'axios';
 import { Link } from 'react-router-dom'
 import ReactS3Uploader from 'react-s3-uploader';
+import LinearProgress from 'material-ui/LinearProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
@@ -67,11 +68,19 @@ export default class AddSoundcast extends Component {
       modalOpen: false,
 			paypalEmail: '',
 			confirmationEmail: EditorState.createWithContent(confirmationEmail),
-      audioUploading: false,
-      audioUploaded: false,
-      audioUploadProgress: 0,
-      audioUploadError: null,
-      uploadedAudioUrl: '', // TODO separate for intro / outro ?
+
+      audioIntroUploading: false,
+      audioIntroUploaded: false,
+      audioIntroUploadProgress: 0,
+      audioIntroUploadError: null,
+      uploadedAudioIntroUrl: '',
+
+      audioOutroUploading: false,
+      audioOutroUploaded: false,
+      audioOutroUploadProgress: 0,
+      audioOutroUploadError: null,
+      uploadedAudioOutroUrl: '',
+
       showIntroOutro: false,
       showPricingModal: false,
 		};
@@ -606,16 +615,17 @@ export default class AddSoundcast extends Component {
                 signingUrl="/s3/sign"
                 signingUrlMethod="GET"
                 accept='.mp3,.m4a'
-                preprocess={this.preProcess.bind(this)}
-                onProgress={this.onProgress.bind(this)}
-                onError={this.onError.bind(this)}
-                onFinish={this.onFinish.bind(this)}
+                preprocess={this.preProcessIntro.bind(this)}
+                onProgress={this.onProgressIntro.bind(this)}
+                onError={this.onErrorIntro.bind(this)}
+                onFinish={this.onFinishIntro.bind(this)}
                 uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
                 contentDisposition="auto"
                 scrubFilename={(filename) => {
                     const original = filename.split('.');
                     const newName = that.soundcastId;
-                    return filename.replace(filename.slice(0), `${newName}_intro.${original[original.length -1]}`);
+                    const ext = original[original.length -1];
+                    return filename.replace(filename.slice(0), `${newName}_intro.${ext}`);
                 }}
                 inputRef={cmp => this.uploadIntroAudioInput = cmp}
                 autoUpload={true}
@@ -624,16 +634,17 @@ export default class AddSoundcast extends Component {
                 signingUrl="/s3/sign"
                 signingUrlMethod="GET"
                 accept='.mp3,.m4a'
-                preprocess={this.preProcess.bind(this)}
-                onProgress={this.onProgress.bind(this)}
-                onError={this.onError.bind(this)}
-                onFinish={this.onFinish.bind(this)}
+                preprocess={this.preProcessOutro.bind(this)}
+                onProgress={this.onProgressOutro.bind(this)}
+                onError={this.onErrorOutro.bind(this)}
+                onFinish={this.onFinishOutro.bind(this)}
                 uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
                 contentDisposition="auto"
                 scrubFilename={(filename) => {
                     const original = filename.split('.');
                     const newName = that.soundcastId;
-                    return filename.replace(filename.slice(0), `${newName}_outro.${original[original.length -1]}`);
+                    const ext = original[original.length -1];
+                    return filename.replace(filename.slice(0), `${newName}_outro.${ext}`);
                 }}
                 inputRef={cmp => this.uploadOutroAudioInput = cmp}
                 autoUpload={true}
@@ -935,39 +946,55 @@ export default class AddSoundcast extends Component {
     this._uploadToAws(fileBlob, hostImg);
   }
 
-  preProcess(file, next) {
+  preProcessIntro(file, next) {
       // this.setAudioDuration(file);
-      // this.clearInputFile(this.uploadAudioInput);
+      this.clearInputFile(this.uploadIntroAudioInput);
       this.setState({
-        audioName: file.name,
-        audioUploading: true,
+        audioIntroName: file.name,
+        audioIntroUploading: true,
       })
       next(file);
   }
-
-  onProgress(percent, message) {
+  preProcessOutro(file, next) {
+      // this.setAudioDuration(file);
+      this.clearInputFile(this.uploadOutroAudioInput);
       this.setState({
-          audioUploadProgress: percent,
-      });
+        audioOutroName: file.name,
+        audioOutroUploading: true,
+      })
+      next(file);
   }
-
-  onFinish(signResult) {
+  onProgressIntro(percent, message) { this.setState({ audioIntroUploadProgress: percent }); }
+  onProgressOutro(percent, message) { this.setState({ audioOutroUploadProgress: percent }); }
+  onFinishIntro(signResult) {
       const awsUrl = signResult.signedUrl.split('?')[0];
       const aux = awsUrl.split('.');
       const ext = aux[aux.length - 1];
       this.setState({
-          audioUploading: false,
-          audioUploaded: true,
-          audioUploadProgress: 0,
-          // uploadedAudioUrl: `https://mysoundwise.com/tracks/${this.episodeId}.${ext}`
+          audioIntroUploading: false,
+          audioIntroUploaded: true,
+          audioIntroUploadProgress: 0,
+          uploadedAudioIntroUrl: `https://mysoundwise.com/tracks/${this.soundcastId}_intro.${ext}`
       });
   }
-
-  onError(message) {
-      console.log(`upload error: ` + message);
+  onFinishOutro(signResult) {
+      const awsUrl = signResult.signedUrl.split('?')[0];
+      const aux = awsUrl.split('.');
+      const ext = aux[aux.length - 1];
       this.setState({
-          audioUploadError: message,
-      })
+          audioOutroUploading: false,
+          audioOutroUploaded: true,
+          audioOutroUploadProgress: 0,
+          uploadedAudioOutroUrl: `https://mysoundwise.com/tracks/${this.soundcastId}_outro.${ext}`
+      });
+  }
+  onErrorIntro(message) {
+      console.log(`upload Intro error: ` + message);
+      this.setState({ audioIntroUploadError: message });
+  }
+  onErrorOutro(message) {
+      console.log(`upload Outro error: ` + message);
+      this.setState({ audioOutroUploadError: message });
   }
 
 	render() {
