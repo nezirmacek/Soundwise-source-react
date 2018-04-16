@@ -1077,7 +1077,7 @@ export default class AddSoundcast extends Component {
           audioIntroUploadProgress: 0,
           uploadedAudioIntroUrl
       });
-      firebase.database().ref('soundcasts/12433478934s/intro').set(uploadedAudioIntroUrl);
+      firebase.database().ref(`soundcasts/${this.soundcastId}/intro`).set(uploadedAudioIntroUrl);
   }
   onFinishOutro(signResult) {
       const awsUrl = signResult.signedUrl.split('?')[0];
@@ -1090,7 +1090,7 @@ export default class AddSoundcast extends Component {
           audioOutroUploadProgress: 0,
           uploadedAudioOutroUrl
       });
-      firebase.database().ref('soundcasts/12433478934s/intro').set(uploadedAudioOutroUrl);
+      firebase.database().ref(`soundcasts/${this.soundcastId}/outro`).set(uploadedAudioOutroUrl);
   }
   onErrorIntro(message) {
       console.log(`upload Intro error: ` + message);
