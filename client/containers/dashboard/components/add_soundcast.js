@@ -1070,23 +1070,27 @@ export default class AddSoundcast extends Component {
       const awsUrl = signResult.signedUrl.split('?')[0];
       const aux = awsUrl.split('.');
       const ext = aux[aux.length - 1];
+      const uploadedAudioIntroUrl = `https://mysoundwise.com/tracks/${this.soundcastId}_intro.${ext}`;
       this.setState({
           audioIntroUploading: false,
           audioIntroUploaded: true,
           audioIntroUploadProgress: 0,
-          uploadedAudioIntroUrl: `https://mysoundwise.com/tracks/${this.soundcastId}_intro.${ext}`
+          uploadedAudioIntroUrl
       });
+      firebase.database().ref('soundcasts/12433478934s/intro').set(uploadedAudioIntroUrl);
   }
   onFinishOutro(signResult) {
       const awsUrl = signResult.signedUrl.split('?')[0];
       const aux = awsUrl.split('.');
       const ext = aux[aux.length - 1];
+      const uploadedAudioOutroUrl = `https://mysoundwise.com/tracks/${this.soundcastId}_intro.${ext}`;
       this.setState({
           audioOutroUploading: false,
           audioOutroUploaded: true,
           audioOutroUploadProgress: 0,
-          uploadedAudioOutroUrl: `https://mysoundwise.com/tracks/${this.soundcastId}_outro.${ext}`
+          uploadedAudioOutroUrl
       });
+      firebase.database().ref('soundcasts/12433478934s/intro').set(uploadedAudioOutroUrl);
   }
   onErrorIntro(message) {
       console.log(`upload Intro error: ` + message);
