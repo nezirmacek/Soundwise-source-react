@@ -6,9 +6,6 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import { Link } from 'react-router-dom'
-import ReactS3Uploader from 'react-s3-uploader';
-import LinearProgress from 'material-ui/LinearProgress';
-import Dots from 'react-activity/lib/Dots';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
@@ -25,6 +22,7 @@ import ImageCropModal from './image_crop_modal';
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import S3FileUploader from '../../../components/s3_file_uploader';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 
@@ -69,19 +67,6 @@ export default class AddSoundcast extends Component {
       modalOpen: false,
 			paypalEmail: '',
 			confirmationEmail: EditorState.createWithContent(confirmationEmail),
-
-      audioIntroUploading: false,
-      audioIntroUploaded: false,
-      audioIntroUploadProgress: 0,
-      audioIntroUploadError: null,
-      uploadedAudioIntroUrl: '',
-
-      audioOutroUploading: false,
-      audioOutroUploaded: false,
-      audioOutroUploadProgress: 0,
-      audioOutroUploadError: null,
-      uploadedAudioOutroUrl: '',
-
       showIntroOutro: false,
       showPricingModal: false,
 		};
@@ -458,11 +443,7 @@ export default class AddSoundcast extends Component {
 	renderAdditionalInputs() {
 		const featureNum = this.state.features.length;
 		const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices,
-       confirmationEmail, proUser, showIntroOutro, showPricingModal, audioIntroUploading,
-       audioIntroUploaded, audioIntroUploadProgress, audioIntroUploadError,
-       uploadedAudioIntroUrl, audioIntroName, audioOutroUploading, audioOutroUploaded,
-       audioOutroUploadProgress, audioOutroUploadError, uploadedAudioOutroUrl, audioOutroName
-    } = this.state;
+       confirmationEmail, proUser, showIntroOutro, showPricingModal} = this.state;
 		const {userInfo} = this.props;
 		const that = this;
 
@@ -616,46 +597,6 @@ export default class AddSoundcast extends Component {
 
         {/*Upload outro/intro*/}
         <div style={{ marginBottom: 40 }} className='row'>
-          <div style = {{display: 'none'}}>
-            <ReactS3Uploader
-                signingUrl="/s3/sign"
-                signingUrlMethod="GET"
-                accept='.mp3,.m4a'
-                preprocess={this.preProcessIntro.bind(this)}
-                onProgress={this.onProgressIntro.bind(this)}
-                onError={this.onErrorIntro.bind(this)}
-                onFinish={this.onFinishIntro.bind(this)}
-                uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
-                contentDisposition="auto"
-                scrubFilename={(filename) => {
-                    const original = filename.split('.');
-                    const newName = that.soundcastId;
-                    const ext = original[original.length -1];
-                    return filename.replace(filename.slice(0), `${newName}_intro.${ext}`);
-                }}
-                inputRef={cmp => this.uploadIntroAudioInput = cmp}
-                autoUpload={true}
-                />
-            <ReactS3Uploader
-                signingUrl="/s3/sign"
-                signingUrlMethod="GET"
-                accept='.mp3,.m4a'
-                preprocess={this.preProcessOutro.bind(this)}
-                onProgress={this.onProgressOutro.bind(this)}
-                onError={this.onErrorOutro.bind(this)}
-                onFinish={this.onFinishOutro.bind(this)}
-                uploadRequestHeaders={{ 'x-amz-acl': 'public-read', }}
-                contentDisposition="auto"
-                scrubFilename={(filename) => {
-                    const original = filename.split('.');
-                    const newName = that.soundcastId;
-                    const ext = original[original.length -1];
-                    return filename.replace(filename.slice(0), `${newName}_outro.${ext}`);
-                }}
-                inputRef={cmp => this.uploadOutroAudioInput = cmp}
-                autoUpload={true}
-                />
-          </div>
           <div class="col-md-12" style={{marginBottom: 10}}>
             <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
               <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
@@ -670,101 +611,23 @@ export default class AddSoundcast extends Component {
           </div>
           <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
             <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
-            { audioIntroUploading &&
-                <div>
-                  { audioIntroUploadError &&
-                      <div>
-                        <span style={{color: 'red'}}>{audioIntroUploadError}</span>
-                      </div>
-                    ||
-                      <div>
-                        <div style={{textAlign: 'center', display:'none'}}>
-                          <div className='title-small' style={{marginBottom: 5,}}>
-                              {`Uploading audio file`}
-                          </div>
-                          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                              <Dots style={{}} color="#727981" size={22} speed={1}/>
-                          </div>
-                        </div>
-                          <div style={{display: ''}}>
-                              <MuiThemeProvider>
-                                <LinearProgress
-                                  mode="determinate"
-                                  value={audioIntroUploadProgress}
-                                  color={Colors.mainOrange}/>
-                              </MuiThemeProvider>
-                              <div className='text-medium' style={{textAlign: 'center'}}>
-                                  <span>{`uploading ${audioIntroUploadProgress} %`}</span>
-                              </div>
-                          </div>
-                      </div>
-                  }
-                </div>
-              || uploadedAudioIntroUrl &&
-                <div style={{textAlign: 'center',}} >
-                  <div className='text-medium'>{`${audioIntroName} saved`}</div>
-                  <div style={styles.cancelImg}
-                    onClick={() => this.setState({audioIntroUploaded: false, uploadedAudioIntroUrl: ''})} >
-                    Cancel
-                  </div>
-                </div>
-              || !uploadedAudioIntroUrl &&
-                <button
-                  onClick={() => { that.uploadIntroAudioInput.click(); }}
-                  style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
-                >
-                  Upload
-                </button>
-            }
+            <S3FileUploader
+              s3NewFileName={`${this.soundcastId}_intro`}
+              onUploadedCallback={ext => {
+                const uploadedUrl = `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`;
+                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(uploadedUrl);
+              }}
+            />
           </div>
           <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
             <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
-            { audioOutroUploading &&
-                <div>
-                  { audioOutroUploadError &&
-                      <div>
-                        <span style={{color: 'red'}}>{audioOutroUploadError}</span>
-                      </div>
-                    ||
-                      <div>
-                        <div style={{textAlign: 'center', display:'none'}}>
-                          <div className='title-small' style={{marginBottom: 5,}}>
-                              {`Uploading audio file`}
-                          </div>
-                          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                              <Dots style={{}} color="#727981" size={22} speed={1}/>
-                          </div>
-                        </div>
-                          <div style={{display: ''}}>
-                              <MuiThemeProvider>
-                                <LinearProgress
-                                  mode="determinate"
-                                  value={audioOutroUploadProgress}
-                                  color={Colors.mainOrange}/>
-                              </MuiThemeProvider>
-                              <div className='text-medium' style={{textAlign: 'center'}}>
-                                  <span>{`uploading ${audioOutroUploadProgress} %`}</span>
-                              </div>
-                          </div>
-                      </div>
-                  }
-                </div>
-              || uploadedAudioOutroUrl &&
-                <div style={{textAlign: 'center',}} >
-                  <div className='text-medium'>{`${audioOutroName} saved`}</div>
-                  <div style={styles.cancelImg}
-                    onClick={() => this.setState({audioOutroUploaded: false, uploadedAudioOutroUrl: ''})} >
-                    Cancel
-                  </div>
-                </div>
-              || !uploadedAudioOutroUrl &&
-                <button
-                  onClick={() => { that.uploadOutroAudioInput.click(); }}
-                  style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
-                >
-                  Upload
-                </button>
-            }
+            <S3FileUploader
+              s3NewFileName={`${this.soundcastId}_outro`}
+              onUploadedCallback={ext => {
+                const uploadedUrl = `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`;
+                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(uploadedUrl);
+              }}
+            />
           </div>
         </div>
 
@@ -1030,75 +893,6 @@ export default class AddSoundcast extends Component {
       })
     }
     this._uploadToAws(fileBlob, hostImg);
-  }
-
-  clearInputFile(f){
-      if(f.value){
-          try{
-              f.value = ''; //for IE11, latest Chrome/Firefox/Opera...
-          }catch(err){ }
-          if(f.value){ //for IE5 ~ IE10
-              var form = document.createElement('form'),
-                  parentNode = f.parentNode, ref = f.nextSibling;
-              form.appendChild(f);
-              form.reset();
-              parentNode.insertBefore(f,ref);
-          }
-      }
-  }
-  preProcessIntro(file, next) {
-      // this.setAudioDuration(file);
-      this.clearInputFile(this.uploadIntroAudioInput);
-      this.setState({
-        audioIntroName: file.name,
-        audioIntroUploading: true,
-      })
-      next(file);
-  }
-  preProcessOutro(file, next) {
-      // this.setAudioDuration(file);
-      this.clearInputFile(this.uploadOutroAudioInput);
-      this.setState({
-        audioOutroName: file.name,
-        audioOutroUploading: true,
-      })
-      next(file);
-  }
-  onProgressIntro(percent, message) { this.setState({ audioIntroUploadProgress: percent }); }
-  onProgressOutro(percent, message) { this.setState({ audioOutroUploadProgress: percent }); }
-  onFinishIntro(signResult) {
-      const awsUrl = signResult.signedUrl.split('?')[0];
-      const aux = awsUrl.split('.');
-      const ext = aux[aux.length - 1];
-      const uploadedAudioIntroUrl = `https://mysoundwise.com/tracks/${this.soundcastId}_intro.${ext}`;
-      this.setState({
-          audioIntroUploading: false,
-          audioIntroUploaded: true,
-          audioIntroUploadProgress: 0,
-          uploadedAudioIntroUrl
-      });
-      firebase.database().ref(`soundcasts/${this.soundcastId}/intro`).set(uploadedAudioIntroUrl);
-  }
-  onFinishOutro(signResult) {
-      const awsUrl = signResult.signedUrl.split('?')[0];
-      const aux = awsUrl.split('.');
-      const ext = aux[aux.length - 1];
-      const uploadedAudioOutroUrl = `https://mysoundwise.com/tracks/${this.soundcastId}_intro.${ext}`;
-      this.setState({
-          audioOutroUploading: false,
-          audioOutroUploaded: true,
-          audioOutroUploadProgress: 0,
-          uploadedAudioOutroUrl
-      });
-      firebase.database().ref(`soundcasts/${this.soundcastId}/outro`).set(uploadedAudioOutroUrl);
-  }
-  onErrorIntro(message) {
-      console.log(`upload Intro error: ` + message);
-      this.setState({ audioIntroUploadError: message });
-  }
-  onErrorOutro(message) {
-      console.log(`upload Outro error: ` + message);
-      this.setState({ audioOutroUploadError: message });
   }
 
 	render() {
