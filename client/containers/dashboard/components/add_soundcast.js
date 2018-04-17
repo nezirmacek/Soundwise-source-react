@@ -69,6 +69,8 @@ export default class AddSoundcast extends Component {
 			confirmationEmail: EditorState.createWithContent(confirmationEmail),
       showIntroOutro: false,
       showPricingModal: false,
+      intro: null,
+      outro: null,
 		};
 
 		this.soundcastId = `${moment().format('x')}s`;
@@ -196,7 +198,7 @@ export default class AddSoundcast extends Component {
 		let { title, imageURL, subscribers, short_description,
 			long_description, landingPage,
 			features, hostName, hostBio, hostImageURL,
-			forSale, prices, confirmationEmail} = this.state;
+			forSale, prices, confirmationEmail, intro, outro} = this.state;
 		if(title.length == 0) {
 			alert('Please enter a soundcast title before saving.');
 			return;
@@ -257,6 +259,8 @@ export default class AddSoundcast extends Component {
 								forSale,
 								prices,
 								published: publish,
+								intro,
+								outro,
 							};
 
 							let _promises_1 = [
@@ -625,8 +629,9 @@ export default class AddSoundcast extends Component {
             <S3FileUploader
               s3NewFileName={`${this.soundcastId}_intro`}
               onUploadedCallback={ext => {
-                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
-                  `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`);
+                that.setState({
+                  intro: `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`
+                });
               }}
             />
           </div>
@@ -635,8 +640,9 @@ export default class AddSoundcast extends Component {
             <S3FileUploader
               s3NewFileName={`${this.soundcastId}_outro`}
               onUploadedCallback={ext => {
-                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
-                  `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`);
+                that.setState({
+                  outro: `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`
+                });
               }}
             />
           </div>
