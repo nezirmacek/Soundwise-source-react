@@ -99,6 +99,28 @@ export default class EditSoundcast extends Component {
         this.showIntroOutro = this.showIntroOutro.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+      const { userInfo } = nextProps;
+      if (!this.state.proUser) {
+        let plan, proUser;
+        if(userInfo.publisher && userInfo.publisher.plan) {
+            plan = userInfo.publisher.plan;
+            proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+        }
+        if(userInfo.publisher && userInfo.publisher.beta) {
+            proUser = true;
+        }
+        this.setState({ proUser });
+      }
+      const publisherName = userInfo.publisher && userInfo.publisher.name;
+      if (publisherName) {
+        const itunesHost = nextProps.history.location.state.soundcast.itunesHost;
+        this.setState({
+          itunesHost: itunesHost ? itunesHost : publisherName,
+        });
+      }
+    }
+
     componentDidMount() {
       let editorState, confirmEmailEditorState;
       const { id, soundcast } = this.props.history.location.state;
@@ -142,7 +164,6 @@ export default class EditSoundcast extends Component {
         isPodcast: isPodcast ? isPodcast : false,
         episodes: episodes ? episodes : null,
         itunesTitle: itunesTitle ? itunesTitle : title,
-        itunesHost: itunesHost ? itunesHost : this.props.userInfo.publisher.name,
         itunesCategory: itunesCategory ? itunesCategory : null,
         itunesExplicit: itunesExplicit ? itunesExplicit : false,
         itunesImage: itunesImage ? itunesImage : null,
@@ -165,19 +186,6 @@ export default class EditSoundcast extends Component {
           prices
         })
       }
-
-      const { userInfo } = this.props;
-      let plan, proUser;
-      if(userInfo.publisher && userInfo.publisher.plan) {
-          plan = userInfo.publisher.plan;
-          proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
-      }
-      if(userInfo.publisher && userInfo.publisher.beta) {
-          proUser = true;
-      }
-      this.setState({
-        proUser,
-      });
     }
 
     _uploadToAws (file, imageType) {
