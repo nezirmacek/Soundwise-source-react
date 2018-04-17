@@ -102,15 +102,9 @@ export default class EditSoundcast extends Component {
     componentWillReceiveProps(nextProps) {
       const { userInfo } = nextProps;
       if (!this.state.proUser) {
-        let plan, proUser;
-        if(userInfo.publisher && userInfo.publisher.plan) {
-            plan = userInfo.publisher.plan;
-            proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+        if(userInfo.publisher) {
+          this.checkUserStatus(userInfo);
         }
-        if(userInfo.publisher && userInfo.publisher.beta) {
-            proUser = true;
-        }
-        this.setState({ proUser });
       }
       const publisherName = userInfo.publisher && userInfo.publisher.name;
       if (publisherName) {
@@ -186,6 +180,24 @@ export default class EditSoundcast extends Component {
           prices
         })
       }
+
+      if(this.props.userInfo.publisher) {
+        this.checkUserStatus(this.props.userInfo);
+      }
+    }
+
+    checkUserStatus(userInfo) {
+      let plan, proUser;
+      if(userInfo.publisher.plan) {
+          plan = userInfo.publisher.plan;
+          proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+      }
+      if(userInfo.publisher.beta) {
+          proUser = true;
+      }
+      this.setState({
+        proUser,
+      });
     }
 
     _uploadToAws (file, imageType) {
@@ -645,10 +657,10 @@ export default class EditSoundcast extends Component {
                   <div class="col-md-12" style={{marginBottom: 10}}>
                     <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
                       <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
-                      <span>Intro And Outro1</span>
+                      <span>Intro And Outro</span>
                      {
                       !proUser &&
-                      <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUSs</span>
+                      <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
                       || <span></span>
                      }
                     </div>

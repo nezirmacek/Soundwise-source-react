@@ -82,14 +82,25 @@ export default class AddSoundcast extends Component {
 		this.showIntroOutro = this.showIntroOutro.bind(this);
 	}
 
-	componentWillReceiveProps(nextProps) {
-		let userInfo = nextProps.userInfo;
+  componentDidMount() {
+    if(this.props.userInfo.publisher) {
+      this.checkUserStatus(this.props.userInfo);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.userInfo.publisher && !this.state.proUser) {
+      this.checkUserStatus(nextProps.userInfo);
+    }
+  }
+
+	checkUserStatus(userInfo) {
     let plan, proUser;
-    if(userInfo.publisher && userInfo.publisher.plan) {
+    if(userInfo.publisher.plan) {
         plan = userInfo.publisher.plan;
         proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
     }
-    if(userInfo.publisher && userInfo.publisher.beta) {
+    if(userInfo.publisher.beta) {
         proUser = true;
     }
     this.setState({
