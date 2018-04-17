@@ -614,8 +614,8 @@ export default class AddSoundcast extends Component {
             <S3FileUploader
               s3NewFileName={`${this.soundcastId}_intro`}
               onUploadedCallback={ext => {
-                const uploadedUrl = `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`;
-                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(uploadedUrl);
+                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
+                  `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`);
               }}
             />
           </div>
@@ -624,8 +624,8 @@ export default class AddSoundcast extends Component {
             <S3FileUploader
               s3NewFileName={`${this.soundcastId}_outro`}
               onUploadedCallback={ext => {
-                const uploadedUrl = `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`;
-                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(uploadedUrl);
+                firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
+                  `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`);
               }}
             />
           </div>

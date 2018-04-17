@@ -34,7 +34,7 @@ export default class S3FileUploader extends Component {
   }
 
   preProcess(file, next) {
-      // this.setAudioDuration(file);   // TODO preprocess callback
+      // this.props.onPreProcessCallback && this.props.onPreProcessCallback(file);
       this.clearInputFile(this.uploadFileInput);
       this.setState({
         fileName: file.name,

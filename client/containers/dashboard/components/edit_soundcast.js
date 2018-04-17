@@ -18,6 +18,10 @@ import Dots from 'react-activity/lib/Dots';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import S3FileUploader from '../../../components/s3_file_uploader';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
+import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
 import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
 import {itunesCategories} from '../../../helpers/itunes_categories';
@@ -80,6 +84,7 @@ export default class EditSoundcast extends Component {
             doneProcessingPodcast: false,
             startProcessingPodcast:  false,
             podcastFeedVersion: null,
+            showIntroOutro: false,
             autoSubmitPodcast: false
         };
 
@@ -91,6 +96,7 @@ export default class EditSoundcast extends Component {
         this.addFeature = this.addFeature.bind(this);
         this.submit = this.submit.bind(this);
         this.onEditorStateChange = this.onEditorStateChange.bind(this);
+        this.showIntroOutro = this.showIntroOutro.bind(this);
     }
 
     componentDidMount() {
@@ -448,9 +454,21 @@ export default class EditSoundcast extends Component {
       }
     }
 
+    showIntroOutro() {
+			const {showIntroOutro, proUser, showPricingModal} = this.state;
+			if (proUser) {
+				this.setState({showIntroOutro: !showIntroOutro});
+			} else {
+				this.setState({
+					showPricingModal: true,
+				})
+			}
+		}
+
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
-        const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices, instructor2Input, hostName2} = this.state;
+        const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale,
+          prices, instructor2Input, hostName2, showIntroOutro, proUser} = this.state;
         const that = this;
         const {userInfo} = this.props;
         const actions = [
@@ -537,6 +555,8 @@ export default class EditSoundcast extends Component {
                     >
                     </textarea>
                 </div>
+
+                {/*Host/Instructor Profile Picture*/}
                 <div style={{height: 150, width: '100%'}}>
                     <div style={{marginBottom: 10}}>
                         <span style={styles.titleText}>
@@ -598,6 +618,43 @@ export default class EditSoundcast extends Component {
                   this.renderInstructor2Input()
                   || null
                 }
+
+                {/*Upload outro/intro*/}
+                <div style={{ marginBottom: 40 }} className='row'>
+                  <div class="col-md-12" style={{marginBottom: 10}}>
+                    <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
+                      <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
+                      <span>Intro And Outro1</span>
+                     {
+                      !proUser &&
+                      <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUSs</span>
+                      || <span></span>
+                     }
+                    </div>
+                    <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
+                  </div>
+                  <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
+                    <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
+                    <S3FileUploader
+                      s3NewFileName={`${this.soundcastId}_intro`}
+                      onUploadedCallback={ext => {
+                        firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
+                          `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`);
+                      }}
+                    />
+                  </div>
+                  <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
+                    <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
+                    <S3FileUploader
+                      s3NewFileName={`${this.soundcastId}_outro`}
+                      onUploadedCallback={ext => {
+                        firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
+                          `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`);
+                      }}
+                    />
+                  </div>
+                </div>
+
                 { landingPage &&
                     <div>
                       <span style={styles.titleText}>Pricing</span>
