@@ -671,7 +671,7 @@ export default class EditSoundcast extends Component {
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_intro`}
-                      showUploadedFile={soundcast.intro}
+                      showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
                       onUploadedCallback={ext => {
                         firebase.database().ref(`soundcasts/${soundcast.id}/intro`).set(
                           `https://mysoundwise.com/tracks/${soundcast.id}_intro.${ext}`);
@@ -685,7 +685,7 @@ export default class EditSoundcast extends Component {
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_outro`}
-                      showUploadedFile={soundcast.outro}
+                      showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
                       onUploadedCallback={ext => {
                         firebase.database().ref(`soundcasts/${soundcast.id}/outro`).set(
                           `https://mysoundwise.com/tracks/${soundcast.id}_outro.${ext}`);

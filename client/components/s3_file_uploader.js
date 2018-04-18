@@ -9,12 +9,13 @@ export default class S3FileUploader extends Component {
 	constructor(props) {
 		super(props)
 
-		this.state = {
-			fileUploading: false,
-      fileUploaded: false,
+    this.state = {
+      fileUploading: false,
+      fileUploaded: props.showUploadedFile ? true : false,
+      fileName: props.showUploadedFile || '',
       fileUploadProgress: 0,
       fileUploadError: null,
-      fileUrl: '',
+      // fileUrl: '',
 		}
 	}
 
