@@ -504,6 +504,7 @@ export default class EditSoundcast extends Component {
           prices, instructor2Input, hostName2, showIntroOutro, proUser} = this.state;
         const that = this;
         const {userInfo} = this.props;
+        const {soundcast} = this.props.history.location.state;
         const actions = [
           <FlatButton
             label="OK"
@@ -669,10 +670,10 @@ export default class EditSoundcast extends Component {
                   <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
                     <S3FileUploader
-                      s3NewFileName={`${this.soundcastId}_intro`}
+                      s3NewFileName={`${soundcast.id}_intro`}
                       onUploadedCallback={ext => {
-                        firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
-                          `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`);
+                        firebase.database().ref(`soundcasts/${soundcast.id}/intro`).set(
+                          `https://mysoundwise.com/tracks/${soundcast.id}_intro.${ext}`);
                       }}
                     />
                   </div>
