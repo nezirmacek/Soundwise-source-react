@@ -126,7 +126,10 @@ export default class S3FileUploader extends Component {
 						<div style={{textAlign: 'center',}} >
 							<div className='text-medium'>{`${fileName} saved`}</div>
 							<div style={styles.cancelImg}
-								onClick={() => this.setState({fileUploaded: false, uploadedFileUrl: ''})} >
+								onClick={() => {
+									this.props.onRemoveCallback && this.props.onRemoveCallback();
+									this.setState({fileUploaded: false, uploadedFileUrl: ''});
+								}} >
 								Cancel
 							</div>
 						</div>

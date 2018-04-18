@@ -671,19 +671,27 @@ export default class EditSoundcast extends Component {
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_intro`}
+                      showUploadedFile={soundcast.intro}
                       onUploadedCallback={ext => {
                         firebase.database().ref(`soundcasts/${soundcast.id}/intro`).set(
                           `https://mysoundwise.com/tracks/${soundcast.id}_intro.${ext}`);
+                      }}
+                      onRemoveCallback={() => {
+                        firebase.database().ref(`soundcasts/${soundcast.id}/intro`).remove();
                       }}
                     />
                   </div>
                   <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
                     <S3FileUploader
-                      s3NewFileName={`${this.soundcastId}_outro`}
+                      s3NewFileName={`${soundcast.id}_outro`}
+                      showUploadedFile={soundcast.outro}
                       onUploadedCallback={ext => {
-                        firebase.database().ref(`soundcasts/${that.soundcastId}/intro`).set(
-                          `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`);
+                        firebase.database().ref(`soundcasts/${soundcast.id}/outro`).set(
+                          `https://mysoundwise.com/tracks/${soundcast.id}_outro.${ext}`);
+                      }}
+                      onRemoveCallback={() => {
+                        firebase.database().ref(`soundcasts/${soundcast.id}/outro`).remove();
                       }}
                     />
                   </div>

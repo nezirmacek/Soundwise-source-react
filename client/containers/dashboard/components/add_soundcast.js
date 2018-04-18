@@ -198,7 +198,7 @@ export default class AddSoundcast extends Component {
 		let { title, imageURL, subscribers, short_description,
 			long_description, landingPage,
 			features, hostName, hostBio, hostImageURL,
-			forSale, prices, confirmationEmail, intro, outro} = this.state;
+			forSale, prices, confirmationEmail, introUrl, outroUrl} = this.state;
 		if(title.length == 0) {
 			alert('Please enter a soundcast title before saving.');
 			return;
@@ -259,8 +259,8 @@ export default class AddSoundcast extends Component {
 								forSale,
 								prices,
 								published: publish,
-								intro,
-								outro,
+								intro: introUrl,
+								outro: outroUrl,
 							};
 
 							let _promises_1 = [
@@ -630,7 +630,7 @@ export default class AddSoundcast extends Component {
               s3NewFileName={`${this.soundcastId}_intro`}
               onUploadedCallback={ext => {
                 that.setState({
-                  intro: `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`
+                  introUrl: `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`
                 });
               }}
             />
@@ -641,7 +641,7 @@ export default class AddSoundcast extends Component {
               s3NewFileName={`${this.soundcastId}_outro`}
               onUploadedCallback={ext => {
                 that.setState({
-                  outro: `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`
+                  outroUrl: `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`
                 });
               }}
             />
