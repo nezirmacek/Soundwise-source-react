@@ -106,7 +106,7 @@ class _Routes extends Component {
                                                 //  _user.soundcasts[key] = _soundcast;
                                                 // }
                                                 // console.log('compiled soundcast');
-                                                that.props.signinUser(_user);
+                                                !that.props.isLoggedIn && that.props.signinUser(_user);
                                                 if (_soundcast.episodes) {
                                                     for (let epkey in _soundcast.episodes) {
                                                         // watch episodes of soundcasts
@@ -116,7 +116,7 @@ class _Routes extends Component {
                                                                 _user = JSON.parse(JSON.stringify(_user));
                                                                 _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
                                                                 // console.log('compiled episodes');
-                                                                that.props.signinUser(_user);
+                                                                !that.props.isLoggedIn && that.props.signinUser(_user);
                                                             }
                                                         });
                                                     }
@@ -138,7 +138,7 @@ class _Routes extends Component {
                                 if(_user.soundcasts_managed && _user.soundcasts_managed[key]) {
                                     _user = JSON.parse(JSON.stringify(_user));
                                     _user.soundcasts[key] = _user.soundcasts_managed[key];
-                                    that.props.signinUser(_user);
+                                    !that.props.isLoggedIn && that.props.signinUser(_user);
                                 }
 
                             	if (!_user.soundcasts_managed || !_user.soundcasts_managed[key]) { // otherwise this soundcast is watched in soundcasts_managed
@@ -150,7 +150,7 @@ class _Routes extends Component {
 												_user = JSON.parse(JSON.stringify(_user));
 												const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
 												_user.soundcasts[key] = _soundcast;
-												that.props.signinUser(_user);
+												!that.props.isLoggedIn && that.props.signinUser(_user);
 												if (_soundcast.episodes) {
 													for (let epkey in _soundcast.episodes) {
 														// watch episodes of soundcasts
@@ -159,7 +159,7 @@ class _Routes extends Component {
 															if (snapshot.val()) {
 																_user = JSON.parse(JSON.stringify(_user));
 																_user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-																that.props.signinUser(_user);
+																!that.props.isLoggedIn && that.props.signinUser(_user);
 															}
 														});
 													}
@@ -257,10 +257,12 @@ class _Routes extends Component {
   }
 }
 
-
+const mapStateToProps = state => {
+  return { isLoggedIn: state.user.isLoggedIn }
+};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ loadCourses, signinUser, subscribeToCategories }, dispatch)
 }
 
-export const Routes = connect(null, mapDispatchToProps)(_Routes)
+export const Routes = connect(mapStateToProps, mapDispatchToProps)(_Routes)
