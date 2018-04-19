@@ -129,7 +129,7 @@ class _Routes extends Component {
                   );
                 }
               }
-            }
+            } // if (_user.admin)
 
             if (_user.soundcasts) {
               for (let key in _user.soundcasts) {
@@ -144,35 +144,32 @@ class _Routes extends Component {
               	if (!_user.soundcasts_managed || !_user.soundcasts_managed[key]) { // otherwise this soundcast is watched in soundcasts_managed
 									// watch soundcasts subscriptions
 									firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
-									firebase.database().ref(`soundcasts/${key}`).on('value',
-										snapshot => {
-											if (snapshot.val()) {
-												_user = JSON.parse(JSON.stringify(_user));
-												const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
-												_user.soundcasts[key] = _soundcast;
-												!that.props.isLoggedIn && that.props.signinUser(_user);
-												if (_soundcast.episodes) {
-													for (let epkey in _soundcast.episodes) {
-														// watch episodes of soundcasts
-														firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
-														firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
-															if (snapshot.val()) {
-																_user = JSON.parse(JSON.stringify(_user));
-																_user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
-																!that.props.isLoggedIn && that.props.signinUser(_user);
-															}
-														});
-													}
+									firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
+										if (snapshot.val()) {
+											_user = JSON.parse(JSON.stringify(_user));
+											const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
+											_user.soundcasts[key] = _soundcast;
+											!that.props.isLoggedIn && that.props.signinUser(_user);
+											if (_soundcast.episodes) {
+												for (let epkey in _soundcast.episodes) {
+													// watch episodes of soundcasts
+													firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
+													firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
+														if (snapshot.val()) {
+															_user = JSON.parse(JSON.stringify(_user));
+															_user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
+															!that.props.isLoggedIn && that.props.signinUser(_user);
+														}
+													});
 												}
 											}
-										},
-										err => {
-											console.log('ERROR on soundcast: ', err);
 										}
-									);
+									}, err => {
+										console.log('ERROR on soundcast: ', err);
+									});
 								}
               }
-            } //   if (_user.soundcasts)
+            } // if (_user.soundcasts)
           } // if (snapshot.val())
         });
       }

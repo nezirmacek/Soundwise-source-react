@@ -488,15 +488,15 @@ export default class EditSoundcast extends Component {
     }
 
     showIntroOutro() {
-			const {showIntroOutro, proUser, showPricingModal} = this.state;
-			if (proUser) {
-				this.setState({showIntroOutro: !showIntroOutro});
-			} else {
-				this.setState({
-					showPricingModal: true,
-				})
-			}
-		}
+      const {showIntroOutro, proUser, showPricingModal} = this.state;
+      if (proUser) {
+        this.setState({showIntroOutro: !showIntroOutro});
+      } else {
+        this.setState({
+          showPricingModal: true,
+        })
+      }
+    }
 
     renderAdditionalInputs() {
         const featureNum = this.state.features.length;
@@ -505,6 +505,7 @@ export default class EditSoundcast extends Component {
         const that = this;
         const {userInfo} = this.props;
         const {soundcast} = this.props.history.location.state;
+        console.log(soundcast && soundcast.id, soundcast && soundcast.intro);
         const actions = [
           <FlatButton
             label="OK"
@@ -655,7 +656,7 @@ export default class EditSoundcast extends Component {
 
                 {/*Upload outro/intro*/}
                 <div style={{ marginBottom: 40 }} className='row'>
-                  <div class="col-md-12" style={{marginBottom: 10}}>
+                  <div className="col-md-12" style={{marginBottom: 10}}>
                     <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
                       <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
                       <span>Intro And Outro</span>
@@ -667,7 +668,7 @@ export default class EditSoundcast extends Component {
                     </div>
                     <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
                   </div>
-                  <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
+                  <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_intro`}
@@ -681,7 +682,7 @@ export default class EditSoundcast extends Component {
                       }}
                     />
                   </div>
-                  <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
+                  <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
                     <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_outro`}
@@ -1343,22 +1344,22 @@ export default class EditSoundcast extends Component {
           <MuiThemeProvider >
             <div className='padding-30px-tb' style={{}}>
 
-							{/*Upgrade account block*/}
-							<div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
-							  <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
-							    <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
-							    <div className='title-small' style={{margin: 25}}>
-							      Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
-							    </div>
-							    <div className="center-col">
-							      <OrangeSubmitButton
-							        label='Upgrade'
-							        onClick={() => that.props.history.push({pathname: '/pricing'})}
-							        styles={{width: '60%'}}
-							      />
-							    </div>
-							  </div>
-							</div>
+              {/*Upgrade account block*/}
+              <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
+                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+                  <div className='title-small' style={{margin: 25}}>
+                    Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                  </div>
+                  <div className="center-col">
+                    <OrangeSubmitButton
+                      label='Upgrade'
+                      onClick={() => that.props.history.push({pathname: '/pricing'})}
+                      styles={{width: '60%'}}
+                    />
+                  </div>
+                </div>
+              </div>
 
               <ImageCropModal
                 open={modalOpen}

@@ -128,7 +128,7 @@ class _CreateEpisode extends Component {
 
             recordedAudioUrl: '', // linkto uploaded file aws s3
             uploadedAudioUrl: '',
-			blob: {}, // to play audio from react-mic
+      blob: {}, // to play audio from react-mic
             notesUrl: '', // linkto uploaded file aws s3
             audioDuration: 0,
 
@@ -200,7 +200,7 @@ class _CreateEpisode extends Component {
                 this.changeSoundcastId(this.props.location.state.soundcastID);
             }
         }
-	}
+  }
 
     componentWillReceiveProps(nextProps) {
         const {userInfo} = nextProps;
@@ -231,7 +231,7 @@ class _CreateEpisode extends Component {
             })
 
         }, 1000);
-	}
+  }
 
     stop (blobObject) {
         const that = this;
@@ -267,7 +267,7 @@ class _CreateEpisode extends Component {
     }
 
     pause () {
-		this.wavesurfer.surfer.pause();
+    this.wavesurfer.surfer.pause();
         this.setState({
             isPlaying: false,
             currentPlayingDuration: 0
@@ -286,8 +286,8 @@ class _CreateEpisode extends Component {
         clearInterval(this.playingInterval);
         this.player.pause();
         this.player.currentTime(0);
-		//upload file to aws s3
-		this._uploadToAws(this.state.blob.blob, 'audio');
+    //upload file to aws s3
+    this._uploadToAws(this.state.blob.blob, 'audio');
         this.setState({
             audioUploading: true,
             isSaved: true,
@@ -1460,7 +1460,7 @@ const styles = {
         float: 'left',
         marginLeft: 15,
         position: 'relative',
-		cursor: 'pointer',
+    cursor: 'pointer',
     },
     playIcon: {
         fontSize: 50,
@@ -1477,7 +1477,7 @@ const styles = {
         top: 15,
         marginLeft: 15,
         marginright: 15,
-		cursor: 'pointer',
+    cursor: 'pointer',
     },
     trashWrapper: {
         float: 'left',
@@ -1487,7 +1487,7 @@ const styles = {
         top: 15,
         marginLeft: 15,
         marginright: 15,
-		cursor: 'pointer',
+    cursor: 'pointer',
 
     },
     trashIcon: {
@@ -1610,7 +1610,7 @@ const styles = {
         marginLeft: 'auto',
         // textAlign: 'center',
         paddingTop: 5,
-		cursor: 'pointer',
+    cursor: 'pointer',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
