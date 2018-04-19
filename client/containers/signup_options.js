@@ -29,7 +29,7 @@ class _SignupOptions extends Component {
     this.state = {
       importFeed: false,
       podcastTitle: '',
-      feedUrl: '', // test
+      feedUrl: '',
       imageUrl: null,
       publisherEmail: null,
       emailNotFoundError: false,

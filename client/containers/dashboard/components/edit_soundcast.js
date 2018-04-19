@@ -1332,13 +1332,34 @@ export default class EditSoundcast extends Component {
     }
 
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion, hostImg2} = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen,
+          hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType,
+          startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion,
+          hostImg2, showPricingModal} = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
         return (
           <MuiThemeProvider >
             <div className='padding-30px-tb' style={{}}>
+
+							{/*Upgrade account block*/}
+							<div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
+							  <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+							    <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+							    <div className='title-small' style={{margin: 25}}>
+							      Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+							    </div>
+							    <div className="center-col">
+							      <OrangeSubmitButton
+							        label='Upgrade'
+							        onClick={() => that.props.history.push({pathname: '/pricing'})}
+							        styles={{width: '60%'}}
+							      />
+							    </div>
+							  </div>
+							</div>
+
               <ImageCropModal
                 open={modalOpen}
                 handleClose={this.handleModalClose.bind(this)}
