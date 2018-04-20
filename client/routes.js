@@ -4,7 +4,6 @@ import firebase from 'firebase';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {Helmet} from 'react-helmet';
-import { browserHistory } from 'react-router';
 // import Butter from 'buttercms';
 // const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8');
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -189,7 +188,7 @@ class _Routes extends Component {
 
   render() {
     return (
-      <Router history = { browserHistory }>
+      <Router>
         <ScrollToTop>
           <div>
             <Helmet>

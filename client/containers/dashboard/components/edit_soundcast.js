@@ -370,33 +370,30 @@ export default class EditSoundcast extends Component {
                   };
 
                   // edit soundcast in database
-                      firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-                      .once('value')
-                      .then(snapshot => {
-                        const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
-
-                        firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-                        .set(changedSoundcast)
-                        .then(
-                          res => {
-                                Axios.post('/api/soundcast', {
-                                  soundcastId: that.props.history.location.state.id,
-                                  publisherId: that.props.userInfo.publisherID,
-                                  title
-                                })
-                                .then(() => {
-                                  if(!noAlert) {
-                                    alert('Soundcast changes are saved.');
-                                  }
-                                  // history.goBack();
-                                  that.firebaseListener = null;
-                                });
-                          },
-                          err => {
-                              console.log('ERROR add soundcast: ', err);
-                          }
-                        );
+                  firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+                  .once('value')
+                  .then(snapshot => {
+                    const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
+                    firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+                    .set(changedSoundcast)
+                    .then(res => {
+                      Axios.post('/api/soundcast', {
+                        soundcastId: that.props.history.location.state.id,
+                        publisherId: that.props.userInfo.publisherID,
+                        title
+                      })
+                      .then(() => {
+                        if(!noAlert) {
+                          alert('Soundcast changes are saved.');
+                        }
+                        // history.goBack();
+                        that.firebaseListener = null;
                       });
+                      history.replace(history.location.pathname, {soundcast: changedSoundcast});
+                    }, err => {
+                      console.log('ERROR add soundcast: ', err);
+                    });
+                  });
               } else {
                 // alert('Soundcast saving failed. Please try again later.');
                 // Raven.captureMessage('Soundcast saving failed!')
@@ -496,6 +493,17 @@ export default class EditSoundcast extends Component {
           showPricingModal: true,
         })
       }
+    }
+
+    updateSoundcast(soundcast, path, ext) {
+      if (ext) {
+        soundcast[path] = `https://mysoundwise.com/tracks/${soundcast.id}_intro.${ext}`
+        firebase.database().ref(`soundcasts/${soundcast.id}/${path}`).set(soundcast[path]);
+      } else {
+        delete soundcast[path];
+        firebase.database().ref(`soundcasts/${soundcast.id}/${path}`).remove();
+      }
+      this.props.history.replace(this.props.history.location.pathname, { soundcast }); // update state
     }
 
     renderAdditionalInputs() {
@@ -673,13 +681,8 @@ export default class EditSoundcast extends Component {
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_intro`}
                       showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
-                      onUploadedCallback={ext => {
-                        firebase.database().ref(`soundcasts/${soundcast.id}/intro`).set(
-                          `https://mysoundwise.com/tracks/${soundcast.id}_intro.${ext}`);
-                      }}
-                      onRemoveCallback={() => {
-                        firebase.database().ref(`soundcasts/${soundcast.id}/intro`).remove();
-                      }}
+                      onUploadedCallback={ext => that.updateSoundcast(soundcast, 'intro', ext)}
+                      onRemoveCallback={() => that.updateSoundcast(soundcast, 'intro')}
                     />
                   </div>
                   <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
@@ -687,13 +690,8 @@ export default class EditSoundcast extends Component {
                     <S3FileUploader
                       s3NewFileName={`${soundcast.id}_outro`}
                       showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
-                      onUploadedCallback={ext => {
-                        firebase.database().ref(`soundcasts/${soundcast.id}/outro`).set(
-                          `https://mysoundwise.com/tracks/${soundcast.id}_outro.${ext}`);
-                      }}
-                      onRemoveCallback={() => {
-                        firebase.database().ref(`soundcasts/${soundcast.id}/outro`).remove();
-                      }}
+                      onUploadedCallback={ext => that.updateSoundcast(soundcast, 'outro', ext)}
+                      onRemoveCallback={() => that.updateSoundcast(soundcast, 'outro')}
                     />
                   </div>
                 </div>
