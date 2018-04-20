@@ -111,7 +111,6 @@ class _Routes extends Component {
               firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
               firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
                 if (snapshot.val()) {
-                  _user = JSON.parse(JSON.stringify(_user));
                   const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
                   _user.soundcasts_managed[key] = _soundcast;
                   // to not watch the same soundcasts twice
@@ -127,7 +126,6 @@ class _Routes extends Component {
                       firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
                       firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
                         if (snapshot.val()) {
-                          _user = JSON.parse(JSON.stringify(_user));
                           _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
                           // console.log('compiled episodes');
                           that.updateUserState(_user);
@@ -148,7 +146,6 @@ class _Routes extends Component {
             // to not watch the same soundcasts twice
             // fixes problem with .off of managed soundcasts, that are subscribed too
             if (_user.soundcasts_managed && _user.soundcasts_managed[key]) {
-              _user = JSON.parse(JSON.stringify(_user));
               _user.soundcasts[key] = _user.soundcasts_managed[key];
               that.updateUserState(_user);
             }
@@ -158,7 +155,6 @@ class _Routes extends Component {
               firebase.database().ref(`soundcasts/${key}`).off(); // to avoid error when subscribe twice
               firebase.database().ref(`soundcasts/${key}`).on('value', snapshot => {
                 if (snapshot.val()) {
-                  _user = JSON.parse(JSON.stringify(_user));
                   const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
                   _user.soundcasts[key] = _soundcast;
                   that.updateUserState(_user);
@@ -168,7 +164,6 @@ class _Routes extends Component {
                       firebase.database().ref(`episodes/${epkey}`).off(); // to avoid error when subscribe twice
                       firebase.database().ref(`episodes/${epkey}`).on('value', snapshot => {
                         if (snapshot.val()) {
-                          _user = JSON.parse(JSON.stringify(_user));
                           _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(snapshot.val()));
                           that.updateUserState(_user);
                         }
