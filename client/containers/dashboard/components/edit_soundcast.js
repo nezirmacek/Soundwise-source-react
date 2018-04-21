@@ -100,24 +100,35 @@ export default class EditSoundcast extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-      const { userInfo } = nextProps;
+      const { userInfo, history } = nextProps;
       if (!this.state.proUser) {
-        if(userInfo.publisher) {
+        if (userInfo.publisher) {
           this.checkUserStatus(userInfo);
         }
       }
+      const _state = history.location.state;
       const publisherName = userInfo.publisher && userInfo.publisher.name;
       if (publisherName) {
-        const itunesHost = nextProps.history.location.state.soundcast.itunesHost;
-        this.setState({
-          itunesHost: itunesHost ? itunesHost : publisherName,
-        });
+        const itunesHost = _state && _state.soundcast.itunesHost;
+        this.setState({ itunesHost: itunesHost || publisherName });
+      }
+      if (!_state && userInfo.loadEditSoundcast) {
+        history.replace(history.location.pathname, { soundcast: userInfo.loadEditSoundcast });
+        this.setSoundcastState(userInfo.loadEditSoundcast);
       }
     }
 
     componentDidMount() {
-      let editorState, confirmEmailEditorState;
-      const { id, soundcast } = this.props.history.location.state;
+      const { history } = this.props;
+      const soundcast = history.location.state && history.location.state.soundcast;
+      if (!soundcast) {
+        return
+      }
+      this.setSoundcastState(soundcast);
+    }
+
+    setSoundcastState(soundcast) {
+      const { userInfo } = this.props;
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesTitle, itunesHost, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
@@ -126,6 +137,7 @@ export default class EditSoundcast extends Component {
       //        features0, hostName0, hostBio0, hostImageURL0,
       //        forSale0, prices0, } = this.state;
 
+      let editorState, confirmEmailEditorState;
       if(long_description) {
         let contentState = convertFromRaw(JSON.parse(long_description));
         editorState = EditorState.createWithContent(contentState);
@@ -165,25 +177,10 @@ export default class EditSoundcast extends Component {
         autoSubmitPodcast: autoSubmitPodcast ? autoSubmitPodcast : false,
       });
 
-      if(subscribed) {
-        this.setState({
-            subscribed
-        })
-      }
-      if(features) {
-        this.setState({
-          features
-        })
-      }
-      if(prices) {
-        this.setState({
-          prices
-        })
-      }
-
-      if(this.props.userInfo.publisher) {
-        this.checkUserStatus(this.props.userInfo);
-      }
+      subscribed && this.setState({ subscribed })
+      features   && this.setState({ features })
+      prices     && this.setState({ prices })
+      userInfo.publisher && this.checkUserStatus(userInfo)
     }
 
     checkUserStatus(userInfo) {
@@ -513,8 +510,8 @@ export default class EditSoundcast extends Component {
       const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale,
         prices, instructor2Input, hostName2, showIntroOutro, proUser} = this.state;
       const that = this;
-      const {userInfo} = this.props;
-      const {soundcast} = this.props.history.location.state;
+      const {userInfo, history} = this.props;
+      const soundcast = history.location.state && history.location.state.soundcast;
       const actions = [
         <FlatButton
           label="OK"
@@ -664,38 +661,40 @@ export default class EditSoundcast extends Component {
             }
 
             {/*Upload outro/intro*/}
-            <div style={{ marginBottom: 40 }} className='row'>
-              <div className="col-md-12" style={{marginBottom: 10}}>
-                <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
-                  <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
-                  <span>Intro And Outro</span>
-                 {
-                  !proUser &&
-                  <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
-                  || <span></span>
-                 }
+            { soundcast &&
+              <div style={{ marginBottom: 40 }} className='row'>
+                <div className="col-md-12" style={{marginBottom: 10}}>
+                  <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
+                    <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
+                    <span>Intro And Outro</span>
+                   {
+                    !proUser &&
+                    <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+                    || <span></span>
+                   }
+                  </div>
+                  <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
                 </div>
-                <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
+                <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
+                  <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
+                  <S3FileUploader
+                    s3NewFileName={`${soundcast.id}_intro`}
+                    showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
+                    onUploadedCallback={ext => that.updateSoundcast(soundcast, 'intro', ext)}
+                    onRemoveCallback={() => that.updateSoundcast(soundcast, 'intro')}
+                  />
+                </div>
+                <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
+                  <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
+                  <S3FileUploader
+                    s3NewFileName={`${soundcast.id}_outro`}
+                    showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
+                    onUploadedCallback={ext => that.updateSoundcast(soundcast, 'outro', ext)}
+                    onRemoveCallback={() => that.updateSoundcast(soundcast, 'outro')}
+                  />
+                </div>
               </div>
-              <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
-                <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
-                <S3FileUploader
-                  s3NewFileName={`${soundcast.id}_intro`}
-                  showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
-                  onUploadedCallback={ext => that.updateSoundcast(soundcast, 'intro', ext)}
-                  onRemoveCallback={() => that.updateSoundcast(soundcast, 'intro')}
-                />
-              </div>
-              <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
-                <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
-                <S3FileUploader
-                  s3NewFileName={`${soundcast.id}_outro`}
-                  showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
-                  onUploadedCallback={ext => that.updateSoundcast(soundcast, 'outro', ext)}
-                  onRemoveCallback={() => that.updateSoundcast(soundcast, 'outro')}
-                />
-              </div>
-            </div>
+            }
 
             { landingPage &&
               <div>

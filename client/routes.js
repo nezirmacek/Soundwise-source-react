@@ -91,6 +91,14 @@ class _Routes extends Component {
         // console.log('_user: ', _user);
         that.updateUserState({..._user, id: userId});
 
+        let editSoundcastKey; // indicate empty history.state and requiring soundcast download
+        if (!window.history.state && window.location.pathname.includes('/dashboard/edit/')) {
+          const key = window.location.pathname.split('/')[3].split('#')[0].split('?')[0];
+          if (key[key.length - 1] === 's') {  // soundcast
+            editSoundcastKey = key;
+          }
+        }
+
         if (_user.admin) {
           if (_user.publisherID) {
             firebase.database().ref(`publishers/${_user.publisherID}`).on('value', snapshot => {
@@ -118,6 +126,9 @@ class _Routes extends Component {
                   //  _user.soundcasts[key] = _soundcast;
                   // }
                   // console.log('compiled soundcast');
+                  if (editSoundcastKey && editSoundcastKey === key) {
+                    _user.loadEditSoundcast = _soundcast;
+                  }
                   that.updateUserState(_user);
                   if (_soundcast.episodes) {
                     for (let epkey in _soundcast.episodes) {
@@ -156,6 +167,9 @@ class _Routes extends Component {
                 if (snapshot.val()) {
                   const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
                   _user.soundcasts[key] = _soundcast;
+                  if (editSoundcastKey && editSoundcastKey === key) {
+                    _user.loadEditSoundcast = _soundcast;
+                  }
                   that.updateUserState(_user);
                   if (_soundcast.episodes) {
                     for (let epkey in _soundcast.episodes) {
