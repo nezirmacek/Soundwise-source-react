@@ -113,8 +113,8 @@ export default class EditSoundcast extends Component {
         this.setState({ itunesHost: itunesHost || publisherName });
       }
       if (!_state && userInfo.loadEditSoundcast) {
-        history.replace(history.location.pathname, { soundcast: userInfo.loadEditSoundcast });
-        this.setSoundcastState(userInfo.loadEditSoundcast);
+        history.replace(history.location.pathname, userInfo.loadEditSoundcast);
+        this.setSoundcastState(userInfo.loadEditSoundcast.soundcast);
       }
     }
 
@@ -494,13 +494,14 @@ export default class EditSoundcast extends Component {
       }
     }
 
-    updateSoundcast(soundcast, path, ext) {
+    updateSoundcast(path, ext) {
+      const { soundcast, id } = window.history.state.state;
       if (ext) {
-        soundcast[path] = `https://mysoundwise.com/tracks/${soundcast.id}_intro.${ext}`
-        firebase.database().ref(`soundcasts/${soundcast.id}/${path}`).set(soundcast[path]);
+        soundcast[path] = `https://mysoundwise.com/tracks/${id}_intro.${ext}`
+        firebase.database().ref(`soundcasts/${id}/${path}`).set(soundcast[path]);
       } else {
         delete soundcast[path];
-        firebase.database().ref(`soundcasts/${soundcast.id}/${path}`).remove();
+        firebase.database().ref(`soundcasts/${id}/${path}`).remove();
       }
       window.history.replaceState(window.history.state, null); // update state
     }
@@ -680,8 +681,8 @@ export default class EditSoundcast extends Component {
                   <S3FileUploader
                     s3NewFileName={`${soundcast.id}_intro`}
                     showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
-                    onUploadedCallback={ext => that.updateSoundcast(soundcast, 'intro', ext)}
-                    onRemoveCallback={() => that.updateSoundcast(soundcast, 'intro')}
+                    onUploadedCallback={ext => that.updateSoundcast('intro', ext)}
+                    onRemoveCallback={() => that.updateSoundcast('intro')}
                   />
                 </div>
                 <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
@@ -689,8 +690,8 @@ export default class EditSoundcast extends Component {
                   <S3FileUploader
                     s3NewFileName={`${soundcast.id}_outro`}
                     showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
-                    onUploadedCallback={ext => that.updateSoundcast(soundcast, 'outro', ext)}
-                    onRemoveCallback={() => that.updateSoundcast(soundcast, 'outro')}
+                    onUploadedCallback={ext => that.updateSoundcast('outro', ext)}
+                    onRemoveCallback={() => that.updateSoundcast('outro')}
                   />
                 </div>
               </div>

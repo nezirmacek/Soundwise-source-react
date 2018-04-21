@@ -127,7 +127,7 @@ class _Routes extends Component {
                   // }
                   // console.log('compiled soundcast');
                   if (editSoundcastKey && editSoundcastKey === key) {
-                    _user.loadEditSoundcast = _soundcast;
+                    _user.loadEditSoundcast = { id: key, soundcast: _soundcast };
                   }
                   that.updateUserState(_user);
                   if (_soundcast.episodes) {
@@ -168,7 +168,7 @@ class _Routes extends Component {
                   const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
                   _user.soundcasts[key] = _soundcast;
                   if (editSoundcastKey && editSoundcastKey === key) {
-                    _user.loadEditSoundcast = _soundcast;
+                    _user.loadEditSoundcast = { id: key, soundcast: _soundcast };
                   }
                   that.updateUserState(_user);
                   if (_soundcast.episodes) {
