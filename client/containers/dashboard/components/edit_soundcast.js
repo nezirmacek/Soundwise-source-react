@@ -370,16 +370,16 @@ export default class EditSoundcast extends Component {
                   };
 
                   // edit soundcast in database
-                  firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+                  firebase.database().ref(`soundcasts/${history.location.state.id}`)
                   .once('value')
                   .then(snapshot => {
                     const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
-                    firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
+                    firebase.database().ref(`soundcasts/${history.location.state.id}`)
                     .set(changedSoundcast)
                     .then(res => {
                       Axios.post('/api/soundcast', {
-                        soundcastId: that.props.history.location.state.id,
-                        publisherId: that.props.userInfo.publisherID,
+                        soundcastId: history.location.state.id,
+                        publisherId: userInfo.publisherID,
                         title
                       })
                       .then(() => {
@@ -389,7 +389,9 @@ export default class EditSoundcast extends Component {
                         // history.goBack();
                         that.firebaseListener = null;
                       });
-                      history.replace(history.location.pathname, {soundcast: changedSoundcast});
+                      const newState = window.history.state;
+                      newState.state.soundcast = changedSoundcast;
+                      window.history.replaceState(newState, null); // update state
                     }, err => {
                       console.log('ERROR add soundcast: ', err);
                     });
@@ -503,7 +505,7 @@ export default class EditSoundcast extends Component {
         delete soundcast[path];
         firebase.database().ref(`soundcasts/${soundcast.id}/${path}`).remove();
       }
-      this.props.history.replace(this.props.history.location.pathname, { soundcast }); // update state
+      window.history.replaceState(window.history.state, null); // update state
     }
 
     renderAdditionalInputs() {
@@ -1352,7 +1354,7 @@ export default class EditSoundcast extends Component {
                   <div className="center-col">
                     <OrangeSubmitButton
                       label='Upgrade'
-                      onClick={() => that.props.history.push({pathname: '/pricing'})}
+                      onClick={() => history.push({pathname: '/pricing'})}
                       styles={{width: '60%'}}
                     />
                   </div>
