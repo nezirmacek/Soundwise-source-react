@@ -386,6 +386,8 @@ export default class EditSoundcast extends Component {
                         // history.goBack();
                         that.firebaseListener = null;
                       });
+                      // using window.history object instead of this.props.history
+                      // to prevent rerendering (on state update)
                       const newState = window.history.state;
                       newState.state.soundcast = changedSoundcast;
                       window.history.replaceState(newState, null); // update state
@@ -503,6 +505,8 @@ export default class EditSoundcast extends Component {
         delete soundcast[path];
         firebase.database().ref(`soundcasts/${id}/${path}`).remove();
       }
+      // using window.history object instead of this.props.history
+      // to prevent rerendering (on state update)
       window.history.replaceState(window.history.state, null); // update state
     }
 
