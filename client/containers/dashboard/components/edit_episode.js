@@ -441,7 +441,7 @@ export default class EditEpisode extends Component {
                                   // trackSwitchedStyle={styles.trackSwitched}
                                   // style={{fontSize: 20, width: '50%'}}
                                 />
-                                <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Make this episode publicly shareable</span>
+                                <span id='share-label' style={styles.toggleLabel}>Make this episode publicly shareable</span>
                             </div>
                             {
                               !isPublished &&
@@ -456,7 +456,7 @@ export default class EditEpisode extends Component {
                                       that.setState({sendEmails})
                                     }}
                                   />
-                                  <span id='share-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Send email notification to subscribers and invitees</span>
+                                  <span id='share-label' style={styles.toggleLabel}>Send email notification to subscribers and invitees</span>
                               </div>
                               || null
                             }
@@ -521,6 +521,51 @@ export default class EditEpisode extends Component {
                             </div>
                             || null
                         }
+                        <div style={{ }}>
+                          <div style={{marginTop: 20,}}>
+                            <span style={{...styles.titleText, marginTop: 20,}}>
+                                Audio Processing
+                            </span>
+                          </div>
+                          <div style={{marginTop: 20,}}>
+                            <span style={{...styles.titleText, marginTop: 20,}}>
+                                Original file
+                            </span>
+                          </div>
+                          <div style={{marginTop: 20,}}>
+                            <span style={{...styles.titleText, marginTop: 20,}}>
+                                Processed file
+                            </span>
+                          </div>
+                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                            <Toggle
+                              // checked={this.state.}
+                              // onChange={this..bind(this)}
+                            />
+                            <span style={styles.toggleLabel}>Optimize button</span>
+                          </div>
+                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                            <Toggle
+                              // checked={this.state.}
+                              // onChange={this..bind(this)}
+                            />
+                            <span style={styles.toggleLabel}>Trim silence at begining and end</span>
+                          </div>
+                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                            <Toggle
+                              // checked={this.state.}
+                              // onChange={this..bind(this)}
+                            />
+                            <span style={styles.toggleLabel}>Remove excessive pauses</span>
+                          </div>
+                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                            <Toggle
+                              // checked={this.state.}
+                              // onChange={this..bind(this)}
+                            />
+                            <span style={styles.toggleLabel}>Attach intro / outro</span>
+                          </div>
+                        </div>
                         <div style={styles.soundcastSelectWrapper}>
                             <div style={{...styles.notesLabel, marginLeft: 10,}}>Publish in</div>
                             <select
@@ -774,4 +819,9 @@ const styles = {
         marginTop: 5,
         fontSize: 16
     },
+    toggleLabel: {
+      fontSize: 20,
+      fontWeight: 800,
+      marginLeft: '0.5em'
+    }
 };
