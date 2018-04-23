@@ -294,48 +294,44 @@ export default class EditEpisode extends Component {
     }
 
     changeSharingSetting() {
-        const {publicEpisode} = this.state;
-        this.setState({
-            publicEpisode: !publicEpisode
-        })
+      const {publicEpisode} = this.state;
+      this.setState({ publicEpisode: !publicEpisode })
     }
 
-    setOriginal(mediaObject) { // setMediaObject
-        this.mediaObjectOriginal = mediaObject;
-        mediaObject.on('deviceReady', () => {
-          console.log('mediaObjectOriginal ready')
-        });
-        mediaObject.on('deviceError', () => { // error handling
-          console.log('device error:', mediaObject.deviceErrorCode);
-        });
-        mediaObject.on('error', error => console.log('error:', error));
-        // user clicked the record button and started recording
-        mediaObject.on('ended', () => this.setState({isPlaying: false}));
-        // user completed recording and stream is available
-        this.player = this.mediaObjectOriginal.player();
-        this.wavesurfer = this.mediaObjectOriginal.wavesurfer();
+    setMediaObject(type, mediaObject) {
+      this[`mediaObject${type}`] = mediaObject;
+      this[`player${type}`]      = mediaObject.player();
+      this[`wavesurfer${type}`]  = mediaObject.wavesurfer();
+      mediaObject.on('deviceReady', () => console.log(`mediaObject${type} ready`));
+      mediaObject.on('deviceError', () => { // error handling
+        console.log('device error:', mediaObject.deviceErrorCode);
+      });
+      mediaObject.on('error', error => console.log('error:', error));
+      // user clicked the record button and started recording
+      mediaObject.on('ended', () => this.setState({isPlaying: false}));
+      if (type === 'Original' && this.props.history.location.state.episode.url) {
+        // this.playerOriginal.src([{"type": "audio/mpeg", "src": this.state.url}])
+        setTimeout(
+          () => this.wavesurferOriginal.load(this.props.history.location.state.episode.url)
+        , 1000);
+      }
     }
 
-    setProcessed(mediaObject) { // setMediaObject
-        this.mediaObjectProcessed = mediaObject;
-        mediaObject.on('deviceReady', () => {
-          console.log('mediaObjectProcessed ready')
-        });
-        mediaObject.on('deviceError', () => { // error handling
-          console.log('device error:', mediaObject.deviceErrorCode);
-        });
-        mediaObject.on('error', error => console.log('error:', error));
-        // user clicked the record button and started recording
-        mediaObject.on('ended', () => this.setState({isPlaying: false}));
-        // user completed recording and stream is available
-        this.player = this.mediaObjectProcessed.player();
-        this.wavesurfer = this.mediaObjectProcessed.wavesurfer();
+    play(type) {
+      this[`wavesurfer${type}`].surfer.play();
+      // TODO timer
+    }
+
+    pause(type) {
+      this[`wavesurfer${type}`].surfer.pause();
     }
 
     render() {
-        const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished, soundcastID, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
+        const { description, title, actionstep, notes, notesUploading, notesUploaded,
+          notesName, isPublished, soundcastID, startProcessingEpisode,
+          doneProcessingEpisode, podcastError } = this.state;
         const {history, userInfo} = this.props;
-        const { id } = this.props.history.location.state;
+        const { id } = history.location.state;
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
             const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
@@ -554,8 +550,11 @@ export default class EditEpisode extends Component {
                             </span>
                           </div>
                           <div style={{ height: 34 }}>
+                            <div style={{ float: 'left', marginTop: 10 }}
+                              onClick={this.play.bind(this, 'Original')}>Play</div>
                             <div style={styles.micWrapper}>
-                              <AudiojsRecordPlayer setMediaObject={this.setOriginal.bind(this)} />
+                              <AudiojsRecordPlayer
+                                  setMediaObject={this.setMediaObject.bind(this, 'Original')} />
                             </div>
                           </div>
                           <div style={{marginTop: 20,}}>
@@ -565,7 +564,8 @@ export default class EditEpisode extends Component {
                           </div>
                           <div style={{ height: 44 }}>
                             <div style={styles.micWrapper}>
-                              <AudiojsRecordPlayer setMediaObject={this.setProcessed.bind(this)} />
+                              <AudiojsRecordPlayer
+                                setMediaObject={this.setMediaObject.bind(this, 'Processed')} />
                             </div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
