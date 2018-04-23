@@ -1790,7 +1790,7 @@ const styles = {
     soundcastSelect: {
         backgroundColor: 'transparent',
         width: 'calc(100% - 20px)',
-        height: 35,
+        height: 40,
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,

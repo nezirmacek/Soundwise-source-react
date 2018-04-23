@@ -585,7 +585,7 @@ export default class EditEpisode extends Component {
                               // checked={this.state.}
                               // onChange={this..bind(this)}
                             />
-                            <span style={styles.toggleLabel}>Optimize button</span>
+                          <span style={styles.toggleLabel}>Optimize volume</span>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
                             <Toggle
@@ -856,7 +856,7 @@ const styles = {
     soundcastSelect: {
         backgroundColor: 'transparent',
         width: 'calc(100% - 20px)',
-        height: 35,
+        height: 40,
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,
