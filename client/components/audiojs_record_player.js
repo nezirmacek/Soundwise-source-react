@@ -11,9 +11,13 @@ import 'videojs-wavesurfer';
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 class AudiojsRecordPlayer extends React.Component {
+    constructor (props) {
+        super(props);
+        this.audioId = 'myAudio' + Date.now(); // random id
+    }
     componentDidMount() {
         // instantiate Video.js
-        this.mediaObject = videojs('myAudio', {
+        this.mediaObject = videojs(this.audioId, {
             controls: false,
             width: 138,
             height: 30,
@@ -61,7 +65,7 @@ class AudiojsRecordPlayer extends React.Component {
         return (
           <div>
             <div data-vjs-player>
-              <audio id='myAudio'
+              <audio id={this.audioId}
                 ref={ node => this.videoNode = node }
                 className='video-js vjs-default-skin video-js-audio-custom'>
               </audio>

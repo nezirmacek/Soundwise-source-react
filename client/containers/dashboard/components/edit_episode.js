@@ -11,6 +11,7 @@ import Toggle from 'react-toggle'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 import {sendNotifications} from '../../../helpers/send_notifications';
@@ -311,6 +312,38 @@ export default class EditEpisode extends Component {
         })
     }
 
+    setOriginal(mediaObject) { // setMediaObject
+        this.mediaObjectOriginal = mediaObject;
+        mediaObject.on('deviceReady', () => {
+          console.log('mediaObjectOriginal ready')
+        });
+        mediaObject.on('deviceError', () => { // error handling
+          console.log('device error:', mediaObject.deviceErrorCode);
+        });
+        mediaObject.on('error', error => console.log('error:', error));
+        // user clicked the record button and started recording
+        mediaObject.on('ended', () => this.setState({isPlaying: false}));
+        // user completed recording and stream is available
+        this.player = this.mediaObjectOriginal.player();
+        this.wavesurfer = this.mediaObjectOriginal.wavesurfer();
+    }
+
+    setProcessed(mediaObject) { // setMediaObject
+        this.mediaObjectProcessed = mediaObject;
+        mediaObject.on('deviceReady', () => {
+          console.log('mediaObjectProcessed ready')
+        });
+        mediaObject.on('deviceError', () => { // error handling
+          console.log('device error:', mediaObject.deviceErrorCode);
+        });
+        mediaObject.on('error', error => console.log('error:', error));
+        // user clicked the record button and started recording
+        mediaObject.on('ended', () => this.setState({isPlaying: false}));
+        // user completed recording and stream is available
+        this.player = this.mediaObjectProcessed.player();
+        this.wavesurfer = this.mediaObjectProcessed.wavesurfer();
+    }
+
     render() {
         const { description, title, actionstep, notes, notesUploading, notesUploaded, notesName, isPublished, soundcastID, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
         const {history, userInfo} = this.props;
@@ -529,13 +562,23 @@ export default class EditEpisode extends Component {
                           </div>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>
-                                Original file
+                              Original file:
                             </span>
+                          </div>
+                          <div style={{ height: 34 }}>
+                            <div style={styles.micWrapper}>
+                              <AudiojsRecordPlayer setMediaObject={this.setOriginal.bind(this)} />
+                            </div>
                           </div>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>
-                                Processed file
+                              Processed file:
                             </span>
+                          </div>
+                          <div style={{ height: 44 }}>
+                            <div style={styles.micWrapper}>
+                              <AudiojsRecordPlayer setMediaObject={this.setProcessed.bind(this)} />
+                            </div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
                             <Toggle
@@ -818,6 +861,16 @@ const styles = {
         marginRight: 10,
         marginTop: 5,
         fontSize: 16
+    },
+    micWrapper: {
+        width: 138,
+        height: 30,
+        position: 'relative',
+        top: 10,
+        overflow: 'hidden',
+        float: 'left',
+        borderRadius: 10,
+        marginLeft: 10,
     },
     toggleLabel: {
       fontSize: 20,
