@@ -1,14 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
-import '!style!css!video.js/dist/video-js.min.css';
-import '!style!css!videojs-record/dist/css/videojs.record.css';
-import 'videojs-record';
-import 'videojs-record/dist/plugins/videojs.record.lamejs.min.js';
-import WaveSurfer from 'wavesurfer.js';
-import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
-WaveSurfer.microphone = MicrophonePlugin;
-import 'videojs-wavesurfer';
 import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
@@ -29,68 +21,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
 import {sendNotifications} from '../../../helpers/send_notifications';
 import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 window.URL = window.URL || window.webkitURL;
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-class AudiojsRecordPlayer extends React.Component {
-    componentDidMount() {
-        // instantiate Video.js
-        this.mediaObject = videojs('myAudio', {
-            controls: false,
-            width: 138,
-            height: 30,
-            fluid: false,
-            plugins: {
-                wavesurfer: {
-                    src: 'live',
-                    waveColor: 'white',
-                    progressColor: 'white',
-                    debug: true,
-                    cursorWidth: 1,
-                    cursorColor: 'white',
-                    msDisplayMax: 20,
-                    hideScrollbar: true
-                },
-                record: {
-                    audio: true,
-                    video: false,
-                    maxLength: 7200, // in seconds, = max 2 hrs
-                    debug: false,
-                    audioEngine: 'lamejs',
-                    audioWorkerURL: '/js/lamejs/worker-example/worker-realtime.js',
-                    audioSampleRate: 44100,
-                    audioBitRate: 64
-                }
-            }
-        }, function() {
-            // print version information at startup
-            videojs.log('Using video.js', videojs.VERSION,
-                'with videojs-record', videojs.getPluginVersion('record'),
-                '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
-                'and recordrtc', RecordRTC.version);
-        });
-        this.props.setMediaObject(this.mediaObject);
-    }
-    componentWillUnmount() {
-        if (this.mediaObject) {
-            this.mediaObject.dispose(); // destroy on unmount
-        }
-    }
-    // wrap the player in a div with a `data-vjs-player` attribute
-    // so videojs won't create additional wrapper in the DOM
-    // see https://github.com/videojs/video.js/pull/3856
-    render() {
-        return (
-            <div><div data-vjs-player>
-                <audio id='myAudio' ref={ node => this.videoNode = node } className='video-js vjs-default-skin video-js-audio-custom'></audio>
-            </div></div>
-        )
-    }
-}
 
 class _CreateEpisode extends Component {
     constructor(props) {
@@ -159,7 +95,6 @@ class _CreateEpisode extends Component {
         this.uploadNotesInput = null;
         this.uploadCoverArtInput = null;
         this.currentSoundcastId = null;
-
         this.firebaseListener = null;
 
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
@@ -214,36 +149,30 @@ class _CreateEpisode extends Component {
 
     record () {
         const that = this;
-
         this.recorder = this.mediaObject.record();
         this.recorder.getDevice(); // triggers 'deviceReady'
 
         this.recordingInterval = setInterval(() => {
             const { recordingStartTime } = that.state;
-
             if (that.state.isRecording == false) {
                 clearInterval(that.recordingInterval);
                 return;
             }
-
             that.setState({
                 currentRecordingDuration: moment().diff(recordingStartTime) //recording duration in millliseconds
             })
-
         }, 1000);
   }
 
     stop (blobObject) {
         const that = this;
         this.recorder.stop(); // triggers 'finishRecord'
-
         // clearInterval(recordingInterval);
         // console.log('interval cleared')
     }
 
     play () {
         const that = this;
-
         this.wavesurfer.surfer.play();
 
         if (this.state.isRecorded) {
@@ -255,11 +184,9 @@ class _CreateEpisode extends Component {
 
         this.playingInterval = setInterval(() => {
             const { playingStartTime } = that.state
-
             if(!that.state.isPlaying) {
                 clearInterval(that.playingInterval)
             }
-
             that.setState({
                 currentPlayingDuration: moment().diff(playingStartTime) //recording duration in millliseconds
             })
@@ -267,7 +194,7 @@ class _CreateEpisode extends Component {
     }
 
     pause () {
-    this.wavesurfer.surfer.pause();
+        this.wavesurfer.surfer.pause();
         this.setState({
             isPlaying: false,
             currentPlayingDuration: 0
@@ -286,8 +213,8 @@ class _CreateEpisode extends Component {
         clearInterval(this.playingInterval);
         this.player.pause();
         this.player.currentTime(0);
-    //upload file to aws s3
-    this._uploadToAws(this.state.blob.blob, 'audio');
+        //upload file to aws s3
+        this._uploadToAws(this.state.blob.blob, 'audio');
         this.setState({
             audioUploading: true,
             isSaved: true,
