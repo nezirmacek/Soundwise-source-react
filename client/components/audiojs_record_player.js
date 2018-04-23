@@ -6,7 +6,7 @@ import 'videojs-record/dist/plugins/videojs.record.lamejs.min.js';
 import WaveSurfer from 'wavesurfer.js';
 import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
 WaveSurfer.microphone = MicrophonePlugin;
-import 'videojs-wavesurfer';
+import 'videojs-wavesurfer'; // depends on video.js and wavesurfer.js
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 

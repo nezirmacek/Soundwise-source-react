@@ -50,29 +50,28 @@ class _CreateEpisode extends Component {
 
             audioUploaded: false,
             notesUploaded: false,
-            coverartUploaded: false,
+            coverArtUploaded: false,
+            coverArtUrl: '',
+            coverArtUploading: false,
             audioUploadProgress: 0,
             notesUploadProgress: 0,
             audioUploadError: null,
             notesUploadError: null,
+            audioUploading: false,
+            notesUploading: false,
+            wrongFileTypeFor: null,
+
+            recordedAudioUrl: '', // linkto uploaded file aws s3
+            uploadedAudioUrl: '',
+            blob: {}, // to play audio from react-mic
+            notesUrl: '', // linkto uploaded file aws s3
+            audioDuration: 0,
 
             title: '',
             description: '',
             actions: '',
             publicEpisode: false,
             index: null,
-
-            recordedAudioUrl: '', // linkto uploaded file aws s3
-            uploadedAudioUrl: '',
-      blob: {}, // to play audio from react-mic
-            notesUrl: '', // linkto uploaded file aws s3
-            audioDuration: 0,
-
-            coverartUrl: '',
-            audioUploading: false,
-            notesUploading: false,
-            coverArtUploading: false,
-            wrongFileTypeFor: null,
 
             audioNormalization: false,
             trimSilence: false,
@@ -330,7 +329,7 @@ class _CreateEpisode extends Component {
             doneProcessingEpisode: false,
           });
         }
-        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
+        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverArtUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
         const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, immediatePublish} = this.state;
         const { userInfo, history, content_saved, handleContentSaving } = this.props;
         if(!content_saved[this.episodeId]) { // prevent unnecessary rerendering of component
@@ -362,7 +361,7 @@ class _CreateEpisode extends Component {
                             publicEpisode,
                             soundcastID: that.currentSoundcastId,
                             isPublished: isPublished && immediatePublish ? true : false,
-                            coverArtUrl: coverartUrl,
+                            coverArtUrl: coverArtUrl,
                         };
 
                         firebase.database().ref(`soundcasts/${that.currentSoundcastId}`)
@@ -1111,9 +1110,9 @@ class _CreateEpisode extends Component {
                                     </span>
                                 </div>
                                 {
-                                    this.state.coverartUrl &&
+                                    this.state.coverArtUrl &&
                                     <div style={{...styles.image, marginRight: 10, marginTop: 10,}}>
-                                      <img style={styles.image}  src={this.state.coverartUrl} />
+                                      <img style={styles.image}  src={this.state.coverArtUrl} />
                                     </div>
                                     || null
                                 }
@@ -1129,17 +1128,17 @@ class _CreateEpisode extends Component {
                                             ref={input => this.uploadCoverArtInput = input}
                                         />
                                         {
-                                          this.state.coverartUploaded &&
+                                          this.state.coverArtUploaded &&
                                           <div>
                                             <span>{this.uploadCoverArtInput.files[0].name}</span>
                                             <span style={styles.cancelImg}
                                               onClick={() => {
-                                                that.setState({coverartUploaded: false, coverartUrl: ''});
+                                                that.setState({coverArtUploaded: false, coverArtUrl: ''});
                                                 document.getElementById('upload_hidden_cover3').value = null;
                                               }}>Cancel</span>
                                           </div>
                                           ||
-                                          !this.state.coverartUploaded &&
+                                          !this.state.coverArtUploaded &&
                                           <div>
                                             <button
                                                 onClick={() => {document.getElementById('upload_hidden_cover3').click();}}

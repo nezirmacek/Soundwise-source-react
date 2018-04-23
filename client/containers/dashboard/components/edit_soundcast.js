@@ -175,11 +175,10 @@ export default class EditSoundcast extends Component {
         itunesImage: itunesImage ? itunesImage : null,
         podcastFeedVersion: podcastFeedVersion ? podcastFeedVersion : null,
         autoSubmitPodcast: autoSubmitPodcast ? autoSubmitPodcast : false,
+        subscribed: subscribed || this.state.subscribed,
+        features: features || this.state.features,
+        prices: prices || this.state.prices,
       });
-
-      subscribed && this.setState({ subscribed })
-      features   && this.setState({ features })
-      prices     && this.setState({ prices })
       userInfo.publisher && this.checkUserStatus(userInfo)
     }
 

@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -33,8 +32,8 @@ export default class EditEpisode extends Component {
             publicEpisode: true,
             isPublished: null,
             soundcastID: '',
-            coverartUploaded: false,
-            coverartUrl: '',
+            coverArtUploaded: false,
+            coverArtUrl: '',
             coverArtUploading: false,
             sendEmails: false,
             startProcessingEpisode : false,
@@ -46,8 +45,8 @@ export default class EditEpisode extends Component {
 
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
-      const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverArtUrl, date_created} = episode;
-
+      const {title, description, actionstep, notes, publicEpisode,
+        isPublished, soundcastID, coverArtUrl, date_created} = episode;
       this.setState({
         id,
         title,
@@ -55,23 +54,11 @@ export default class EditEpisode extends Component {
         isPublished,
         soundcastID,
         date_created,
-        coverartUrl: coverArtUrl ? coverArtUrl : '',
+        coverArtUrl: coverArtUrl || this.state.coverArtUrl,
+        description: description || this.state.description,
+        actionstep: actionstep || this.state.actionstep,
+        notes: notes || this.state.notes,
       })
-      if(description) {
-        this.setState({
-            description
-        })
-      }
-      if(notes) {
-        this.setState({
-          notes
-        })
-      }
-      if(actionstep) {
-        this.setState({
-          actionstep
-        })
-      }
     }
 
     componentWillUnmount() {
@@ -112,8 +99,8 @@ export default class EditEpisode extends Component {
                   });
                 } else if(type == 'coverart') {
                 _self.setState({
-                  coverartUrl: url,
-                  coverartUploaded: true,
+                  coverArtUrl: url,
+                  coverArtUploaded: true,
                   coverArtUploading: false
                 });
                 }
@@ -147,7 +134,8 @@ export default class EditEpisode extends Component {
     }
 
     submit (toPublish) {
-        const { title, description, actionstep, notes, publicEpisode, isPublished, soundcastID, coverartUrl, date_created} = this.state;
+        const { title, description, actionstep, notes, publicEpisode,
+          isPublished, soundcastID, coverArtUrl, date_created} = this.state;
         const { userInfo, history } = this.props;
         const soundcast = userInfo.soundcasts_managed[soundcastID];
         const {itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion} = soundcast; // only available if the soundcast has been submitted as a podcast;
@@ -168,7 +156,7 @@ export default class EditEpisode extends Component {
             publicEpisode,
             date_created: toPublish ? moment().format('X') : date_created,
             isPublished: toPublish ? true : isPublished,
-            coverArtUrl: coverartUrl,
+            coverArtUrl: coverArtUrl,
         };
 
         // edit episode in database
@@ -510,9 +498,9 @@ export default class EditEpisode extends Component {
                                     </span>
                                 </div>
                                 {
-                                    this.state.coverartUrl &&
+                                    this.state.coverArtUrl &&
                                     <div style={{...styles.image, marginRight: 10, marginTop: 10,}}>
-                                      <img style={styles.image}  src={this.state.coverartUrl} />
+                                      <img style={styles.image}  src={this.state.coverArtUrl} />
                                     </div>
                                     || null
                                 }
@@ -528,17 +516,17 @@ export default class EditEpisode extends Component {
                                             ref={input => this.uploadCoverArtInput = input}
                                         />
                                         {
-                                          this.state.coverartUploaded &&
+                                          this.state.coverArtUploaded &&
                                           <div>
                                             <span>{this.uploadCoverArtInput.files[0].name}</span>
                                             <span style={styles.cancelImg}
                                               onClick={() => {
-                                                that.setState({coverartUploaded: false, coverartUrl: ''});
+                                                that.setState({coverArtUploaded: false, coverArtUrl: ''});
                                                 document.getElementById('upload_hidden_cover3').value = null;
                                               }}>Cancel</span>
                                           </div>
                                           ||
-                                          !this.state.coverartUploaded &&
+                                          !this.state.coverArtUploaded &&
                                           <div>
                                             <button
                                                 onClick={() => {document.getElementById('upload_hidden_cover3').click();}}
