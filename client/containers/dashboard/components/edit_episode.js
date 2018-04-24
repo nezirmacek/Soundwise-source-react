@@ -46,7 +46,7 @@ export default class EditEpisode extends Component {
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
       const {title, description, actionstep, notes, publicEpisode,
-        isPublished, soundcastID, coverArtUrl, date_created} = episode;
+        isPublished, soundcastID, coverArtUrl, date_created, url} = episode;
       this.setState({
         id,
         title,
@@ -59,6 +59,10 @@ export default class EditEpisode extends Component {
         actionstep: actionstep || this.state.actionstep,
         notes: notes || this.state.notes,
       })
+      if (url) {
+        // this.playerOriginal.src([{"type": "audio/mpeg", "src": url}])
+        setTimeout(() => this.wavesurferOriginal.load(url), 1000)
+      }
     }
 
     componentWillUnmount() {
@@ -309,12 +313,6 @@ export default class EditEpisode extends Component {
       mediaObject.on('error', error => console.log('error:', error));
       // user clicked the record button and started recording
       mediaObject.on('ended', () => this.setState({isPlaying: false}));
-      if (type === 'Original' && this.props.history.location.state.episode.url) {
-        // this.playerOriginal.src([{"type": "audio/mpeg", "src": this.state.url}])
-        setTimeout(
-          () => this.wavesurferOriginal.load(this.props.history.location.state.episode.url)
-        , 1000);
-      }
     }
 
     play(type) {
