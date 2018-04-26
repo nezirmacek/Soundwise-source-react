@@ -7,6 +7,9 @@ import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 import Dots from 'react-activity/lib/Dots';
 import Toggle from 'react-toggle'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faPlayCircle from '@fortawesome/fontawesome-free-solid/faPlayCircle'
+import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -39,6 +42,8 @@ export default class EditEpisode extends Component {
             startProcessingEpisode : false,
             doneProcessingEpisode: false,
             podcastError: null,
+            isPlayingOriginal: false,
+            isPlayingProcessed: false,
         };
         this.uploadCoverArtInput = null;
     }
@@ -315,19 +320,22 @@ export default class EditEpisode extends Component {
       mediaObject.on('ended', () => this.setState({isPlaying: false}));
     }
 
-    play(type) {
-      this[`wavesurfer${type}`].surfer.play();
+    playOrPause(type) {
+      if (this.state[`isPlaying${type}`]) {
+        this[`wavesurfer${type}`].surfer.pause();
+      } else {
+        this[`wavesurfer${type}`].surfer.play();
+      }
+      const newState = {};
+      newState[`isPlaying${type}`] = !this.state[`isPlaying${type}`];
+      this.setState(newState);
       // TODO timer
-    }
-
-    pause(type) {
-      this[`wavesurfer${type}`].surfer.pause();
     }
 
     render() {
         const { description, title, actionstep, notes, notesUploading, notesUploaded,
           notesName, isPublished, soundcastID, startProcessingEpisode,
-          doneProcessingEpisode, podcastError } = this.state;
+          doneProcessingEpisode, podcastError, isPlayingOriginal, isPlayingProcessed } = this.state;
         const {history, userInfo} = this.props;
         const { id } = history.location.state;
         const _soundcasts_managed = [];
@@ -548,8 +556,13 @@ export default class EditEpisode extends Component {
                             </span>
                           </div>
                           <div style={{ height: 34 }}>
-                            <div style={{ float: 'left', marginTop: 10 }}
-                              onClick={this.play.bind(this, 'Original')}>Play</div>
+                            <div style={{ cursor: 'pointer', float: 'left', fontSize: 33, margin:
+                              '7px -1px 0px 1px'}} onClick={this.playOrPause.bind(this, 'Original')}>
+                              <span className="fa-layers">
+                                <FontAwesomeIcon color={Colors.mainOrange} size="1x"
+                                  icon={isPlayingOriginal ? faStopCircle : faPlayCircle } />
+                              </span>
+                            </div>
                             <div style={styles.micWrapper}>
                               <AudiojsRecordPlayer
                                   setMediaObject={this.setMediaObject.bind(this, 'Original')} />
