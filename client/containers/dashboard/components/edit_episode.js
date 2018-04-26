@@ -332,6 +332,30 @@ export default class EditEpisode extends Component {
       // TODO timer
     }
 
+    audioToggle(toggleType) { // "Optimize, Trim, RemoveExcPauses, AttachIntroOutro"
+      console.log(toggleType);
+      return
+      // TODO
+      const {soundcastId, trim, setVolume, intro, outro, removeSilence} = {};
+      Axios.post('/api/audio_processing', {
+        soundcastId,
+        trim,
+        setVolume,
+        intro,
+        outro,
+        removeSilence,
+      })
+      .then(response => {
+        that.setState({
+        });
+      })
+      .catch(err => {
+        that.setState({
+        });
+        console.log(err);
+      });
+    }
+
     render() {
         const { description, title, actionstep, notes, notesUploading, notesUploaded,
           notesName, isPublished, soundcastID, startProcessingEpisode,
@@ -556,8 +580,8 @@ export default class EditEpisode extends Component {
                             </span>
                           </div>
                           <div style={{ height: 34 }}>
-                            <div style={{ cursor: 'pointer', float: 'left', fontSize: 33, margin:
-                              '7px -1px 0px 1px'}} onClick={this.playOrPause.bind(this, 'Original')}>
+                            <div style={{ cursor: 'pointer', float: 'left', fontSize: 34, margin:
+                              '7px 0px 0px 1px'}} onClick={this.playOrPause.bind(this, 'Original')}>
                               <span className="fa-layers">
                                 <FontAwesomeIcon color={Colors.mainOrange} size="1x"
                                   icon={isPlayingOriginal ? faStopCircle : faPlayCircle } />
@@ -580,31 +604,23 @@ export default class EditEpisode extends Component {
                             </div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              // checked={this.state.}
-                              // onChange={this..bind(this)}
-                            />
+                            <Toggle checked={this.state.isOptimized}
+                              onChange={this.audioToggle.bind(this, 'Optimize')}/>
                           <span style={styles.toggleLabel}>Optimize volume</span>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              // checked={this.state.}
-                              // onChange={this..bind(this)}
-                            />
+                            <Toggle checked={this.state.isTrimmed}
+                              onChange={this.audioToggle.bind(this, 'Trim')}/>
                             <span style={styles.toggleLabel}>Trim silence at begining and end</span>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              // checked={this.state.}
-                              // onChange={this..bind(this)}
-                            />
+                            <Toggle checked={this.state.isExcPauseRemoved}
+                              onChange={this.audioToggle.bind(this, 'RemoveExcPauses')}/>
                             <span style={styles.toggleLabel}>Remove excessive pauses</span>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              // checked={this.state.}
-                              // onChange={this..bind(this)}
-                            />
+                            <Toggle checked={this.state.isIntroOutroAttached}
+                              onChange={this.audioToggle.bind(this, 'AttachIntroOutro')}/>
                             <span style={styles.toggleLabel}>Attach intro / outro</span>
                           </div>
                         </div>
