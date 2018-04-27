@@ -203,7 +203,15 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
-        const that = this;
+        if (this.state.startPaymentSubmission) { return }
+        const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
+        if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
+          return
+        }
+        const lastSubmitDate2 = Number(localStorage.getItem('paymentPaid') || 0);
+        if ((Date.now() - lastSubmitDate2) < 10000) { // 10 seconds since last success call not passed
+          return
+        }
         this.setState({
             startPaymentSubmission: true
         });
@@ -251,6 +259,7 @@ export default class Payment extends Component {
                         .then(function (response) {
                             const paid = response.data.res.paid; //boolean
                             if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
+                                localStorage.setItem('paymentPaidBilCycleOneTimeRental', Date.now());
                                 that.setState({
                                     paid,
                                     startPaymentSubmission: false
@@ -288,6 +297,7 @@ export default class Payment extends Component {
                             // console.log('subscription: ', subscription);
 
                             if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
+                                localStorage.setItem('paymentPaid', Date.now());
                                 that.setState({
                                     paid: true,
                                     startPaymentSubmission: false
@@ -548,4 +558,3 @@ const styles = {
         position: 'relative',
     },
 };
-

@@ -58,6 +58,7 @@ class _SoundwiseCheckout extends Component {
 
   handlePaymentSuccess(charge) {
     const {plan, frequency, promoCodeError, promoCode, trialPeriod} = this.state;
+    localStorage.setItem('soundwiseCheckoutPaid', Date.now());
     this.setState({
       success: true,
       startPaymentSubmission: false,
@@ -144,7 +145,11 @@ class _SoundwiseCheckout extends Component {
 
   async onSubmit(event) {
       event.preventDefault();
-      const that = this;
+      if (this.state.startPaymentSubmission) { return }
+      const lastSubmitDate = Number(localStorage.getItem('soundwiseCheckoutPaid') || 0);
+      if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
+        return
+      }
       this.setState({
           startPaymentSubmission: true,
           submitted: true,

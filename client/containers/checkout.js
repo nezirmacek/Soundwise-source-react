@@ -62,7 +62,11 @@ class _Checkout extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
-
+        if (this.state.startPaymentSubmission) { return }
+        const lastSubmitDate = Number(localStorage.getItem('checkoutPaid') || 0);
+        if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
+          return
+        }
         this.setState({
             startPaymentSubmission: true
         });
@@ -99,6 +103,7 @@ class _Checkout extends Component {
                     const customer = response.data.customer;
 
                     if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
+                        localStorage.setItem('checkoutPaid', Date.now());
                         that.setState({
                             paid,
                             startPaymentSubmission: false
