@@ -45,6 +45,8 @@ export default class EditEpisode extends Component {
 
             isPlayingOriginal: false,
             isPlayingProcessed: false,
+            timerOriginal: 0,
+            timerProcessed: 0,
             audioNormalization: false,
             trimSilence: false,
             reduceSilence: false,
@@ -274,7 +276,6 @@ export default class EditEpisode extends Component {
         });
     }
 
-
     changeSoundcastId (e) {
         this.setState({
             soundcastID: e.target.value,
@@ -344,6 +345,10 @@ export default class EditEpisode extends Component {
       this[`mediaObject${type}`] = mediaObject;
       this[`player${type}`]      = mediaObject.player();
       this[`wavesurfer${type}`]  = mediaObject.wavesurfer();
+      setTimeout(() => {
+        this[`wavesurfer${type}`].surfer.on('seek', () => this.updateTimer(type));
+        setInterval(() => this.state[`isPlaying${type}`] && this.updateTimer(type), 1000);
+      }, 1000);
       mediaObject.on('deviceReady', () => console.log(`mediaObject${type} ready`));
       mediaObject.on('deviceError', () => { // error handling
         console.log('device error:', mediaObject.deviceErrorCode);
@@ -351,6 +356,12 @@ export default class EditEpisode extends Component {
       mediaObject.on('error', error => console.log('error:', error));
       // user clicked the record button and started recording
       mediaObject.on('ended', () => this.setState({isPlaying: false}));
+    }
+
+    updateTimer(type) {
+      const newState = {}
+      newState[`timer${type}`] = Math.floor(this[`wavesurfer${type}`].getCurrentTime() * 1000);
+      this.setState(newState);
     }
 
     playOrPause(type) {
@@ -367,7 +378,7 @@ export default class EditEpisode extends Component {
 
     render() {
         const { description, title, actionstep, notes, notesUploading, notesUploaded,
-          notesName, isPublished, soundcastID, startProcessingEpisode,
+          notesName, isPublished, soundcastID, startProcessingEpisode, timerOriginal, timerProcessed,
           doneProcessingEpisode, podcastError, isPlayingOriginal, isPlayingProcessed } = this.state;
         const {history, userInfo} = this.props;
         const soundcast = userInfo.soundcasts_managed && userInfo.soundcasts_managed[soundcastID];
@@ -601,6 +612,8 @@ export default class EditEpisode extends Component {
                               <AudiojsRecordPlayer
                                   setMediaObject={this.setMediaObject.bind(this, 'Original')} />
                             </div>
+                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}
+                              >{moment.utc(timerOriginal).format('HH:mm:ss')}</div>
                           </div>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>
@@ -619,6 +632,8 @@ export default class EditEpisode extends Component {
                               <AudiojsRecordPlayer
                                 setMediaObject={this.setMediaObject.bind(this, 'Processed')} />
                             </div>
+                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}
+                              >{moment.utc(timerProcessed).format('HH:mm:ss')}</div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
                             <Toggle
