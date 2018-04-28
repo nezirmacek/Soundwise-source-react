@@ -149,9 +149,10 @@ export default class EditEpisode extends Component {
     }
 
     submit (toPublish) {
-        const { title, description, actionstep, notes, publicEpisode,
-          isPublished, soundcastID, coverArtUrl, date_created} = this.state;
-        const { userInfo, history } = this.props;
+        const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID,
+          coverArtUrl, date_created, audioNormalization, trimSilence, reduceSilence,
+          addIntroOutro, silentPeriod} = this.state;
+        const {userInfo, history} = this.props;
         const soundcast = userInfo.soundcasts_managed[soundcastID];
         const {itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion} = soundcast; // only available if the soundcast has been submitted as a podcast;
         const { id } = history.location.state;
@@ -171,7 +172,7 @@ export default class EditEpisode extends Component {
             publicEpisode,
             date_created: toPublish ? moment().format('X') : date_created,
             isPublished: toPublish ? true : isPublished,
-            coverArtUrl: coverArtUrl,
+            coverArtUrl,
         };
 
         // edit episode in database
@@ -202,15 +203,13 @@ export default class EditEpisode extends Component {
                       firstName: userInfo.firstName,
                     })
                     .then(response => {
-                      that.setState({
-                        startProcessingEpisode: false,
-                        doneProcessingEpisode: true,
+                      runProcessing(() => {
+                        alert('Episode is processed and saved.');
+                        if(toPublish && !isPublished) {
+                          that.notifySubscribers();
+                          history.goBack();
+                        }
                       });
-                      alert('Episode is processed and saved.');
-                      if(toPublish && !isPublished) {
-                        that.notifySubscribers();
-                        history.goBack();
-                      }
                     })
                     .catch(err => {
                       that.setState({
@@ -223,20 +222,16 @@ export default class EditEpisode extends Component {
                   })
                 } else {
                   if(toPublish && !isPublished) { // if publishing for the first time
-                    that.setState({
-                      startProcessingEpisode: false,
-                      doneProcessingEpisode: true,
+                    runProcessing(() => {
+                      alert('Episode is published.');
+                      that.notifySubscribers();
+                      history.goBack();
                     });
-                    alert('Episode is published.');
-                    that.notifySubscribers();
-                    history.goBack();
-                  } else  {
-                    that.setState({
-                      startProcessingEpisode: false,
-                      doneProcessingEpisode: true,
+                  } else {
+                    runProcessing(() => {
+                      alert('The edited episode is saved');
+                      // history.goBack();
                     });
-                    alert('The edited episode is saved');
-                    // history.goBack();
                   }
                 }
             },
@@ -244,6 +239,40 @@ export default class EditEpisode extends Component {
                 console.log('ERROR edit episode: ', err);
             }
           );
+
+          function runProcessing(callback) {
+            Axios.post('/api/audio_processing', {
+              epsiodeId: id,
+              soundcastId: soundcastID,
+              publisherEmail: userInfo.publisher.email,
+              publisherFirstName: userInfo.firstName,
+              publisherName: userInfo.publisher.name,
+              publisherImageUrl: userInfo.publisher.imageUrl,
+              tagging: true,
+              intro: (addIntroOutro && soundcast.intro) || null,
+              outro: (addIntroOutro && soundcast.outro) || null,
+              overlayDuration: (addIntroOutro && soundcast.introOutroOverlay) || 0,
+              setVolume: audioNormalization,
+              trim: trimSilence,
+              removeSilence: (reduceSilence && Number(silentPeriod)|| false),
+              autoPublish: immediatePublish,
+              emailListeners: that.state.sendEmails,
+            }).then(res => {
+                that.setState({
+                  startProcessingEpisode: false,
+                  doneProcessingEpisode: true,
+                });
+                callback && callback();
+            })
+            .catch(err => {
+                that.setState({
+                  startProcessingEpisode: false,
+                  doneProcessingEpisode: true,
+                  podcastError: err.toString(),
+                });
+                console.log(err);
+            });
+          }
         });
     }
 
@@ -343,7 +372,7 @@ export default class EditEpisode extends Component {
           notesName, isPublished, soundcastID, startProcessingEpisode,
           doneProcessingEpisode, podcastError, isPlayingOriginal, isPlayingProcessed } = this.state;
         const {history, userInfo} = this.props;
-        const soundcast = userInfo.soundcasts_managed[soundcastID];
+        const soundcast = userInfo.soundcasts_managed && userInfo.soundcasts_managed[soundcastID];
         const { id } = history.location.state;
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
@@ -649,7 +678,6 @@ export default class EditEpisode extends Component {
                               className='toggle-green'
                               checked={this.state.addIntroOutro}
                               onChange={() => {
-                                console.log(soundcast);
                                 if(((soundcast.intro || soundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
                                   const addIntroOutro = !that.state.addIntroOutro;
                                   that.setState({addIntroOutro})

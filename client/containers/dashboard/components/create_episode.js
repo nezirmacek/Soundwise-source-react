@@ -343,7 +343,8 @@ class _CreateEpisode extends Component {
                 return;
             }
 
-            if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check if soundcast in soundcasts_managed
+            const soundcast = userInfo.soundcasts_managed[this.currentSoundcastId];
+            if ((recordedAudioUrl || uploadedAudioUrl) && soundcast) { // check if soundcast in soundcasts_managed
 
               this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
                     if (user && that.firebaseListener) {
@@ -399,10 +400,10 @@ class _CreateEpisode extends Component {
                                 soundcastId: that.currentSoundcastId,
                                 publisherId: userInfo.publisherID,
                                 title,
-                                soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].title,
+                                soundcastTitle: soundcast.title,
                             }).then(
                                 res => {
-                                    if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
+                                  if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
                                         Axios.post('/api/audio_processing', {
                                           epsiodeId: that.episodeId,
                                           soundcastId: that.currentSoundcastId,
@@ -411,9 +412,9 @@ class _CreateEpisode extends Component {
                                           publisherName: userInfo.publisher.name,
                                           publisherImageUrl: userInfo.publisher.imageUrl,
                                           tagging: true,
-                                          intro: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].intro) || null,
-                                          outro: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].outro) || null,
-                                          overlayDuration: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].introOutroOverlay) || 0,
+                                          intro: (addIntroOutro && soundcast.intro) || null,
+                                          outro: (addIntroOutro && soundcast.outro) || null,
+                                          overlayDuration: (addIntroOutro && soundcast.introOutroOverlay) || 0,
                                           setVolume: audioNormalization,
                                           trim: trimSilence,
                                           removeSilence: (reduceSilence && Number(silentPeriod)|| false),
@@ -436,7 +437,7 @@ class _CreateEpisode extends Component {
                                             })
                                             console.log(err);
                                         });
-                                    } else { // if audio processing is not requested
+                                  } else { // if audio processing is not requested
                                     if(isPublished) {
                                       that.notifySubscribers();
                                       if(podcastFeedVersion) {
@@ -445,8 +446,8 @@ class _CreateEpisode extends Component {
                                             itunesExplicit,
                                             itunesImage,
                                             itunesCategory,
-                                            soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].itunesTitle ||  userInfo.soundcasts_managed[that.currentSoundcastId].title,
-                                            soundcastHost: userInfo.soundcasts_managed[that.currentSoundcastId].itunesHost ||  userInfo.soundcasts_managed[that.currentSoundcastId].hostName,
+                                            soundcastTitle: soundcast.itunesTitle ||  soundcast.title,
+                                            soundcastHost: soundcast.itunesHost ||  soundcast.hostName,
                                             firstName: userInfo.firstName,
                                             email: userInfo.email[0],
                                           })
@@ -480,8 +481,7 @@ class _CreateEpisode extends Component {
                                       alert('Episode saved');
                                       history.goBack();
                                     }
-                                    }
-
+                                  }
                                 }
                             ).catch(
                                 err => {
