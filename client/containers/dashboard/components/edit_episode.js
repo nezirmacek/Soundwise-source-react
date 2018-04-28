@@ -42,8 +42,14 @@ export default class EditEpisode extends Component {
             startProcessingEpisode : false,
             doneProcessingEpisode: false,
             podcastError: null,
+
             isPlayingOriginal: false,
             isPlayingProcessed: false,
+            audioNormalization: false,
+            trimSilence: false,
+            reduceSilence: false,
+            addIntroOutro: false,
+            silentPeriod: 0.5,
         };
         this.uploadCoverArtInput = null;
     }
@@ -332,35 +338,12 @@ export default class EditEpisode extends Component {
       // TODO timer
     }
 
-    audioToggle(toggleType) { // "Optimize, Trim, RemoveExcPauses, AttachIntroOutro"
-      console.log(toggleType);
-      return
-      // TODO
-      const {soundcastId, trim, setVolume, intro, outro, removeSilence} = {};
-      Axios.post('/api/audio_processing', {
-        soundcastId,
-        trim,
-        setVolume,
-        intro,
-        outro,
-        removeSilence,
-      })
-      .then(response => {
-        that.setState({
-        });
-      })
-      .catch(err => {
-        that.setState({
-        });
-        console.log(err);
-      });
-    }
-
     render() {
         const { description, title, actionstep, notes, notesUploading, notesUploaded,
           notesName, isPublished, soundcastID, startProcessingEpisode,
           doneProcessingEpisode, podcastError, isPlayingOriginal, isPlayingProcessed } = this.state;
         const {history, userInfo} = this.props;
+        const soundcast = userInfo.soundcasts_managed[soundcastID];
         const { id } = history.location.state;
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
@@ -580,8 +563,8 @@ export default class EditEpisode extends Component {
                             </span>
                           </div>
                           <div style={{ height: 34 }}>
-                            <div style={{ cursor: 'pointer', float: 'left', fontSize: 34, margin:
-                              '7px 0px 0px 1px'}} onClick={this.playOrPause.bind(this, 'Original')}>
+                            <div style={styles.playPauseBtn}
+                              onClick={this.playOrPause.bind(this, 'Original')}>
                               <span className="fa-layers">
                                 <FontAwesomeIcon color={Colors.mainOrange} size="1x"
                                   icon={isPlayingOriginal ? faStopCircle : faPlayCircle } />
@@ -598,29 +581,83 @@ export default class EditEpisode extends Component {
                             </span>
                           </div>
                           <div style={{ height: 44 }}>
+                            <div style={styles.playPauseBtn}
+                              onClick={this.playOrPause.bind(this, 'Processed')}>
+                              <span className="fa-layers">
+                                <FontAwesomeIcon color={Colors.mainOrange} size="1x"
+                                  icon={isPlayingProcessed ? faStopCircle : faPlayCircle } />
+                              </span>
+                            </div>
                             <div style={styles.micWrapper}>
                               <AudiojsRecordPlayer
                                 setMediaObject={this.setMediaObject.bind(this, 'Processed')} />
                             </div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle checked={this.state.isOptimized}
-                              onChange={this.audioToggle.bind(this, 'Optimize')}/>
-                          <span style={styles.toggleLabel}>Optimize volume</span>
+                            <Toggle
+                              className='toggle-green'
+                              checked={this.state.audioNormalization}
+                              onChange={() => {
+                                const audioNormalization = !that.state.audioNormalization;
+                                that.setState({audioNormalization})
+                              }}
+                            />
+                            <span style={styles.toggleLabel}>Optimize volume</span>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle checked={this.state.isTrimmed}
-                              onChange={this.audioToggle.bind(this, 'Trim')}/>
+                            <Toggle
+                              className='toggle-green'
+                              checked={this.state.trimSilence}
+                              onChange={() => {
+                                const trimSilence = !that.state.trimSilence;
+                                that.setState({trimSilence})
+                              }}
+                            />
                             <span style={styles.toggleLabel}>Trim silence at begining and end</span>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle checked={this.state.isExcPauseRemoved}
-                              onChange={this.audioToggle.bind(this, 'RemoveExcPauses')}/>
+                            <Toggle
+                              className='toggle-green'
+                              checked={this.state.reduceSilence}
+                              onChange={() => {
+                                const reduceSilence = !that.state.reduceSilence;
+                                that.setState({reduceSilence})
+                              }}
+                            />
                             <span style={styles.toggleLabel}>Remove excessive pauses</span>
                           </div>
+                          {
+                            this.state.reduceSilence &&
+                              <div>
+                                <span style={{fontSize: 14, marginRight: 5}}>Remove silent periods longer than </span>
+                                <input style={{width: 70, marginBottom: 0}} type='text'
+                                  value={this.state.silentPeriod}
+                                  onChange={e => {
+                                    if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
+                                      that.setState({silentPeriod: Number(e.target.value)});
+                                    } else {
+                                      alert('Please enter a number >=0.1 and <= 10.');
+                                    }
+                                  }}
+                                />
+                                <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                              </div>
+                            || null
+                          }
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle checked={this.state.isIntroOutroAttached}
-                              onChange={this.audioToggle.bind(this, 'AttachIntroOutro')}/>
+                            <Toggle
+                              className='toggle-green'
+                              checked={this.state.addIntroOutro}
+                              onChange={() => {
+                                console.log(soundcast);
+                                if(((soundcast.intro || soundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
+                                  const addIntroOutro = !that.state.addIntroOutro;
+                                  that.setState({addIntroOutro})
+                                } else {
+                                  alert('Please upload intro/outro clip(s) to your soundcast first!');
+                                }
+                              }}
+                            />
                             <span style={styles.toggleLabel}>Attach intro / outro</span>
                           </div>
                         </div>
@@ -654,7 +691,7 @@ export default class EditEpisode extends Component {
                           <div>
                             <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <OrangeSubmitButton
-                                    label={isPublished ? "Update" : "Save draft"}
+                                    label={'Re-process and ' + (isPublished ? 'update' : 'save draft')}
                                     onClick={this.submit.bind(this, false)}
                                     styles={{backgroundColor: Colors.link, borderWidth: 0}}
                                 />
@@ -663,7 +700,7 @@ export default class EditEpisode extends Component {
                                 !isPublished &&
                                 <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                   <OrangeSubmitButton
-                                    label='Publish'
+                                    label='Re-process and publish'
                                     onClick={this.submit.bind(this, true)}
                                   />
                                 </div>
@@ -887,8 +924,14 @@ const styles = {
         borderRadius: 10,
         marginLeft: 10,
     },
+    playPauseBtn: {
+      cursor: 'pointer',
+      float: 'left',
+      fontSize: 34,
+      margin: '7px 0px 0px 1px'
+    },
     toggleLabel: {
-      fontSize: 20,
+      fontSize: 16,
       fontWeight: 800,
       marginLeft: '0.5em'
     }
