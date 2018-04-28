@@ -536,7 +536,7 @@ module.exports.audioProcessing = async (req, res) => {
             to: publisherEmail,
             from: 'support@mysoundwise.com',
             subject: 'Your episode has been processed!',
-            html: `<p>Hello ${publisherName},</p><p>${episodeTitle} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
+            html: `<p>Hello ${publisherName},</p><p>${episode.title} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
           });
         }); // uploader.upload s3
       }); // file.save outputPath

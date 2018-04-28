@@ -252,7 +252,7 @@ export default class EditEpisode extends Component {
               overlayDuration: (addIntroOutro && soundcast.introOutroOverlay) || 0,
               setVolume: audioNormalization,
               trim: trimSilence,
-              removeSilence: (reduceSilence && Number(silentPeriod)|| false),
+              removeSilence: (reduceSilence && Number(silentPeriod) || 0),
               autoPublish: toPublish,
               emailListeners: that.state.sendEmails,
             }).then(res => {

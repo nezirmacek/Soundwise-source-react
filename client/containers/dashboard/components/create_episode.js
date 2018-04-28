@@ -417,7 +417,7 @@ class _CreateEpisode extends Component {
                                           overlayDuration: (addIntroOutro && soundcast.introOutroOverlay) || 0,
                                           setVolume: audioNormalization,
                                           trim: trimSilence,
-                                          removeSilence: (reduceSilence && Number(silentPeriod)|| false),
+                                          removeSilence: (reduceSilence && Number(silentPeriod) || 0),
                                           autoPublish: immediatePublish,
                                           emailListeners: that.state.sendEmails,
                                         }).then(res => {
