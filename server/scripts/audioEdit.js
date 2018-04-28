@@ -5,7 +5,7 @@
 // 1. Client make post request to /api/audio_processing, with episode ID and processing options
 //    Example reuquest body:
       {
-          epsiodeId: '123456789e', // need to retrieve episode info from firebase for tagging
+          episodeId: '123456789e', // need to retrieve episode info from firebase for tagging
           soundcastId: '987654321s', // need to retrieve soundcast info from firebase for tagging
           publisherEmail: 'john@awesomepublisher.com',
           publisherFirstName: 'John',

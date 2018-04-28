@@ -57,7 +57,7 @@ export default class EditEpisode extends Component {
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
       const {title, description, actionstep, notes, publicEpisode,
-        isPublished, soundcastID, coverArtUrl, date_created, url} = episode;
+        isPublished, soundcastID, coverArtUrl, date_created, url, editedUrl} = episode;
       this.setState({
         id,
         title,
@@ -70,10 +70,8 @@ export default class EditEpisode extends Component {
         actionstep: actionstep || this.state.actionstep,
         notes: notes || this.state.notes,
       })
-      if (url) {
-        // this.playerOriginal.src([{"type": "audio/mpeg", "src": url}])
-        setTimeout(() => this.wavesurferOriginal.load(url), 1000)
-      }
+      url && setTimeout(() => this.wavesurferOriginal.load(url), 1000);
+      editedUrl && setTimeout(() => this.wavesurferProcessed.load(editedUrl), 1000);
     }
 
     componentWillUnmount() {
@@ -242,7 +240,7 @@ export default class EditEpisode extends Component {
 
           function runProcessing(callback) {
             Axios.post('/api/audio_processing', {
-              epsiodeId: id,
+              episodeId: id,
               soundcastId: soundcastID,
               publisherEmail: userInfo.publisher.email,
               publisherFirstName: userInfo.firstName,
@@ -255,7 +253,7 @@ export default class EditEpisode extends Component {
               setVolume: audioNormalization,
               trim: trimSilence,
               removeSilence: (reduceSilence && Number(silentPeriod)|| false),
-              autoPublish: immediatePublish,
+              autoPublish: toPublish,
               emailListeners: that.state.sendEmails,
             }).then(res => {
                 that.setState({
@@ -717,30 +715,29 @@ export default class EditEpisode extends Component {
                           </div>
                           ||
                           <div>
-                            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <div className="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                                 <OrangeSubmitButton
                                     label={'Re-process and ' + (isPublished ? 'update' : 'save draft')}
                                     onClick={this.submit.bind(this, false)}
-                                    styles={{backgroundColor: Colors.link, borderWidth: 0}}
+                                    styles={{backgroundColor: Colors.link, borderWidth: 0, width: 300, margin: '40px auto 0'}}
                                 />
                             </div>
                             {
                                 !isPublished &&
-                                <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <div className="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                                   <OrangeSubmitButton
                                     label='Re-process and publish'
                                     onClick={this.submit.bind(this, true)}
+                                    styles={{width: 300, margin: '40px auto 0' }}
                                   />
                                 </div>
                                 || null
                             }
-                            <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <TransparentShortSubmitButton
                                     label="Cancel"
-                                    styles={{width: 229}}
-                                    onClick={() => {
-                                      history.goBack();
-                                    }}
+                                    styles={{width: 300}}
+                                    onClick={() => history.goBack()}
                                 />
                             </div>
                             {

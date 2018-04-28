@@ -405,7 +405,7 @@ class _CreateEpisode extends Component {
                                 res => {
                                   if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
                                         Axios.post('/api/audio_processing', {
-                                          epsiodeId: that.episodeId,
+                                          episodeId: that.episodeId,
                                           soundcastId: that.currentSoundcastId,
                                           publisherEmail: userInfo.publisher.email,
                                           publisherFirstName: userInfo.firstName,
