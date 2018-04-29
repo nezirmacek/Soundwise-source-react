@@ -10,6 +10,7 @@ import Toggle from 'react-toggle'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faPlayCircle from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle'
+import faTrash from '@fortawesome/fontawesome-free-solid/faTrash'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -43,6 +44,8 @@ export default class EditEpisode extends Component {
             doneProcessingEpisode: false,
             podcastError: null,
 
+            isLoadingOriginal: false,
+            isLoadingProcessed: false,
             isPlayingOriginal: false,
             isPlayingProcessed: false,
             timerOriginal: 0,
@@ -72,8 +75,14 @@ export default class EditEpisode extends Component {
         actionstep: actionstep || this.state.actionstep,
         notes: notes || this.state.notes,
       })
-      url && setTimeout(() => this.wavesurferOriginal.load(url), 1000);
-      editedUrl && setTimeout(() => this.wavesurferProcessed.load(editedUrl), 1000);
+      setTimeout(() => {
+        this.setState({
+          isLoadingOriginal: !!url,
+          isLoadingProcessed: !!editedUrl,
+        });
+        url && this.wavesurferOriginal.load(url);
+        editedUrl && this.wavesurferProcessed.load(editedUrl);
+      }, 1000);
     }
 
     componentWillUnmount() {
@@ -348,7 +357,16 @@ export default class EditEpisode extends Component {
       this[`wavesurfer${type}`]  = mediaObject.wavesurfer();
       setTimeout(() => {
         this[`wavesurfer${type}`].surfer.on('seek', () => this.updateTimer(type));
-        setInterval(() => this.state[`isPlaying${type}`] && this.updateTimer(type), 1000);
+        setInterval(() => {
+          this.state[`isPlaying${type}`] && this.updateTimer(type)
+          if (this.state[`isLoading${type}`]) {
+            if (this[`wavesurfer${type}`].getDuration()) { // loaded
+              const newState = {};
+              newState[`isLoading${type}`] = false;
+              this.setState(newState);
+            }
+          }
+        }, 1000);
       }, 1000);
       mediaObject.on('deviceReady', () => console.log(`mediaObject${type} ready`));
       mediaObject.on('deviceError', () => { // error handling
@@ -356,7 +374,11 @@ export default class EditEpisode extends Component {
       });
       mediaObject.on('error', error => console.log('error:', error));
       // user clicked the record button and started recording
-      mediaObject.on('ended', () => this.setState({isPlaying: false}));
+      mediaObject.on('ended', () => {
+        const newState = {};
+        newState[`isPlaying${type}`] = false;
+        this.setState(newState);
+      });
     }
 
     updateTimer(type) {
@@ -374,13 +396,13 @@ export default class EditEpisode extends Component {
       const newState = {};
       newState[`isPlaying${type}`] = !this.state[`isPlaying${type}`];
       this.setState(newState);
-      // TODO timer
     }
 
     render() {
         const { description, title, actionstep, notes, notesUploading, notesUploaded,
-          notesName, isPublished, soundcastID, startProcessingEpisode, timerOriginal, timerProcessed,
-          doneProcessingEpisode, podcastError, isPlayingOriginal, isPlayingProcessed } = this.state;
+          notesName, isPublished, soundcastID, startProcessingEpisode, timerOriginal,
+          timerProcessed, doneProcessingEpisode, podcastError, isPlayingOriginal,
+          isPlayingProcessed, isLoadingOriginal, isLoadingProcessed } = this.state;
         const {history, userInfo} = this.props;
         const soundcast = userInfo.soundcasts_managed && userInfo.soundcasts_managed[soundcastID];
         const { id } = history.location.state;
@@ -613,8 +635,10 @@ export default class EditEpisode extends Component {
                               <AudiojsRecordPlayer
                                   setMediaObject={this.setMediaObject.bind(this, 'Original')} />
                             </div>
-                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}
-                              >{moment.utc(timerOriginal).format('HH:mm:ss')}</div>
+                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}>
+                              { isLoadingOriginal ? 'Loading'
+                                                  : moment.utc(timerOriginal).format('HH:mm:ss') }
+                            </div>
                           </div>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>
@@ -633,8 +657,15 @@ export default class EditEpisode extends Component {
                               <AudiojsRecordPlayer
                                 setMediaObject={this.setMediaObject.bind(this, 'Processed')} />
                             </div>
-                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}
-                              >{moment.utc(timerProcessed).format('HH:mm:ss')}</div>
+                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}>
+                              { isLoadingProcessed ? 'Loading'
+                                                   : moment.utc(timerProcessed).format('HH:mm:ss') }
+                            </div>
+                            <div style={{ fontSize: 16, padding: 13, float: 'left',
+                                          color: '#fb0000', cursor: 'pointer'}}>
+                              <FontAwesomeIcon size='1x' icon={faTrash}/>
+                              <span style={{ marginLeft: 5 }}>Delete</span>
+                            </div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
                             <Toggle
