@@ -204,7 +204,7 @@ export default class EditEpisode extends Component {
                     })
                     .then(response => {
                       runProcessing(() => {
-                        alert('Episode is processed and saved.');
+                        // alert('Episode is processed and saved.');
                         if(toPublish && !isPublished) {
                           that.notifySubscribers();
                           history.goBack();
@@ -223,13 +223,13 @@ export default class EditEpisode extends Component {
                 } else {
                   if(toPublish && !isPublished) { // if publishing for the first time
                     runProcessing(() => {
-                      alert('Episode is published.');
+                      // alert('Episode is published.');
                       that.notifySubscribers();
                       history.goBack();
                     });
                   } else {
                     runProcessing(() => {
-                      alert('The edited episode is saved');
+                      // alert('The edited episode is saved');
                       // history.goBack();
                     });
                   }
@@ -258,19 +258,20 @@ export default class EditEpisode extends Component {
               autoPublish: toPublish,
               emailListeners: that.state.sendEmails,
             }).then(res => {
-                that.setState({
-                  startProcessingEpisode: false,
-                  doneProcessingEpisode: true,
-                });
-                callback && callback();
+              alert(`Processing request is submitted. We'll email you when processing is complete.`);
+              that.setState({
+                startProcessingEpisode: false,
+                doneProcessingEpisode: true,
+              });
+              callback();
             })
             .catch(err => {
-                that.setState({
-                  startProcessingEpisode: false,
-                  doneProcessingEpisode: true,
-                  podcastError: err.toString(),
-                });
-                console.log(err);
+              that.setState({
+                startProcessingEpisode: false,
+                doneProcessingEpisode: true,
+                podcastError: err.toString(),
+              });
+              console.log(err);
             });
           }
         });
