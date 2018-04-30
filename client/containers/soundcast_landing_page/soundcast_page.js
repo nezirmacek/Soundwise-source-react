@@ -133,6 +133,12 @@ class _SoundcastPage extends Component {
     return (
       <div>
         <Helmet>
+          {
+            soundcast.podcastFeedVersion &&
+            <link rel="alternate" type="application/rss+xml" title={`${soundcast.title}`}
+              href={`https://mysoundwise.com/rss/${soundcastID}`}/>
+            || null
+          }
           <title>{`${soundcast.title} | Soundwise`}</title>
           <meta property="og:url" content={`https://mysoundwise.com/soundcasts/${soundcastID}`} />
           <meta property="fb:app_id" content='1726664310980105' />

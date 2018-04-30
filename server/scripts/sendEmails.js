@@ -221,6 +221,7 @@ const sendMarketingEmails = (req, res) => {
     suppression_group_id: unsubscribeGroup,
     status: 'Draft',
     sender_id: 204129,
+    reply_to: {email: publisherEmail, name: publisherName},
   };
   const options = {
     method: 'POST',

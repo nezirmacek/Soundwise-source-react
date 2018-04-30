@@ -347,7 +347,10 @@ async function feedInterval() {
         const { userId, publisherId } = item;
         for (const feed of results.feedItems) {
           const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
+          console.log('pub_date: ', pub_date);
+          console.log('item.updated: ', item.updated);
           if (pub_date && pub_date > item.updated) {
+            console.log('feed update block called');
             // 3. create new episodes from the new feed items, and add them to their respective soundcast
             //    *episode.index for the new episodes should be the number of existing episodes
             //     in the  soundcast + 1
@@ -356,6 +359,7 @@ async function feedInterval() {
             soundcast.title = metadata && metadata.title;
             await addFeedEpisode(feed, userId, publisherId, soundcastId, soundcast, metadata, i);
             i++;
+            firebase.database().ref(`importedFeeds/${soundcastId}/updated`).set(pub_date);
           }
         }
       });
