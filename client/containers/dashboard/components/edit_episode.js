@@ -49,6 +49,7 @@ export default class EditEpisode extends Component {
             isPlayingProcessed: false,
             timerOriginal: 0,
             timerProcessed: 0,
+            doReprocess: false,
             audioNormalization: false,
             trimSilence: false,
             reduceSilence: false,
@@ -159,7 +160,7 @@ export default class EditEpisode extends Component {
     submit (toPublish) {
         const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID,
           coverArtUrl, date_created, audioNormalization, trimSilence, reduceSilence,
-          addIntroOutro, silentPeriod} = this.state;
+          addIntroOutro, silentPeriod, doReprocess} = this.state;
         const {userInfo, history} = this.props;
         const soundcast = userInfo.soundcasts_managed[soundcastID];
         const {itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion} = soundcast; // only available if the soundcast has been submitted as a podcast;
@@ -211,13 +212,20 @@ export default class EditEpisode extends Component {
                       firstName: userInfo.firstName,
                     })
                     .then(response => {
-                      runProcessing(() => {
-                        // alert('Episode is processed and saved.');
+                      if (doReprocess) {
+                        runProcessing(() => {
+                          if(toPublish && !isPublished) {
+                            that.notifySubscribers();
+                            history.goBack();
+                          }
+                        });
+                      } else {
+                        alert('Episode is processed and saved.');
                         if(toPublish && !isPublished) {
                           that.notifySubscribers();
                           history.goBack();
                         }
-                      });
+                      }
                     })
                     .catch(err => {
                       that.setState({
@@ -230,16 +238,23 @@ export default class EditEpisode extends Component {
                   })
                 } else {
                   if(toPublish && !isPublished) { // if publishing for the first time
-                    runProcessing(() => {
-                      // alert('Episode is published.');
+                    if (doReprocess) {
+                      runProcessing(() => {
+                        that.notifySubscribers();
+                        history.goBack();
+                      });
+                    } else {
+                      alert('Episode is published.');
                       that.notifySubscribers();
                       history.goBack();
-                    });
+                    }
                   } else {
-                    runProcessing(() => {
-                      // alert('The edited episode is saved');
-                      // history.goBack();
-                    });
+                    if (doReprocess) {
+                      runProcessing();
+                    } else {
+                      alert('The edited episode is saved');
+                      history.goBack();
+                    }
                   }
                 }
             },
@@ -271,7 +286,7 @@ export default class EditEpisode extends Component {
                 startProcessingEpisode: false,
                 doneProcessingEpisode: true,
               });
-              callback();
+              callback && callback();
             })
             .catch(err => {
               that.setState({
@@ -401,7 +416,7 @@ export default class EditEpisode extends Component {
         const { description, title, actionstep, notes, notesUploading, notesUploaded,
           notesName, isPublished, soundcastID, startProcessingEpisode, timerOriginal,
           timerProcessed, doneProcessingEpisode, podcastError, isPlayingOriginal,
-          isPlayingProcessed, isLoadingOriginal, isLoadingProcessed } = this.state;
+          isPlayingProcessed, isLoadingOriginal, isLoadingProcessed, doReprocess } = this.state;
         const {history, userInfo} = this.props;
         const soundcast = userInfo.soundcasts_managed && userInfo.soundcasts_managed[soundcastID];
         const { id } = history.location.state;
@@ -661,71 +676,73 @@ export default class EditEpisode extends Component {
                                                    : moment.utc(timerProcessed).format('HH:mm:ss') }
                             </div>
                           </div>
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                          <div style={{display: 'flex', alignItems: 'center', marginTop: 25}}>
                             <Toggle
                               className='toggle-green'
-                              checked={this.state.audioNormalization}
-                              onChange={() => {
-                                const audioNormalization = !that.state.audioNormalization;
-                                that.setState({audioNormalization})
-                              }}
+                              checked={this.state.doReprocess}
+                              onChange={() => that.setState({doReprocess: !that.state.doReprocess})}
                             />
-                            <span style={styles.toggleLabel}>Optimize volume</span>
+                            <span style={styles.toggleLabel}>Reprocess</span>
                           </div>
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              className='toggle-green'
-                              checked={this.state.trimSilence}
-                              onChange={() => {
-                                const trimSilence = !that.state.trimSilence;
-                                that.setState({trimSilence})
-                              }}
-                            />
-                            <span style={styles.toggleLabel}>Trim silence at begining and end</span>
-                          </div>
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              className='toggle-green'
-                              checked={this.state.reduceSilence}
-                              onChange={() => {
-                                const reduceSilence = !that.state.reduceSilence;
-                                that.setState({reduceSilence})
-                              }}
-                            />
-                            <span style={styles.toggleLabel}>Remove excessive pauses</span>
-                          </div>
-                          {
-                            this.state.reduceSilence &&
-                              <div>
-                                <span style={{fontSize: 14, marginRight: 5}}>Remove silent periods longer than </span>
-                                <input style={{width: 70, marginBottom: 0}} type='text'
-                                  value={this.state.silentPeriod}
-                                  onChange={e => {
-                                    if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
-                                      that.setState({silentPeriod: Number(e.target.value)});
-                                    } else {
-                                      alert('Please enter a number >=0.1 and <= 10.');
-                                    }
-                                  }}
-                                />
-                                <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
-                              </div>
-                            || null
-                          }
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
-                            <Toggle
-                              className='toggle-green'
-                              checked={this.state.addIntroOutro}
-                              onChange={() => {
-                                if(((soundcast.intro || soundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
-                                  const addIntroOutro = !that.state.addIntroOutro;
-                                  that.setState({addIntroOutro})
-                                } else {
-                                  alert('Please upload intro/outro clip(s) to your soundcast first!');
-                                }
-                              }}
-                            />
-                            <span style={styles.toggleLabel}>Attach intro / outro</span>
+                          <div style={{ display: doReprocess ? '' : 'none'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                              <Toggle
+                                className='toggle-green'
+                                checked={this.state.audioNormalization}
+                                onChange={() => that
+                                  .setState({audioNormalization: !that.state.audioNormalization})}
+                              />
+                              <span style={styles.toggleLabel}>Optimize volume</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                              <Toggle
+                                className='toggle-green'
+                                checked={this.state.trimSilence}
+                                onChange={() => that.setState({trimSilence: !that.state.trimSilence})}
+                              />
+                              <span style={styles.toggleLabel}>Trim silence at begining and end</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                              <Toggle
+                                className='toggle-green'
+                                checked={this.state.reduceSilence}
+                                onChange={() => that.setState({reduceSilence: !that.state.reduceSilence})}
+                              />
+                              <span style={styles.toggleLabel}>Remove excessive pauses</span>
+                            </div>
+                            {
+                              this.state.reduceSilence &&
+                                <div>
+                                  <span style={{fontSize: 14, marginRight: 5}}>Remove silent periods longer than </span>
+                                  <input style={{width: 70, marginBottom: 0}} type='text'
+                                    value={this.state.silentPeriod}
+                                    onChange={e => {
+                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
+                                        that.setState({silentPeriod: Number(e.target.value)});
+                                      } else {
+                                        alert('Please enter a number >=0.1 and <= 10.');
+                                      }
+                                    }}
+                                  />
+                                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                                </div>
+                              || null
+                            }
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                              <Toggle
+                                className='toggle-green'
+                                checked={this.state.addIntroOutro}
+                                onChange={() => {
+                                  if(((soundcast.intro || soundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
+                                    const addIntroOutro = !that.state.addIntroOutro;
+                                    that.setState({addIntroOutro})
+                                  } else {
+                                    alert('Please upload intro/outro clip(s) to your soundcast first!');
+                                  }
+                                }}
+                              />
+                              <span style={styles.toggleLabel}>Attach intro / outro</span>
+                            </div>
                           </div>
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
@@ -735,11 +752,11 @@ export default class EditEpisode extends Component {
                               style={styles.soundcastSelect}
                               onChange={(e) => {this.changeSoundcastId(e);}}>
                                 {
-                                    _soundcasts_managed.map((soundcast, i) => {
-                                        return (
-                                            <option value={soundcast.id} key={i}>{soundcast.title}</option>
-                                        );
-                                    })
+                                  _soundcasts_managed.map((soundcast, i) => {
+                                    return (
+                                      <option value={soundcast.id} key={i}>{soundcast.title}</option>
+                                    );
+                                  })
                                 }
                             </select>
                         </div>
@@ -756,28 +773,28 @@ export default class EditEpisode extends Component {
                           </div>
                           ||
                           <div>
-                            <div className="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                            <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                                 <OrangeSubmitButton
-                                    label={'Re-process and ' + (isPublished ? 'update' : 'save draft')}
+                                    label={isPublished ? 'Update' : 'Save draft'}
                                     onClick={this.submit.bind(this, false)}
-                                    styles={{backgroundColor: Colors.link, borderWidth: 0, width: 300, margin: '40px auto 0'}}
+                                    styles={{backgroundColor: Colors.link, borderWidth: 0, width: 230, margin: '40px auto 0'}}
                                 />
                             </div>
                             {
                                 !isPublished &&
-                                <div className="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                                   <OrangeSubmitButton
-                                    label='Re-process and publish'
+                                    label='Publish'
                                     onClick={this.submit.bind(this, true)}
-                                    styles={{width: 300, margin: '40px auto 0' }}
+                                    styles={{width: 230, margin: '40px auto 0' }}
                                   />
                                 </div>
                                 || null
                             }
-                            <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div className="col-lg-4 col-md-12 col-sm-12 col-xs-12">
                                 <TransparentShortSubmitButton
                                     label="Cancel"
-                                    styles={{width: 300}}
+                                    styles={{width: 230}}
                                     onClick={() => history.goBack()}
                                 />
                             </div>
@@ -969,7 +986,7 @@ const styles = {
     soundcastSelectWrapper: {
         height: 92,
         backgroundColor: Colors.mainWhite,
-        marginTop: 15,
+        marginTop: 40,
     },
     soundcastSelect: {
         backgroundColor: 'transparent',
