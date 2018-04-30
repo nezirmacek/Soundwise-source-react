@@ -10,7 +10,6 @@ import Toggle from 'react-toggle'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faPlayCircle from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle'
-import faTrash from '@fortawesome/fontawesome-free-solid/faTrash'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -660,11 +659,6 @@ export default class EditEpisode extends Component {
                             <div style={{ fontSize: 16, padding: 13, float: 'left'}}>
                               { isLoadingProcessed ? 'Loading'
                                                    : moment.utc(timerProcessed).format('HH:mm:ss') }
-                            </div>
-                            <div style={{ fontSize: 16, padding: 13, float: 'left',
-                                          color: '#fb0000', cursor: 'pointer'}}>
-                              <FontAwesomeIcon size='1x' icon={faTrash}/>
-                              <span style={{ marginLeft: 5 }}>Delete</span>
                             </div>
                           </div>
                           <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
