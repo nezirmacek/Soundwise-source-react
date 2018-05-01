@@ -10,6 +10,8 @@ import Toggle from 'react-toggle'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faPlayCircle from '@fortawesome/fontawesome-free-solid/faPlayCircle'
 import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle'
+import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
+import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -57,12 +59,13 @@ export default class EditEpisode extends Component {
             silentPeriod: 0.5,
         };
         this.uploadCoverArtInput = null;
+        this.doReprocess = this.doReprocess.bind(this);
     }
 
     componentDidMount() {
       const { id, episode } = this.props.history.location.state;
       const {title, description, actionstep, notes, publicEpisode,
-        isPublished, soundcastID, coverArtUrl, date_created, url, editedUrl} = episode;
+        isPublished, soundcastID, coverArtUrl, date_created, url, editedUrl, audioProcessing} = episode;
       this.setState({
         id,
         title,
@@ -74,7 +77,10 @@ export default class EditEpisode extends Component {
         description: description || this.state.description,
         actionstep: actionstep || this.state.actionstep,
         notes: notes || this.state.notes,
-      })
+        audioProcessing,
+      });
+      this.checkUserStatus(this.props.userInfo);
+
       setTimeout(() => {
         this.setState({
           isLoadingOriginal: !!url,
@@ -83,6 +89,29 @@ export default class EditEpisode extends Component {
         url && this.wavesurferOriginal.load(url);
         editedUrl && this.wavesurferProcessed.load(editedUrl);
       }, 1000);
+    }
+
+    componentWillReceiveProps(nextProps) {
+      const { userInfo, history } = nextProps;
+      if (!this.state.proUser) {
+        if (userInfo.publisher) {
+          this.checkUserStatus(userInfo);
+        }
+      }
+    }
+
+    checkUserStatus(userInfo) {
+      let plan, proUser;
+      if(userInfo.publisher.plan) {
+          plan = userInfo.publisher.plan;
+          proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+      }
+      if(userInfo.publisher.beta) {
+          proUser = true;
+      }
+      this.setState({
+        proUser,
+      });
     }
 
     componentWillUnmount() {
@@ -159,7 +188,7 @@ export default class EditEpisode extends Component {
 
     submit (toPublish) {
         const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID,
-          coverArtUrl, date_created, audioNormalization, trimSilence, reduceSilence,
+          coverArtUrl, date_created, audioProcessing, audioNormalization, trimSilence, reduceSilence,
           addIntroOutro, silentPeriod, doReprocess} = this.state;
         const {userInfo, history} = this.props;
         const soundcast = userInfo.soundcasts_managed[soundcastID];
@@ -412,8 +441,19 @@ export default class EditEpisode extends Component {
       this.setState(newState);
     }
 
+    doReprocess() {
+      const {doReprocess, proUser, showPricingModal} = this.state;
+      if (proUser) {
+        this.setState({doReprocess: !doReprocess});
+      } else {
+        this.setState({
+          showPricingModal: true,
+        })
+      }
+    }
+
     render() {
-        const { description, title, actionstep, notes, notesUploading, notesUploaded,
+        const { proUser, showPricingModal, description, title, actionstep, notes, notesUploading, notesUploaded,
           notesName, isPublished, soundcastID, startProcessingEpisode, timerOriginal,
           timerProcessed, doneProcessingEpisode, podcastError, isPlayingOriginal,
           isPlayingProcessed, isLoadingOriginal, isLoadingProcessed, doReprocess } = this.state;
@@ -433,6 +473,21 @@ export default class EditEpisode extends Component {
 
         return (
             <div className='padding-30px-tb'>
+              <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
+                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+                  <div className='title-small' style={{margin: 25}}>
+                    Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                  </div>
+                  <div className="center-col">
+                    <OrangeSubmitButton
+                      label='Upgrade'
+                      onClick={() => history.push({pathname: '/pricing'})}
+                      styles={{width: '60%'}}
+                    />
+                  </div>
+                </div>
+              </div>
               <div className='padding-bottom-20px'>
                   <span className='title-medium '>
                       Edit Episode
@@ -629,12 +684,7 @@ export default class EditEpisode extends Component {
                         <div style={{ }}>
                           <div style={{marginTop: 20,}}>
                             <span style={{...styles.titleText, marginTop: 20,}}>
-                                Audio Processing
-                            </span>
-                          </div>
-                          <div style={{marginTop: 20,}}>
-                            <span style={{...styles.titleText, marginTop: 20,}}>
-                              Original file:
+                              {`${this.state.audioProcessing ? 'Original' : 'Episode'} audio file`}
                             </span>
                           </div>
                           <div style={{ height: 34 }}>
@@ -654,38 +704,48 @@ export default class EditEpisode extends Component {
                                                   : moment.utc(timerOriginal).format('HH:mm:ss') }
                             </div>
                           </div>
-                          <div style={{marginTop: 20,}}>
-                            <span style={{...styles.titleText, marginTop: 20,}}>
-                              Processed file:
-                            </span>
-                          </div>
-                          <div style={{ height: 44 }}>
-                            <div style={styles.playPauseBtn}
-                              onClick={this.playOrPause.bind(this, 'Processed')}>
-                              <span className="fa-layers">
-                                <FontAwesomeIcon color={Colors.mainOrange} size="1x"
-                                  icon={isPlayingProcessed ? faStopCircle : faPlayCircle } />
-                              </span>
+                          {
+                            this.state.audioProcessing &&
+                            <div>
+                              <div style={{marginTop: 20,}}>
+                                <span style={{...styles.titleText, marginTop: 20,}}>
+                                  Processed audio file
+                                </span>
+                              </div>
+                              <div style={{ height: 44 }}>
+                                <div style={styles.playPauseBtn}
+                                  onClick={this.playOrPause.bind(this, 'Processed')}>
+                                  <span className="fa-layers">
+                                    <FontAwesomeIcon color={Colors.mainOrange} size="1x"
+                                      icon={isPlayingProcessed ? faStopCircle : faPlayCircle } />
+                                  </span>
+                                </div>
+                                <div style={styles.micWrapper}>
+                                  <AudiojsRecordPlayer
+                                    setMediaObject={this.setMediaObject.bind(this, 'Processed')} />
+                                </div>
+                                <div style={{ fontSize: 16, padding: 13, float: 'left'}}>
+                                  { isLoadingProcessed ? 'Loading'
+                                                       : moment.utc(timerProcessed).format('HH:mm:ss') }
+                                </div>
+                              </div>
                             </div>
-                            <div style={styles.micWrapper}>
-                              <AudiojsRecordPlayer
-                                setMediaObject={this.setMediaObject.bind(this, 'Processed')} />
-                            </div>
-                            <div style={{ fontSize: 16, padding: 13, float: 'left'}}>
-                              { isLoadingProcessed ? 'Loading'
-                                                   : moment.utc(timerProcessed).format('HH:mm:ss') }
+                          }
+                        </div>
+                        <div className='row'>
+                          <div className='col-md-12' style={{marginBottom: 15, marginTop: 20, }}>
+                            <div onClick={this.doReprocess} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center', fontWeight: 800}}>
+                              <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={that.state.doReprocess ? faCaretDown : faCaretRight} /></div>
+                              <span>Audio Processing</span>
+                             {
+                              !proUser &&
+                              <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+                              || <span></span>
+                             }
                             </div>
                           </div>
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 25}}>
-                            <Toggle
-                              className='toggle-green'
-                              checked={this.state.doReprocess}
-                              onChange={() => that.setState({doReprocess: !that.state.doReprocess})}
-                            />
-                            <span style={styles.toggleLabel}>Reprocess</span>
-                          </div>
-                          <div style={{ display: doReprocess ? '' : 'none'}}>
-                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+                          <div className='col-md-12' style={{ display: doReprocess ? '' : 'none'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginTop: 15, width: '100%'}}>
                               <Toggle
                                 className='toggle-green'
                                 checked={this.state.audioNormalization}
@@ -1015,7 +1075,7 @@ const styles = {
     },
     toggleLabel: {
       fontSize: 16,
-      fontWeight: 800,
+      fontWeight: 600,
       marginLeft: '0.5em'
     }
 };

@@ -96,7 +96,7 @@ module.exports.audioProcessing = async (req, res) => {
           }
           (new ffmpeg(filePath)).then(file => {
             file.addCommand('-af', `atrim=${start}:${end}`);
-            file.addCommand('-q:a', '0');
+            file.addCommand('-q:a', '3');
             const trimmedPath = `${filePath.slice(0, -4)}_trimmed${path.extname(episode.url)}`;
             file.save(trimmedPath, err => {
               if (err) {
@@ -146,7 +146,7 @@ module.exports.audioProcessing = async (req, res) => {
               filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1"`;
               file.addCommand('-filter_complex', filterComplex);
               // *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
-              file.addCommand('-q:a', '0');
+              file.addCommand('-q:a', '3');
               const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${path.extname(episode.url)}`;
               file.save(silenceRemovedPath, err => {
                 if (err) {
@@ -183,7 +183,7 @@ module.exports.audioProcessing = async (req, res) => {
                 const fadeDuration = overlayDuration * 2;
                 const fadeStartPosition = introDuration - fadeDuration;
                 file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
-                file.addCommand('-q:a', '0');
+                file.addCommand('-q:a', '3');
                 const introFadePath = `${introPath.slice(0, -4)}_fadeintro${path.extname(intro)}`;
                 file.save(introFadePath, err => {
                   if (err) {
@@ -231,7 +231,7 @@ module.exports.audioProcessing = async (req, res) => {
               const fadeStartPosition = outroDuration - fadeDuration;
               const fadeout = `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`;
               file.addCommand('-af', `${fadein},${fadeout}`);
-              file.addCommand('-q:a', '0');
+              file.addCommand('-q:a', '3');
               const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(outro)}`;
               file.save(outroFadePath, err => {
                 if (err) {
@@ -296,7 +296,7 @@ module.exports.audioProcessing = async (req, res) => {
             filterComplex= `"[1]adelay=${adelay2}[a];[0][a]amix=2"`;
           }
           file.addCommand('-filter_complex', `${filterComplex}`);
-          file.addCommand('-q:a', '0');
+          file.addCommand('-q:a', '3');
           const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(intro)}`;
           file.save(concatPath, err => {
             if (err) {
@@ -322,7 +322,7 @@ module.exports.audioProcessing = async (req, res) => {
           // ffmpeg -i audio.mp3 -af loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20::linear=true:print_format=summary -ar 44.1k audio-normalized.mp3
           file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20:linear=true:print_format=summary`);
           file.addCommand('-ar', `44.1k`);
-          file.addCommand('-q:a', '0');
+          file.addCommand('-q:a', '3');
           const setVolumePath = `${filePath.slice(0, -4)}_set_volume${path.extname(intro)}`;
           file.save(setVolumePath, err => {
             if (err) {
@@ -340,7 +340,7 @@ module.exports.audioProcessing = async (req, res) => {
       (new ffmpeg(filePath)).then(file => {
         if (file.metadata.audio.codec !== 'mp3') { // 'aac' for .m4a files
           file.setAudioCodec('mp3').setAudioBitRate(64); // convert to mp3
-          file.addCommand('-q:a', '0');
+          file.addCommand('-q:a', '3');
           const mp3codecPath = `${filePath.slice(0, -4)}_mp3codec.mp3`;
           file.save(mp3codecPath, err => {
             if (err) {
@@ -514,6 +514,7 @@ module.exports.audioProcessing = async (req, res) => {
 
             //     step 3: update firebase
             await firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+            await firebase.database().ref(`episodes/${episodeId}/audioProcessing`).set(false);
             await firebase.database().ref(`episodes/${episodeId}/id3Tagged`).set(true);
 
             // If autoPublish == true and if soundcast.podcastFeedVersion, then we need to update the podcast feed after the episode is processed and ready to be published
@@ -536,7 +537,7 @@ module.exports.audioProcessing = async (req, res) => {
             to: publisherEmail,
             from: 'support@mysoundwise.com',
             subject: 'Your episode has been processed!',
-            html: `<p>Hello ${publisherName},</p><p>${episode.title} has been processed${autoPublish ? ' and published' : ''}.</p><p>${autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
+            html: `<p>Hello ${publisherName},</p><p>${episode.title} has been processed${autoPublish ? ' and published' : ''}.</p><p>${!autoPublish ? 'You can now review and publish the processed episode from your dashboard.' : ''}</p><p>Folks at Soundwise</p>`,
           });
         }); // uploader.upload s3
       }); // file.save outputPath
