@@ -57,6 +57,7 @@ export default class EditEpisode extends Component {
             reduceSilence: false,
             addIntroOutro: false,
             silentPeriod: 0.5,
+            overlayDuration: 0,
         };
         this.uploadCoverArtInput = null;
         this.doReprocess = this.doReprocess.bind(this);
@@ -198,7 +199,7 @@ export default class EditEpisode extends Component {
     submit (toPublish) {
         const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID,
           coverArtUrl, date_created, audioProcessing, audioNormalization, trimSilence, reduceSilence,
-          addIntroOutro, silentPeriod, doReprocess} = this.state;
+          addIntroOutro, silentPeriod, doReprocess, overlayDuration} = this.state;
         const {userInfo, history} = this.props;
         const soundcast = userInfo.soundcasts_managed[soundcastID];
         const {itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion} = soundcast; // only available if the soundcast has been submitted as a podcast;
@@ -309,7 +310,7 @@ export default class EditEpisode extends Component {
               tagging: true,
               intro: (addIntroOutro && soundcast.intro) || null,
               outro: (addIntroOutro && soundcast.outro) || null,
-              overlayDuration: (addIntroOutro && soundcast.introOutroOverlay) || 0,
+              overlayDuration: (addIntroOutro && (overlayDuration || soundcast.introOutroOverlay)) || 0,
               setVolume: audioNormalization,
               trim: trimSilence,
               removeSilence: (reduceSilence && Number(silentPeriod) || 0),
@@ -802,6 +803,26 @@ export default class EditEpisode extends Component {
                               />
                               <span style={styles.toggleLabel}>Attach intro / outro</span>
                             </div>
+                            {
+                              this.state.addIntroOutro &&
+                                <div>
+                                  <span style={{fontSize: 14, marginRight: 5}}>
+                                    Overlap with main audio:
+                                  </span>
+                                  <input style={{width: 70, marginBottom: 0}} type='text'
+                                    value={this.state.overlayDuration}
+                                    onChange={e => {
+                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
+                                        that.setState({overlayDuration: Number(e.target.value)});
+                                      } else {
+                                        alert('Please enter a number >=0.1 and <= 10.');
+                                      }
+                                    }}
+                                  />
+                                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                                </div>
+                              || null
+                            }
                           </div>
                         </div>
                         <div style={styles.soundcastSelectWrapper}>
