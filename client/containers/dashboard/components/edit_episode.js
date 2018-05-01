@@ -286,6 +286,7 @@ export default class EditEpisode extends Component {
                     } else {
                       Axios.post('/api/audio_processing_replace', {
                         episodeId: id,
+                        soundcastId: soundcastID,
                       }).then(res => {
                         alert('The edited episode is saved');
                         history.goBack();

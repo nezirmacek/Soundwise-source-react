@@ -548,7 +548,7 @@ module.exports.audioProcessing = async (req, res) => {
 } // audioProcessing
 
 module.exports.audioProcessingReplace = async (req, res) => {
-  const { episodeId } = req.body;
+  const { episodeId, soundcastId } = req.body;
   const episodeObj = await firebase.database().ref(`episodes/${episodeId}`).once('value');
   const episode = episodeObj.val();
   if (!episode.editedUrl) {
@@ -581,6 +581,45 @@ module.exports.audioProcessingReplace = async (req, res) => {
         fs.unlink(outputPath, err => 0); // remove downloaded
         if (err) {
           return logErr(`Error: uploading ${episodeId}.mp3 to S3 ${err}`);
+        }
+        const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+        const soundcast = soundcastObj.val();
+        database.Episode.findOrCreate({
+          where: { episodeId },
+          defaults: {
+            episodeId,
+            soundcastId,
+            publisherId: soundcast.publisherID,
+            title: episode.title,
+            soundcastTitle: soundcast.title,
+          }
+        })
+        .then(data => console.log('audio response DB response: ', data))
+        .catch(err => console.log('error: ', err));
+        //     step 2: notify subscribed listeners by text and email
+        //       text notification:
+        const registrationTokens = [];
+        if (soundcast.subscribed) {
+          Object.keys(soundcast.subscribed).forEach(user => {
+            if (typeof soundcast.subscribed[user] === 'object') {
+              registrationTokens.push(soundcast.subscribed[user][0]) // basic version: only allow one device per user
+            }
+          });
+          const payload = {
+            notification: {
+              title: `${soundcast.title} just published:`,
+              body: `${episode.title}`,
+              sound: 'default',
+              badge: '1'
+            }
+          };
+          const options = { priority: 'high' };
+          // send push notificaiton
+          firebase.messaging().sendToDevice(registrationTokens, payload, options)
+          .then(response => {
+            console.log('audio processing sendToDevice Response');
+            //...
+          }).catch(err => logErr(`sendToDevice ${err}`));
         }
         await firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
         await firebase.database().ref(`episodes/${episodeId}/audioProcessing`).set(false);
