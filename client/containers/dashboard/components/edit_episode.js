@@ -186,6 +186,15 @@ export default class EditEpisode extends Component {
         }
     }
 
+    catchError(err) {
+      that.setState({
+        startProcessingEpisode: false,
+        doneProcessingEpisode: true,
+        podcastError: err.toString(),
+      });
+      console.log(err);
+    }
+
     submit (toPublish) {
         const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID,
           coverArtUrl, date_created, audioProcessing, audioNormalization, trimSilence, reduceSilence,
@@ -241,7 +250,7 @@ export default class EditEpisode extends Component {
                       firstName: userInfo.firstName,
                     })
                     .then(response => {
-                      if (doReprocess) {
+                      if(doReprocess) {
                         runProcessing(() => {
                           if(toPublish && !isPublished) {
                             that.notifySubscribers();
@@ -256,18 +265,11 @@ export default class EditEpisode extends Component {
                         }
                       }
                     })
-                    .catch(err => {
-                      that.setState({
-                        startProcessingEpisode: false,
-                        doneProcessingEpisode: true,
-                        podcastError: err.toString(),
-                      });
-                      console.log(err);
-                    });
+                    .catch(err => that.catchError(err));
                   })
                 } else {
                   if(toPublish && !isPublished) { // if publishing for the first time
-                    if (doReprocess) {
+                    if(doReprocess) {
                       runProcessing(() => {
                         that.notifySubscribers();
                         history.goBack();
@@ -278,11 +280,15 @@ export default class EditEpisode extends Component {
                       history.goBack();
                     }
                   } else {
-                    if (doReprocess) {
+                    if(doReprocess) {
                       runProcessing();
                     } else {
-                      alert('The edited episode is saved');
-                      history.goBack();
+                      Axios.post('/api/audio_processing_replace', {
+                        episodeId: id,
+                      }).then(res => {
+                        alert('The edited episode is saved');
+                        history.goBack();
+                      }).catch(err => that.catchError(err));
                     }
                   }
                 }
@@ -317,14 +323,7 @@ export default class EditEpisode extends Component {
               });
               callback && callback();
             })
-            .catch(err => {
-              that.setState({
-                startProcessingEpisode: false,
-                doneProcessingEpisode: true,
-                podcastError: err.toString(),
-              });
-              console.log(err);
-            });
+            .catch(err => that.catchError(err));
           }
         });
     }

@@ -422,7 +422,7 @@ module.exports.audioProcessing = async (req, res) => {
          , { path: outputPath, name: `${episodeId + (autoPublish ? '' : '-edited')}.mp3` } // file
          , async (err, files) => {
           if (err) {
-            return reject(`Error: uploading ${episodeId}.mp3 to S3 ${err}`);
+            return logErr(`Error: uploading ${episodeId}.mp3 to S3 ${err}`);
           }
           fs.unlink(outputPath, err => 0); // remove tagged file
           if (!autoPublish) {
@@ -545,4 +545,48 @@ module.exports.audioProcessing = async (req, res) => {
   } catch(e) {
     logErr(`ffmpeg catch ${e.body || e.stack}`);
   }
+} // audioProcessing
+
+module.exports.audioProcessingReplace = async (req, res) => {
+  const { episodeId } = req.body;
+  const episodeObj = await firebase.database().ref(`episodes/${episodeId}`).once('value');
+  const episode = episodeObj.val();
+  if (!episode.editedUrl) {
+    return logErr('editedUrl empty', res);
+  }
+  res.send('OK');
+  request.get({ url: episode.editedUrl, encoding: null }).then(body => {
+    const outputPath = `/tmp/audio_processing_replace_${episodeId + path.extname(episode.url)}`;
+    fs.writeFile(outputPath, body, err => {
+      if (err) {
+        return logErr(`cannot write tmp audio file ${outputPath}`);
+      }
+      uploader.use(new S3Strategy({
+        uploadPath: 'soundcasts',
+        headers: { 'x-amz-acl': 'public-read' },
+        options: {
+          key: awsConfig.accessKeyId,
+          secret: awsConfig.secretAccessKey,
+          bucket: 'soundwiseinc',
+        },
+      }));
+      console.log('CHECK: audio processing replace ', outputPath, episodeId);
+      uploader.upload('s3' // saving to S3 db
+        // 5a. If 'autoPublish == true', save processed audio file to AWS S3
+        //         to replace the original file
+        //     If 'autoPublish == false', save processed audio file to AWS S3 under
+        //         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
+       , { path: outputPath, name: `${episodeId}.mp3` } // replace original file
+       , async (err, files) => {
+        fs.unlink(outputPath, err => 0); // remove downloaded
+        if (err) {
+          return logErr(`Error: uploading ${episodeId}.mp3 to S3 ${err}`);
+        }
+        await firebase.database().ref(`episodes/${episodeId}/isPublished`).set(true);
+        await firebase.database().ref(`episodes/${episodeId}/audioProcessing`).set(false);
+        await firebase.database().ref(`episodes/${episodeId}/id3Tagged`).set(true);
+      }); // uploader.upload s3
+
+    });
+  }).catch(err => logErr(`unable to get episode ${episode.editedUrl} ${err}`));
 }
