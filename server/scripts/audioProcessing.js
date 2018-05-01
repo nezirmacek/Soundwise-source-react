@@ -2,6 +2,9 @@
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
+const AWS = require('aws-sdk');
+AWS.config.update(awsConfig);
+const s3 = new AWS.S3();
 const { uploader, logErr, setAudioTags, parseSilenceDetect } = require('./utils')('audioProcessing');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
@@ -582,6 +585,14 @@ module.exports.audioProcessingReplace = async (req, res) => {
         if (err) {
           return logErr(`Error: uploading ${episodeId}.mp3 to S3 ${err}`);
         }
+        await firebase.database().ref(`episodes/${episodeId}/editedUrl`).remove();
+        s3.deleteObject({ Bucket: 'soundwiseinc', Key: `soundcasts/${episodeId}-edited.mp3` }
+         , (err, data) => {
+          if (err) {
+            return logErr(`Error: Audio processing replace cannot delete object ${Key} ${err}`);
+          }
+          // console.log(`Audio processing replace: Successfully deleted ${Key}`);
+        });
         const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
         const soundcast = soundcastObj.val();
         database.Episode.findOrCreate({
