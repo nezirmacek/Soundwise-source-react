@@ -70,11 +70,11 @@ module.exports = {
         videojs: 'video.js', 'window.videojs': 'video.js',
         RecordRTC: 'recordrtc', 'window.RecordRTC': 'recordrtc',
     }),
-    new webpack.optimize.UglifyJsPlugin(),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production'),
-      },
-    }),
+    // new webpack.optimize.UglifyJsPlugin(),
+    // new webpack.DefinePlugin({
+    //   'process.env': {
+    //     NODE_ENV: JSON.stringify('production'),
+    //   },
+    // }),
   ],
 };
