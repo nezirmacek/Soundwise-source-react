@@ -303,6 +303,10 @@ export default class EditEpisode extends Component {
                       });
                     } else {
                       alert("The edited episode is saved.");
+                      this.setState({
+                        startProcessingEpisode: false,
+                        doneProcessingEpisode: true,
+                      });
                     }
                   }
                 }
