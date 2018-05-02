@@ -136,7 +136,7 @@ export default class EditSoundcast extends Component {
         isPodcast: isPodcast ? isPodcast : false,
         episodes: episodes ? episodes : null,
         itunesTitle: itunesTitle ? itunesTitle : title,
-        itunesHost: itunesHost ? itunesHost : hostName,
+        itunesHost: itunesHost ? itunesHost : this.props.userInfo.publisher.name,
         itunesCategory: itunesCategory ? itunesCategory : null,
         itunesExplicit: itunesExplicit ? itunesExplicit : false,
         itunesImage: itunesImage ? itunesImage : null,
