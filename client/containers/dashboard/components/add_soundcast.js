@@ -98,11 +98,11 @@ export default class AddSoundcast extends Component {
 
   checkUserStatus(userInfo) {
     let plan, proUser;
-    if(userInfo.publisher.plan) {
+    if(userInfo.publisher && userInfo.publisher.plan) {
         plan = userInfo.publisher.plan;
         proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
     }
-    if(userInfo.publisher.beta) {
+    if(userInfo.publisher && userInfo.publisher.beta) {
         proUser = true;
     }
     this.setState({

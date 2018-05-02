@@ -57,7 +57,7 @@ export default class EditEpisode extends Component {
             reduceSilence: false,
             addIntroOutro: false,
             silentPeriod: 0.5,
-            overlayDuration: 0,
+            overlayDuration: 5,
         };
         this.uploadCoverArtInput = null;
         this.doReprocess = this.doReprocess.bind(this);
@@ -103,11 +103,11 @@ export default class EditEpisode extends Component {
 
     checkUserStatus(userInfo) {
       let plan, proUser;
-      if(userInfo.publisher.plan) {
+      if(userInfo.publisher && userInfo.publisher.plan) {
           plan = userInfo.publisher.plan;
           proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
       }
-      if(userInfo.publisher.beta) {
+      if(userInfo.publisher && userInfo.publisher.beta) {
           proUser = true;
       }
       this.setState({
@@ -188,7 +188,7 @@ export default class EditEpisode extends Component {
     }
 
     catchError(err) {
-      that.setState({
+      this.setState({
         startProcessingEpisode: false,
         doneProcessingEpisode: true,
         podcastError: err.toString(),
@@ -251,18 +251,29 @@ export default class EditEpisode extends Component {
                       firstName: userInfo.firstName,
                     })
                     .then(response => {
-                      if(doReprocess) {
-                        runProcessing(() => {
-                          if(toPublish && !isPublished) {
+                      if(toPublish && !isPublished) { // if publishing for the first time
+                        if(doReprocess) {
+                          runProcessing(() => {
                             that.notifySubscribers();
+                            alert("The episode will be published after processing is finished.");
                             history.goBack();
-                          }
-                        });
+                          });
+                        } else {
+                          Axios.post('/api/audio_processing_replace', {
+                            episodeId: id,
+                            soundcastId: soundcastID,
+                          }).then(res => {
+                            alert('Episode is published.');
+                            history.goBack();
+                          }).catch(err => that.catchError(err));
+                        }
                       } else {
-                        alert('Episode is processed and saved.');
-                        if(toPublish && !isPublished) {
-                          that.notifySubscribers();
-                          history.goBack();
+                        if(doReprocess) {
+                          runProcessing(() => {
+                            alert("Request submitted. We'll email you when processing is done.");
+                          });
+                        } else {
+                          alert("The edited episode is saved.");
                         }
                       }
                     })
@@ -273,24 +284,25 @@ export default class EditEpisode extends Component {
                     if(doReprocess) {
                       runProcessing(() => {
                         that.notifySubscribers();
+                        alert("The episode will be published after processing is finished.");
                         history.goBack();
                       });
-                    } else {
-                      alert('Episode is published.');
-                      that.notifySubscribers();
-                      history.goBack();
-                    }
-                  } else {
-                    if(doReprocess) {
-                      runProcessing();
                     } else {
                       Axios.post('/api/audio_processing_replace', {
                         episodeId: id,
                         soundcastId: soundcastID,
                       }).then(res => {
-                        alert('The edited episode is saved');
+                        alert('Episode is published.');
                         history.goBack();
                       }).catch(err => that.catchError(err));
+                    }
+                  } else {
+                    if(doReprocess) {
+                      runProcessing(() => {
+                        // alert("Request submitted. We'll email you when processing is done.");
+                      });
+                    } else {
+                      alert("The edited episode is saved.");
                     }
                   }
                 }
@@ -301,6 +313,14 @@ export default class EditEpisode extends Component {
           );
 
           function runProcessing(callback) {
+            if(Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10 ) {
+              alert('Overlap with main audio: Please enter a number >=0.1 and <= 10.');
+              return;
+            }
+            if(Number(silentPeriod) < 0.1 && Number(silentPeriod) > 10 ) {
+              alert('Remove excessive pauses: Please enter a number >=0.1 and <= 10.');
+              return;
+            }
             Axios.post('/api/audio_processing', {
               episodeId: id,
               soundcastId: soundcastID,
@@ -311,7 +331,7 @@ export default class EditEpisode extends Component {
               tagging: true,
               intro: (addIntroOutro && soundcast.intro) || null,
               outro: (addIntroOutro && soundcast.outro) || null,
-              overlayDuration: (addIntroOutro && (overlayDuration || soundcast.introOutroOverlay)) || 0,
+              overlayDuration: (addIntroOutro && (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) || 0,
               setVolume: audioNormalization,
               trim: trimSilence,
               removeSilence: (reduceSilence && Number(silentPeriod) || 0),
@@ -475,10 +495,10 @@ export default class EditEpisode extends Component {
         return (
             <div className='padding-30px-tb'>
               <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
-                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
-                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 850, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to access audio processing tools</div>
                   <div className='title-small' style={{margin: 25}}>
-                    Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                    Audio processing options are available on PLUS and PRO plans. Please upgrade to access this feature.
                   </div>
                   <div className="center-col">
                     <OrangeSubmitButton
@@ -734,7 +754,7 @@ export default class EditEpisode extends Component {
                           }
                         </div>
                         <div className='row'>
-                          <div className='col-md-12' style={{marginBottom: 15, marginTop: 20, }}>
+                          <div className='col-md-12' style={{marginBottom: 15, marginTop: 20, display: `${isPublished ? 'none' : ''}`}}>
                             <div onClick={this.doReprocess} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center', fontWeight: 800}}>
                               <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={that.state.doReprocess ? faCaretDown : faCaretRight} /></div>
                               <span>Audio Processing</span>
@@ -778,11 +798,7 @@ export default class EditEpisode extends Component {
                                   <input style={{width: 70, marginBottom: 0}} type='text'
                                     value={this.state.silentPeriod}
                                     onChange={e => {
-                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
-                                        that.setState({silentPeriod: Number(e.target.value)});
-                                      } else {
-                                        alert('Please enter a number >=0.1 and <= 10.');
-                                      }
+                                        that.setState({silentPeriod: e.target.value});
                                     }}
                                   />
                                   <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
@@ -813,11 +829,7 @@ export default class EditEpisode extends Component {
                                   <input style={{width: 70, marginBottom: 0}} type='text'
                                     value={this.state.overlayDuration}
                                     onChange={e => {
-                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
-                                        that.setState({overlayDuration: Number(e.target.value)});
-                                      } else {
-                                        alert('Please enter a number >=0.1 and <= 10.');
-                                      }
+                                      that.setState({overlayDuration: e.target.value});
                                     }}
                                   />
                                   <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>

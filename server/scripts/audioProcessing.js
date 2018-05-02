@@ -47,6 +47,7 @@ module.exports.audioProcessing = async (req, res) => {
 
   // 2. return 200 ok to client if request body includes all necessary information
   res.end('ok');
+  await firebase.database().ref(`episodes/${episodeId}/audioProcessing`).set(true);
 
   // 3. Get the episode url from firebase 'episodes/[episode id]/url', fetch the audio file
   const episodeObj = await firebase.database().ref(`episodes/${episodeId}`).once('value');

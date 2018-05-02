@@ -79,6 +79,7 @@ class _CreateEpisode extends Component {
             reduceSilence: false,
             addIntroOutro: false,
             silentPeriod: 0.5,
+            overlayDuration: 5,
             immediatePublish: true,
 
             sendEmails: false,
@@ -151,11 +152,11 @@ class _CreateEpisode extends Component {
 
     checkUserStatus(userInfo) {
       let plan, proUser;
-      if(userInfo.publisher.plan) {
+      if(userInfo.publisher && userInfo.publisher.plan) {
           plan = userInfo.publisher.plan;
           proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
       }
-      if(userInfo.publisher.beta) {
+      if(userInfo.publisher && userInfo.publisher.beta) {
           proUser = true;
       }
       this.setState({
@@ -352,7 +353,7 @@ class _CreateEpisode extends Component {
             })
         }
         const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverArtUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
-        const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, immediatePublish} = this.state;
+        const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, overlayDuration, immediatePublish} = this.state;
         const { userInfo, history, content_saved, handleContentSaving } = this.props;
         const audioProcessing = (audioNormalization || trimSilence || reduceSilence || addIntroOutro) ? true : false;
 
@@ -429,6 +430,14 @@ class _CreateEpisode extends Component {
                             }).then(
                                 res => {
                                   if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
+                                        if(Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10 ) {
+                                          alert('Overlap with main audio: Please enter a number >=0.1 and <= 10.');
+                                          return;
+                                        }
+                                        if(Number(silentPeriod) < 0.1 && Number(silentPeriod) > 10 ) {
+                                          alert('Remove excessive pauses: Please enter a number >=0.1 and <= 10.');
+                                          return;
+                                        }
                                         Axios.post('/api/audio_processing', {
                                           episodeId: that.episodeId,
                                           soundcastId: that.currentSoundcastId,
@@ -439,7 +448,7 @@ class _CreateEpisode extends Component {
                                           tagging: true,
                                           intro: (addIntroOutro && soundcast.intro) || null,
                                           outro: (addIntroOutro && soundcast.outro) || null,
-                                          overlayDuration: (addIntroOutro && soundcast.introOutroOverlay) || 0,
+                                          overlayDuration: (addIntroOutro && (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) || 0,
                                           setVolume: audioNormalization,
                                           trim: trimSilence,
                                           removeSilence: (reduceSilence && Number(silentPeriod) || 0),
@@ -834,6 +843,7 @@ class _CreateEpisode extends Component {
         const {proUser} = this.state;
         if(proUser) {
             const oldOption = this.state[option];
+            console.log('oldOption: ', this.state[option]);
             this.setState({
                 [option]: !oldOption,
             });
@@ -846,7 +856,7 @@ class _CreateEpisode extends Component {
 
     render() {
         const {proUser, showPricingModal, isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, audioUploadProgress, notesUploadProgress, wrongFileTypeFor, audioUploadError, notesUploadError, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
-        const { userInfo } = this.props;
+        const { userInfo, history } = this.props;
         const that = this;
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
@@ -861,10 +871,10 @@ class _CreateEpisode extends Component {
         return (
             <div className='padding-30px-tb'>
               <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
-                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
-                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 850, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to access audio processing tools</div>
                   <div className='title-small' style={{margin: 25}}>
-                    Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                    Audio processing options available on PLUS and PRO plans. Please upgrade to access this feature.
                   </div>
                   <div className="center-col">
                     <OrangeSubmitButton
@@ -1215,12 +1225,14 @@ class _CreateEpisode extends Component {
                         }
                         <div style={{marginTop: 50, display: ''}}>
                           <hr style={{border: '0.5px solid lightgray'}}/>
-                          <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing Options</span>
-                          {
-                              !proUser &&
-                              <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
-                              || <span></span>
-                          }
+                          <div style={{display: 'flex', alignItems: 'center'}}>
+                              <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing</span>
+                              {
+                                  !proUser &&
+                                  <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+                                  || <span></span>
+                              }
+                          </div>
                           <div style={{marginTop: 20, marginBottom: 25, }}>
                             <div style={{display: 'flex', alignItems: 'center'}}>
                                 <Toggle
@@ -1260,11 +1272,7 @@ class _CreateEpisode extends Component {
                                   <input style={{width: 70}} type='text'
                                     value={this.state.silentPeriod}
                                     onChange={(e) => {
-                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
-                                        that.setState({silentPeriod: Number(e.target.value)});
-                                      } else {
-                                        alert('Please enter a number >=0.1 and <= 10.');
-                                      }
+                                      that.setState({silentPeriod: Number(e.target.value)});
                                     }}
                                   />
                                   <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
@@ -1279,8 +1287,8 @@ class _CreateEpisode extends Component {
                                   // label="Charge subscribers for this soundcast?"
                                   checked={this.state.addIntroOutro}
                                   onChange={() => {
-                                    if(((that.state.currentsoundcast.intro || that.state.currentsoundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
-                                        that.setProcessingOption.bind(this, 'addIntroOutro')
+                                    if(that.state.currentsoundcast.intro || that.state.currentsoundcast.outro) {
+                                        that.setProcessingOption.bind(this, 'addIntroOutro')();
                                     } else {
                                         alert('Please upload intro/outro clip(s) to your soundcast first!');
                                     }
@@ -1288,6 +1296,22 @@ class _CreateEpisode extends Component {
                                 />
                                 <span id='audio-edit-4-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Attach intro and outro</span><span> (Please upload an intro and/or outro for your soundcast first)</span>
                             </div>
+                            {
+                              this.state.addIntroOutro &&
+                                <div>
+                                  <span style={{fontSize: 14, marginRight: 5}}>
+                                    Overlap with main audio:
+                                  </span>
+                                  <input style={{width: 70, marginBottom: 0}} type='text'
+                                    value={this.state.overlayDuration}
+                                    onChange={e => {
+                                      that.setState({overlayDuration: e.target.value});
+                                    }}
+                                  />
+                                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                                </div>
+                              || null
+                            }
                           </div>
                         </div>
                 </div>
@@ -1385,7 +1409,7 @@ const styles = {
         // textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)',
         color: Colors.black,
         fontWeight: 800,
-        width: '100%',
+        // width: '100%',
         paddingTop: 10,
         paddingBottom: 10,
     },
