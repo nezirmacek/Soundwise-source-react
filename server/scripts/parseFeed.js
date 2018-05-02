@@ -11,13 +11,18 @@
 // 5. front end assigns the newly created soundcast to the user.
 // 6. server checks the feed url every hour to see if there are new episodes. If so, update the soundcast with new episodes.
 
-const request = require ("request");
-const FeedParser = require ("feedparser");
+const request = require ('request');
+const requestPromise = require('request-promise');
+const path = require ('path');
+const fs = require ('fs');
+const ffmpeg = require('./ffmpeg');
+const FeedParser = require ('feedparser');
 const firebase = require('firebase-admin');
 const database = require('../../database/index');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
+const { logErr } = require('./utils')('parseFeed.js');
 
 const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
 
@@ -224,9 +229,11 @@ async function runFeedImport(req, res, url) {
     .then(async data => {
       // console.log('DB response: ', data);
       // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
-      await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
-        addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
-      })));
+      let i = 0;
+      for (const item of feedItems) {
+        await addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i);
+        i++;
+      }
       firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
       firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
       firebase.database().ref(`soundcasts/${soundcastId}/published`).set(true);
@@ -234,22 +241,41 @@ async function runFeedImport(req, res, url) {
       delete feedUrls[url];
       res.send('Success_import');
     })
-    .catch(err => {
-      console.log(`Error: parseFeed.js Soundcast.findOrCreate ${err}`);
-      res.status(400).send(`Error: parseFeed.js Soundcast.findOrCreate ${err}`);
-    });
+    .catch(err => logErr(`Soundcast.findOrCreate ${err}`, res));
 } // runFeedImport
 
 
 async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadataDate, i, resolve) {
+
   const {title, description, summary, date, image, enclosures} = item;
+  let url = enclosures[0].url, duration;
+  await new Promise(resolve => {
+    requestPromise.get({ encoding: null, url }).then(async body => {
+      const filePath = `/tmp/parse_feed_${Math.random().toString().slice(2) + path.extname(url)}`;
+      fs.writeFile(filePath, body, err => {
+        if (err) {
+          return logErr(`Error: cannot write tmp audio file ${url} ${filePath}`, null, resolve);
+        }
+        (new ffmpeg(filePath)).then(file => { // resize itunes image
+          if (file && file.metadata && file.metadata.duration) {
+            duration = file.metadata.duration.seconds;
+          } else {
+            logErr(`empty file.metadata ${url}`);
+          }
+          fs.unlink(filePath, err => 0); // remove file
+          resolve();
+        }, err => logErr(`ffmpeg unable to parse file ${url} ${filePath} ${err}`, null, resolve));
+      });
+    }).catch(err => logErr(`unable to obtain image ${err}`, null, resolve));
+  });
+
   const episode = {
     title,
     coverArtUrl: image.url || soundcast.imageURL,
     creatorID: userId,
     date_created: moment(date || metadataDate).format('X'),
     description: description || summary,
-    duration: enclosures[0].length,
+    duration,
     id3Tagged: true,
     index: i + 1,
     isPublished: true,
@@ -277,15 +303,13 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     .then(data => {
       // console.log('parseFeed.js findOrCreate then');
     })
-    .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
-
-  resolve && resolve();
+    .catch(err => logErr(`Episode.findOrCreate ${err}`));
 }
 
 
 // Need to update all the published soundcasts from imported feeds every hour
 async function feedInterval() {
-  // await firebase.database().ref('importedFeeds/1523160250142s').remove();
+  // await firebase.database().ref('importedFeeds/1523423408085s').remove(); return;
   // 1. go through every item under 'importedFeeds' node in firebase
   const podcastObj = await firebase.database().ref('importedFeeds').once('value');
   const podcasts = podcastObj.val();
@@ -297,13 +321,14 @@ async function feedInterval() {
     if (item.published) {
       getFeed(item.originalUrl, async (err, results) => {
         if (err) {
-          return console.log(`Error: feedInterval getFeed ${err}`);
+          return logErr(`feedInterval getFeed ${err}`);
         }
         const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
         const soundcastVal = soundcastObj.val();
         let i = Object.keys(soundcastVal.episodes).length; // episodes count
         const { metadata } = results;
-        results.feedItems.forEach(feed => {
+        const { userId, publisherId } = item;
+        for (const feed of results.feedItems) {
           const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
           if (pub_date && pub_date > item.updated) {
             // 3. create new episodes from the new feed items, and add them to their respective soundcast
@@ -312,10 +337,11 @@ async function feedInterval() {
             const soundcast = {};
             soundcast.imageURL = metadata && metadata.image && metadata.image.url;
             soundcast.title = metadata && metadata.title;
-            addFeedEpisode(feed, item.userId, item.publisherId, soundcastId, soundcast, feed.pub_date, i);
+
+            await addFeedEpisode(feed, userId, publisherId, soundcastId, soundcast, metadata.date, i);
             i++;
           }
-        });
+        }
       });
     }
   });
