@@ -7,10 +7,10 @@ import PropTypes from 'prop-types';
 import 'url-search-params-polyfill';
 import {orange500, blue500} from 'material-ui/styles/colors';
 import {
-	BrowserRouter as Router,
-	Route,
-	Link,
-	Redirect,
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Redirect,
 } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import moment from 'moment';
@@ -774,11 +774,11 @@ class _AppSignup extends Component {
         if(redirectToReferrer) {
             return (
                 <Redirect to={from} />
-			)
-		}
-		return (
+      )
+    }
+    return (
             <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700), overflow: 'auto'}}>
-				{
+        {
                     soundcast &&
                     <div className='col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col'>
                         <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12  text-center">
@@ -895,8 +895,8 @@ class _AppSignup extends Component {
                         </div>
                     </div>
                     ||
-					!isPublisherFormShown && !soundcast
-					&&
+          !isPublisherFormShown && !soundcast
+          &&
                     <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col text-center">
                         <img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>
                         <div style={styles.containerWrapper}>
@@ -1136,8 +1136,8 @@ function mapDispatchToProps(dispatch) {
 const mapStateToProps = state => {
     const { userInfo, isLoggedIn, defaultSoundcastAdded } = state.user;
     return {
-				userInfo, isLoggedIn, defaultSoundcastAdded,
-				feedVerified: state.setFeedVerified.feedVerified,
+        userInfo, isLoggedIn, defaultSoundcastAdded,
+        feedVerified: state.setFeedVerified.feedVerified,
     }
 };
 

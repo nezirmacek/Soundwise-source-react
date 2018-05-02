@@ -1,14 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
-import '!style!css!video.js/dist/video-js.min.css';
-import '!style!css!videojs-record/dist/css/videojs.record.css';
-import 'videojs-record';
-import 'videojs-record/dist/plugins/videojs.record.lamejs.min.js';
-import WaveSurfer from 'wavesurfer.js';
-import MicrophonePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js';
-WaveSurfer.microphone = MicrophonePlugin;
-import 'videojs-wavesurfer';
 import Loader from 'react-loader';
 import rp from 'request-promise';
 import Axios from 'axios';
@@ -28,69 +20,15 @@ import LinearProgress from 'material-ui/LinearProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
+import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
 import {sendNotifications} from '../../../helpers/send_notifications';
 import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
 window.URL = window.URL || window.webkitURL;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-class AudiojsRecordPlayer extends React.Component {
-    componentDidMount() {
-        // instantiate Video.js
-        this.mediaObject = videojs('myAudio', {
-            controls: false,
-            width: 138,
-            height: 30,
-            fluid: false,
-            plugins: {
-                wavesurfer: {
-                    src: 'live',
-                    waveColor: 'white',
-                    progressColor: 'white',
-                    debug: true,
-                    cursorWidth: 1,
-                    cursorColor: 'white',
-                    msDisplayMax: 20,
-                    hideScrollbar: true
-                },
-                record: {
-                    audio: true,
-                    video: false,
-                    maxLength: 7200, // in seconds, = max 2 hrs
-                    debug: false,
-                    audioEngine: 'lamejs',
-                    audioWorkerURL: '/js/lamejs/worker-example/worker-realtime.js',
-                    audioSampleRate: 44100,
-                    audioBitRate: 64
-                }
-            }
-        }, function() {
-            // print version information at startup
-            videojs.log('Using video.js', videojs.VERSION,
-                'with videojs-record', videojs.getPluginVersion('record'),
-                '+ videojs-wavesurfer', videojs.getPluginVersion('wavesurfer'),
-                'and recordrtc', RecordRTC.version);
-        });
-        this.props.setMediaObject(this.mediaObject);
-    }
-    componentWillUnmount() {
-        if (this.mediaObject) {
-            this.mediaObject.dispose(); // destroy on unmount
-        }
-    }
-    // wrap the player in a div with a `data-vjs-player` attribute
-    // so videojs won't create additional wrapper in the DOM
-    // see https://github.com/videojs/video.js/pull/3856
-    render() {
-        return (
-            <div><div data-vjs-player>
-                <audio id='myAudio' ref={ node => this.videoNode = node } className='video-js vjs-default-skin video-js-audio-custom'></audio>
-            </div></div>
-        )
-    }
-}
 
 class _CreateEpisode extends Component {
     constructor(props) {
@@ -114,11 +52,22 @@ class _CreateEpisode extends Component {
 
             audioUploaded: false,
             notesUploaded: false,
-            coverartUploaded: false,
+            coverArtUploaded: false,
+            coverArtUrl: '',
+            coverArtUploading: false,
             audioUploadProgress: 0,
             notesUploadProgress: 0,
             audioUploadError: null,
             notesUploadError: null,
+            audioUploading: false,
+            notesUploading: false,
+            wrongFileTypeFor: null,
+
+            recordedAudioUrl: '', // linkto uploaded file aws s3
+            uploadedAudioUrl: '',
+            blob: {}, // to play audio from react-mic
+            notesUrl: '', // linkto uploaded file aws s3
+            audioDuration: 0,
 
             title: '',
             description: '',
@@ -126,23 +75,12 @@ class _CreateEpisode extends Component {
             publicEpisode: false,
             index: null,
 
-            recordedAudioUrl: '', // linkto uploaded file aws s3
-            uploadedAudioUrl: '',
-			blob: {}, // to play audio from react-mic
-            notesUrl: '', // linkto uploaded file aws s3
-            audioDuration: 0,
-
-            coverartUrl: '',
-            audioUploading: false,
-            notesUploading: false,
-            coverArtUploading: false,
-            wrongFileTypeFor: null,
-
             audioNormalization: false,
             trimSilence: false,
             reduceSilence: false,
             addIntroOutro: false,
             silentPeriod: 0.5,
+            overlayDuration: 5,
             immediatePublish: true,
 
             sendEmails: false,
@@ -159,7 +97,6 @@ class _CreateEpisode extends Component {
         this.uploadNotesInput = null;
         this.uploadCoverArtInput = null;
         this.currentSoundcastId = null;
-
         this.firebaseListener = null;
 
         this.renderPlayAndSave = this.renderPlayAndSave.bind(this)
@@ -200,7 +137,8 @@ class _CreateEpisode extends Component {
                 this.changeSoundcastId(this.props.location.state.soundcastID);
             }
         }
-	}
+        this.checkUserStatus(this.props.userInfo);
+  }
 
     componentWillReceiveProps(nextProps) {
         const {userInfo} = nextProps;
@@ -210,40 +148,49 @@ class _CreateEpisode extends Component {
                 this.changeSoundcastId(soundcastArr[0], userInfo);
             }
         }
+        this.checkUserStatus(nextProps.userInfo);
+    }
+
+    checkUserStatus(userInfo) {
+      let plan, proUser;
+      if(userInfo.publisher && userInfo.publisher.plan) {
+          plan = userInfo.publisher.plan;
+          proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+      }
+      if(userInfo.publisher && userInfo.publisher.beta) {
+          proUser = true;
+      }
+      this.setState({
+        proUser,
+      });
     }
 
     record () {
         const that = this;
-
         this.recorder = this.mediaObject.record();
         this.recorder.getDevice(); // triggers 'deviceReady'
 
         this.recordingInterval = setInterval(() => {
             const { recordingStartTime } = that.state;
-
             if (that.state.isRecording == false) {
                 clearInterval(that.recordingInterval);
                 return;
             }
-
             that.setState({
                 currentRecordingDuration: moment().diff(recordingStartTime) //recording duration in millliseconds
             })
-
         }, 1000);
-	}
+  }
 
     stop (blobObject) {
         const that = this;
         this.recorder.stop(); // triggers 'finishRecord'
-
         // clearInterval(recordingInterval);
         // console.log('interval cleared')
     }
 
     play () {
         const that = this;
-
         this.wavesurfer.surfer.play();
 
         if (this.state.isRecorded) {
@@ -255,11 +202,9 @@ class _CreateEpisode extends Component {
 
         this.playingInterval = setInterval(() => {
             const { playingStartTime } = that.state
-
             if(!that.state.isPlaying) {
                 clearInterval(that.playingInterval)
             }
-
             that.setState({
                 currentPlayingDuration: moment().diff(playingStartTime) //recording duration in millliseconds
             })
@@ -267,7 +212,7 @@ class _CreateEpisode extends Component {
     }
 
     pause () {
-		this.wavesurfer.surfer.pause();
+        this.wavesurfer.surfer.pause();
         this.setState({
             isPlaying: false,
             currentPlayingDuration: 0
@@ -286,8 +231,8 @@ class _CreateEpisode extends Component {
         clearInterval(this.playingInterval);
         this.player.pause();
         this.player.currentTime(0);
-		//upload file to aws s3
-		this._uploadToAws(this.state.blob.blob, 'audio');
+        //upload file to aws s3
+        this._uploadToAws(this.state.blob.blob, 'audio');
         this.setState({
             audioUploading: true,
             isSaved: true,
@@ -403,9 +348,16 @@ class _CreateEpisode extends Component {
             doneProcessingEpisode: false,
           });
         }
-        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverartUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
-        const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, immediatePublish} = this.state;
+        if(!isPublished) {
+            this.setState({
+                immediatePublish: false, // if 'save draft' button is clicked, process the episode, but not publish it
+            })
+        }
+        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverArtUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
+        const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, overlayDuration, immediatePublish} = this.state;
         const { userInfo, history, content_saved, handleContentSaving } = this.props;
+        const audioProcessing = (audioNormalization || trimSilence || reduceSilence || addIntroOutro) ? true : false;
+
         if(!content_saved[this.episodeId]) { // prevent unnecessary rerendering of component
             if(!recordedAudioUrl && !uploadedAudioUrl) {
                 alert("Please upload an audio file before saving!");
@@ -417,7 +369,8 @@ class _CreateEpisode extends Component {
                 return;
             }
 
-            if ((recordedAudioUrl || uploadedAudioUrl) && userInfo.soundcasts_managed[this.currentSoundcastId]) { // check if soundcast in soundcasts_managed
+            const soundcast = userInfo.soundcasts_managed[this.currentSoundcastId];
+            if ((recordedAudioUrl || uploadedAudioUrl) && soundcast) { // check if soundcast in soundcasts_managed
 
               this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
                     if (user && that.firebaseListener) {
@@ -435,7 +388,8 @@ class _CreateEpisode extends Component {
                             publicEpisode,
                             soundcastID: that.currentSoundcastId,
                             isPublished: isPublished && immediatePublish ? true : false,
-                            coverArtUrl: coverartUrl,
+                            coverArtUrl: coverArtUrl,
+                            audioProcessing,
                         };
 
                         firebase.database().ref(`soundcasts/${that.currentSoundcastId}`)
@@ -473,24 +427,32 @@ class _CreateEpisode extends Component {
                                 soundcastId: that.currentSoundcastId,
                                 publisherId: userInfo.publisherID,
                                 title,
-                                soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].title,
+                                soundcastTitle: soundcast.title,
                             }).then(
                                 res => {
-                                    if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
+                                  if(audioNormalization || trimSilence || reduceSilence || addIntroOutro) { // if audio processing is requested
+                                        if(Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10 ) {
+                                          alert('Overlap with main audio: Please enter a number >=0.1 and <= 10.');
+                                          return;
+                                        }
+                                        if(Number(silentPeriod) < 0.1 && Number(silentPeriod) > 10 ) {
+                                          alert('Remove excessive pauses: Please enter a number >=0.1 and <= 10.');
+                                          return;
+                                        }
                                         Axios.post('/api/audio_processing', {
-                                          epsiodeId: that.episodeId,
+                                          episodeId: that.episodeId,
                                           soundcastId: that.currentSoundcastId,
                                           publisherEmail: userInfo.publisher.email,
                                           publisherFirstName: userInfo.firstName,
                                           publisherName: userInfo.publisher.name,
                                           publisherImageUrl: userInfo.publisher.imageUrl,
                                           tagging: true,
-                                          intro: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].intro) || null,
-                                          outro: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].outro) || null,
-                                          overlayDuration: (addIntroOutro && userInfo.soundcasts_managed[that.currentSoundcastId].introOutroOverlay) || 0,
+                                          intro: (addIntroOutro && soundcast.intro) || null,
+                                          outro: (addIntroOutro && soundcast.outro) || null,
+                                          overlayDuration: (addIntroOutro && (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) || 0,
                                           setVolume: audioNormalization,
                                           trim: trimSilence,
-                                          removeSilence: (reduceSilence && Number(silentPeriod)|| false),
+                                          removeSilence: (reduceSilence && Number(silentPeriod) || 0),
                                           autoPublish: immediatePublish,
                                           emailListeners: that.state.sendEmails,
                                         }).then(res => {
@@ -498,7 +460,12 @@ class _CreateEpisode extends Component {
                                               startProcessingEpisode: false,
                                               doneProcessingEpisode: true,
                                             });
-                                            alert('Episode is submitted and will be published after processing is done.');
+                                            if(immediatePublish) {
+                                              alert('Episode is submitted and will be published after audio processing is done.');
+                                            } else {
+                                              alert("Episode is saved. We will notify you by email when audio processing is done.");
+                                            }
+
                                             handleContentSaving(that.episodeId, true);
                                             history.goBack();
                                         })
@@ -510,7 +477,7 @@ class _CreateEpisode extends Component {
                                             })
                                             console.log(err);
                                         });
-                                    } else { // if audio processing is not requested
+                                  } else { // if audio processing is not requested
                                     if(isPublished) {
                                       that.notifySubscribers();
                                       if(podcastFeedVersion) {
@@ -519,8 +486,8 @@ class _CreateEpisode extends Component {
                                             itunesExplicit,
                                             itunesImage,
                                             itunesCategory,
-                                            soundcastTitle: userInfo.soundcasts_managed[that.currentSoundcastId].itunesTitle ||  userInfo.soundcasts_managed[that.currentSoundcastId].title,
-                                            soundcastHost: userInfo.soundcasts_managed[that.currentSoundcastId].itunesHost ||  userInfo.soundcasts_managed[that.currentSoundcastId].hostName,
+                                            soundcastTitle: soundcast.itunesTitle ||  soundcast.title,
+                                            soundcastHost: soundcast.itunesHost ||  soundcast.hostName,
                                             firstName: userInfo.firstName,
                                             email: userInfo.email[0],
                                           })
@@ -554,8 +521,7 @@ class _CreateEpisode extends Component {
                                       alert('Episode saved');
                                       history.goBack();
                                     }
-                                    }
-
+                                  }
                                 }
                             ).catch(
                                 err => {
@@ -874,9 +840,24 @@ class _CreateEpisode extends Component {
         })
     }
 
+    setProcessingOption(option) {
+        const {proUser} = this.state;
+        if(proUser) {
+            const oldOption = this.state[option];
+            console.log('oldOption: ', this.state[option]);
+            this.setState({
+                [option]: !oldOption,
+            });
+        } else {
+            this.setState({
+              showPricingModal: true,
+            });
+        }
+    }
+
     render() {
-        const { isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, audioUploadProgress, notesUploadProgress, wrongFileTypeFor, audioUploadError, notesUploadError, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
-        const { userInfo } = this.props;
+        const {proUser, showPricingModal, isRecording, isRecorded, isPlaying, isLoading, audioUploaded, notesUploaded, recordedAudioUrl, uploadedAudioUrl, audioName, notesName, notesUrl, audioUploading, notesUploading, audioUploadProgress, notesUploadProgress, wrongFileTypeFor, audioUploadError, notesUploadError, startProcessingEpisode, doneProcessingEpisode, podcastError } = this.state;
+        const { userInfo, history } = this.props;
         const that = this;
         const _soundcasts_managed = [];
         for (let id in userInfo.soundcasts_managed) {
@@ -890,6 +871,21 @@ class _CreateEpisode extends Component {
 
         return (
             <div className='padding-30px-tb'>
+              <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
+                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 850, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to access audio processing tools</div>
+                  <div className='title-small' style={{margin: 25}}>
+                    Audio processing options available on PLUS and PRO plans. Please upgrade to access this feature.
+                  </div>
+                  <div className="center-col">
+                    <OrangeSubmitButton
+                      label='Upgrade'
+                      onClick={() => history.push({pathname: '/pricing'})}
+                      styles={{width: '60%'}}
+                    />
+                  </div>
+                </div>
+              </div>
                 <div className='padding-bottom-20px'>
                     <span className='title-medium '>
                         Add New Episode
@@ -1184,9 +1180,9 @@ class _CreateEpisode extends Component {
                                     </span>
                                 </div>
                                 {
-                                    this.state.coverartUrl &&
+                                    this.state.coverArtUrl &&
                                     <div style={{...styles.image, marginRight: 10, marginTop: 10,}}>
-                                      <img style={styles.image}  src={this.state.coverartUrl} />
+                                      <img style={styles.image}  src={this.state.coverArtUrl} />
                                     </div>
                                     || null
                                 }
@@ -1202,17 +1198,17 @@ class _CreateEpisode extends Component {
                                             ref={input => this.uploadCoverArtInput = input}
                                         />
                                         {
-                                          this.state.coverartUploaded &&
+                                          this.state.coverArtUploaded &&
                                           <div>
                                             <span>{this.uploadCoverArtInput.files[0].name}</span>
                                             <span style={styles.cancelImg}
                                               onClick={() => {
-                                                that.setState({coverartUploaded: false, coverartUrl: ''});
+                                                that.setState({coverArtUploaded: false, coverArtUrl: ''});
                                                 document.getElementById('upload_hidden_cover3').value = null;
                                               }}>Cancel</span>
                                           </div>
                                           ||
-                                          !this.state.coverartUploaded &&
+                                          !this.state.coverArtUploaded &&
                                           <div>
                                             <button
                                                 onClick={() => {document.getElementById('upload_hidden_cover3').click();}}
@@ -1230,13 +1226,13 @@ class _CreateEpisode extends Component {
                         }
                         <div style={{marginTop: 50, display: ''}}>
                           <hr style={{border: '0.5px solid lightgray'}}/>
-                          <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing Options</span>
-                          <div style={{marginTop: 15, display: 'none'}}>
-                            <label className='text-dark-gray' style={{fontSize: 16, display: 'flex', alignItems: 'center'}}>
-                              <input style={{height: 30, width: 30}} type="checkbox" value={this.state.immediatePublish} checked onChange={() => that.setState({
-                                  immediatePublish: that.state.immediatePublish
-                              })}/>Automatically publish the episode after processing is done
-                            </label>
+                          <div style={{display: 'flex', alignItems: 'center'}}>
+                              <span style={{...styles.recordTitleText,fontSize: 18, fontWeight: 800,}}>Audio Processing</span>
+                              {
+                                  !proUser &&
+                                  <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+                                  || <span></span>
+                              }
                           </div>
                           <div style={{marginTop: 20, marginBottom: 25, }}>
                             <div style={{display: 'flex', alignItems: 'center'}}>
@@ -1246,10 +1242,7 @@ class _CreateEpisode extends Component {
                                   aria-labelledby='audio-edit-1-label'
                                   // label="Charge subscribers for this soundcast?"
                                   checked={this.state.audioNormalization}
-                                  onChange={() => {
-                                    const audioNormalization = !that.state.audioNormalization;
-                                    that.setState({audioNormalization})
-                                  }}
+                                  onChange={this.setProcessingOption.bind(this, 'audioNormalization')}
                                 />
                                 <span id='audio-edit-1-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Optimize volume</span><span>(This is to make sure different parts of your audio have consistent volume, and adjust the volume to the most suitable level for mobile and web playing )</span>
                             </div>
@@ -1259,10 +1252,7 @@ class _CreateEpisode extends Component {
                                   id='audio-edit-2'
                                   aria-labelledby='audio-edit-2-label'
                                   checked={this.state.trimSilence}
-                                  onChange={() => {
-                                    const trimSilence = !that.state.trimSilence;
-                                    that.setState({trimSilence})
-                                  }}
+                                  onChange={this.setProcessingOption.bind(this, 'trimSilence')}
                                 />
                                 <span id='audio-edit-2-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Trim silience at the beginning</span>
                             </div>
@@ -1272,10 +1262,7 @@ class _CreateEpisode extends Component {
                                   id='audio-edit-3'
                                   aria-labelledby='audio-edit-3-label'
                                   checked={this.state.reduceSilence}
-                                  onChange={() => {
-                                    const reduceSilence = !that.state.reduceSilence;
-                                    that.setState({reduceSilence})
-                                  }}
+                                  onChange={this.setProcessingOption.bind(this, 'reduceSilence')}
                                 />
                                 <span id='audio-edit-3-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Remove excessive silence/pauses throughout</span><span>(This option will remove all silent periods in the recording that're longer than specified seconds. It's good for tightening up your recording. But don't use this if you have silent periods in your recording on purpose.)</span>
                             </div>
@@ -1286,11 +1273,7 @@ class _CreateEpisode extends Component {
                                   <input style={{width: 70}} type='text'
                                     value={this.state.silentPeriod}
                                     onChange={(e) => {
-                                      if(Number(e.target.value) >= 0.1 && Number(e.target.value) <= 10 ) {
-                                        that.setState({silentPeriod: Number(e.target.value)});
-                                      } else {
-                                        alert('Please enter a number >=0.1 and <= 10.');
-                                      }
+                                      that.setState({silentPeriod: Number(e.target.value)});
                                     }}
                                   />
                                   <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
@@ -1305,9 +1288,8 @@ class _CreateEpisode extends Component {
                                   // label="Charge subscribers for this soundcast?"
                                   checked={this.state.addIntroOutro}
                                   onChange={() => {
-                                    if(((that.state.currentsoundcast.intro || that.state.currentsoundcast.outro) && !that.state.addIntroOutro) || that.state.addIntroOutro) {
-                                        const addIntroOutro = !that.state.addIntroOutro;
-                                        that.setState({addIntroOutro})
+                                    if(that.state.currentsoundcast.intro || that.state.currentsoundcast.outro) {
+                                        that.setProcessingOption.bind(this, 'addIntroOutro')();
                                     } else {
                                         alert('Please upload intro/outro clip(s) to your soundcast first!');
                                     }
@@ -1315,6 +1297,22 @@ class _CreateEpisode extends Component {
                                 />
                                 <span id='audio-edit-4-label' style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}>Attach intro and outro</span><span> (Please upload an intro and/or outro for your soundcast first)</span>
                             </div>
+                            {
+                              this.state.addIntroOutro &&
+                                <div>
+                                  <span style={{fontSize: 14, marginRight: 5}}>
+                                    Overlap with main audio:
+                                  </span>
+                                  <input style={{width: 70, marginBottom: 0}} type='text'
+                                    value={this.state.overlayDuration}
+                                    onChange={e => {
+                                      that.setState({overlayDuration: e.target.value});
+                                    }}
+                                  />
+                                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                                </div>
+                              || null
+                            }
                           </div>
                         </div>
                 </div>
@@ -1412,7 +1410,7 @@ const styles = {
         // textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)',
         color: Colors.black,
         fontWeight: 800,
-        width: '100%',
+        // width: '100%',
         paddingTop: 10,
         paddingBottom: 10,
     },
@@ -1460,7 +1458,7 @@ const styles = {
         float: 'left',
         marginLeft: 15,
         position: 'relative',
-		cursor: 'pointer',
+    cursor: 'pointer',
     },
     playIcon: {
         fontSize: 50,
@@ -1477,7 +1475,7 @@ const styles = {
         top: 15,
         marginLeft: 15,
         marginright: 15,
-		cursor: 'pointer',
+    cursor: 'pointer',
     },
     trashWrapper: {
         float: 'left',
@@ -1487,7 +1485,7 @@ const styles = {
         top: 15,
         marginLeft: 15,
         marginright: 15,
-		cursor: 'pointer',
+    cursor: 'pointer',
 
     },
     trashIcon: {
@@ -1589,7 +1587,7 @@ const styles = {
     soundcastSelect: {
         backgroundColor: 'transparent',
         width: 'calc(100% - 20px)',
-        height: 35,
+        height: 40,
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,
@@ -1610,7 +1608,7 @@ const styles = {
         marginLeft: 'auto',
         // textAlign: 'center',
         paddingTop: 5,
-		cursor: 'pointer',
+    cursor: 'pointer',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

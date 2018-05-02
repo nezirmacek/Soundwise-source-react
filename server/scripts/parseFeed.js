@@ -356,6 +356,7 @@ async function feedInterval() {
             soundcast.title = metadata && metadata.title;
             await addFeedEpisode(feed, userId, publisherId, soundcastId, soundcast, metadata, i);
             i++;
+            firebase.database().ref(`importedFeeds/${soundcastId}/updated`).set(pub_date);
           }
         }
       });

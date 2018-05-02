@@ -147,43 +147,43 @@ class _Dashboard extends Component {
         const chargeState  = nextProps.chargeState  || this.props.chargeState;
         if (!this.runningParseFeedRequest && feedVerified && publisher && publisherID) {
           this.runningParseFeedRequest = true;
-        	const { feedUrl } = feedVerified;
-        	const reqObj = {
-        		feedUrl,
-        		userId: that.props.userInfo.id,
-        		publisherId: publisherID,
-        		publisherName: publisher.name,
-        		importFeedUrl: true,
-        	};
-        	Axios.post('/api/parse_feed', reqObj).then(res => {
-        		// if (res.data === 'Success_import') {
-        			that.props.setFeedVerified(false);
-        		// }
-        	}).catch(err => {
-        		console.log('import feed request failed', err, err && err.response && err.response.data);
-        		alert('Hmm...there is a problem importing feed. Please try again later.');
-        		that.props.setFeedVerified(false);
-        	});
+          const { feedUrl } = feedVerified;
+          const reqObj = {
+            feedUrl,
+            userId: that.props.userInfo.id,
+            publisherId: publisherID,
+            publisherName: publisher.name,
+            importFeedUrl: true,
+          };
+          Axios.post('/api/parse_feed', reqObj).then(res => {
+            // if (res.data === 'Success_import') {
+              that.props.setFeedVerified(false);
+            // }
+          }).catch(err => {
+            console.log('import feed request failed', err, err && err.response && err.response.data);
+            alert('Hmm...there is a problem importing feed. Please try again later.');
+            that.props.setFeedVerified(false);
+          });
         }
         if (!this.runningChargeStateRequest && publisherID && chargeState) { // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
           this.runningChargeStateRequest = true;
-        	const { plan, frequency, promoCodeError, promoCode, trialPeriod, charge } = chargeState;
-        	firebase.database().ref(`publishers/${publisherID}/plan`).set(plan);
-        	firebase.database().ref(`publishers/${publisherID}/frequency`).set(frequency);
-        	firebase.database().ref(`publishers/${publisherID}/current_period_end`).set(charge.data.current_period_end);
-        	firebase.database().ref(`publishers/${publisherID}/auto_renewal`).set(true);
-        	firebase.database().ref(`publishers/${publisherID}/subscriptionID`).set(charge.data.id);
-        	if(trialPeriod) {
-        		firebase.database().ref(`publishers/${publisherID}/trialEnd`).set(moment().add(trialPeriod, 'days').format('X'));
-        	}
-        	firebase.database().ref(`publishers/${publisherID}/stripe_customer_id`).set(charge.data.customer);
-        	if(promoCode && !promoCodeError && !trialPeriod) {
-        		firebase.database().ref(`publishers/${publisherID}/coupon`).set({
-        			code: promoCode,
-        			expires_on: charge.data.current_period_end
-        		});
-        	}
-        	that.props.setChargeState(null);
+          const { plan, frequency, promoCodeError, promoCode, trialPeriod, charge } = chargeState;
+          firebase.database().ref(`publishers/${publisherID}/plan`).set(plan);
+          firebase.database().ref(`publishers/${publisherID}/frequency`).set(frequency);
+          firebase.database().ref(`publishers/${publisherID}/current_period_end`).set(charge.data.current_period_end);
+          firebase.database().ref(`publishers/${publisherID}/auto_renewal`).set(true);
+          firebase.database().ref(`publishers/${publisherID}/subscriptionID`).set(charge.data.id);
+          if(trialPeriod) {
+            firebase.database().ref(`publishers/${publisherID}/trialEnd`).set(moment().add(trialPeriod, 'days').format('X'));
+          }
+          firebase.database().ref(`publishers/${publisherID}/stripe_customer_id`).set(charge.data.customer);
+          if(promoCode && !promoCodeError && !trialPeriod) {
+            firebase.database().ref(`publishers/${publisherID}/coupon`).set({
+              code: promoCode,
+              expires_on: charge.data.current_period_end
+            });
+          }
+          that.props.setChargeState(null);
         }
     }
 

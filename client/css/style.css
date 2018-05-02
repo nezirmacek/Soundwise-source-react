@@ -1,14 +1,10 @@
 @charset "utf-8";
 
 /* ----------------------------------
-
 Name: elements.css
 Version: 1.0
-
 ----------------------------------
-
 Table of Contents
-
     01. Navbar
     02. Header
     03. Hero Section
@@ -31,7 +27,6 @@ Table of Contents
     20. Social Widget
     21. Circular Progress Bar
     22. Collapsible
-
 */
 
 
@@ -1056,7 +1051,6 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
 .Collapsible__trigger.is-open::after {
       transform: rotateZ(180deg);
 }
-
 
 .Collapsible__trigger .is-disabled {
     opacity: 0.5;

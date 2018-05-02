@@ -383,7 +383,7 @@ class _AppSignin extends Component {
             )
         }
         return (
-			<div className="row" style={{...styles.row, height: window.innerHeight, overflow: 'auto'}}>
+      <div className="row" style={{...styles.row, height: window.innerHeight, overflow: 'auto'}}>
                 {
                     soundcast &&
                     <div className='col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col'>
@@ -520,86 +520,86 @@ class _AppSignin extends Component {
 }
 
 const styles = {
-	row: {
-		backgroundColor: Colors.window,
-		paddingTop: 15,
-		paddingRight: 0,
-		paddingBottom: 0,
-		paddingLeft: 0,
-	},
-	logo: {
-		marginBottom: 18,
-	},
-	containerWrapper: {
-		overflow: 'hidden',
-		borderRadius: 3,
-		width: 'auto',
-		backgroundColor: Colors.mainWhite,
-	},
-	container: {
-		backgroundColor: Colors.mainWhite,
-	},
-	title: {
-		paddingTop: 20,
-		fontSize: 32,
-		color: Colors.fontBlack,
-	},
-	fb: {
-		width: 212,
-		height: 44,
-		marginTop: 10,
+  row: {
+    backgroundColor: Colors.window,
+    paddingTop: 15,
+    paddingRight: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+  },
+  logo: {
+    marginBottom: 18,
+  },
+  containerWrapper: {
+    overflow: 'hidden',
+    borderRadius: 3,
+    width: 'auto',
+    backgroundColor: Colors.mainWhite,
+  },
+  container: {
+    backgroundColor: Colors.mainWhite,
+  },
+  title: {
+    paddingTop: 20,
+    fontSize: 32,
+    color: Colors.fontBlack,
+  },
+  fb: {
+    width: 212,
+    height: 44,
+    marginTop: 10,
         marginBottom: 10
-	},
-	fbIcon: {
-		marginLeft: 0,
-		marginRight: 20,
-		position: 'relative',
-		bottom: 2,
-		right: '10%',
-	},
-	withEmailText: {
-		fontSize: 14,
-		display: 'inline-block',
-		paddingLeft: 20,
-		paddingRight: 20,
-		position: 'relative',
-		bottom: 35,
-		backgroundColor: Colors.mainWhite,
-		fontStyle: 'Italic',
-	},
-	checkbox: {
-		width: 20,
-	},
-	acceptText: {
-		fontSize: 11,
-		position: 'relative',
-		bottom: 3,
-	},
-	submitButton: {
-		marginTop: 40,
-		marginBottom: 20,
-		backgroundColor: Colors.link,
-		borderColor: Colors.link,
-	},
-	italicText: {
-		fontSize: 16,
-		fontStyle: 'Italic',
-		marginBottom: 10,
-		display: 'inline-block',
-		height: 16,
-		lineHeight: '16px',
-	},
+  },
+  fbIcon: {
+    marginLeft: 0,
+    marginRight: 20,
+    position: 'relative',
+    bottom: 2,
+    right: '10%',
+  },
+  withEmailText: {
+    fontSize: 14,
+    display: 'inline-block',
+    paddingLeft: 20,
+    paddingRight: 20,
+    position: 'relative',
+    bottom: 35,
+    backgroundColor: Colors.mainWhite,
+    fontStyle: 'Italic',
+  },
+  checkbox: {
+    width: 20,
+  },
+  acceptText: {
+    fontSize: 11,
+    position: 'relative',
+    bottom: 3,
+  },
+  submitButton: {
+    marginTop: 40,
+    marginBottom: 20,
+    backgroundColor: Colors.link,
+    borderColor: Colors.link,
+  },
+  italicText: {
+    fontSize: 16,
+    fontStyle: 'Italic',
+    marginBottom: 10,
+    display: 'inline-block',
+    height: 16,
+    lineHeight: '16px',
+  },
 
-	inputLabel: {
-		fontSize: 14,
-		marginBottom: 0,
-		marginTop: 0,
-		position: 'relative',
-		top: 10,
-	},
-	greyInputText: {
-		fontSize: 14,
-	},
+  inputLabel: {
+    fontSize: 14,
+    marginBottom: 0,
+    marginTop: 0,
+    position: 'relative',
+    top: 10,
+  },
+  greyInputText: {
+    fontSize: 14,
+  },
 };
 
 function mapDispatchToProps(dispatch) {

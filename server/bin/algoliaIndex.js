@@ -73,3 +73,4 @@ function deleteIndexRecord(soundcast) {
       process.exit(1);
     });
 }
+

@@ -18,6 +18,10 @@ import Dots from 'react-activity/lib/Dots';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
+import S3FileUploader from '../../../components/s3_file_uploader';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
+import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
 import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
 import {itunesCategories} from '../../../helpers/itunes_categories';
@@ -80,6 +84,7 @@ export default class EditSoundcast extends Component {
             doneProcessingPodcast: false,
             startProcessingPodcast:  false,
             podcastFeedVersion: null,
+            showIntroOutro: false,
             autoSubmitPodcast: false
         };
 
@@ -91,11 +96,39 @@ export default class EditSoundcast extends Component {
         this.addFeature = this.addFeature.bind(this);
         this.submit = this.submit.bind(this);
         this.onEditorStateChange = this.onEditorStateChange.bind(this);
+        this.showIntroOutro = this.showIntroOutro.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+      const { userInfo, history } = nextProps;
+      if (!this.state.proUser) {
+        if (userInfo.publisher) {
+          this.checkUserStatus(userInfo);
+        }
+      }
+      const _state = history.location.state;
+      const publisherName = userInfo.publisher && userInfo.publisher.name;
+      if (publisherName) {
+        const itunesHost = _state && _state.soundcast.itunesHost;
+        this.setState({ itunesHost: itunesHost || publisherName });
+      }
+      if (!_state && userInfo.loadEditSoundcast) {
+        history.replace(history.location.pathname, userInfo.loadEditSoundcast);
+        this.setSoundcastState(userInfo.loadEditSoundcast.soundcast);
+      }
     }
 
     componentDidMount() {
-      let editorState, confirmEmailEditorState;
-      const { id, soundcast } = this.props.history.location.state;
+      const { history } = this.props;
+      const soundcast = history.location.state && history.location.state.soundcast;
+      if (!soundcast) {
+        return
+      }
+      this.setSoundcastState(soundcast);
+    }
+
+    setSoundcastState(soundcast) {
+      const { userInfo } = this.props;
       const {title, subscribed, imageURL, short_description,
              long_description, landingPage,
              features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesTitle, itunesHost, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
@@ -104,6 +137,7 @@ export default class EditSoundcast extends Component {
       //        features0, hostName0, hostBio0, hostImageURL0,
       //        forSale0, prices0, } = this.state;
 
+      let editorState, confirmEmailEditorState;
       if(long_description) {
         let contentState = convertFromRaw(JSON.parse(long_description));
         editorState = EditorState.createWithContent(contentState);
@@ -142,23 +176,25 @@ export default class EditSoundcast extends Component {
         itunesImage: itunesImage ? itunesImage : null,
         podcastFeedVersion: podcastFeedVersion ? podcastFeedVersion : null,
         autoSubmitPodcast: autoSubmitPodcast ? autoSubmitPodcast : false,
+        subscribed: subscribed || this.state.subscribed,
+        features: features || this.state.features,
+        prices: prices || this.state.prices,
       });
+      userInfo.publisher && this.checkUserStatus(userInfo)
+    }
 
-      if(subscribed) {
-        this.setState({
-            subscribed
-        })
+    checkUserStatus(userInfo) {
+      let plan, proUser;
+      if(userInfo.publisher.plan) {
+          plan = userInfo.publisher.plan;
+          proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
       }
-      if(features) {
-        this.setState({
-          features
-        })
+      if(userInfo.publisher.beta) {
+          proUser = true;
       }
-      if(prices) {
-        this.setState({
-          prices
-        })
-      }
+      this.setState({
+        proUser,
+      });
     }
 
     _uploadToAws (file, imageType) {
@@ -331,33 +367,34 @@ export default class EditSoundcast extends Component {
                   };
 
                   // edit soundcast in database
-                      firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-                      .once('value')
-                      .then(snapshot => {
-                        const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
-
-                        firebase.database().ref(`soundcasts/${that.props.history.location.state.id}`)
-                        .set(changedSoundcast)
-                        .then(
-                          res => {
-                                Axios.post('/api/soundcast', {
-                                  soundcastId: that.props.history.location.state.id,
-                                  publisherId: that.props.userInfo.publisherID,
-                                  title
-                                })
-                                .then(() => {
-                                  if(!noAlert) {
-                                    alert('Soundcast changes are saved.');
-                                  }
-                                  // history.goBack();
-                                  that.firebaseListener = null;
-                                });
-                          },
-                          err => {
-                              console.log('ERROR add soundcast: ', err);
-                          }
-                        );
+                  firebase.database().ref(`soundcasts/${history.location.state.id}`)
+                  .once('value')
+                  .then(snapshot => {
+                    const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
+                    firebase.database().ref(`soundcasts/${history.location.state.id}`)
+                    .set(changedSoundcast)
+                    .then(res => {
+                      Axios.post('/api/soundcast', {
+                        soundcastId: history.location.state.id,
+                        publisherId: userInfo.publisherID,
+                        title
+                      })
+                      .then(() => {
+                        if(!noAlert) {
+                          alert('Soundcast changes are saved.');
+                        }
+                        // history.goBack();
+                        that.firebaseListener = null;
                       });
+                      // using window.history object instead of this.props.history
+                      // to prevent rerendering (on state update)
+                      const newState = window.history.state;
+                      newState.state.soundcast = changedSoundcast;
+                      window.history.replaceState(newState, null); // update state
+                    }, err => {
+                      console.log('ERROR add soundcast: ', err);
+                    });
+                  });
               } else {
                 // alert('Soundcast saving failed. Please try again later.');
                 // Raven.captureMessage('Soundcast saving failed!')
@@ -448,341 +485,403 @@ export default class EditSoundcast extends Component {
       }
     }
 
-    renderAdditionalInputs() {
-        const featureNum = this.state.features.length;
-        const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale, prices, instructor2Input, hostName2} = this.state;
-        const that = this;
-        const {userInfo} = this.props;
-        const actions = [
-          <FlatButton
-            label="OK"
-            labelStyle={{color: Colors.mainOrange, fontSize: 17}}
-            onClick={this.handlePaypalModalClose.bind(this)}
-          />,
-        ];
-        return (
-            <div style={{marginTop: 25, marginBottom: 25,}}>
-                <span style={{...styles.titleText, marginBottom: 5}}>
-                  What Listeners Will Get
-                </span>
-                <span>
-                  <i>
-                    {` (list the main benefits and features of this soundcast)`}
-                  </i>
-                </span>
-                <div style={{width: '100%', marginBottom: 30}}>
-                    {
-                        this.state.features.map((feature, i) => {
-                            return (
-                                <div key={i} style={styles.inputTitleWrapper}>
-                                  <span style={styles.titleText}>{`${i + 1}. `}</span>
-                                  <input
-                                      type="text"
-                                      style={{...styles.inputTitle, width: '85%'}}
-                                      placeholder={'e.g. Learn how to analyze financial statement with ease'}
-                                      onChange={this.setFeatures.bind(this,i)}
-                                      value={this.state.features[i]}
-                                  />
-                                  <span
-                                      style={{marginLeft: 5, cursor: 'pointer'}}
-                                      onClick={this.deleteFeature.bind(this, i)}>
-                                    <i className="fa fa-times " aria-hidden="true"></i>
-                                  </span>
-                                </div>
-                            )
-                        })
-                    }
-                    <div>
-                      <span style={styles.addFeature} onClick={this.addFeature}>
-                        Add
-                      </span>
-                    </div>
-                </div>
-                <span style={{...styles.titleText, marginBottom: 5}}>
-                    Long Description
-                </span>
-                <div>
-                    <Editor
-                      editorState = {long_description}
-                      editorStyle={styles.editorStyle}
-                      wrapperStyle={styles.wrapperStyle}
-                      onEditorStateChange={this.onEditorStateChange}
-                    />
-                </div>
-                <div>
-                    <span style={styles.titleText}>
-                        Host/Instructor Name
-                    </span>
-                    <div style={{...styles.inputTitleWrapper, width: '35%'}}>
-                      <input
-                          type="text"
-                          style={styles.inputTitle}
-                          placeholder={''}
-                          onChange={(e) => {this.setState({hostName: e.target.value})}}
-                          value={this.state.hostName}
-                      />
-                    </div>
-                </div>
-                <div>
-                    <div >
-                        <span style={styles.titleText}>
-                            Host/Instructor Bio
-                        </span>
-                    </div>
-                    <textarea
-                        style={styles.inputDescription}
-                        placeholder={'Who will be teaching?'}
-                        onChange={(e) => {this.setState({hostBio: e.target.value})}}
-                        value={this.state.hostBio}
-                    >
-                    </textarea>
-                </div>
-                <div style={{height: 150, width: '100%'}}>
-                    <div style={{marginBottom: 10}}>
-                        <span style={styles.titleText}>
-                            Host/Instructor Profile Picture
-                        </span>
-                    </div>
-                    <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}}>
-
-                    </div>
-                    <div style={styles.loaderWrapper}>
-                        <div style={{...styles.inputFileWrapper, marginTop: 0}}>
-                            <input
-                                type="file"
-                                name="upload"
-                                id="upload_hidden_cover_2"
-                                accept="image/*"
-                                onChange={this.setFileName.bind(this, 'host')}
-                                style={styles.inputFileHidden}
-                                ref={input => this.hostImgInputRef = input}
-                            />
-                            {
-                              hostImgUploaded &&
-                              <div>
-                                <span>{this.hostImgInputRef.files[0].name}</span>
-                                <span style={styles.cancelImg}
-                                  onClick={() => {
-                                    that.setState({hostImgUploaded: false, hostImageURL: ''});
-                                    document.getElementById('upload_hidden_cover_2').value = null;
-                                  }}>Cancel</span>
-                              </div>
-                              ||
-                              !hostImgUploaded &&
-                              <div>
-                                <button
-                                    onClick={() => {document.getElementById('upload_hidden_cover_2').click();}}
-                                    style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
-                                >
-                                    Upload
-                                </button>
-                                <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
-                              </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                {
-                  !hostName2 && !instructor2Input &&
-                  <div
-                    onClick={() => that.setState({
-                      instructor2Input: true
-                    })}
-                    style={{...styles.addFeature, marginLeft: 0, marginBottom: 25}}>
-                   <span >Add A Second Host/Instructor</span>
-                  </div>
-                  || null
-                }
-                {
-                  (hostName2 || instructor2Input) &&
-                  this.renderInstructor2Input()
-                  || null
-                }
-                { landingPage &&
-                    <div>
-                      <span style={styles.titleText}>Pricing</span>
-                      <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
-                          <Toggle
-                            id='charging-status'
-                            aria-labelledby='charging-label'
-                            // label="Charge subscribers for this soundcast?"
-                            checked={this.state.forSale}
-                            onChange={this.handleChargeOption.bind(this)}
-                            // thumbSwitchedStyle={styles.thumbSwitched}
-                            // trackSwitchedStyle={styles.trackSwitched}
-                            // style={{fontSize: 20, width: '50%'}}
-                          />
-                          <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge for this soundcast</span>
-                          <Dialog
-                            title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
-                            actions={actions}
-                            modal={true}
-                            open={this.state.paypalModalOpen}
-                            onRequestClose={this.handlePaypalModalClose}
-                          >
-                            <div style={{fontSize: 17,}}>
-                              <span>You need a payout account so that we could send you your sales proceeds. Please save this soundcast, and go to publisher setting to enter your payout method, before setting up soundcast pricing.</span>
-                            </div>
-                          </Dialog>
-                      </div>
-                      {
-                        forSale &&
-                      <div style={{width: '100%,'}}>
-                        {
-                            prices.map((price, i) => {
-                                const priceTag = price.price == 'free' ? 0 : price.price;
-                                return (
-                                  <div key={i} className='' style={{marginBottom: 10}}>
-                                    <div style={{width: '100%'}}>
-                                      <span style={styles.titleText}>{`${i + 1}. `}</span>
-                                      <div style={{width: '45%', display: 'inline-block', marginRight: 10,}}>
-                                        <span><strong>Payment Plan Name</strong></span>
-                                        <input
-                                          type="text"
-                                          style={styles.inputTitle}
-                                          name="paymentPlan"
-                                          placeholder='e.g. 3 day access, monthly subscription, etc'
-                                          onChange={this.handlePriceInputs.bind(this, i)}
-                                          value={prices[i].paymentPlan}
-                                        />
-                                      </div>
-                                      <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                                        <span><strong>Billing</strong></span>
-                                        <select
-                                          type="text"
-                                          style={styles.inputTitle}
-                                          name="billingCycle"
-                                          onChange={this.handlePriceInputs.bind(this, i)}
-                                          value={prices[i].billingCycle}
-                                        >
-                                          <option value='one time'>one time purchase</option>
-                                          <option value='rental'>one time rental</option>
-                                          <option value='monthly'>monthly subscription</option>
-                                          <option value='quarterly'>quarterly subscription</option>
-                                          <option value='annual'>annual subscription</option>
-
-                                        </select>
-                                      </div>
-                                      <div style={{width: '20%', display: 'inline-block',}}>
-                                        <span><strong>Price</strong></span>
-                                        <div>
-                                          <span style={{fontSize: 18}}>{`$ `}</span>
-                                          <input
-                                            type="text"
-                                            style={{...styles.inputTitle, width: '85%'}}
-                                            name="price"
-                                            placeholder={''}
-                                            onChange={this.handlePriceInputs.bind(this, i)}
-                                            value={priceTag}
-                                          />
-                                        </div>
-                                      </div>
-                                      <span
-                                        style={{marginLeft: 5, cursor: 'pointer', fontSize:20}}
-                                        onClick={this.deletePriceOption.bind(this, i)}>
-                                                      <i className="fa fa-times " aria-hidden="true"></i>
-                                      </span>
-                                    </div>
-                                    {
-                                      prices[i].billingCycle == 'rental' &&
-                                      <div className='col-md-12' style={{marginTop: 10, marginBottom: 15, }}>
-                                        <div className='col-md-4 col-md-offset-6' style={{marginRight: 10,}}>
-                                          <span>Rental period</span>
-                                          <div>
-                                            <input
-                                              type="text"
-                                              style={{...styles.inputTitle, width: '70%'}}
-                                              name="rentalPeriod"
-                                              placeholder={'2'}
-                                              onChange={this.handlePriceInputs.bind(this, i)}
-                                              value={prices[i].rentalPeriod}
-                                            />
-                                            <span style={{fontSize: 18,}}>{` days`}</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      || null
-                                    }
-                                    {
-                                      price.coupons &&
-                                      <div className='' style={{marginLeft: 23, width: '100%',marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
-                                        <div className=' ' style={{marginRight: 10,}}>
-                                          <span>Coupon Code</span>
-                                          <div>
-                                            <input
-                                              type="text"
-                                              style={{...styles.inputTitle}}
-                                              name="couponCode"
-                                              onChange={(e) => {
-                                                prices[i].coupons[0].code = e.target.value;
-                                                that.setState({prices});
-                                              }}
-                                              value={price.coupons[0].code}
-                                            />
-                                          </div>
-                                        </div>
-                                        <div className=' ' style={{marginRight: 10,}}>
-                                          <span>Discount Percent</span>
-                                          <div>
-                                            <input
-                                              type="text"
-                                              style={{...styles.inputTitle, width: '70%'}}
-                                              name="discountPercent"
-                                              onChange={(e) => {
-                                                prices[i].coupons[0].percentOff = e.target.value;
-                                                that.setState({prices});
-                                              }}
-                                              value={price.coupons[0].percentOff}
-                                            />
-                                            <span style={{fontSize: 18,}}>{` % off`}</span>
-                                          </div>
-                                        </div>
-                                        <div className=' ' style={{marginRight: 10,}}>
-                                          <span>Price After Discount</span>
-                                          <div style={{display: 'flex', alignItems: 'center', marginTop: 5}}>
-                                            <span style={{fontSize: 18,}}>{`$${(Math.round(price.price * (100 - price.coupons[0].percentOff)) / 100).toFixed(2)}`}</span>
-                                          </div>
-                                        </div>
-                                        <div style={{marginTop: 30}}>
-                                          <span
-                                            style={{marginLeft: 5, cursor: 'pointer', fontSize: 20, }}
-                                            onClick={() => {
-                                              prices[i].coupons = null;
-                                              that.setState({prices});
-                                            }}>
-                                              <i className="fa fa-times " aria-hidden="true"></i>
-                                          </span>
-                                        </div>
-                                      </div>
-                                      ||
-                                      !price.coupons && priceTag > 0 &&
-                                      <div style={{marginLeft: 25, marginTop: 5, marginBottom: 5, fontSize: 14, color: Colors.mainOrange, cursor: 'pointer'}}>
-                                        <span onClick={() => {
-                                          prices[i].coupons = [{code: '', percentOff: 0, expiration: 4670438400}]; //default is coupon never expires
-                                          that.setState({prices});
-                                        }}>Add a coupon</span>
-                                      </div>
-                                      || null
-                                    }
-                                  </div>
-                                )
-                            } )
-                        }
-                        <div className=''
-                            onClick={this.addPriceOption.bind(this)}
-                            style={{...styles.addFeature, marginTop: 25, marginBottom: 30, width: '100%'}}
-                        >
-                            Add another price option
-                        </div>
-                      </div>
-                      }
-                    </div>
-                }
-
-            </div>
-        )
-
+    showIntroOutro() {
+      const {showIntroOutro, proUser, showPricingModal} = this.state;
+      if (proUser) {
+        this.setState({showIntroOutro: !showIntroOutro});
+      } else {
+        this.setState({
+          showPricingModal: true,
+        })
+      }
     }
+
+    updateSoundcast(path, ext) {
+      const { soundcast, id } = window.history.state.state;
+      if (ext) {
+        soundcast[path] = `https://mysoundwise.com/tracks/${id}_intro.${ext}`
+        firebase.database().ref(`soundcasts/${id}/${path}`).set(soundcast[path]);
+      } else {
+        delete soundcast[path];
+        firebase.database().ref(`soundcasts/${id}/${path}`).remove();
+      }
+      // using window.history object instead of this.props.history
+      // to prevent rerendering (on state update)
+      window.history.replaceState(window.history.state, null); // update state
+    }
+
+    renderAdditionalInputs() {
+      const featureNum = this.state.features.length;
+      const {long_description, hostImageURL, hostImgUploaded, landingPage, forSale,
+        prices, instructor2Input, hostName2, showIntroOutro, proUser} = this.state;
+      const that = this;
+      const {userInfo, history} = this.props;
+      const soundcast = history.location.state && history.location.state.soundcast;
+      const actions = [
+        <FlatButton
+          label="OK"
+          labelStyle={{color: Colors.mainOrange, fontSize: 17}}
+          onClick={this.handlePaypalModalClose.bind(this)}
+        />,
+      ];
+      return (
+        <div style={{marginTop: 25, marginBottom: 25,}}>
+            <span style={{...styles.titleText, marginBottom: 5}}>
+              What Listeners Will Get
+            </span>
+            <span>
+              <i>
+                {` (list the main benefits and features of this soundcast)`}
+              </i>
+            </span>
+            <div style={{width: '100%', marginBottom: 30}}>
+                {
+                    this.state.features.map((feature, i) => {
+                        return (
+                            <div key={i} style={styles.inputTitleWrapper}>
+                              <span style={styles.titleText}>{`${i + 1}. `}</span>
+                              <input
+                                  type="text"
+                                  style={{...styles.inputTitle, width: '85%'}}
+                                  placeholder={'e.g. Learn how to analyze financial statement with ease'}
+                                  onChange={this.setFeatures.bind(this,i)}
+                                  value={this.state.features[i]}
+                              />
+                              <span
+                                  style={{marginLeft: 5, cursor: 'pointer'}}
+                                  onClick={this.deleteFeature.bind(this, i)}>
+                                <i className="fa fa-times " aria-hidden="true"></i>
+                              </span>
+                            </div>
+                        )
+                    })
+                }
+                <div>
+                  <span style={styles.addFeature} onClick={this.addFeature}>
+                    Add
+                  </span>
+                </div>
+            </div>
+            <span style={{...styles.titleText, marginBottom: 5}}>
+                Long Description
+            </span>
+            <div>
+                <Editor
+                  editorState = {long_description}
+                  editorStyle={styles.editorStyle}
+                  wrapperStyle={styles.wrapperStyle}
+                  onEditorStateChange={this.onEditorStateChange}
+                />
+            </div>
+            <div>
+                <span style={styles.titleText}>
+                    Host/Instructor Name
+                </span>
+                <div style={{...styles.inputTitleWrapper, width: '35%'}}>
+                  <input
+                      type="text"
+                      style={styles.inputTitle}
+                      placeholder={''}
+                      onChange={(e) => {this.setState({hostName: e.target.value})}}
+                      value={this.state.hostName}
+                  />
+                </div>
+            </div>
+            <div>
+                <div >
+                    <span style={styles.titleText}>
+                        Host/Instructor Bio
+                    </span>
+                </div>
+                <textarea
+                    style={styles.inputDescription}
+                    placeholder={'Who will be teaching?'}
+                    onChange={(e) => {this.setState({hostBio: e.target.value})}}
+                    value={this.state.hostBio}
+                >
+                </textarea>
+            </div>
+
+            {/*Host/Instructor Profile Picture*/}
+            <div style={{height: 150, width: '100%'}}>
+                <div style={{marginBottom: 10}}>
+                    <span style={styles.titleText}>
+                        Host/Instructor Profile Picture
+                    </span>
+                </div>
+                <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}}>
+
+                </div>
+                <div style={styles.loaderWrapper}>
+                    <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                        <input
+                            type="file"
+                            name="upload"
+                            id="upload_hidden_cover_2"
+                            accept="image/*"
+                            onChange={this.setFileName.bind(this, 'host')}
+                            style={styles.inputFileHidden}
+                            ref={input => this.hostImgInputRef = input}
+                        />
+                        {
+                          hostImgUploaded &&
+                          <div>
+                            <span>{this.hostImgInputRef.files[0].name}</span>
+                            <span style={styles.cancelImg}
+                              onClick={() => {
+                                that.setState({hostImgUploaded: false, hostImageURL: ''});
+                                document.getElementById('upload_hidden_cover_2').value = null;
+                              }}>Cancel</span>
+                          </div>
+                          ||
+                          !hostImgUploaded &&
+                          <div>
+                            <button
+                                onClick={() => {document.getElementById('upload_hidden_cover_2').click();}}
+                                style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                            >
+                                Upload
+                            </button>
+                            <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
+                          </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            {
+              !hostName2 && !instructor2Input &&
+              <div
+                onClick={() => that.setState({
+                  instructor2Input: true
+                })}
+                style={{...styles.addFeature, marginLeft: 0, marginBottom: 25}}>
+               <span >Add A Second Host/Instructor</span>
+              </div>
+              || null
+            }
+            {
+              (hostName2 || instructor2Input) &&
+              this.renderInstructor2Input()
+              || null
+            }
+
+            {/*Upload outro/intro*/}
+            { soundcast &&
+              <div style={{ marginBottom: 40 }} className='row'>
+                <div className="col-md-12" style={{marginBottom: 10}}>
+                  <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
+                    <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
+                    <span>Intro And Outro</span>
+                   {
+                    !proUser &&
+                    <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
+                    || <span></span>
+                   }
+                  </div>
+                  <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
+                </div>
+                <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
+                  <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
+                  <S3FileUploader
+                    s3NewFileName={`${soundcast.id}_intro`}
+                    showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
+                    onUploadedCallback={ext => that.updateSoundcast('intro', ext)}
+                    onRemoveCallback={() => that.updateSoundcast('intro')}
+                  />
+                </div>
+                <div className="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
+                  <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
+                  <S3FileUploader
+                    s3NewFileName={`${soundcast.id}_outro`}
+                    showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
+                    onUploadedCallback={ext => that.updateSoundcast('outro', ext)}
+                    onRemoveCallback={() => that.updateSoundcast('outro')}
+                  />
+                </div>
+              </div>
+            }
+
+            { landingPage &&
+              <div>
+                <span style={styles.titleText}>Pricing</span>
+                <div style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
+                  <Toggle
+                    id='charging-status'
+                    aria-labelledby='charging-label'
+                    // label="Charge subscribers for this soundcast?"
+                    checked={this.state.forSale}
+                    onChange={this.handleChargeOption.bind(this)}
+                    // thumbSwitchedStyle={styles.thumbSwitched}
+                    // trackSwitchedStyle={styles.trackSwitched}
+                    // style={{fontSize: 20, width: '50%'}}
+                  />
+                  <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge for this soundcast</span>
+                  <Dialog
+                    title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
+                    actions={actions}
+                    modal={true}
+                    open={this.state.paypalModalOpen}
+                    onRequestClose={this.handlePaypalModalClose}
+                  >
+                    <div style={{fontSize: 17,}}>
+                      <span>You need a payout account so that we could send you your sales proceeds. Please save this soundcast, and go to publisher setting to enter your payout method, before setting up soundcast pricing.</span>
+                    </div>
+                  </Dialog>
+                </div>
+                {
+                  forSale &&
+                <div style={{width: '100%,'}}>
+                  {prices.map((price, i) => {
+                    const priceTag = price.price == 'free' ? 0 : price.price;
+                    return (
+                      <div key={i} className='' style={{marginBottom: 10}}>
+                        <div style={{width: '100%'}}>
+                          <span style={styles.titleText}>{`${i + 1}. `}</span>
+                          <div style={{width: '45%', display: 'inline-block', marginRight: 10,}}>
+                            <span><strong>Payment Plan Name</strong></span>
+                            <input
+                              type="text"
+                              style={styles.inputTitle}
+                              name="paymentPlan"
+                              placeholder='e.g. 3 day access, monthly subscription, etc'
+                              onChange={this.handlePriceInputs.bind(this, i)}
+                              value={prices[i].paymentPlan}
+                            />
+                          </div>
+                          <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
+                            <span><strong>Billing</strong></span>
+                            <select
+                              type="text"
+                              style={styles.inputTitle}
+                              name="billingCycle"
+                              onChange={this.handlePriceInputs.bind(this, i)}
+                              value={prices[i].billingCycle}
+                            >
+                              <option value='one time'>one time purchase</option>
+                              <option value='rental'>one time rental</option>
+                              <option value='monthly'>monthly subscription</option>
+                              <option value='quarterly'>quarterly subscription</option>
+                              <option value='annual'>annual subscription</option>
+
+                            </select>
+                          </div>
+                          <div style={{width: '20%', display: 'inline-block',}}>
+                            <span><strong>Price</strong></span>
+                            <div>
+                              <span style={{fontSize: 18}}>{`$ `}</span>
+                              <input
+                                type="text"
+                                style={{...styles.inputTitle, width: '85%'}}
+                                name="price"
+                                placeholder={''}
+                                onChange={this.handlePriceInputs.bind(this, i)}
+                                value={priceTag}
+                              />
+                            </div>
+                          </div>
+                          <span
+                            style={{marginLeft: 5, cursor: 'pointer', fontSize:20}}
+                            onClick={this.deletePriceOption.bind(this, i)}>
+                                          <i className="fa fa-times " aria-hidden="true"></i>
+                          </span>
+                        </div>
+                        {
+                          prices[i].billingCycle == 'rental' &&
+                          <div className='col-md-12' style={{marginTop: 10, marginBottom: 15, }}>
+                            <div className='col-md-4 col-md-offset-6' style={{marginRight: 10,}}>
+                              <span>Rental period</span>
+                              <div>
+                                <input
+                                  type="text"
+                                  style={{...styles.inputTitle, width: '70%'}}
+                                  name="rentalPeriod"
+                                  placeholder={'2'}
+                                  onChange={this.handlePriceInputs.bind(this, i)}
+                                  value={prices[i].rentalPeriod}
+                                />
+                                <span style={{fontSize: 18,}}>{` days`}</span>
+                              </div>
+                            </div>
+                          </div>
+                          || null
+                        }
+                        {
+                          price.coupons &&
+                          <div className='' style={{marginLeft: 23, width: '100%',marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
+                            <div className=' ' style={{marginRight: 10,}}>
+                              <span>Coupon Code</span>
+                              <div>
+                                <input
+                                  type="text"
+                                  style={{...styles.inputTitle}}
+                                  name="couponCode"
+                                  onChange={(e) => {
+                                    prices[i].coupons[0].code = e.target.value;
+                                    that.setState({prices});
+                                  }}
+                                  value={price.coupons[0].code}
+                                />
+                              </div>
+                            </div>
+                            <div className=' ' style={{marginRight: 10,}}>
+                              <span>Discount Percent</span>
+                              <div>
+                                <input
+                                  type="text"
+                                  style={{...styles.inputTitle, width: '70%'}}
+                                  name="discountPercent"
+                                  onChange={(e) => {
+                                    prices[i].coupons[0].percentOff = e.target.value;
+                                    that.setState({prices});
+                                  }}
+                                  value={price.coupons[0].percentOff}
+                                />
+                                <span style={{fontSize: 18,}}>{` % off`}</span>
+                              </div>
+                            </div>
+                            <div className=' ' style={{marginRight: 10,}}>
+                              <span>Price After Discount</span>
+                              <div style={{display: 'flex', alignItems: 'center', marginTop: 5}}>
+                                <span style={{fontSize: 18,}}>{`$${(Math.round(price.price * (100 - price.coupons[0].percentOff)) / 100).toFixed(2)}`}</span>
+                              </div>
+                            </div>
+                            <div style={{marginTop: 30}}>
+                              <span
+                                style={{marginLeft: 5, cursor: 'pointer', fontSize: 20, }}
+                                onClick={() => {
+                                  prices[i].coupons = null;
+                                  that.setState({prices});
+                                }}>
+                                  <i className="fa fa-times " aria-hidden="true"></i>
+                              </span>
+                            </div>
+                          </div>
+                          ||
+                          !price.coupons && priceTag > 0 &&
+                          <div style={{marginLeft: 25, marginTop: 5, marginBottom: 5, fontSize: 14, color: Colors.mainOrange, cursor: 'pointer'}}>
+                            <span onClick={() => {
+                              prices[i].coupons = [{code: '', percentOff: 0, expiration: 4670438400}]; //default is coupon never expires
+                              that.setState({prices});
+                            }}>Add a coupon</span>
+                          </div>
+                          || null
+                        }
+                      </div>
+                    )
+                  }) /* prices.map */ }
+                  <div className=''
+                      onClick={this.addPriceOption.bind(this)}
+                      style={{...styles.addFeature, marginTop: 25, marginBottom: 30, width: '100%'}}
+                  >
+                      Add another price option
+                  </div>
+                </div>
+                }
+              </div>
+            }
+        </div>
+      )
+    } // renderAdditionalInputs
 
     renderInstructor2Input() {
       const {hostName2, hostBio2, hostImageURL2, hostImgUploaded2} = this.state;
@@ -1233,13 +1332,34 @@ export default class EditSoundcast extends Component {
     }
 
     render() {
-        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen, hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType, startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion, hostImg2} = this.state;
+        const { imageURL, title, subscribed, fileUploaded, landingPage, modalOpen,
+          hostImg, isPodcast, createPodcast, editPodcast, episodes, forSale, imageType,
+          startProcessingPodcast, doneProcessingPodcast, podcastError, podcastFeedVersion,
+          hostImg2, showPricingModal} = this.state;
         const { userInfo, history, id } = this.props;
         const that = this;
 
         return (
           <MuiThemeProvider >
             <div className='padding-30px-tb' style={{}}>
+
+              {/*Upgrade account block*/}
+              <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
+                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+                  <div className='title-small' style={{margin: 25}}>
+                    Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                  </div>
+                  <div className="center-col">
+                    <OrangeSubmitButton
+                      label='Upgrade'
+                      onClick={() => history.push({pathname: '/pricing'})}
+                      styles={{width: '60%'}}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <ImageCropModal
                 open={modalOpen}
                 handleClose={this.handleModalClose.bind(this)}
@@ -1670,7 +1790,7 @@ const styles = {
     soundcastSelect: {
         backgroundColor: 'transparent',
         width: 'calc(100% - 20px)',
-        height: 35,
+        height: 40,
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,

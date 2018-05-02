@@ -35,6 +35,7 @@ var requestFeed = require('./scripts/feed.js').requestFeed;
 var parseFeed = require('./scripts/parseFeed.js').parseFeed;
 var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
 var audioProcessing = require('./scripts/audioProcessing').audioProcessing;
+var audioProcessingReplace = require('./scripts/audioProcessing').audioProcessingReplace;
 
 var sendNotification = require('./scripts/messaging.js').sendNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
@@ -180,6 +181,7 @@ app.post('/api/upload', function(req, res, next) {
 });
 app.post('/api/audiowave', multipart(), createAudioWaveVid);
 app.post('/api/audio_processing', audioProcessing);
+app.post('/api/audio_processing_replace', audioProcessingReplace);
 
 app.use('/s3', require('react-s3-uploader/s3router')({
   bucket: 'soundwiseinc',

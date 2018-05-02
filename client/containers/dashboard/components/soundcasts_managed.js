@@ -138,22 +138,22 @@ export default class SoundcastsManaged extends Component {
     const { userInfo } = this.state;
     const { history, id } = this.props;
     const that = this;
-			const _soundcasts_managed = [];
-			for (let id in userInfo.soundcasts_managed) {
-				const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
-				if (_soundcast.title) {
-					_soundcast.id = id;
-					if (_soundcast.episodes) {
-						_soundcast.last_update = 0;
-						for (let episodeId in _soundcast.episodes) {
-							if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
-								_soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
-							}
-						}
-					}
-					_soundcasts_managed.push(_soundcast);
-				}
-			}
+      const _soundcasts_managed = [];
+      for (let id in userInfo.soundcasts_managed) {
+        const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
+        if (_soundcast.title) {
+          _soundcast.id = id;
+          if (_soundcast.episodes) {
+            _soundcast.last_update = 0;
+            for (let episodeId in _soundcast.episodes) {
+              if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
+                _soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
+              }
+            }
+          }
+          _soundcasts_managed.push(_soundcast);
+        }
+      }
 
       if(this.props.match.params.id == 'bundles') {
         return <SoundcastsBundles {...this.props}/>
@@ -277,7 +277,7 @@ export default class SoundcastsManaged extends Component {
 SoundcastsManaged.propTypes = {
     userInfo: PropTypes.object,
     history: PropTypes.object,
-	id: PropTypes.string,
+  id: PropTypes.string,
 };
 
 const styles = {
@@ -382,73 +382,73 @@ const styles = {
         // overflow: 'auto',
 
     },
-	itemContainer: {
-    	marginTop: 30,
-    	marginRight: 20,
-    	marginBottom: 20,
-    	marginLeft: 15,
-		backgroundColor: Colors.mainWhite,
-		paddingTop: 10,
-		paddingRight: 0,
-		paddingBottom: 10,
-		paddingLeft: 0,
-	},
-	itemHeader: {
-		// height: 22,
-		marginLeft: 15,
+  itemContainer: {
+      marginTop: 30,
+      marginRight: 20,
+      marginBottom: 20,
+      marginLeft: 15,
+    backgroundColor: Colors.mainWhite,
+    paddingTop: 10,
+    paddingRight: 0,
+    paddingBottom: 10,
+    paddingLeft: 0,
+  },
+  itemHeader: {
+    // height: 22,
+    marginLeft: 15,
     marginTop: 10,
     marginBottom: 25,
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
 
-	},
-	itemTitle: {
+  },
+  itemTitle: {
     fontSize: 24,
-		// float: 'left',
-		// height: 22,
-		// lineHeight: '22px',
-	},
-	addEpisodeLink: {
-    	// float: 'left',
-		fontSize: 16,
-		color: Colors.mainOrange,
-		// marginLeft: 20,
-		// height: 22,
-		// lineHeight: '22px',
-		cursor: 'pointer',
-	},
+    // float: 'left',
+    // height: 22,
+    // lineHeight: '22px',
+  },
+  addEpisodeLink: {
+      // float: 'left',
+    fontSize: 16,
+    color: Colors.mainOrange,
+    // marginLeft: 20,
+    // height: 22,
+    // lineHeight: '22px',
+    cursor: 'pointer',
+  },
   tableWrapper: {
     padding: 20,
   },
-	tr: {
-    	borderBottomWidth: 1,
-		borderBottomColor: Colors.lightBorder,
-		borderBottomStyle: 'solid',
-	},
-	th: {
+  tr: {
+      borderBottomWidth: 1,
+    borderBottomColor: Colors.lightBorder,
+    borderBottomStyle: 'solid',
+  },
+  th: {
     fontSize: 17,
-		color: Colors.fontGrey,
-		height: 35,
-		fontWeight: 'regular',
-		verticalAlign: 'middle',
-	},
-	td: {
-    	color: Colors.fontDarkGrey,
-		fontSize: 17,
-    color: 'black',
-		height: 40,
-		overflow: 'hidden',
-		textOverflow: 'ellipsis',
-		whiteSpace: 'nowrap',
+    color: Colors.fontGrey,
+    height: 35,
+    fontWeight: 'regular',
     verticalAlign: 'middle',
-	},
-	itemCheckbox: {
-    	marginTop: 7,
-	},
-	itemChartIcon: {
-    	// fontSize: 12,
-		color: Colors.fontBlack,
-		cursor: 'pointer',
-	},
+  },
+  td: {
+      color: Colors.fontDarkGrey,
+    fontSize: 17,
+    color: 'black',
+    height: 40,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
+  },
+  itemCheckbox: {
+      marginTop: 7,
+  },
+  itemChartIcon: {
+      // fontSize: 12,
+    color: Colors.fontBlack,
+    cursor: 'pointer',
+  },
 };
