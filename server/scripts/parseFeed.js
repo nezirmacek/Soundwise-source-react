@@ -222,7 +222,7 @@ async function runFeedImport(req, res, url) {
       }
     })
     .then(async data => {
-      console.log('DB response: ', data);
+      // console.log('DB response: ', data);
       // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
       await Promise.all(feedItems.map((item, i) => new Promise (async resolve => {
         addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, date, i, resolve);
@@ -240,45 +240,46 @@ async function runFeedImport(req, res, url) {
     });
 } // runFeedImport
 
-async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, publicationDate, i, resolve) {
-    const {title, description, summary, date, pub_date, image, enclosures} = item;
-    const episode = {
-      title,
-      coverArtUrl: image.url || soundcast.imageURL,
-      creatorID: userId,
-      date_created: moment(date || pub_date).format('X'),
-      description: description || summary,
-      duration: enclosures[0].length,
-      id3Tagged: true,
-      index: i + 1,
-      isPublished: true,
-      publicEpisode: true,
-      publisherID: publisherId,
-      soundcastID: soundcastId,
-      url: enclosures[0].url,
-    };
-    const episodeId = `${moment().format('x')}e`;
-    // add to episodes node in firebase
-    await firebase.database().ref(`episodes/${episodeId}`).set(episode);
-    // add to the soundcast
-    await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
-    // add to postgres
-    database.Episode.findOrCreate({
-        where: { episodeId },
-        defaults: {
-          episodeId,
-          soundcastId,
-          publisherId,
-          title: episode.title,
-          soundcastTitle: soundcast.title,
-        }
-      })
-      .then(data => {
-        // console.log('parseFeed.js findOrCreate then');
-      })
-      .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
 
-    resolve && resolve();
+async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadataDate, i, resolve) {
+  const {title, description, summary, date, image, enclosures} = item;
+  const episode = {
+    title,
+    coverArtUrl: image.url || soundcast.imageURL,
+    creatorID: userId,
+    date_created: moment(date || metadataDate).format('X'),
+    description: description || summary,
+    duration: enclosures[0].length,
+    id3Tagged: true,
+    index: i + 1,
+    isPublished: true,
+    publicEpisode: true,
+    publisherID: publisherId,
+    soundcastID: soundcastId,
+    url: enclosures[0].url,
+  };
+  const episodeId = `${moment().format('x')}e`;
+  // add to episodes node in firebase
+  await firebase.database().ref(`episodes/${episodeId}`).set(episode);
+  // add to the soundcast
+  await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
+  // add to postgres
+  database.Episode.findOrCreate({
+      where: { episodeId },
+      defaults: {
+        episodeId,
+        soundcastId,
+        publisherId,
+        title: episode.title,
+        soundcastTitle: soundcast.title,
+      }
+    })
+    .then(data => {
+      // console.log('parseFeed.js findOrCreate then');
+    })
+    .catch(err => console.log('Error: parseFeed.js Episode.findOrCreate ', err));
+
+  resolve && resolve();
 }
 
 
@@ -301,7 +302,7 @@ async function feedInterval() {
         const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
         const soundcastVal = soundcastObj.val();
         let i = Object.keys(soundcastVal.episodes).length; // episodes count
-        const { metadata, feedItems } = results;
+        const { metadata } = results;
         results.feedItems.forEach(feed => {
           const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
           if (pub_date && pub_date > item.updated) {
