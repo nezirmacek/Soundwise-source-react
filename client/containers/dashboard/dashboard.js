@@ -143,14 +143,15 @@ class _Dashboard extends Component {
         }
         const publisher    = nextProps.userInfo.publisher   || this.props.userInfo.publisher;
         const publisherID  = nextProps.userInfo.publisherID || this.props.userInfo.publisherID;
+        const userId       = nextProps.userInfo.id          || this.props.userInfo.id;
         const feedVerified = nextProps.feedVerified || this.props.feedVerified;
         const chargeState  = nextProps.chargeState  || this.props.chargeState;
-        if (!this.runningParseFeedRequest && feedVerified && publisher && publisherID) {
+        if (!this.runningParseFeedRequest && feedVerified && publisher && publisherID && userId) {
           this.runningParseFeedRequest = true;
           const { feedUrl } = feedVerified;
           const reqObj = {
             feedUrl,
-            userId: that.props.userInfo.id,
+            userId,
             publisherId: publisherID,
             publisherName: publisher.name,
             importFeedUrl: true,

@@ -370,4 +370,4 @@ if (require.main.filename.indexOf('iTunesUrls.js') === -1) { // except iTunesUrl
   setTimeout(feedInterval, 30*1000); // 30 seconds after app starts
 }
 
-module.exports = { getFeed, parseFeed, runFeedImport };
+module.exports = { getFeed, parseFeed };
