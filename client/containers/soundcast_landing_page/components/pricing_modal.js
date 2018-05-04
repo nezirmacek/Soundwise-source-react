@@ -58,7 +58,11 @@ class _PricingModal extends Component {
         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
       } else {
         // console.log('soundcast: ', soundcast);
-        history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
+        if (soundcast.forSale) {
+          history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+        } else {
+          history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
+        }
       }
     })
   }

@@ -155,7 +155,7 @@ class _SoundcastPage extends Component {
         <MuiThemeProvider >
           <div>
             <div ref={(elem) => this.header = elem}>
-            <SoundwiseHeader
+              <SoundwiseHeader
                 soundcastID={soundcastID}
               />
               <PricingModal
@@ -220,4 +220,3 @@ const mapStateToProps = state => {
 const SP_worouter = connect(mapStateToProps, null)(_SoundcastPage)
 
 export const SoundcastPage = withRouter(SP_worouter)
-
