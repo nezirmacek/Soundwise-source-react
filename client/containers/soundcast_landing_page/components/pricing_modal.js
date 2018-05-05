@@ -41,12 +41,10 @@ class _PricingModal extends Component {
 
   handleCheck(i, e) {
     const {prices} = this.props.soundcast;
-
     this.setState({
       checked: i,
       sumTotal: prices[i].price == 'free' ? '' : `Total today: $${Number(prices[i].price).toFixed(2)}`
     })
-
   }
 
   handleCheckout() {

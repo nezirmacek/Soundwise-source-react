@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import firebase from 'firebase';
 
 import  PageHeader  from './components/page_header';
 import Payment from './components/payment';
@@ -13,27 +14,51 @@ import {sendEmail} from '../../actions/index';
 class _SoundcastCheckout extends Component {
   constructor(props) {
     super(props);
-    const {soundcast, soundcastID, checked, sumTotal} = props.history.location.state;
+    this.state = {
+      success: false,
+    }
+    this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
+    this.setTotalPrice = this.setTotalPrice.bind(this);
+  }
+
+  async componentDidMount() {
+    const {location} = this.props.history;
+    if(location.state && location.state.soundcast) {
+      const {soundcast, soundcastID, checked, sumTotal} = location.state;
+      this.setSoundcastData(soundcast, soundcastID, checked, sumTotal);
+    } else if (location.search.includes('?soundcast_id=')) {
+      const params = new URLSearchParams(location.search);
+      const soundcastID = params.get('soundcast_id');
+      const checked = Number(params.get('checked')) || 0;
+      const _soundcast =  await firebase.database().ref('soundcasts/' + soundcastID).once('value');
+      const soundcast = _soundcast.val();
+      if (soundcast) {
+        const sumTotal = soundcast.prices[checked].price === 'free' ? '' : `Total today: $${Number(soundcast.prices[checked].price).toFixed(2)}`;
+        this.setSoundcastData(soundcast, soundcastID, checked, sumTotal);
+      } else {
+        this.props.history.push('/notfound');
+      }
+    }
+  }
+
+  setSoundcastData(soundcast, soundcastID, checked, sumTotal) {
     let totalPrice;
     if(soundcast.prices[checked].price == 'free') {
       totalPrice = 0;
     } else {
       totalPrice = Number(soundcast.prices[checked].price);
     }
-    this.state = {
-      success: false,
+    this.setState({
       totalPrice,
-    }
-
-    this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
-    this.setTotalPrice = this.setTotalPrice.bind(this);
+      soundcast,
+      soundcastID,
+      checked,
+      sumTotal,
+    });
   }
 
-  componentDidMount() {
-
-  }
-
-  handlePaymentSuccess(soundcast) {
+  handlePaymentSuccess() {
+    const {soundcast, soundcastID, checked, sumTotal} = this.state;
     this.setState({
       success: true,
     });
@@ -44,10 +69,10 @@ class _SoundcastCheckout extends Component {
       state: {
         text,
         soundcastTitle: soundcast.title,
-        soundcast: this.props.history.location.state.soundcast,
-        soundcastID: this.props.history.location.state.soundcastID,
-        checked: this.props.history.location.state.checked,
-        sumTotal: this.props.history.location.state.sumTotal,
+        soundcast,
+        soundcastID,
+        checked,
+        sumTotal,
         ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
         android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
       }
@@ -61,10 +86,8 @@ class _SoundcastCheckout extends Component {
   }
 
   render() {
-
-    const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
+    const {soundcast, soundcastID, checked, sumTotal, totalPrice} = this.state;
     const {userInfo} = this.props;
-    const {totalPrice} = this.state;
 
     if(!soundcast) {
       return (
