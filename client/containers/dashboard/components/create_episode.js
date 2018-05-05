@@ -875,7 +875,7 @@ class _CreateEpisode extends Component {
                 <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 850, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
                   <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to access audio processing tools</div>
                   <div className='title-small' style={{margin: 25}}>
-                    Audio processing options available on PLUS and PRO plans. Please upgrade to access this feature.
+                    Audio processing options are available on PLUS and PRO plans. Please upgrade to access this feature.
                   </div>
                   <div className="center-col">
                     <OrangeSubmitButton

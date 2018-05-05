@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
+import Dots from 'react-activity/lib/Dots';
 
 import {SoundwiseHeader} from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
@@ -23,6 +24,8 @@ import Publisher from './components/publisher';
 import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
 import {handleContentSaving, setFeedVerified, setChargeState} from '../../actions/index';
+import Colors from '../../styles/colors';
+
 const verticalMenuItems = [
     {
         path: 'soundcasts',
@@ -206,8 +209,13 @@ class _Dashboard extends Component {
             <div className=''
               >
                 <SoundwiseHeader />
-                { feedVerified && <div class="importing-feed-overlay">
-                            <div>Importing feed... Please wait</div></div> }
+                {
+                    feedVerified &&
+                    <div class="importing-feed-overlay">
+                            <div>Importing feed... Please wait</div>
+                            <div><Dots style={{}} color={Colors.mainOrange} size={22} speed={1}/></div>
+                    </div>
+                }
                 <div className="" style={{minHeight: '100%', width: '100%'}}>
                     <div className="col-lg-2 col-md-3 col-sm-3 col-xs-3" style={styles.verticalMenu}>
                         {
