@@ -22,6 +22,9 @@ export default class Payment extends Component {
         this.state={
             paymentError: '',
             submitDisabled: false,
+            firstname: '',
+            lastname: '',
+            email: '',
             number: '',
             cvc: '',
             exp_month: 0,
@@ -100,7 +103,7 @@ export default class Payment extends Component {
         let userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
         let _email, content;
 
-        if(userInfo) {
+        if(userInfo && userInfo.email) { // if logged in
             // console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
@@ -264,7 +267,7 @@ export default class Payment extends Component {
                                     paid,
                                     startPaymentSubmission: false
                                 });
-
+                                that.checkEmail(response.id);
                                 that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
                             }
                         })
@@ -291,18 +294,16 @@ export default class Payment extends Component {
                             statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                         })
                         .then(function (response) {
-
                             const subscription = response.data; //boolean
                             const customer = response.data.customer;
                             // console.log('subscription: ', subscription);
-
                             if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
                                 localStorage.setItem('paymentPaid', Date.now());
                                 that.setState({
                                     paid: true,
                                     startPaymentSubmission: false
                                 });
-
+                                that.checkEmail(response.id);
                                 that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
                             }
                         })
@@ -323,6 +324,28 @@ export default class Payment extends Component {
                }
             })
         }
+    }
+
+    // The app should check whether the email address of the user already has an account. If yes, app should sign in the user with the password entered or through FB; If no, app should create a new account
+    // The stripe id associated with the user's credit card should be saved in user's data
+    checkEmail(stripeId) {
+      const userInfo = this.state.userInfo || this.props.userInfo;
+      if (!userInfo || !userInfo.email) { // not logged in
+        const { email } = this.state;
+        firebase.auth().fetchSignInMethodsForEmail(email)
+        .then(providerInfo => {
+          // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
+          // if the user doesn't have account, the providerInfo returns empty array, []
+          if (providerInfo && providerInfo.length) { // registered
+            this.props.history.push('/signin', { stripeId, email }); // TODO parameters handling
+          } else {
+            this.props.history.push('/signup_options', { stripeId, email }); // TODO parameters handling
+          }
+        })
+        .catch(err => {
+          console.log('Payments fetchSignInMethodsForEmail', err);
+        });
+      }
     }
 
     renderProgressBar() {
