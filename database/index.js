@@ -59,13 +59,18 @@ var Episode = db.define('Episode', {
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
   title: Sequelize.STRING,
-  soundcastTitle: Sequelize.STRING
+  soundcastTitle: Sequelize.STRING,
+  imageUrl: Sequelize.STRING
 });
 
 var Soundcast = db.define('Soundcast', {
   soundcastId: { type: Sequelize.STRING, primaryKey: true },
   publisherId: { type: Sequelize.STRING, allowNull: false },
-  title: { type: Sequelize.STRING}
+  title: { type: Sequelize.STRING},
+  imageUrl: Sequelize.STRING,
+  itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
+  category: Sequelize.STRING,
+  updateDate: Sequelize.DATEONLY
 });
 
 var Publisher = db.define('Publisher', {
@@ -177,8 +182,8 @@ Publisher.sync({force: false, alter: true});
 Comment.sync({force: false});
 Announcement.sync({force: false});
 Like.sync({force: false});
-Soundcast.sync({force: false});
-Episode.sync({force: false});
+Soundcast.sync({force: false, alter: true});
+Episode.sync({force: false, alter: false});
 ListeningSession.sync({force: false});
 Transaction.sync({force: false, alter: true});
 Payout.sync({force: false, alter: true});

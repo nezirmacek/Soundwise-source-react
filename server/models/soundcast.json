@@ -28,6 +28,34 @@
       "type": "string",
       "required": true
     },
+    "imageUrl": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "column": "imageUrl"
+      }
+    },
+    "itunesId": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "column": "itunesId"
+      }
+    },
+    "category": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "column": "category"
+      }
+    },
+    "updateDate": {
+      "type": "date",
+      "required": false,
+      "postgresql": {
+        "column": "updateDate"
+      }
+    },
     "createdAt": {
       "type": "date",
       "required": true,

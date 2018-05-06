@@ -42,6 +42,13 @@
         "column": "soundcastTitle"
       }
     },
+    "imageUrl": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "column": "imageUrl"
+      }
+    },
     "createdAt": {
       "type": "date",
       "required": true,
