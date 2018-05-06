@@ -359,8 +359,39 @@ export default class Payment extends Component {
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
-                                    {/*card number*/}
+                                    {/* lastname, firstname, email, card number*/}
                                     <div style={styles.relativeBlock}>
+                                        <div className='col-md-6 col-sm-12 inputFirstName'>
+                                          <input
+                                              onChange={this.handleChange}
+                                              required
+                                              className='border-radius-4'
+                                              type='text'
+                                              name='firstname'
+                                              placeholder='First Name'
+                                              style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                          />
+                                        </div>
+                                        <div className='col-md-6 col-sm-12 inputLastName'>
+                                          <input
+                                              onChange={this.handleChange}
+                                              required
+                                              className='border-radius-4'
+                                              type='text'
+                                              name='lastname'
+                                              placeholder='Last Name'
+                                              style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                          />
+                                        </div>
+                                        <input
+                                            onChange={this.handleChange}
+                                            required
+                                            className='border-radius-4 col-md-12'
+                                            type='email'
+                                            name='email'
+                                            placeholder='Email'
+                                            style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                        />
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -475,7 +506,7 @@ const styles = {
     cardsImage: {
         position: 'absolute',
         right: 4,
-        top: 10,
+        marginTop: 10,
         width: 179,
         height: 26,
     },
