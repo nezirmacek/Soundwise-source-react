@@ -326,7 +326,7 @@ export default class Payment extends Component {
         }
     }
 
-    // The app should check whether the email address of the user already has an account. If yes, app should sign in the user with the password entered or through FB; If no, app should create a new account
+    // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
     checkEmail(stripeId) {
       const userInfo = this.state.userInfo || this.props.userInfo;
@@ -337,8 +337,10 @@ export default class Payment extends Component {
           // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
           // if the user doesn't have account, the providerInfo returns empty array, []
           if (providerInfo && providerInfo.length) { // registered
+            // If yes, app should sign in the user with the password entered or through FB;
             this.props.history.push('/signin', { stripeId, email }); // TODO parameters handling
           } else {
+            // If no,  app should create a new account
             this.props.history.push('/signup_options', { stripeId, email }); // TODO parameters handling
           }
         })
