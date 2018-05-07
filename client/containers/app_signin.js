@@ -388,7 +388,7 @@ class _AppSignin extends Component {
           && history.location.state.platformCustomer
       ) {
         firebase.database().ref(`users/${userId}/stripe_id`)
-        .set(platformCustomer);
+        .set(history.location.state.platformCustomer);
       }
     }
 
