@@ -60,7 +60,10 @@ class _AppSignin extends Component {
 
         let soundcast, soundcastID, checked, sumTotal;
         if(history.location.state && history.location.state.soundcast) {
-            {soundcast, soundcastID, checked, sumTotal} = history.location.state;
+            soundcast = history.location.state.soundcast;
+            soundcastID = history.location.state.soundcastID;
+            checked = history.location.state.checked;
+            sumTotal = history.location.state.sumTotal;
         }
 
         const that = this;
@@ -188,7 +191,6 @@ class _AppSignin extends Component {
                 }
             }
         }
-
     }
 
     signInInvitedAdmin() {
@@ -244,7 +246,10 @@ class _AppSignin extends Component {
         const {history, userInfo, signinUser, match} = this.props;
         let soundcast, soundcastID, checked, sumTotal;
         if(history.location.state && history.location.state.soundcast) {
-            {soundcast, soundcastID, checked, sumTotal} = history.location.state;
+            soundcast = history.location.state.soundcast;
+            soundcastID = history.location.state.soundcastID;
+            checked = history.location.state.checked;
+            sumTotal = history.location.state.sumTotal;
         }
         // firebase.auth().signInWithRedirect(provider)
 
