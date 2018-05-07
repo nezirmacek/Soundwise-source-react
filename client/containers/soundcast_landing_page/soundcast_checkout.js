@@ -16,9 +16,14 @@ class _SoundcastCheckout extends Component {
     super(props);
     this.state = {
       success: false,
+      lastStep: false, // last step dialog
+      signIn: false,
+      showPassword: true,
+      showFacebook: true,
     }
     this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
+    this.onSuccessPayment = this.onSuccessPayment.bind(this);
   }
 
   async componentDidMount() {
@@ -85,6 +90,32 @@ class _SoundcastCheckout extends Component {
     });
   }
 
+  onSuccessPayment(charge, userInfo) {
+    // The app should check whether the email address of the user already has an account.
+    // The stripe id associated with the user's credit card should be saved in user's data
+    if (!(userInfo && userInfo.email)) { // not logged in
+      const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
+      const { email, firstname, lastname } = this.state;
+      firebase.auth().fetchSignInMethodsForEmail(email)
+      .then(providerInfo => {
+        const newState = { lastStep: true };
+        // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
+        // if the user doesn't have account, the providerInfo returns empty array, []
+        if (providerInfo && providerInfo.length) { // registered
+          // If yes, app should sign in the user with the password entered or through FB;
+          newState.signIn = true;
+          newState.showPassword = providerInfo.indexOf('password') !== -1;
+          newState.showFacebook = providerInfo.indexOf('facebook.com') !== -1;
+        }
+        // If no, app should create a new account
+        this.setState(newState);
+      })
+      .catch(err => {
+        console.log('Payments fetchSignInMethodsForEmail', err);
+      });
+    }
+  }
+
   render() {
     const {soundcast, soundcastID, checked, sumTotal, totalPrice} = this.state;
     const {userInfo} = this.props;
@@ -142,7 +173,7 @@ class _SoundcastCheckout extends Component {
                       handlePaymentSuccess={this.handlePaymentSuccess}
                       isEmailSent={this.props.isEmailSent}
                       sendEmail={this.props.sendEmail}
-                      history={this.props.history}
+                      onSuccessPayment={this.props.onSuccessPayment}
                     />
                 </div>
       )

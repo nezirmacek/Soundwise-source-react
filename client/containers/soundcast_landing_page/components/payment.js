@@ -228,7 +228,8 @@ export default class Payment extends Component {
     stripeTokenHandler(status, response) {
         const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
-        const {soundcast, checked, soundcastID} = this.props;
+        const {soundcast, checked, soundcastID, onSuccessPayment} = this.props;
+        const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -267,7 +268,7 @@ export default class Payment extends Component {
                                     paid,
                                     startPaymentSubmission: false
                                 });
-                                that.checkEmail(response.data.res);
+                                onSuccessPayment && onSuccessPayment(response.data.res, userInfo);
                                 that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
                             }
                         })
@@ -303,7 +304,7 @@ export default class Payment extends Component {
                                     paid: true,
                                     startPaymentSubmission: false
                                 });
-                                that.checkEmail(subscription);
+                                onSuccessPayment && onSuccessPayment(subscription, userInfo);
                                 that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
                             }
                         })
@@ -324,39 +325,6 @@ export default class Payment extends Component {
                }
             })
         }
-    }
-
-    // The app should check whether the email address of the user already has an account.
-    // The stripe id associated with the user's credit card should be saved in user's data
-    checkEmail(charge) {
-      const userInfo = this.state.userInfo || this.props.userInfo;
-      if (!(userInfo && userInfo.email)) { // not logged in
-        const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
-        const { email, firstname, lastname } = this.state;
-        firebase.auth().fetchSignInMethodsForEmail(email)
-        .then(providerInfo => {
-          // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
-          // if the user doesn't have account, the providerInfo returns empty array, []
-          if (providerInfo && providerInfo.length) { // registered
-            // If yes, app should sign in the user with the password entered or through FB;
-            this.props.history.push('/signin', {
-              platformCustomer,
-              email,
-            });
-          } else {
-            // If no,  app should create a new account
-            this.props.history.push('/signup_options', {
-              platformCustomer,
-              email,
-              firstname,
-              lastname,
-            }); // TODO parameters handling
-          }
-        })
-        .catch(err => {
-          console.log('Payments fetchSignInMethodsForEmail', err);
-        });
-      }
     }
 
     renderProgressBar() {

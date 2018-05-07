@@ -79,7 +79,6 @@ class _AppSignin extends Component {
                             if (snapshot.val()) {
                                 _user = JSON.parse(JSON.stringify(snapshot.val()));
                                 signinUser(_user);
-                                that.checkStripeId(history, _user, userId);
                             }
                         })
                         .then(() => {
@@ -269,7 +268,6 @@ class _AppSignin extends Component {
                         _user.pic_url = _user.photoURL;
                         delete _user.photoURL;
                         signinUser(_user);
-                        that.checkStripeId(history, _user, userId);
 
                         if (history.location.state && history.location.state.soundcast) {
                             that.compileUser(_user);
@@ -354,7 +352,6 @@ class _AppSignin extends Component {
                                                 const pic_url = snapshot.val().pic_url;
 
                                                 that.props.signinUser(_user);
-                                                that.checkStripeId(history, _user, userId);
 
                                                 if (soundcast) {
                                                     that.compileUser(_user);
@@ -379,17 +376,6 @@ class _AppSignin extends Component {
                 })
             }
         })
-    }
-
-    checkStripeId(history, _user, userId) {
-      // handle stripe id from payment while not logged in
-      if (!_user.stripe_id // stripe id not set
-          && history.location.state
-          && history.location.state.platformCustomer
-      ) {
-        firebase.database().ref(`users/${userId}/stripe_id`)
-        .set(history.location.state.platformCustomer);
-      }
     }
 
     render() {
