@@ -101,7 +101,7 @@ module.exports.audioProcessing = async (req, res) => {
           (new ffmpeg(filePath)).then(file => {
             file.addCommand('-af', `atrim=${start}:${end}`);
             file.addCommand('-q:a', '3');
-            const trimmedPath = `${filePath.slice(0, -4)}_trimmed${path.extname(episode.url)}`;
+            const trimmedPath = `${filePath.slice(0, -4)}_trimmed${path.extname(filePath)}`;
             file.save(trimmedPath, err => {
               if (err) {
                 return logErr(`trimming fails ${filePath} ${err}`);
@@ -151,7 +151,7 @@ module.exports.audioProcessing = async (req, res) => {
               file.addCommand('-filter_complex', filterComplex);
               // *command example: ffmpeg -i audio_processing_out.mp3 -filter_complex "[0]atrim=start=5.088:end=10.041[a1];[0]atrim=start=15.553:end=17.481[a2];[a1][a2]concat=n=2:v=0:a=1" out.mp3
               file.addCommand('-q:a', '3');
-              const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${path.extname(episode.url)}`;
+              const silenceRemovedPath = `${filePath.slice(0, -4)}_silence_removed${path.extname(filePath)}`;
               file.save(silenceRemovedPath, err => {
                 if (err) {
                   return logErr(`removing silence fails ${filePath} ${err}`);
@@ -301,7 +301,7 @@ module.exports.audioProcessing = async (req, res) => {
           }
           file.addCommand('-filter_complex', `${filterComplex}`);
           file.addCommand('-q:a', '3');
-          const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(intro)}`;
+          const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(filePath)}`;
           file.save(concatPath, err => {
             if (err) {
               return logErr(`concat save fails ${concatPath} ${err}`);
@@ -327,7 +327,7 @@ module.exports.audioProcessing = async (req, res) => {
           file.addCommand('-af', `loudnorm=I=-14:TP=-2:LRA=11:measured_I=-19.5:measured_LRA=5.7:measured_TP=-0.1:measured_thresh=-30.20:linear=true:print_format=summary`);
           file.addCommand('-ar', `44.1k`);
           file.addCommand('-q:a', '3');
-          const setVolumePath = `${filePath.slice(0, -4)}_set_volume${path.extname(intro)}`;
+          const setVolumePath = `${filePath.slice(0, -4)}_set_volume${path.extname(filePath)}`;
           file.save(setVolumePath, err => {
             if (err) {
               return logErr(`volumeProccessing save fails ${setVolumePath} ${err}`);
@@ -560,7 +560,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
   }
   res.send('OK');
   request.get({ url: episode.editedUrl, encoding: null }).then(body => {
-    const outputPath = `/tmp/audio_processing_replace_${episodeId + path.extname(episode.url)}`;
+    const outputPath = `/tmp/audio_processing_replace_${episodeId + path.extname(episode.editedUrl)}`;
     fs.writeFile(outputPath, body, err => {
       if (err) {
         return logErr(`cannot write tmp audio file ${outputPath}`);
