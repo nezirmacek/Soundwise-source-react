@@ -142,6 +142,7 @@ class _SoundcastCheckout extends Component {
                       handlePaymentSuccess={this.handlePaymentSuccess}
                       isEmailSent={this.props.isEmailSent}
                       sendEmail={this.props.sendEmail}
+                      history={this.props.history}
                     />
                 </div>
       )
