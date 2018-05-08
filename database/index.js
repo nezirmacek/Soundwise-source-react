@@ -184,9 +184,9 @@ Publisher.hasMany(Like, {as: 'Likes'});
 
 User.sync({force: false});
 Publisher.sync({force: false, alter: true});
-Comment.sync({force: false, alter: true});
+Comment.sync({force: true});
 Announcement.sync({force: false});
-Like.sync({force: false, alter: true});
+Like.sync({force: true});
 Soundcast.sync({force: false, alter: true});
 Episode.sync({force: false, alter: false});
 ListeningSession.sync({force: false});
