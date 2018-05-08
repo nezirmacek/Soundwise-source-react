@@ -228,7 +228,7 @@ export default class Payment extends Component {
     stripeTokenHandler(status, response) {
         const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
-        const {soundcast, checked, soundcastID, onSuccessPayment} = this.props;
+        const {soundcast, checked, soundcastID, handleStripeId} = this.props;
         const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
@@ -268,7 +268,7 @@ export default class Payment extends Component {
                                     paid,
                                     startPaymentSubmission: false
                                 });
-                                onSuccessPayment && onSuccessPayment(response.data.res, userInfo);
+                                handleStripeId && handleStripeId(response.data.res, userInfo, that.state);
                                 that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
                             }
                         })
@@ -304,7 +304,7 @@ export default class Payment extends Component {
                                     paid: true,
                                     startPaymentSubmission: false
                                 });
-                                onSuccessPayment && onSuccessPayment(subscription, userInfo);
+                                handleStripeId && handleStripeId(subscription, userInfo, that.state);
                                 that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
                             }
                         })

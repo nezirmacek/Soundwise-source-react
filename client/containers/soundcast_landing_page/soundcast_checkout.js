@@ -17,13 +17,16 @@ class _SoundcastCheckout extends Component {
     this.state = {
       success: false,
       lastStep: false, // last step dialog
+      firstname: '',
+      lastname: '',
+      email: '',
       signIn: false,
       showPassword: true,
       showFacebook: true,
     }
     this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
-    this.onSuccessPayment = this.onSuccessPayment.bind(this);
+    this.handleStripeId = this.handleStripeId.bind(this);
   }
 
   async componentDidMount() {
@@ -64,9 +67,7 @@ class _SoundcastCheckout extends Component {
 
   handlePaymentSuccess() {
     const {soundcast, soundcastID, checked, sumTotal} = this.state;
-    this.setState({
-      success: true,
-    });
+    this.setState({ success: true });
     // this.props.history.push('/mysoundcasts');
     const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
     this.props.history.push({
@@ -84,21 +85,19 @@ class _SoundcastCheckout extends Component {
     });
   }
 
-  setTotalPrice(price) {
-    this.setState({
-      totalPrice: price,
-    });
+  setTotalPrice(totalPrice) {
+    this.setState({ totalPrice });
   }
 
-  onSuccessPayment(charge, userInfo) {
+  handleStripeId(charge, userInfo, state) {
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
     if (!(userInfo && userInfo.email)) { // not logged in
       const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
-      const { email, firstname, lastname } = this.state;
+      const {email, firstname, lastname} = state;
       firebase.auth().fetchSignInMethodsForEmail(email)
       .then(providerInfo => {
-        const newState = { lastStep: true };
+        const newState = { lastStep: true, email, firstname, lastname };
         // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
         // if the user doesn't have account, the providerInfo returns empty array, []
         if (providerInfo && providerInfo.length) { // registered
@@ -133,6 +132,27 @@ class _SoundcastCheckout extends Component {
                             </div>
                         </div>
                     </section>
+                </div>
+      )
+    } else if(soundcast && this.state.lastStep) {
+      return (
+                <div>
+                    <PageHeader />
+                      <section className="bg-white border-none">
+                          <div className="container">
+                              <div className="row">
+                                  <section className="bg-white" id="content-section23" >
+                                      <div className="container">
+                                          <div className="row equalize sm-equalize-auto equalize-display-inherit">
+                                              <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{height: ''}}>
+                                                  <SoundcastInCart soundcast={soundcast} />
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </section>
+                              </div>
+                          </div>
+                      </section>
                 </div>
       )
     } else if(soundcast && !this.state.success) {
@@ -173,7 +193,7 @@ class _SoundcastCheckout extends Component {
                       handlePaymentSuccess={this.handlePaymentSuccess}
                       isEmailSent={this.props.isEmailSent}
                       sendEmail={this.props.sendEmail}
-                      onSuccessPayment={this.props.onSuccessPayment}
+                      handleStripeId={this.handleStripeId}
                     />
                 </div>
       )
