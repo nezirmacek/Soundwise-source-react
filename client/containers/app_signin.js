@@ -16,6 +16,7 @@ import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
+import { signIn, compileUser } from './common';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -53,171 +54,35 @@ class _AppSignin extends Component {
         }
     }
 
-    async signIn() {
-        const { firstName, lastName, email, password, pic_url, courses } = this.state;
-        const { signinUser, history, userInfo, match } = this.props;
-        // let soundcast, checked, sumTotal;
-
-        let soundcast, soundcastID, checked, sumTotal;
-        if(history.location.state && history.location.state.soundcast) {
-            soundcast = history.location.state.soundcast;
-            soundcastID = history.location.state.soundcastID;
-            checked = history.location.state.checked;
-            sumTotal = history.location.state.sumTotal;
-        }
-
-        const that = this;
-        let _user;
-
-        try {
-            await firebase.auth().signInWithEmailAndPassword(email, password);
-
-              firebase.auth().onAuthStateChanged(function(user) {
-                    if (user) {
-                        const userId = user.uid;
-                        firebase.database().ref(`users/${userId}`).once('value').then(snapshot => {
-                            if (snapshot.val()) {
-                                _user = JSON.parse(JSON.stringify(snapshot.val()));
-                                signinUser(_user);
-                            }
-                        })
-                        .then(() => {
-                                if (history.location.state && history.location.state.soundcast) {
-                                    that.compileUser(_user);
-                                    history.push('/soundcast_checkout', {
-                                        soundcast: history.location.state.soundcast,
-                                        soundcastID: history.location.state.soundcastID,
-                                        checked: history.location.state.checked,
-                                        sumTotal: history.location.state.sumTotal,
-                                        userInfo: _user,
-                                    });
-                                } else if (_user.admin && !match.params.id) {
-                                    that.compileUser(_user);
-                                    history.push('/dashboard/soundcasts');
-                                } else if(match.params.id) {
-                                    that.signInInvitedAdmin();
-                                } else if (_user.courses) {
-                                    that.compileUser(_user);
-                                    history.push('/myprograms');
-                                } else {
-                                    that.compileUser(_user);
-                                    history.push('/mysoundcasts');
-                                }
-                        });
-                    } else {
-                        // alert('Failed to save login info. Please try again later.');
-                        // Raven.captureMessage('Failed to save login info. Please try again later.');
-                    }
-              });
-        } catch (error) {
-            this.setState({
-                message: error.toString()
-            });
-            console.log(error.toString());
-        }
-    }
-
-    async compileUser(_user) {
-        const { signinUser, history, userInfo, match } = this.props;
-
-        if (_user.soundcasts_managed && _user.admin) {
-            if (_user.publisherID) {
-
-                let publisher_snapshot = await firebase.database().ref(`publishers/${_user.publisherID}`).once('value');
-
-                if (publisher_snapshot.val()) {
-                    const _publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
-                    _publisher.id = _user.publisherID;
-                    _user.publisher = _publisher;
-
-                    if (_user.publisher.administrators) {
-                        let admins = {};
-                        for (let adminId in _user.publisher.administrators) {
-                            admins[adminId] = await firebase.database().ref(`users/${adminId}`).once('value');
-                            if (admins[adminId].val()) {
-                                const _admin = JSON.parse(JSON.stringify(admins[adminId].val()));
-                                _user.publisher.administrators[adminId] = _admin;
-                            }
-                        }
-                    }
-                }
-            }
-
-            let soundcastsManaged = {};
-            for (let key in _user.soundcasts_managed) {
-                soundcastsManaged[key] = await firebase.database().ref(`soundcasts/${key}`).once('value');
-
-                if (soundcastsManaged[key].val()) {
-                    _user = JSON.parse(JSON.stringify(_user));
-                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
-                    _user.soundcasts_managed[key] = _soundcast;
-                    signinUser(_user);
-                    if (_soundcast.episodes) {
-                        let episodes = {};
-                        for (let epkey in _soundcast.episodes) {
-                            episodes[epkey] = await firebase.database().ref(`episodes/${epkey}`).once('value');
-                            if (episodes[epkey].val()) {
-                                _user = JSON.parse(JSON.stringify(_user));
-                                _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
-                                signinUser(_user);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (_user.soundcasts) {
-            let userSoundcasts = {};
-            for (let key in _user.soundcasts) {
-                userSoundcasts[key] = await firebase.database().ref(`soundcasts/${key}`).once('value');
-                if (userSoundcasts[key].val()) {
-                    _user = JSON.parse(JSON.stringify(_user));
-                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
-                    _user.soundcasts[key] = _soundcast;
-                    signinUser(_user);
-                    if (_soundcast.episodes) {
-                        let soundcastEpisodes = {};
-                        for (let epkey in _soundcast.episodes) {
-                            soundcastEpisodes[epkey] = await firebase.database().ref(`episodes/${epkey}`).once('value')
-                            if (soundcastEpisodes[epkey].val()) {
-                                _user = JSON.parse(JSON.stringify(_user));
-                                _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
-                                signinUser(_user);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    signInClick() {
+      const { email, password } = this.state;
+      const { signinUser, history, match } = this.props;
+      signIn(email, password, signinUser, history, match, user => {
+        // console.log('Signin success', user);
+      }, error => {
+        this.setState({ message: error.toString() });
+      });
     }
 
     signInInvitedAdmin() {
         const { match, history } = this.props;
-        const that = this;
-
-          firebase.auth().onAuthStateChanged(function(user) {
+          firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     const userId = user.uid;
                     firebase.database().ref(`publishers/${match.params.id}/administrators/${userId}`).set(true);
-
                     firebase.database().ref(`publishers/${match.params.id}/soundcasts`)
                     .once('value')
                     .then(snapshot => {
-                        firebase.database().ref(`users/${userId}/soundcasts_managed`)
-                        .set(snapshot.val());
-
+                        firebase.database().ref(`users/${userId}/soundcasts_managed`).set(snapshot.val());
                         firebase.database().ref(`users/${userId}/admin`).set(true);
-
                         firebase.database().ref(`users/${userId}/publisherID`).set(match.params.id);
-
                         console.log('completed adding publisher to invited admin');
                     })
                     .then(() => {
                         firebase.database().ref(`users/${userId}`)
                         .on('value', snapshot => {
                             const _user = snapshot.val();
-                            that.compileUser(_user);
+                            compileUser(_user, signinUser);
                         });
                     })
                     .then(() => {
@@ -270,7 +135,7 @@ class _AppSignin extends Component {
                         signinUser(_user);
 
                         if (history.location.state && history.location.state.soundcast) {
-                            that.compileUser(_user);
+                            compileUser(_user, signinUser);
                             history.push('/soundcast_checkout', {
                                 soundcast: history.location.state.soundcast,
                                 soundcastID: history.location.state.soundcastID,
@@ -278,7 +143,7 @@ class _AppSignin extends Component {
                                 sumTotal: history.location.state.sumTotal,
                             });
                         } else if (_user.admin) {
-                            that.compileUser(_user);
+                            compileUser(_user, signinUser);
                             history.push('/dashboard/soundcasts');
                         } else if(match.params.id) {
                             that.signInInvitedAdmin();
@@ -351,13 +216,13 @@ class _AppSignin extends Component {
                                                 const soundcasts = snapshot.val().soundcasts;
                                                 const pic_url = snapshot.val().pic_url;
 
-                                                that.props.signinUser(_user);
+                                                signinUser(_user);
 
                                                 if (soundcast) {
-                                                    that.compileUser(_user);
+                                                    compileUser(_user, signinUser);
                                                     history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
                                                 } else if (_user.admin && !match.params.id) {
-                                                    that.compileUser(_user);
+                                                    compileUser(_user, signinUser);
                                                     history.push('/dashboard/soundcasts');
                                                 } else if(match.params.id) {
                                                     that.signInInvitedAdmin();
@@ -437,7 +302,7 @@ class _AppSignin extends Component {
                                     <OrangeSubmitButton
                                         styles={{marginTop: 15, marginBottom: 15}}
                                         label="Get Access"
-                                        onClick={this.signIn.bind(this)}
+                                        onClick={this.signInClick.bind(this)}
                                     />
                                     <div style={{fontSize: 14, textDecoration: 'underline', marginBottom: 20}}>
                                       <Link  to='/password_reset'>Forgot your password? </Link>
@@ -504,7 +369,7 @@ class _AppSignin extends Component {
                                 <OrangeSubmitButton
                                     styles={{marginTop: 15, marginBottom: 15}}
                                     label="SIGN IN"
-                                    onClick={this.signIn.bind(this)}
+                                    onClick={this.signInClick.bind(this)}
                                 />
                                 <div style={{fontSize: 14, textDecoration: 'underline'}}>
                                   <Link  to='/password_reset'>Forgot your password? </Link>

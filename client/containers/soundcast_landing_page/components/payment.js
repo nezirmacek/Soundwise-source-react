@@ -22,8 +22,8 @@ export default class Payment extends Component {
         this.state={
             paymentError: '',
             submitDisabled: false,
-            firstname: '',
-            lastname: '',
+            firstName: '',
+            lastName: '',
             email: '',
             number: '',
             cvc: '',
@@ -206,6 +206,7 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
+        // return this.props.handleStripeId('TEST1', this.state.userInfo || this.props.userInfo, this.state);
         if (this.state.startPaymentSubmission) { return }
         const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
         if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
@@ -361,7 +362,7 @@ export default class Payment extends Component {
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
-                                    {/* lastname, firstname, email, card number*/}
+                                    {/* lastName, firstName, email, card number*/}
                                     <div style={styles.relativeBlock}>
                                         <div className='col-md-6 col-sm-12 inputFirstName'>
                                           <input
@@ -369,7 +370,7 @@ export default class Payment extends Component {
                                               required
                                               className='border-radius-4'
                                               type='text'
-                                              name='firstname'
+                                              name='firstName'
                                               placeholder='First Name'
                                               style={{ ...styles.input, margin: '20px 0 0 0' }}
                                           />
@@ -380,7 +381,7 @@ export default class Payment extends Component {
                                               required
                                               className='border-radius-4'
                                               type='text'
-                                              name='lastname'
+                                              name='lastName'
                                               placeholder='Last Name'
                                               style={{ ...styles.input, margin: '20px 0 0 0' }}
                                           />

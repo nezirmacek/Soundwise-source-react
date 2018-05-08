@@ -9,9 +9,11 @@ import  PageHeader  from './components/page_header';
 import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
-import {sendEmail} from '../../actions/index';
+import { sendEmail, signinUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
+import { OrangeSubmitButton } from '../../components/buttons/buttons';
+import { signIn } from '../common';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -22,9 +24,11 @@ class _SoundcastCheckout extends Component {
       firstname: '',
       lastname: '',
       email: '',
-      signIn: false,
-      showPassword: true,
+      password: '',
+      runSignIn: false,
       showFacebook: true,
+      showPassword: true,
+      platformCustomer: null,
     }
     this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
@@ -95,18 +99,18 @@ class _SoundcastCheckout extends Component {
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
     if (!(userInfo && userInfo.email)) { // not logged in
-      const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
-      const {email, firstname, lastname} = state;
+      const {email, firstName, lastName} = state;
       firebase.auth().fetchSignInMethodsForEmail(email)
       .then(providerInfo => {
-        const newState = { lastStep: true, email, firstname, lastname };
+        const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
+        const newState = { lastStep: true, email, firstName, lastName, platformCustomer };
         // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
         // if the user doesn't have account, the providerInfo returns empty array, []
         if (providerInfo && providerInfo.length) { // registered
           // If yes, app should sign in the user with the password entered or through FB;
-          newState.signIn = true;
-          newState.showPassword = providerInfo.indexOf('password') !== -1;
+          newState.runSignIn = true;
           newState.showFacebook = providerInfo.indexOf('facebook.com') !== -1;
+          newState.showPassword = providerInfo.indexOf('password') !== -1;
         }
         // If no, app should create a new account
         this.setState(newState);
@@ -119,6 +123,31 @@ class _SoundcastCheckout extends Component {
 
   handleChange(field, e) {
     this.setState({ [field]: e.target.value })
+  }
+
+  handleFBAuth() {
+    const {runSignIn, firstName, lastName, email, password} = this.state;
+    if(runSignIn) {
+
+    } else { // sign up
+      // TODO
+    }
+  }
+
+  submitPassword() {
+    const {runSignIn, firstName, lastName, email, password} = this.state;
+    const {signinUser, history, match, signinUser} = this.props;
+    if(runSignIn) {
+      signIn(email, password, signinUser, history, match, user => {
+        if (platformCustomer && user.stripe_id !== platformCustomer) {
+          firebase.database().ref(`users/${user.uid}/stripe_id`).set(platformCustomer);
+          user.stripe_id = platformCustomer;
+          signinUser(user);
+        }
+      }, error => this.setState({ message: error.toString() }));
+    } else { // sign up
+      // TODO
+    }
   }
 
   render() {
@@ -153,8 +182,8 @@ class _SoundcastCheckout extends Component {
                       <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{textAlign: 'center'}}>
                         <SoundcastInCart soundcast={soundcast} />
                         <div style={{fontSize: 19, fontWeight: 700, padding: '55px 0 25px'}}>
-                          {this.state.signIn ? 'Final step: sign in to your Soundwise account'
-                                             : 'One last step...'}
+                          {this.state.runSignIn ? 'Final step: sign in to your Soundwise account'
+                                                : 'One last step...'}
                         </div>
                         { this.state.showFacebook &&
                           <button
@@ -167,7 +196,11 @@ class _SoundcastCheckout extends Component {
                           </button>
                         }
                         <div style={{fontStyle: 'italic', padding: '18px 0 22px'}}>
-                          {!this.state.signIn ? 'or set a password' : 'Enter your password'}
+                          {!this.state.runSignIn ? 'or set a password' : (
+                              this.state.showPassword ?
+                                `${this.state.showFacebook ? 'or e' : 'E'}nter your password` : ''
+                            )
+                          }
                         </div>
                         { this.state.showPassword &&
                           <div>
@@ -176,8 +209,13 @@ class _SoundcastCheckout extends Component {
                                 styles={{ width: 270 }}
                                 placeholder={'Password'}
                                 onChange={this.handleChange.bind(this, 'password')}
-                                value={''}
+                                value={this.state.password}
                                 validators={[minLengthValidator.bind(null, 1)]}
+                            />
+                            <OrangeSubmitButton
+                                styles={{marginTop: 15, marginBottom: 15}}
+                                label='SIGN IN'
+                                onClick={this.submitPassword.bind(this)}
                             />
                           </div>
                         }
@@ -262,7 +300,7 @@ const mapStateToProps = state => {
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ sendEmail }, dispatch);
+    return bindActionCreators({ sendEmail, signinUser }, dispatch);
 }
 
 const Checkout_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundcastCheckout);
