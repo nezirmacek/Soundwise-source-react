@@ -51,10 +51,14 @@ firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: "https://soundwise-a8e6f.firebaseio.com",
 });
-
-// sync firebase with Algolia
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
+var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
+var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners;
+
+// sync firebase with Algolia and postgres
 algoliaIndex();
+// transferLikes();
+// firebaseListeners();
 
 var app = module.exports = loopback();
 app.start = function() {
@@ -360,5 +364,7 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
+
+
 
 

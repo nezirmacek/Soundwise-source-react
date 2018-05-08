@@ -34,7 +34,8 @@ var Comment = db.define('Comment', {
   content: Sequelize.STRING,
   userId: { type: Sequelize.STRING, allowNull: false },
   announcementId: Sequelize.STRING,
-  episodeId: Sequelize.STRING
+  episodeId: Sequelize.STRING,
+  soundcastId: Sequelize.STRING,
 });
 
 var Announcement = db.define('Announcement', {
@@ -48,10 +49,10 @@ var Announcement = db.define('Announcement', {
 var Like = db.define('Like', {
   likeId: { type: Sequelize.STRING, primaryKey: true },
   userId: { type: Sequelize.STRING, allowNull: false },
-  publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   episodeId: Sequelize.STRING,
-  announcementId: Sequelize.STRING
+  announcementId: Sequelize.STRING,
+  commentId: Sequelize.STRING
 });
 
 var Episode = db.define('Episode', {
@@ -70,6 +71,7 @@ var Soundcast = db.define('Soundcast', {
   imageUrl: Sequelize.STRING,
   itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
   category: Sequelize.STRING,
+  rank: Sequelize.INTEGER,
   updateDate: Sequelize.DATEONLY
 });
 
@@ -156,6 +158,9 @@ Announcement.hasMany(Comment, {as: 'Comments'});
 Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
 Announcement.hasMany(Like, {as: 'Likes'});
 
+Like.belongsTo(Comment, {foreignKey: 'commentId'});
+Comment.hasMany(Like, {as: 'Likes'});
+
 Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 Soundcast.hasMany(Announcement, {as: 'Announcements'});
 
@@ -179,9 +184,9 @@ Publisher.hasMany(Like, {as: 'Likes'});
 
 User.sync({force: false});
 Publisher.sync({force: false, alter: true});
-Comment.sync({force: false});
+Comment.sync({force: false, alter: true});
 Announcement.sync({force: false});
-Like.sync({force: false});
+Like.sync({force: false, alter: true});
 Soundcast.sync({force: false, alter: true});
 Episode.sync({force: false, alter: false});
 ListeningSession.sync({force: false});

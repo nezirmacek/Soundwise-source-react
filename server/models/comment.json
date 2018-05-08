@@ -1,0 +1,88 @@
+{
+  "name": "comment",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "postgresql": {
+      "table": "Comments"
+    }
+  },
+  "properties": {
+    "commentId": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "postgresql": {
+        "column": "commentId"
+      }
+    },
+    "episodeId": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "column": "episodeId"
+      }
+    },
+    "announcementId": {
+      "type": "string",
+      "required": false,
+      "postgresql": {
+        "column": "announcementId"
+      }
+    },
+    "content": {
+      "type": "string",
+      "required": true
+    },
+    "userId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "userId"
+      }
+    },
+    "soundcastId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "soundcastId"
+      }
+    },
+    "createdAt": {
+      "type": "date",
+      "required": true,
+      "postgresql": {
+        "column": "createdAt"
+      }
+    },
+    "updatedAt": {
+      "type": "date",
+      "required": true,
+      "postgresql": {
+        "column": "updatedAt"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "soundcast": {
+      "type": "belongsTo",
+      "model": "soundcast",
+      "foreignKey": "soundcastId"
+    },
+    "episode": {
+      "type": "belongsTo",
+      "model": "episode",
+      "foreignKey": "episodeId"
+    },
+    "users": {
+      "type": "hasMany",
+      "model": "listener",
+      "foreignKey": "userId",
+      "through": "userComment"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
