@@ -554,7 +554,7 @@ const styles = {
     width: 212,
     height: 44,
     marginTop: 10,
-        marginBottom: 10
+    marginBottom: 10
   },
   fbIcon: {
     marginLeft: 0,

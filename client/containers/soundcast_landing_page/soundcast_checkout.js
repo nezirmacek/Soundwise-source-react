@@ -10,6 +10,8 @@ import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
 import {sendEmail} from '../../actions/index';
+import { GreyInput } from '../../components/inputs/greyInput';
+import { minLengthValidator } from '../../helpers/validators';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -115,87 +117,120 @@ class _SoundcastCheckout extends Component {
     }
   }
 
+  handleChange(field, e) {
+    this.setState({ [field]: e.target.value })
+  }
+
   render() {
     const {soundcast, soundcastID, checked, sumTotal, totalPrice} = this.state;
     const {userInfo} = this.props;
 
     if(!soundcast) {
       return (
-                <div>
-                    <PageHeader />
-                    <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                                    <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">YOUR CART IS EMPTY</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+        <div>
+          <PageHeader />
+          <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
+            <div className="container">
+              <div className="row">
+                <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                  <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">YOUR CART IS EMPTY</h2>
                 </div>
+              </div>
+            </div>
+          </section>
+        </div>
       )
     } else if(soundcast && this.state.lastStep) {
       return (
-                <div>
-                    <PageHeader />
-                      <section className="bg-white border-none">
-                          <div className="container">
-                              <div className="row">
-                                  <section className="bg-white" id="content-section23" >
-                                      <div className="container">
-                                          <div className="row equalize sm-equalize-auto equalize-display-inherit">
-                                              <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{height: ''}}>
-                                                  <SoundcastInCart soundcast={soundcast} />
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </section>
-                              </div>
+        <div>
+          <PageHeader />
+          <section className="bg-white border-none">
+            <div className="container">
+              <div className="row">
+                <section className="bg-white" id="content-section23" >
+                  <div className="container">
+                    <div className="row equalize sm-equalize-auto equalize-display-inherit">
+                      <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{textAlign: 'center'}}>
+                        <SoundcastInCart soundcast={soundcast} />
+                        <div style={{fontSize: 19, fontWeight: 700, padding: '55px 0 25px'}}>
+                          {this.state.signIn ? 'Final step: sign in to your Soundwise account'
+                                             : 'One last step...'}
+                        </div>
+                        { this.state.showFacebook &&
+                          <button
+                              onClick={() => this.handleFBAuth()}
+                              className="text-white btn btn-medium propClone btn-3d builder-bg tz-text bg-blue tz-background-color"
+                              style={styles.fb}
+                          >
+                            <i className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub" style={styles.fbIcon}></i>
+                            <span className="tz-text">SIGN IN with FACEBOOK</span>
+                          </button>
+                        }
+                        <div style={{fontStyle: 'italic', padding: '18px 0 22px'}}>
+                          {!this.state.signIn ? 'or set a password' : 'Enter your password'}
+                        </div>
+                        { this.state.showPassword &&
+                          <div>
+                            <GreyInput
+                                type='password'
+                                styles={{ width: 270 }}
+                                placeholder={'Password'}
+                                onChange={this.handleChange.bind(this, 'password')}
+                                value={''}
+                                validators={[minLengthValidator.bind(null, 1)]}
+                            />
                           </div>
-                      </section>
-                </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+        </div>
       )
     } else if(soundcast && !this.state.success) {
       return (
-                <div>
-                    <PageHeader />
-                    <section className="bg-white border-none">
-                        <div className="container">
-                            <div className="row">
-                                <section className="bg-white" id="content-section23" >
-                                    <div className="container">
-                                        <div className="row equalize sm-equalize-auto equalize-display-inherit">
-                                            <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{height: ''}}>
-                                                <SoundcastInCart
-                                                    soundcast={soundcast}
-                                                    checked={checked}
-                                                    sumTotal={sumTotal}
-                                                    setTotalPrice={this.setTotalPrice}
-                                                />
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-md-12 col-sm-12 col-xs-12">
+        <div>
+          <PageHeader />
+          <section className="bg-white border-none">
+            <div className="container">
+              <div className="row">
+                <section className="bg-white" id="content-section23" >
+                  <div className="container">
+                    <div className="row equalize sm-equalize-auto equalize-display-inherit">
+                      <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{height: ''}}>
+                        <SoundcastInCart
+                          soundcast={soundcast}
+                          checked={checked}
+                          sumTotal={sumTotal}
+                          setTotalPrice={this.setTotalPrice}
+                        />
+                      </div>
+                      <div className="row">
+                        <div className="col-md-12 col-sm-12 col-xs-12">
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                            </div>
                         </div>
-                    </section>
-                    <Payment
-                      soundcast={soundcast}
-                      soundcastID={soundcastID}
-                      checked={checked}
-                      total={totalPrice}
-                      userInfo={userInfo}
-                      handlePaymentSuccess={this.handlePaymentSuccess}
-                      isEmailSent={this.props.isEmailSent}
-                      sendEmail={this.props.sendEmail}
-                      handleStripeId={this.handleStripeId}
-                    />
-                </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+          <Payment
+            soundcast={soundcast}
+            soundcastID={soundcastID}
+            checked={checked}
+            total={totalPrice}
+            userInfo={userInfo}
+            handlePaymentSuccess={this.handlePaymentSuccess}
+            isEmailSent={this.props.isEmailSent}
+            sendEmail={this.props.sendEmail}
+            handleStripeId={this.handleStripeId}
+          />
+        </div>
       )
     } else {
       return (
@@ -203,6 +238,22 @@ class _SoundcastCheckout extends Component {
       )
     }
   }
+}
+
+const styles = {
+  fb: {
+    width: 270,
+    height: 44,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  fbIcon: {
+    marginLeft: 0,
+    marginRight: 20,
+    position: 'relative',
+    bottom: 2,
+    right: '10%',
+  },
 }
 
 const mapStateToProps = state => {
