@@ -182,7 +182,7 @@ var Payout = db.define('Payout', { // records of payouts
 
 User.sync({force: false, alter: true});
 Publisher.sync({force: false, alter: true});
-Comment.sync({force: true, alter: true});
+Comment.sync({force: false, alter: true});
 Announcement.sync({force: false});
 Like.sync({force: false, alter: true});
 Soundcast.sync({force: false, alter: true});
