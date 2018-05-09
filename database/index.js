@@ -36,6 +36,7 @@ var Comment = db.define('Comment', {
   announcementId: Sequelize.STRING,
   episodeId: Sequelize.STRING,
   soundcastId: Sequelize.STRING,
+  timeStamp: Sequelize.BIGINT
 });
 
 var Announcement = db.define('Announcement', {
@@ -52,7 +53,8 @@ var Like = db.define('Like', {
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   episodeId: Sequelize.STRING,
   announcementId: Sequelize.STRING,
-  commentId: Sequelize.STRING
+  commentId: Sequelize.STRING,
+  timeStamp: Sequelize.BIGINT
 });
 
 var Episode = db.define('Episode', {
@@ -182,9 +184,9 @@ var Payout = db.define('Payout', { // records of payouts
 
 User.sync({force: false, alter: true});
 Publisher.sync({force: false, alter: true});
-Comment.sync({force: false, alter: true});
+Comment.sync({force: true, alter: true});
 Announcement.sync({force: false});
-Like.sync({force: false, alter: true});
+Like.sync({force: true, alter: true});
 Soundcast.sync({force: false, alter: true});
 Episode.sync({force: false, alter: true});
 ListeningSession.sync({force: false, alter: true});

@@ -121,7 +121,7 @@ function deleteUserRecord(user) {
 function addOrUpdateCommentRecord(comment) {
   // Get Firebase object
   if (comment.val()) {
-    const {episodeID, announcementID, soundcastId, userID, content} = comment.val();
+    const {episodeID, announcementID, soundcastId, userID, content, timestamp} = comment.val();
     const commentId = comment.key;
     const commentObj = {
       commentId,
@@ -129,7 +129,8 @@ function addOrUpdateCommentRecord(comment) {
       soundcastId,
       episodeId: episodeID || null,
       announcementId: announcementID || null,
-      content
+      content,
+      timeStamp: timestamp
     };
 
     // Add or update object
@@ -169,7 +170,7 @@ function deleteCommentRecord(comment) {
 function addOrUpdateLikeRecord(like) {
   // Get Firebase object
   if (like.val()) {
-    const {episodeId, announcementId, commentId, soundcastId, userId} = like.val();
+    const {episodeId, announcementId, commentId, soundcastId, userId, timeStamp} = like.val();
     const likeId = like.key;
     const likeObj = {
       likeId,
@@ -178,6 +179,7 @@ function addOrUpdateLikeRecord(like) {
       episodeId: episodeId || null,
       announcementId: announcementId || null,
       commentId: commentId || null,
+      timeStamp
     };
 
     // Add or update object

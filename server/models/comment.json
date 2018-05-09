@@ -49,6 +49,12 @@
         "column": "soundcastId"
       }
     },
+    "timeStamp": {
+      "type": "bigint",
+      "postgresql": {
+        "column": "timeStamp"
+      }
+    },
     "createdAt": {
       "type": "date",
       "required": true,
