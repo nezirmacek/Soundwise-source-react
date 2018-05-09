@@ -128,14 +128,14 @@ Soundcast.belongsToMany(User, {through: 'UserSoundcast', foreignKey: 'soundcastI
 User.belongsToMany(Episode, {through: 'UserEpisode', foreignKey: 'userId', otherKey: 'episodeId'});
 Episode.belongsToMany(User, {through: 'UserEpisode', foreignKey: 'episodeId', otherKey: 'userId'});
 
-ListeningSession.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-Soundcast.hasMany(ListeningSession, {as: 'ListeningSessions'});
+// ListeningSession.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Soundcast.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-ListeningSession.belongsTo(Episode, {foreignKey: 'episodeId'});
-Episode.hasMany(ListeningSession, {as: 'ListeningSessions'});
+// ListeningSession.belongsTo(Episode, {foreignKey: 'episodeId'});
+// Episode.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-ListeningSession.belongsTo(User, {foreignKey: 'userId'});
-User.hasMany(ListeningSession, {as: 'ListeningSessions'});
+// ListeningSession.belongsTo(User, {foreignKey: 'userId'});
+// User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
 Comment.belongsTo(User, {foreignKey: 'userId'});
 User.hasMany(Comment, {as: 'Comments'});
@@ -144,34 +144,32 @@ Announcement.belongsTo(User, {foreignKey: 'userId'});
 User.hasMany(Announcement, {as: 'Announcements'});
 
 Like.belongsTo(User, {foreignKey: 'userId'});
-User.hasMany(Like, {as: 'Likes'});
+// User.hasMany(Like, {as: 'Likes'});
 
 Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
 Episode.hasMany(Comment, {as: 'Comments'});
 
 Like.belongsTo(Episode, {foreignKey: 'episodeId'});
-Episode.hasMany(Like, {as: 'Likes'});
+// Episode.hasMany(Like, {as: 'Likes'});
 
 Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
 Announcement.hasMany(Comment, {as: 'Comments'});
 
 Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
-Announcement.hasMany(Like, {as: 'Likes'});
+// Announcement.hasMany(Like, {as: 'Likes'});
 
 Like.belongsTo(Comment, {foreignKey: 'commentId'});
-Comment.hasMany(Like, {as: 'Likes'});
+// Comment.hasMany(Like, {as: 'Likes'});
 
 Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 Soundcast.hasMany(Announcement, {as: 'Announcements'});
 
 Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-Soundcast.hasMany(Like, {as: 'Likes'});
+// Soundcast.hasMany(Like, {as: 'Likes'});
 
 Announcement.belongsTo(Publisher, {foreignKey: 'publisherId'});
 Publisher.hasMany(Announcement, {as: 'Announcements'});
 
-Like.belongsTo(Publisher, {foreignKey: 'publisherId'});
-Publisher.hasMany(Like, {as: 'Likes'});
 
 // Transaction.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Transaction, {as: 'Transactions'});
@@ -189,7 +187,7 @@ Announcement.sync({force: false});
 Like.sync({force: false});
 Soundcast.sync({force: false, alter: true});
 Episode.sync({force: false, alter: false});
-ListeningSession.sync({force: false});
+ListeningSession.sync({force: false, alter: true});
 Transaction.sync({force: false, alter: true});
 Payout.sync({force: false, alter: true});
 

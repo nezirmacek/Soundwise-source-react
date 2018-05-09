@@ -94,23 +94,7 @@
     }
   },
   "validations": [],
-  "relations": {
-    "soundcast": {
-      "type": "belongsTo",
-      "model": "soundcast",
-      "foreignKey": "soundcastId"
-    },
-    "episode": {
-      "type": "belongsTo",
-      "model": "episode",
-      "foreignKey": "episodeId"
-    },
-    "user": {
-      "type": "belongsTo",
-      "model": "listener",
-      "foreignKey": "userId"
-    }
-  },
+  "relations": {},
   "acls": [],
   "methods": {}
 }

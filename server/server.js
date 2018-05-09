@@ -366,5 +366,5 @@ client.setApiKey(sendGridApiKey);
 // changeUrl();
 
 
-
+console.log(moment().format().slice(0, 10));
 
