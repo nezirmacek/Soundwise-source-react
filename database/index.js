@@ -31,7 +31,7 @@ var User = db.define('User', {
 
 var Comment = db.define('Comment', {
   commentId: { type: Sequelize.STRING, primaryKey: true },
-  content: Sequelize.STRING,
+  content: Sequelize.TEXT,
   userId: { type: Sequelize.STRING, allowNull: false },
   announcementId: Sequelize.STRING,
   episodeId: Sequelize.STRING,
@@ -184,7 +184,7 @@ User.sync({force: false, alter: true});
 Publisher.sync({force: false, alter: true});
 Comment.sync({force: true, alter: true});
 Announcement.sync({force: false});
-Like.sync({force: true, alter: true});
+Like.sync({force: false, alter: true});
 Soundcast.sync({force: false, alter: true});
 Episode.sync({force: false, alter: true});
 ListeningSession.sync({force: false, alter: true});
