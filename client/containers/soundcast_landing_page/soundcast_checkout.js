@@ -13,7 +13,7 @@ import { sendEmail, signinUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
-import { signIn } from '../common';
+import { signIn, signInFacebook } from '../commonAuth';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -21,6 +21,7 @@ class _SoundcastCheckout extends Component {
     this.state = {
       success: false,
       lastStep: false, // last step dialog
+      message: '',
       firstname: '',
       lastname: '',
       email: '',
@@ -33,6 +34,7 @@ class _SoundcastCheckout extends Component {
     this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
     this.handleStripeId = this.handleStripeId.bind(this);
+    this.checkStripeId = this.checkStripeId.bind(this);
   }
 
   async componentDidMount() {
@@ -95,7 +97,7 @@ class _SoundcastCheckout extends Component {
     this.setState({ totalPrice });
   }
 
-  handleStripeId(charge, userInfo, state) {
+  handleStripeId(charge, userInfo, state) { // success payment callback
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
     if (!(userInfo && userInfo.email)) { // not logged in
@@ -125,10 +127,24 @@ class _SoundcastCheckout extends Component {
     this.setState({ [field]: e.target.value })
   }
 
-  handleFBAuth() {
-    const {runSignIn, firstName, lastName, email, password} = this.state;
-    if(runSignIn) {
+  checkStripeId(user) {
+    const {platformCustomer} = this.state;
+    if (platformCustomer && user.stripe_id !== platformCustomer) {
+      firebase.database().ref(`users/${user.uid}/stripe_id`).set(platformCustomer);
+      user.stripe_id = platformCustomer;
+      signinUser(user);
+    }
+  }
 
+  handleFBAuth() {
+    const {runSignIn, firstName, lastName} = this.state;
+    const {signinUser, history, match} = this.props;
+    if(runSignIn) {
+      signInFacebook(
+        signinUser, history, match,
+        user => checkStripeId(user),
+        error => this.setState({ message: error.toString() })
+      );
     } else { // sign up
       // TODO
     }
@@ -138,20 +154,18 @@ class _SoundcastCheckout extends Component {
     const {runSignIn, firstName, lastName, email, password} = this.state;
     const {signinUser, history, match} = this.props;
     if(runSignIn) {
-      signIn(email, password, signinUser, history, match, user => {
-        if (platformCustomer && user.stripe_id !== platformCustomer) {
-          firebase.database().ref(`users/${user.uid}/stripe_id`).set(platformCustomer);
-          user.stripe_id = platformCustomer;
-          signinUser(user);
-        }
-      }, error => this.setState({ message: error.toString() }));
+      signIn(
+        email, password, signinUser, history, match,
+        user => checkStripeId(user),
+        error => this.setState({ message: error.toString() })
+      );
     } else { // sign up
       // TODO
     }
   }
 
   render() {
-    const {soundcast, soundcastID, checked, sumTotal, totalPrice} = this.state;
+    const {soundcast, soundcastID, checked, sumTotal, totalPrice, message} = this.state;
     const {userInfo} = this.props;
 
     if(!soundcast) {
@@ -201,6 +215,9 @@ class _SoundcastCheckout extends Component {
                                 `${this.state.showFacebook ? 'or e' : 'E'}nter your password` : ''
                             )
                           }
+                        </div>
+                        <div style={{paddingBottom: 25}}>
+                          <span style={{color: 'red', fontSize: 16}}>{message}</span>
                         </div>
                         { this.state.showPassword &&
                           <div>

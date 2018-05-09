@@ -16,9 +16,7 @@ import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
-import { signIn, compileUser } from './common';
-
-var provider = new firebase.auth.FacebookAuthProvider();
+import { signIn, signInFacebook } from './commonAuth';
 
 class _AppSignin extends Component {
     constructor(props) {
@@ -45,7 +43,7 @@ class _AppSignin extends Component {
         }
         if(this.props.history.location.state) {
             const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
-            this.setState({
+            soundcast && this.setState({
                 soundcast,
                 soundcastID,
                 checked,
@@ -55,197 +53,32 @@ class _AppSignin extends Component {
     }
 
     signInClick() {
-      const { email, password } = this.state;
-      const { signinUser, history, match } = this.props;
-      signIn(email, password, signinUser, history, match, user => {
-        // console.log('Signin success', user);
-      }, error => {
-        this.setState({ message: error.toString() });
-      });
-    }
-
-    signInInvitedAdmin() {
-        const { match, history } = this.props;
-          firebase.auth().onAuthStateChanged(user => {
-                if (user) {
-                    const userId = user.uid;
-                    firebase.database().ref(`publishers/${match.params.id}/administrators/${userId}`).set(true);
-                    firebase.database().ref(`publishers/${match.params.id}/soundcasts`)
-                    .once('value')
-                    .then(snapshot => {
-                        firebase.database().ref(`users/${userId}/soundcasts_managed`).set(snapshot.val());
-                        firebase.database().ref(`users/${userId}/admin`).set(true);
-                        firebase.database().ref(`users/${userId}/publisherID`).set(match.params.id);
-                        console.log('completed adding publisher to invited admin');
-                    })
-                    .then(() => {
-                        firebase.database().ref(`users/${userId}`)
-                        .on('value', snapshot => {
-                            const _user = snapshot.val();
-                            compileUser(_user, signinUser);
-                        });
-                    })
-                    .then(() => {
-                        history.push('/dashboard/soundcasts');
-                    });
-                } else {
-                    // alert('profile saving failed. Please try again later.');
-                    // Raven.captureMessage('invited admin saving failed!')
-                }
-          });
-    }
-
-    handleChange(field, e) {
-        this.setState({
-            [field]: e.target.value
-        })
-    }
-
-    componentWillMount() {
-
+      const {email, password} = this.state;
+      const {signinUser, history, match} = this.props;
+      signIn(
+        email, password, signinUser, history, match,
+        user => console.log('Success signIn', user),
+        error => this.setState({ message: error.toString() })
+      );
     }
 
     handleFBAuth() {
-        const that = this;
-        const {history, userInfo, signinUser, match} = this.props;
-        let soundcast, soundcastID, checked, sumTotal;
-        if(history.location.state && history.location.state.soundcast) {
-            soundcast = history.location.state.soundcast;
-            soundcastID = history.location.state.soundcastID;
-            checked = history.location.state.checked;
-            sumTotal = history.location.state.sumTotal;
-        }
-        // firebase.auth().signInWithRedirect(provider)
+      const {signinUser, history, match} = this.props;
+      signInFacebook(
+        signinUser, history, match,
+        user => console.log('Success signInFacebook', user),
+        error => this.setState({ message: error.toString() })
+      );
+    }
 
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-            // The signed-in user info.
-            const userId = firebase.auth().currentUser.uid;
-            firebase.database().ref('users/' + userId)
-                .once('value')
-                .then(snapshot => {
-                    if(snapshot.val() && typeof(snapshot.val().firstName) !== 'undefined') { // if user already exists
-                        let updates = {};
-                        updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
-                        firebase.database().ref().update(updates);
-
-                        let _user = snapshot.val();
-                        _user.pic_url = _user.photoURL;
-                        delete _user.photoURL;
-                        signinUser(_user);
-
-                        if (history.location.state && history.location.state.soundcast) {
-                            compileUser(_user, signinUser);
-                            history.push('/soundcast_checkout', {
-                                soundcast: history.location.state.soundcast,
-                                soundcastID: history.location.state.soundcastID,
-                                checked: history.location.state.checked,
-                                sumTotal: history.location.state.sumTotal,
-                            });
-                        } else if (_user.admin) {
-                            compileUser(_user, signinUser);
-                            history.push('/dashboard/soundcasts');
-                        } else if(match.params.id) {
-                            that.signInInvitedAdmin();
-                        } else {
-                            history.push('/myprograms');
-                        }
-                    } else {  //if it's a new user
-
-                        // const { email, photoURL: pic_url, displayName } = result.user;
-                        // const name = displayName.split(' ');
-                        // const _userToRegister = {
-                        //     firstName: name[0],
-                        //     lastName: name[1],
-                        //     email,
-                        //     pic_url,
-                        // };
-                        //
-                        // firebase.database().ref('users/' + userId).set(_userToRegister);
-                        // signinUser(_userToRegister);
-                        // // from login page now register subscribers by default
-                        // history.push('/myprograms');
-
-                        alert('You don’t have a Soundwise account. Please create or sign up for a soundcast to get started.');
-                        if(match.params.id) {
-                            history.push(`/signup/admin/${match.params.id}`);
-                        } else {
-                            history.push('/signup');
-                        }
-                    }
-                })
-        }).catch(function(error) {
-            // Handle Errors here.
-            if (error.code === 'auth/account-exists-with-different-credential') {
-                // Step 2.
-                // User's email already exists.
-                // The pending Facebook credential.
-
-                // that.setState({
-                //     message: error.toString()
-                // })
-                console.log('facebook error');
-                var pendingCred = error.credential;
-                // The provider account's email address.
-                var email = error.email;
-                // Get registered providers for this email.
-                firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
-                    // Step 3.
-                    // If the user has several providers,
-                    // the first provider in the list will be the "recommended" provider to use.
-                    if (providers[0] === 'password') {
-                        // Asks the user his password.
-                        // In real scenario, you should handle this asynchronously.
-                        var password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
-                        firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-                            // Step 4a.
-                            return user.link(pendingCred)
-                        }).then(function() {
-                            // Facebook account successfully linked to the existing Firebase user.
-                              firebase.auth().onAuthStateChanged(function(user) {
-                                    if (user) {
-                                        const userId = user.uid;
-                                        firebase.database().ref('users/' + userId)
-                                            .once('value')
-                                            .then(snapshot => {
-                                                const _user = snapshot.val();
-                                                const firstName = snapshot.val().firstName;
-                                                const lastName = snapshot.val().lastName;
-                                                const email = snapshot.val().email[0];
-                                                const courses = snapshot.val().courses;
-                                                const soundcasts = snapshot.val().soundcasts;
-                                                const pic_url = snapshot.val().pic_url;
-
-                                                signinUser(_user);
-
-                                                if (soundcast) {
-                                                    compileUser(_user, signinUser);
-                                                    history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-                                                } else if (_user.admin && !match.params.id) {
-                                                    compileUser(_user, signinUser);
-                                                    history.push('/dashboard/soundcasts');
-                                                } else if(match.params.id) {
-                                                    that.signInInvitedAdmin();
-                                                } else {
-                                                    history.push('/myprograms');
-                                                }
-                                            });
-                                    } else {
-                                        // alert('User saving failed. Please try again later.');
-                                        // Raven.captureMessage('user saving failed!')
-                                    }
-                              });
-                        })
-                    }
-
-                })
-            }
-        })
+    handleChange(field, e) {
+      this.setState({ [field]: e.target.value })
     }
 
     render() {
-        const { firstName, lastName, email, password, redirectToReferrer, message, soundcast, checked, sumTotal } = this.state
-        const { from } = this.props.location.state || { from: { pathname: '/courses' } }
+        const {firstName, lastName, email, password, checked,
+               redirectToReferrer, message, soundcast, sumTotal} = this.state
+        const {from} = this.props.location.state || { from: { pathname: '/courses' } }
         const {history} = this.props;
 
         if(redirectToReferrer) {
