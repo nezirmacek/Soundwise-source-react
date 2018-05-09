@@ -12,4 +12,4 @@ ds.automigrate('payout');
 ds.automigrate('publisher');
 ds.automigrate('comment');
 ds.automigrate('like');
-ds.automigrate('announcement');
+// ds.automigrate('announcement');

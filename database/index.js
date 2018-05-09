@@ -119,23 +119,23 @@ var Payout = db.define('Payout', { // records of payouts
   email: { type: Sequelize.STRING }, //email address used to send paypal payout
 });
 
-Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-Soundcast.hasMany(Episode, {as: 'Episodes'});
+// Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Soundcast.hasMany(Episode, {as: 'Episodes'});
 
-User.belongsToMany(Soundcast, {through: 'UserSoundcast', foreignKey: 'userId', otherKey: 'soundcastId'});
-Soundcast.belongsToMany(User, {through: 'UserSoundcast', foreignKey: 'soundcastId', otherKey: 'userId'});
+// User.belongsToMany(Soundcast, {through: 'UserSoundcast', foreignKey: 'userId', otherKey: 'soundcastId'});
+// Soundcast.belongsToMany(User, {through: 'UserSoundcast', foreignKey: 'soundcastId', otherKey: 'userId'});
 
-User.belongsToMany(Episode, {through: 'UserEpisode', foreignKey: 'userId', otherKey: 'episodeId'});
-Episode.belongsToMany(User, {through: 'UserEpisode', foreignKey: 'episodeId', otherKey: 'userId'});
+// User.belongsToMany(Episode, {through: 'UserEpisode', foreignKey: 'userId', otherKey: 'episodeId'});
+// Episode.belongsToMany(User, {through: 'UserEpisode', foreignKey: 'episodeId', otherKey: 'userId'});
 
-ListeningSession.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-Soundcast.hasMany(ListeningSession, {as: 'ListeningSessions'});
+// ListeningSession.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Soundcast.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-ListeningSession.belongsTo(Episode, {foreignKey: 'episodeId'});
-Episode.hasMany(ListeningSession, {as: 'ListeningSessions'});
+// ListeningSession.belongsTo(Episode, {foreignKey: 'episodeId'});
+// Episode.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-ListeningSession.belongsTo(User, {foreignKey: 'userId'});
-User.hasMany(ListeningSession, {as: 'ListeningSessions'});
+// ListeningSession.belongsTo(User, {foreignKey: 'userId'});
+// User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
 Comment.belongsTo(User, {foreignKey: 'userId'});
 User.hasMany(Comment, {as: 'Comments'});
@@ -182,7 +182,7 @@ Publisher.hasMany(Like, {as: 'Likes'});
 // Payout.belongsTo(Publisher, {foreignKey: 'publisherId'});
 // Publisher.hasMany(Payout, {as: 'Payouts'});
 
-User.sync({force: false});
+User.sync({force: false, alter: true});
 Publisher.sync({force: false, alter: true});
 Comment.sync({force: false});
 Announcement.sync({force: false});
