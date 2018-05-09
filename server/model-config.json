@@ -60,6 +60,14 @@
     "dataSource": "db",
     "public": true
   },
+  "comment": {
+    "dataSource": "db",
+    "public": true
+  },
+  "like": {
+    "dataSource": "db",
+    "public": true
+  },
   "publisher": {
     "dataSource": "db",
     "public": true
