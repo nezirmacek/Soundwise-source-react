@@ -127,8 +127,8 @@ function addOrUpdateCommentRecord(comment) {
       commentId,
       userId: userID,
       soundcastId,
-      episodeId: episodeID,
-      announcementId: announcementID,
+      episodeId: episodeID || null,
+      announcementId: announcementID || null,
       content
     };
 
@@ -175,9 +175,9 @@ function addOrUpdateLikeRecord(like) {
       likeId,
       userId,
       soundcastId,
-      episodeId,
-      announcementId,
-      commentId,
+      episodeId: episodeId || null,
+      announcementId: announcementId || null,
+      commentId: commentId || null,
     };
 
     // Add or update object
