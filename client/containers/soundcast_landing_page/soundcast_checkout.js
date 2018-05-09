@@ -136,7 +136,7 @@ class _SoundcastCheckout extends Component {
 
   submitPassword() {
     const {runSignIn, firstName, lastName, email, password} = this.state;
-    const {signinUser, history, match, signinUser} = this.props;
+    const {signinUser, history, match} = this.props;
     if(runSignIn) {
       signIn(email, password, signinUser, history, match, user => {
         if (platformCustomer && user.stripe_id !== platformCustomer) {
