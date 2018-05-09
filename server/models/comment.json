@@ -50,9 +50,10 @@
       }
     },
     "timeStamp": {
-      "type": "bigint",
+      "type": "number",
       "postgresql": {
-        "column": "timeStamp"
+        "column": "timeStamp",
+        "dataType": "bigint"
       }
     },
     "createdAt": {

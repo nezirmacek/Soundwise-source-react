@@ -130,7 +130,7 @@ function addOrUpdateCommentRecord(comment) {
       episodeId: episodeID || null,
       announcementId: announcementID || null,
       content,
-      timeStamp: timestamp
+      timeStamp: Number(timestamp)
     };
 
     // Add or update object
@@ -179,7 +179,7 @@ function addOrUpdateLikeRecord(like) {
       episodeId: episodeId || null,
       announcementId: announcementId || null,
       commentId: commentId || null,
-      timeStamp
+      timeStamp: Number(timeStamp)
     };
 
     // Add or update object
