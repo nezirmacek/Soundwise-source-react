@@ -85,7 +85,7 @@
       "foreignKey": "commentId"
     },
     "users": {
-      "type": "hasMany",
+      "type": "belongsTo",
       "model": "listener",
       "foreignKey": "userId",
       "through": "userLike"

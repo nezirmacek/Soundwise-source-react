@@ -137,38 +137,38 @@ var Payout = db.define('Payout', { // records of payouts
 // ListeningSession.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-Comment.belongsTo(User, {foreignKey: 'userId'});
-User.hasMany(Comment, {as: 'Comments'});
+// Comment.belongsTo(User, {foreignKey: 'userId'});
+// User.hasMany(Comment, {as: 'Comments'});
 
-Announcement.belongsTo(User, {foreignKey: 'userId'});
-User.hasMany(Announcement, {as: 'Announcements'});
+// Announcement.belongsTo(User, {foreignKey: 'userId'});
+// User.hasMany(Announcement, {as: 'Announcements'});
 
-Like.belongsTo(User, {foreignKey: 'userId'});
+// Like.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Like, {as: 'Likes'});
 
-Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
-Episode.hasMany(Comment, {as: 'Comments'});
+// Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
+// Episode.hasMany(Comment, {as: 'Comments'});
 
-Like.belongsTo(Episode, {foreignKey: 'episodeId'});
+// Like.belongsTo(Episode, {foreignKey: 'episodeId'});
 // Episode.hasMany(Like, {as: 'Likes'});
 
-Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
-Announcement.hasMany(Comment, {as: 'Comments'});
+// Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
+// Announcement.hasMany(Comment, {as: 'Comments'});
 
-Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
+// Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
 // Announcement.hasMany(Like, {as: 'Likes'});
 
-Like.belongsTo(Comment, {foreignKey: 'commentId'});
+// Like.belongsTo(Comment, {foreignKey: 'commentId'});
 // Comment.hasMany(Like, {as: 'Likes'});
 
-Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-Soundcast.hasMany(Announcement, {as: 'Announcements'});
+// Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Soundcast.hasMany(Announcement, {as: 'Announcements'});
 
-Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Like, {as: 'Likes'});
 
-Announcement.belongsTo(Publisher, {foreignKey: 'publisherId'});
-Publisher.hasMany(Announcement, {as: 'Announcements'});
+// Announcement.belongsTo(Publisher, {foreignKey: 'publisherId'});
+// Publisher.hasMany(Announcement, {as: 'Announcements'});
 
 
 // Transaction.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
@@ -182,11 +182,11 @@ Publisher.hasMany(Announcement, {as: 'Announcements'});
 
 User.sync({force: false, alter: true});
 Publisher.sync({force: false, alter: true});
-Comment.sync({force: false});
+Comment.sync({force: false, alter: true});
 Announcement.sync({force: false});
-Like.sync({force: false});
+Like.sync({force: false, alter: true});
 Soundcast.sync({force: false, alter: true});
-Episode.sync({force: false, alter: false});
+Episode.sync({force: false, alter: true});
 ListeningSession.sync({force: false, alter: true});
 Transaction.sync({force: false, alter: true});
 Payout.sync({force: false, alter: true});

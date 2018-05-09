@@ -77,7 +77,7 @@
       "foreignKey": "episodeId"
     },
     "users": {
-      "type": "hasMany",
+      "type": "belongsTo",
       "model": "listener",
       "foreignKey": "userId",
       "through": "userComment"

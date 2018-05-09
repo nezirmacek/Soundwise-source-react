@@ -68,6 +68,16 @@
       "type": "hasMany",
       "model": "listeningSession",
       "foreignKey": "userId"
+    },
+    "likes": {
+      "type": "hasMany",
+      "model": "likes",
+      "foreignKey": "userId"
+    },
+    "comments": {
+      "type": "hasMany",
+      "model": "comments",
+      "foreignKey": "userId"
     }
   },
   "acls": [],

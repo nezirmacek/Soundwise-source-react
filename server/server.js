@@ -57,8 +57,8 @@ var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners
 
 // sync firebase with Algolia and postgres
 algoliaIndex();
-// transferLikes();
-// firebaseListeners();
+transferLikes();
+firebaseListeners();
 
 var app = module.exports = loopback();
 app.start = function() {
@@ -365,6 +365,4 @@ client.setApiKey(sendGridApiKey);
 // }
 // changeUrl();
 
-
-console.log(moment().format().slice(0, 10));
 
