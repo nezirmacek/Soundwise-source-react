@@ -112,66 +112,69 @@ const signInFacebook = (signinUser, history, match, sucessCallback, errCallback)
         }
       })
   }).catch(error => {
-    // Handle Errors here.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      // Step 2.
-      // User's email already exists.
-      // The pending Facebook credential.
-      console.log('Error signInFacebook', error);
-      // The provider account's email address.
-      const email = error.email;
-      // Get registered providers for this email.
-      firebase.auth().fetchProvidersForEmail(email).then(providers => {
-        // Step 3.
-        // If the user has several providers,
-        // the first provider in the list will be the "recommended" provider to use.
-        if (providers[0] === 'password') {
-          // Asks the user his password.
-          // In real scenario, you should handle this asynchronously.
-          const password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
-          // TODO compare next block with signIn function (merge into one?)
-          firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
-            // Step 4a.
-            return user.link(error.credential); // pending credential
-          }).then(() => {
-            // Facebook account successfully linked to the existing Firebase user.
-            firebase.auth().onAuthStateChanged(user => {
-              if (user) {
-                const userId = user.uid;
-                firebase.database().ref('users/' + userId)
-                .once('value')
-                .then(snapshot => {
-                  const _user = snapshot.val();
-                  _user && signinUser(_user);
+    signInFBErrorCallback(error, () => {
+      // Facebook account successfully linked to the existing Firebase user.
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          const userId = user.uid;
+          firebase.database().ref('users/' + userId)
+          .once('value')
+          .then(snapshot => {
+            const _user = snapshot.val();
+            _user && signinUser(_user);
 
-                  if (history.location.state && history.location.state.soundcast) {
-                    compileUser(_user, signinUser);
-                    history.push('/soundcast_checkout', {
-                      soundcast: history.location.state.soundcast,
-                      soundcastID: history.location.state.soundcastID,
-                      checked: history.location.state.checked,
-                      sumTotal: history.location.state.sumTotal,
-                    });
-                  } else if (_user.admin && !match.params.id) {
-                    compileUser(_user, signinUser);
-                    history.push('/dashboard/soundcasts');
-                  } else if(match.params.id) {
-                    signInInvitedAdmin(match, history);
-                  } else {
-                    history.push('/myprograms');
-                  }
-                });
-              } else {
-                // alert('User saving failed. Please try again later.');
-                // Raven.captureMessage('user saving failed!')
-              }
-            });
+            if (history.location.state && history.location.state.soundcast) {
+              compileUser(_user, signinUser);
+              history.push('/soundcast_checkout', {
+                soundcast: history.location.state.soundcast,
+                soundcastID: history.location.state.soundcastID,
+                checked: history.location.state.checked,
+                sumTotal: history.location.state.sumTotal,
+              });
+            } else if (_user.admin && !match.params.id) {
+              compileUser(_user, signinUser);
+              history.push('/dashboard/soundcasts');
+            } else if(match.params.id) {
+              signInInvitedAdmin(match, history);
+            } else {
+              history.push('/myprograms');
+            }
           });
+        } else {
+          // alert('User saving failed. Please try again later.');
+          // Raven.captureMessage('user saving failed!')
         }
-      }); // fetchProvidersForEmail
-    }
+      });
+    });
     errCallback && errCallback(error);
   });
+}
+
+const signInFBErrorCallback = (error, callback) => {
+  // Handle Errors here.
+  if (error.code === 'auth/account-exists-with-different-credential') {
+    // Step 2.
+    // User's email already exists.
+    console.log('Error signInFacebook', error)
+    // The provider account's email address.
+    const email = error.email;
+    // Get registered providers for this email.
+    firebase.auth().fetchProvidersForEmail(email).then(providers => {
+      // Step 3.
+      // If the user has several providers,
+      // the first provider in the list will be the "recommended" provider to use.
+      if (providers[0] === 'password') {
+        // Asks the user his password.
+        // In real scenario, you should handle this asynchronously.
+        const password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
+        firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
+          // Step 4a.
+          // The pending Facebook credential.
+          return user.link(error.credential) // pending credential
+        }).then(callback)
+      }
+    })
+  }
 }
 
 const compileUser = async (_user, signinUser) => {
@@ -338,4 +341,5 @@ export {
   signIn,
   signInFacebook,
   signUpUser,
+  signInFBErrorCallback,
 }

@@ -24,7 +24,7 @@ import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
-import { signUpUser } from './commonAuth';
+import { signUpUser, signInFBErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -599,60 +599,37 @@ class _AppSignup extends Component {
           }
         });
       })
-      .catch(function(error) {
-        // Handle Errors here.
-        if (error.code === 'auth/account-exists-with-different-credential') {
-          // Step 2.
-          // User's email already exists.
-          // The pending Facebook credential.
-          var pendingCred = error.credential;
-          // The provider account's email address.
-          var email = error.email;
-          // Get registered providers for this email.
-          firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
-            // Step 3.
-            // If the user has several providers,
-            // the first provider in the list will be the "recommended" provider to use.
-            if (providers[0] === 'password') {
-              // Asks the user his password.
-              // In real scenario, you should handle this asynchronously.
-              var password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
-              firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-                // Step 4a.
-                return user.link(pendingCred);
-              }).then(function() {
-                // Facebook account successfully linked to the existing Firebase user.
-                firebase.auth().onAuthStateChanged(function(user) {
-                  if (user) {
-                    const userId = user.uid;
-                    firebase.database().ref('users/' + userId)
-                      .once('value')
-                      .then(snapshot => {
-                        const { firstName, lastName, email, pic_url } = snapshot.val();
-                        const user = {
-                          firstName,
-                          lastName,
-                          email,
-                          pic_url
-                        };
-                        that.setState({ firstName, lastName, email, pic_url });
-                        if (match.params.mode === 'admin' && !match.params.id) {
-                          that.setState({isPublisherFormShown: true});
-                        } else if(match.params.mode == 'admin' && match.params.id) {
-                          that.signUpInvitedAdmin(user);
-                        } else {
-                          signUpUser(signupUser, history, match, that.publisherID, user);
-                        }
-                      });
+      .catch(error => {
+        signInFBErrorCallback(error, () => {
+          // Facebook account successfully linked to the existing Firebase user.
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              const userId = user.uid;
+              firebase.database().ref('users/' + userId)
+                .once('value')
+                .then(snapshot => {
+                  const { firstName, lastName, email, pic_url } = snapshot.val();
+                  const user = {
+                    firstName,
+                    lastName,
+                    email,
+                    pic_url
+                  };
+                  that.setState({ firstName, lastName, email, pic_url });
+                  if (match.params.mode === 'admin' && !match.params.id) {
+                    that.setState({isPublisherFormShown: true});
+                  } else if(match.params.mode == 'admin' && match.params.id) {
+                    that.signUpInvitedAdmin(user);
                   } else {
-                    // alert('profile saving failed. Please try again later.');
-                    // Raven.captureMessage('profile saving failed!')
+                    signUpUser(signupUser, history, match, that.publisherID, user);
                   }
                 });
-              })
+            } else {
+              // alert('profile saving failed. Please try again later.');
+              // Raven.captureMessage('profile saving failed!')
             }
-          })
-        }
+          });
+        });
       });
     } // handleFBAuth
 
