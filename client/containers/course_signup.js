@@ -14,7 +14,6 @@ import { withRouter } from 'react-router';
 
 import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
 import AddCourseToUser from '../helpers/add_course_to_user';
-import { signInFBErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -337,41 +336,41 @@ class _CourseSignup extends Component {
 
           if(that.props.course.price == 0) {
             that.addCourseToUser()
+
           } else {
             that.props.addCourseToCart(that.props.course)
             that.props.history.push('/cart')
           }
 
           that.props.openSignupbox(false)
+
         }
+
       })
-    }).catch(function(error) {
+    }).catch(error => {
       signInFBErrorCallback(error, () => {
         // Facebook account successfully linked to the existing Firebase user.
         const userId = firebase.auth().currentUser.uid
         firebase.database().ref('users/' + userId)
         .once('value')
         .then(snapshot => {
-          const {firstName, lastName, email, pic_url, courses} = snapshot.val();
+          const {firstName, lastName, email, pic_url, courses} = snapshot.val() || {};
           // if(!courses) {
           //   firebase.database().ref('users/' + userId).set({
           //     courses: {}
           //   })
           // }
           that.props.signinUser({firstName, lastName, email, pic_url, courses})
-
           if(that.props.course.price == 0) {
             that.addCourseToUser()
           } else {
             that.props.addCourseToCart(that.props.course)
             that.props.history.push('/cart')
           }
-
           that.props.openSignupbox(false)
         })
       });
-    }
-  })
+    })
   }
 
   handleFBSignup() {
@@ -414,17 +413,14 @@ class _CourseSignup extends Component {
         firebase.database().ref('users/' + userId)
         .once('value')
         .then(snapshot => {
-          const {firstName, lastName, email, pic_url} = snapshot.val();
-
+          const {firstName, lastName, email, pic_url} = snapshot.val() || {};
           that.props.signupUser({firstName, lastName, email, pic_url})
-
           if(that.props.course.price == 0) {
             that.addCourseToUser()
           } else {
             that.props.addCourseToCart(that.props.course)
             that.props.history.push('/cart')
           }
-
           that.props.openSignupbox(false)
         })
       })
