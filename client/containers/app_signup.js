@@ -115,19 +115,22 @@ class _AppSignup extends Component {
         .then(authArr => {
             // console.log('authArr: ', authArr);
             if(authArr.length > 0) {
+                const text = 'This account already exists. Please sign in instead';
                 if(match.params.mode == 'admin' && match.params.id) {
-                  history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
+                  history.push(`/signin/admin/${match.params.id}`, {text});
                   return;
-                } else if(match.params.mode == 'soundcast_user' && (history.location.state || match.params.id)) {
-                  history.push('/signin', {text: 'This account already exists. Please sign in instead',
+                } else if(match.params.mode == 'soundcast_user' && (
+                  history.location.state || match.params.id
+                )) {
+                  history.push('/signin', {
+                      text,
                       soundcast,
                       soundcastID,
                       checked,
                       sumTotal,
                   });
                 } else {
-                  history.push('/signin', {text: 'This account already exists. Please sign in instead'
-                  });
+                  history.push('/signin', {text});
                 }
             } else {
                 if (match.params.mode !== 'admin') { // listener case
@@ -143,236 +146,216 @@ class _AppSignup extends Component {
     }
 
     signUpInvitedAdmin(user) {
-        const that = this;
-        const { match, history, signupUser } = this.props;
-        const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
+      const that = this;
+      const { match, history, signupUser } = this.props;
+      const { firstName, lastName, email, password, pic_url,
+              publisher_name, publisherImage, isFBauth } = this.state;
 
-        if(!isFBauth) {
-            this._signUp().then(
-                res => {
-                      firebase.auth().onAuthStateChanged(function(user) {
-                            if (user) {
-                                const creatorID = user.uid;
-                                firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`).set(true);
-
-                                firebase.database().ref(`publishers/${that.publisherID}/soundcasts`)
-                                .once('value')
-                                .then(snapshot => {
-                                    firebase.database().ref(`users/${creatorID}/soundcasts_managed`)
-                                    .set(snapshot.val());
-
-                                    firebase.database().ref(`users/${creatorID}/admin`).set(true);
-
-                                    firebase.database().ref(`users/${creatorID}/publisherID`).set(that.publisherID);
-
-                                    console.log('completed adding publisher to invited admin');
-                                })
-                                .then(() => {
-                                    that.compileUser();
-                                })
-                                .then(() => {
-                                    history.push('/dashboard/soundcasts');
-                                });
-                            } else {
-                                // alert('Admin saving failed. Please try again later.');
-                                // Raven.captureMessage('invited admin saving failed!')
-                            }
-                      });
-                }
-            );
-        } else {
-              signUpUser(signupUser, history, match, this.publisherID, user);
-              firebase.auth().onAuthStateChanged(function(user) {
-                    if (user) {
-                        const creatorID = user.uid;
-                        firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`).set(true);
-
-                        firebase.database().ref(`publishers/${that.publisherID}/soundcasts`)
-                        .once('value')
-                        .then(snapshot => {
-                            firebase.database().ref(`users/${creatorID}/soundcasts_managed`)
-                            .set(snapshot.val());
-
-                            firebase.database().ref(`users/${creatorID}/admin`).set(true);
-
-                            console.log('completed adding publisher to invited admin');
-                        })
-                        .then(() => {
-                            that.compileUser();
-                        })
-                        .then(() => {
-                            history.push('/dashboard/soundcasts');
-                        });
-                    } else {
-                        // alert('Admin saving failed. Please try again later.');
-                        // Raven.captureMessage('invited admin saving failed!')
-                    }
-              });
-        }
-
+      if(!isFBauth) {
+        this._signUp().then(res => {
+          firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+              const creatorID = user.uid;
+              firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`)
+              .set(true);
+              firebase.database().ref(`publishers/${that.publisherID}/soundcasts`)
+              .once('value')
+              .then(snapshot => {
+                firebase.database().ref(`users/${creatorID}/soundcasts_managed`)
+                .set(snapshot.val());
+                firebase.database().ref(`users/${creatorID}/admin`).set(true);
+                firebase.database().ref(`users/${creatorID}/publisherID`).set(that.publisherID);
+                console.log('completed adding publisher to invited admin');
+              })
+              .then(() => that.compileUser())
+              .then(() => history.push('/dashboard/soundcasts'));
+            } else {
+              // alert('Admin saving failed. Please try again later.');
+              // Raven.captureMessage('invited admin saving failed!')
+            }
+          });
+        });
+      } else {
+        signUpUser(signupUser, history, match, this.publisherID, user);
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            const creatorID = user.uid;
+            firebase.database().ref(`publishers/${that.publisherID}/administrators/${creatorID}`)
+            .set(true);
+            firebase.database().ref(`publishers/${that.publisherID}/soundcasts`)
+            .once('value')
+            .then(snapshot => {
+              firebase.database().ref(`users/${creatorID}/soundcasts_managed`)
+              .set(snapshot.val());
+              firebase.database().ref(`users/${creatorID}/admin`).set(true);
+              console.log('completed adding publisher to invited admin');
+            })
+            .then(() => that.compileUser())
+            .then(() => history.push('/dashboard/soundcasts'));
+          } else {
+            // alert('Admin saving failed. Please try again later.');
+            // Raven.captureMessage('invited admin saving failed!')
+          }
+        });
+      }
     }
 
     signUpAdmin () {
-        const that = this;
-        const { match, history } = this.props;
-        const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
+      const that = this;
+      const { match, history } = this.props;
+      const { firstName, lastName, email, password,
+              publisher_name, publisherImage, isFBauth } = this.state;
 
-        this.setState({ isFBauth: true });
-        if(publisher_name.length < 1) {
-            alert('Please enter a publisher name!');
-            return;
-        }
-        if (!this._validateForm(firstName, lastName, email, password, isFBauth)) return;
+      this.setState({ isFBauth: true });
+      if(publisher_name.length < 1) {
+        alert('Please enter a publisher name!');
+        return;
+      }
+      if (!this._validateForm(firstName, lastName, email, password, isFBauth)) return;
 
-        this._signUp().then(
-            res => {
-                if (this.props.match.params.mode === 'admin') { // admin case
-                    const publisherNameEncode = encodeURIComponent(publisher_name);
-                    const imageLink = `https://dummyimage.com/300.png/F76B1C/ffffff&text=${publisherNameEncode}`;
+      this._signUp().then(res => {
+        if (this.props.match.params.mode === 'admin') { // admin case
+          const publisherNameEncode = encodeURIComponent(publisher_name);
+          const imageLink = `https://dummyimage.com/300.png/F76B1C/ffffff&text=${publisherNameEncode}`;
+          that.firebaseListener = firebase.auth().onAuthStateChanged(user => {
+            if (user && that.firebaseListener) {
+              let _newPublisher = {
+                name: publisher_name,
+                imageUrl: publisherImage || imageLink,
+                administrators: {
+                  [user.uid]: true,
+                },
+                email,
+              };
 
-                      that.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
-                            if (user && that.firebaseListener) {
-                                let _newPublisher = {
-                                    name: publisher_name,
-                                    imageUrl: publisherImage || imageLink,
-                                    administrators: {
-                                        [user.uid]: true,
-                                    },
-                                    email,
-                                };
-
-                                firebase.database().ref(`publishers/${that.publisherID}`).set(_newPublisher).then(
-                                    res => {
-                                        // console.log('success add publisher: ', res);
-                                        Axios.post('https://mysoundwise.com/api/publishers', {
-                                            publisherId: that.publisherID,
-                                            name: publisher_name,
-                                            createdAt: moment().utc().format(),
-                                            updatedAt: moment().utc().format(),
-                                        })
-                                        .then((res) => {
-                                          console.log('publisher added to db');
-                                          // that.addDefaultSoundcast();
-                                        })
-                                        .catch((err) => {
-                                          // that.addDefaultSoundcast();
-                                      })
-                                    },
-                                    err => {
-                                        console.log('ERROR add publisher: ', err);
-                                    }
-                                );
-                            } else {
-                                // alert('Admin saving failed. Please try again later.');
-                                // Raven.captureMessage('admin saving failed!')
-                            }
-                      });
-                      that.firebaseListener && that.firebaseListener();
-                }
+              firebase.database().ref(`publishers/${that.publisherID}`).set(_newPublisher)
+              .then(res => {
+                // console.log('success add publisher: ', res);
+                Axios.post('https://mysoundwise.com/api/publishers', {
+                  publisherId: that.publisherID,
+                  name: publisher_name,
+                  createdAt: moment().utc().format(),
+                  updatedAt: moment().utc().format(),
+                })
+                .then(res => {
+                  console.log('publisher added to db');
+                  // that.addDefaultSoundcast(); return;
+                  history.push('/dashboard/soundcasts');
+                })
+                .catch(err => {
+                  // that.addDefaultSoundcast(); return;
+                  history.push('/dashboard/soundcasts');
+                })
+              },
+              err => {
+                console.log('ERROR add publisher: ', err);
+              });
+            } else {
+              // alert('Admin saving failed. Please try again later.');
+              // Raven.captureMessage('admin saving failed!')
             }
-        );
+          });
+          that.firebaseListener && that.firebaseListener();
+        }
+      });
     }
 
     async compileUser() {
-        const { signinUser } = this.props;
-        let fb_operation;
+      const { signinUser } = this.props;
 
-          firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                const creatorID = user.uid;
-                firebase.database().ref(`users/${creatorID}`).once('value')
-                .then(user_snapshot => {
-                    let _user = user_snapshot.val();
-                    if (_user.soundcasts_managed && _user.admin) {
-                        if (_user.publisherID) {
-                            firebase.database().ref(`publishers/${_user.publisherID}`).once('value')
-                            .then(publisher_snapshot => {
-                                if (publisher_snapshot.val()) {
-                                    const _publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
-                                    _publisher.id = _user.publisherID;
-                                    _user.publisher = _publisher;
-
-                                    if (_user.publisher.administrators) {
-                                        let admins = {};
-                                        for (let adminId in _user.publisher.administrators) {
-                                            firebase.database().ref(`users/${adminId}`).once('value')
-                                            .then(adminSnapshot => {
-                                                admins[adminId] = adminSnapshot;
-                                                if (admins[adminId].val()) {
-                                                    const _admin = JSON.parse(JSON.stringify(admins[adminId].val()));
-                                                    _user.publisher.administrators[adminId] = _admin;
-                                                }
-                                            })
-                                        }
-                                    }
-                                }
-                            })
-                        }
-
-                        let soundcastsManaged = {};
-                        for (let key in _user.soundcasts_managed) {
-                            firebase.database().ref(`soundcasts/${key}`).once('value')
-                            .then(soundcastSnapshot => {
-                                soundcastsManaged[key] = soundcastSnapshot;
-                                if (soundcastsManaged[key].val()) {
-                                    _user = JSON.parse(JSON.stringify(_user));
-                                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
-                                    _user.soundcasts_managed[key] = _soundcast;
-                                    signinUser(_user);
-                                    if (_soundcast.episodes) {
-                                        let episodes = {};
-                                        for (let epkey in _soundcast.episodes) {
-                                            firebase.database().ref(`episodes/${epkey}`).once('value')
-                                            .then(episodeSnapshot => {
-                                                episodes[epkey] = episodeSnapshot;
-                                                if (episodes[epkey].val()) {
-                                                    _user = JSON.parse(JSON.stringify(_user));
-                                                    _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
-                                                    signinUser(_user);
-                                                }
-                                            })
-                                        }
-                                    }
-                                }
-                            });
-                        }
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const creatorID = user.uid;
+          firebase.database().ref(`users/${creatorID}`).once('value')
+          .then(user_snapshot => {
+            let _user = user_snapshot.val();
+            if (_user.soundcasts_managed && _user.admin) {
+              if (_user.publisherID) {
+                firebase.database().ref(`publishers/${_user.publisherID}`).once('value')
+                .then(publisher_snapshot => {
+                  if (publisher_snapshot.val()) {
+                    _user.publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
+                    _user.publisher.id = _user.publisherID;
+                    if (_user.publisher.administrators) {
+                      for (let adminId in _user.publisher.administrators) {
+                        firebase.database().ref(`users/${adminId}`).once('value')
+                        .then(adminSnapshot => {
+                          if (adminSnapshot.val()) {
+                            _user.publisher.administrators[adminId] = JSON.parse(
+                              JSON.stringify(adminSnapshot.val())
+                            );
+                          }
+                        })
+                      }
                     }
-
-                    if (_user.soundcasts) {
-                        let userSoundcasts = {};
-                        for (let key in _user.soundcasts) {
-                            firebase.database().ref(`soundcasts/${key}`).once('value')
-                            .then(soundcastSnapshot => {
-                                userSoundcasts[key] = soundcastSnapshot;
-                                if (userSoundcasts[key].val()) {
-                                    _user = JSON.parse(JSON.stringify(_user));
-                                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
-                                    _user.soundcasts[key] = _soundcast;
-                                    signinUser(_user);
-                                    if (_soundcast.episodes) {
-                                        let soundcastEpisodes = {};
-                                        for (let epkey in _soundcast.episodes) {
-                                            firebase.database().ref(`episodes/${epkey}`).once('value')
-                                            .then(episodeSnapshot => {
-                                                soundcastEpisodes[epkey] = episodeSnapshot;
-                                                if (soundcastEpisodes[epkey].val()) {
-                                                    _user = JSON.parse(JSON.stringify(_user));
-                                                    _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
-                                                    signinUser(_user);
-                                                }
-                                            })
-                                        }
-                                    }
-                                }
-                            })
-                        }
-                    }
+                  }
                 })
-            } else {
-                // alert('User saving failed. Please try again later.');
-                // Raven.captureMessage('user saving failed!')
+              }
+
+              let soundcastsManaged = {};
+              for (let key in _user.soundcasts_managed) {
+                firebase.database().ref(`soundcasts/${key}`).once('value')
+                .then(soundcastSnapshot => {
+                  soundcastsManaged[key] = soundcastSnapshot;
+                  if (soundcastsManaged[key].val()) {
+                    _user = JSON.parse(JSON.stringify(_user));
+                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
+                    _user.soundcasts_managed[key] = _soundcast;
+                    signinUser(_user);
+                    if (_soundcast.episodes) {
+                      let episodes = {};
+                      for (let epkey in _soundcast.episodes) {
+                        firebase.database().ref(`episodes/${epkey}`).once('value')
+                        .then(episodeSnapshot => {
+                          episodes[epkey] = episodeSnapshot;
+                          if (episodes[epkey].val()) {
+                            _user = JSON.parse(JSON.stringify(_user));
+                            _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
+                            signinUser(_user);
+                          }
+                        })
+                      }
+                    }
+                  }
+                });
+              }
             }
-          });
+
+            if (_user.soundcasts) {
+              let userSoundcasts = {};
+              for (let key in _user.soundcasts) {
+                firebase.database().ref(`soundcasts/${key}`).once('value')
+                .then(soundcastSnapshot => {
+                  userSoundcasts[key] = soundcastSnapshot;
+                  if (userSoundcasts[key].val()) {
+                    _user = JSON.parse(JSON.stringify(_user));
+                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
+                    _user.soundcasts[key] = _soundcast;
+                    signinUser(_user);
+                    if (_soundcast.episodes) {
+                      let soundcastEpisodes = {};
+                      for (let epkey in _soundcast.episodes) {
+                        firebase.database().ref(`episodes/${epkey}`).once('value')
+                        .then(episodeSnapshot => {
+                          soundcastEpisodes[epkey] = episodeSnapshot;
+                          if (soundcastEpisodes[epkey].val()) {
+                            _user = JSON.parse(JSON.stringify(_user));
+                            _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
+                            signinUser(_user);
+                          }
+                        })
+                      }
+                    }
+                  }
+                })
+              }
+            }
+          })
+        } else {
+          // alert('User saving failed. Please try again later.');
+          // Raven.captureMessage('user saving failed!')
+        }
+      });
     }
 
     // not getting used see https://github.com/natashache/SoundwiseCMS_web/issues/13
@@ -507,40 +490,38 @@ class _AppSignup extends Component {
     }
 
     async _signUp () {
-        const { match, history, signupUser } = this.props;
-        const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
-        let authArr = [];
-        try {
-            authArr = await firebase.auth().fetchProvidersForEmail(email);
-        } catch(err) {
-            console.log(err);
-        }
+      const { match, history, signupUser } = this.props;
+      const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
+      let authArr = [];
+      try {
+        authArr = await firebase.auth().fetchProvidersForEmail(email);
+      } catch(err) {
+        console.log(err);
+      }
+      // console.log('authArr: ', authArr);
 
-        // console.log('authArr: ', authArr);
-
-        if(authArr.length > 0) {
-            if(match.params.mode == 'admin' && match.params.id) {
-              history.push(`/signin/admin/${match.params.id}`, {text: 'This account already exists. Please sign in instead'});
-              return;
-            } else {
-              history.push('/signin', {text: 'This account already exists. Please sign in instead'});
-            }
+      if(authArr.length > 0) {
+        const text = 'This account already exists. Please sign in instead';
+        if(match.params.mode == 'admin' && match.params.id) {
+          history.push(`/signin/admin/${match.params.id}`, {text});
+          return;
+        } else {
+          history.push('/signin', {text});
         }
+      }
 
-        try {
-            if (!isFBauth) {
-                await firebase.auth().createUserWithEmailAndPassword(email, password);
-            }
-            this.setState({message: "account created"});
-            this.signUpUser(signupUser, history, match, this.publisherID, this.state);
-            return true;
-        } catch (error) {
-            this.setState({
-                message: error.toString()
-            });
-            console.log(error.toString());
-            Promise.reject(error);
+      try {
+        if (!isFBauth) {
+          await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
+        this.setState({message: "account created"});
+        this.signUpUser(signupUser, history, match, this.publisherID, this.state);
+        return true;
+      } catch (error) {
+        this.setState({ message: error.toString() });
+        console.log(error.toString());
+        Promise.reject(error);
+      }
     }
 
     handleChange(prop, e) {
@@ -548,134 +529,131 @@ class _AppSignup extends Component {
     }
 
     handleFBAuth() {
-        const { match, history, signupUser, signinUser } = this.props;
-        const that = this;
-        this.setState({ isFBauth: true });
+      const { match, history, signupUser, signinUser } = this.props;
+      const that = this;
+      this.setState({ isFBauth: true });
 
-        firebase.auth().signInWithPopup(provider)
-            .then(function(result) {
-                // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-                // The signed-in user info.
-                  firebase.auth().onAuthStateChanged(function(user) {
-                        if (user) {
-                            const userId = user.uid;
-                            firebase.database().ref('users/' + userId)
-                                .once('value')
-                                .then(snapshot => {
-                                    if(snapshot.val() && typeof(snapshot.val().firstName) !== 'undefined') { // if user already exists
-                                        console.log('user already exists');
-                                        let updates = {};
-                                        updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
-                                        firebase.database().ref().update(updates);
+      firebase.auth().signInWithPopup(provider).then(result => {
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        // The signed-in user info.
+        firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            const userId = user.uid;
+            firebase.database().ref('users/' + userId)
+            .once('value')
+            .then(snapshot => {
+              if(snapshot.val() && typeof(snapshot.val().firstName) !== 'undefined') { // if user already exists
+                console.log('user already exists');
+                let updates = {};
+                updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
+                firebase.database().ref().update(updates);
 
-                                        let _user = snapshot.val();
-                                        _user.pic_url = _user.photoURL;
-                                        delete _user.photoURL;
-                                        signinUser(_user);
+                let _user = snapshot.val();
+                _user.pic_url = _user.photoURL;
+                delete _user.photoURL;
+                signinUser(_user);
 
-                                        that.setState({
-                                            firstName: _user.firstName,
-                                            lastName: _user.lastName,
-                                            email: _user.email[0],
-                                            pic_url: _user.pic_url,
-                                        });
+                that.setState({
+                  firstName: _user.firstName,
+                  lastName: _user.lastName,
+                  email: _user.email[0],
+                  pic_url: _user.pic_url,
+                });
 
-                                        if (_user.admin && !match.params.id) {
-                                            history.push('/dashboard/soundcasts');
-                                        } else if (match.params.mode == 'admin' && match.params.id) {
-                                            that.signUpInvitedAdmin();
-                                        } else  if (_user.soundcasts) {
-                                            history.push('/mysoundcasts');
-                                        } else  {
-                                            history.push('/myprograms');
-                                        }
-                                    } else {  //if it's a new user
-                                        const { email, photoURL, displayName } = JSON.parse(JSON.stringify(result.user));
-                                        const name = displayName ? displayName.split(' ') : ['User', ''];
-                                        const user = {
-                                            firstName: name[0],
-                                            lastName: name[1],
-                                            email,
-                                            pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
-                                        };
-                                        if (match.params.mode === 'admin' && !match.params.id) {
-                                            that.setState({
-                                                firstName: name[0],
-                                                lastName: name[1],
-                                                email,
-                                                pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
-                                                isPublisherFormShown: true,
-                                            });
-                                        } else if(match.params.mode == 'admin' && match.params.id) {
-                                            that.signUpInvitedAdmin(user);
-                                        } else {
-                                            signUpUser(signupUser, history, match, that.publisherID, user);
-                                        }
-                                    }
-                                });
-                            // })
-                        } else {
-                            // alert('User saving failed. Please try again later.');
-                            // Raven.captureMessage('user saving failed!')
-                        }
-                  });
-            })
-            .catch(function(error) {
-                // Handle Errors here.
-                if (error.code === 'auth/account-exists-with-different-credential') {
-                    // Step 2.
-                    // User's email already exists.
-                    // The pending Facebook credential.
-                    var pendingCred = error.credential;
-                    // The provider account's email address.
-                    var email = error.email;
-                    // Get registered providers for this email.
-                    firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
-                        // Step 3.
-                        // If the user has several providers,
-                        // the first provider in the list will be the "recommended" provider to use.
-                        if (providers[0] === 'password') {
-                            // Asks the user his password.
-                            // In real scenario, you should handle this asynchronously.
-                            var password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
-                            firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-                                // Step 4a.
-                                return user.link(pendingCred);
-                            }).then(function() {
-                                // Facebook account successfully linked to the existing Firebase user.
-
-                                  firebase.auth().onAuthStateChanged(function(user) {
-                                        if (user) {
-                                            const userId = user.uid;
-                                            firebase.database().ref('users/' + userId)
-                                                .once('value')
-                                                .then(snapshot => {
-                                                    const { firstName, lastName, email, pic_url } = snapshot.val();
-                                                    const user = {
-                                                        firstName,
-                                                        lastName,
-                                                        email,
-                                                        pic_url
-                                                    };
-                                                    that.setState({ firstName, lastName, email, pic_url });
-                                                    if (match.params.mode === 'admin' && !match.params.id) {
-                                                        that.setState({isPublisherFormShown: true});
-                                                    } else if(match.params.mode == 'admin' && match.params.id) {
-                                                        that.signUpInvitedAdmin(user);
-                                                    } else {
-                                                        signUpUser(signupUser, history, match, that.publisherID, user);
-                                                    }
-                                                });
-                                        } else {
-                                            // alert('profile saving failed. Please try again later.');
-                                            // Raven.captureMessage('profile saving failed!')
-                                        }
-                                  });
-                            })
-                        }
-                    })
+                if (_user.admin && !match.params.id) {
+                  history.push('/dashboard/soundcasts');
+                } else if (match.params.mode == 'admin' && match.params.id) {
+                  that.signUpInvitedAdmin();
+                } else  if (_user.soundcasts) {
+                  history.push('/mysoundcasts');
+                } else  {
+                  history.push('/myprograms');
                 }
+              } else {  //if it's a new user
+                const { email, photoURL, displayName } = JSON.parse(JSON.stringify(result.user));
+                const name = displayName ? displayName.split(' ') : ['User', ''];
+                const user = {
+                  firstName: name[0],
+                  lastName: name[1],
+                  email,
+                  pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
+                };
+                if (match.params.mode === 'admin' && !match.params.id) {
+                  that.setState({
+                    firstName: name[0],
+                    lastName: name[1],
+                    email,
+                    pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
+                    isPublisherFormShown: true,
+                  });
+                } else if(match.params.mode == 'admin' && match.params.id) {
+                  that.signUpInvitedAdmin(user);
+                } else {
+                  signUpUser(signupUser, history, match, that.publisherID, user);
+                }
+              }
             });
+          } else {
+            // alert('User saving failed. Please try again later.');
+            // Raven.captureMessage('user saving failed!')
+          }
+        });
+      })
+      .catch(function(error) {
+        // Handle Errors here.
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          // Step 2.
+          // User's email already exists.
+          // The pending Facebook credential.
+          var pendingCred = error.credential;
+          // The provider account's email address.
+          var email = error.email;
+          // Get registered providers for this email.
+          firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
+            // Step 3.
+            // If the user has several providers,
+            // the first provider in the list will be the "recommended" provider to use.
+            if (providers[0] === 'password') {
+              // Asks the user his password.
+              // In real scenario, you should handle this asynchronously.
+              var password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
+              firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
+                // Step 4a.
+                return user.link(pendingCred);
+              }).then(function() {
+                // Facebook account successfully linked to the existing Firebase user.
+                firebase.auth().onAuthStateChanged(function(user) {
+                  if (user) {
+                    const userId = user.uid;
+                    firebase.database().ref('users/' + userId)
+                      .once('value')
+                      .then(snapshot => {
+                        const { firstName, lastName, email, pic_url } = snapshot.val();
+                        const user = {
+                          firstName,
+                          lastName,
+                          email,
+                          pic_url
+                        };
+                        that.setState({ firstName, lastName, email, pic_url });
+                        if (match.params.mode === 'admin' && !match.params.id) {
+                          that.setState({isPublisherFormShown: true});
+                        } else if(match.params.mode == 'admin' && match.params.id) {
+                          that.signUpInvitedAdmin(user);
+                        } else {
+                          signUpUser(signupUser, history, match, that.publisherID, user);
+                        }
+                      });
+                  } else {
+                    // alert('profile saving failed. Please try again later.');
+                    // Raven.captureMessage('profile saving failed!')
+                  }
+                });
+              })
+            }
+          })
+        }
+      });
     } // handleFBAuth
 
     render() {
