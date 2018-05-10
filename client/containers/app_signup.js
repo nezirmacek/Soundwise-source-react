@@ -490,8 +490,8 @@ class _AppSignup extends Component {
     }
 
     async _signUp () {
-      const { match, history, signupUser } = this.props;
-      const {firstName, lastName, email, password, pic_url, isFBauth} = this.state;
+      const {match, history, signupUser} = this.props;
+      const {firstName, lastName, email, password, isFBauth} = this.state;
       let authArr = [];
       try {
         authArr = await firebase.auth().fetchProvidersForEmail(email);
@@ -868,7 +868,7 @@ class _AppSignup extends Component {
                             </div>
                         </div>
                     </div>
-                    ||
+          ||
                     <div className="col-lg-4 col-md-6 col-sm-8 col-xs-12 center-col">
                         <div className="center-col text-center">
                             <img className='hidden-xs' alt="Soundwise Logo" src="/images/soundwiselogo.svg" style={styles.logo}/>

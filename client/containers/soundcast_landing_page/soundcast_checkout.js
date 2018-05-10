@@ -108,6 +108,7 @@ class _SoundcastCheckout extends Component {
       .then(providerInfo => {
         const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
         const newState = { lastStep: true, email, firstName, lastName, platformCustomer };
+        // TODO add firstName, lastName, email validation
         // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
         // if the user doesn't have account, the providerInfo returns empty array, []
         if (providerInfo && providerInfo.length) { // registered
@@ -151,7 +152,42 @@ class _SoundcastCheckout extends Component {
       // TODO
       firebase.auth().signInWithPopup(provider).then(result => {
         firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            const userId = user.uid;
+            firebase.database().ref('users/' + userId)
+            .once('value')
+            .then(snapshot => {
+              let _user = snapshot.val();
+              if(_user && _user.firstName) {
+                console.log('user already exists');
+                let updates = {};
+                updates['/users/' + userId + '/pic_url/'] = _user.pic_url;
+                firebase.database().ref().update(updates);
 
+                _user.pic_url = _user.photoURL;
+                delete _user.photoURL;
+                signinUser(_user);
+
+                if (_user.admin) {
+                  history.push('/dashboard/soundcasts');
+                } else if (_user.soundcasts) {
+                  history.push('/mysoundcasts');
+                } else {
+                  history.push('/myprograms');
+                }
+              } else {  //if it's a new user
+                const { email, photoURL, displayName } = JSON.parse(JSON.stringify(result.user));
+                const name = displayName ? displayName.split(' ') : ['User', ''];
+                const user = {
+                  firstName: name[0],
+                  lastName: name[1],
+                  email,
+                  pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
+                };
+                signupCommon(signupUser, history, match, that.publisherID, user);
+              }
+            });
+          }
         });
       })
       .catch(error => {
@@ -161,15 +197,12 @@ class _SoundcastCheckout extends Component {
             if (user) {
               const userId = user.uid;
               firebase.database().ref('users/' + userId)
-                .once('value')
-                .then(snapshot => {
-                  const { firstName, lastName, email, pic_url } = snapshot.val();
-                  const user = { firstName, lastName, email, pic_url };
-                  signupCommon(signupUser, history, match, this.publisherID, user);
-                });
-            } else {
-              // alert('profile saving failed. Please try again later.');
-              // Raven.captureMessage('profile saving failed!')
+              .once('value')
+              .then(snapshot => {
+                const { firstName, lastName, email, pic_url } = snapshot.val();
+                const user = { firstName, lastName, email, pic_url };
+                signupCommon(signupUser, history, match, this.publisherID, user);
+              });
             }
           });
         });
@@ -177,9 +210,9 @@ class _SoundcastCheckout extends Component {
     }
   }
 
-  submitPassword() {
+  async submitPassword() {
     const {runSignIn, firstName, lastName, email, password} = this.state;
-    const {signinUser, history, match} = this.props;
+    const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
       signIn(
         email, password, signinUser, history, match,
@@ -187,7 +220,16 @@ class _SoundcastCheckout extends Component {
         error => this.setState({ message: error.toString() })
       );
     } else { // sign up
-      // TODO
+      const {firstName, lastName, email, password, pic_url} = this.state;
+      try {
+        await firebase.auth().createUserWithEmailAndPassword(email, password);
+        this.setState({message: 'account created'});
+        signupCommon(signupUser, history, match, this.publisherID, this.state);
+        return true;
+      } catch (error) {
+        this.setState({ message: error.toString() });
+        console.log('Error submitPassword', error.toString());
+      }
     }
   }
 
