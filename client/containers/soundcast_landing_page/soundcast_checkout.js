@@ -216,9 +216,11 @@ class _SoundcastCheckout extends Component {
                             )
                           }
                         </div>
-                        <div style={{paddingBottom: 25}}>
-                          <span style={{color: 'red', fontSize: 16}}>{message}</span>
-                        </div>
+                        { message &&
+                          <div style={{paddingBottom: 25}}>
+                            <span style={{color: 'red', fontSize: 16}}>{message}</span>
+                          </div>
+                        }
                         { this.state.showPassword &&
                           <div>
                             <GreyInput
