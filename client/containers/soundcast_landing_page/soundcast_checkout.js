@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import firebase from 'firebase';
+import moment from 'moment';
 
 import  PageHeader  from './components/page_header';
 import Payment from './components/payment';

@@ -46,7 +46,9 @@ export default class Payment extends Component {
     componentDidMount() {
         // stripe = Stripe('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
         // stripe = Stripe('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
-        Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+
         this.setState({
             totalPay: this.props.total
         });
