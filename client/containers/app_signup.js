@@ -141,10 +141,6 @@ class _AppSignup extends Component {
         .catch(err => console.log('error: ', err));
     }
 
-    getUrl (url) {
-        this.setState({publisherImage: url});
-    }
-
     signUpInvitedAdmin(user) {
         const that = this;
         const { match, history } = this.props;
@@ -256,10 +252,10 @@ class _AppSignup extends Component {
                                         })
                                         .then((res) => {
                                           console.log('publisher added to db');
-                                          that.addDefaultSoundcast();
+                                          // that.addDefaultSoundcast();
                                         })
                                         .catch((err) => {
-                                          that.addDefaultSoundcast();
+                                          // that.addDefaultSoundcast();
                                       })
                                     },
                                     err => {
@@ -278,7 +274,7 @@ class _AppSignup extends Component {
     }
 
     async compileUser() {
-        const { signinUser, history, userInfo, match } = this.props;
+        const { signinUser } = this.props;
         let fb_operation;
 
           firebase.auth().onAuthStateChanged(function(user) {
@@ -379,6 +375,7 @@ class _AppSignup extends Component {
           });
     }
 
+    // not getting used see https://github.com/natashache/SoundwiseCMS_web/issues/13
     addDefaultSoundcast() {
         const { history, addDefaultSoundcast, defaultSoundcastAdded } = this.props;
         const that = this;
@@ -560,7 +557,6 @@ class _AppSignup extends Component {
             lastName = userToSignUP.lastName;
             email = userToSignUP.email;
             pic_url = userToSignUP.pic_url;
-
         } else {
             firstName = this.state.firstName;
             lastName = this.state.lastName;
@@ -628,9 +624,7 @@ class _AppSignup extends Component {
     }
 
     handleChange(prop, e) {
-        this.setState({
-            [prop]: e.target.value
-        })
+      this.setState({ [prop]: e.target.value })
     }
 
     handleFBAuth() {
@@ -763,21 +757,22 @@ class _AppSignup extends Component {
                     })
                 }
             });
-    }
+    } // handleFBAuth
 
     render() {
-        const { match, history } = this.props;
+      const { match, history } = this.props;
+      const { firstName, lastName, email, password, redirectToReferrer, sumTotal,
+          isPublisherFormShown, publisher_name, soundcast, checked, soundcastID } = this.state;
+      const { from } = this.props.location.state || { from: { pathname: '/courses' } };
 
-        const { firstName, lastName, email, password, redirectToReferrer, isPublisherFormShown, publisher_name, soundcast, checked, sumTotal, soundcastID } = this.state;
-        const { from } = this.props.location.state || { from: { pathname: '/courses' } };
+      if(redirectToReferrer) {
+        return (
+          <Redirect to={from} />
+        )
+      }
 
-        if(redirectToReferrer) {
-            return (
-                <Redirect to={from} />
-      )
-    }
-    return (
-            <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700), overflow: 'auto'}}>
+      return (
+        <div className="row" style={{...styles.row, height: Math.max(window.innerHeight, 700), overflow: 'auto'}}>
         {
                     soundcast &&
                     <div className='col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col'>
@@ -785,7 +780,6 @@ class _AppSignup extends Component {
                             <img className='hidden-xs' alt="Soundcast cover art" src={soundcast.imageURL} style={{...styles.logo, height: 120}}/>
                             <div style={styles.containerWrapper}>
                                 <div style={styles.container} className="center-col text-center">
-
                                     <button
                                         onClick={() => this.handleFBAuth()}
                                         className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
