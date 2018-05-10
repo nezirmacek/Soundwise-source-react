@@ -22,6 +22,9 @@ export default class Payment extends Component {
         this.state={
             paymentError: '',
             submitDisabled: false,
+            firstName: '',
+            lastName: '',
+            email: '',
             number: '',
             cvc: '',
             exp_month: 0,
@@ -93,14 +96,14 @@ export default class Payment extends Component {
     }
 
     addSoundcastToUser(charge, userInfoFromProp) {
-        const that = this;
-        const {soundcastID, soundcast, checked} = this.props;
-        const {confirmationEmail} = soundcast;
-        const {totalPay} = this.state;
-        let userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
-        let _email, content;
+        const userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
+        if(userInfo && userInfo.email) { // if logged in
+            const that = this;
+            const {soundcastID, soundcast, checked} = this.props;
+            const {confirmationEmail} = soundcast;
+            const {totalPay} = this.state;
+            let _email, content;
 
-        if(userInfo) {
             // console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
@@ -203,6 +206,7 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
+        // return this.props.handleStripeId('TEST1', this.state.userInfo || this.props.userInfo, this.state);
         if (this.state.startPaymentSubmission) { return }
         const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
         if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
@@ -225,7 +229,8 @@ export default class Payment extends Component {
     stripeTokenHandler(status, response) {
         const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
-        const {soundcast, checked, soundcastID} = this.props;
+        const {soundcast, checked, soundcastID, handleStripeId} = this.props;
+        const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -264,7 +269,7 @@ export default class Payment extends Component {
                                     paid,
                                     startPaymentSubmission: false
                                 });
-
+                                handleStripeId && handleStripeId(response.data.res, userInfo, that.state);
                                 that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
                             }
                         })
@@ -291,18 +296,16 @@ export default class Payment extends Component {
                             statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                         })
                         .then(function (response) {
-
                             const subscription = response.data; //boolean
                             const customer = response.data.customer;
                             // console.log('subscription: ', subscription);
-
                             if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
                                 localStorage.setItem('paymentPaid', Date.now());
                                 that.setState({
                                     paid: true,
                                     startPaymentSubmission: false
                                 });
-
+                                handleStripeId && handleStripeId(subscription, userInfo, that.state);
                                 that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
                             }
                         })
@@ -359,8 +362,39 @@ export default class Payment extends Component {
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
-                                    {/*card number*/}
+                                    {/* lastName, firstName, email, card number*/}
                                     <div style={styles.relativeBlock}>
+                                        <div className='col-md-6 col-sm-12 inputFirstName'>
+                                          <input
+                                              onChange={this.handleChange}
+                                              required
+                                              className='border-radius-4'
+                                              type='text'
+                                              name='firstName'
+                                              placeholder='First Name'
+                                              style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                          />
+                                        </div>
+                                        <div className='col-md-6 col-sm-12 inputLastName'>
+                                          <input
+                                              onChange={this.handleChange}
+                                              required
+                                              className='border-radius-4'
+                                              type='text'
+                                              name='lastName'
+                                              placeholder='Last Name'
+                                              style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                          />
+                                        </div>
+                                        <input
+                                            onChange={this.handleChange}
+                                            required
+                                            className='border-radius-4 col-md-12'
+                                            type='email'
+                                            name='email'
+                                            placeholder='Email'
+                                            style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                        />
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -475,7 +509,7 @@ const styles = {
     cardsImage: {
         position: 'absolute',
         right: 4,
-        top: 10,
+        marginTop: 10,
         width: 179,
         height: 26,
     },

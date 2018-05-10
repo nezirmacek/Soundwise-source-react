@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as firebase from 'firebase';
@@ -52,11 +51,28 @@ export default class SoundcastInCart extends Component {
     }
 
     render () {
-        const { soundcast, sumTotal, checked } = this.props;
-        const that = this;
-        const {price, promoCode, promoApplied} = this.state;
-        let fee = price == 'free' ? 0 : Math.floor(price * 0.03 *100) / 100;
-        fee = 0.00;
+      const { soundcast, sumTotal, checked } = this.props;
+      const that = this;
+      const {price, promoCode, promoApplied} = this.state;
+      let fee = price == 'free' ? 0 : Math.floor(price * 0.03 *100) / 100;
+      fee = 0.00;
+      if (soundcast && !checked) {
+        return ( // show only cover image and title
+            <div className="row" style={styles.course}>
+              <div className="col-md-12 col-sm-12 col-xs-12">
+                <img src={soundcast.imageURL}
+                     alt=""
+                     style={styles.courseImage}
+                />
+                <div style={styles.courseText}>
+                    <p style={{...styles.courseName, marginTop: 14}}>
+                        {soundcast.title}
+                    </p>
+                </div>
+              </div>
+            </div>
+        )
+      } else {
         return (
             <div className="row" style={styles.course}>
               <div className="col-md-12 col-sm-12 col-xs-12">
@@ -142,6 +158,7 @@ export default class SoundcastInCart extends Component {
               </div>
             </div>
         );
+      }
     }
 };
 

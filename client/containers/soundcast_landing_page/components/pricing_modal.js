@@ -41,12 +41,10 @@ class _PricingModal extends Component {
 
   handleCheck(i, e) {
     const {prices} = this.props.soundcast;
-
     this.setState({
       checked: i,
       sumTotal: prices[i].price == 'free' ? '' : `Total today: $${Number(prices[i].price).toFixed(2)}`
     })
-
   }
 
   handleCheckout() {
@@ -58,7 +56,11 @@ class _PricingModal extends Component {
         history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
       } else {
         // console.log('soundcast: ', soundcast);
-        history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
+        if (soundcast.forSale) {
+          history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+        } else {
+          history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
+        }
       }
     })
   }
