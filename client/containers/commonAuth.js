@@ -112,7 +112,7 @@ const signInFacebook = (signinUser, history, match, sucessCallback, errCallback)
         }
       })
   }).catch(error => {
-    signInFBErrorCallback(error, () => {
+    facebookErrorCallback(error, () => {
       // Facebook account successfully linked to the existing Firebase user.
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
@@ -150,7 +150,7 @@ const signInFacebook = (signinUser, history, match, sucessCallback, errCallback)
   });
 }
 
-const signInFBErrorCallback = (error, callback) => {
+const facebookErrorCallback = (error, callback) => {
   // Handle Errors here.
   if (error.code === 'auth/account-exists-with-different-credential') {
     // Step 2.
@@ -280,7 +280,7 @@ const signInInvitedAdmin = (match, history) => {
  * SIGN UP BLOCK (signUp, signUpFacebook)
  */
 
-const signUpUser = (signupUser, history, match, publisherID, user) => {
+const signupUserCommon = (signupUser, history, match, publisherID, user) => {
   const { firstName, lastName, email, pic_url } = user;
 
   firebase.auth().onAuthStateChanged(user => {
@@ -304,7 +304,7 @@ const signUpUser = (signupUser, history, match, publisherID, user) => {
       Axios.post('https://mysoundwise.com/api/user', _user)
       .then(res => {
         // console.log('userToSave: ', userToSave);
-        console.log('Success signUpUser user save');
+        console.log('Success signupUserCommon user save');
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
@@ -319,7 +319,7 @@ const signUpUser = (signupUser, history, match, publisherID, user) => {
         }
       })
       .catch(err => {
-        console.log('Error signUpUser user saving failed: ', err);
+        console.log('Error signupUserCommon user saving failed: ', err);
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
@@ -340,6 +340,6 @@ const signUpUser = (signupUser, history, match, publisherID, user) => {
 export {
   signIn,
   signInFacebook,
-  signUpUser,
-  signInFBErrorCallback,
+  signupUserCommon,
+  facebookErrorCallback,
 }

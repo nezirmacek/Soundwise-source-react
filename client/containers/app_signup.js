@@ -24,7 +24,7 @@ import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
-import { signUpUser, signInFBErrorCallback } from './commonAuth';
+import { signupUserCommon, facebookErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -176,7 +176,7 @@ class _AppSignup extends Component {
           });
         });
       } else {
-        signUpUser(signupUser, history, match, this.publisherID, user);
+        signupUserCommon(signupUser, history, match, this.publisherID, user);
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             const creatorID = user.uid;
@@ -515,7 +515,7 @@ class _AppSignup extends Component {
           await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
         this.setState({message: "account created"});
-        this.signUpUser(signupUser, history, match, this.publisherID, this.state);
+        signupUserCommon(signupUser, history, match, this.publisherID, this.state);
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });
@@ -589,7 +589,7 @@ class _AppSignup extends Component {
                 } else if(match.params.mode == 'admin' && match.params.id) {
                   that.signUpInvitedAdmin(user);
                 } else {
-                  signUpUser(signupUser, history, match, that.publisherID, user);
+                  signupUserCommon(signupUser, history, match, that.publisherID, user);
                 }
               }
             });
@@ -600,7 +600,7 @@ class _AppSignup extends Component {
         });
       })
       .catch(error => {
-        signInFBErrorCallback(error, () => {
+        facebookErrorCallback(error, () => {
           // Facebook account successfully linked to the existing Firebase user.
           firebase.auth().onAuthStateChanged(user => {
             if (user) {
@@ -609,19 +609,14 @@ class _AppSignup extends Component {
                 .once('value')
                 .then(snapshot => {
                   const { firstName, lastName, email, pic_url } = snapshot.val();
-                  const user = {
-                    firstName,
-                    lastName,
-                    email,
-                    pic_url
-                  };
+                  const user = { firstName, lastName, email, pic_url };
                   that.setState({ firstName, lastName, email, pic_url });
                   if (match.params.mode === 'admin' && !match.params.id) {
                     that.setState({isPublisherFormShown: true});
                   } else if(match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    signUpUser(signupUser, history, match, that.publisherID, user);
+                    signupUserCommon(signupUser, history, match, that.publisherID, user);
                   }
                 });
             } else {

@@ -9,11 +9,11 @@ import  PageHeader  from './components/page_header';
 import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
-import { sendEmail, signinUser } from '../../actions/index';
+import { sendEmail, signinUser, signupUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
-import { signIn, signInFacebook } from '../commonAuth';
+import { signIn, signInFacebook, signupUserCommon, facebookErrorCallback } from '../commonAuth';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -22,8 +22,8 @@ class _SoundcastCheckout extends Component {
       success: false,
       lastStep: false, // last step dialog
       message: '',
-      firstname: '',
-      lastname: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       runSignIn: false,
@@ -31,6 +31,8 @@ class _SoundcastCheckout extends Component {
       showPassword: true,
       platformCustomer: null,
     }
+
+    this.publisherID = moment().format('x') + 'p';
     this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
     this.handleStripeId = this.handleStripeId.bind(this);
@@ -138,7 +140,7 @@ class _SoundcastCheckout extends Component {
 
   handleFBAuth() {
     const {runSignIn, firstName, lastName} = this.state;
-    const {signinUser, history, match} = this.props;
+    const {signinUser, signupUserCommon, history, match} = this.props;
     if(runSignIn) {
       signInFacebook(
         signinUser, history, match,
@@ -147,6 +149,31 @@ class _SoundcastCheckout extends Component {
       );
     } else { // sign up
       // TODO
+      firebase.auth().signInWithPopup(provider).then(result => {
+        firebase.auth().onAuthStateChanged(user => {
+
+        });
+      })
+      .catch(error => {
+        facebookErrorCallback(error, () => {
+          // Facebook account successfully linked to the existing Firebase user.
+          firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+              const userId = user.uid;
+              firebase.database().ref('users/' + userId)
+                .once('value')
+                .then(snapshot => {
+                  const { firstName, lastName, email, pic_url } = snapshot.val();
+                  const user = { firstName, lastName, email, pic_url };
+                  signupUserCommon(signupUser, history, match, this.publisherID, user);
+                });
+            } else {
+              // alert('profile saving failed. Please try again later.');
+              // Raven.captureMessage('profile saving failed!')
+            }
+          });
+        });
+      });
     }
   }
 
@@ -319,7 +346,7 @@ const mapStateToProps = state => {
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ sendEmail, signinUser }, dispatch);
+    return bindActionCreators({ sendEmail, signinUser, signupUser }, dispatch);
 }
 
 const Checkout_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundcastCheckout);

@@ -14,7 +14,7 @@ import { withRouter } from 'react-router';
 
 import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
 import AddCourseToUser from '../helpers/add_course_to_user';
-import { signInFBErrorCallback } from './commonAuth';
+import { facebookErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -349,7 +349,7 @@ class _CourseSignup extends Component {
 
       })
     }).catch(error => {
-      signInFBErrorCallback(error, () => {
+      facebookErrorCallback(error, () => {
         // Facebook account successfully linked to the existing Firebase user.
         const userId = firebase.auth().currentUser.uid
         firebase.database().ref('users/' + userId)
@@ -408,7 +408,7 @@ class _CourseSignup extends Component {
       that.props.openSignupbox(false)
 
     }).catch(error => {
-      signInFBErrorCallback(error, () => {
+      facebookErrorCallback(error, () => {
         // Facebook account successfully linked to the existing Firebase user.
         const userId = firebase.auth().currentUser.uid
         firebase.database().ref('users/' + userId)
