@@ -13,7 +13,7 @@ import { sendEmail, signinUser, signupUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
-import { signIn, signInFacebook, signupUserCommon, facebookErrorCallback } from '../commonAuth';
+import { signIn, signInFacebook, signupCommon, facebookErrorCallback } from '../commonAuth';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -140,7 +140,7 @@ class _SoundcastCheckout extends Component {
 
   handleFBAuth() {
     const {runSignIn, firstName, lastName} = this.state;
-    const {signinUser, signupUserCommon, history, match} = this.props;
+    const {signinUser, signupCommon, history, match} = this.props;
     if(runSignIn) {
       signInFacebook(
         signinUser, history, match,
@@ -165,7 +165,7 @@ class _SoundcastCheckout extends Component {
                 .then(snapshot => {
                   const { firstName, lastName, email, pic_url } = snapshot.val();
                   const user = { firstName, lastName, email, pic_url };
-                  signupUserCommon(signupUser, history, match, this.publisherID, user);
+                  signupCommon(signupUser, history, match, this.publisherID, user);
                 });
             } else {
               // alert('profile saving failed. Please try again later.');

@@ -24,7 +24,7 @@ import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
-import { signupUserCommon, facebookErrorCallback } from './commonAuth';
+import { signupCommon, facebookErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -176,7 +176,7 @@ class _AppSignup extends Component {
           });
         });
       } else {
-        signupUserCommon(signupUser, history, match, this.publisherID, user);
+        signupCommon(signupUser, history, match, this.publisherID, user);
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             const creatorID = user.uid;
@@ -515,7 +515,7 @@ class _AppSignup extends Component {
           await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
         this.setState({message: "account created"});
-        signupUserCommon(signupUser, history, match, this.publisherID, this.state);
+        signupCommon(signupUser, history, match, this.publisherID, this.state);
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });
@@ -589,7 +589,7 @@ class _AppSignup extends Component {
                 } else if(match.params.mode == 'admin' && match.params.id) {
                   that.signUpInvitedAdmin(user);
                 } else {
-                  signupUserCommon(signupUser, history, match, that.publisherID, user);
+                  signupCommon(signupUser, history, match, that.publisherID, user);
                 }
               }
             });
@@ -616,7 +616,7 @@ class _AppSignup extends Component {
                   } else if(match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    signupUserCommon(signupUser, history, match, that.publisherID, user);
+                    signupCommon(signupUser, history, match, that.publisherID, user);
                   }
                 });
             } else {
@@ -979,7 +979,6 @@ const styles = {
         height: 16,
         lineHeight: '16px',
     },
-
     inputLabel: {
         fontSize: 16,
         marginBottom: 3,

@@ -280,7 +280,7 @@ const signInInvitedAdmin = (match, history) => {
  * SIGN UP BLOCK (signUp, signUpFacebook)
  */
 
-const signupUserCommon = (signupUser, history, match, publisherID, user) => {
+const signupCommon = (signupUser, history, match, publisherID, user) => {
   const { firstName, lastName, email, pic_url } = user;
 
   firebase.auth().onAuthStateChanged(user => {
@@ -304,7 +304,7 @@ const signupUserCommon = (signupUser, history, match, publisherID, user) => {
       Axios.post('https://mysoundwise.com/api/user', _user)
       .then(res => {
         // console.log('userToSave: ', userToSave);
-        console.log('Success signupUserCommon user save');
+        console.log('Success signupCommon user save');
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
@@ -319,7 +319,7 @@ const signupUserCommon = (signupUser, history, match, publisherID, user) => {
         }
       })
       .catch(err => {
-        console.log('Error signupUserCommon user saving failed: ', err);
+        console.log('Error signupCommon user saving failed: ', err);
         signupUser(userToSave);
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
@@ -340,6 +340,6 @@ const signupUserCommon = (signupUser, history, match, publisherID, user) => {
 export {
   signIn,
   signInFacebook,
-  signupUserCommon,
+  signupCommon,
   facebookErrorCallback,
 }
