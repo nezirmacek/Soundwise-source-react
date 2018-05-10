@@ -24,6 +24,7 @@ import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
+import { signUpUser } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -143,7 +144,7 @@ class _AppSignup extends Component {
 
     signUpInvitedAdmin(user) {
         const that = this;
-        const { match, history } = this.props;
+        const { match, history, signupUser } = this.props;
         const { firstName, lastName, email, password, pic_url, publisher_name, publisherImage, isFBauth } = this.state;
 
         if(!isFBauth) {
@@ -180,8 +181,7 @@ class _AppSignup extends Component {
                 }
             );
         } else {
-            this.signUpUser(user);
-
+              signUpUser(signupUser, history, match, this.publisherID, user);
               firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {
                         const creatorID = user.uid;
@@ -532,7 +532,7 @@ class _AppSignup extends Component {
                 await firebase.auth().createUserWithEmailAndPassword(email, password);
             }
             this.setState({message: "account created"});
-            this.signUpUser();
+            this.signUpUser(signupUser, history, match, this.publisherID, this.state);
             return true;
         } catch (error) {
             this.setState({
@@ -541,86 +541,6 @@ class _AppSignup extends Component {
             console.log(error.toString());
             Promise.reject(error);
         }
-    }
-
-    signUpUser (userToSignUP) {
-        // console.log('signUpUser called');
-        const { match, history, signupUser } = this.props;
-        const that = this;
-        if(history.location.state && history.location.state.soundcast) {
-          const {soundcast, soundcastID, checked, sumTotal} = history.location.state;
-        }
-        let firstName, lastName, email, pic_url;
-
-        if(userToSignUP) {
-            firstName = userToSignUP.firstName;
-            lastName = userToSignUP.lastName;
-            email = userToSignUP.email;
-            pic_url = userToSignUP.pic_url;
-        } else {
-            firstName = this.state.firstName;
-            lastName = this.state.lastName;
-            email = this.state.email;
-            pic_url = this.state.pic_url;
-        }
-
-        let userId;
-
-        firebase.auth().onAuthStateChanged(user => {
-            if(user) {
-                userId = user.uid;
-
-                const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
-                // add admin fields
-                if (match.params.mode === 'admin') {
-                    userToSave.admin = true;
-                    userToSave.publisherID = that.publisherID;
-                }
-
-                firebase.database().ref(`users/${userId}`)
-                .once('value')
-                .then(userSnapshot => {
-                    if(!userSnapshot.val()) {
-                        firebase.database().ref('users/' + userId).set(userToSave);
-                    }
-                })
-
-                const _user = { userId, firstName, lastName, picURL: pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png' };
-                // TODO: _user.picURL = false
-                Axios.post('https://mysoundwise.com/api/user', _user)
-                    .then(res => {
-                        // console.log('userToSave: ', userToSave);
-                        console.log('success save user');
-                        signupUser(userToSave);
-                        // for user -> goTo myPrograms, for admin need to register publisher first
-                        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-                            history.push('/myprograms');
-                        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
-                            history.push('/soundcast_checkout', {
-                                soundcast: history.location.state.soundcast,
-                                soundcastID: history.location.state.soundcastID,
-                                checked: history.location.state.checked,
-                                sumTotal: history.location.state.sumTotal,
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.log('user saving failed: ', err);
-                        signupUser(userToSave);
-                        // for user -> goTo myPrograms, for admin need to register publisher first
-                        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-                            history.push('/myprograms');
-                        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
-                            history.push('/soundcast_checkout', {
-                                soundcast: history.location.state.soundcast,
-                                soundcastID: history.location.state.soundcastID,
-                                checked: history.location.state.checked,
-                                sumTotal: history.location.state.sumTotal,
-                            });
-                        }
-                    })
-            }
-        })
     }
 
     handleChange(prop, e) {
@@ -689,9 +609,8 @@ class _AppSignup extends Component {
                                         } else if(match.params.mode == 'admin' && match.params.id) {
                                             that.signUpInvitedAdmin(user);
                                         } else {
-                                            that.signUpUser(user);
+                                            signUpUser(signupUser, history, match, that.publisherID, user);
                                         }
-
                                     }
                                 });
                             // })
@@ -744,7 +663,7 @@ class _AppSignup extends Component {
                                                     } else if(match.params.mode == 'admin' && match.params.id) {
                                                         that.signUpInvitedAdmin(user);
                                                     } else {
-                                                        that.signUpUser(user);
+                                                        signUpUser(signupUser, history, match, that.publisherID, user);
                                                     }
                                                 });
                                         } else {

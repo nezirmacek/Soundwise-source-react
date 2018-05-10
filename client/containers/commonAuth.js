@@ -1,5 +1,9 @@
 import firebase from 'firebase';
 
+/*
+ * SIGN IN BLOCK (signIn, signInFacebook, compileUser, signInInvitedAdmin)
+ */
+
 const signIn = async (email, password, signinUser, history, match, sucessCallback, errCallback) => {
   try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -80,7 +84,7 @@ const signInFacebook = (signinUser, history, match, sucessCallback, errCallback)
             compileUser(_user, signinUser);
             history.push('/dashboard/soundcasts');
           } else if(match.params.id) {
-            signInInvitedAdmin();
+            signInInvitedAdmin(match, history);
           } else {
             history.push('/myprograms');
           }
@@ -125,6 +129,7 @@ const signInFacebook = (signinUser, history, match, sucessCallback, errCallback)
           // Asks the user his password.
           // In real scenario, you should handle this asynchronously.
           const password = prompt('Please enter your Soundwise password'); // TODO: implement promptUserForPassword.
+          // TODO compare next block with signIn function (merge into one?)
           firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
             // Step 4a.
             return user.link(error.credential); // pending credential
@@ -151,7 +156,7 @@ const signInFacebook = (signinUser, history, match, sucessCallback, errCallback)
                     compileUser(_user, signinUser);
                     history.push('/dashboard/soundcasts');
                   } else if(match.params.id) {
-                    signInInvitedAdmin();
+                    signInInvitedAdmin(match, history);
                   } else {
                     history.push('/myprograms');
                   }
@@ -268,7 +273,69 @@ const signInInvitedAdmin = (match, history) => {
   });
 }
 
+/*
+ * SIGN UP BLOCK (signUp, signUpFacebook)
+ */
+
+const signUpUser = (signupUser, history, match, publisherID, user) => {
+  const { firstName, lastName, email, pic_url } = user;
+
+  firebase.auth().onAuthStateChanged(user => {
+    if(user) {
+      const userId = user.uid;
+      const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
+      // add admin fields
+      if (match.params.mode === 'admin') {
+        userToSave.admin = true;
+        userToSave.publisherID = publisherID;
+      }
+      firebase.database().ref(`users/${userId}`)
+      .once('value')
+      .then(userSnapshot => {
+        if(!userSnapshot.val()) {
+          firebase.database().ref('users/' + userId).set(userToSave);
+        }
+      });
+      const _user = { userId, firstName, lastName, picURL: pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png' };
+      // TODO: _user.picURL = false
+      Axios.post('https://mysoundwise.com/api/user', _user)
+      .then(res => {
+        // console.log('userToSave: ', userToSave);
+        console.log('Success signUpUser user save');
+        signupUser(userToSave);
+        // for user -> goTo myPrograms, for admin need to register publisher first
+        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+          history.push('/myprograms');
+        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+          history.push('/soundcast_checkout', {
+            soundcast: history.location.state.soundcast,
+            soundcastID: history.location.state.soundcastID,
+            checked: history.location.state.checked,
+            sumTotal: history.location.state.sumTotal,
+          });
+        }
+      })
+      .catch(err => {
+        console.log('Error signUpUser user saving failed: ', err);
+        signupUser(userToSave);
+        // for user -> goTo myPrograms, for admin need to register publisher first
+        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+          history.push('/myprograms');
+        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+          history.push('/soundcast_checkout', {
+            soundcast: history.location.state.soundcast,
+            soundcastID: history.location.state.soundcastID,
+            checked: history.location.state.checked,
+            sumTotal: history.location.state.sumTotal,
+          });
+        }
+      });
+    }
+  });
+}
+
 export {
   signIn,
   signInFacebook,
+  signUpUser,
 }
