@@ -14,6 +14,7 @@ import { withRouter } from 'react-router';
 
 import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
 import AddCourseToUser from '../helpers/add_course_to_user';
+import { signInFBErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
