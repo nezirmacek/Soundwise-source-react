@@ -1598,21 +1598,22 @@ export default class EditSoundcast extends Component {
                         </div>
                       </div>
                       <div className='row'>
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
                                 label="Save Draft"
                                 styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
                                 onClick={()=> that.submit(false, false)}
                             />
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                             <OrangeSubmitButton
                                 label="Publish"
                                 onClick={()=> that.submit(true, false)}
                             />
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <div className="col-lg-4 col-md-12 col-sm-12 col-xs-12">
                             <TransparentShortSubmitButton
+                                styles={{ width: 229 }}
                                 label="Cancel"
                                 onClick={() => {
                                   history.goBack();
