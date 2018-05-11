@@ -267,12 +267,13 @@ export default class EditEpisode extends Component {
     }
 
     checkToPublish(toPublish, callbackRequestSubmitted, callbackSaved) {
-      const {isPublished, doReprocess} = this.state;
+      const {isPublished, isPublished, doReprocess} = this.state;
+      const {history} = this.props;
       if(toPublish && !isPublished) { // if publishing for the first time
         if(doReprocess) {
           this.runProcessing(toPublish, () => {
             this.notifySubscribers();
-            alert("The episode will be published after processing is finished.");
+            alert('The episode will be published after processing is finished.');
             history.goBack();
           });
         } else {
@@ -290,7 +291,7 @@ export default class EditEpisode extends Component {
             callbackRequestSubmitted && callbackRequestSubmitted();
           });
         } else {
-          alert("The edited episode is saved.");
+          alert('The edited episode is saved.');
           callbackSaved && callbackSaved();
         }
       }
@@ -299,7 +300,7 @@ export default class EditEpisode extends Component {
     runProcessing(toPublish, callback) {
       const {soundcastID, audioNormalization, trimSilence, reduceSilence,
              addIntroOutro, silentPeriod, overlayDuration} = this.state;
-      const {userInfo} = this.props;
+      const {userInfo, history} = this.props;
       const soundcast = userInfo.soundcasts_managed[soundcastID];
       const {id} = history.location.state;
       if(Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10 ) {
@@ -338,9 +339,7 @@ export default class EditEpisode extends Component {
     }
 
     changeSoundcastId (e) {
-        this.setState({
-            soundcastID: e.target.value,
-        })
+      this.setState({ soundcastID: e.target.value })
     }
 
     notifySubscribers() {
@@ -454,9 +453,7 @@ export default class EditEpisode extends Component {
       if (proUser) {
         this.setState({doReprocess: !doReprocess});
       } else {
-        this.setState({
-          showPricingModal: true,
-        })
+        this.setState({showPricingModal: true})
       }
     }
 
