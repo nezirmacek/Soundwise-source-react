@@ -267,7 +267,7 @@ export default class EditEpisode extends Component {
     }
 
     checkToPublish(toPublish, callbackRequestSubmitted, callbackSaved) {
-      const {isPublished, isPublished, doReprocess} = this.state;
+      const {isPublished, doReprocess} = this.state;
       const {history} = this.props;
       if(toPublish && !isPublished) { // if publishing for the first time
         if(doReprocess) {
