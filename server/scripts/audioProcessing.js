@@ -576,10 +576,6 @@ module.exports.audioProcessingReplace = async (req, res) => {
       }));
       console.log('CHECK: audio processing replace ', outputPath, episodeId);
       uploader.upload('s3' // saving to S3 db
-        // 5a. If 'autoPublish == true', save processed audio file to AWS S3
-        //         to replace the original file
-        //     If 'autoPublish == false', save processed audio file to AWS S3 under
-        //         'https://s3.amazonaws.com/soundwiseinc/soundcasts/[episodeId-edited].mp3'
        , { path: outputPath, name: `${episodeId}.mp3` } // replace original file
        , async (err, files) => {
         fs.unlink(outputPath, err => 0); // remove downloaded

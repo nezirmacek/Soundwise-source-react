@@ -248,14 +248,14 @@ export default class EditEpisode extends Component {
                   firstName: userInfo.firstName,
                 })
                 .then(response => {
-                  checkToPublish(toPublish, () => {
+                  that.checkToPublish(toPublish, () => {
                     alert("Request submitted. We'll email you when processing is done.");
                   });
                 })
                 .catch(err => that.catchError(err));
               })
             } else {
-              checkToPublish(toPublish, null, () => {
+              that.checkToPublish(toPublish, null, () => {
                 that.setState({
                   startProcessingEpisode: false,
                   doneProcessingEpisode: true,
@@ -267,8 +267,9 @@ export default class EditEpisode extends Component {
     }
 
     checkToPublish(toPublish, callbackRequestSubmitted, callbackSaved) {
-      const {isPublished, doReprocess} = this.state;
+      const {isPublished, doReprocess, soundcastID} = this.state;
       const {history} = this.props;
+      const {id} = history.location.state;
       if(toPublish && !isPublished) { // if publishing for the first time
         if(doReprocess) {
           this.runProcessing(toPublish, () => {
