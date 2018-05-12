@@ -3,13 +3,11 @@ import Axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
 import draftToHtml from 'draftjs-to-html';
-
 import * as firebase from 'firebase';
 import moment from 'moment';
 
 import  PageHeader  from './page_header';
 import Colors from '../../../styles/colors';
-
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import {addToEmailList} from '../../../helpers/addToEmailList';
 
@@ -52,13 +50,12 @@ export default class Payment extends Component {
         this.setState({
             totalPay: this.props.total
         });
-        const that = this;
         if(this.props.userInfo && this.props.userInfo.email) {
             this.setState({
-                userInfo: that.props.userInfo
+                userInfo: this.props.userInfo
             });
             if(this.props.total == 0 || this.props.total == 'free') {
-                this.addSoundcastToUser(null, that.props.userInfo);
+                this.addSoundcastToUser(null, this.props.userInfo);
             }
         }
     }
@@ -341,8 +338,8 @@ export default class Payment extends Component {
     }
 
     render() {
-
         const {total} = this.props;
+        const showInputs = this.state.userInfo && this.state.userInfo.firstName;
 
         const monthOptions = [];
         const yearOptions = [];
@@ -366,6 +363,7 @@ export default class Payment extends Component {
                                 <form onSubmit={this.onSubmit}>
                                     {/* lastName, firstName, email, card number*/}
                                     <div style={styles.relativeBlock}>
+                                      {showInputs &&
                                         <div className='col-md-6 col-sm-12 inputFirstName'>
                                           <input
                                               onChange={this.handleChange}
@@ -377,6 +375,8 @@ export default class Payment extends Component {
                                               style={{ ...styles.input, margin: '20px 0 0 0' }}
                                           />
                                         </div>
+                                      }
+                                      {showInputs &&
                                         <div className='col-md-6 col-sm-12 inputLastName'>
                                           <input
                                               onChange={this.handleChange}
@@ -388,6 +388,8 @@ export default class Payment extends Component {
                                               style={{ ...styles.input, margin: '20px 0 0 0' }}
                                           />
                                         </div>
+                                      }
+                                      {showInputs &&
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -397,6 +399,7 @@ export default class Payment extends Component {
                                             placeholder='Email'
                                             style={{ ...styles.input, margin: '20px 0 0 0' }}
                                         />
+                                      }
                                         <input
                                             onChange={this.handleChange}
                                             required
