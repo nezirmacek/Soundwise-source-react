@@ -407,7 +407,8 @@ export default class Payment extends Component {
                                             size='20'
                                             type='text'
                                             name='number'
-                                            placeholder="Card Number"
+                                            placeholder='Card Number'
+                                            autocomplete='new-password'
                                             style={styles.input}
                                         />
                                         <img src="../../../images/card_types.png" style={styles.cardsImage} />
@@ -452,7 +453,8 @@ export default class Payment extends Component {
                                             size='4'
                                             type='password'
                                             name='cvc'
-                                            placeholder="CVC"
+                                            placeholder='CVC'
+                                            autocomplete='new-password'
                                             style={Object.assign({}, styles.input, styles.cvc)}
                                         />
                                     </div>
