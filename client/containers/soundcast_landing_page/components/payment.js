@@ -64,12 +64,17 @@ export default class Payment extends Component {
         this.setState({
             totalPay: nextProps.total
         });
-        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) { //if it's free course, then no need for credit card info. add soundcast to user and then redirect
+        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) {
             this.setState({
                 userInfo: nextProps.userInfo
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
+              // if it's free course, then no need for credit card info.
+              // add soundcast to user and then redirect
               this.addSoundcastToUser(null, nextProps.userInfo);
+            }
+            if (nextProps.userInfo.stripe_id) { // have stripe_id
+              this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
