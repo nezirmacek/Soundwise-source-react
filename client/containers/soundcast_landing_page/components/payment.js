@@ -70,8 +70,7 @@ export default class Payment extends Component {
                 // if it's free course, then no need for credit card info.
                 // add soundcast to user and then redirect
                 this.addSoundcastToUser(null, nextProps.userInfo);
-            }
-            if (nextProps.userInfo.stripe_id) { // have stripe_id
+            } else if (nextProps.userInfo.stripe_id) { // have stripe_id
                 this.stripeTokenHandler(null, {}); // charge user
             }
         }
