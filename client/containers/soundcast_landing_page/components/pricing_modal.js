@@ -104,7 +104,7 @@ class _PricingModal extends Component {
           title="Select Access Option"
           actions={actions}
           modal={true}
-          open={open}
+          open={!!open}
           autoScrollBodyContent={true}
           onRequestClose={this.handleModalClose.bind(this)}
         >

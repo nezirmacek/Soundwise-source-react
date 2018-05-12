@@ -11,8 +11,6 @@ import Colors from '../../../styles/colors';
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import {addToEmailList} from '../../../helpers/addToEmailList';
 
-let stripe, elements;
-
 export default class Payment extends Component {
     constructor(props) {
         super(props);
@@ -42,8 +40,6 @@ export default class Payment extends Component {
     }
 
     componentDidMount() {
-        // stripe = Stripe('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        // stripe = Stripe('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
 
@@ -56,6 +52,8 @@ export default class Payment extends Component {
             });
             if(this.props.total == 0 || this.props.total == 'free') {
                 this.addSoundcastToUser(null, this.props.userInfo);
+            } else if (this.props.userInfo.stripe_id) { // have stripe_id
+                this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
@@ -69,12 +67,12 @@ export default class Payment extends Component {
                 userInfo: nextProps.userInfo
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
-              // if it's free course, then no need for credit card info.
-              // add soundcast to user and then redirect
-              this.addSoundcastToUser(null, nextProps.userInfo);
+                // if it's free course, then no need for credit card info.
+                // add soundcast to user and then redirect
+                this.addSoundcastToUser(null, nextProps.userInfo);
             }
             if (nextProps.userInfo.stripe_id) { // have stripe_id
-              this.stripeTokenHandler(null, {}); // charge user
+                this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
