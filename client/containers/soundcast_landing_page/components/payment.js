@@ -228,7 +228,7 @@ export default class Payment extends Component {
     }
 
     stripeTokenHandler(status, response) {
-        const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
+        const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
         const {soundcast, checked, soundcastID, handleStripeId} = this.props;
         const userInfo = this.state.userInfo || this.props.userInfo;
@@ -248,7 +248,7 @@ export default class Payment extends Component {
                if(snapshot.val() && snapshot.val().stripe_user_id) {
                     const stripe_user_id = snapshot.val().stripe_user_id; // publisher's id for stripe connected account
                     if(billingCycle == 'one time' || billingCycle == 'rental') { //if purchase or rental, post to api/charge
-                        Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
+                        Axios.post('/api/transactions/handleOnetimeCharge', {
                             amount,
                             source: response.id,
                             currency: 'usd',
