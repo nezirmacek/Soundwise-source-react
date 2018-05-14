@@ -162,7 +162,7 @@ async function parseFeed(req, res) {
 } // parseFeed
 
 function sendVerificationMail(to, soundcastTitle, verificationCode) {
-  // console.log(verificationCode); return;
+  // console.log(verificationCode); return; // uncomment to test
   sgMail.send({
     to, from: 'support@mysoundwise.com',
     subject: 'Your confirmation code for Soundwise',
@@ -251,8 +251,8 @@ async function runFeedImport(req, res, url) {
 async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i) {
   const {title, description, summary, date, image, enclosures} = item;
   let duration = null;
-  if (metadata['itunes:duration'] && metadata['itunes:duration']['#']) { // duration not empty
-    duration = metadata['itunes:duration']['#'].toString(); // '323' (seconds) or '14:23'
+  if (item['itunes:duration'] && item['itunes:duration']['#']) { // duration not empty
+    duration = item['itunes:duration']['#'].toString(); // '323' (seconds) or '14:23'
     if (duration.includes(':')) {
       if (duration.split(':').length === 2) {
         duration = '0:' + duration; // '14:23' > '0:14:23'
