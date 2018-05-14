@@ -86,7 +86,7 @@ async function parseFeed(req, res) {
     return res.status(400).send(`Error: empty feedUrl field`);
   }
   const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
-  const url = urlParsed.host + urlParsed.pathname; // use url as a key
+  const url = urlParsed.host + urlParsed.path; // use url as a key
 
   if (!feedUrls[url]) { // wasn't obtained
     // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
