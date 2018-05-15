@@ -230,6 +230,7 @@ export default class Payment extends Component {
     stripeTokenHandler(status, response) {
         const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
+        const receipt_email = (email && email[0]) || this.state.email;
         const {soundcast, checked, soundcastID, handleStripeId} = this.props;
         const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
@@ -252,7 +253,7 @@ export default class Payment extends Component {
                             amount,
                             source: response.id,
                             currency: 'usd',
-                            receipt_email: email[0],
+                            receipt_email,
                             customer: stripe_id,
                             billingCycle,
                             publisherID: soundcast.publisherID,
@@ -341,7 +342,7 @@ export default class Payment extends Component {
 
     render() {
         const {total} = this.props;
-        const showInputs = this.state.userInfo && this.state.userInfo.firstName;
+        const showInputs = !(this.state.userInfo && this.state.userInfo.firstName);
 
         const monthOptions = [];
         const yearOptions = [];
