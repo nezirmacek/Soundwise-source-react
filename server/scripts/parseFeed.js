@@ -135,6 +135,8 @@ async function parseFeed(req, res) {
           originalUrl: feedUrl,
         };
         sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+        // sendVerificationMail('natasha@mysoundwise.com', metadata.title, verificationCode);
+
         res.json({ imageUrl: metadata.image.url, publisherEmail });
       });
     }
@@ -189,7 +191,7 @@ async function runFeedImport(req, res, url) {
     short_description: description,
     imageURL: image.url,
     hostName: author || (metadata['itunes:author'] && metadata['itunes:author']['#']),
-    last_update: moment(date).format('X'),
+    last_update: moment().format('X'),
     fromParsedFeed: true, // this soundcast is imported from a RSS feed
     forSale: false,
     landingPage: true,
