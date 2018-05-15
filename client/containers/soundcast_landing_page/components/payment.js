@@ -3,17 +3,13 @@ import Axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
 import draftToHtml from 'draftjs-to-html';
-
 import * as firebase from 'firebase';
 import moment from 'moment';
 
 import  PageHeader  from './page_header';
 import Colors from '../../../styles/colors';
-
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import {addToEmailList} from '../../../helpers/addToEmailList';
-
-let stripe, elements;
 
 export default class Payment extends Component {
     constructor(props) {
@@ -44,21 +40,20 @@ export default class Payment extends Component {
     }
 
     componentDidMount() {
-        // stripe = Stripe('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        // stripe = Stripe('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
 
         this.setState({
             totalPay: this.props.total
         });
-        const that = this;
         if(this.props.userInfo && this.props.userInfo.email) {
             this.setState({
-                userInfo: that.props.userInfo
+                userInfo: this.props.userInfo
             });
             if(this.props.total == 0 || this.props.total == 'free') {
-                this.addSoundcastToUser(null, that.props.userInfo);
+                this.addSoundcastToUser(null, this.props.userInfo);
+            } else if (this.props.userInfo.stripe_id) { // have stripe_id
+                this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
@@ -67,12 +62,16 @@ export default class Payment extends Component {
         this.setState({
             totalPay: nextProps.total
         });
-        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) { //if it's free course, then no need for credit card info. add soundcast to user and then redirect
+        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) {
             this.setState({
                 userInfo: nextProps.userInfo
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
-              this.addSoundcastToUser(null, nextProps.userInfo);
+                // if it's free course, then no need for credit card info.
+                // add soundcast to user and then redirect
+                this.addSoundcastToUser(null, nextProps.userInfo);
+            } else if (nextProps.userInfo.stripe_id) { // have stripe_id
+                this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
@@ -229,7 +228,7 @@ export default class Payment extends Component {
     }
 
     stripeTokenHandler(status, response) {
-        const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
+        const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
         const {soundcast, checked, soundcastID, handleStripeId} = this.props;
         const userInfo = this.state.userInfo || this.props.userInfo;
@@ -249,7 +248,7 @@ export default class Payment extends Component {
                if(snapshot.val() && snapshot.val().stripe_user_id) {
                     const stripe_user_id = snapshot.val().stripe_user_id; // publisher's id for stripe connected account
                     if(billingCycle == 'one time' || billingCycle == 'rental') { //if purchase or rental, post to api/charge
-                        Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
+                        Axios.post('/api/transactions/handleOnetimeCharge', {
                             amount,
                             source: response.id,
                             currency: 'usd',
@@ -341,8 +340,8 @@ export default class Payment extends Component {
     }
 
     render() {
-
         const {total} = this.props;
+        const showInputs = this.state.userInfo && this.state.userInfo.firstName;
 
         const monthOptions = [];
         const yearOptions = [];
@@ -366,6 +365,7 @@ export default class Payment extends Component {
                                 <form onSubmit={this.onSubmit}>
                                     {/* lastName, firstName, email, card number*/}
                                     <div style={styles.relativeBlock}>
+                                      {showInputs &&
                                         <div className='col-md-6 col-sm-12 inputFirstName'>
                                           <input
                                               onChange={this.handleChange}
@@ -377,6 +377,8 @@ export default class Payment extends Component {
                                               style={{ ...styles.input, margin: '20px 0 0 0' }}
                                           />
                                         </div>
+                                      }
+                                      {showInputs &&
                                         <div className='col-md-6 col-sm-12 inputLastName'>
                                           <input
                                               onChange={this.handleChange}
@@ -388,6 +390,8 @@ export default class Payment extends Component {
                                               style={{ ...styles.input, margin: '20px 0 0 0' }}
                                           />
                                         </div>
+                                      }
+                                      {showInputs &&
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -397,6 +401,7 @@ export default class Payment extends Component {
                                             placeholder='Email'
                                             style={{ ...styles.input, margin: '20px 0 0 0' }}
                                         />
+                                      }
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -404,7 +409,8 @@ export default class Payment extends Component {
                                             size='20'
                                             type='text'
                                             name='number'
-                                            placeholder="Card Number"
+                                            placeholder='Card Number'
+                                            autocomplete='new-password'
                                             style={styles.input}
                                         />
                                         <img src="../../../images/card_types.png" style={styles.cardsImage} />
@@ -449,7 +455,8 @@ export default class Payment extends Component {
                                             size='4'
                                             type='password'
                                             name='cvc'
-                                            placeholder="CVC"
+                                            placeholder='CVC'
+                                            autocomplete='new-password'
                                             style={Object.assign({}, styles.input, styles.cvc)}
                                         />
                                     </div>

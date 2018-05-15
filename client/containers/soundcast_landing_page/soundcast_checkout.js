@@ -335,11 +335,6 @@ class _SoundcastCheckout extends Component {
                           setTotalPrice={this.setTotalPrice}
                         />
                       </div>
-                      <div className="row">
-                        <div className="col-md-12 col-sm-12 col-xs-12">
-
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </section>

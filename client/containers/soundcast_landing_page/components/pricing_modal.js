@@ -37,6 +37,11 @@ class _PricingModal extends Component {
         sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${Number(prices[checked].price).toFixed(2)}`
       })
     }
+    const soundcast = this.props.soundcast || nextProps.soundcast;
+    const open = this.props.open || nextProps.open;
+    if(open && soundcast && soundcast.prices && soundcast.prices.length === 1) {
+      this.handleCheckout(); // checkout if having only one price
+    }
   }
 
   handleCheck(i, e) {
@@ -99,7 +104,7 @@ class _PricingModal extends Component {
           title="Select Access Option"
           actions={actions}
           modal={true}
-          open={open}
+          open={!!open}
           autoScrollBodyContent={true}
           onRequestClose={this.handleModalClose.bind(this)}
         >
