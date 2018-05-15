@@ -134,8 +134,8 @@ async function parseFeed(req, res) {
           verificationCode,
           originalUrl: feedUrl,
         };
-        sendVerificationMail(publisherEmail, metadata.title, verificationCode);
-        // sendVerificationMail('natasha@mysoundwise.com', metadata.title, verificationCode);
+        // sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+        sendVerificationMail('natasha@mysoundwise.com', metadata.title, verificationCode);
 
         res.json({ imageUrl: metadata.image.url, publisherEmail });
       });
