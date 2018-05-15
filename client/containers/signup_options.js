@@ -55,7 +55,7 @@ class _SignupOptions extends Component {
     Axios.post('/api/parse_feed', { podcastTitle, feedUrl }).then(res => {
       res.data && that.setState({...res.data, feedSubmitting: false}); // setting imageUrl, publisherEmail
     }).catch(err => {
-      const errMsg = err && err.response && err.response.data;
+      const errMsg = err && err.response && err.response.data || err.toString();
       that.setState({feedSubmitting: false});
       if (errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email") {
         that.setState({ emailNotFoundError: true });
@@ -78,7 +78,7 @@ class _SignupOptions extends Component {
         this.props.history.push('/signup/admin');
       }
     }).catch(err => {
-      const errMsg = err && err.response && err.response.data;
+      const errMsg = err && err.response && err.response.data || err.toString();
       if (errMsg.slice(0, 33) === "Error: incorrect verfication code") {
         alert('Code incorrect!');
       } else {

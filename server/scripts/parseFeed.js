@@ -86,7 +86,7 @@ async function parseFeed(req, res) {
     return res.status(400).send(`Error: empty feedUrl field`);
   }
   const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
-  const url = urlParsed.host + urlParsed.pathname; // use url as a key
+  const url = urlParsed.host + urlParsed.path; // use url as a key
 
   if (!feedUrls[url]) { // wasn't obtained
     // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
@@ -162,7 +162,7 @@ async function parseFeed(req, res) {
 } // parseFeed
 
 function sendVerificationMail(to, soundcastTitle, verificationCode) {
-  // console.log(verificationCode); return;
+  // console.log(verificationCode); return; // uncomment to test
   sgMail.send({
     to, from: 'support@mysoundwise.com',
     subject: 'Your confirmation code for Soundwise',
@@ -189,7 +189,7 @@ async function runFeedImport(req, res, url) {
     short_description: description,
     imageURL: image.url,
     hostName: author || (metadata['itunes:author'] && metadata['itunes:author']['#']),
-    last_update: moment(date).format('x'),
+    last_update: moment(date).format('X'),
     fromParsedFeed: true, // this soundcast is imported from a RSS feed
     forSale: false,
     landingPage: true,
@@ -251,8 +251,8 @@ async function runFeedImport(req, res, url) {
 async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i) {
   const {title, description, summary, date, image, enclosures} = item;
   let duration = null;
-  if (metadata['itunes:duration'] && metadata['itunes:duration']['#']) { // duration not empty
-    duration = metadata['itunes:duration']['#'].toString(); // '323' (seconds) or '14:23'
+  if (item['itunes:duration'] && item['itunes:duration']['#']) { // duration not empty
+    duration = item['itunes:duration']['#'].toString(); // '323' (seconds) or '14:23'
     if (duration.includes(':')) {
       if (duration.split(':').length === 2) {
         duration = '0:' + duration; // '14:23' > '0:14:23'

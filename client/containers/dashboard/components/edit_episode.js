@@ -197,13 +197,12 @@ export default class EditEpisode extends Component {
     }
 
     submit (toPublish) {
-        const {title, description, actionstep, notes, publicEpisode, isPublished, soundcastID,
-          coverArtUrl, date_created, audioProcessing, audioNormalization, trimSilence, reduceSilence,
-          addIntroOutro, silentPeriod, doReprocess, overlayDuration} = this.state;
+        const {title, soundcastID, description, actionstep, notes,
+               publicEpisode, date_created, isPublished, coverArtUrl} = this.state;
         const {userInfo, history} = this.props;
         const soundcast = userInfo.soundcasts_managed[soundcastID];
         const {itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion} = soundcast; // only available if the soundcast has been submitted as a podcast;
-        const { id } = history.location.state;
+        const {id} = history.location.state;
         const that = this;
         if(toPublish || isPublished) {
           this.setState({
@@ -235,129 +234,113 @@ export default class EditEpisode extends Component {
           }
 
           firebase.database().ref(`episodes/${id}`)
-          .set(changedEpisode).then(
-            res => {
-                // history.goBack();
-                if(podcastFeedVersion) {
-                  firebase.database().ref(`episodes/${id}/id3Tagged`)
-                  .set(false)
-                  .then(() => {
-                    Axios.post('/api/create_feed', {
-                      soundcastId: soundcastID,
-                      itunesExplicit,
-                      itunesImage,
-                      itunesCategory,
-                      email: userInfo.publisher.email,
-                      firstName: userInfo.firstName,
-                    })
-                    .then(response => {
-                      if(toPublish && !isPublished) { // if publishing for the first time
-                        if(doReprocess) {
-                          runProcessing(() => {
-                            that.notifySubscribers();
-                            alert("The episode will be published after processing is finished.");
-                            history.goBack();
-                          });
-                        } else {
-                          Axios.post('/api/audio_processing_replace', {
-                            episodeId: id,
-                            soundcastId: soundcastID,
-                          }).then(res => {
-                            alert('Episode is published.');
-                            history.goBack();
-                          }).catch(err => that.catchError(err));
-                        }
-                      } else {
-                        if(doReprocess) {
-                          runProcessing(() => {
-                            alert("Request submitted. We'll email you when processing is done.");
-                          });
-                        } else {
-                          alert("The edited episode is saved.");
-                        }
-                      }
-                    })
-                    .catch(err => that.catchError(err));
-                  })
-                } else {
-                  if(toPublish && !isPublished) { // if publishing for the first time
-                    if(doReprocess) {
-                      runProcessing(() => {
-                        that.notifySubscribers();
-                        alert("The episode will be published after processing is finished.");
-                        history.goBack();
-                      });
-                    } else {
-                      Axios.post('/api/audio_processing_replace', {
-                        episodeId: id,
-                        soundcastId: soundcastID,
-                      }).then(res => {
-                        alert('Episode is published.');
-                        history.goBack();
-                      }).catch(err => that.catchError(err));
-                    }
-                  } else {
-                    if(doReprocess) {
-                      runProcessing(() => {
-                        // alert("Request submitted. We'll email you when processing is done.");
-                      });
-                    } else {
-                      alert("The edited episode is saved.");
-                      this.setState({
-                        startProcessingEpisode: false,
-                        doneProcessingEpisode: true,
-                      });
-                    }
-                  }
-                }
-            },
-            err => {
-                console.log('ERROR edit episode: ', err);
-            }
-          );
-
-          function runProcessing(callback) {
-            if(Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10 ) {
-              alert('Overlap with main audio: Please enter a number >=0.1 and <= 10.');
-              return;
-            }
-            if(Number(silentPeriod) < 0.1 && Number(silentPeriod) > 10 ) {
-              alert('Remove excessive pauses: Please enter a number >=0.1 and <= 10.');
-              return;
-            }
-            Axios.post('/api/audio_processing', {
-              episodeId: id,
-              soundcastId: soundcastID,
-              publisherEmail: userInfo.publisher.email,
-              publisherFirstName: userInfo.firstName,
-              publisherName: userInfo.publisher.name,
-              publisherImageUrl: userInfo.publisher.imageUrl,
-              tagging: true,
-              intro: (addIntroOutro && soundcast.intro) || null,
-              outro: (addIntroOutro && soundcast.outro) || null,
-              overlayDuration: (addIntroOutro && (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) || 0,
-              setVolume: audioNormalization,
-              trim: trimSilence,
-              removeSilence: (reduceSilence && Number(silentPeriod) || 0),
-              autoPublish: toPublish,
-              emailListeners: that.state.sendEmails,
-            }).then(res => {
-              alert(`Processing request is submitted. We'll email you when processing is complete.`);
-              that.setState({
-                startProcessingEpisode: false,
-                doneProcessingEpisode: true,
+          .set(changedEpisode).then(res => {
+            if(podcastFeedVersion) {
+              firebase.database().ref(`episodes/${id}/id3Tagged`)
+              .set(false)
+              .then(() => {
+                Axios.post('/api/create_feed', {
+                  soundcastId: soundcastID,
+                  itunesExplicit,
+                  itunesImage,
+                  itunesCategory,
+                  email: userInfo.publisher.email,
+                  firstName: userInfo.firstName,
+                })
+                .then(response => {
+                  that.checkToPublish(toPublish, () => {
+                    alert("Request submitted. We'll email you when processing is done.");
+                  });
+                })
+                .catch(err => that.catchError(err));
+              })
+            } else {
+              that.checkToPublish(toPublish, null, () => {
+                that.setState({
+                  startProcessingEpisode: false,
+                  doneProcessingEpisode: true,
+                });
               });
-              callback && callback();
-            })
-            .catch(err => that.catchError(err));
-          }
+            }
+          }, err => console.log('ERROR edit episode: ', err));
         });
     }
 
-    changeSoundcastId (e) {
+    checkToPublish(toPublish, callbackRequestSubmitted, callbackSaved) {
+      const {isPublished, doReprocess, soundcastID} = this.state;
+      const {history} = this.props;
+      const {id} = history.location.state;
+      if(toPublish && !isPublished) { // if publishing for the first time
+        if(doReprocess) {
+          this.runProcessing(toPublish, () => {
+            this.notifySubscribers();
+            alert('The episode will be published after processing is finished.');
+            history.goBack();
+          });
+        } else {
+          Axios.post('/api/audio_processing_replace', {
+            episodeId: id,
+            soundcastId: soundcastID,
+          }).then(res => {
+            alert('Episode is published.');
+            history.goBack();
+          }).catch(err => this.catchError(err));
+        }
+      } else {
+        if(doReprocess) {
+          this.runProcessing(toPublish, () => {
+            callbackRequestSubmitted && callbackRequestSubmitted();
+          });
+        } else {
+          alert('The edited episode is saved.');
+          callbackSaved && callbackSaved();
+        }
+      }
+    }
+
+    runProcessing(toPublish, callback) {
+      const {soundcastID, audioNormalization, trimSilence, reduceSilence,
+             addIntroOutro, silentPeriod, overlayDuration} = this.state;
+      const {userInfo, history} = this.props;
+      const soundcast = userInfo.soundcasts_managed[soundcastID];
+      const {id} = history.location.state;
+      if(Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10 ) {
+        alert('Overlap with main audio: Please enter a number >=0.1 and <= 10.');
+        return;
+      }
+      if(Number(silentPeriod) < 0.1 && Number(silentPeriod) > 10 ) {
+        alert('Remove excessive pauses: Please enter a number >=0.1 and <= 10.');
+        return;
+      }
+      Axios.post('/api/audio_processing', {
+        episodeId: id,
+        soundcastId: soundcastID,
+        publisherEmail: userInfo.publisher.email,
+        publisherFirstName: userInfo.firstName,
+        publisherName: userInfo.publisher.name,
+        publisherImageUrl: userInfo.publisher.imageUrl,
+        tagging: true,
+        intro: (addIntroOutro && soundcast.intro) || null,
+        outro: (addIntroOutro && soundcast.outro) || null,
+        overlayDuration: (addIntroOutro && (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) || 0,
+        setVolume: audioNormalization,
+        trim: trimSilence,
+        removeSilence: (reduceSilence && Number(silentPeriod) || 0),
+        autoPublish: toPublish,
+        emailListeners: this.state.sendEmails,
+      }).then(res => {
+        alert(`Processing request is submitted. We'll email you when processing is complete.`);
         this.setState({
-            soundcastID: e.target.value,
-        })
+          startProcessingEpisode: false,
+          doneProcessingEpisode: true,
+        });
+        callback && callback();
+      })
+      .catch(err => this.catchError(err));
+    }
+
+    changeSoundcastId (e) {
+      this.setState({ soundcastID: e.target.value })
     }
 
     notifySubscribers() {
@@ -471,9 +454,7 @@ export default class EditEpisode extends Component {
       if (proUser) {
         this.setState({doReprocess: !doReprocess});
       } else {
-        this.setState({
-          showPricingModal: true,
-        })
+        this.setState({showPricingModal: true})
       }
     }
 
@@ -888,7 +869,10 @@ export default class EditEpisode extends Component {
                                 </div>
                                 || null
                             }
-                            <div className="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                            <div className={isPublished ?
+                                  "col-lg-4 col-md-6  col-sm-12 col-xs-12"
+                                : "col-lg-4 col-md-12 col-sm-12 col-xs-12"}
+                            >
                                 <TransparentShortSubmitButton
                                     label="Cancel"
                                     styles={{width: 230}}
