@@ -224,7 +224,7 @@ class _SoundcastCheckout extends Component {
       const {firstName, lastName, email, password, pic_url} = this.state;
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, password);
-        this.setState({message: 'account created'});
+        // this.setState({message: 'account created'});
         signupCommon(signupUser, history, match, this.publisherID, this.state);
         return true;
       } catch (error) {

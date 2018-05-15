@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import Axios from 'axios';
 
 /*
  * SIGN IN BLOCK (signIn, signInFacebook, compileUser, signInInvitedAdmin)
@@ -282,11 +283,11 @@ const signInInvitedAdmin = (match, history) => {
 
 const signupCommon = (signupUser, history, match, publisherID, user) => {
   const { firstName, lastName, email, pic_url } = user;
-
+  const picture = pic_url ? pic_url : 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
   firebase.auth().onAuthStateChanged(user => {
     if(user) {
       const userId = user.uid;
-      const userToSave = { firstName, lastName, email: { 0: email }, pic_url };
+      const userToSave = { firstName, lastName, email: { 0: email }, pic_url: picture };
       // add admin fields
       if (match.params.mode === 'admin') {
         userToSave.admin = true;
