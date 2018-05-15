@@ -14,6 +14,7 @@ import { withRouter } from 'react-router';
 
 import { signupUser, signinUser, openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
 import AddCourseToUser from '../helpers/add_course_to_user';
+import { facebookErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -347,62 +348,30 @@ class _CourseSignup extends Component {
         }
 
       })
-    }).catch(function(error) {
-      // Handle Errors here.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      // Step 2.
-      // User's email already exists.
-      // The pending Facebook credential.
-      console.log('facebook error')
-      var pendingCred = error.credential
-      // The provider account's email address.
-      var email = error.email
-      // Get registered providers for this email.
-      firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
-        // Step 3.
-        // If the user has several providers,
-        // the first provider in the list will be the "recommended" provider to use.
-        if (providers[0] === 'password') {
-          // Asks the user his password.
-          // In real scenario, you should handle this asynchronously.
-          var password = prompt('Please enter your Soundwise password') // TODO: implement promptUserForPassword.
-          firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-            // Step 4a.
-            return user.link(pendingCred)
-          }).then(function() {
-            // Facebook account successfully linked to the existing Firebase user.
-            const userId = firebase.auth().currentUser.uid
-            firebase.database().ref('users/' + userId)
-            .once('value')
-            .then(snapshot => {
-                const firstName = snapshot.val().firstName
-                const lastName = snapshot.val().lastName
-                const email = snapshot.val().email
-                const courses = snapshot.val().courses
-                const pic_url = snapshot.val().pic_url
-                // if(!courses) {
-                //   firebase.database().ref('users/' + userId).set({
-                //     courses: {}
-                //   })
-                // }
-                that.props.signinUser({firstName, lastName, email, pic_url, courses})
-
-                if(that.props.course.price == 0) {
-                  that.addCourseToUser()
-
-                } else {
-                that.props.addCourseToCart(that.props.course)
-                that.props.history.push('/cart')
-                }
-
-                that.props.openSignupbox(false)
-            })
-          })
-        }
-
-      })
-    }
-  })
+    }).catch(error => {
+      facebookErrorCallback(error, () => {
+        // Facebook account successfully linked to the existing Firebase user.
+        const userId = firebase.auth().currentUser.uid
+        firebase.database().ref('users/' + userId)
+        .once('value')
+        .then(snapshot => {
+          const {firstName, lastName, email, pic_url, courses} = snapshot.val() || {};
+          // if(!courses) {
+          //   firebase.database().ref('users/' + userId).set({
+          //     courses: {}
+          //   })
+          // }
+          that.props.signinUser({firstName, lastName, email, pic_url, courses})
+          if(that.props.course.price == 0) {
+            that.addCourseToUser()
+          } else {
+            that.props.addCourseToCart(that.props.course)
+            that.props.history.push('/cart')
+          }
+          that.props.openSignupbox(false)
+        })
+      });
+    })
   }
 
   handleFBSignup() {
@@ -438,55 +407,24 @@ class _CourseSignup extends Component {
 
       that.props.openSignupbox(false)
 
-    }).catch(function(error) {
-      // Handle Errors here.
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        // Step 2.
-        // User's email already exists.
-        // The pending Facebook credential.
-        var pendingCred = error.credential
-        // The provider account's email address.
-        var email = error.email
-        // Get registered providers for this email.
-        firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
-          // Step 3.
-          // If the user has several providers,
-          // the first provider in the list will be the "recommended" provider to use.
-          if (providers[0] === 'password') {
-            // Asks the user his password.
-            // In real scenario, you should handle this asynchronously.
-            var password = prompt('Please enter your Soundwise password') // TODO: implement promptUserForPassword.
-            firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-              // Step 4a.
-              return user.link(pendingCred)
-            }).then(function() {
-              // Facebook account successfully linked to the existing Firebase user.
-              const userId = firebase.auth().currentUser.uid
-              firebase.database().ref('users/' + userId)
-              .once('value')
-              .then(snapshot => {
-                  const firstName = snapshot.val().firstName
-                  const lastName = snapshot.val().lastName
-                  const email = snapshot.val().email
-                  const pic_url = snapshot.val().pic_url
-
-                  that.props.signupUser({firstName, lastName, email, pic_url})
-
-                  if(that.props.course.price == 0) {
-                    that.addCourseToUser()
-
-                  } else {
-                  that.props.addCourseToCart(that.props.course)
-                  that.props.history.push('/cart')
-                  }
-
-                  that.props.openSignupbox(false)
-              })
-            })
+    }).catch(error => {
+      facebookErrorCallback(error, () => {
+        // Facebook account successfully linked to the existing Firebase user.
+        const userId = firebase.auth().currentUser.uid
+        firebase.database().ref('users/' + userId)
+        .once('value')
+        .then(snapshot => {
+          const {firstName, lastName, email, pic_url} = snapshot.val() || {};
+          that.props.signupUser({firstName, lastName, email, pic_url})
+          if(that.props.course.price == 0) {
+            that.addCourseToUser()
+          } else {
+            that.props.addCourseToCart(that.props.course)
+            that.props.history.push('/cart')
           }
-
+          that.props.openSignupbox(false)
         })
-      }
+      })
     })
   }
 

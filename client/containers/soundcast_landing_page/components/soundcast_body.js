@@ -71,7 +71,7 @@ export default class SoundcastBody extends Component {
                 that.setState({
                     publisher: snapshot.val()
                 });
-                const allSoundcasts = Object.keys(snapshot.val().soundcasts);
+                const allSoundcasts = Object.keys(snapshot.val().soundcasts || {});
                 if(allSoundcasts.length > 1) {
                     const promises = allSoundcasts.map(soundcast => {
                         if(soundcast == soundcastID) {

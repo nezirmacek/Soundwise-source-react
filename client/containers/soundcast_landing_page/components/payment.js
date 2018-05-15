@@ -3,17 +3,13 @@ import Axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
 import draftToHtml from 'draftjs-to-html';
-
 import * as firebase from 'firebase';
 import moment from 'moment';
 
 import  PageHeader  from './page_header';
 import Colors from '../../../styles/colors';
-
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import {addToEmailList} from '../../../helpers/addToEmailList';
-
-let stripe, elements;
 
 export default class Payment extends Component {
     constructor(props) {
@@ -22,6 +18,9 @@ export default class Payment extends Component {
         this.state={
             paymentError: '',
             submitDisabled: false,
+            firstName: '',
+            lastName: '',
+            email: '',
             number: '',
             cvc: '',
             exp_month: 0,
@@ -41,19 +40,20 @@ export default class Payment extends Component {
     }
 
     componentDidMount() {
-        // stripe = Stripe('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        // stripe = Stripe('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
-        Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+
         this.setState({
             totalPay: this.props.total
         });
-        const that = this;
         if(this.props.userInfo && this.props.userInfo.email) {
             this.setState({
-                userInfo: that.props.userInfo
+                userInfo: this.props.userInfo
             });
             if(this.props.total == 0 || this.props.total == 'free') {
-                this.addSoundcastToUser(null, that.props.userInfo);
+                this.addSoundcastToUser(null, this.props.userInfo);
+            } else if (this.props.userInfo.stripe_id) { // have stripe_id
+                this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
@@ -62,12 +62,16 @@ export default class Payment extends Component {
         this.setState({
             totalPay: nextProps.total
         });
-        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) { //if it's free course, then no need for credit card info. add soundcast to user and then redirect
+        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) {
             this.setState({
                 userInfo: nextProps.userInfo
             });
             if(nextProps.total === 0 || nextProps.total == 'free') {
-              this.addSoundcastToUser(null, nextProps.userInfo);
+                // if it's free course, then no need for credit card info.
+                // add soundcast to user and then redirect
+                this.addSoundcastToUser(null, nextProps.userInfo);
+            } else if (nextProps.userInfo.stripe_id) { // have stripe_id
+                this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
@@ -93,14 +97,14 @@ export default class Payment extends Component {
     }
 
     addSoundcastToUser(charge, userInfoFromProp) {
-        const that = this;
-        const {soundcastID, soundcast, checked} = this.props;
-        const {confirmationEmail} = soundcast;
-        const {totalPay} = this.state;
-        let userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
-        let _email, content;
+        const userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
+        if(userInfo && userInfo.email) { // if logged in
+            const that = this;
+            const {soundcastID, soundcast, checked} = this.props;
+            const {confirmationEmail} = soundcast;
+            const {totalPay} = this.state;
+            let _email, content;
 
-        if(userInfo) {
             // console.log('userInfo: ', userInfo);
             _email = userInfo.email[0].replace(/\./g, "(dot)");
 
@@ -203,6 +207,7 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
+        // return this.props.handleStripeId('TEST1', this.state.userInfo || this.props.userInfo, this.state);
         if (this.state.startPaymentSubmission) { return }
         const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
         if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
@@ -223,9 +228,11 @@ export default class Payment extends Component {
     }
 
     stripeTokenHandler(status, response) {
-        const amount = Number(this.state.totalPay).toFixed(2) * 100; // in cents
+        const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
         const {email, stripe_id} = this.props.userInfo;
-        const {soundcast, checked, soundcastID} = this.props;
+        const receipt_email = (email && email[0]) || this.state.email;
+        const {soundcast, checked, soundcastID, handleStripeId} = this.props;
+        const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -242,11 +249,11 @@ export default class Payment extends Component {
                if(snapshot.val() && snapshot.val().stripe_user_id) {
                     const stripe_user_id = snapshot.val().stripe_user_id; // publisher's id for stripe connected account
                     if(billingCycle == 'one time' || billingCycle == 'rental') { //if purchase or rental, post to api/charge
-                        Axios.post('https://mysoundwise.com/api/transactions/handleOnetimeCharge', {
+                        Axios.post('/api/transactions/handleOnetimeCharge', {
                             amount,
                             source: response.id,
                             currency: 'usd',
-                            receipt_email: email[0],
+                            receipt_email,
                             customer: stripe_id,
                             billingCycle,
                             publisherID: soundcast.publisherID,
@@ -264,7 +271,7 @@ export default class Payment extends Component {
                                     paid,
                                     startPaymentSubmission: false
                                 });
-
+                                handleStripeId && handleStripeId(response.data.res, userInfo, that.state);
                                 that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
                             }
                         })
@@ -291,18 +298,16 @@ export default class Payment extends Component {
                             statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                         })
                         .then(function (response) {
-
                             const subscription = response.data; //boolean
                             const customer = response.data.customer;
                             // console.log('subscription: ', subscription);
-
                             if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
                                 localStorage.setItem('paymentPaid', Date.now());
                                 that.setState({
                                     paid: true,
                                     startPaymentSubmission: false
                                 });
-
+                                handleStripeId && handleStripeId(subscription, userInfo, that.state);
                                 that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
                             }
                         })
@@ -336,8 +341,8 @@ export default class Payment extends Component {
     }
 
     render() {
-
         const {total} = this.props;
+        const showInputs = !(this.state.userInfo && this.state.userInfo.firstName);
 
         const monthOptions = [];
         const yearOptions = [];
@@ -359,8 +364,45 @@ export default class Payment extends Component {
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
-                                    {/*card number*/}
+                                    {/* lastName, firstName, email, card number*/}
                                     <div style={styles.relativeBlock}>
+                                      {showInputs &&
+                                        <div className='col-md-6 col-sm-12 inputFirstName'>
+                                          <input
+                                              onChange={this.handleChange}
+                                              required
+                                              className='border-radius-4'
+                                              type='text'
+                                              name='firstName'
+                                              placeholder='First Name'
+                                              style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                          />
+                                        </div>
+                                      }
+                                      {showInputs &&
+                                        <div className='col-md-6 col-sm-12 inputLastName'>
+                                          <input
+                                              onChange={this.handleChange}
+                                              required
+                                              className='border-radius-4'
+                                              type='text'
+                                              name='lastName'
+                                              placeholder='Last Name'
+                                              style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                          />
+                                        </div>
+                                      }
+                                      {showInputs &&
+                                        <input
+                                            onChange={this.handleChange}
+                                            required
+                                            className='border-radius-4 col-md-12'
+                                            type='email'
+                                            name='email'
+                                            placeholder='Email'
+                                            style={{ ...styles.input, margin: '20px 0 0 0' }}
+                                        />
+                                      }
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -368,7 +410,8 @@ export default class Payment extends Component {
                                             size='20'
                                             type='text'
                                             name='number'
-                                            placeholder="Card Number"
+                                            placeholder='Card Number'
+                                            autocomplete='new-password'
                                             style={styles.input}
                                         />
                                         <img src="../../../images/card_types.png" style={styles.cardsImage} />
@@ -413,7 +456,8 @@ export default class Payment extends Component {
                                             size='4'
                                             type='password'
                                             name='cvc'
-                                            placeholder="CVC"
+                                            placeholder='CVC'
+                                            autocomplete='new-password'
                                             style={Object.assign({}, styles.input, styles.cvc)}
                                         />
                                     </div>
@@ -475,7 +519,7 @@ const styles = {
     cardsImage: {
         position: 'absolute',
         right: 4,
-        top: 10,
+        marginTop: 10,
         width: 179,
         height: 26,
     },

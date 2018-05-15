@@ -2677,4 +2677,18 @@
 @media (max-width: 400px) {
     .slider-typography {margin-top: 25%}
 }
+
+.inputFirstName, .inputLastName {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-width: 992px) {
+  .inputFirstName {
+    padding-right: 5px;
+  }
+  .inputLastName {
+    padding-left: 5px;
+  }
+}
 /*customization end*/
