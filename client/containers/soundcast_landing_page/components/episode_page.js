@@ -143,7 +143,7 @@ class _EpisodePage extends Component {
 
   sendToDatabase(event) {
     const {soundcastID, publisherID, episodeID, startPosition, listens, modalShown} = this.state;
-    const _date = moment().utc().format();
+    const _date = moment().format('YYYY-MM-DD');
 
     firebase.database().ref(`episodes/${episodeID}/totalListens`)
     .set(listens + 1);
