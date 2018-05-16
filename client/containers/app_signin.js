@@ -16,7 +16,7 @@ import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
-import { signIn, signInFacebook } from './commonAuth';
+import { signInPassword, signInFacebook } from './commonAuth';
 
 class _AppSignin extends Component {
     constructor(props) {
@@ -55,9 +55,9 @@ class _AppSignin extends Component {
     signInClick() {
       const {email, password} = this.state;
       const {signinUser, history, match} = this.props;
-      signIn(
+      signInPassword(
         email, password, signinUser, history, match,
-        user => console.log('Success signIn', user),
+        user => console.log('Success signInPassword', user),
         error => this.setState({ message: error.toString() })
       );
     }

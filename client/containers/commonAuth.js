@@ -2,10 +2,10 @@ import firebase from 'firebase';
 import Axios from 'axios';
 
 /*
- * SIGN IN BLOCK (signIn, signInFacebook, compileUser, signInInvitedAdmin)
+ * SIGN IN BLOCK (signInPassword, signInFacebook, compileUser, signInInvitedAdmin)
  */
 
-const signIn = async (email, password, signinUser, history, match, sucessCallback, errCallback) => {
+const signInPassword = async (email, password, signinUser, history, match, sucessCallback, errCallback) => {
   try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
       firebase.auth().onAuthStateChanged(user => {
@@ -340,7 +340,7 @@ const signupCommon = (signupUser, history, match, publisherID, user, successCall
 }
 
 export {
-  signIn,
+  signInPassword,
   signInFacebook,
   signupCommon,
   facebookErrorCallback,

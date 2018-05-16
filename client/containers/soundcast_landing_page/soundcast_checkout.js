@@ -14,7 +14,7 @@ import { sendEmail, signinUser, signupUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
-import { signIn, signInFacebook, signupCommon, facebookErrorCallback } from '../commonAuth';
+import { signInPassword, signInFacebook, signupCommon, facebookErrorCallback } from '../commonAuth';
 
 class _SoundcastCheckout extends Component {
   constructor(props) {
@@ -226,7 +226,7 @@ class _SoundcastCheckout extends Component {
     const {runSignIn, firstName, lastName, email, password, charge, addSoundcastToUse} = this.state;
     const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
-      signIn(
+      signInPassword(
         email, password, signinUser, history, match,
         user => checkStripeId(user),
         error => this.setState({ message: error.toString() })
