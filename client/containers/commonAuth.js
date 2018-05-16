@@ -281,7 +281,7 @@ const signInInvitedAdmin = (match, history) => {
  * SIGN UP BLOCK (signUp, signUpFacebook)
  */
 
-const signupCommon = (signupUser, history, match, publisherID, user) => {
+const signupCommon = (signupUser, history, match, publisherID, user, successCallback) => {
   const { firstName, lastName, email, pic_url } = user;
   const picture = pic_url ? pic_url : 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
   firebase.auth().onAuthStateChanged(user => {
@@ -307,6 +307,7 @@ const signupCommon = (signupUser, history, match, publisherID, user) => {
         // console.log('userToSave: ', userToSave);
         console.log('Success signupCommon user save');
         signupUser(userToSave);
+        successCallback && successCallback();
         // for user -> goTo myPrograms, for admin need to register publisher first
         if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
           history.push('/myprograms');

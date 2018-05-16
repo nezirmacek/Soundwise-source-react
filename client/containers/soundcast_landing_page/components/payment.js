@@ -35,6 +35,7 @@ export default class Payment extends Component {
 
         this.onSubmit = this.onSubmit.bind(this);
         this.stripeTokenHandler = this.stripeTokenHandler.bind(this);
+        this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
         this.renderProgressBar = this.renderProgressBar.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
@@ -271,8 +272,13 @@ export default class Payment extends Component {
                                     paid,
                                     startPaymentSubmission: false
                                 });
-                                handleStripeId && handleStripeId(response.data.res, userInfo, that.state);
-                                that.addSoundcastToUser(response.data.res) //add soundcast to user database and redirect
+                                if (userInfo && userInfo.email) { // logged in
+                                  that.addSoundcastToUser(response.data.res); //add soundcast to user database and redirect
+                                } else {
+                                  handleStripeId && handleStripeId(
+                                    response.data.res, userInfo, that.state, that.addSoundcastToUse
+                                  );
+                                }
                             }
                         })
                         .catch(function (error) {
@@ -307,8 +313,13 @@ export default class Payment extends Component {
                                     paid: true,
                                     startPaymentSubmission: false
                                 });
-                                handleStripeId && handleStripeId(subscription, userInfo, that.state);
-                                that.addSoundcastToUser(subscription) //add soundcast to user database and redirect
+                                if (userInfo && userInfo.email) { // logged in
+                                  that.addSoundcastToUser(subscription); //add soundcast to user database and redirect
+                                } else {
+                                  handleStripeId && handleStripeId(
+                                    subscription, userInfo, that.state, that.addSoundcastToUse
+                                  );
+                                }
                             }
                         })
                         .catch(function (error) {

@@ -100,7 +100,7 @@ class _SoundcastCheckout extends Component {
     this.setState({ totalPrice });
   }
 
-  handleStripeId(charge, userInfo, state) { // success payment callback
+  handleStripeId(charge, userInfo, state, addSoundcastToUse) { // success payment callback
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
     if (!(userInfo && userInfo.email)) { // not logged in
@@ -108,7 +108,15 @@ class _SoundcastCheckout extends Component {
       firebase.auth().fetchSignInMethodsForEmail(email)
       .then(providerInfo => {
         const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
-        const newState = { lastStep: true, email, firstName, lastName, platformCustomer };
+        const newState = {
+          lastStep: true,
+          charge,
+          email,
+          firstName,
+          lastName,
+          platformCustomer,
+          addSoundcastToUse,
+        };
         // TODO add firstName, lastName, email validation
         // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
         // if the user doesn't have account, the providerInfo returns empty array, []
@@ -141,8 +149,8 @@ class _SoundcastCheckout extends Component {
   }
 
   handleFBAuth() {
-    const {runSignIn, firstName, lastName} = this.state;
-    const {signinUser, signupCommon, history, match} = this.props;
+    const {runSignIn, firstName, lastName, charge, addSoundcastToUse} = this.state;
+    const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
       signInFacebook(
         signinUser, history, match,
@@ -150,7 +158,6 @@ class _SoundcastCheckout extends Component {
         error => this.setState({ message: error.toString() })
       );
     } else { // sign up
-      // TODO
       firebase.auth().signInWithPopup(provider).then(result => {
         firebase.auth().onAuthStateChanged(user => {
           if (user) {
@@ -185,7 +192,9 @@ class _SoundcastCheckout extends Component {
                   email,
                   pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                 };
-                signupCommon(signupUser, history, match, that.publisherID, user);
+                signupCommon(signupUser, history, match, that.publisherID, user, () => {
+                  addSoundcastToUse && charge && addSoundcastToUse(charge);
+                });
               }
             });
           }
@@ -202,7 +211,9 @@ class _SoundcastCheckout extends Component {
               .then(snapshot => {
                 const { firstName, lastName, email, pic_url } = snapshot.val();
                 const user = { firstName, lastName, email, pic_url };
-                signupCommon(signupUser, history, match, this.publisherID, user);
+                signupCommon(signupUser, history, match, this.publisherID, user, () => {
+                  addSoundcastToUse && charge && addSoundcastToUse(charge);
+                });
               });
             }
           });
@@ -212,7 +223,7 @@ class _SoundcastCheckout extends Component {
   }
 
   async submitPassword() {
-    const {runSignIn, firstName, lastName, email, password} = this.state;
+    const {runSignIn, firstName, lastName, email, password, charge, addSoundcastToUse} = this.state;
     const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
       signIn(
@@ -225,7 +236,9 @@ class _SoundcastCheckout extends Component {
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, password);
         // this.setState({message: 'account created'});
-        signupCommon(signupUser, history, match, this.publisherID, this.state);
+        signupCommon(signupUser, history, match, this.publisherID, this.state, () => {
+          addSoundcastToUse && charge && addSoundcastToUse(charge);
+        });
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });

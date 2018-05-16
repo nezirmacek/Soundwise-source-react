@@ -62,9 +62,6 @@ class _SoundcastHeader extends Component {
 
   }
 
-  addSoundcastToUser() {
-  }
-
   checkOut() {
 
   }
