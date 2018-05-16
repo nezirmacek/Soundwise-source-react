@@ -24,7 +24,7 @@ import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
-import { signupCommon, facebookErrorCallback } from './commonAuth';
+import { signupCommon, facebookErrorCallback, compileUser } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -262,94 +262,11 @@ class _AppSignup extends Component {
 
     async compileUser() {
       const { signinUser } = this.props;
-
-      firebase.auth().onAuthStateChanged(function(user) {
+      firebase.auth().onAuthStateChanged(user => {
         if (user) {
-          const creatorID = user.uid;
-          firebase.database().ref(`users/${creatorID}`).once('value')
-          .then(user_snapshot => {
-            let _user = user_snapshot.val();
-            if (_user.soundcasts_managed && _user.admin) {
-              if (_user.publisherID) {
-                firebase.database().ref(`publishers/${_user.publisherID}`).once('value')
-                .then(publisher_snapshot => {
-                  if (publisher_snapshot.val()) {
-                    _user.publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
-                    _user.publisher.id = _user.publisherID;
-                    if (_user.publisher.administrators) {
-                      for (let adminId in _user.publisher.administrators) {
-                        firebase.database().ref(`users/${adminId}`).once('value')
-                        .then(adminSnapshot => {
-                          if (adminSnapshot.val()) {
-                            _user.publisher.administrators[adminId] = JSON.parse(
-                              JSON.stringify(adminSnapshot.val())
-                            );
-                          }
-                        })
-                      }
-                    }
-                  }
-                })
-              }
-
-              let soundcastsManaged = {};
-              for (let key in _user.soundcasts_managed) {
-                firebase.database().ref(`soundcasts/${key}`).once('value')
-                .then(soundcastSnapshot => {
-                  soundcastsManaged[key] = soundcastSnapshot;
-                  if (soundcastsManaged[key].val()) {
-                    _user = JSON.parse(JSON.stringify(_user));
-                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
-                    _user.soundcasts_managed[key] = _soundcast;
-                    signinUser(_user);
-                    if (_soundcast.episodes) {
-                      let episodes = {};
-                      for (let epkey in _soundcast.episodes) {
-                        firebase.database().ref(`episodes/${epkey}`).once('value')
-                        .then(episodeSnapshot => {
-                          episodes[epkey] = episodeSnapshot;
-                          if (episodes[epkey].val()) {
-                            _user = JSON.parse(JSON.stringify(_user));
-                            _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
-                            signinUser(_user);
-                          }
-                        })
-                      }
-                    }
-                  }
-                });
-              }
-            }
-
-            if (_user.soundcasts) {
-              let userSoundcasts = {};
-              for (let key in _user.soundcasts) {
-                firebase.database().ref(`soundcasts/${key}`).once('value')
-                .then(soundcastSnapshot => {
-                  userSoundcasts[key] = soundcastSnapshot;
-                  if (userSoundcasts[key].val()) {
-                    _user = JSON.parse(JSON.stringify(_user));
-                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
-                    _user.soundcasts[key] = _soundcast;
-                    signinUser(_user);
-                    if (_soundcast.episodes) {
-                      let soundcastEpisodes = {};
-                      for (let epkey in _soundcast.episodes) {
-                        firebase.database().ref(`episodes/${epkey}`).once('value')
-                        .then(episodeSnapshot => {
-                          soundcastEpisodes[epkey] = episodeSnapshot;
-                          if (soundcastEpisodes[epkey].val()) {
-                            _user = JSON.parse(JSON.stringify(_user));
-                            _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
-                            signinUser(_user);
-                          }
-                        })
-                      }
-                    }
-                  }
-                })
-              }
-            }
+          firebase.database().ref(`users/${user.uid}`).once('value')
+          .then(snapshot => {
+            compileUser(snapshot.val() || {}, signinUser);
           })
         } else {
           // alert('User saving failed. Please try again later.');

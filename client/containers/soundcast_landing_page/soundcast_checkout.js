@@ -226,9 +226,13 @@ class _SoundcastCheckout extends Component {
     const {runSignIn, firstName, lastName, email, password, charge, addSoundcastToUse} = this.state;
     const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
-      signInPassword(
-        email, password, signinUser, history, match,
-        user => checkStripeId(user),
+      signInPassword(email, password,
+        user => {
+          console.log('Success signInPassword', user);
+          signinUser(user);
+          // TODO history.push('/notice')
+          checkStripeId(user);
+        },
         error => this.setState({ message: error.toString() })
       );
     } else { // sign up
