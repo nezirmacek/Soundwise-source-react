@@ -50,6 +50,7 @@ class _AppSignup extends Component {
         this.firebaseListener = null;
         this.firebaseListener2 = null;
         this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
+        this.signupCallback = this.signupCallback.bind(this);
     }
 
     componentWillMount() {
@@ -176,7 +177,10 @@ class _AppSignup extends Component {
           });
         });
       } else {
-        signupCommon(signupUser, history, match, this.publisherID, user);
+        signupCommon(
+          user, match.params.mode === 'admin' ? this.publisherID : null,
+          this.signupCallback, this.signupCallback,
+        );
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             const creatorID = user.uid;
@@ -432,7 +436,10 @@ class _AppSignup extends Component {
           await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
         this.setState({message: "account created"});
-        signupCommon(signupUser, history, match, this.publisherID, this.state);
+        signupCommon(
+          this.state, match.params.mode === 'admin' ? this.publisherID : null,
+          this.signupCallback, this.signupCallback,
+        );
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });
@@ -506,7 +513,10 @@ class _AppSignup extends Component {
                 } else if(match.params.mode == 'admin' && match.params.id) {
                   that.signUpInvitedAdmin(user);
                 } else {
-                  signupCommon(signupUser, history, match, that.publisherID, user);
+                  signupCommon(
+                    user, match.params.mode === 'admin' ? that.publisherID : null,
+                    that.signupCallback, that.signupCallback
+                  );
                 }
               }
             });
@@ -533,7 +543,10 @@ class _AppSignup extends Component {
                   } else if(match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    signupCommon(signupUser, history, match, that.publisherID, user);
+                    signupCommon(
+                      user, match.params.mode === 'admin' ? that.publisherID : null,
+                      that.signupCallback, that.signupCallback
+                    );
                   }
                 });
             } else {
@@ -544,6 +557,21 @@ class _AppSignup extends Component {
         });
       });
     } // handleFBAuth
+
+
+
+    signupCallback() => {
+      const { signupUser, match, history } = this.props;
+
+      signupUser(userToSave);
+      // for user -> goTo myPrograms, for admin need to register publisher first
+      if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+        history.push('/myprograms');
+      } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+        const { soundcast, soundcastID, checked, sumTotal } = history.location.state;
+        history.push('/soundcast_checkout', { soundcast, soundcastID, checked, sumTotal });
+      }
+    }
 
     render() {
       const { match, history } = this.props;

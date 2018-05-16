@@ -1,10 +1,6 @@
 import firebase from 'firebase';
 import Axios from 'axios';
 
-/*
- * SIGN IN BLOCK (signInPassword, signInFacebook, compileUser)
- */
-
 const signInPassword = async (email, password, sucessCallback, errCallback) => {
   try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -146,64 +142,33 @@ const compileUser = async (_user, signinUser) => {
   signinUser(_user);
 }
 
-
-/*
- * SIGN UP BLOCK (signUp, signUpFacebook)
- */
-
-const signupCommon = (signupUser, history, match, publisherID, user, successCallback) => {
-  const { firstName, lastName, email, pic_url } = user;
-  const picture = pic_url ? pic_url : 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
+const signupCommon = (_user, isAdmin, successCallback, errCallback) => {
+  const { firstName, lastName, email, pic_url } = _user;
+  const picture = pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
   firebase.auth().onAuthStateChanged(user => {
     if(user) {
       const userId = user.uid;
       const userToSave = { firstName, lastName, email: { 0: email }, pic_url: picture };
       // add admin fields
-      if (match.params.mode === 'admin') {
+      if (isAdmin) {
         userToSave.admin = true;
-        userToSave.publisherID = publisherID;
+        userToSave.publisherID = isAdmin;
       }
       firebase.database().ref(`users/${userId}`)
       .once('value')
       .then(userSnapshot => {
-        if(!userSnapshot.val()) {
+        if(!userSnapshot.val()) { // check user isn't exist
           firebase.database().ref('users/' + userId).set(userToSave);
         }
       });
-      const _user = { userId, firstName, lastName, picURL: pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png' };
-      // TODO: _user.picURL = false
-      Axios.post('https://mysoundwise.com/api/user', _user)
+      Axios.post('https://mysoundwise.com/api/user', { userId, firstName, lastName, picURL: picture })
       .then(res => {
-        // console.log('userToSave: ', userToSave);
-        console.log('Success signupCommon user save');
-        signupUser(userToSave);
-        successCallback && successCallback();
-        // for user -> goTo myPrograms, for admin need to register publisher first
-        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-          history.push('/myprograms');
-        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
-          history.push('/soundcast_checkout', {
-            soundcast: history.location.state.soundcast,
-            soundcastID: history.location.state.soundcastID,
-            checked: history.location.state.checked,
-            sumTotal: history.location.state.sumTotal,
-          });
-        }
+        console.log('Success signupCommon user save', userToSave);
+        successCallback();
       })
       .catch(err => {
         console.log('Error signupCommon user saving failed: ', err);
-        signupUser(userToSave);
-        // for user -> goTo myPrograms, for admin need to register publisher first
-        if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
-          history.push('/myprograms');
-        } else if(match.params.mode == 'soundcast_user' && history.location.state) {
-          history.push('/soundcast_checkout', {
-            soundcast: history.location.state.soundcast,
-            soundcastID: history.location.state.soundcastID,
-            checked: history.location.state.checked,
-            sumTotal: history.location.state.sumTotal,
-          });
-        }
+        errCallback && errCallback(err);
       });
     }
   });

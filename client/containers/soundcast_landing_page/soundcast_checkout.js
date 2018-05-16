@@ -192,9 +192,12 @@ class _SoundcastCheckout extends Component {
                   email,
                   pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                 };
-                signupCommon(signupUser, history, match, that.publisherID, user, () => {
-                  addSoundcastToUse && charge && addSoundcastToUse(charge);
-                });
+                signupCommon(
+                  user, null,
+                  () => {
+                    addSoundcastToUse && charge && addSoundcastToUse(charge);
+                  }
+                );
               }
             });
           }
@@ -211,9 +214,12 @@ class _SoundcastCheckout extends Component {
               .then(snapshot => {
                 const { firstName, lastName, email, pic_url } = snapshot.val();
                 const user = { firstName, lastName, email, pic_url };
-                signupCommon(signupUser, history, match, this.publisherID, user, () => {
-                  addSoundcastToUse && charge && addSoundcastToUse(charge);
-                });
+                signupCommon(
+                  user, null,
+                  () => {
+                    addSoundcastToUse && charge && addSoundcastToUse(charge);
+                  }
+                );
               });
             }
           });
@@ -240,9 +246,12 @@ class _SoundcastCheckout extends Component {
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, password);
         // this.setState({message: 'account created'});
-        signupCommon(signupUser, history, match, this.publisherID, this.state, () => {
-          addSoundcastToUse && charge && addSoundcastToUse(charge);
-        });
+        signupCommon(
+          this.state, null,
+          () => {
+            addSoundcastToUse && charge && addSoundcastToUse(charge);
+          }
+        );
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });
