@@ -177,10 +177,8 @@ class _AppSignup extends Component {
           });
         });
       } else {
-        signupCommon(
-          user, match.params.mode === 'admin' ? this.publisherID : null,
-          this.signupCallback, this.signupCallback,
-        );
+        const isAdmin = match.params.mode === 'admin' ? this.publisherID : null
+        signupCommon(user, isAdmin, this.signupCallback);
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             const creatorID = user.uid;
@@ -436,10 +434,8 @@ class _AppSignup extends Component {
           await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
         this.setState({message: "account created"});
-        signupCommon(
-          this.state, match.params.mode === 'admin' ? this.publisherID : null,
-          this.signupCallback, this.signupCallback,
-        );
+        const isAdmin = match.params.mode === 'admin' ? this.publisherID : null
+        signupCommon(user, isAdmin, this.signupCallback);
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });
@@ -513,10 +509,8 @@ class _AppSignup extends Component {
                 } else if(match.params.mode == 'admin' && match.params.id) {
                   that.signUpInvitedAdmin(user);
                 } else {
-                  signupCommon(
-                    user, match.params.mode === 'admin' ? that.publisherID : null,
-                    that.signupCallback, that.signupCallback
-                  );
+                  const isAdmin = match.params.mode === 'admin' ? that.publisherID : null
+                  signupCommon(user, isAdmin, that.signupCallback);
                 }
               }
             });
@@ -543,10 +537,8 @@ class _AppSignup extends Component {
                   } else if(match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    signupCommon(
-                      user, match.params.mode === 'admin' ? that.publisherID : null,
-                      that.signupCallback, that.signupCallback
-                    );
+                    const isAdmin = match.params.mode === 'admin' ? that.publisherID : null
+                    signupCommon(user, isAdmin, that.signupCallback);
                   }
                 });
             } else {
@@ -558,12 +550,9 @@ class _AppSignup extends Component {
       });
     } // handleFBAuth
 
-
-
-    signupCallback() => {
+    signupCallback(user) {
       const { signupUser, match, history } = this.props;
-
-      signupUser(userToSave);
+      signupUser(user);
       // for user -> goTo myPrograms, for admin need to register publisher first
       if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
         history.push('/myprograms');

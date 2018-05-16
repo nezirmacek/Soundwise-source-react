@@ -3,21 +3,21 @@ import Axios from 'axios';
 
 const signInPassword = async (email, password, sucessCallback, errCallback) => {
   try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          firebase.database().ref(`users/${user.uid}`).once('value').then(snapshot => {
-            if (snapshot.val()) {
-              sucessCallback(JSON.parse(JSON.stringify(snapshot.val())));
-            } else {
-              errCallback('User not found');
-            }
-          });
-        } else {
-          errCallback('Failed to save login info. Please try again later.');
-          // Raven.captureMessage('Failed to save login info. Please try again later.');
-        }
-      });
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        firebase.database().ref(`users/${user.uid}`).once('value').then(snapshot => {
+          if (snapshot.val()) {
+            sucessCallback(snapshot.val());
+          } else {
+            errCallback('User not found');
+          }
+        });
+      } else {
+        errCallback('Failed to save login info. Please try again later.');
+        // Raven.captureMessage('Failed to save login info. Please try again later.');
+      }
+    });
   } catch (error) {
     errCallback(error);
     console.log(error.toString());
@@ -31,7 +31,7 @@ const signInFacebook = (sucessCallback, errCallback) => {
     // This gives you a Facebook Access Token. You can use it to access the Facebook API.
     // The signed-in user info.
     const userId = firebase.auth().currentUser.uid;
-    firebase.database().ref('users/' + userId)
+    firebase.database().ref(`users/${userId}`)
     .once('value')
     .then(snapshot => {
       const _user = snapshot.val();
@@ -49,7 +49,7 @@ const signInFacebook = (sucessCallback, errCallback) => {
       // Facebook account successfully linked to the existing Firebase user.
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
-          firebase.database().ref('users/' + user.uid)
+          firebase.database().ref(`users/${user.uid}`)
           .once('value')
           .then(snapshot => {
             sucessCallback(snapshot.val());
@@ -142,7 +142,7 @@ const compileUser = async (_user, signinUser) => {
   signinUser(_user);
 }
 
-const signupCommon = (_user, isAdmin, successCallback, errCallback) => {
+const signupCommon = (_user, isAdmin, successCallback) => {
   const { firstName, lastName, email, pic_url } = _user;
   const picture = pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
   firebase.auth().onAuthStateChanged(user => {
@@ -164,11 +164,11 @@ const signupCommon = (_user, isAdmin, successCallback, errCallback) => {
       Axios.post('https://mysoundwise.com/api/user', { userId, firstName, lastName, picURL: picture })
       .then(res => {
         console.log('Success signupCommon user save', userToSave);
-        successCallback();
+        successCallback(userToSave);
       })
       .catch(err => {
         console.log('Error signupCommon user saving failed: ', err);
-        errCallback && errCallback(err);
+        successCallback(userToSave);
       });
     }
   });
@@ -177,7 +177,7 @@ const signupCommon = (_user, isAdmin, successCallback, errCallback) => {
 export {
   signInPassword,
   signInFacebook,
+  facebookErrorCallback,
   compileUser,
   signupCommon,
-  facebookErrorCallback,
 }

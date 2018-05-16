@@ -34,10 +34,11 @@ class _SoundcastCheckout extends Component {
     }
 
     this.publisherID = moment().format('x') + 'p';
-    this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
+    this.redirectNotice = this.redirectNotice.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
     this.handleStripeId = this.handleStripeId.bind(this);
-    this.checkStripeId = this.checkStripeId.bind(this);
+    this.signupCallback = this.signupCallback.bind(this);
+    this.signinCallback = this.signinCallback.bind(this);
   }
 
   async componentDidMount() {
@@ -73,26 +74,6 @@ class _SoundcastCheckout extends Component {
       soundcastID,
       checked,
       sumTotal,
-    });
-  }
-
-  handlePaymentSuccess() {
-    const {soundcast, soundcastID, checked, sumTotal} = this.state;
-    this.setState({ success: true });
-    // this.props.history.push('/mysoundcasts');
-    const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
-    this.props.history.push({
-      pathname: '/notice',
-      state: {
-        text,
-        soundcastTitle: soundcast.title,
-        soundcast,
-        soundcastID,
-        checked,
-        sumTotal,
-        ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
-        android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
-      }
     });
   }
 
@@ -139,24 +120,11 @@ class _SoundcastCheckout extends Component {
     this.setState({ [field]: e.target.value })
   }
 
-  checkStripeId(user) {
-    const {platformCustomer} = this.state;
-    if (platformCustomer && user.stripe_id !== platformCustomer) {
-      firebase.database().ref(`users/${user.uid}/stripe_id`).set(platformCustomer);
-      user.stripe_id = platformCustomer;
-      signinUser(user);
-    }
-  }
-
   handleFBAuth() {
     const {runSignIn, firstName, lastName, charge, addSoundcastToUse} = this.state;
     const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
-      signInFacebook(
-        signinUser, history, match,
-        user => checkStripeId(user),
-        error => this.setState({ message: error.toString() })
-      );
+      signInFacebook(this.signinCallback, error => this.setState({ message: error.toString() }));
     } else { // sign up
       firebase.auth().signInWithPopup(provider).then(result => {
         firebase.auth().onAuthStateChanged(user => {
@@ -192,12 +160,7 @@ class _SoundcastCheckout extends Component {
                   email,
                   pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                 };
-                signupCommon(
-                  user, null,
-                  () => {
-                    addSoundcastToUse && charge && addSoundcastToUse(charge);
-                  }
-                );
+                signupCommon(user, null, this.signupCallback);
               }
             });
           }
@@ -212,14 +175,7 @@ class _SoundcastCheckout extends Component {
               firebase.database().ref('users/' + userId)
               .once('value')
               .then(snapshot => {
-                const { firstName, lastName, email, pic_url } = snapshot.val();
-                const user = { firstName, lastName, email, pic_url };
-                signupCommon(
-                  user, null,
-                  () => {
-                    addSoundcastToUse && charge && addSoundcastToUse(charge);
-                  }
-                );
+                signupCommon(snapshot.val(), null, this.signupCallback);
               });
             }
           });
@@ -228,31 +184,54 @@ class _SoundcastCheckout extends Component {
     }
   }
 
+  signupCallback(user) {
+    const {addSoundcastToUse, charge} = this.state;
+    console.log('Success sign up', user);
+    this.props.signupUser(user);
+    addSoundcastToUse && charge && addSoundcastToUse(charge);
+    this.redirectNotice();
+  }
+
+  signinCallback(user) {
+    const {platformCustomer} = this.state;
+    console.log('Success sign in', user);
+    if (platformCustomer && user.stripe_id !== platformCustomer) { // check stripe id
+      firebase.database().ref(`users/${user.uid}/stripe_id`).set(platformCustomer);
+      user.stripe_id = platformCustomer;
+    }
+    this.props.signinUser(user);
+    this.redirectNotice();
+  }
+
+  redirectNotice() {
+    const {soundcast, soundcastID, checked, sumTotal} = this.state;
+    this.setState({ success: true });
+    const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+    this.props.history.push({
+      pathname: '/notice',
+      state: {
+        text,
+        soundcastTitle: soundcast.title,
+        soundcast,
+        soundcastID,
+        checked,
+        sumTotal,
+        ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
+        android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
+      }
+    });
+  }
+
   async submitPassword() {
-    const {runSignIn, firstName, lastName, email, password, charge, addSoundcastToUse} = this.state;
-    const {signinUser, signupUser, history, match} = this.props;
+    const {runSignIn, firstName, lastName, email, password} = this.state;
     if(runSignIn) {
-      signInPassword(email, password,
-        user => {
-          console.log('Success signInPassword', user);
-          signinUser(user);
-          // TODO history.push('/notice')
-          checkStripeId(user);
-        },
+      signInPassword(email, password, this.signinCallback,
         error => this.setState({ message: error.toString() })
       );
     } else { // sign up
-      const {firstName, lastName, email, password, pic_url} = this.state;
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, password);
-        // this.setState({message: 'account created'});
-        signupCommon(
-          this.state, null,
-          () => {
-            addSoundcastToUse && charge && addSoundcastToUse(charge);
-          }
-        );
-        return true;
+        signupCommon(this.state, null, this.signupCallback);
       } catch (error) {
         this.setState({ message: error.toString() });
         console.log('Error submitPassword', error.toString());
@@ -373,7 +352,6 @@ class _SoundcastCheckout extends Component {
             checked={checked}
             total={totalPrice}
             userInfo={userInfo}
-            handlePaymentSuccess={this.handlePaymentSuccess}
             isEmailSent={this.props.isEmailSent}
             sendEmail={this.props.sendEmail}
             handleStripeId={this.handleStripeId}

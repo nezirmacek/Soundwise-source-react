@@ -199,8 +199,6 @@ export default class Payment extends Component {
                             }
                         })
                     }
-
-                    that.props.handlePaymentSuccess(soundcast);
                 }
             });
         }
@@ -208,7 +206,6 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
-        // return this.props.handleStripeId('TEST1', this.state.userInfo || this.props.userInfo, this.state);
         if (this.state.startPaymentSubmission) { return }
         const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
         if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
@@ -422,7 +419,7 @@ export default class Payment extends Component {
                                             type='text'
                                             name='number'
                                             placeholder='Card Number'
-                                            autocomplete='new-password'
+                                            autoComplete='new-password'
                                             style={styles.input}
                                         />
                                         <img src="../../../images/card_types.png" style={styles.cardsImage} />
@@ -468,7 +465,7 @@ export default class Payment extends Component {
                                             type='password'
                                             name='cvc'
                                             placeholder='CVC'
-                                            autocomplete='new-password'
+                                            autoComplete='new-password'
                                             style={Object.assign({}, styles.input, styles.cvc)}
                                         />
                                     </div>
