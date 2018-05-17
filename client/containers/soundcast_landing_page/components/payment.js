@@ -38,47 +38,41 @@ export default class Payment extends Component {
         this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
         this.renderProgressBar = this.renderProgressBar.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.updateProps = this.updateProps.bind(this);
     }
 
     componentDidMount() {
         // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-
-        this.setState({
-            totalPay: this.props.total
-        });
-        if(this.props.userInfo && this.props.userInfo.email) {
-            this.setState({
-                userInfo: this.props.userInfo
-            });
-            if(this.props.total == 0 || this.props.total == 'free') {
-                this.addSoundcastToUser(null, this.props.userInfo);
-            } else if (this.props.userInfo.stripe_id) { // have stripe_id
-                this.stripeTokenHandler(null, {}); // charge user
-            }
-        }
+        this.updateProps(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
+        this.updateProps(nextProps);
+    }
+
+    updateProps(props) {
         this.setState({
-            totalPay: nextProps.total
+            totalPay: props.total
         });
-        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) {
-            this.setState({
-                userInfo: nextProps.userInfo
-            });
-            if(nextProps.total === 0 || nextProps.total == 'free') {
+        if(props.userInfo && props.userInfo.email) {
+            if(props.total === 0 || props.total == 'free') {
                 // if it's free course, then no need for credit card info.
                 // add soundcast to user and then redirect
-                this.addSoundcastToUser(null, nextProps.userInfo);
-            } else if (nextProps.userInfo.stripe_id) { // have stripe_id
+                this.addSoundcastToUser(null, props.userInfo);
+            } else if(props.userInfo.stripe_id) { // have stripe_id
                 this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
 
-    shouldComponentUpdate(nextProps) {
-        if(  this.props.isEmailSent != nextProps.isEmailSent || this.props.total != nextProps.total ){
+    shouldComponentUpdate(nextProps, nextState) {
+        if(  this.props.isEmailSent != nextProps.isEmailSent
+          || this.props.total != nextProps.total
+          || this.props.userInfo.email !== nextProps.userInfo.email
+          || nextState.paymentError
+          || nextState.startPaymentSubmission
+        ){
             // this.setState({confirmationEmailSent : true})
             return true;
         }
@@ -98,7 +92,7 @@ export default class Payment extends Component {
     }
 
     addSoundcastToUser(charge, userInfoFromProp) {
-        const userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
+        const userInfo = userInfoFromProp || this.props.userInfo;
         if(userInfo && userInfo.email) { // if logged in
             const that = this;
             const {soundcastID, soundcast, checked} = this.props;
@@ -227,10 +221,10 @@ export default class Payment extends Component {
 
     stripeTokenHandler(status, response) {
         const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
-        const {email, stripe_id} = this.props.userInfo;
+        const userInfo = this.props.userInfo;
+        const {email, stripe_id} = userInfo;
         const receipt_email = (email && email[0]) || this.state.email;
         const {soundcast, checked, soundcastID, handleStripeId} = this.props;
-        const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -273,7 +267,7 @@ export default class Payment extends Component {
                                   that.addSoundcastToUser(response.data.res); //add soundcast to user database and redirect
                                 } else {
                                   handleStripeId && handleStripeId(
-                                    response.data.res, userInfo, that.state, that.addSoundcastToUse
+                                    response.data.res, userInfo, that.state, that.addSoundcastToUser
                                   );
                                 }
                             }
@@ -314,7 +308,7 @@ export default class Payment extends Component {
                                   that.addSoundcastToUser(subscription); //add soundcast to user database and redirect
                                 } else {
                                   handleStripeId && handleStripeId(
-                                    subscription, userInfo, that.state, that.addSoundcastToUse
+                                    subscription, userInfo, that.state, that.addSoundcastToUser
                                   );
                                 }
                             }
@@ -350,7 +344,7 @@ export default class Payment extends Component {
 
     render() {
         const {total} = this.props;
-        const showInputs = !(this.state.userInfo && this.state.userInfo.firstName);
+        const showInputs = !(this.props.userInfo && this.props.userInfo.firstName);
 
         const monthOptions = [];
         const yearOptions = [];

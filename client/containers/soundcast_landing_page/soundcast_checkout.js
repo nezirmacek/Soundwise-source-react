@@ -81,7 +81,7 @@ class _SoundcastCheckout extends Component {
     this.setState({ totalPrice });
   }
 
-  handleStripeId(charge, userInfo, state, addSoundcastToUse) { // success payment callback
+  handleStripeId(charge, userInfo, state, addSoundcastToUser) { // success payment callback
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
     if (!(userInfo && userInfo.email)) { // not logged in
@@ -96,7 +96,7 @@ class _SoundcastCheckout extends Component {
           firstName,
           lastName,
           platformCustomer,
-          addSoundcastToUse,
+          addSoundcastToUser,
         };
         // TODO add firstName, lastName, email validation
         // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
@@ -121,7 +121,7 @@ class _SoundcastCheckout extends Component {
   }
 
   handleFBAuth() {
-    const {runSignIn, firstName, lastName, charge, addSoundcastToUse} = this.state;
+    const {runSignIn, firstName, lastName, charge} = this.state;
     const {signinUser, signupUser, history, match} = this.props;
     if(runSignIn) {
       signInFacebook(this.signinCallback, error => this.setState({ message: error.toString() }));
@@ -185,10 +185,10 @@ class _SoundcastCheckout extends Component {
   }
 
   signupCallback(user) {
-    const {addSoundcastToUse, charge} = this.state;
+    const {addSoundcastToUser, charge} = this.state;
     console.log('Success sign up', user);
     this.props.signupUser(user);
-    addSoundcastToUse && charge && addSoundcastToUse(charge);
+    addSoundcastToUser && charge && addSoundcastToUser(charge);
     this.redirectNotice();
   }
 
