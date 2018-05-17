@@ -60,7 +60,8 @@ export default class Payment extends Component {
                 // if it's free course, then no need for credit card info.
                 // add soundcast to user and then redirect
                 this.addSoundcastToUser(null, props.userInfo);
-            } else if(props.userInfo.stripe_id) { // have stripe_id
+            } else if(props.userInfo.stripe_id && !this.state.submitDisabled) { // have stripe_id
+                this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: '' });
                 this.stripeTokenHandler(null, {}); // charge user
             }
         }
@@ -91,11 +92,11 @@ export default class Payment extends Component {
         })
     }
 
-    addSoundcastToUser(charge, userInfoFromProp) {
+    addSoundcastToUser(charge, userInfoFromProp, signinUser) {
         const userInfo = userInfoFromProp || this.props.userInfo;
         if(userInfo && userInfo.email) { // if logged in
             const that = this;
-            const {soundcastID, soundcast, checked} = this.props;
+            const {soundcastID, soundcast, checked, sumTotal, history} = this.props;
             const {confirmationEmail} = soundcast;
             const {totalPay} = this.state;
             let _email, content;
@@ -132,6 +133,23 @@ export default class Payment extends Component {
                     addToEmailList(soundcastID, [{email: userInfo.email[0], firstName: userInfo.firstName, lastName: userInfo.lastName}], 'subscriberEmailList', soundcast.subscriberEmailList)
                     .then(listId => {
                       inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail); // use transactional email for this
+
+                      // Redirect to /notice page
+                      that.setState({ success: true });
+                      const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+                      history.push({
+                        pathname: '/notice',
+                        state: {
+                          text,
+                          soundcastTitle: soundcast.title,
+                          soundcast,
+                          soundcastID,
+                          checked,
+                          sumTotal,
+                          ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
+                          android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
+                        }
+                      });
                     });
                 })
             }
@@ -155,9 +173,10 @@ export default class Payment extends Component {
                     });
 
                     // add stripe_id to user data if not already exists
-                    if(platformCustomer) {
-                        firebase.database().ref(`users/${userId}/stripe_id`)
-                        .set(platformCustomer);
+                    if(platformCustomer && user.stripe_id !== platformCustomer) {
+                        firebase.database().ref(`users/${userId}/stripe_id`).set(platformCustomer);
+                        user.stripe_id = platformCustomer;
+                        signinUser && signinUser(user);
                     }
 
                     //add user to soundcast
@@ -209,13 +228,10 @@ export default class Payment extends Component {
         if ((Date.now() - lastSubmitDate2) < 10000) { // 10 seconds since last success call not passed
           return
         }
-        this.setState({
-            startPaymentSubmission: true
-        });
+        this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: null });
         const {number, cvc} = this.state;
         const exp_month = Number(this.state.exp_month) + 1;
         const exp_year = Number(this.state.exp_year);
-        this.setState({ submitDisabled: true, paymentError: null });
         Stripe.card.createToken({number, cvc, exp_month, exp_year}, this.stripeTokenHandler);
     }
 

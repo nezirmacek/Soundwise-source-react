@@ -26,7 +26,7 @@ import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
 import { signupCommon, facebookErrorCallback, compileUser } from './commonAuth';
 
-var provider = new firebase.auth.FacebookAuthProvider();
+const provider = new firebase.auth.FacebookAuthProvider();
 
 class _AppSignup extends Component {
     constructor(props) {
@@ -408,7 +408,7 @@ class _AppSignup extends Component {
         }
     }
 
-    async _signUp () {
+    async _signUp() {
       const {match, history, signupUser} = this.props;
       const {firstName, lastName, email, password, isFBauth} = this.state;
       let authArr = [];
@@ -433,9 +433,9 @@ class _AppSignup extends Component {
         if (!isFBauth) {
           await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
-        this.setState({message: "account created"});
+        // this.setState({message: "account created"});
         const isAdmin = match.params.mode === 'admin' ? this.publisherID : null
-        signupCommon(user, isAdmin, this.signupCallback);
+        signupCommon(this.state, isAdmin, this.signupCallback);
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });

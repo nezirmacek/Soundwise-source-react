@@ -16,6 +16,8 @@ import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
 import { signInPassword, signInFacebook, signupCommon, facebookErrorCallback } from '../commonAuth';
 
+const provider = new firebase.auth.FacebookAuthProvider();
+
 class _SoundcastCheckout extends Component {
   constructor(props) {
     super(props);
@@ -30,11 +32,9 @@ class _SoundcastCheckout extends Component {
       runSignIn: false,
       showFacebook: true,
       showPassword: true,
-      platformCustomer: null,
     }
 
     this.publisherID = moment().format('x') + 'p';
-    this.redirectNotice = this.redirectNotice.bind(this);
     this.setTotalPrice = this.setTotalPrice.bind(this);
     this.handleStripeId = this.handleStripeId.bind(this);
     this.signupCallback = this.signupCallback.bind(this);
@@ -88,14 +88,12 @@ class _SoundcastCheckout extends Component {
       const {email, firstName, lastName} = state;
       firebase.auth().fetchSignInMethodsForEmail(email)
       .then(providerInfo => {
-        const platformCustomer = charge ? (charge.platformCustomer || charge.stripe_id) : null;
         const newState = {
           lastStep: true,
           charge,
           email,
           firstName,
           lastName,
-          platformCustomer,
           addSoundcastToUser,
         };
         // TODO add firstName, lastName, email validation
@@ -185,41 +183,15 @@ class _SoundcastCheckout extends Component {
   }
 
   signupCallback(user) {
-    const {addSoundcastToUser, charge} = this.state;
-    console.log('Success sign up', user);
+    console.log('Success signup', user);
     this.props.signupUser(user);
-    addSoundcastToUser && charge && addSoundcastToUser(charge);
-    this.redirectNotice();
+    this.state.addSoundcastToUser(this.state.charge, user);
   }
 
   signinCallback(user) {
-    const {platformCustomer} = this.state;
-    console.log('Success sign in', user);
-    if (platformCustomer && user.stripe_id !== platformCustomer) { // check stripe id
-      firebase.database().ref(`users/${user.uid}/stripe_id`).set(platformCustomer);
-      user.stripe_id = platformCustomer;
-    }
+    console.log('Success signin', user);
     this.props.signinUser(user);
-    this.redirectNotice();
-  }
-
-  redirectNotice() {
-    const {soundcast, soundcastID, checked, sumTotal} = this.state;
-    this.setState({ success: true });
-    const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
-    this.props.history.push({
-      pathname: '/notice',
-      state: {
-        text,
-        soundcastTitle: soundcast.title,
-        soundcast,
-        soundcastID,
-        checked,
-        sumTotal,
-        ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
-        android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
-      }
-    });
+    this.state.addSoundcastToUser(this.state.charge, user, this.props.signinUser);
   }
 
   async submitPassword() {
@@ -241,7 +213,7 @@ class _SoundcastCheckout extends Component {
 
   render() {
     const {soundcast, soundcastID, checked, sumTotal, totalPrice, message} = this.state;
-    const {userInfo} = this.props;
+    const {userInfo, history} = this.props;
 
     if(!soundcast) {
       return (
@@ -352,6 +324,8 @@ class _SoundcastCheckout extends Component {
             checked={checked}
             total={totalPrice}
             userInfo={userInfo}
+            sumTotal={sumTotal}
+            history={history}
             isEmailSent={this.props.isEmailSent}
             sendEmail={this.props.sendEmail}
             handleStripeId={this.handleStripeId}
