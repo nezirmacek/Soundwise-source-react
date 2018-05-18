@@ -10,7 +10,6 @@ const sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const stripeFeeFixed = 30; // 30 cents fixed fee
 const stripeFeePercent = (2.9 + 0.5); // 2.9% transaction fee, 0.5% fee on payout volume
-const soundwiseFeePercent = 0;
 
 module.exports = function(Transaction) {
   Transaction.handleStripeWebhookEvent = function(data, cb) {
@@ -207,7 +206,7 @@ function createTransactions(Transaction, transactionsPromises,
     });
 }
 
-function createCharge(Transaction, data, cb) {
+async function createCharge(Transaction, data, cb) {
   const {
     amount,
     platformCustomer,
@@ -225,6 +224,16 @@ function createCharge(Transaction, data, cb) {
     statement_descriptor = data.statement_descriptor;
   }
 
+  const publisherObj = await admin.database().ref(`publishers/${publisherID}`);
+  const publisher = publisherObj.val();
+  let soundwiseFeePercent;
+  if(publisher.plan == 'plus' && current_period_end > moment().format('X')) {
+    soundwiseFeePercent = 5;
+  } else if((publisher.plan == 'pro' && current_period_end > moment().format('X')) || publisher.beta) {
+    soundwiseFeePercent = 0;
+  } else {
+    soundwiseFeePercent = 10;
+  }
   const fees = soundwiseFeePercent / 100 * Number(amount);
   // create token from customer
   // and then create charge using token and connected account id

@@ -210,7 +210,7 @@ export default class SoundcastsManaged extends Component {
                               </a>
                               <a
                                 target='_blank'
-                                href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
+                                href={soundcast.prices && soundcast.prices[0].price > 0 && `http://localhost:3000/soundcast_checkout?soundcast_id=${soundcast.id}` || `https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
                                 style={{paddingLeft: 15}}>
                                 <span
                                   dataToggle="tooltip" dataPlacement="top" title="view soundcast signup form"

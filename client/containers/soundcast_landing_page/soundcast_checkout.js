@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import firebase from 'firebase';
 import moment from 'moment';
+import Dots from 'react-activity/lib/Dots';
 
 import  PageHeader  from './components/page_header';
 import Payment from './components/payment';
@@ -222,8 +223,8 @@ class _SoundcastCheckout extends Component {
           <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
             <div className="container">
               <div className="row">
-                <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                  <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">YOUR CART IS EMPTY</h2>
+                <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1em'}}>
+                  <Dots style={{display: 'flex'}} color="#727981" size={32} speed={1}/>
                 </div>
               </div>
             </div>
