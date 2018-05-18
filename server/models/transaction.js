@@ -224,7 +224,7 @@ async function createCharge(Transaction, data, cb) {
     statement_descriptor = data.statement_descriptor;
   }
 
-  const publisherObj = await admin.database().ref(`publishers/${publisherID}`);
+  const publisherObj = await admin.database().ref(`publishers/${publisherID}`).once('value');
   const publisher = publisherObj.val();
   let soundwiseFeePercent;
   if(publisher.plan == 'plus' && current_period_end > moment().format('X')) {

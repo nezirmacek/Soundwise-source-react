@@ -364,3 +364,9 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
+const test = async () => {
+    const publisherObj = await firebase.database().ref(`publishers/1508293592360p`).once('value');
+  const publisher = publisherObj.val();
+  console.log(publisher.name);
+}
+test();
