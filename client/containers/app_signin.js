@@ -16,7 +16,7 @@ import Colors from '../styles/colors';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
-import { signIn, signInFacebook } from './commonAuth';
+import { signInPassword, signInFacebook, compileUser } from './commonAuth';
 
 class _AppSignin extends Component {
     constructor(props) {
@@ -55,18 +55,111 @@ class _AppSignin extends Component {
     signInClick() {
       const {email, password} = this.state;
       const {signinUser, history, match} = this.props;
-      signIn(
-        email, password, signinUser, history, match,
-        user => console.log('Success signIn', user),
+      signInPassword(email, password,
+        user => {
+          console.log('Success signInPassword', user);
+          signinUser(user);
+          if (history.location.state && history.location.state.soundcast) {
+            compileUser(user, signinUser);
+            history.push('/soundcast_checkout', {
+              soundcast: history.location.state.soundcast,
+              soundcastID: history.location.state.soundcastID,
+              checked: history.location.state.checked,
+              sumTotal: history.location.state.sumTotal,
+              userInfo: user,
+            });
+          } else if (user.admin && !match.params.id) {
+            compileUser(user, signinUser);
+            history.push('/dashboard/soundcasts');
+          } else if(match.params.id) {
+            signInInvitedAdmin(match, history);
+          } else if (user.courses) {
+            compileUser(user, signinUser);
+            history.push('/myprograms');
+          } else {
+            compileUser(user, signinUser);
+            history.push('/mysoundcasts');
+          }
+        },
         error => this.setState({ message: error.toString() })
       );
+    }
+
+    signInInvitedAdmin() {
+      const {signinUser, history, match} = this.props;
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          const userId = user.uid;
+          firebase.database().ref(`publishers/${match.params.id}/administrators/${userId}`).set(true);
+          firebase.database().ref(`publishers/${match.params.id}/soundcasts`)
+          .once('value')
+          .then(snapshot => {
+            firebase.database().ref(`users/${userId}/soundcasts_managed`).set(snapshot.val());
+            firebase.database().ref(`users/${userId}/admin`).set(true);
+            firebase.database().ref(`users/${userId}/publisherID`).set(match.params.id);
+            console.log('completed adding publisher to invited admin');
+          })
+          .then(() => {
+            firebase.database().ref(`users/${userId}`)
+            .on('value', snapshot => {
+              compileUser(snapshot.val(), signinUser);
+            });
+          })
+          .then(() => {
+            history.push('/dashboard/soundcasts');
+          });
+        } else {
+          // alert('profile saving failed. Please try again later.');
+          // Raven.captureMessage('invited admin saving failed!')
+        }
+      });
     }
 
     handleFBAuth() {
       const {signinUser, history, match} = this.props;
       signInFacebook(
-        signinUser, history, match,
-        user => console.log('Success signInFacebook', user),
+        user => {
+          console.log('Success signInFacebook', user);
+          if(user && typeof(user.firstName) !== 'undefined') { // if user already exists
+            signinUser(user);
+            if (history.location.state && history.location.state.soundcast) {
+              compileUser(user, signinUser);
+              history.push('/soundcast_checkout', {
+                soundcast: history.location.state.soundcast,
+                soundcastID: history.location.state.soundcastID,
+                checked: history.location.state.checked,
+                sumTotal: history.location.state.sumTotal,
+              });
+            } else if (user.admin && !match.params.id) {
+              compileUser(user, signinUser);
+              history.push('/dashboard/soundcasts');
+            } else if (match.params.id) {
+              signInInvitedAdmin(match, history);
+            } else {
+              history.push('/myprograms');
+            }
+          } else {  //if it's a new user
+            // const { email, photoURL: pic_url, displayName } = result.user;
+            // const name = displayName.split(' ');
+            // const _userToRegister = {
+            //   firstName: name[0],
+            //   lastName: name[1],
+            //   email,
+            //   pic_url,
+            // };
+            //
+            // firebase.database().ref('users/' + userId).set(_userToRegister);
+            // signinUser(_userToRegister);
+            // // from login page now register subscribers by default
+            // history.push('/myprograms');
+            alert('You don’t have a Soundwise account. Please create or sign up for a soundcast to get started.');
+            if(match.params.id) {
+              history.push(`/signup/admin/${match.params.id}`);
+            } else {
+              history.push('/signup');
+            }
+          }
+        },
         error => this.setState({ message: error.toString() })
       );
     }

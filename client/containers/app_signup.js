@@ -24,9 +24,9 @@ import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
 import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
-import { signupCommon, facebookErrorCallback } from './commonAuth';
+import { signupCommon, facebookErrorCallback, compileUser } from './commonAuth';
 
-var provider = new firebase.auth.FacebookAuthProvider();
+const provider = new firebase.auth.FacebookAuthProvider();
 
 class _AppSignup extends Component {
     constructor(props) {
@@ -50,6 +50,7 @@ class _AppSignup extends Component {
         this.firebaseListener = null;
         this.firebaseListener2 = null;
         this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
+        this.signupCallback = this.signupCallback.bind(this);
     }
 
     componentWillMount() {
@@ -176,7 +177,8 @@ class _AppSignup extends Component {
           });
         });
       } else {
-        signupCommon(signupUser, history, match, this.publisherID, user);
+        const isAdmin = match.params.mode === 'admin' ? this.publisherID : null
+        signupCommon(user, isAdmin, this.signupCallback);
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             const creatorID = user.uid;
@@ -262,94 +264,11 @@ class _AppSignup extends Component {
 
     async compileUser() {
       const { signinUser } = this.props;
-
-      firebase.auth().onAuthStateChanged(function(user) {
+      firebase.auth().onAuthStateChanged(user => {
         if (user) {
-          const creatorID = user.uid;
-          firebase.database().ref(`users/${creatorID}`).once('value')
-          .then(user_snapshot => {
-            let _user = user_snapshot.val();
-            if (_user.soundcasts_managed && _user.admin) {
-              if (_user.publisherID) {
-                firebase.database().ref(`publishers/${_user.publisherID}`).once('value')
-                .then(publisher_snapshot => {
-                  if (publisher_snapshot.val()) {
-                    _user.publisher = JSON.parse(JSON.stringify(publisher_snapshot.val()));
-                    _user.publisher.id = _user.publisherID;
-                    if (_user.publisher.administrators) {
-                      for (let adminId in _user.publisher.administrators) {
-                        firebase.database().ref(`users/${adminId}`).once('value')
-                        .then(adminSnapshot => {
-                          if (adminSnapshot.val()) {
-                            _user.publisher.administrators[adminId] = JSON.parse(
-                              JSON.stringify(adminSnapshot.val())
-                            );
-                          }
-                        })
-                      }
-                    }
-                  }
-                })
-              }
-
-              let soundcastsManaged = {};
-              for (let key in _user.soundcasts_managed) {
-                firebase.database().ref(`soundcasts/${key}`).once('value')
-                .then(soundcastSnapshot => {
-                  soundcastsManaged[key] = soundcastSnapshot;
-                  if (soundcastsManaged[key].val()) {
-                    _user = JSON.parse(JSON.stringify(_user));
-                    const _soundcast = JSON.parse(JSON.stringify(soundcastsManaged[key].val()));
-                    _user.soundcasts_managed[key] = _soundcast;
-                    signinUser(_user);
-                    if (_soundcast.episodes) {
-                      let episodes = {};
-                      for (let epkey in _soundcast.episodes) {
-                        firebase.database().ref(`episodes/${epkey}`).once('value')
-                        .then(episodeSnapshot => {
-                          episodes[epkey] = episodeSnapshot;
-                          if (episodes[epkey].val()) {
-                            _user = JSON.parse(JSON.stringify(_user));
-                            _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(JSON.stringify(episodes[epkey].val()));
-                            signinUser(_user);
-                          }
-                        })
-                      }
-                    }
-                  }
-                });
-              }
-            }
-
-            if (_user.soundcasts) {
-              let userSoundcasts = {};
-              for (let key in _user.soundcasts) {
-                firebase.database().ref(`soundcasts/${key}`).once('value')
-                .then(soundcastSnapshot => {
-                  userSoundcasts[key] = soundcastSnapshot;
-                  if (userSoundcasts[key].val()) {
-                    _user = JSON.parse(JSON.stringify(_user));
-                    const _soundcast = JSON.parse(JSON.stringify(userSoundcasts[key].val()));
-                    _user.soundcasts[key] = _soundcast;
-                    signinUser(_user);
-                    if (_soundcast.episodes) {
-                      let soundcastEpisodes = {};
-                      for (let epkey in _soundcast.episodes) {
-                        firebase.database().ref(`episodes/${epkey}`).once('value')
-                        .then(episodeSnapshot => {
-                          soundcastEpisodes[epkey] = episodeSnapshot;
-                          if (soundcastEpisodes[epkey].val()) {
-                            _user = JSON.parse(JSON.stringify(_user));
-                            _user.soundcasts[key].episodes[epkey] = JSON.parse(JSON.stringify(soundcastEpisodes[epkey].val()));
-                            signinUser(_user);
-                          }
-                        })
-                      }
-                    }
-                  }
-                })
-              }
-            }
+          firebase.database().ref(`users/${user.uid}`).once('value')
+          .then(snapshot => {
+            compileUser(snapshot.val() || {}, signinUser);
           })
         } else {
           // alert('User saving failed. Please try again later.');
@@ -489,7 +408,7 @@ class _AppSignup extends Component {
         }
     }
 
-    async _signUp () {
+    async _signUp() {
       const {match, history, signupUser} = this.props;
       const {firstName, lastName, email, password, isFBauth} = this.state;
       let authArr = [];
@@ -514,8 +433,9 @@ class _AppSignup extends Component {
         if (!isFBauth) {
           await firebase.auth().createUserWithEmailAndPassword(email, password);
         }
-        this.setState({message: "account created"});
-        signupCommon(signupUser, history, match, this.publisherID, this.state);
+        // this.setState({message: "account created"});
+        const isAdmin = match.params.mode === 'admin' ? this.publisherID : null
+        signupCommon(this.state, isAdmin, this.signupCallback);
         return true;
       } catch (error) {
         this.setState({ message: error.toString() });
@@ -589,7 +509,8 @@ class _AppSignup extends Component {
                 } else if(match.params.mode == 'admin' && match.params.id) {
                   that.signUpInvitedAdmin(user);
                 } else {
-                  signupCommon(signupUser, history, match, that.publisherID, user);
+                  const isAdmin = match.params.mode === 'admin' ? that.publisherID : null
+                  signupCommon(user, isAdmin, that.signupCallback);
                 }
               }
             });
@@ -616,7 +537,8 @@ class _AppSignup extends Component {
                   } else if(match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    signupCommon(signupUser, history, match, that.publisherID, user);
+                    const isAdmin = match.params.mode === 'admin' ? that.publisherID : null
+                    signupCommon(user, isAdmin, that.signupCallback);
                   }
                 });
             } else {
@@ -627,6 +549,18 @@ class _AppSignup extends Component {
         });
       });
     } // handleFBAuth
+
+    signupCallback(user) {
+      const { signupUser, match, history } = this.props;
+      signupUser(user);
+      // for user -> goTo myPrograms, for admin need to register publisher first
+      if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
+        history.push('/myprograms');
+      } else if(match.params.mode == 'soundcast_user' && history.location.state) {
+        const { soundcast, soundcastID, checked, sumTotal } = history.location.state;
+        history.push('/soundcast_checkout', { soundcast, soundcastID, checked, sumTotal });
+      }
+    }
 
     render() {
       const { match, history } = this.props;

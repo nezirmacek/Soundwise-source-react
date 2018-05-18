@@ -38,47 +38,42 @@ export default class Payment extends Component {
         this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
         this.renderProgressBar = this.renderProgressBar.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.updateProps = this.updateProps.bind(this);
     }
 
     componentDidMount() {
         // Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
         Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-
-        this.setState({
-            totalPay: this.props.total
-        });
-        if(this.props.userInfo && this.props.userInfo.email) {
-            this.setState({
-                userInfo: this.props.userInfo
-            });
-            if(this.props.total == 0 || this.props.total == 'free') {
-                this.addSoundcastToUser(null, this.props.userInfo);
-            } else if (this.props.userInfo.stripe_id) { // have stripe_id
-                this.stripeTokenHandler(null, {}); // charge user
-            }
-        }
+        this.updateProps(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
+        this.updateProps(nextProps);
+    }
+
+    updateProps(props) {
         this.setState({
-            totalPay: nextProps.total
+            totalPay: props.total
         });
-        if(nextProps.userInfo && nextProps.userInfo.email && !this.props.userInfo.email) {
-            this.setState({
-                userInfo: nextProps.userInfo
-            });
-            if(nextProps.total === 0 || nextProps.total == 'free') {
+        if(props.userInfo && props.userInfo.email) {
+            if(props.total === 0 || props.total == 'free') {
                 // if it's free course, then no need for credit card info.
                 // add soundcast to user and then redirect
-                this.addSoundcastToUser(null, nextProps.userInfo);
-            } else if (nextProps.userInfo.stripe_id) { // have stripe_id
+                this.addSoundcastToUser(null, props.userInfo);
+            } else if(props.userInfo.stripe_id && !this.state.submitDisabled) { // have stripe_id
+                this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: '' });
                 this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
 
-    shouldComponentUpdate(nextProps) {
-        if(  this.props.isEmailSent != nextProps.isEmailSent || this.props.total != nextProps.total ){
+    shouldComponentUpdate(nextProps, nextState) {
+        if(  this.props.isEmailSent != nextProps.isEmailSent
+          || this.props.total != nextProps.total
+          || this.props.userInfo.email !== nextProps.userInfo.email
+          || nextState.paymentError
+          || nextState.startPaymentSubmission
+        ){
             // this.setState({confirmationEmailSent : true})
             return true;
         }
@@ -97,11 +92,11 @@ export default class Payment extends Component {
         })
     }
 
-    addSoundcastToUser(charge, userInfoFromProp) {
-        const userInfo = userInfoFromProp ? userInfoFromProp : (this.state.userInfo || this.props.userInfo);
+    addSoundcastToUser(charge, userInfoFromProp, signinUser) {
+        const userInfo = userInfoFromProp || this.props.userInfo;
         if(userInfo && userInfo.email) { // if logged in
             const that = this;
-            const {soundcastID, soundcast, checked} = this.props;
+            const {soundcastID, soundcast, checked, sumTotal, history} = this.props;
             const {confirmationEmail} = soundcast;
             const {totalPay} = this.state;
             let _email, content;
@@ -138,6 +133,23 @@ export default class Payment extends Component {
                     addToEmailList(soundcastID, [{email: userInfo.email[0], firstName: userInfo.firstName, lastName: userInfo.lastName}], 'subscriberEmailList', soundcast.subscriberEmailList)
                     .then(listId => {
                       inviteListeners([userInfo.email[0]], subject, content, snapshot.val().name, snapshot.val().imageUrl, publisherEmail); // use transactional email for this
+
+                      // Redirect to /notice page
+                      that.setState({ success: true });
+                      const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+                      history.push({
+                        pathname: '/notice',
+                        state: {
+                          text,
+                          soundcastTitle: soundcast.title,
+                          soundcast,
+                          soundcastID,
+                          checked,
+                          sumTotal,
+                          ios: 'https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8',
+                          android: 'https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android'
+                        }
+                      });
                     });
                 })
             }
@@ -161,9 +173,10 @@ export default class Payment extends Component {
                     });
 
                     // add stripe_id to user data if not already exists
-                    if(platformCustomer) {
-                        firebase.database().ref(`users/${userId}/stripe_id`)
-                        .set(platformCustomer);
+                    if(platformCustomer && user.stripe_id !== platformCustomer) {
+                        firebase.database().ref(`users/${userId}/stripe_id`).set(platformCustomer);
+                        user.stripe_id = platformCustomer;
+                        signinUser && signinUser(user);
                     }
 
                     //add user to soundcast
@@ -199,8 +212,6 @@ export default class Payment extends Component {
                             }
                         })
                     }
-
-                    that.props.handlePaymentSuccess(soundcast);
                 }
             });
         }
@@ -208,7 +219,6 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
-        // return this.props.handleStripeId('TEST1', this.state.userInfo || this.props.userInfo, this.state);
         if (this.state.startPaymentSubmission) { return }
         const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
         if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
@@ -218,22 +228,19 @@ export default class Payment extends Component {
         if ((Date.now() - lastSubmitDate2) < 10000) { // 10 seconds since last success call not passed
           return
         }
-        this.setState({
-            startPaymentSubmission: true
-        });
+        this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: null });
         const {number, cvc} = this.state;
         const exp_month = Number(this.state.exp_month) + 1;
         const exp_year = Number(this.state.exp_year);
-        this.setState({ submitDisabled: true, paymentError: null });
         Stripe.card.createToken({number, cvc, exp_month, exp_year}, this.stripeTokenHandler);
     }
 
     stripeTokenHandler(status, response) {
         const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
-        const {email, stripe_id} = this.props.userInfo;
+        const userInfo = this.props.userInfo;
+        const {email, stripe_id} = userInfo;
         const receipt_email = (email && email[0]) || this.state.email;
         const {soundcast, checked, soundcastID, handleStripeId} = this.props;
-        const userInfo = this.state.userInfo || this.props.userInfo;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -276,7 +283,7 @@ export default class Payment extends Component {
                                   that.addSoundcastToUser(response.data.res); //add soundcast to user database and redirect
                                 } else {
                                   handleStripeId && handleStripeId(
-                                    response.data.res, userInfo, that.state, that.addSoundcastToUse
+                                    response.data.res, userInfo, that.state, that.addSoundcastToUser
                                   );
                                 }
                             }
@@ -317,7 +324,7 @@ export default class Payment extends Component {
                                   that.addSoundcastToUser(subscription); //add soundcast to user database and redirect
                                 } else {
                                   handleStripeId && handleStripeId(
-                                    subscription, userInfo, that.state, that.addSoundcastToUse
+                                    subscription, userInfo, that.state, that.addSoundcastToUser
                                   );
                                 }
                             }
@@ -353,7 +360,7 @@ export default class Payment extends Component {
 
     render() {
         const {total} = this.props;
-        const showInputs = !(this.state.userInfo && this.state.userInfo.firstName);
+        const showInputs = !(this.props.userInfo && this.props.userInfo.firstName);
 
         const monthOptions = [];
         const yearOptions = [];
@@ -422,7 +429,7 @@ export default class Payment extends Component {
                                             type='text'
                                             name='number'
                                             placeholder='Card Number'
-                                            autocomplete='new-password'
+                                            autoComplete='new-password'
                                             style={styles.input}
                                         />
                                         <img src="../../../images/card_types.png" style={styles.cardsImage} />
@@ -468,7 +475,7 @@ export default class Payment extends Component {
                                             type='password'
                                             name='cvc'
                                             placeholder='CVC'
-                                            autocomplete='new-password'
+                                            autoComplete='new-password'
                                             style={Object.assign({}, styles.input, styles.cvc)}
                                         />
                                     </div>
