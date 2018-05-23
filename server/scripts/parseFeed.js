@@ -208,7 +208,7 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     publisherName,
     short_description: description,
     imageURL: image.url,
-    hostName: author || (metadata['itunes:author'] && metadata['itunes:author']['#']),
+    hostName: (metadata['itunes:author'] && metadata['itunes:author']['#']) || author,
     last_update: moment(last_update).format('X'),
     fromParsedFeed: true, // this soundcast is imported from a RSS feed
     forSale: false,
