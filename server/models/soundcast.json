@@ -49,6 +49,20 @@
         "column": "category"
       }
     },
+    "published": {
+      "type": "boolean",
+      "required": false,
+      "postgresql": {
+        "column": "published"
+      }
+    },
+    "landingPage": {
+      "type": "boolean",
+      "required": false,
+      "postgresql": {
+        "column": "landingPage"
+      }
+    },
     "updateDate": {
       "type": "date",
       "required": false,

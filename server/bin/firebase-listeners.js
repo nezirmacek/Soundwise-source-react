@@ -59,6 +59,7 @@ module.exports.firebaseListeners = () => {  // sync firebase with postgres
   const usersRef = firebase.database().ref('/users');
   const commentsRef = firebase.database().ref('/comments');
   const likesRef = firebase.database().ref('/likes');
+  const soundcastsRef = firebase.database().ref('/soundcasts');
 
   usersRef.on('child_added', addOrUpdateUserRecord);
   usersRef.on('child_changed', addOrUpdateUserRecord);
@@ -70,6 +71,10 @@ module.exports.firebaseListeners = () => {  // sync firebase with postgres
 
   likesRef.on('child_added', addOrUpdateLikeRecord);
   likesRef.on('child_removed', deleteLikeRecord);
+
+  soundcastsRef.on('child_added', addOrUpdateSoundcastRecord);
+  soundcastsRef.on('child_changed', addOrUpdateSoundcastRecord);
+  soundcastsRef.on('child_removed', deleteSoundcastRecord);
 };
 
 function addOrUpdateUserRecord(user) {
@@ -97,7 +102,6 @@ function addOrUpdateUserRecord(user) {
     })
     .catch(err => {
       console.log('error saving user data: ', err);
-      process.exit(1);
     });
   }
 };
@@ -114,7 +118,6 @@ function deleteUserRecord(user) {
   })
   .catch(err => {
       console.log('error deleting user data: ', err);
-      process.exit(1);
   });
 };
 
@@ -146,7 +149,6 @@ function addOrUpdateCommentRecord(comment) {
     })
     .catch(err => {
       console.log('error saving comment data: ', err);
-      process.exit(1);
     });
   }
 };
@@ -163,7 +165,6 @@ function deleteCommentRecord(comment) {
   })
   .catch(err => {
       console.log('error deleting comment data: ', err);
-      process.exit(1);
   });
 };
 
@@ -195,7 +196,6 @@ function addOrUpdateLikeRecord(like) {
     })
     .catch(err => {
       console.log('error saving like data: ', err);
-      process.exit(1);
     });
   }
 };
@@ -212,6 +212,64 @@ function deleteLikeRecord(like) {
   })
   .catch(err => {
       console.log('error deleting like data: ', err);
-      process.exit(1);
+  });
+};
+
+function addOrUpdateSoundcastRecord(soundcast) {
+  // Get Firebase object
+  if (soundcast.val()) {
+    const {
+      publisherID,
+      title,
+      imageUrl,
+      itunesId,
+      category,
+      rank,
+      updateDate,
+      published,
+      landingPage
+    } = soundcast.val();
+    const soundcastId = soundcast.key;
+    const soundcastObj = {
+      soundcastId,
+      publisherId: publisherID,
+      title,
+      imageUrl,
+      itunesId,
+      category,
+      updateDate,
+      published,
+      landingPage
+    };
+
+    // Add or update object
+    database.Soundcast.findOne({
+      where: { soundcastId },
+    })
+    .then(soundcastData => {
+      if(soundcastData) { // update
+        return soundcastData.update(soundcastObj);
+      } else { // create
+        return database.Soundcast.create(soundcastObj);
+      }
+    })
+    .catch(err => {
+      console.log('error saving soundcast data: ', err);
+    });
+  }
+};
+
+function deleteSoundcastRecord(soundcast) {
+  const soundcastId = soundcast.key;
+  database.Soundcast.findOne({
+    where: { soundcastId }
+  })
+  .then(soundcastData => {
+    if(soundcastData) {
+      return soundcastData.destroy();
+    }
+  })
+  .catch(err => {
+      console.log('error deleting soundcast data: ', err);
   });
 };
