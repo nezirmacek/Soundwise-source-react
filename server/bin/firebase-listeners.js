@@ -221,11 +221,11 @@ function addOrUpdateSoundcastRecord(soundcast) {
     const {
       publisherID,
       title,
-      imageUrl,
+      imageURL,
       itunesId,
       category,
       rank,
-      updateDate,
+      last_update,
       published,
       landingPage
     } = soundcast.val();
@@ -234,10 +234,10 @@ function addOrUpdateSoundcastRecord(soundcast) {
       soundcastId,
       publisherId: publisherID,
       title,
-      imageUrl,
+      imgageUrl: imageURL,
       itunesId,
       category,
-      updateDate,
+      updateDate: last_update,
       published,
       landingPage
     };

@@ -74,7 +74,7 @@ var Soundcast = db.define('Soundcast', {
   itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
   category: Sequelize.STRING,
   rank: Sequelize.INTEGER,
-  updateDate: Sequelize.DATE,
+  updateDate: Sequelize.BIGINT,
   published: Sequelize.BOOLEAN,
   landingPage: Sequelize.BOOLEAN
 });
