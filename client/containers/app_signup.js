@@ -51,6 +51,7 @@ class _AppSignup extends Component {
         this.firebaseListener2 = null;
         this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this)
         this.signupCallback = this.signupCallback.bind(this);
+        this.sendWelcomeEmail = this.sendWelcomeEmail.bind(this);
     }
 
     componentWillMount() {
@@ -241,12 +242,12 @@ class _AppSignup extends Component {
                 })
                 .then(res => {
                   console.log('publisher added to db');
-                  // that.addDefaultSoundcast(); return;
-                  history.push('/dashboard/soundcasts');
+                  // that.addDefaultSoundcast(); return; // see github/issues/13
+                  that.sendWelcomeEmail();
                 })
                 .catch(err => {
-                  // that.addDefaultSoundcast(); return;
-                  history.push('/dashboard/soundcasts');
+                  // that.addDefaultSoundcast(); return; // see github/issues/13
+                  that.sendWelcomeEmail();
                 })
               },
               err => {
@@ -368,29 +369,38 @@ class _AppSignup extends Component {
                             console.log('failed to complete adding soundcast');
                         }
                     )
-                    .then(() => {
-                        const content = `<p>Hello ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you join our expanding community of knowledge creators!</p><p>If you're creating a podcast, make sure to check out our <a href="http://bit.ly/2IILSGm">quick start guide</a> and <a href="http://bit.ly/2qlyVKK">"how to get subscribers" guide</a>.</p><p>I'm curious...would you mind sharing what kind of content you're creating? </p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you need help with anything related to creating your audio program, please don't hesitate to shoot me an email. We'll try our best to help.</p>`;
-                        inviteListeners([{firstName, lastName, email}], `What are you creating, ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)}?`, content,'Natasha Che', null, 'natasha@mysoundwise.com', true, 'natasha@mysoundwise.com');
-                        addToEmailList (null, [email], 'soundwise publishers', 2876261); // 2876261 is the 'soundwise publishers' list id
-                        if(params.get('frequency') && params.get('plan')) {
-                            history.push({
-                              pathname: '/buy',
-                              state: {
-                                plan: params.get('plan'),
-                                frequency: params.get('frequency'),
-                                price: params.get('price')
-                              }
-                            });
-                        } else {
-                            history.push('/dashboard/soundcasts');
-                        }
-                    });
+                    .then(() => sendWelcomeEmail());
                 } else {
                     // Raven.captureMessage('Default soundcast saving failed!')
                 }
           });
           this.firebaseListener2 && this.firebaseListener2();
         }
+    }
+
+    sendWelcomeEmail() {
+      const { firstName, lastName, email } = this.state;
+      const { history } = this.props;
+      const params = new URLSearchParams(this.props.location.search);
+      const content = `<p>Hello ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you join our expanding community of knowledge creators!</p><p>If you're creating a podcast, make sure to check out our <a href="http://bit.ly/2IILSGm">quick start guide</a> and <a href="http://bit.ly/2qlyVKK">"how to get subscribers" guide</a>.</p><p>I'm curious...would you mind sharing what kind of content you're creating? </p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you need help with anything related to creating your audio program, please don't hesitate to shoot me an email. We'll try our best to help.</p>`;
+
+      inviteListeners(
+        [{firstName, lastName, email}],
+        `What are you creating, ${firstName.slice(0,1).toUpperCase() + firstName.slice(1)}?`, content,'Natasha Che', null, 'natasha@mysoundwise.com', true, 'natasha@mysoundwise.com'
+      );
+      addToEmailList (null, [email], 'soundwise publishers', 2876261); // 2876261 is the 'soundwise publishers' list id
+      if(params.get('frequency') && params.get('plan')) {
+          history.push({
+            pathname: '/buy',
+            state: {
+              plan: params.get('plan'),
+              frequency: params.get('frequency'),
+              price: params.get('price')
+            }
+          });
+      } else {
+          history.push('/dashboard/soundcasts');
+      }
     }
 
     _validateForm (firstName, lastName, email, password, isFBauth) {
