@@ -20,8 +20,10 @@ export default class Billing extends Component {
         createdAt: '',
         amount: 0,
       }],
+      affiliate: false,
     };
     this.handlePlanCancel = this.handlePlanCancel.bind(this);
+    this.handleAffiliate = this.handleAffiliate.bind(this);
   }
 
   componentDidMount() {
@@ -52,9 +54,30 @@ export default class Billing extends Component {
     }
   }
 
+  async handleAffiliate(){
+    const {userInfo} = this.props;
+    if (!userInfo || !userInfo.publisher) {
+      return alert('Empty user/publisher value');
+    }
+    if (!userInfo.publisher.stripe_user_id) {
+      // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user that a payout account should be set up first
+      alert('Error: payout account should be set up first');
+    } else {
+      // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
+      await firebase.database().ref(`publishers/${userInfo.publisher.publisherID}/affiliate`)
+      .set(true);
+      this.setState({ affiliate: true });
+    }
+  }
+
+  affiliateClick(e) {
+    e.target.setSelectionRange(0, e.target.value.length)
+  }
+
   render() {
     const {userInfo} = this.props;
     const that = this;
+    const affiliate = userInfo.publisher && userInfo.publisher.affiliate || this.state.affiliate;
     if(userInfo.publisher) {
       const {plan, frequency, current_period_end, auto_renewal, stripe_customer_id} = userInfo.publisher;
       return (
@@ -111,6 +134,25 @@ export default class Billing extends Component {
                                 style={{cursor: 'pointer', fontSize: 16}}>Cancel plan</span>
                             </div>
                             || null
+                          }
+                          { affiliate
+                            && <div>
+                                <div style={{...styles.titleText, marginTop: 20,marginBottom: 7}}>
+                                  Affiliate link:
+                                </div>
+                                <input readOnly onClick={this.affiliateClick}
+                                  style={{width:350,textAlign:'center',cursor:'pointer'}}
+                                  value={
+                                  `https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`
+                                }></input>
+                              </div>
+                           || <div>
+                                <OrangeSubmitButton
+                                    label="Become an affiliate"
+                                    onClick={this.handleAffiliate}
+                                    styles={{margin: '20px auto', borderWidth: '0px'}}
+                                />
+                              </div>
                           }
                         </div>
                       </div>
