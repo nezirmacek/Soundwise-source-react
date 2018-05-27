@@ -64,14 +64,14 @@ For reference, see https://www.digitalocean.com/community/tutorials/how-to-secur
 
 #### Issues
 
-#####- wrong buffer length:
+##### - wrong buffer length:
 node_modules/microm/dist/microm.js:3125
 change
 self.buffer = new ArrayBuffer(view);
 to
 self.buffer = new ArrayBuffer(view.buffer.byteLength);
 
-#####- Error: Cannot resolve module 'fs' in /home/developer/www/SoundwiseCMS_web/node_modules/request/lib:
+##### - Error: Cannot resolve module 'fs' in /home/developer/www/SoundwiseCMS_web/node_modules/request/lib:
 open node_modules/request/lib/har.js
 and remove
 var fs = require('fs')
@@ -130,7 +130,7 @@ node .
 
 ### issues:
 
-####- express-fileuploader module changes files names when upload to aws s3:
+#### - express-fileuploader module changes files names when upload to aws s3:
 api/node_modules/express-fileuploader/lib/index.js:91-93
 ```
 var uid = uuid.v1(),
