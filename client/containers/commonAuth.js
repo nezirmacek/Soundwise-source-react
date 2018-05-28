@@ -154,6 +154,9 @@ const signupCommon = (_user, isAdmin, successCallback) => {
         userToSave.admin = true;
         userToSave.publisherID = isAdmin;
       }
+      if (localStorage.getItem('soundwiseAffiliateId')) {
+        userToSave.referredBy = localStorage.getItem('soundwiseAffiliateId');
+      }
       firebase.database().ref(`users/${userId}`)
       .once('value')
       .then(userSnapshot => {
@@ -161,11 +164,7 @@ const signupCommon = (_user, isAdmin, successCallback) => {
           firebase.database().ref('users/' + userId).set(userToSave);
         }
       });
-      const user = { userId, firstName, lastName, picURL: picture };
-      if (localStorage.getItem('soundwiseAffiliateId')) {
-        user.referredBy = localStorage.getItem('soundwiseAffiliateId');
-      }
-      Axios.post('https://mysoundwise.com/api/user', user)
+      Axios.post('https://mysoundwise.com/api/user', { userId, firstName, lastName, picURL: picture })
       .then(res => {
         console.log('Success signupCommon user save', userToSave);
         successCallback(userToSave);
