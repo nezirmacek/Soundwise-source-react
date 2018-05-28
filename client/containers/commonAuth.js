@@ -161,7 +161,11 @@ const signupCommon = (_user, isAdmin, successCallback) => {
           firebase.database().ref('users/' + userId).set(userToSave);
         }
       });
-      Axios.post('https://mysoundwise.com/api/user', { userId, firstName, lastName, picURL: picture })
+      const user = { userId, firstName, lastName, picURL: picture };
+      if (localStorage.getItem('soundwiseAffiliateId')) {
+        user.referredBy = localStorage.getItem('soundwiseAffiliateId');
+      }
+      Axios.post('https://mysoundwise.com/api/user', user)
       .then(res => {
         console.log('Success signupCommon user save', userToSave);
         successCallback(userToSave);

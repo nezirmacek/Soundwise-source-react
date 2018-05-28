@@ -66,11 +66,14 @@ class Page extends Component {
         this.state={
             open: false
         }
-
     }
 
     componentDidMount() {
         window.prerenderReady = true;
+        if (this.props.location.search.includes('?a_id=')) {
+          const params = new URLSearchParams(this.props.location.search);
+          localStorage.setItem('soundwiseAffiliateId', params.get('a_id'));
+        }
     }
 
 

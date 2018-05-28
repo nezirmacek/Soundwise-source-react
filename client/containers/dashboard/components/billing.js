@@ -64,7 +64,7 @@ export default class Billing extends Component {
       alert('Error: payout account should be set up first');
     } else {
       // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
-      await firebase.database().ref(`publishers/${userInfo.publisher.publisherID}/affiliate`)
+      await firebase.database().ref(`publishers/${userInfo.publisherID}/affiliate`)
       .set(true);
       this.setState({ affiliate: true });
     }
@@ -143,7 +143,7 @@ export default class Billing extends Component {
                             && <div>
                                 <div style={{...styles.titleTextSmall,marginTop:17}}>
                                   <span>Your affiliate link:  </span>
-                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
+                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
                                 </div>
                                 <div style={{marginTop:12}}>
                                   <span style={styles.titleTextSmall}>Your affiliate promo code</span>
