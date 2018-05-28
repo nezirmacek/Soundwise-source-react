@@ -151,6 +151,7 @@ class _UserProfile extends Component {
   }
 
   changePassword() {
+    const that = this;
     this.setState({
       passwordError: '',
     });
