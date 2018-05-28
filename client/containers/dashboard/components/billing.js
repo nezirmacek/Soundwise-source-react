@@ -77,9 +77,9 @@ export default class Billing extends Component {
   render() {
     const {userInfo} = this.props;
     const that = this;
-    const affiliate = userInfo.publisher && userInfo.publisher.affiliate || this.state.affiliate;
     if(userInfo.publisher) {
       const {plan, frequency, current_period_end, auto_renewal, stripe_customer_id} = userInfo.publisher;
+      const affiliate = userInfo.publisher.affiliate || this.state.affiliate;
       return (
               <div className='padding-30px-tb'>
                   <div className='padding-bottom-20px'>
@@ -99,21 +99,21 @@ export default class Billing extends Component {
                   <div className='container' style={{minHeight: 700}}>
                     <div  className="row">
                       <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div style={{marginTop: 20, textAlign: 'center'}}>
-                          <span style={{...styles.titleText, marginTop: 20,}}>
-                              Current Plan
-                          </span>
+                        <div style={{marginTop: 20}}>
+                          <div style={{...styles.titleText, marginBottom: 25}}>
+                              Subscription Plan
+                          </div>
                           <div>
                             <span style={{...styles.titleText, color: Colors.mainOrange, marginTop: 20,}}>{`Soundwise ${plan ? plan.toUpperCase() : 'BASIC'} ${frequency ? `- ${frequency.toUpperCase()}` : ''}`}</span>
                           </div>
                           {
                             current_period_end && auto_renewal &&
                             <div>
-                              <span style={{fontSize: 16}}>{`Your plan will automatically renew on ${moment(current_period_end * 1000).format('YYYY-MM-DD')}`}</span>
+                              <span>{`(Plan will automatically renew on ${moment(current_period_end * 1000).format('YYYY-MM-DD')})`}</span>
                             </div>
                             || current_period_end && !auto_renewal &&
                             <div>
-                              <span style={{fontSize: 16}}>{`You have access to ${plan.toUpperCase()} features until your subscription ends on ${moment(current_period_end * 1000).format('YYYY-MM-DD')}`}</span>
+                              <span>{`(Current subscription ends on ${moment(current_period_end * 1000).format('YYYY-MM-DD')})`}</span>
                             </div>
                             || null
                           }
@@ -123,7 +123,7 @@ export default class Billing extends Component {
                                 onClick={() => that.props.history.push({
                                   pathname: '/pricing'
                                 })}
-                                styles={{margin: '20px auto', backgroundColor: Colors.link, borderWidth: '0px'}}
+                                styles={{margin: '7px 0 50px', backgroundColor: Colors.link, borderWidth: '0px'}}
                             />
                           </div>
                           {
@@ -135,22 +135,28 @@ export default class Billing extends Component {
                             </div>
                             || null
                           }
+                          <div style={{...styles.titleText, marginTop:20}}>
+                            Affiliate Program
+                          </div>
+                          <div>{`(50% lifetime commisions on your referrals)`}</div>
                           { affiliate
                             && <div>
-                                <div style={{...styles.titleText, marginTop: 20,marginBottom: 7}}>
-                                  Affiliate link:
+                                <div style={{...styles.titleTextSmall,marginTop:17}}>
+                                  <span>Your affiliate link:  </span>
+                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
                                 </div>
-                                <input readOnly onClick={this.affiliateClick}
-                                  style={{width:350,textAlign:'center',cursor:'pointer'}}
-                                  value={
-                                  `https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`
-                                }></input>
+                                <div style={{marginTop:12}}>
+                                  <span style={styles.titleTextSmall}>Your affiliate promo code</span>
+                                  <span> (1 month free on any paid plans)</span>
+                                  <span style={styles.titleTextSmall}>: </span>
+                                  <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>publishername</a>
+                                </div>
                               </div>
                            || <div>
                                 <OrangeSubmitButton
-                                    label="Become an affiliate"
+                                    label="Become An Affiliate"
                                     onClick={this.handleAffiliate}
-                                    styles={{margin: '20px auto', borderWidth: '0px'}}
+                                    styles={{margin: '18px 0', backgroundColor: Colors.link, borderWidth: '0px'}}
                                 />
                               </div>
                           }
@@ -173,6 +179,10 @@ export default class Billing extends Component {
 const styles = {
     titleText: {
         fontSize: 16,
+        fontWeight: 600,
+    },
+    titleTextSmall: {
+        fontSize: 15,
         fontWeight: 600,
     },
     inputTitleWrapper: {
