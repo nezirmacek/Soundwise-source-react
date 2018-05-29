@@ -8,6 +8,7 @@ const firebase = require('firebase-admin');
 const sgMail = require('@sendgrid/mail');
 const sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
+const database = require('../../database/index');
 
 module.exports.createSubscription = (req, res) => {
   if(!req.body.subscriptionID) { // if subscription doesn't exist, create subscription
@@ -103,6 +104,48 @@ module.exports.renewSubscription = (req, res) => {
       .set(current_period_end);
       res.send({});
     }
+
+    const data = req.body.data.object.lines.data[0];
+
+    // check if there is referredBy property in the subscription's metadata
+    const referredBy = (
+      req.body.data.object.metadata &&
+      req.body.data.object.metadata.referredBy
+    ) || (
+      data.metadata &&
+      data.metadata.referredBy
+    ) || (
+      data.plan.metadata &&
+      data.plan.metadata.referredBy
+    );
+    let subscriptionPlanId;
+    if (data.plan.id === 'plus-annual') {         // Soundwise Plus Annual: prod_CIfFqhoS2m4xaN
+      subscriptionPlanId = 'prod_CIfFqhoS2m4xaN';
+    } else if (data.plan.id === 'pro-monthly') {  // Soundwise Pro Monthly: prod_CIfGFWSDY3ktD8
+      subscriptionPlanId = 'prod_CIfGFWSDY3ktD8';
+    } else if (data.plan.id === 'plus-monthly') { // Soundwise Plus Monthly: prod_CIfDGkLuKCaFs5
+      subscriptionPlanId = 'prod_CIfDGkLuKCaFs5';
+    } else if (data.plan.id === 'pro-annual') {   // Soundwise Pro Annual: prod_CIfHWeFWKcVKyh
+      subscriptionPlanId = 'prod_CIfHWeFWKcVKyh';
+    } else {
+      console.log(`Error: renewSubscription unknown plan id ${data.plan.id}`);
+    }
+
+    const newCharge = {
+      publisherId: publisherID,
+      publisherStripeUserId: 1,
+      subscriptionPlanName: 1,
+      subscriptionPlanId,
+      subscriptionId: 1,
+      chargeId: req.body.data.object.charge,
+      chargeAmount: 1,
+      coupon: 1,
+    }
+    if (referredBy) {
+      newCharge.referredBy = referredBy;
+    }
+
+    database.PlatformCharges.create(newCharge);
   } else if (req.body.type == 'invoice.payment_failed') {
     const input = {'to': 'natasha@mysoundwise.com',
       'from': 'support@mysoundwise.com',

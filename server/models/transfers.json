@@ -6,7 +6,7 @@
     "validateUpsert": true
   },
   "properties": {
-    "affiliateStripeId": {
+    "affiliateStripeAccountId": {
       "type": "string",
       "required": true
     },
@@ -18,7 +18,11 @@
       "type": "string",
       "required": true
     },
-    "transferAmount": {
+    "amountCharge": {
+      "type": "number",
+      "required": true
+    },
+    "amountTransfer": {
       "type": "number",
       "required": true
     }

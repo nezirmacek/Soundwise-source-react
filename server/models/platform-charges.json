@@ -6,11 +6,15 @@
     "validateUpsert": true
   },
   "properties": {
-    "stripeUserId": {
+    "publisherStripeUserId": {
       "type": "string",
       "required": true
     },
-    "subscriptionName": {
+    "subscriptionPlanName": {
+      "type": "string",
+      "required": true
+    },
+    "subscriptionPlanId": {
       "type": "string",
       "required": true
     },

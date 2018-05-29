@@ -125,21 +125,36 @@ var Payout = db.define('Payout', { // records of payouts
 
 var PlatformCharges = db.define('PlatformCharges', {
   publisherId: { type: Sequelize.STRING, allowNull: false },
-  stripeUserId: { type: Sequelize.STRING, allowNull: false },
-  subscriptionName: { type: Sequelize.STRING, allowNull: false },
+  publisherStripeUserId: { type: Sequelize.STRING, allowNull: false },
+  subscriptionPlanName: { type: Sequelize.STRING, allowNull: false },
+  subscriptionPlanId: { type: Sequelize.STRING, allowNull: false },
   subscriptionId: { type: Sequelize.STRING, allowNull: false },
   chargeId: { type: Sequelize.STRING, allowNull: false },
   chargeAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   coupon: { type: Sequelize.STRING },
   referredBy: { type: Sequelize.STRING }
+}, {
+  indexes: [
+    { fields: ['publisherId'] },
+    { fields: ['chargeId'] },
+    { fields: ['subscriptionId'] },
+    { fields: ['referredBy'] }
+  ]
 });
 
 var Transfers = db.define('Transfers', {
-  affiliateStripeId: { type: Sequelize.STRING, allowNull: false },
+  affiliateId: { type: Sequelize.STRING, allowNull: false },
+  affiliateStripeAccountId: { type: Sequelize.STRING, allowNull: false },
   subscriptionId: { type: Sequelize.STRING, allowNull: false },
   chargeId: { type: Sequelize.STRING, allowNull: false },
-  transferAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
-  affiliate: { type: Sequelize.STRING, allowNull: false }
+  amountCharge: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  amountTransfer: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+}, {
+  indexes: [
+    { fields: ['affiliateId'] },
+    { fields: ['subscriptionId'] },
+    { fields: ['chargeId'] }
+  ]
 });
 
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
