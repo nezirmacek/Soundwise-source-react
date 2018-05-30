@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
+// window.firebase = firebase;
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {Helmet} from 'react-helmet';
@@ -76,6 +77,10 @@ class _Routes extends Component {
   }
 
   async componentDidMount() {
+    if (window.location.search.includes('?a_id=')) {
+      const params = new URLSearchParams(window.location.search);
+      localStorage.setItem('soundwiseAffiliateId', params.get('a_id'));
+    }
     const that = this;
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) {

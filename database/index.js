@@ -123,6 +123,40 @@ var Payout = db.define('Payout', { // records of payouts
   email: { type: Sequelize.STRING }, //email address used to send paypal payout
 });
 
+var PlatformCharges = db.define('PlatformCharges', {
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  stripeCustomerId: { type: Sequelize.STRING, allowNull: false },
+  subscriptionPlanName: { type: Sequelize.STRING, allowNull: false },
+  subscriptionPlanId: { type: Sequelize.STRING, allowNull: false },
+  subscriptionId: { type: Sequelize.STRING, allowNull: false },
+  chargeId: { type: Sequelize.STRING, allowNull: false },
+  chargeAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  coupon: { type: Sequelize.STRING },
+  referredBy: { type: Sequelize.STRING }
+}, {
+  indexes: [
+    { fields: ['publisherId'] },
+    { fields: ['chargeId'] },
+    { fields: ['subscriptionId'] },
+    { fields: ['referredBy'] }
+  ]
+});
+
+var Transfers = db.define('Transfers', {
+  affiliateId: { type: Sequelize.STRING, allowNull: false },
+  affiliateStripeAccountId: { type: Sequelize.STRING, allowNull: false },
+  subscriptionId: { type: Sequelize.STRING, allowNull: false },
+  chargeId: { type: Sequelize.STRING, allowNull: false },
+  chargeAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  transferAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+}, {
+  indexes: [
+    { fields: ['affiliateId'] },
+    { fields: ['subscriptionId'] },
+    { fields: ['chargeId'] }
+  ]
+});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -194,6 +228,8 @@ Episode.sync({force: false, alter: true});
 ListeningSession.sync({force: false, alter: true});
 Transaction.sync({force: false, alter: true});
 Payout.sync({force: false, alter: true});
+PlatformCharges.sync({force: false, alter: true});
+Transfers.sync({force: false, alter: true});
 
 module.exports = {
   User: User,

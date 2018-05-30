@@ -154,6 +154,9 @@ const signupCommon = (_user, isAdmin, successCallback) => {
         userToSave.admin = true;
         userToSave.publisherID = isAdmin;
       }
+      if (localStorage.getItem('soundwiseAffiliateId')) {
+        userToSave.referredBy = localStorage.getItem('soundwiseAffiliateId');
+      }
       firebase.database().ref(`users/${userId}`)
       .once('value')
       .then(userSnapshot => {

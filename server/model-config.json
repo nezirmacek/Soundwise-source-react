@@ -71,5 +71,13 @@
   "publisher": {
     "dataSource": "db",
     "public": true
+  },
+  "PlatformCharges": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Transfers": {
+    "dataSource": "db",
+    "public": true
   }
 }

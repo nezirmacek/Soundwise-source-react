@@ -20,8 +20,10 @@ export default class Billing extends Component {
         createdAt: '',
         amount: 0,
       }],
+      affiliate: false,
     };
     this.handlePlanCancel = this.handlePlanCancel.bind(this);
+    this.handleAffiliate = this.handleAffiliate.bind(this);
   }
 
   componentDidMount() {
@@ -52,11 +54,33 @@ export default class Billing extends Component {
     }
   }
 
+  async handleAffiliate(){
+    const {userInfo} = this.props;
+    if (!userInfo || !userInfo.publisher) {
+      return alert('Empty user/publisher value');
+    }
+    if (!userInfo.publisher.stripe_user_id) {
+      // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user
+      alert('Please connect your payout account first.');
+      // TODO redirect/show card input form (example client/containers/checkout.js)
+    } else {
+      // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
+      await firebase.database().ref(`publishers/${userInfo.publisherID}/affiliate`)
+      .set(true);
+      this.setState({ affiliate: true });
+    }
+  }
+
+  affiliateClick(e) {
+    e.target.setSelectionRange(0, e.target.value.length)
+  }
+
   render() {
     const {userInfo} = this.props;
     const that = this;
     if(userInfo.publisher) {
       const {plan, frequency, current_period_end, auto_renewal, stripe_customer_id} = userInfo.publisher;
+      const affiliate = userInfo.publisher.affiliate || this.state.affiliate;
       return (
               <div className='padding-30px-tb'>
                   <div className='padding-bottom-20px'>
@@ -76,21 +100,21 @@ export default class Billing extends Component {
                   <div className='container' style={{minHeight: 700}}>
                     <div  className="row">
                       <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div style={{marginTop: 20, textAlign: 'center'}}>
-                          <span style={{...styles.titleText, marginTop: 20,}}>
-                              Current Plan
-                          </span>
+                        <div style={{marginTop: 20}}>
+                          <div style={{...styles.titleText, marginBottom: 25}}>
+                              Subscription Plan
+                          </div>
                           <div>
                             <span style={{...styles.titleText, color: Colors.mainOrange, marginTop: 20,}}>{`Soundwise ${plan ? plan.toUpperCase() : 'BASIC'} ${frequency ? `- ${frequency.toUpperCase()}` : ''}`}</span>
                           </div>
                           {
                             current_period_end && auto_renewal &&
                             <div>
-                              <span style={{fontSize: 16}}>{`Your plan will automatically renew on ${moment(current_period_end * 1000).format('YYYY-MM-DD')}`}</span>
+                              <span>{`(Plan will automatically renew on ${moment(current_period_end * 1000).format('YYYY-MM-DD')})`}</span>
                             </div>
                             || current_period_end && !auto_renewal &&
                             <div>
-                              <span style={{fontSize: 16}}>{`You have access to ${plan.toUpperCase()} features until your subscription ends on ${moment(current_period_end * 1000).format('YYYY-MM-DD')}`}</span>
+                              <span>{`(Current subscription ends on ${moment(current_period_end * 1000).format('YYYY-MM-DD')})`}</span>
                             </div>
                             || null
                           }
@@ -100,7 +124,7 @@ export default class Billing extends Component {
                                 onClick={() => that.props.history.push({
                                   pathname: '/pricing'
                                 })}
-                                styles={{margin: '20px auto', backgroundColor: Colors.link, borderWidth: '0px'}}
+                                styles={{margin: '7px 0 50px', backgroundColor: Colors.link, borderWidth: '0px'}}
                             />
                           </div>
                           {
@@ -111,6 +135,31 @@ export default class Billing extends Component {
                                 style={{cursor: 'pointer', fontSize: 16}}>Cancel plan</span>
                             </div>
                             || null
+                          }
+                          <div style={{...styles.titleText, marginTop:20}}>
+                            Affiliate Program
+                          </div>
+                          <div>{`(50% lifetime commisions on your referrals)`}</div>
+                          { affiliate
+                            && <div>
+                                <div style={{...styles.titleTextSmall,marginTop:17}}>
+                                  <span>Your affiliate link:  </span>
+                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
+                                </div>
+                                <div style={{marginTop:12}}>
+                                  <span style={styles.titleTextSmall}>Your affiliate promo code</span>
+                                  <span> (1 month free on any paid plans)</span>
+                                  <span style={styles.titleTextSmall}>: </span>
+                                  <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>publishername</a>
+                                </div>
+                              </div>
+                           || <div>
+                                <OrangeSubmitButton
+                                    label="Become An Affiliate"
+                                    onClick={this.handleAffiliate}
+                                    styles={{margin: '18px 0', backgroundColor: Colors.link, borderWidth: '0px'}}
+                                />
+                              </div>
                           }
                         </div>
                       </div>
@@ -131,6 +180,10 @@ export default class Billing extends Component {
 const styles = {
     titleText: {
         fontSize: 16,
+        fontWeight: 600,
+    },
+    titleTextSmall: {
+        fontSize: 15,
         fontWeight: 600,
     },
     inputTitleWrapper: {

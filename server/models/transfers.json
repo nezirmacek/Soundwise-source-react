@@ -1,0 +1,40 @@
+{
+  "name": "Transfers",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "affiliateStripeAccountId": {
+      "type": "string",
+      "required": true
+    },
+    "subscriptionId": {
+      "type": "string",
+      "required": true
+    },
+    "chargeId": {
+      "type": "string",
+      "required": true
+    },
+    "chargeAmount": {
+      "type": "number",
+      "required": true
+    },
+    "transferAmount": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "affiliate": {
+      "type": "hasOne",
+      "model": "publisher",
+      "foreignKey": "publisherId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

@@ -163,7 +163,7 @@ class _SoundwiseCheckout extends Component {
 
   stripeTokenHandler(status, response) {
     const amount = Number(this.state.total).toFixed(2) * 100; // in cents
-    const {email, stripe_id, publisherID, publisher} = this.props.userInfo;
+    const {email, stripe_id, publisherID, publisher, referredBy} = this.props.userInfo;
     const {plan, frequency, promoCodeError, promoCode, percentOff, trialPeriod, checkoutEmail} = this.state;
     const that = this;
     const coupon = (promoCode && !promoCodeError && percentOff && percentOff > 0) ? promoCode : null; // code for free trials may have percentOff == 0
@@ -186,6 +186,7 @@ class _SoundwiseCheckout extends Component {
           metaData,
           trialPeriod,
           publisherID: publisherID,
+          referredBy,
           plan: `${plan}-${frequency}`,
           statement_descriptor: `Soundwise ${plan} plan: ${frequency}`,
       })
@@ -285,7 +286,7 @@ class _SoundwiseCheckout extends Component {
                                               onClick={this.applyPromoCode}
                                               type="button"
                                               className="btn"
-                                              style={{color: Colors.link}}>Apply</button>
+                                              style={{margin: '0 8px 5px'}}>Apply</button>
                                           }
                                           <div style={{color: 'red'}}>{this.state.promoCodeError}</div>
                                           <div>{this.state.promoDescription}</div>
