@@ -34,6 +34,12 @@ module.exports.createSubscription = (req, res) => {
             if (req.body.metadata) {
               options.metadata.promoCode = req.body.metadata.promoCode;
             }
+            if (req.body.referredBy) {
+              options.metadata.referredBy = req.body.referredBy;
+            }
+            if (req.body.refererPublisherId) {
+              options.metadata.refererPublisherId = req.body.refererPublisherId;
+            }
             return stripe.subscriptions.create(options)
                   .then(subscription => {
                     res.send(subscription);
@@ -111,12 +117,6 @@ module.exports.renewSubscription = (req, res) => {
       return // skip if no charge amount
     }
 
-    // check if there is referredBy property in the subscription's metadata
-    const referredBy = (
-      req.body.data.object.metadata && req.body.data.object.metadata.referredBy
-      || data.metadata && data.metadata.referredBy
-      || data.plan.metadata && data.plan.metadata.referredBy || null
-    );
     let subscriptionPlanName;
     if (data.plan.product === 'prod_CIfFqhoS2m4xaN') {
       subscriptionPlanName = 'Soundwise Plus Annual Subscription';
@@ -139,7 +139,30 @@ module.exports.renewSubscription = (req, res) => {
       chargeId: req.body.data.object.charge,
       chargeAmount: data.amount, // in cents, example 3600
       coupon: data.metadata.coupon || null,
-      referredBy,
+      referredBy: data.metadata.referredBy || null,
+    }
+
+    // check if there is referredBy property in the subscription's metadata
+    if (data.metadata.referredBy) {
+      const amountTransfer = data.amount * 0.971 - 30; // - 2.9% - $0.3 stripe fee
+      stripe.transfers.create({
+        amount: amountTransfer,
+        currency: 'usd',
+        destination: data.metadata.referredBy,
+        transfer_group: 'affiliateGroup' // optional
+      }, (err, transfer) => {
+        if (err) {
+          return console.log(`Error: renewSubscription stripe.transfers.create ${err}`);
+        }
+        database.Transfers.create({
+          affiliateId: data.metadata.refererPublisherId,
+          affiliateStripeAccountId: data.metadata.referredBy,
+          subscriptionId: req.body.data.object.subscription,
+          chargeId: req.body.data.object.charge,
+          amountCharge: data.amount,
+          amountTransfer,
+        });
+      });
     }
 
     database.PlatformCharges.create(newCharge);
