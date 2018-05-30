@@ -154,10 +154,10 @@ module.exports = function(Transaction) {
                 email: req.receipt_email,
                 source: req.source,
             })
-                .then(customer => {
-                    const data = Object.assign({}, req, {platformCustomer: customer.id});
-                    return createCharge(Transaction, data, cb);
-                });
+            .then(customer => {
+                const data = Object.assign({}, req, {platformCustomer: customer.id});
+                return createCharge(Transaction, data, cb);
+            });
         } else { // if customer id is in the reqest body, create a charge using the existing customer id
             console.log('customer: ', req.customer);
             const data = Object.assign({}, req, {platformCustomer: req.customer});

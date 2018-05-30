@@ -11,91 +11,63 @@ sgMail.setApiKey(sendGridApiKey);
 const database = require('../../database/index');
 
 module.exports.createSubscription = (req, res) => {
+  const options = {
+    items: [{plan: req.body.plan}],
+    metadata: {
+      publisherID: req.body.publisherID
+    }
+  }
+  if (req.body.coupon) {
+    options.coupon = req.body.coupon;
+  }
   if(!req.body.subscriptionID) { // if subscription doesn't exist, create subscription
+    if (req.body.metadata) {
+      options.metadata.promoCode = req.body.metadata.promoCode;
+    }
+    if (req.body.trialPeriod) {
+      options.trial_period_days = req.body.trialPeriod;
+    }
+    if (req.body.referredBy) {
+      options.metadata.referredBy = req.body.referredBy; // stripe user id
+    }
     if (!req.body.customer) { // create customer first
-          stripe.customers.create({
-            email: req.body.receipt_email,
-            source: req.body.source,
-          })
-          .then(customer => {
-            const options = {
-              customer: customer.id,
-              items: [{plan: req.body.plan}],
-              metadata: {
-                publisherID: req.body.publisherID,
-              },
-            };
-            if (req.body.coupon) {
-              options.coupon = req.body.coupon;
-            }
-            if (req.body.trialPeriod) {
-              options.trial_period_days = req.body.trialPeriod;
-            }
-            if (req.body.metadata) {
-              options.metadata.promoCode = req.body.metadata.promoCode;
-            }
-            if (req.body.referredBy) {
-              options.metadata.referredBy = req.body.referredBy;
-            }
-            if (req.body.refererPublisherId) {
-              options.metadata.refererPublisherId = req.body.refererPublisherId;
-            }
-            return stripe.subscriptions.create(options)
-                  .then(subscription => {
-                    res.send(subscription);
-                  })
-                  .catch(err => {
-                    console.log('error creating subscription');
-                    res.status(500).send(err.raw.message);
-                  });
-          })
-          .catch(err => {
-            console.log('error creating customer');
-            res.status(500).send(err.raw.message);
-          });
+      stripe.customers.create({
+        email: req.body.receipt_email,
+        source: req.body.source,
+      })
+      .then(customer => {
+        options.customer = customer.id;
+        stripe.subscriptions.create(options)
+        .then(subscription => {
+          res.send(subscription)
+        })
+        .catch(err => {
+          console.log('createSubscription error creating subscription', err);
+          res.status(500).send(err);
+        });
+      })
+      .catch(err => {
+        console.log('createSubscription error creating customer', err);
+        res.status(500).send(err);
+      });
     } else { // if customer already exists
-      const options = {
-        customer: req.body.customer,
-        // customer: 'cus_B2k4GMj8KtSkGs',
-        items: [{plan: req.body.plan}],
-        metadata: {
-          publisherID: req.body.publisherID,
-        },
-      };
-      if (req.body.coupon) {
-        options.coupon = req.body.coupon;
-      }
-      if (req.body.trialPeriod) {
-        options.trial_period_days = req.body.trialPeriod;
-      }
-      if (req.body.metadata) {
-        options.metadata.promoCode = req.body.metadata.promoCode;
-      }
+      options.customer = req.body.customer; // 'cus_B2k4GMj8KtSkGs',
       stripe.subscriptions.create(options)
       .then(subscription => {
         res.send(subscription);
       })
       .catch(err => {
-        console.log('error creating subscription');
-        console.log(err);
+        console.log('createSubscription error creating subscription with customer', err);
         res.status(500).send(err);
       });
     }
   } else { // if subscription exists, update existing subscription
-    const options = {
-        items: [{plan: req.body.plan}],
-        metadata: {
-          publisherID: req.body.publisherID,
-        },
-    }
-    if (req.body.coupon) {
-      options.coupon = req.body.coupon;
-    }
     stripe.subscriptions.update(req.body.subscriptionID, options)
     .then(subscription => {
       res.send(subscription);
     })
     .catch(err => {
+      console.log('error updating subscription', err);
       res.status(500).send(err);
     });
   }
@@ -132,21 +104,22 @@ module.exports.renewSubscription = (req, res) => {
 
     // check if there is referredBy property in the subscription's metadata
     if (data.metadata.referredBy) {
+      const [affiliateStripeAccountId, affiliateId] = data.metadata.referredBy.split('-');
       const transferAmount = Math.floor(
         (chargeAmount * 0.971 - 30) / 2 // half of (chargeAmount minus stripe fee: - 2.9% - $0.3)
       );
       stripe.transfers.create({
         amount: transferAmount,
         currency: 'usd',
-        destination: data.metadata.referredBy,
+        destination: affiliateStripeAccountId,
         transfer_group: 'affiliateGroup' // optional
       }, (err, transfer) => {
         if (err) {
           return console.log(`Error: renewSubscription stripe.transfers.create ${err}`);
         }
         database.Transfers.create({
-          affiliateId: data.metadata.refererPublisherId,
-          affiliateStripeAccountId: data.metadata.referredBy,
+          affiliateId,
+          affiliateStripeAccountId,
           subscriptionId: req.body.data.object.subscription,
           chargeId: req.body.data.object.charge,
           chargeAmount,
