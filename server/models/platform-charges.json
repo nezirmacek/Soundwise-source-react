@@ -6,7 +6,7 @@
     "validateUpsert": true
   },
   "properties": {
-    "publisherStripeUserId": {
+    "stripeCustomerId": {
       "type": "string",
       "required": true
     },

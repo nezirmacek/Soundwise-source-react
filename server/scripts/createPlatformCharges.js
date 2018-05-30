@@ -97,52 +97,49 @@ module.exports.createSubscription = (req, res) => {
 
 module.exports.renewSubscription = (req, res) => {
   if (req.body.type == 'invoice.payment_succeeded') {
-    const current_period_end = req.body.data.object.lines.data[0].period.end;
-    const publisherID = req.body.data.object.lines.data[0].metadata.publisherID;
+    const data = req.body.data.object.lines.data[0];
+    const current_period_end = data.period.end;
+    const publisherId = data.metadata.publisherID;
     if (current_period_end) {
-      firebase.database().ref(`publishers/${publisherID}/current_period_end`)
+      firebase.database().ref(`publishers/${publisherId}/current_period_end`)
       .set(current_period_end);
       res.send({});
     }
 
-    const data = req.body.data.object.lines.data[0];
+    const chargeAmount = data.amount;
+    if (!chargeAmount) {
+      return // skip if no charge amount
+    }
 
     // check if there is referredBy property in the subscription's metadata
     const referredBy = (
-      req.body.data.object.metadata &&
-      req.body.data.object.metadata.referredBy
-    ) || (
-      data.metadata &&
-      data.metadata.referredBy
-    ) || (
-      data.plan.metadata &&
-      data.plan.metadata.referredBy
+      req.body.data.object.metadata && req.body.data.object.metadata.referredBy
+      || data.metadata && data.metadata.referredBy
+      || data.plan.metadata && data.plan.metadata.referredBy || null
     );
-    let subscriptionPlanId;
-    if (data.plan.id === 'plus-annual') {         // Soundwise Plus Annual: prod_CIfFqhoS2m4xaN
-      subscriptionPlanId = 'prod_CIfFqhoS2m4xaN';
-    } else if (data.plan.id === 'pro-monthly') {  // Soundwise Pro Monthly: prod_CIfGFWSDY3ktD8
-      subscriptionPlanId = 'prod_CIfGFWSDY3ktD8';
-    } else if (data.plan.id === 'plus-monthly') { // Soundwise Plus Monthly: prod_CIfDGkLuKCaFs5
-      subscriptionPlanId = 'prod_CIfDGkLuKCaFs5';
-    } else if (data.plan.id === 'pro-annual') {   // Soundwise Pro Annual: prod_CIfHWeFWKcVKyh
-      subscriptionPlanId = 'prod_CIfHWeFWKcVKyh';
+    let subscriptionPlanName;
+    if (data.plan.product === 'prod_CIfFqhoS2m4xaN') {
+      subscriptionPlanName = 'Soundwise Plus Annual Subscription';
+    } else if (data.plan.product === 'prod_CIfGFWSDY3ktD8') {
+      subscriptionPlanName = 'Soundwise Pro Monthly Subscription';
+    } else if (data.plan.product === 'prod_CIfDGkLuKCaFs5') {
+      subscriptionPlanName = 'Soundwise Plus Monthly Subscription';
+    } else if (data.plan.product === 'prod_CIfHWeFWKcVKyh') {
+      subscriptionPlanName = 'Soundwise Pro Annual Subscription';
     } else {
-      console.log(`Error: renewSubscription unknown plan id ${data.plan.id}`);
+      console.log(`Error: renewSubscription unknown plan product ${data.plan.product}`);
     }
 
     const newCharge = {
-      publisherId: publisherID,
-      publisherStripeUserId: 1,
-      subscriptionPlanName: 1,
-      subscriptionPlanId,
-      subscriptionId: 1,
+      publisherId,
+      stripeCustomerId: req.body.data.object.customer,
+      subscriptionPlanName,
+      subscriptionPlanId: data.plan.product,
+      subscriptionId: req.body.data.object.subscription,
       chargeId: req.body.data.object.charge,
-      chargeAmount: 1,
-      coupon: 1,
-    }
-    if (referredBy) {
-      newCharge.referredBy = referredBy;
+      chargeAmount: data.amount, // in cents, example 3600
+      coupon: data.metadata.coupon || null,
+      referredBy,
     }
 
     database.PlatformCharges.create(newCharge);

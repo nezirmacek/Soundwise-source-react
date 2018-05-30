@@ -125,7 +125,7 @@ var Payout = db.define('Payout', { // records of payouts
 
 var PlatformCharges = db.define('PlatformCharges', {
   publisherId: { type: Sequelize.STRING, allowNull: false },
-  publisherStripeUserId: { type: Sequelize.STRING, allowNull: false },
+  stripeCustomerId: { type: Sequelize.STRING, allowNull: false },
   subscriptionPlanName: { type: Sequelize.STRING, allowNull: false },
   subscriptionPlanId: { type: Sequelize.STRING, allowNull: false },
   subscriptionId: { type: Sequelize.STRING, allowNull: false },
