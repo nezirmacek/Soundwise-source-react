@@ -60,8 +60,8 @@ export default class Billing extends Component {
       return alert('Empty user/publisher value');
     }
     if (!userInfo.publisher.stripe_user_id) {
-      // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user that a payout account should be set up first
-      alert('Error: payout account should be set up first');
+      // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user
+      alert('Please connect your payout account first.');
       // TODO redirect/show card input form (example client/containers/checkout.js)
     } else {
       // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
