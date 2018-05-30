@@ -104,7 +104,7 @@ module.exports.renewSubscription = (req, res) => {
 
     // check if there is referredBy property in the subscription's metadata
     if (data.metadata.referredBy) {
-      const [affiliateStripeAccountId, affiliateId] = data.metadata.referredBy.split('-');
+      const [affiliateId, affiliateStripeAccountId] = data.metadata.referredBy.split('-');
       const transferAmount = Math.floor(
         (chargeAmount * 0.971 - 30) / 2 // half of (chargeAmount minus stripe fee: - 2.9% - $0.3)
       );

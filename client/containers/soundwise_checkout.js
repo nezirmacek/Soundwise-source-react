@@ -186,7 +186,7 @@ class _SoundwiseCheckout extends Component {
           metaData,
           trialPeriod,
           publisherID: publisherID,
-          referredBy, // stripe user id
+          referredBy,
           plan: `${plan}-${frequency}`,
           statement_descriptor: `Soundwise ${plan} plan: ${frequency}`,
       })
