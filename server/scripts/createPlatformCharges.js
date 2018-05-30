@@ -112,7 +112,7 @@ module.exports.renewSubscription = (req, res) => {
       res.send({});
     }
 
-    const chargeAmount = data.amount;
+    const chargeAmount = data.amount; // in cents, example 3600
     if (!chargeAmount) {
       return // skip if no charge amount
     }
@@ -130,23 +130,13 @@ module.exports.renewSubscription = (req, res) => {
       console.log(`Error: renewSubscription unknown plan product ${data.plan.product}`);
     }
 
-    const newCharge = {
-      publisherId,
-      stripeCustomerId: req.body.data.object.customer,
-      subscriptionPlanName,
-      subscriptionPlanId: data.plan.product,
-      subscriptionId: req.body.data.object.subscription,
-      chargeId: req.body.data.object.charge,
-      chargeAmount: data.amount, // in cents, example 3600
-      coupon: data.metadata.coupon || null,
-      referredBy: data.metadata.referredBy || null,
-    }
-
     // check if there is referredBy property in the subscription's metadata
     if (data.metadata.referredBy) {
-      const amountTransfer = data.amount * 0.971 - 30; // - 2.9% - $0.3 stripe fee
+      const transferAmount = Math.floor(
+        (chargeAmount * 0.971 - 30) / 2 // half of (chargeAmount minus stripe fee: - 2.9% - $0.3)
+      );
       stripe.transfers.create({
-        amount: amountTransfer,
+        amount: transferAmount,
         currency: 'usd',
         destination: data.metadata.referredBy,
         transfer_group: 'affiliateGroup' // optional
@@ -159,13 +149,23 @@ module.exports.renewSubscription = (req, res) => {
           affiliateStripeAccountId: data.metadata.referredBy,
           subscriptionId: req.body.data.object.subscription,
           chargeId: req.body.data.object.charge,
-          amountCharge: data.amount,
-          amountTransfer,
+          chargeAmount,
+          transferAmount,
         });
       });
     }
 
-    database.PlatformCharges.create(newCharge);
+    database.PlatformCharges.create({
+      publisherId,
+      stripeCustomerId: req.body.data.object.customer,
+      subscriptionPlanName,
+      subscriptionPlanId: data.plan.product,
+      subscriptionId: req.body.data.object.subscription,
+      chargeId: req.body.data.object.charge,
+      chargeAmount,
+      coupon: data.metadata.coupon || null,
+      referredBy: data.metadata.referredBy || null,
+    });
   } else if (req.body.type == 'invoice.payment_failed') {
     const input = {'to': 'natasha@mysoundwise.com',
       'from': 'support@mysoundwise.com',

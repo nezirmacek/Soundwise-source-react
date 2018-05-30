@@ -147,8 +147,8 @@ var Transfers = db.define('Transfers', {
   affiliateStripeAccountId: { type: Sequelize.STRING, allowNull: false },
   subscriptionId: { type: Sequelize.STRING, allowNull: false },
   chargeId: { type: Sequelize.STRING, allowNull: false },
-  amountCharge: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
-  amountTransfer: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  chargeAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  transferAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
 }, {
   indexes: [
     { fields: ['affiliateId'] },
