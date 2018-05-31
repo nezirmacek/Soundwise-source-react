@@ -16,6 +16,7 @@ import { config, awsConfig } from '../config';
 import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
 import Page from './components/page';
 import PageRealEstate from './components/page_realestate';
+import ConversionCourse from './components/conversion_course';
 import PageExperts from './components/page_experts';
 import {PricingPage} from './containers/pricing_page';
 import {SoundwiseCheckout} from './containers/soundwise_checkout';
@@ -224,6 +225,7 @@ class _Routes extends Component {
             <Switch>
                 <Route exact path="/" component={Page}/>
                 <Route path="/about" component={About}/>
+                <Route path="/conversion" component={ConversionCourse}/>
                 <Route path="/realestate" component={PageRealEstate}/>
                 <Route path="/experts" component={PageExperts}/>
                 <Route exact={true} path='/signup/:mode' component={AppSignup} />

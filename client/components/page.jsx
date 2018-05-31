@@ -66,6 +66,7 @@ class Page extends Component {
         this.state={
             open: false
         }
+
     }
 
     componentDidMount() {

@@ -61,7 +61,7 @@ const Footer = (props) => (
         </div>
         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12 text-right xs-text-center display-table">
           <div className="display-table-cell-vertical-middle">
-            <span className="text-light-gray tz-text">© 2017 Soundwise Inc.</span>
+            <span className="text-light-gray tz-text">© 2018 Soundwise Inc.</span>
           </div>
         </div>
 

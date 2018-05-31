@@ -234,7 +234,7 @@ function addOrUpdateSoundcastRecord(soundcast) {
       soundcastId,
       publisherId: publisherID,
       title,
-      imgageUrl: imageURL,
+      imageUrl: imageURL,
       itunesId,
       category,
       updateDate: last_update,

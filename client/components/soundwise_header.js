@@ -189,7 +189,7 @@ class _SoundwiseHeader extends Component {
                                   <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                                 </Link>
                                 ||
-                                (this.props.match.path.slice(0, 5) == '/blog' || this.props.match.path == '/wave_video' || this.props.match.path == '/content_download' || this.props.match.path == '/pricing') &&
+                                (this.props.match.path.slice(0, 5) == '/blog' || this.props.match.path == '/wave_video' || this.props.match.path == '/content_download' || this.props.match.path == '/pricing' || this.props.match.path == '/conversion') &&
                                 <Link to={`/`}>
                                   <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
                                 </Link>
