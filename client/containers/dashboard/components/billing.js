@@ -151,7 +151,7 @@ export default class Billing extends Component {
                                   <span> (1 month free on any paid plans)</span>
                                   <span style={styles.titleTextSmall}>: </span>
                                   <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>
-                                    {(userInfo.firstName + userInfo.lastName).replace(/ /g, '')}</a>
+                                    {(userInfo.publisher.name).replace(/[^A-Za-z]/g, '')}</a>
                                 </div>
                               </div>
                            || <div>
