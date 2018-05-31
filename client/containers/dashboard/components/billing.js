@@ -53,12 +53,12 @@ export default class Billing extends Component {
 
   async createCoupon(userName, stripeId, count) {
     const ref = userName + (count || '');
-    const coupon = await firebase.database().ref(ref).once('value');
+    const coupon = await firebase.database().ref(`coupons/${ref}`).once('value');
     if (coupon.val()) { // coupon exist
       count++;
       this.createCoupon(userName, stripeId, count); // recursion
     } else {
-      await firebase.database().ref(ref).set({
+      await firebase.database().ref(`coupons/${ref}`).set({
         count: 0,
         description: "30 Day Free",
         expiration: 4670449076,
