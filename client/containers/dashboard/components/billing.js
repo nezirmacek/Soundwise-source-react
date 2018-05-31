@@ -24,17 +24,14 @@ export default class Billing extends Component {
     };
     this.handlePlanCancel = this.handlePlanCancel.bind(this);
     this.handleAffiliate = this.handleAffiliate.bind(this);
+    this.createCoupon = this.createCoupon.bind(this);
   }
 
   componentDidMount() {
-    if(this.props.userInfo.publisher) {
-
-    }
+    // if(this.props.userInfo.publisher) {}
   }
 
-  componentWillReceiveProps(nextProps) {
-
-  }
+  componentWillReceiveProps(nextProps) {}
 
   handlePlanCancel() {
     const {userInfo} = this.props;
@@ -54,17 +51,38 @@ export default class Billing extends Component {
     }
   }
 
+  async createCoupon(userName, stripeId, count) {
+    const ref = userName + (count || '');
+    const coupon = await firebase.database().ref(ref).once('value');
+    if (coupon.val()) { // coupon exist
+      count++;
+      this.createCoupon(userName, stripeId, count); // recursion
+    } else {
+      await firebase.database().ref(ref).set({
+        count: 0,
+        description: "30 Day Free",
+        expiration: 4670449076,
+        frequency: "all",
+        percentOff: 0,
+        trialPeriod: 30,
+        affiliate: stripeId
+      })
+    }
+  }
+
   async handleAffiliate(){
     const {userInfo} = this.props;
     if (!userInfo || !userInfo.publisher) {
       return alert('Empty user/publisher value');
     }
-    if (!userInfo.publisher.stripe_user_id) {
+    const stripeId = userInfo.publisher.stripe_user_id;
+    if (!stripeId) {
       // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user
       alert('Please connect your payout account first.');
       // TODO redirect/show card input form (example client/containers/checkout.js)
     } else {
       // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
+      this.createCoupon(userInfo.publisher.name.replace(/[^A-Za-z]/g, ''), stripeId, 0);
       await firebase.database().ref(`publishers/${userInfo.publisherID}/affiliate`)
       .set(true);
       this.setState({ affiliate: true });
@@ -151,7 +169,7 @@ export default class Billing extends Component {
                                   <span> (1 month free on any paid plans)</span>
                                   <span style={styles.titleTextSmall}>: </span>
                                   <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>
-                                    {(userInfo.publisher.name).replace(/[^A-Za-z]/g, '')}</a>
+                                    {userInfo.publisher.name.replace(/[^A-Za-z]/g, '')}</a>
                                 </div>
                               </div>
                            || <div>
