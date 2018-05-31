@@ -1,3 +1,22 @@
+// *** create new email list in sendgrid
+// var sgMail = require('@sendgrid/mail');
+// var sendGridApiKey = require('../config').sendGridApiKey;
+// sgMail.setApiKey(sendGridApiKey);
+// var client = require('@sendgrid/client');
+// client.setApiKey(sendGridApiKey);
+
+// let listId;
+// const data1 = {
+//   method: 'POST',
+//   url: '/v3/contactdb/lists',
+//   body: {'name': `podcast-conversion-course`},
+// };
+// client.request(data1)
+// .then(([response, body]) => {
+//   listId = body.id;
+//   console.log(listId); // 3921133
+// });
+
 // *** save soundcast and episodes in database ***
 
 // const soundcastId = '1514433422681s';
