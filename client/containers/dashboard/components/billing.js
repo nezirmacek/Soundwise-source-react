@@ -144,13 +144,14 @@ export default class Billing extends Component {
                             && <div>
                                 <div style={{...styles.titleTextSmall,marginTop:17}}>
                                   <span>Your affiliate link:  </span>
-                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
+                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
                                 </div>
                                 <div style={{marginTop:12}}>
                                   <span style={styles.titleTextSmall}>Your affiliate promo code</span>
                                   <span> (1 month free on any paid plans)</span>
                                   <span style={styles.titleTextSmall}>: </span>
-                                  <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>publishername</a>
+                                  <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>
+                                    {(userInfo.firstName + userInfo.lastName).replace(/ /g, '')}</a>
                                 </div>
                               </div>
                            || <div>
