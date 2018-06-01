@@ -26,13 +26,31 @@ export default class Billing extends Component {
     this.handlePlanCancel = this.handlePlanCancel.bind(this);
     this.handleAffiliate = this.handleAffiliate.bind(this);
     this.createCoupon = this.createCoupon.bind(this);
+    this.checkAffiliateId = this.checkAffiliateId.bind(this);
   }
 
   componentDidMount() {
-    // if(this.props.userInfo.publisher) {}
+    this.checkAffiliateId();
   }
 
-  componentWillReceiveProps(nextProps) {}
+  componentWillReceiveProps(nextProps) {
+    this.checkAffiliateId();
+  }
+
+  checkAffiliateId() {
+    const {userInfo} = this.props;
+    if (!this.state.couponText && userInfo.publisher && userInfo.publisher.stripe_user_id) {
+      firebase.database().ref(`coupons`).orderByChild(`affiliate`)
+      .equalTo(userInfo.publisher.stripe_user_id).once('value').then(snapshot => {
+        const value = snapshot.val();
+        if (value) { // have coupon
+          this.setState({
+            couponText: Object.keys(value)[0]
+          });
+        }
+      });
+    }
+  }
 
   handlePlanCancel() {
     const {userInfo} = this.props;
