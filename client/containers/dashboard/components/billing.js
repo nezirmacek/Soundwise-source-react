@@ -21,6 +21,7 @@ export default class Billing extends Component {
         amount: 0,
       }],
       affiliate: false,
+      couponText: '',
     };
     this.handlePlanCancel = this.handlePlanCancel.bind(this);
     this.handleAffiliate = this.handleAffiliate.bind(this);
@@ -52,13 +53,13 @@ export default class Billing extends Component {
   }
 
   async createCoupon(userName, stripeId, count) {
-    const ref = userName + (count || '');
-    const coupon = await firebase.database().ref(`coupons/${ref}`).once('value');
+    const couponText = userName + (count || '');
+    const coupon = await firebase.database().ref(`coupons/${couponText}`).once('value');
     if (coupon.val()) { // coupon exist
       count++;
       this.createCoupon(userName, stripeId, count); // recursion
     } else {
-      await firebase.database().ref(`coupons/${ref}`).set({
+      await firebase.database().ref(`coupons/${couponText}`).set({
         count: 0,
         description: "30 Day Free",
         expiration: 4670449076,
@@ -66,7 +67,8 @@ export default class Billing extends Component {
         percentOff: 0,
         trialPeriod: 30,
         affiliate: stripeId
-      })
+      });
+      this.setState({ couponText });
     }
   }
 
@@ -169,7 +171,8 @@ export default class Billing extends Component {
                                   <span> (1 month free on any paid plans)</span>
                                   <span style={styles.titleTextSmall}>: </span>
                                   <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>
-                                    {userInfo.publisher.name.replace(/[^A-Za-z]/g, '')}</a>
+                                    {this.state.couponText}
+                                  </a>
                                 </div>
                               </div>
                            || <div>
