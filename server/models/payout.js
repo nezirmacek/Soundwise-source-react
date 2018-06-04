@@ -22,15 +22,16 @@ module.exports = function(Payout) {
           case 'payout.paid':
             // write payout date to Payout table
             if (data.data.object.id) {
+              const date = moment().utc().format();
               const payout = {
                 batchId: data.data.object.id,
-                amount: data.data.object.amount,
-                date: data.data.object.arrival_date,
+                amount: Math.trunc(data.data.object.amount),
+                date: date,
                 publisherId,
                 email: snapshot.val()[publisherId].email ? snapshot.val()[publisherId].email : snapshot.val()[publisherId].paypalEmail,
                 payoutId: data.data.object.id,
-                createdAt: moment().utc().format(),
-                updatedAt: moment().utc().format(),
+                createdAt: date,
+                updatedAt: date,
               };
               console.log('new payout data: ', payout);
 
