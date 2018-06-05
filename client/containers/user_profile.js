@@ -585,7 +585,6 @@ class _UserProfile extends Component {
                                     </span>
                                 </div>
                                 <div style={{...styles.profileImage, backgroundImage: `url(${pic_url ? pic_url : ''})`}}>
-
                                 </div>
                                 <div style={styles.loaderWrapper}>
                                     <div style={{...styles.inputFileWrapper, marginTop: 0}}>

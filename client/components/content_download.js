@@ -75,7 +75,7 @@ export default class ContentDownload extends Component {
     const {image, content, submitted} = this.state;
     return (
       <div>
-        <SoundwiseHeader />
+        <SoundwiseHeader showIcon={true}/>
           <section className="padding-40px-tb xs-padding-50px-tb position-relative cover-background tz-builder-bg-image border-none hero-style9" id="hero-section11" data-img-size="(W)1920px X (H)800px" style={{backgroundColor:'#f8f6f2', height: 800}}>
               <div className="container position-relative" style={{}}>
                   <div className="row">

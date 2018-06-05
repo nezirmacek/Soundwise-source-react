@@ -20,7 +20,7 @@ class _OrderConfirmation extends Component {
     render() {
         return (
           <div>
-            <SoundwiseHeader />
+            <SoundwiseHeader showIcon={true}/>
             <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
                 <div className="container">
                     <div className="row">

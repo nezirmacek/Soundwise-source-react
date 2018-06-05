@@ -79,7 +79,7 @@ export default class Referral extends Component {
     if(this.state.submitted) {
       return (
           <div>
-            <SoundwiseHeader />
+            <SoundwiseHeader showIcon={true}/>
             <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="contact-section2">
                 <div className="container">
                     <div className="row">

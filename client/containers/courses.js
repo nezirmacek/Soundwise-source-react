@@ -31,7 +31,7 @@ class _Courses extends Component {
 
         return (
             <div>
-                <SoundwiseHeader />
+                <SoundwiseHeader showIcon={true}/>
                 <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                     <div className="container">
                         <div className="row">

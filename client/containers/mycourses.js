@@ -33,7 +33,7 @@ class _MyCourses extends Component {
                 .then(snapshot => {
                     if (snapshot.val()) {
                         const courseIDs = Object.keys(snapshot.val());
-        
+
                         courseIDs.forEach(id => {
                             firebase.database().ref('courses/' + id)
                                 .on('value', snapshot => {

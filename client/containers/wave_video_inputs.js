@@ -311,7 +311,7 @@ class _WaveVideoInputs extends Component {
           <meta name="twitter:image" content='https://mysoundwise.com/images/vid-maker.png'/>
           <meta name="twitter:card" content='https://mysoundwise.com/images/vid-maker.png' />
         </Helmet>
-        <SoundwiseHeader />
+        <SoundwiseHeader showIcon={true}/>
           <section className="no-padding xs-padding-50px-tb position-relative cover-background tz-builder-bg-image border-none hero-style9" id="hero-section11" data-img-size="(W)1920px X (H)800px" style={{background:"linear-gradient(-45deg,rgba(247,107,28,0.4), rgba(97,225,251,0.8)), url('images/mic_tv.jpg')", height: 600}}>
               <div className="container position-relative" style={{height: 600}}>
                   <div className="row">

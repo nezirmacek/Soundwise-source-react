@@ -87,11 +87,11 @@ class _SoundcastHeader extends Component {
     const soundcastName = this.props.soundcast.title.split(' ').join('%20');
     const {soundcast} = this.props;
     let {prices, forSale} = soundcast;
-    let displayedPrice = forSale ? '___' : 'Free';
+    let displayedPrice = '';
     let pre = '', post = '';
     if(forSale) {
         pre = prices.length > 1 ? `From ` : '';
-        displayedPrice = `$${Number(prices[0].price).toFixed(2)}`;
+        displayedPrice = prices[0].price ? `$${Number(prices[0].price).toFixed(2)}` : '';
         if(prices[0].billingCycle == 'rental') {
             post = `/ ${prices[0].rentalPeriod}-Day Access`;
         } else if(prices[0].billingCycle == 'monthly') {
@@ -139,7 +139,9 @@ class _SoundcastHeader extends Component {
                             </div>
                             <div className="row" style={{paddingBottom: '30px'}}>
                                 <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center xs-margin-bottom-10px">
-                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}><strong>{`${pre}${displayedPrice} ${post}`}</strong></span>
+                                { soundcast.prices && soundcast.prices[0] &&
+                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}><strong>{`${pre}${ forSale ? displayedPrice : 'Free'} ${post}`}</strong></span>
+                                }
                                 </div>
                                 <div className="col-md-5 col-sm-6 col-xs-12 text-center ">
                                   <a className="btn-medium btn btn-circle text-white no-letter-spacing" onClick={this.props.openModal} style={{backgroundColor: '#F76B1C'}}

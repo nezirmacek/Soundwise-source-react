@@ -20,7 +20,7 @@ import Banner from './components/banner'
 import {PricingModal} from './components/pricing_modal'
 
 import  PageHeader  from './components/page_header'
-import {SoundwiseHeader} from '../../components/soundwise_header'
+import {PublisherHeader} from './components/publisher_header'
 import RelatedSoundcasts from './components/related_soundcasts'
 // import {CourseSignup} from './course_signup'
 
@@ -32,6 +32,7 @@ class _SoundcastPage extends Component {
       soundcast: {
         title: '',
         short_description: '',
+        forSale: true,
         imageURL: '',
         long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
         prices: [{}],
@@ -39,9 +40,13 @@ class _SoundcastPage extends Component {
       },
       cardHeight: 0,
       showBanner: false,
+      publisherID: '',
+      publisherName: '',
+      publisherImg: '',
     }
     this.nv = null;
     this.handleScroll = this.handleScroll.bind(this);
+    this.retrieveSoundcast = this.retrieveSoundcast.bind(this);
   }
 
   async componentDidMount() {
@@ -49,16 +54,7 @@ class _SoundcastPage extends Component {
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
     const params = new URLSearchParams(this.props.location.search);
-
-    const soundcast =  await firebase.database().ref('soundcasts/' + soundcastID).once('value');
-    if(soundcast.val()) {
-      that.setState({
-        soundcast: soundcast.val(),
-        soundcastID
-      });
-    } else {
-      history.push('/notfound');
-    }
+    this.retrieveSoundcast(soundcastID);
 
     if(params.get('custom_token')) {
         const customToken = params.get('custom_token');
@@ -76,17 +72,29 @@ class _SoundcastPage extends Component {
     if(nextProps.match.params.id !== this.props.match.params.id) {
       const soundcastID = nextProps.match.params.id;
       // console.log('soundcastID: ', soundcastID);
-      firebase.database().ref('soundcasts/' + soundcastID)
-        .once('value', snapshot => {
-          if(snapshot.val()) {
-            that.setState({
-              soundcast: snapshot.val(),
-              soundcastID
-            });
-          } else {
-            history.push('/notfound');
-          }
-        })
+      this.retrieveSoundcast(soundcastID);
+    }
+  }
+
+  async retrieveSoundcast(soundcastID) {
+    const that = this;
+    const {history} = this.props;
+    const soundcast =  await firebase.database().ref('soundcasts/' + soundcastID).once('value');
+    if(soundcast.val()) {
+      that.setState({
+        soundcast: soundcast.val(),
+        soundcastID,
+        publisherID: soundcast.val().publisherID,
+      });
+      const publisher = await firebase.database().ref('publishers/' + soundcast.val().publisherID).once('value');
+      if(publisher.val()) {
+        that.setState({
+          publisherImg: publisher.val().imageUrl,
+          publisherName: publisher.val().name
+        });
+      }
+    } else {
+      history.push('/notfound');
     }
   }
 
@@ -124,7 +132,7 @@ class _SoundcastPage extends Component {
 
   render() {
     const soundcastID = this.props.match.params.id;
-    const {soundcast, modalOpen, showBanner} = this.state;
+    const {soundcast, modalOpen, showBanner, publisherName, publisherImg, publisherID} = this.state;
     if(!soundcastID || !soundcast || (soundcast && soundcast.title && !soundcast.landingPage)) {
       return (
         <Redirect to="/notfound"/>
@@ -155,8 +163,11 @@ class _SoundcastPage extends Component {
         <MuiThemeProvider >
           <div>
             <div ref={(elem) => this.header = elem}>
-              <SoundwiseHeader
+              <PublisherHeader
                 soundcastID={soundcastID}
+                publisherID={publisherID}
+                publisherName={publisherName}
+                publisherImg={publisherImg}
               />
               <PricingModal
                 soundcast={soundcast}

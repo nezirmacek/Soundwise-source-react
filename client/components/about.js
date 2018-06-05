@@ -3,7 +3,7 @@ import {SoundwiseHeader} from './soundwise_header'
 
 const About = () => (
   <div>
-    <SoundwiseHeader />
+    <SoundwiseHeader showIcon={true}/>
     <div>
       <h1>About</h1>
     </div>

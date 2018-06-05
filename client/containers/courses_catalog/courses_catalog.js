@@ -63,7 +63,7 @@ class _CoursesCatalog extends Component {
                     <meta name="description" content={''} />
                     <meta name="keywords" content={''} />
                 </Helmet>
-                <SoundwiseHeader />
+                <SoundwiseHeader showIcon={true}/>
                 {
                     _categories.map((categoryObj, i) => (
                         <RelatedCourses

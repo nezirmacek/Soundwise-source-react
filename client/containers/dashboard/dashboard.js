@@ -208,7 +208,7 @@ class _Dashboard extends Component {
         return (
             <div className=''
               >
-                <SoundwiseHeader />
+                <SoundwiseHeader showIcon={true}/>
                 {
                     feedVerified &&
                     <div class="importing-feed-overlay">

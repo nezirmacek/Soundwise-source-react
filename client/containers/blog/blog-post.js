@@ -55,7 +55,7 @@ export default class BlogPost extends Component {
             <meta name="twitter:image" content={post.featured_image}/>
             <meta name="twitter:card" content={post.featured_image} />
           </Helmet>
-          <SoundwiseHeader />
+          <SoundwiseHeader showIcon={true}/>
           <section className="padding-70px-tb xs-padding-60px-tb blog-style1 blog-post-style bg-white builder-bg" id="blog-section1" >
               <div className='row' style={{paddingLeft: '10%', paddingRight: '10%',}}>
                 <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
@@ -129,7 +129,7 @@ export default class BlogPost extends Component {
     } else {
       return (
         <div>
-          <SoundwiseHeader
+          <SoundwiseHeader showIcon={true}
             blog={true}
           />
           <div></div>

@@ -10,8 +10,8 @@ import IconButton from 'material-ui/IconButton';
 import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Colors from '../styles/colors';
-import {signoutUser} from '../actions/index';
+import Colors from '../../../styles/colors';
+import {signoutUser} from '../../../actions/index';
 
 const styles = {
   navItem: {
@@ -23,9 +23,22 @@ const styles = {
     // float: 'right',
     // marginTop: 6,
   },
+  profileImage: {
+    width: 45,
+    height: 45,
+    float: 'left',
+    borderRadius: '50%',
+    backgroundColor: Colors.mainWhite,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: Colors.lightGrey,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center center',
+    backgroundSize: 'cover',
+  },
 };
 
-class _SoundwiseHeader extends Component {
+class _PublisherHeader extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -157,16 +170,6 @@ class _SoundwiseHeader extends Component {
         } else {
             return (
                 <ul className="nav navbar-nav">
-                    {
-                      (this.props.match.path.slice(0, 5) == '/blog' || this.props.match.path == '/wave_video' || this.props.match.path == '/content_download' || this.props.match.path == '/pricing') &&
-                      <li className="propClone"><Link className="inner-link" to="/pricing" style={styles.navlink}>Pricing</Link></li>
-                      || null
-                    }
-                    {
-                      (this.props.match.path.slice(0, 5) == '/blog' || this.props.match.path == '/wave_video' || this.props.match.path == '/content_download' || this.props.match.path == '/pricing') &&
-                      <li className="propClone"><Link className="inner-link" to="/wave_video" style={styles.navlink}>Soundwave Video Maker</Link></li>
-                      || null
-                    }
                     <li className="propClone " style={styles.navItem}>
                         <Link className="inner-link" to="/signin">LOG IN</Link>
                     </li>
@@ -177,19 +180,22 @@ class _SoundwiseHeader extends Component {
 
     render() {
       // console.log('this.props.userInfo: ', this.props.userInfo)
+        const {publisherID, publisherName, publisherImg} = this.props;
         return (
             <header className="leadgen-agency-1" id="header-section1">
                 <nav className="navbar bg-white tz-header-bg no-margin alt-font shrink-header light-header">
                     <div className="container navigation-menu">
                         <div className="row">
-                            <div className="col-md-3 col-sm-0 col-xs-0">
-                            {   this.props.showIcon &&
-                                <Link to={`/`}>
-                                  <img alt="Soundwise Logo" src="/images/soundwiselogo.svg" data-img-size="(W)163px X (H)39px" />
+                            <div className="col-md-3 col-sm-6 col-xs-9">
+                                <Link to={`/publishers/${publisherID}`}>
+                                  <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <div style={{...styles.profileImage, backgroundImage: `url(${publisherImg ? publisherImg : ''})`}}>
+                                    </div>
+                                    <div className='title-small sm-title-small xs-title-small ' style={{paddingLeft: '0.5em'}}>{publisherName}</div>
+                                  </div>
                                 </Link>
-                            }
                             </div>
-                            <div className="col-md-9 col-sm-12 col-xs-12 position-inherit">
+                            <div className="col-md-9 col-sm-6 col-xs-3 position-inherit">
                                 {/*menu button for md, sm, xs*/}
                                 <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
                                     <span className="sr-only">Toggle navigation</span>
@@ -221,6 +227,6 @@ const mapStateToProps = state => {
   }
 };
 
-const SoundwiseHeader_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundwiseHeader);
+const PublisherHeader_worouter = connect(mapStateToProps, mapDispatchToProps)(_PublisherHeader);
 
-export const SoundwiseHeader = withRouter(SoundwiseHeader_worouter);
+export const PublisherHeader = withRouter(PublisherHeader_worouter);

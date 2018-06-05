@@ -173,7 +173,7 @@ class _Course_Purchased extends Component {
                         <meta name="description" content={course.description} />
                         <meta name="keywords" content={course.keywords} />
                     </Helmet>
-                    <SoundwiseHeader />
+                    <SoundwiseHeader showIcon={true}/>
                     <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                         <div className="container">
                             <div className="row">
@@ -203,7 +203,7 @@ class _Course_Purchased extends Component {
                     <meta name="description" content={course.description} />
                     <meta name="keywords" content={course.keywords} />
                 </Helmet>
-                <SoundwiseHeader />
+                <SoundwiseHeader showIcon={true}/>
                 <CourseHeaderPurchased course={course}/>
                 <MuiThemeProvider >
                     <CourseBodyPurchased

@@ -63,7 +63,7 @@ export default class Publisher extends Component {
 
       return (
         <div>
-            <SoundwiseHeader />
+            <SoundwiseHeader showIcon={false}/>
             <section className="padding-70px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                 <div className="container">
                     <div className="row margin-five-bottom" >

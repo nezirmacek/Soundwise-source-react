@@ -53,7 +53,7 @@ export default class HelpDocs extends Component {
       const { next_page, previous_page } = this.state.resp.meta;
       return (
         <div>
-          <SoundwiseHeader />
+          <SoundwiseHeader showIcon={true}/>
           <section className="padding-110px-tb xs-padding-60px-tb blog-style1 bg-white builder-bg" id="blog-section1">
               <div className="container">
                   <div className="row">
@@ -91,7 +91,7 @@ export default class HelpDocs extends Component {
     } else {
       return (
         <div>
-          <SoundwiseHeader
+          <SoundwiseHeader showIcon={true}
             blog={true}
           />
           <div></div>

@@ -5,7 +5,7 @@ import  Footer  from './footer'
 
 const Privacy = () => (
           <div>
-            <SoundwiseHeader />
+            <SoundwiseHeader showIcon={true}/>
             <section className=" bg-white builder-bg xs-padding-60px-tb" id="contact-section2 border-none" style={{paddingBottom: '30px', paddingTop: '110px', boderBottom: '0px'}}>
               <div className='container text-dark-gray border-none' style={{fontSize: '18px'}}>
                 <h3 className="section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text" style={{textAlign: 'center'}}>PRIVACY POLICY</h3>

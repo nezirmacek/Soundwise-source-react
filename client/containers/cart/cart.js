@@ -94,7 +94,7 @@ class _Cart extends Component {
         if(items_num === 0) {
             return (
                 <div>
-                    <SoundwiseHeader />
+                    <SoundwiseHeader showIcon={true}/>
                     <section className="padding-110px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1">
                         <div className="container">
                             <div className="row">
@@ -110,7 +110,7 @@ class _Cart extends Component {
         } else {
             return (
                 <div>
-                    <SoundwiseHeader />
+                    <SoundwiseHeader showIcon={true}/>
                     <section className="bg-white border-none">
                         <div className="container">
                             <div className="row">

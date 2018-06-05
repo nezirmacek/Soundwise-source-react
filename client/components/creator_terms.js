@@ -4,7 +4,7 @@ import { SoundwiseHeader } from './soundwise_header'
 
 const CreatorTerms = () => (
   <div>
-    <SoundwiseHeader />
+    <SoundwiseHeader showIcon={true}/>
     <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="contact-section2">
       <div className='container text-dark-gray' style={{fontSize: '18px'}}>
           <div className='text-center'>

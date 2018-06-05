@@ -12,7 +12,8 @@ import Axios from 'axios'
 import Footer from '../../../components/footer'
 import  PageHeader  from './page_header'
 import AudioPlayer from 'react-responsive-audio-player'
-import {SoundwiseHeader} from '../../../components/soundwise_header'
+import {PublisherHeader} from './publisher_header'
+
 import Colors from '../../../styles/colors'
 
 class _EpisodePage extends Component {
@@ -47,12 +48,24 @@ class _EpisodePage extends Component {
     this.audio = null;
     this.modalScheduler = null;
     this.onCloseModal = this.onCloseModal.bind(this);
+    this.fetchData = this.fetchData.bind(this);
   }
 
   componentDidMount() {
     const that = this;
     const episodeID = this.props.match.params.id;
     // console.log('soundcastID: ', soundcastID);
+    this.fetchData(episodeID);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(!this.state.publisherName) {
+      this.fetchData(episodeID);
+    }
+  }
+
+  fetchData(episodeID) {
+    const that = this;
     firebase.database().ref('episodes/' + episodeID)
       .on('value', snapshot => {
         if(snapshot.val()) {
@@ -98,8 +111,7 @@ class _EpisodePage extends Component {
               })
             })
         }
-      })
-
+      });
   }
 
   getTime_hoursMins (seconds) {
@@ -229,8 +241,12 @@ class _EpisodePage extends Component {
     if(!publicEpisode) {
       return (
         <div>
-          <PageHeader/>
-
+          <PublisherHeader
+            soundcastID={soundcastID}
+            publisherID={publisherID}
+            publisherName={publisherName}
+            publisherImg={publisherImageURL}
+          />
           <section className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
               <div className="container">
                   <div className="row">
@@ -264,8 +280,11 @@ class _EpisodePage extends Component {
         </Helmet>
         <MuiThemeProvider >
           <div>
-            <SoundwiseHeader
-              soundcastID = {soundcastID}
+            <PublisherHeader
+              soundcastID={soundcastID}
+              publisherID={publisherID}
+              publisherName={publisherName}
+              publisherImg={publisherImageURL}
             />
             <div>
             <Modal open={open} onClose={this.onCloseModal} styles={{modal: {maxWidth: '100%'}}}>

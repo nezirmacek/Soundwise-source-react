@@ -6,7 +6,7 @@ import Footer from './footer'
 
 const NotFound = () => (
   <div>
-    <SoundwiseHeader />
+    <SoundwiseHeader showIcon={true}/>
     <section id="content-section31" className="padding-110px-tb xs-padding-60px-tb builder-bg border-none">
         <div className="container">
             <div className="row equalize xs-equalize-auto equalize-display-inherit">

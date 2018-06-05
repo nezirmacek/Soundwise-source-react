@@ -78,7 +78,7 @@ import Pricing from '../components/pricing'
           <meta name="twitter:image" content="https://mysoundwise.com/images/soundwise_homepage.png"/>
           <meta name="twitter:card" content="https://mysoundwise.com/images/soundwise_homepage.png" />
         </Helmet>
-        <SoundwiseHeader />
+        <SoundwiseHeader showIcon={true}/>
         <Pricing
            goToCheckout={this.goToCheckout}
            changeFrequency={this.changeFrequency}

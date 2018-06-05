@@ -221,7 +221,7 @@ class _SoundwiseCheckout extends Component {
     const totalDisplayed = trialPeriod ? 0 : total;
     return (
       <div>
-        <SoundwiseHeader />
+        <SoundwiseHeader showIcon={true}/>
         <section className="bg-white border-none">
             <div className="container">
                 <div className="row">

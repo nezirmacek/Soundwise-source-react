@@ -146,7 +146,7 @@ class _Course extends Component {
           <meta name="description" content={_course.description} />
           <meta name="keywords" content={_course.keywords} />
         </Helmet>
-        <SoundwiseHeader />
+        <SoundwiseHeader showIcon={true}/>
         <CourseHeader course={_course}/>
 
         <MuiThemeProvider >
