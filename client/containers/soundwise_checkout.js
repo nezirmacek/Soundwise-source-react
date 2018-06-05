@@ -255,11 +255,11 @@ class _SoundwiseCheckout extends Component {
                                       <div className="col-md-12 col-sm-12 col-xs-12">
                                       {
                                         !this.state.enterPromoCode &&
-                                        <span
+                                        <div
                                           style={{cursor: 'pointer'}}
                                           onClick={() => that.setState({
                                             enterPromoCode: true
-                                          })}>Have a promo code?</span>
+                                          })}>Have a promo code?</div>
                                         ||
                                         <div>
                                           <input
@@ -280,7 +280,7 @@ class _SoundwiseCheckout extends Component {
                                               onClick={()=> {}}
                                               type="button"
                                               className="btn"
-                                              style={{color: Colors.mainOrange}}>Applied!</button>
+                                              style={{color: Colors.mainOrange, margin: '0 8px 5px'}}>Applied!</button>
                                             ||
                                             <button
                                               onClick={this.applyPromoCode}

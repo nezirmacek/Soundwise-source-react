@@ -108,24 +108,28 @@ module.exports.renewSubscription = (req, res) => {
       const transferAmount = Math.floor(
         (chargeAmount * 0.971 - 30) / 2 // half of (chargeAmount minus stripe fee: - 2.9% - $0.3)
       );
-      stripe.transfers.create({
-        amount: transferAmount,
-        currency: 'usd',
-        destination: affiliateStripeAccountId,
-        transfer_group: 'affiliateGroup' // optional
-      }, (err, transfer) => {
-        if (err) {
-          return console.log(`Error: renewSubscription stripe.transfers.create ${err}`);
-        }
-        database.Transfers.create({
-          affiliateId,
-          affiliateStripeAccountId,
-          subscriptionId: req.body.data.object.subscription,
-          chargeId: req.body.data.object.charge,
-          chargeAmount,
-          transferAmount,
+      if (transferAmount <= 0) {
+        console.log(`Error: renewSubscription wrong transferAmount ${JSON.stringify(req.body.data)}`);
+      } else {
+        stripe.transfers.create({
+          amount: transferAmount,
+          currency: 'usd',
+          destination: affiliateStripeAccountId,
+          transfer_group: 'affiliateGroup' // optional
+        }, (err, transfer) => {
+          if (err) {
+            return console.log(`Error: renewSubscription stripe.transfers.create ${err}`);
+          }
+          database.Transfers.create({
+            affiliateId,
+            affiliateStripeAccountId,
+            subscriptionId: req.body.data.object.subscription,
+            chargeId: req.body.data.object.charge,
+            chargeAmount,
+            transferAmount,
+          });
         });
-      });
+      }
     }
 
     database.PlatformCharges.create({

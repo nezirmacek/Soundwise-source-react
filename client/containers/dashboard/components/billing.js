@@ -21,19 +21,35 @@ export default class Billing extends Component {
         amount: 0,
       }],
       affiliate: false,
+      couponText: '',
     };
     this.handlePlanCancel = this.handlePlanCancel.bind(this);
     this.handleAffiliate = this.handleAffiliate.bind(this);
+    this.createCoupon = this.createCoupon.bind(this);
+    this.checkAffiliateId = this.checkAffiliateId.bind(this);
   }
 
   componentDidMount() {
-    if(this.props.userInfo.publisher) {
-
-    }
+    this.checkAffiliateId();
   }
 
   componentWillReceiveProps(nextProps) {
+    this.checkAffiliateId();
+  }
 
+  checkAffiliateId() {
+    const {userInfo} = this.props;
+    if (!this.state.couponText && userInfo.publisher && userInfo.publisher.stripe_user_id) {
+      firebase.database().ref(`coupons`).orderByChild(`affiliate`)
+      .equalTo(userInfo.publisher.stripe_user_id).once('value').then(snapshot => {
+        const value = snapshot.val();
+        if (value) { // have coupon
+          this.setState({
+            couponText: Object.keys(value)[0]
+          });
+        }
+      });
+    }
   }
 
   handlePlanCancel() {
@@ -54,17 +70,39 @@ export default class Billing extends Component {
     }
   }
 
+  async createCoupon(userName, stripeId, count) {
+    const couponText = userName + (count || '');
+    const coupon = await firebase.database().ref(`coupons/${couponText}`).once('value');
+    if (coupon.val()) { // coupon exist
+      count++;
+      this.createCoupon(userName, stripeId, count); // recursion
+    } else {
+      await firebase.database().ref(`coupons/${couponText}`).set({
+        count: 0,
+        description: "30 Day Free",
+        expiration: 4670449076,
+        frequency: "all",
+        percentOff: 0,
+        trialPeriod: 30,
+        affiliate: stripeId
+      });
+      this.setState({ couponText });
+    }
+  }
+
   async handleAffiliate(){
     const {userInfo} = this.props;
     if (!userInfo || !userInfo.publisher) {
       return alert('Empty user/publisher value');
     }
-    if (!userInfo.publisher.stripe_user_id) {
+    const stripeId = userInfo.publisher.stripe_user_id;
+    if (!stripeId) {
       // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user
       alert('Please connect your payout account first.');
       // TODO redirect/show card input form (example client/containers/checkout.js)
     } else {
       // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
+      this.createCoupon(userInfo.publisher.name.replace(/[^A-Za-z]/g, ''), stripeId, 0);
       await firebase.database().ref(`publishers/${userInfo.publisherID}/affiliate`)
       .set(true);
       this.setState({ affiliate: true });
@@ -144,13 +182,15 @@ export default class Billing extends Component {
                             && <div>
                                 <div style={{...styles.titleTextSmall,marginTop:17}}>
                                   <span>Your affiliate link:  </span>
-                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisher.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
+                                  <a target='_blank' style={{color: Colors.mainOrange}} href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}>{`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${userInfo.publisher.stripe_user_id}`}</a>
                                 </div>
                                 <div style={{marginTop:12}}>
                                   <span style={styles.titleTextSmall}>Your affiliate promo code</span>
                                   <span> (1 month free on any paid plans)</span>
                                   <span style={styles.titleTextSmall}>: </span>
-                                  <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>publishername</a>
+                                  <a href='#' style={{...styles.titleTextSmall, color: Colors.mainOrange}}>
+                                    {this.state.couponText}
+                                  </a>
                                 </div>
                               </div>
                            || <div>
