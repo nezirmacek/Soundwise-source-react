@@ -29,11 +29,6 @@
   },
   "validations": [],
   "relations": {
-    "affiliate": {
-      "type": "hasOne",
-      "model": "publisher",
-      "foreignKey": "publisherId"
-    }
   },
   "acls": [],
   "methods": {}
