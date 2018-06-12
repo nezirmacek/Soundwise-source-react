@@ -357,12 +357,14 @@ class _EpisodePage extends Component {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-md-5 col-sm-5 col-xs-12 text-center center-col" style={{}}>
-                              <img
-                                  src={coverArtUrl || soundcastImageURL}
-                                  alt={soundcastTitle}
-                                  style={{}}
-                              />
+                            <div className="col-md-4 col-sm-5 col-xs-12 text-center center-col" style={{}}>
+                              <a target='_blank' href={`https://mysoundwise.com/signup/soundcast_user/1528841806636s/${soundcastID}`}>
+                                <img
+                                    src={coverArtUrl || soundcastImageURL}
+                                    alt={soundcastTitle}
+                                    style={{}}
+                                />
+                              </a>
                             </div>
                         </div>
                         <div className="row">
@@ -423,8 +425,8 @@ class _EpisodePage extends Component {
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-9 col-sm-9 col-xs-12  center-col" style={{ marginTop: 20, marginBottom: 10}}>
-                            <p className="text-large text-dark-gray" style={{whiteSpace: 'pre-wrap', textAligh: 'left'}}>{description}</p>
+                          <div className="col-md-9 col-sm-9 col-xs-12  center-col text-large text-dark-gray" style={{ marginTop: 20, marginBottom: 10, whiteSpace: 'pre-wrap', textAligh: 'left'}}>
+                            <div dangerouslySetInnerHTML={{__html: description}} />
                           </div>
                         </div>
                     </div>
