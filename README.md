@@ -128,7 +128,7 @@ node server/bin/create-lb-tables.js
 node .
 ```
 
-### issues:
+### Issues:
 
 #### - express-fileuploader module changes files names when upload to aws s3:
 api/node_modules/express-fileuploader/lib/index.js:91-93
@@ -138,6 +138,18 @@ var uid = uuid.v1(),
 file.name = uid + ext;
 ```
 comment these 3 strings
+
+#### - webpack watch not recompiling files on changes
+solution https://webpack.js.org/configuration/watch/#not-enough-watchers
+
+#### - progress-label.js:13 Uncaught TypeError: Cannot read property 'number' of undefined
+fix: edit *node_modules/react-progress-label/dist/progress-label.js*
+and add after   *var React = require('react');*   :
+```
+React.PropTypes = require('prop-types');
+React.createClass = require('create-react-class');
+```
+
 
 ## Archiving in xcode shows 'duplicate symbol error' because of conflicts in cocoapod
 

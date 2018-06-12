@@ -41,11 +41,6 @@
       "type": "belongsTo",
       "model": "publisher",
       "foreignKey": "publisherId"
-    },
-    "referredBy": {
-      "type": "hasOne",
-      "model": "publisher",
-      "foreignKey": "publisherId"
     }
   },
   "acls": [],
