@@ -358,7 +358,7 @@ class _EpisodePage extends Component {
                         </div>
                         <div className="row">
                             <div className="col-md-4 col-sm-5 col-xs-12 text-center center-col" style={{}}>
-                              <a target='_blank' href={`https://mysoundwise.com/signup/soundcast_user/1528841806636s/${soundcastID}`}>
+                              <a target='_blank' href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`}>
                                 <img
                                     src={coverArtUrl || soundcastImageURL}
                                     alt={soundcastTitle}
