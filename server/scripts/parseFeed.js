@@ -117,6 +117,7 @@ async function parseFeed(req, res) {
         }
         const { metadata, feedItems } = results;
         const verificationCode = Date.now().toString().slice(-4);
+        console.log('verificationCode: ', verificationCode);
         const itunesEmail = metadata['itunes:owner']
                          && metadata['itunes:owner']['itunes:email']
                          && metadata['itunes:owner']['itunes:email']['#'];
