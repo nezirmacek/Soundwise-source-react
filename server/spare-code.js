@@ -1,3 +1,28 @@
+// *** fixing listeningSession date format
+// const options = {
+//   method: 'GET',
+//   uri: 'https://mysoundwise.com/api/listeningSessions'
+// };
+// let newSession, newOption;
+
+// request(options)
+// .then(data => {
+//   // console.log(data);
+//   JSON.parse(data).forEach(session => {
+//     if(session.date.length > 10) {
+//       newSession = Object.assign({}, session, {date: session.date.slice(0, 10)});
+//       newOption = {
+//         method: 'PUT',
+//         uri: `https://mysoundwise.com/api/listeningSessions/${session.sessionId}`,
+//         json: newSession
+//       };
+//       request(newOption).
+//       then(data => {})
+//       .catch(err => console.log(err));
+//     }
+//   });
+// });
+
 // *** create new email list in sendgrid
 // var sgMail = require('@sendgrid/mail');
 // var sendGridApiKey = require('../config').sendGridApiKey;

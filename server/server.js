@@ -16,8 +16,8 @@ var firebase = require('firebase-admin');
 var serviceAccount = require('../serviceAccountKey.json');
 var cors = require('cors');
 const moment = require('moment');
-var request = require('request');
-
+// var request = require('request');
+const request = require('request-promise');
 var handlePayment = require('./scripts/payment.js').handlePayment;
 var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
 var updateCreditCard = require('./scripts/payment.js').updateCreditCard;
@@ -364,5 +364,3 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
-
-

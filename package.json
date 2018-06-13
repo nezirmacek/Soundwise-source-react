@@ -114,7 +114,7 @@
     "redux-persist": "^4.6.0",
     "redux-thunk": "^2.1.0",
     "request": "^2.83.0",
-    "request-promise": "^4.2.0",
+    "request-promise": "^4.2.2",
     "sendinblue-api": "^1.0.8",
     "sequelize": "^4.8.0",
     "serve-favicon": "^2.0.1",
