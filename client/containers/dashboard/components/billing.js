@@ -71,7 +71,7 @@ export default class Billing extends Component {
   }
 
   async createCoupon(userName, stripeId, count) {
-    const couponText = userName + (count || '');
+    const couponText = (userName + (count || '')).toLowerCase();
     const coupon = await firebase.database().ref(`coupons/${couponText}`).once('value');
     if (coupon.val()) { // coupon exist
       count++;
