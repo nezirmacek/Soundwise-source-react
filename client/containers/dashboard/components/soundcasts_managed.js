@@ -227,7 +227,11 @@ export default class SoundcastsManaged extends Component {
                         <div className='col-md-3 col-sm-4 col-xs-12'
                           style={{...styles.subscribers, textAlign:'center'}}>
                           <span style={styles.soundcastUpdated}>
-                              {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
+                          {
+                            soundcast.id == '1512247726161s' && '742 subscribed'
+                            || soundcast.id == '1526158128140s' && '111 subscribed'
+                            ||  `${(soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0)} subscribed`
+                          }
                           </span>
                           <span
                             dataToggle="tooltip" dataPlacement="top" title="invite listeners"

@@ -313,7 +313,7 @@ class _EpisodePage extends Component {
                     || null
                   }
                   <div style={{textAlign: 'center', marginBottom: 25}}>
-                    <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" style={{backgroundColor: '#61E1FB'}}
+                    <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-extra-large2 btn btn-circle text-white no-letter-spacing" style={{backgroundColor: Colors.mainGreen}}
                     >
                       <span className="text-extra-large xs-text-extra-large tz-text">ACCESS ENTIRE SERIES</span>
                     </a>
@@ -321,7 +321,7 @@ class _EpisodePage extends Component {
                 </div>
               </div>
             </Modal>
-                <section className="padding-90px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
+                <section className="padding-30px-tb bg-white builder-bg xs-padding-60px-tb" id="feature-section14">
                     <div className="container">
                         <div className="row">
                             <div className="col-md-12 col-sm-12 col-xs-12 text-center">
@@ -341,7 +341,7 @@ class _EpisodePage extends Component {
                                 </a>
                                 <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font tz-text">{`by `}</span>
                                 <a target='_blank' href={`https://mysoundwise.com/publishers/${publisherID}`}>
-                                    <span className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text" style={{color: Colors.link}}>{`${publisherName}`}</span>
+                                    <span className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text" style={{color: Colors.mainGreen}}>{`${publisherName}`}</span>
                                  </a>
                                </div>
                                ||
@@ -349,7 +349,7 @@ class _EpisodePage extends Component {
                                 <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font tz-text">
                                     {`${soundcastTitle} by `}
                                 </span>
-                                <span className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text" style={{color: Colors.link}}>
+                                <span className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text" style={{color: Colors.mainGreen}}>
                                     {`${publisherName}`}
                                 </span>
                                </div>
@@ -357,7 +357,7 @@ class _EpisodePage extends Component {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-md-4 col-sm-5 col-xs-12 text-center center-col" style={{}}>
+                            <div className="col-md-3 col-sm-5 col-xs-12 text-center center-col" style={{}}>
                               <a target='_blank' href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`}>
                                 <img
                                     src={coverArtUrl || soundcastImageURL}
@@ -369,10 +369,26 @@ class _EpisodePage extends Component {
                         </div>
                         <div className="row">
                           <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col " style={{display: 'flex', justifyContent: 'center', marginTop: 20}}>
-                            <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-medium btn btn-circle text-white no-letter-spacing" style={{backgroundColor: '#61E1FB'}}
+                            <a href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`} target='_blank' className="btn-extra-large2 btn btn-circle text-white no-letter-spacing" style={{backgroundColor: Colors.mainGreen}}
                             >
                               <span className="text-extra-large sm-text-extra-large tz-text">ACCESS ENTIRE SERIES</span>
                             </a>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20, marginBottom: 10}}>
+                            <AudioPlayer
+                              playlist={playlist}
+                              hideBackSkip={true}
+                              hideForwardSkip={true}
+                              audioElementRef={(elem) => that.audio = elem}
+                              onMediaEvent={{
+                                play: this.recordPlaying.bind(this),
+                                pause: this.sendToDatabase.bind(this, 'pause'),
+                                ended: this.sendToDatabase.bind(this, 'ended')
+                              }}
+                              style={{width: '70%'}}
+                            />
                           </div>
                         </div>
                         <div className="row">
@@ -407,22 +423,6 @@ class _EpisodePage extends Component {
                                 </span>
                               }
                             </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-12 col-sm-12 col-xs-12 text-center center-col" style={{display: 'flex', justifyContent: 'center', marginTop: 20, marginBottom: 10}}>
-                            <AudioPlayer
-                              playlist={playlist}
-                              hideBackSkip={true}
-                              hideForwardSkip={true}
-                              audioElementRef={(elem) => that.audio = elem}
-                              onMediaEvent={{
-                                play: this.recordPlaying.bind(this),
-                                pause: this.sendToDatabase.bind(this, 'pause'),
-                                ended: this.sendToDatabase.bind(this, 'ended')
-                              }}
-                              style={{width: '70%'}}
-                            />
-                          </div>
                         </div>
                         <div className="row">
                           <div className="col-md-9 col-sm-9 col-xs-12  center-col text-large text-dark-gray" style={{ marginTop: 20, marginBottom: 10, whiteSpace: 'pre-wrap', textAligh: 'left'}}>
