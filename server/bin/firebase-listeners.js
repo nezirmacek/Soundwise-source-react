@@ -11,29 +11,29 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
   const episodesRef = firebase.database().ref('/episodes');
   const likesRef = firebase.database().ref('/likes');
   var newLikeId;
-  soundcastsRef.on('child_changed', soundcast => {
-    const soundcastObj = soundcast.val();
-    const soundcastId = soundcast.key;
-    if(soundcastObj.announcements) {
-      for(var key in soundcastObj.announcements) {
-        if(soundcastObj.announcements[key].likes) {
-          for(var userId in soundcastObj.announcements[key].likes) {
-            newLikeId = `${userId}-${key}`;
-            firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
-              if(!snapshot.val()) { // if data doesn't already exist
-                firebase.database().ref(`/likes/${newLikeId}`).set({
-                  announcementId: key,
-                  userId,
-                  soundcastId,
-                  timeStamp: soundcastObj.announcements[key].likes[userId]
-                });
-              }
-            })
-          }
-        }
-      }
-    }
-  });
+  // soundcastsRef.on('child_changed', soundcast => {
+  //   const soundcastObj = soundcast.val();
+  //   const soundcastId = soundcast.key;
+  //   if(soundcastObj.announcements) {
+  //     for(var key in soundcastObj.announcements) {
+  //       if(soundcastObj.announcements[key].likes) {
+  //         for(var userId in soundcastObj.announcements[key].likes) {
+  //           newLikeId = `${userId}-${key}`;
+  //           firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
+  //             if(!snapshot.val()) { // if data doesn't already exist
+  //               firebase.database().ref(`/likes/${newLikeId}`).set({
+  //                 announcementId: key,
+  //                 userId,
+  //                 soundcastId,
+  //                 timeStamp: soundcastObj.announcements[key].likes[userId]
+  //               });
+  //             }
+  //           })
+  //         }
+  //       }
+  //     }
+  //   }
+  // });
   episodesRef.on('child_changed', episode => {
     const episodeObj = episode.val();
     const episodeId = episode.key;
@@ -54,6 +54,43 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
     }
   });
 };
+
+module.exports.transferMessages = () => { // add or delete data from messages node and likes node in firebase according to changes to 'announcements' under soundcast node
+  const soundcastsRef = firebase.database().ref('/soundcasts');
+  const messagesRef = firebase.database().ref('/messages');
+  var newLikeId;
+  soundcastsRef.on('child_changed', soundcast => {
+    const soundcastObj = soundcast.val();
+    const soundcastId = soundcast.key;
+    if(soundcastObj.announcements) {
+      // console.log(Object.keys(soundcastObj.announcements));
+      for(var key in soundcastObj.announcements) {
+        const {content, creatorID, date_created, id, isPublished, publisherID, soundcastID} = soundcastObj.announcements[key];
+        firebase.database().ref(`/messages/${key}`).once('value', snapshot => {
+          if(!snapshot.val()) { // if data doesn't already exist
+            firebase.database().ref(`/messages/${key}`).set({content, creatorID, date_created, id, isPublished, publisherID, soundcastID});
+          }
+        });
+        if(soundcastObj.announcements[key].likes) {
+          for(var userId in soundcastObj.announcements[key].likes) {
+            newLikeId = `${userId}-${key}`;
+            firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
+              if(!snapshot.val()) { // if data doesn't already exist
+                firebase.database().ref(`/likes/${newLikeId}`).set({
+                  announcementId: key,
+                  userId,
+                  soundcastId,
+                  timeStamp: soundcastObj.announcements[key].likes[userId]
+                });
+              }
+            })
+          }
+        }
+      }
+    }
+  });
+
+}
 
 module.exports.firebaseListeners = () => {  // sync firebase with postgres
   const usersRef = firebase.database().ref('/users');

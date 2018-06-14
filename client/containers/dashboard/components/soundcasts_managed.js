@@ -228,9 +228,7 @@ export default class SoundcastsManaged extends Component {
                           style={{...styles.subscribers, textAlign:'center'}}>
                           <span style={styles.soundcastUpdated}>
                           {
-                            soundcast.id == '1512247726161s' && '742 subscribed'
-                            || soundcast.id == '1526158128140s' && '111 subscribed'
-                            ||  `${(soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0)} subscribed`
+                             `${(soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0)} subscribed`
                           }
                           </span>
                           <span

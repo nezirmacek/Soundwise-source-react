@@ -53,12 +53,14 @@ firebase.initializeApp({
 });
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
 var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
+var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
 var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners;
 
 // sync firebase with Algolia and postgres
 algoliaIndex();
 transferLikes();
-firebaseListeners();
+transferMessages();
+// firebaseListeners();
 
 var app = module.exports = loopback();
 app.start = function() {
@@ -364,3 +366,4 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
+
