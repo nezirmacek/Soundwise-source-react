@@ -60,7 +60,7 @@ var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners
 algoliaIndex();
 transferLikes();
 transferMessages();
-firebaseListeners();
+// firebaseListeners();
 
 var app = module.exports = loopback();
 app.start = function() {
@@ -367,3 +367,22 @@ client.setApiKey(sendGridApiKey);
 // }
 // changeUrl();
 
+const soundcastsRef = firebase.database().ref('/soundcasts');
+const messagesRef = firebase.database().ref('/messages');
+var newMessageId;
+soundcastsRef.on('child_added', soundcast => {
+  const soundcastObj = soundcast.val();
+  const soundcastId = soundcast.key;
+  if(soundcastObj.announcements) {
+    // console.log(Object.keys(soundcastObj.announcements));
+    for(var key in soundcastObj.announcements) {
+      const {content, creatorID, date_created, id, isPublished, publisherID, soundcastID} = soundcastObj.announcements[key];
+      // firebase.database().ref(`/messages/${key}`).once('value', snapshot => {
+      //   if(!snapshot.val()) { // if data doesn't already exist
+
+          firebase.database().ref(`/messages/${key}`).set({content, creatorID, date_created, id, isPublished, publisherID, soundcastID});
+      //   }
+      // })
+    }
+  }
+});
