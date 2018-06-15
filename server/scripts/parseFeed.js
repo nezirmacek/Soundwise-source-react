@@ -24,6 +24,16 @@ const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const { logErr } = require('./utils')('parseFeed.js');
 
+const jsdom = require('jsdom');
+const djs = require('draft-js');
+jsdom.env('', (err, window) => {
+  global.window = window;
+  global.document = window.document;
+  global.navigator = window.navigator;
+  global.HTMLElement = window.HTMLElement;
+  global.HTMLAnchorElement = window.HTMLAnchorElement;
+});
+
 const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
 
 // function to parse a given feed url:
@@ -339,7 +349,9 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     coverArtUrl: image.url || soundcast.imageURL,
     creatorID: userId,
     date_created: moment(date || metadata.date).format('X'),
-    description: description || summary,
+    description: JSON.stringify(djs.convertToRaw(
+      djs.ContentState.createFromBlockArray(djs.convertFromHTML(description || summary)))
+    )),
     duration,
     id3Tagged: true,
     index: i + 1,

@@ -28,7 +28,7 @@ export default class EditEpisode extends Component {
         this.state = {
             id: '',
             title: '',
-            description: '',
+            description: EditorState.createEmpty(),
             actionstep: '',
             notes: '',
             notesUploaded: false,
@@ -75,7 +75,9 @@ export default class EditEpisode extends Component {
         soundcastID,
         date_created,
         coverArtUrl: coverArtUrl || this.state.coverArtUrl,
-        description: description || this.state.description,
+        description: EditorState.createWithContent(
+                       convertFromRaw(JSON.parse(description || this.state.description))
+                     ),
         actionstep: actionstep || this.state.actionstep,
         notes: notes || this.state.notes,
         audioProcessing,
@@ -213,7 +215,8 @@ export default class EditEpisode extends Component {
         const editedEpisode = {
             title,
             soundcastID,
-            description: description.length > 0 ? description : null,
+            description: description.getCurrentContent().hasText() ?
+              JSON.stringify(convertToRaw(description.getCurrentContent())) : null,
             actionstep: actionstep.length > 0 ? actionstep : null,
             notes,
             publicEpisode,
@@ -458,6 +461,10 @@ export default class EditEpisode extends Component {
       }
     }
 
+    onEditorStateChange(description) {
+      this.setState({ description })
+    }
+
     render() {
         const { proUser, showPricingModal, description, title, actionstep, notes, notesUploading, notesUploaded,
           notesName, isPublished, soundcastID, startProcessingEpisode, timerOriginal,
@@ -523,13 +530,12 @@ export default class EditEpisode extends Component {
                           </span>
                         </div>
                         <div style={styles.inputTitleWrapper}>
-                          <textarea
-                              style={styles.inputDescription}
-                              // placeholder={'Description'}
-                              onChange={(e) => {this.setState({description: e.target.value})}}
-                              value={this.state.description}
-                          >
-                          </textarea>
+                          <Editor
+                            editorState={this.state.description}
+                            editorStyle={styles.editorStyle}
+                            wrapperStyle={styles.wrapperStyle}
+                            onEditorStateChange={this.onEditorStateChange.bind(this)}
+                          />
                         </div>
                         <div style={{marginTop: 20,}}>
                           <span style={{...styles.titleText, marginTop: 20,}}>
@@ -1093,6 +1099,19 @@ const styles = {
       float: 'left',
       fontSize: 34,
       margin: '7px 0px 0px 1px'
+    },
+    editorStyle: {
+      padding: '5px',
+      fontSize: 16,
+      borderRadius: 4,
+      height: '300px',
+      width: '100%',
+      backgroundColor: Colors.mainWhite,
+    },
+    wrapperStyle: {
+      borderRadius: 4,
+      marginBottom: 25,
+      marginTop: 15,
     },
     toggleLabel: {
       fontSize: 16,
