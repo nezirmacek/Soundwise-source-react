@@ -24,17 +24,16 @@ const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const { logErr } = require('./utils')('parseFeed.js');
 
-const jsdom = require('jsdom');
-const djs = require('draft-js');
-jsdom.env('', (err, window) => {
-  global.window = window;
-  global.document = window.document;
-  global.navigator = window.navigator;
-  global.HTMLElement = window.HTMLElement;
-  global.HTMLAnchorElement = window.HTMLAnchorElement;
-});
-
-const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
+// // Test the getFeed function:
+// setTimeout(() =>
+//   const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
+//   getFeed (urlTestFeed, function (err, results) {
+//     const {metadata, feedItems} = results;
+//     // console.log('metadata: ', metadata);
+//     console.log('email: ', metadata['itunes:owner']);
+//     console.log('feedItems: ', feedItems[0]);
+//   });
+// , 1000);
 
 // function to parse a given feed url:
 function getFeed (urlfeed, callback) {
@@ -77,15 +76,6 @@ function getFeed (urlfeed, callback) {
     callback (err);
   });
 }
-
-// Test the getFeed function:
-
-// getFeed (urlTestFeed, function (err, results) {
-//   const {metadata, feedItems} = results;
-//   // console.log('metadata: ', metadata);
-//   console.log('email: ', metadata['itunes:owner']);
-//   console.log('feedItems: ', feedItems[0]);
-// });
 
 const feedUrls = {}; // in-memory cache object for obtained (but not imported to db) feeds
 
@@ -349,9 +339,7 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     coverArtUrl: image.url || soundcast.imageURL,
     creatorID: userId,
     date_created: moment(date || metadata.date).format('X'),
-    description: JSON.stringify(djs.convertToRaw(
-      djs.ContentState.createFromBlockArray(djs.convertFromHTML(description || summary)))
-    )),
+    description: description || summary,
     duration,
     id3Tagged: true,
     index: i + 1,

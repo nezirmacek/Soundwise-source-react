@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import {Editor} from 'react-draft-wysiwyg';
+import {convertFromHTML, convertToRaw, convertFromRaw, EditorState, ContentState} from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 import Dots from 'react-activity/lib/Dots';
 import Toggle from 'react-toggle'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
@@ -67,6 +68,7 @@ export default class EditEpisode extends Component {
       const { id, episode } = this.props.history.location.state;
       const {title, description, actionstep, notes, publicEpisode,
         isPublished, soundcastID, coverArtUrl, date_created, url, editedUrl, audioProcessing} = episode;
+      const {contentBlocks, entityMap} = convertFromHTML(description || this.state.description);
       this.setState({
         id,
         title,
@@ -76,7 +78,7 @@ export default class EditEpisode extends Component {
         date_created,
         coverArtUrl: coverArtUrl || this.state.coverArtUrl,
         description: EditorState.createWithContent(
-                       convertFromRaw(JSON.parse(description || this.state.description))
+                       ContentState.createFromBlockArray(contentBlocks, entityMap)
                      ),
         actionstep: actionstep || this.state.actionstep,
         notes: notes || this.state.notes,
@@ -216,7 +218,7 @@ export default class EditEpisode extends Component {
             title,
             soundcastID,
             description: description.getCurrentContent().hasText() ?
-              JSON.stringify(convertToRaw(description.getCurrentContent())) : null,
+              draftToHtml(convertToRaw(description.getCurrentContent())) : null,
             actionstep: actionstep.length > 0 ? actionstep : null,
             notes,
             publicEpisode,

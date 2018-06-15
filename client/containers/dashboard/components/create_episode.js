@@ -20,6 +20,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Editor} from 'react-draft-wysiwyg';
 import {convertToRaw, EditorState} from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
@@ -386,7 +387,7 @@ class _CreateEpisode extends Component {
                         const newEpisode = {
                             title,
                             description: description.getCurrentContent().hasText() ?
-                              JSON.stringify(convertToRaw(description.getCurrentContent())) : null,
+                              draftToHtml(convertToRaw(description.getCurrentContent())) : null,
                             actionstep: actions.length > 0 ? actions : null,
                             date_created: moment().format('X'),
                             creatorID,
