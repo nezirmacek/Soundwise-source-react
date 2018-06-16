@@ -15,6 +15,9 @@ injectTapEventPlugin();
 import { config, awsConfig } from '../config';
 import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
 import Page from './components/page';
+import {HomePage} from './components/landingpage_main';
+import {LandingPagePodcast} from './components/landingpage_podcast';
+import {LandingPageSelling} from './components/landingpage_selling_audio';
 import PageRealEstate from './components/page_realestate';
 import ConversionCourse from './components/conversion_course';
 import PageExperts from './components/page_experts';
@@ -223,7 +226,9 @@ class _Routes extends Component {
               <meta name="keywords" content="soundwise, podcast hosting, audio course, podcasting, audio training, online education, podcast software, subscription, soundwise, audio publishing, content management system, audio learning, online learning, online course, podcast mobile app" />
             </Helmet>
             <Switch>
-                <Route exact path="/" component={Page}/>
+                <Route exact path="/" component={HomePage}/>
+                <Route exact path='/podcast' component={LandingPagePodcast}/>
+                <Route exact path='/selling' component={LandingPageSelling}/>
                 <Route path="/about" component={About}/>
                 <Route path="/conversion" component={ConversionCourse}/>
                 <Route path="/realestate" component={PageRealEstate}/>

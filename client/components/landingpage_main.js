@@ -1,60 +1,199 @@
-            <div class="header-style8">
-                <header class="header-style8" id="header-section16">
-                    <!-- nav -->
-                    <nav class="navbar tz-header-bg no-margin alt-font navigation-menu dark-header" data-selector=".tz-header-bg" style="">
-                        <!-- logo -->
-                        <div class="pull-left">
-                            <a href="#home" class="inner-link" data-selector="nav a" style=""><img alt="" src="images/uploads/LOGO_WHITE.png" data-img-size="(W)163px X (H)40px" data-selector="img" style="border-radius: 0px; border-color: rgb(78, 78, 78); border-style: none; border-width: 1px !important;" id="ui-id-16"></a>
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import * as firebase from "firebase"
+import { bindActionCreators } from 'redux'
+import IconMenu from 'material-ui/IconMenu'
+import MenuItem from 'material-ui/MenuItem'
+import IconButton from 'material-ui/IconButton'
+
+import Footer from './footer'
+import {signoutUser} from '../actions/index'
+
+class _HomePage extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      buttonValue: 0
+    }
+  }
+
+  signoutUser() {
+    let that = this;
+    firebase.auth().signOut().then(
+        function() {
+            that.props.signoutUser();
+            that.props.history.push('/signin')
+        },
+        function(error) {
+            console.error('Sign Out Error', error);
+        }
+    );
+  }
+  capFirstLetter(name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  handleButtonChange(e, value) {
+      this.setState({
+        buttonValue: Number(value)
+      });
+      if(Number(value)==1) {
+        this.signoutUser();
+      }
+  }
+
+  renderLogin() {
+        if(this.props.isLoggedIn) {
+            if (this.props.userInfo.admin) {
+                return (
+                    <ul className="nav navbar-nav" style={{
+                        verticalAlign: 'center',
+                    }}>
+                        <li className="propClone sm-no-border" style={{marginTop: 5}}>
+                            <div className='dropdown'>
+                                <div className='btn dropdown-toggle' data-toggle="dropdown" style={{height: 37, justifyContent: 'center'}}>
+                                    <div style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}}>{`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                                       <span className="caret"></span>
+                                    </div>
+                                </div>
+                                <ul className="dropdown-menu">
+                                    {this.props.userInfo.soundcasts &&
+                                    <li>
+                                        <Link style={{color: 'black'}} to='/mysoundcasts'>My Soundcasts</Link>
+                                    </li>
+                                    }
+                                    {this.props.userInfo.admin &&
+                                    <li>
+                                        <Link to='/dashboard/soundcasts' style={{color: 'black'}}>Admin Dashboard</Link>
+                                    </li>
+                                    }
+                                    {this.props.userInfo.courses &&
+                                    <li>
+                                        <Link to='/myprograms' style={{color: 'black'}}>My Courses</Link>
+                                    </li>
+                                    }
+                                    <li>
+                                        <Link to='/myprofile' style={{color: 'black'}}>My Profile</Link>
+                                    </li>
+                                    <li>
+                                        <a onClick={() => this.signoutUser()}>
+                                            <font style={{color: 'black'}}>Log Out</font>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                );
+            } else {
+                return (
+                    <ul className="nav navbar-nav">
+                        {
+                            this.props.userInfo.courses &&
+                            <li className="propClone sm-no-border">
+                                <Link to='/courses' className="inner-link">COURSES</Link>
+                            </li>
+                        }
+                        {
+                            this.props.userInfo.courses &&
+                            <li>
+                                <Link to='/myprograms'>My Library</Link>
+                            </li>
+                        }
+                        {
+                            this.props.userInfo.soundcasts &&
+                            <li>
+                                <Link to='/mysoundcasts'>My Soundcasts</Link>
+                            </li>
+                        }
+                        <li className="propClone sm-no-border" >
+                            <a className='dropdown-toggle' data-toggle="dropdown">
+                                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
+                                <span className="caret"></span>
+                            </a>
+                            <ul className="dropdown-menu">
+                                {this.props.userInfo.soundcasts &&
+                                <li>
+                                    <Link to='/mysoundcasts'>My Soundcasts</Link>
+                                </li>
+                                }
+                                {this.props.userInfo.courses &&
+                                <li>
+                                    <Link to='/myprograms'>My Courses</Link>
+                                </li>
+                                }
+                                <li>
+                                    <Link to='/myprofile'>My Profile</Link>
+                                </li>
+                                <li>
+                                    <a onClick={() => this.signoutUser()}>
+                                        <font style={{color: 'black'}}>LOG OUT</font>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                );
+            }
+        } else {
+            return (
+                <ul className="nav navbar-nav">
+                                    <li className="propClone"><Link to="/signin" className="inner-link" data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-21">LOG IN</Link></li>
+                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/signup_options"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
+                </ul>
+            );
+        }
+  }
+
+  render() {
+    return (
+        <div>
+            <div className="header-style8">
+                <header className="header-style8" id="header-section16">
+                    <nav className="navbar tz-header-bg no-margin alt-font navigation-menu dark-header" data-selector=".tz-header-bg" >
+                        <div className="pull-left">
+                            <a href="#home" className="inner-link" data-selector="nav a" ><img alt="" src="images/soundwiselogo_white.svg" data-img-size="(W)163px X (H)40px" data-selector="img" style={{borderRadius: 0, bordeColor: 'rgb(78, 78, 78)', borderStyle: 'none', borderWidth: '1px', maxHeight: 40}} id="ui-id-16"/></a>
                         </div>
-                        <!-- end logo -->
-                        <div class="pull-right">
-                            <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
-                                <span class="sr-only">Toggle navigation</span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
+                        <div className="pull-right">
+                            <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
+                                <span className="sr-only">Toggle navigation</span>
+                                <span className="icon-bar"></span>
+                                <span className="icon-bar"></span>
+                                <span className="icon-bar"></span>
                             </button>
-                            <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse pull-right">
-                                <ul class="nav navbar-nav">
-                                    <li class="propClone"><a class="inner-link" href="#" data-selector="nav a" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); border-color: rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0); font-family: Montserrat, sans-serif; text-transform: none; font-size: 16px !important; font-weight: 700 !important;" id="ui-id-18">PODCAST HOSTS</a></li>
-                                    <li class="propClone"><a class="inner-link" href="#" data-selector="nav a" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); border-color: rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0); font-family: Montserrat, sans-serif; text-transform: none; font-size: 16px !important; font-weight: 700 !important;" id="ui-id-19">SELLING AUDIOS</a></li>
-                                    <li class="propClone"><a class="inner-link" href="#" data-selector="nav a" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); border-color: rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0); font-family: Montserrat, sans-serif; text-transform: none; font-size: 16px !important; font-weight: 700 !important;" id="ui-id-20">PRICING</a></li>
-                                    <li class="propClone"><a class="inner-link" href="#" data-selector="nav a" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); border-color: rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0); font-family: Montserrat, sans-serif; text-transform: none; font-size: 16px !important; font-weight: 700 !important;" id="ui-id-21">LOG IN</a></li>
-
-
-                                    <li class="nav-button propClone float-left btn-medium sm-no-margin-tb"><a href="#" class="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); border-color: rgba(0, 0, 0, 0); font-family: Montserrat, sans-serif; text-transform: none; font-size: 16px !important; font-weight: 700 !important;" id="ui-id-17">SIGN UP</a></li>
+                            <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
+                                <ul className="nav navbar-nav">
+                                    <li className="propClone"><Link to='/podcast' className="inner-link"  data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-18">PODCAST HOSTS</Link></li>
+                                    <li className="propClone"><Link className="inner-link" to='/selling' data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-19">SELLING AUDIOS</Link></li>
+                                    <li className="propClone"><Link className="inner-link" to='/pricing' data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-20">PRICING</Link></li>
+                                    {this.renderLogin()}
                                 </ul>
                             </div>
                         </div>
                     </nav>
-                    <!-- end nav -->
                 </header>
-                <section class="no-padding cover-background tz-builder-bg-image" data-img-size="(W)1920px X (H)750px" style="padding-top: 0px; padding-bottom: 0px; background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(&quot;images/uploads/Screenshot 2018-06-14 17.10.56.png&quot;) !important;" data-selector=".tz-builder-bg-image" id="ui-id-10">
-                    <div class="container one-fourth-screen position-relative">
-                        <div class="slider-typography text-center">
-                            <div class="slider-text-middle-main">
-                                <div class="slider-text-middle">
-                                    <!-- slider text -->
-                                    <div class="col-md-12 header-banner">
-                                        <a href="https://www.youtube.com/watch?v=_xG68lkrMDU" class="tz-edit title-extra-large-6 text-white margin-five-bottom display-inline-block banner-icon popup-youtube">
-
-                                        </a>
-                                        <div class="text-white font-weight-700 title-extra-large-3 alt-font margin-two-bottom banner-title xs-margin-seven-bottom">
-                                            <span class="tz-text" data-selector=".tz-text" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); font-weight: 700; font-family: Montserrat, sans-serif; text-transform: none; border-radius: 0px; font-size: 75px !important;" id="ui-id-11"><p>
-</p><p>GROW YOUR BUSINESS WITH AUDIO</p></span>
+                <section className="no-padding cover-background tz-builder-bg-image" data-img-size="(W)1920px X (H)750px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("images/uploads/Screenshot 2018-06-14 17.10.56.png")'}} data-selector=".tz-builder-bg-image" id="ui-id-10">
+                    <div className="container one-fourth-screen position-relative">
+                        <div className="slider-typography text-center">
+                            <div className="slider-text-middle-main">
+                                <div className="slider-text-middle">
+                                    <div className="col-md-12 header-banner">
+                                        <div className="tz-text text-white font-weight-700  alt-font margin-two-bottom banner-title xs-margin-seven-bottom" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 700, fontFamily: 'Montserrat, sans-serif', textTransform: 'none', borderRadius: '0px', fontSize: 65, }} >
+                                           <p style={{lineHeight: '55px'}}>GROW YOUR BUSINESS</p>
+                                           <p style={{lineHeight: '55px'}}>WITH AUDIO</p>
                                         </div>
-                                        <div class="text-white title-medium sm-title-medium margin-six-bottom banner-text width-60 md-width-90 center-col">
-                                            <span class="tz-text" data-selector=".tz-text" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); font-size: 24px; font-family: &quot;Open Sans&quot;, sans-serif; text-transform: none; border-radius: 0px; font-weight: 500 !important;" id="ui-id-22">Soundwise is the premium solution for entrepreneurial experts to grow an engaged audience for their podcast, convert listeners into customers, and sell on-demand audios.</span>
+                                        <div className="text-white title-medium sm-title-medium margin-six-bottom banner-text width-60 md-width-90 center-col">
+                                            <span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 20, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, fontWeight: 500}} id="ui-id-22">Soundwise is the premium solution for entrepreneurial experts to grow an engaged audience for their podcast, convert listeners into customers, and sell on-demand audios.</span>
                                         </div>
-                                        <div class="display-inline-block margin-one">
-                                            <a class="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" href="#" data-selector="a.btn, button.btn" style="color: rgb(0, 0, 0); border-color: rgba(0, 0, 0, 0); font-weight: 600; font-family: Montserrat, sans-serif; text-transform: none; border-radius: 4px; background-color: rgb(255, 153, 0) !important; font-size: 18px !important;" id="ui-id-12"><span class="tz-text" data-selector=".tz-text" style="background-color: rgba(0, 0, 0, 0); font-weight: 600; font-family: Montserrat, sans-serif; text-transform: none; border-radius: 0px; color: rgb(255, 255, 255) !important; font-size: 22px !important;" id="ui-id-14">I WANT TO USE MY PODCAST TO GROW MY BUSINESS</span></a>
+                                        <div className="display-inline-block margin-one">
+                                            <Link className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" to='/podcast' data-selector="a.btn, button.btn" style={{color: 'rgb(0, 0, 0)',borderColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 4, backgroundColor: 'rgb(255, 153, 0)', fontSize: 18}} id="ui-id-12"><span className="tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(255, 255, 255)', fontSize: 22}} id="ui-id-14">I WANT TO USE MY PODCAST TO GROW MY BUSINESS</span></Link>
                                         </div>
-                                        <div class="display-inline-block margin-one">
-                                            <a class="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" href="#" data-selector="a.btn, button.btn" style="border-color: rgba(0, 0, 0, 0); font-weight: 600; font-family: Montserrat, sans-serif; text-transform: none; border-radius: 4px; color: rgb(255, 255, 255) !important; background-color: rgb(97, 83, 204) !important; font-size: 18px !important;" id="ui-id-13"><span class="tz-text" data-selector=".tz-text" style="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); font-weight: 600; font-family: Montserrat, sans-serif; text-transform: none; border-radius: 0px; font-size: 22px !important;" id="ui-id-15">I WANT TO SELL MORE ON-DEMAND AUDIO PRODUCTS</span>
-                                            </a>
+                                        <div className="display-inline-block margin-one">
+                                            <Link className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" to='/selling' data-selector="a.btn, button.btn" style={{color: 'rgb(0, 0, 0)',borderColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 4, backgroundColor: 'rgb(255, 153, 0)', fontSize: 18}} id="ui-id-13"><span className="tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(255, 255, 255)', fontSize: 22}} id="ui-id-15">I WANT TO SELL MORE ON-DEMAND AUDIO PRODUCTS</span>
+                                            </Link>
                                         </div>
                                     </div>
-                                    <!-- end slider text -->
                                 </div>
                             </div>
                         </div>
@@ -62,23 +201,41 @@
                 </section>
             </div>
 
-            <section id="clients-section4" class="padding-110px-tb bg-white builder-bg clients-section4 xs-padding-60px-tb" data-selector=".builder-bg" style="">
-                <div class="container">
-                    <div class="row">
-                        <!-- clients logo -->
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="client-logo-outer"><div class="client-logo-inner"><a href="#"><img src="images/clients-1.jpg" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"></a></div></div>
+            <section id="clients-section4" className="padding-110px-tb bg-white builder-bg clients-section4 xs-padding-60px-tb" data-selector=".builder-bg" >
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-3 col-sm-6 col-xs-12">
+                            <div className="client-logo-outer"><div className="client-logo-inner"><img src="images/huffington-post-logo.png" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"/></div></div>
                         </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="client-logo-outer"><div class="client-logo-inner"><a href="#"><img src="images/clients-2.jpg" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"></a></div></div>
+                        <div className="col-md-3 col-sm-6 col-xs-12">
+                            <div className="client-logo-outer"><div className="client-logo-inner"><img src="images/entrepreneur-logo.png" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"/></div></div>
                         </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="client-logo-outer"><div class="client-logo-inner"><a href="#"><img src="images/clients-3.jpg" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"></a></div></div>
+                        <div className="col-md-3 col-sm-6 col-xs-12">
+                            <div className="client-logo-outer"><div className="client-logo-inner"><img src="images/NAB-logo.jpg" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"/></div></div>
                         </div>
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="client-logo-outer"><div class="client-logo-inner"><a href="#"><img src="images/clients-4.jpg" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"></a></div></div>
+                        <div className="col-md-3 col-sm-6 col-xs-12">
+                            <div className="client-logo-outer"><div className="client-logo-inner"><img src="images/podcastmovement.jpg" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"/></div></div>
                         </div>
-                        <!-- end clients logo -->
                     </div>
                 </div>
             </section>
+            <Footer
+              showPricing={true}
+            ></Footer>
+        </div>
+    )
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ signoutUser }, dispatch)
+}
+
+const mapStateToProps = state => {
+  const { userInfo, isLoggedIn } = state.user
+  return {
+    userInfo, isLoggedIn
+  }
+}
+
+export const HomePage = connect(mapStateToProps, mapDispatchToProps)(_HomePage);
