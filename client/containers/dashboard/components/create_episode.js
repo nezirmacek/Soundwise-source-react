@@ -18,6 +18,9 @@ import Dots from 'react-activity/lib/Dots';
 import ReactS3Uploader from 'react-s3-uploader'
 import LinearProgress from 'material-ui/LinearProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import {Editor} from 'react-draft-wysiwyg';
+import {convertToRaw, EditorState} from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
 import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
@@ -70,7 +73,7 @@ class _CreateEpisode extends Component {
             audioDuration: 0,
 
             title: '',
-            description: '',
+            description: EditorState.createEmpty(),
             actions: '',
             publicEpisode: false,
             index: null,
@@ -339,6 +342,10 @@ class _CreateEpisode extends Component {
         // document.getElementById(type).value = e.target.value;
     }
 
+    onEditorStateChange(description) {
+      this.setState({ description })
+    }
+
     saveEpisode (isPublished) {
         const that = this;
         const {podcastFeedVersion, itunesImage, itunesExplicit, itunesCategory} = this.state.currentsoundcast; // if this is a  podcast; otherwise these variables would be null
@@ -353,9 +360,11 @@ class _CreateEpisode extends Component {
                 immediatePublish: false, // if 'save draft' button is clicked, process the episode, but not publish it
             })
         }
-        const { title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl, coverArtUrl, currentRecordingDuration, audioDuration, publicEpisode, currentsoundcast } = this.state;
-        const { audioNormalization, trimSilence, reduceSilence, addIntroOutro, silentPeriod, overlayDuration, immediatePublish} = this.state;
-        const { userInfo, history, content_saved, handleContentSaving } = this.props;
+        const {title, description, actions, recordedAudioUrl, uploadedAudioUrl, notesUrl,
+          coverArtUrl, currentRecordingDuration, audioDuration, publicEpisode,
+          audioNormalization, trimSilence, reduceSilence, addIntroOutro,
+          silentPeriod, overlayDuration, immediatePublish} = this.state;
+        const {userInfo, history, content_saved, handleContentSaving} = this.props;
         const audioProcessing = (audioNormalization || trimSilence || reduceSilence || addIntroOutro) ? true : false;
 
         if(!content_saved[this.episodeId]) { // prevent unnecessary rerendering of component
@@ -377,7 +386,8 @@ class _CreateEpisode extends Component {
                         const creatorID = user.uid;
                         const newEpisode = {
                             title,
-                            description: description.length > 0 ? description : null,
+                            description: description.getCurrentContent().hasText() ?
+                              draftToHtml(convertToRaw(description.getCurrentContent())) : null,
                             actionstep: actions.length > 0 ? actions : null,
                             date_created: moment().format('X'),
                             creatorID,
@@ -1026,13 +1036,17 @@ class _CreateEpisode extends Component {
                             value={this.state.title}
                             validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 80)]}
                         />
-                        <textarea
-                            style={styles.inputDescription}
-                            placeholder={'Description'}
-                            onChange={(e) => {this.setState({description: e.target.value})}}
-                            value={this.state.description}
-                        >
-                        </textarea>
+                        <span style={{fontSize:17, color:'#a0a0a0db', marginBottom:-13, display:'block'}}>
+                          Description
+                        </span>
+                        <div>
+                          <Editor
+                            editorState={this.state.description}
+                            editorStyle={styles.editorStyle}
+                            wrapperStyle={styles.wrapperStyle}
+                            onEditorStateChange={this.onEditorStateChange.bind(this)}
+                          />
+                        </div>
                         <textarea
                             style={styles.inputDescription}
                             placeholder={'Action step'}
@@ -1638,6 +1652,19 @@ const styles = {
         fontSize: 15,
         marginLeft: 0,
         display: 'block',
+    },
+    editorStyle: {
+      padding: '5px',
+      fontSize: 16,
+      borderRadius: 4,
+      height: '300px',
+      width: '100%',
+      backgroundColor: Colors.mainWhite,
+    },
+    wrapperStyle: {
+      borderRadius: 4,
+      marginBottom: 25,
+      marginTop: 15,
     },
     checkbox: {
         display: 'inline-block',

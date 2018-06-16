@@ -24,7 +24,16 @@ const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const { logErr } = require('./utils')('parseFeed.js');
 
-const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
+// // Test the getFeed function:
+// setTimeout(() =>
+//   const urlTestFeed = "https://mysoundwise.com/rss/1508293913676s";
+//   getFeed (urlTestFeed, function (err, results) {
+//     const {metadata, feedItems} = results;
+//     // console.log('metadata: ', metadata);
+//     console.log('email: ', metadata['itunes:owner']);
+//     console.log('feedItems: ', feedItems[0]);
+//   });
+// , 1000);
 
 // function to parse a given feed url:
 function getFeed (urlfeed, callback) {
@@ -67,15 +76,6 @@ function getFeed (urlfeed, callback) {
     callback (err);
   });
 }
-
-// Test the getFeed function:
-
-// getFeed (urlTestFeed, function (err, results) {
-//   const {metadata, feedItems} = results;
-//   // console.log('metadata: ', metadata);
-//   console.log('email: ', metadata['itunes:owner']);
-//   console.log('feedItems: ', feedItems[0]);
-// });
 
 const feedUrls = {}; // in-memory cache object for obtained (but not imported to db) feeds
 
