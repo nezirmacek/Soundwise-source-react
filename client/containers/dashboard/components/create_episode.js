@@ -756,7 +756,8 @@ class _CreateEpisode extends Component {
         .then(snapshot => {
             if(snapshot.val()) {
                 that.setState({
-                    publicEpisode: snapshot.val().landingPage ? true : false
+                    publicEpisode: snapshot.val().landingPage ? true : false,
+                    currentsoundcast: snapshot.val(),
                 })
             }
         })
