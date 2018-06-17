@@ -29,7 +29,8 @@ export default class EditEpisode extends Component {
         this.state = {
             id: '',
             title: '',
-            description: EditorState.createEmpty(),
+            // description: EditorState.createEmpty(),
+            description: '',
             actionstep: '',
             notes: '',
             notesUploaded: false,
