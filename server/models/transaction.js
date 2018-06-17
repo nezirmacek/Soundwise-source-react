@@ -227,9 +227,9 @@ async function createCharge(Transaction, data, cb) {
   const publisherObj = await admin.database().ref(`publishers/${publisherID}`).once('value');
   const publisher = publisherObj.val();
   let soundwiseFeePercent;
-  if(publisher.plan == 'plus' && current_period_end > moment().format('X')) {
+  if(publisher.plan == 'plus' && publisher.current_period_end > moment().format('X')) {
     soundwiseFeePercent = 5;
-  } else if((publisher.plan == 'pro' && current_period_end > moment().format('X')) || publisher.beta) {
+  } else if((publisher.plan == 'pro' && publisher.current_period_end > moment().format('X')) || publisher.beta) {
     soundwiseFeePercent = 0;
   } else {
     soundwiseFeePercent = 10;

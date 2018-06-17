@@ -112,14 +112,14 @@ export default class Payment extends Component {
             current_period_end = charge && charge.current_period_end ? charge.current_period_end : current_period_end ; //if it's not a recurring billing ('one time' or 'rental'), set the end period to 2117/1/1 or rental expiration date.
 
             // send email invitations to subscribers
-            const subject = `${userInfo.firstName}, thanks for subscribing! Here's how to access your soundcast`;
+            const subject = `${userInfo.firstName}, here's how to access your soundcast`;
             if(confirmationEmail) {
                 const editorState = JSON.parse(confirmationEmail);
                 const confirmEmailHTML = draftToHtml(editorState);
                 content = confirmEmailHTML.replace('[subscriber first name]', userInfo.firstName);
                 content = content.replace('[soundcast title]', soundcast.title);
             } else {
-                content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for subscribing to ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
+                content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for signing up for ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to sign up for this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
             }
 
             if(!that.props.isEmailSent && !that.state.confirmationEmailSent) {
@@ -136,7 +136,7 @@ export default class Payment extends Component {
 
                       // Redirect to /notice page
                       that.setState({ success: true });
-                      const text = `Thanks for subscribing to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+                      const text = `Thanks for signing up to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
                       history.push({
                         pathname: '/notice',
                         state: {

@@ -1,8 +1,9 @@
-var stripe_key =  require('../../config').stripe_key;
+const moment = require('moment');
 
+var stripe_key =  require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 
-const soundwiseFeePercent = 0;
+let soundwiseFeePercent = 0;
 
 module.exports.handlePayment = (req, res) => {
 // create customer: to be used in real version
@@ -44,7 +45,17 @@ module.exports.handlePayment = (req, res) => {
   }
 };
 
-module.exports.handleRecurringPayment = (req, res) => {
+module.exports.handleRecurringPayment = async (req, res) => {
+  const publisherID = req.body.publisherID;
+  const publisherObj = await admin.database().ref(`publishers/${publisherID}`).once('value');
+  const publisher = publisherObj.val();
+  if(publisher.plan == 'plus' && publisher.current_period_end > moment().format('X')) {
+    soundwiseFeePercent = 5;
+  } else if((publisher.plan == 'pro' && publisher.current_period_end > moment().format('X')) || publisher.beta) {
+    soundwiseFeePercent = 0;
+  } else {
+    soundwiseFeePercent = 10;
+  }
   // first create customer on connected account
   const customers = createCustomer(req)
   .then(customers => {
