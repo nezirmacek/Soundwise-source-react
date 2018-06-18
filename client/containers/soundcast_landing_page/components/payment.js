@@ -61,8 +61,8 @@ export default class Payment extends Component {
                 // add soundcast to user and then redirect
                 this.addSoundcastToUser(null, props.userInfo);
             } else if(props.userInfo.stripe_id && !this.state.submitDisabled) { // have stripe_id
-                this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: '' });
-                this.stripeTokenHandler(null, {}); // charge user
+                // this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: '' });
+                // this.stripeTokenHandler(null, {}); // charge user
             }
         }
     }
