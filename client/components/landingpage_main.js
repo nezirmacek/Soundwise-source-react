@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux'
 import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import IconButton from 'material-ui/IconButton'
+import Colors from '../styles/colors';
 
 import Footer from './footer'
 import {signoutUser} from '../actions/index'
@@ -173,24 +174,24 @@ class _HomePage extends Component {
                         </div>
                     </nav>
                 </header>
-                <section className="no-padding cover-background tz-builder-bg-image" data-img-size="(W)1920px X (H)750px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("images/uploads/Screenshot 2018-06-14 17.10.56.png")'}} data-selector=".tz-builder-bg-image" id="ui-id-10">
+                <section className="no-padding cover-background tz-builder-bg-image" data-img-size="(W)1920px X (H)750px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("images/dog.png")'}} data-selector=".tz-builder-bg-image" id="ui-id-10">
                     <div className="container one-fourth-screen position-relative">
                         <div className="slider-typography text-center">
                             <div className="slider-text-middle-main">
                                 <div className="slider-text-middle">
                                     <div className="col-md-12 header-banner">
-                                        <div className="tz-text text-white font-weight-700  alt-font margin-two-bottom banner-title xs-margin-seven-bottom" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 700, fontFamily: 'Montserrat, sans-serif', textTransform: 'none', borderRadius: '0px', fontSize: 65, }} >
+                                        <div className="line-height-55 sm-title-extra-large xs-title-extra-large-4 tz-text text-white font-weight-700  alt-font margin-two-bottom banner-title xs-margin-seven-bottom" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 700, fontFamily: 'Montserrat, sans-serif', textTransform: 'none', borderRadius: '0px', fontSize: 65, }} >
                                            <p style={{lineHeight: '55px'}}>GROW YOUR BUSINESS</p>
                                            <p style={{lineHeight: '55px'}}>WITH AUDIO</p>
                                         </div>
                                         <div className="text-white title-medium sm-title-medium margin-six-bottom banner-text width-60 md-width-90 center-col">
-                                            <span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 20, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, fontWeight: 500}} id="ui-id-22">Soundwise is the premium solution for entrepreneurial experts to grow an engaged audience for their podcast, convert listeners into customers, and sell on-demand audios.</span>
+                                            <span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 20, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, fontWeight: 500}} id="ui-id-22">The premium solution for entrepreneurial experts to grow an engaged podcast audience, convert listeners to customers, and sell on-demand audios.</span>
                                         </div>
                                         <div className="display-inline-block margin-one">
-                                            <Link className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" to='/podcast' data-selector="a.btn, button.btn" style={{color: 'rgb(0, 0, 0)',borderColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 4, backgroundColor: 'rgb(255, 153, 0)', fontSize: 18}} id="ui-id-12"><span className="tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(255, 255, 255)', fontSize: 22}} id="ui-id-14">I WANT TO USE MY PODCAST TO GROW MY BUSINESS</span></Link>
+                                            <Link className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" to='/podcast' data-selector="a.btn, button.btn" style={{color: 'rgb(0, 0, 0)',borderColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 4, backgroundColor: Colors.mainOrange, fontSize: 18}} id="ui-id-12"><span className="tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(255, 255, 255)', fontSize: 22}} id="ui-id-14">CONVERT PODCAST LISTENERS</span></Link>
                                         </div>
                                         <div className="display-inline-block margin-one">
-                                            <Link className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" to='/selling' data-selector="a.btn, button.btn" style={{color: 'rgb(0, 0, 0)',borderColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 4, backgroundColor: 'rgb(255, 153, 0)', fontSize: 18}} id="ui-id-13"><span className="tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(255, 255, 255)', fontSize: 22}} id="ui-id-15">I WANT TO SELL MORE ON-DEMAND AUDIO PRODUCTS</span>
+                                            <Link className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing" to='/selling' data-selector="a.btn, button.btn" style={{color: 'rgb(0, 0, 0)',borderColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 4, backgroundColor: Colors.mainOrange, fontSize: 18}} id="ui-id-13"><span className="tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(255, 255, 255)', fontSize: 22}} id="ui-id-15">SELL ON-DEMAND AUDIOS</span>
                                             </Link>
                                         </div>
                                     </div>

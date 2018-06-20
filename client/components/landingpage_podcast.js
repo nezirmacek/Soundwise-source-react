@@ -10,7 +10,7 @@ import Colors from '../styles/colors';
 
 import Footer from './footer'
 import {signoutUser} from '../actions/index'
-
+import FAQs from './faqs'
 
 class _LandingPagePodcast extends Component {
   constructor(props) {
@@ -142,7 +142,7 @@ class _LandingPagePodcast extends Component {
             return (
                 <ul className="nav navbar-nav">
                                     <li className="propClone"><Link to="/signin" className="inner-link" data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-21">LOG IN</Link></li>
-                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/signup_options"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
+                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/pricing"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
                 </ul>
             );
         }
@@ -175,14 +175,14 @@ class _LandingPagePodcast extends Component {
                     </div>
                 </nav>
             </header>
-            <section className="no-padding cover-background tz-builder-bg-image" data-img-size="(W)1920px X (H)750px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("images/uploads/Screenshot 2018-06-14 17.10.56.png")'}} data-selector=".tz-builder-bg-image" id="ui-id-10">
+            <section className="no-padding cover-background tz-builder-bg-image" data-img-size="(W)1920px X (H)750px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05)), url("images/boy.png")'}} data-selector=".tz-builder-bg-image" id="ui-id-10">
                 <div className="container">
-                    <div className="row equalize xs-equalize-auto equalize-display-inherit">
+                    <div className=" row equalize xs-equalize-auto equalize-display-inherit">
                         <div className="col-md-6 col-sm-7 col-xs-12 text-left xs-margin-nineteen-bottom xs-text-center display-table pull-right" style={{height: 713}}>
                             <div className="display-table-cell-vertical-middle xs-padding-nineteen-top">
-                                <h1 className="sm-title-extra-large alt-font xs-title-extra-large line-height-55 text-white tz-text margin-eight-bottom" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', borderRadius: 0, fontSize: 60, fontWeight: 700}} id="ui-id-33"><p>Turn Casual Listeners Into Loyal Customers</p></h1>
-                                <div className="text-white text-extra-large xs-text-extra-large margin-twelve-bottom sm-margin-nine-bottom width-80 sm-width-100 tz-text" data-selector=".tz-text" ><p>For coaches, consultants, and entrepreneurial experts. Build an engaged, loyal listener community for your podcast with Soundwise. So that you can turn more listeners into customers.</p></div>
-                                <Link to='/signup_options' className="btn btn-large btn-circle propClone bg-white text-dark-gray xs-margin-thirteen-bottom" href="#" data-selector="a.btn, button.btn" ><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', textTransform: 'none', borderRadius: 0, fontSize: 18}} id="ui-id-32">SUBMIT YOUR PODCAST FEED OR START ANEW</span></Link>
+                                <h1 className="sm-title-extra-large-3 alt-font xs-title-extra-large-4 line-height-55 tz-text margin-eight-bottom" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', borderRadius: 0, fontSize: 60, fontWeight: 700}} id="ui-id-33"><p>Turn Casual Listeners Into Loyal Customers</p></h1>
+                                <div className=" text-extra-large xs-text-extra-large margin-twelve-bottom sm-margin-nine-bottom width-80 sm-width-100 tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)'}}><p>For coaches, consultants, and entrepreneurial experts. Build an engaged, loyal listener community for your podcast with Soundwise. So that you can turn more listeners into customers.</p></div>
+                                <Link to='/pricing' className="btn btn-large btn-circle propClone bg-white text-dark-gray xs-margin-thirteen-bottom" href="#" data-selector="a.btn, button.btn" ><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', textTransform: 'none', borderRadius: 0, fontSize: 18}} id="ui-id-32">SUBMIT YOUR PODCAST FEED OR START ANEW</span></Link>
                             </div>
                         </div>
                         <div className="col-md-6 col-sm-5 col-xs-12 display-table" style={{height: 713}}>
@@ -202,7 +202,7 @@ class _LandingPagePodcast extends Component {
                             <h2 className="alt-font  sm-title-large xs-title-large text-fast-blue margin-eight-bottom tz-text sm-margin-ten-bottom" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(247, 107, 28)', fontSize: 42, fontWeight: 700 }} id="ui-id-41">Double your email list growth. With no extra work.</h2>
                             <div className=" tz-text width-90 sm-width-100 margin-seven-bottom sm-margin-ten-bottom" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 300, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, color: 'rgb(0, 0, 0)', fontSize: 18}} id="ui-id-42"><p>Leverage your podcast to grow one of your biggest assets in business—your email list— 100% faster. And make your communication intimate and special with group text messages. Directly to your listeners’ phones.</p></div>
                             <div className=" tz-text width-90 sm-width-100 margin-fifteen-bottom sm-margin-ten-bottom" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, color: 'rgb(0, 0, 0)', fontSize: 18}} id="ui-id-43"><p><i className ="far fa-check-square" style={{marginRight: 5, color: Colors.mainOrange}}></i> Get name and email of every subscriber to your Soundwise channel</p><p><i className ="far fa-check-square" style={{marginRight: 5, color: Colors.mainOrange}}></i> Automated emails to subscribers when publishing new episodes</p><p><i style={{marginRight: 5, color: Colors.mainOrange}} className ="far fa-check-square"></i> Text-message and email your subscribers about new updates</p></div>
-                            <Link to='/signup_options' className="btn btn-medium propClone btn-circle bg-fast-blue text-white" href="#" data-selector="a.btn, button.btn" style={{color: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontSize: 12, fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 30, backgroundColor: 'rgb(247, 107, 28)'}} id="ui-id-45"><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, fontSize: 16}} id="ui-id-44">SUBMIT YOUR PODCAST FEED OR START ANEW</span></Link>
+                            <Link to='/pricing' className="btn btn-medium propClone btn-circle bg-fast-blue text-white" href="#" data-selector="a.btn, button.btn" style={{color: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontSize: 12, fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 30, backgroundColor: 'rgb(247, 107, 28)'}} id="ui-id-45"><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, fontSize: 16}} id="ui-id-44">SUBMIT YOUR PODCAST FEED OR START ANEW</span></Link>
                         </div>
                     </div>
                     <div className="col-lg-7 col-md-6 col-sm-6 xs-12 xs-text-center display-table" style={{height: 651}}>
@@ -322,7 +322,7 @@ class _LandingPagePodcast extends Component {
                             <h2 className="alt-font sm-title-large xs-section-title-large line-height-40 width-90 sm-width-100 margin-eight-bottom tz-text sm-margin-ten-bottom sm-margin-ten-top" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: Colors.link, fontSize: 42, fontWeight: 600}} data-selector=".tz-text" id="ui-id-60">Understand your listeners intimately.</h2>
                             <div className="text-extra-large tz-text width-90 sm-width-100 margin-five-bottom sm-margin-ten-bottom" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 18, fontWeight: 300, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, color: 'rgb(0, 0, 0)'}} data-selector=".tz-text" id="ui-id-61">Understand what your subscribers want with listening-session tracking. Make your marketing smarter by knowing who your biggest fans are.</div>
                             <div className=" tz-text width-90 sm-width-100 margin-ten-bottom sm-margin-ten-bottom xs-margin-twenty-bottom" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 18, fontWeight: 400, fontFamily: 'Open Sans, sans-serif', borderRadius: 0, color: 'rgb(0, 0, 0)'}} data-selector=".tz-text" id="ui-id-62"><p><i className="far fa-play-circle" style={{color: Colors.link, marginRight: 5}}></i> See every subscriber’s listening record</p><p><i className="far fa-play-circle" style={{color: Colors.link, marginRight: 5}}></i> Know who your most avid listeners are</p><p><i className="far fa-play-circle" style={{color: Colors.link, marginRight: 5}}></i> See which episodes perform the best</p></div>
-                              <Link to='/signup_options' className="btn-medium btn-circle btn  btn-border text-fast-blue propClone"  data-selector="a.btn, button.btn" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 30, color: 'rgb(97, 225, 251)', borderColor: Colors.link, fontSize: 18}} id="ui-id-59"><span className="tz-text" data-selector=".tz-text" >SUBMIT YOUR PODCAST FEED OR START ANEW</span></Link>
+                              <Link to='/pricing' className="btn-medium btn-circle btn  btn-border text-fast-blue propClone"  data-selector="a.btn, button.btn" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 30, color: 'rgb(97, 225, 251)', borderColor: Colors.link, fontSize: 18}} id="ui-id-59"><span className="tz-text" data-selector=".tz-text" >SUBMIT YOUR PODCAST FEED OR START ANEW</span></Link>
                         </div>
                     </div>
                 </div>
@@ -348,6 +348,7 @@ class _LandingPagePodcast extends Component {
                 </div>
             </div>
         </section>
+        <FAQs />
         <section className="call-to-action4 padding-90px-tb builder-bg offer bg-gray border-none xs-padding-60px-tb" id="callto-action4" data-selector=".builder-bg" >
             <div className="container">
                 <div className="row equalize xs-equalize-auto equalize-display-inherit">
@@ -379,13 +380,13 @@ class _LandingPagePodcast extends Component {
                         <div className="offer-box-left display-table-cell-vertical-middle">
                             <div className="display-table-cell-vertical-middle sm-display-inline-block">
 
-                            <span className="title-extra-large xs-title-extra-large text-white font-weight-400 display-block tz-text"  data-selector=".tz-text">30-day money back guarantee. No risk involved.</span>
+                            <span className="title-medium xs-title-extra-large text-white font-weight-400 display-block tz-text"  data-selector=".tz-text">30-day money back guarantee. No risk required.</span>
                         </div>
                             </div>
                     </div>
                     <div className="col-md-6 col-sm-12 col-xs-12 sm-text-center text-right display-table" style={{height: 80}}>
                         <div className="btn-dual display-table-cell-vertical-middle">
-                            <Link to='/signup_options' className="btn btn-large propClone bg-white  btn-circle xs-margin-ten-bottom" href="#" data-selector="a.btn, button.btn" ><span className="tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(247, 107, 28)', fontSize: 16}} data-selector=".tz-text" id="ui-id-73">SUBMIT YOUR PODCAST FEED OR START A NEW ONE</span></Link>
+                            <Link to='/pricing' className="btn btn-large propClone bg-white  btn-circle xs-margin-ten-bottom" href="#" data-selector="a.btn, button.btn" ><span className="tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: 'Montserrat, sans-serif', borderRadius: 0, color: 'rgb(247, 107, 28)', fontSize: 16}} data-selector=".tz-text" id="ui-id-73">SUBMIT YOUR PODCAST FEED OR START A NEW ONE</span></Link>
 
                             </div>
                     </div>

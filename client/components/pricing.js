@@ -33,67 +33,7 @@ const Pricing = (props) => (
                 </div>
             </div>
             <div className="row">
-                <div className="col-xs-12 col-sm-4 col-md-4 xs-margin-bottom-20px sm-margin-bottom-20px" >
-                    <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
-                        <li className="tz-background-color" style={{backgroundColor: Colors.mainGrey}}>
-                            <h5 className="text-white title-large font-weight-600 tz-text alt-font" style={{marginTop: 0, marginBottom: 0}}>Basic</h5>
-                            <div className="text-medium text-white alt-font tz-text no-margin-bottom font-weight-600" style={{fontSize: 15}}> <span className="no-margin-bottom">Try it for fun</span>  </div>
-                        </li>
-                        <li className="tz-border">
-                            <div className="title-extra-large-2 sm-title-extra-large-2 alt-font tz-text" style={{color: Colors.mainGrey, marginTop: 0, marginBottom: 0, fontWeight: 800}}>$0<span style={{fontWeight: 800, fontSize: 18}}> </span></div>
-                            <span className="tz-text alt-font">FOREVER</span>
-                            <div style={{marginTop: '1em'}}>
-                              {
-                                !props.isLoggedIn &&
-                                <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to="/signup_options" style={{width: '80%', backgroundColor: Colors.mainGrey}}><span className="tz-text">GET BASIC</span></Link>
-                                ||
-                                props.isLoggedIn && props.userInfo.publisher && (!props.userInfo.publisher.plan || props.userInfo.publisher.current_period_end < moment().format('X')) &&
-                                <div className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" style={{width: '80%', backgroundColor: 'transparent'}}><span className="tz-text">Current Plan</span></div>
-                                ||
-                                props.isLoggedIn && props.userInfo.publisher && (props.userInfo.publisher.plan && props.userInfo.publisher.current_period_end > moment().format('X')) &&
-                                <div className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" style={{width: '80%', backgroundColor: 'transparent'}}><span className="tz-text">Downgrade Plan</span></div>
-                              }
-                            </div>
-                        </li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far fa-star" style={{color: 'orange', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray"><strong>9% transaction fee</strong> on soundcast sales</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Unlimited audio storage and hosting</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Unlimited audience signup and number of soundcasts published</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Unlimited uploading of companion materials (PDFs, texts, images) </span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Audio recording from dashboard</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">One-click RSS feed generation</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">One-click deployment of free soundcasts to iTunes and Google Play</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Automatic audio file metadata tagging (e.g. ID3 tags for mp3s)</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Optimized soundcast landing page and publisher “store front” page</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Private soundcasts</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Listener access to mobile and web apps</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Audience interaction on mobile app (e.g. likes and comments)</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Selling soundcasts as one-time purchase, limited-time rental, or subscription</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-check-circle" style={{color: 'green', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Payment processing</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far  fa-star" style={{color: 'orange', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray"><strong>Monthly payouts</strong> to bank account or debit card</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far fa-star" style={{color: 'orange', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Creating marketing video from audio clip and branding image <strong>(up to 1 min)</strong></span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="far fa-star" style={{color: 'orange', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Service support</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Audience names and email addresses (for audience who subscribed through Soundwise)</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Complete listener analytics for each individual (for audience who signed up through Soundwise)</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Comprehensive listener analytics for all audience, e.g. download numbers, traffic sources, geo distribution</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Sending group text messages and emails to subscribed audience </span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Embedable audio player with audience signup form</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Automatic audio editing (leveling volume, trimming silence, adding intro/outro)</span></li>
-                        <li className="tz-border" style={{textAlign: 'left', paddingLeft: 15, paddingRight: 5}}><i className="fas fa-ban" style={{color: 'red', fontSize: 16}}></i><span style={{paddingLeft: 5}} className="text-medium text-dark-gray">Audio transcription powered by machine learning</span></li>
-                        <li>
-                          {
-                            !props.isLoggedIn &&
-                            <Link className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" to="/signup_options" style={{width: '80%', backgroundColor: Colors.mainGrey}}><span className="tz-text">GET BASIC</span></Link>
-                            ||
-                            props.isLoggedIn && props.userInfo.publisher && (!props.userInfo.publisher.plan || props.userInfo.publisher.current_period_end < moment().format('X')) &&
-                            <div className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" style={{width: '80%', backgroundColor: 'transparent'}}><span className="tz-text">Current Plan</span></div>
-                            ||
-                            props.isLoggedIn && props.userInfo.publisher && (props.userInfo.publisher.plan && props.userInfo.publisher.current_period_end > moment().format('X')) &&
-                            <div className="col-md-6 center-col  btn-extra-large btn bg-white text-dark-gray no-letter-spacing" style={{width: '80%', backgroundColor: 'transparent'}}><span className="tz-text">Downgrade Plan</span></div>
-                          }
-                        </li>
-                    </ul>
-                </div>
-                <div className="col-xs-12 col-sm-4 col-md-4 xs-margin-bottom-20px sm-margin-bottom-20px" >
+                <div className="col-xs-12 col-sm-6 col-md-6 xs-margin-bottom-20px sm-margin-bottom-20px" >
                     <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
                         <li className="tz-background-color" style={{backgroundColor: Colors.link}}>
                             <h5 className="text-white title-large font-weight-600 tz-text alt-font" style={{marginTop: 0, marginBottom: 0}}>PLUS</h5>
@@ -164,7 +104,7 @@ const Pricing = (props) => (
                         </li>
                     </ul>
                 </div>
-                <div className="col-xs-12 col-sm-4 col-md-4 xs-margin-bottom-20px sm-margin-bottom-20px" >
+                <div className="col-xs-12 col-sm-6 col-md-6 xs-margin-bottom-20px sm-margin-bottom-20px" >
                     <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
                         <li className="tz-background-color" style={{backgroundColor: Colors.mainOrange}}>
                             <h5 className="text-white font-weight-600 title-large tz-text alt-font" style={{marginTop: 0, marginBottom: 0}}>PRO</h5>
@@ -236,6 +176,18 @@ const Pricing = (props) => (
                           }
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section style={{backgroundColor: Colors.mainGreen}} className="padding-60px-tb offer bg-white builder-bg xs-padding-60px-tb" id="callto-action5" data-selector=".builder-bg" >
+        <div className="container">
+            <div className="row">
+                <div className="col-md-12 col-sm-12 col-xs-12 text-center  ">
+                    <div className="offer-box-left">
+                        <span className="title-small xs-title-extra-large text-dark-gray display-block alt-font tz-text " data-selector=".tz-text" >No risk required to up your audio game.</span>
+                        <span className="title-extra-large xs-title-extra-large display-block alt-font font-weight-700 text-dark-gray margin-four-bottom xs-margin-thirteen-bottom tz-text" data-selector=".tz-text"  >30-Day Money Back Guarantee</span>
+                    </div>
                 </div>
             </div>
         </div>

@@ -141,7 +141,7 @@ class _LandingPageSelling extends Component {
             return (
                 <ul className="nav navbar-nav">
                                     <li className="propClone"><Link to="/signin" className="inner-link" data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-21">LOG IN</Link></li>
-                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/signup_options"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
+                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/pricing"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
                 </ul>
             );
         }
@@ -174,17 +174,17 @@ class _LandingPageSelling extends Component {
                     </div>
                 </nav>
             </header>
-            <section className="no-padding position-relative cover-background tz-builder-bg-image border-none hero-style1" id="hero-section1" data-img-size="(W)1920px X (H)800px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("images/uploads/shutterstock_450439006.jpg")'}} data-selector=".tz-builder-bg-image">
+            <section className="no-padding position-relative cover-background tz-builder-bg-image border-none hero-style1" id="hero-section1" data-img-size="(W)1920px X (H)800px" style={{paddingTop: 0, paddingBottom: 0, backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.01)), url("images/girl.png")'}} data-selector=".tz-builder-bg-image">
                     <div className="container one-fourth-screen xs-height-400-px position-relative">
                         <div className="row">
                             <div className="slider-typography xs-position-absolute text-center">
                                 <div className="slider-text-middle-main">
                                     <div className="slider-text-middle text-left">
                                         <div className="col-md-8 col-sm-10 col-xs-12 xs-text-center">
-                                            <h1 className="line-height-55 sm-title-extra-large xs-title-extra-large text-white alt-font margin-six-bottom xs-margin-ten-bottom tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', borderRadius: 0, fontSize: 60, fontWeight: 800}} id="ui-id-19"><p>SELL MORE AUDIOS </p><p>ON THE GO</p></h1>
+                                            <h1 className="line-height-55 sm-title-extra-large-3 xs-title-extra-large-4 text-white alt-font margin-six-bottom xs-margin-ten-bottom tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', borderRadius: 0, fontSize: 60, fontWeight: 800}} id="ui-id-19"><p>SELL MORE AUDIOS </p><p>ON THE GO</p></h1>
                                             <div className="text-white  xs-text-extra-large width-80 sm-width-90 xs-width-100 margin-eleven-bottom xs-margin-fifteen-bottom tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 24}} id="ui-id-20"><p>The #1 mobile and web platform for selling and delivering on-demand audio streaming programs.&nbsp;</p></div>
                                             <div className="btn-dual">
-                                                <Link to='/pricing' className="btn btn-large bg-golden-yellow text-dark-gray propClone xs-no-margin xs-margin-five-bottom xs-display-block" href="#" data-selector="a.btn, button.btn" ><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Montserrat, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-62">START SELLING</span></Link>
+                                                <Link to='/pricing' className="btn btn-large  text-dark-gray propClone xs-no-margin xs-margin-five-bottom xs-display-block" data-selector="a.btn, button.btn" style={{backgroundColor: Colors.link}} ><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Montserrat, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-62">START SELLING</span></Link>
 
                                             </div>
                                         </div>
@@ -274,7 +274,7 @@ class _LandingPageSelling extends Component {
                         <div className="display-table-cell-vertical-middle">
                             <div className="row">
                                 <div className="col-md-12 col-sm-12 col-xs-12 section-title5 margin-eleven-bottom xs-margin-fifteen-bottom xs-text-center">
-                                    <h2 className=" sm-section-title-medium xs-section-title-large width-90 sm-width-100  alt-font line-height-45 margin-five-bottom tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 42, fontWeight: 700, fontFamily: "Montserrat, sans-serif", borderRadius: 0, color: 'rgb(247, 107, 28)'}} id="ui-id-33">Impress your listeners with professional delivery</h2>
+                                    <h2 className=" sm-section-title-medium xs-section-title-large width-90 sm-width-100  alt-font line-height-45 margin-five-bottom tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontSize: 42, fontWeight: 700, fontFamily: "Montserrat, sans-serif", borderRadius: 0, color: 'rgb(247, 107, 28)'}} id="ui-id-33">Impress your customers with professional delivery</h2>
                                     <div className=" width-90 sm-width-100 tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-40">No more file transfer hassle for your listeners. Immediate access to your content on Soundwise mobile and web apps after purchase.</div>
                                 </div>
                             </div>
@@ -283,16 +283,16 @@ class _LandingPageSelling extends Component {
                                     <div className="margin-seven-bottom xs-margin-three-bottom">
                                         <i className="fas fa-angle-double-down  tz-icon-color ti-world" aria-hidden="true" data-selector=".tz-icon-color" style={{fontSize: 30, backgroundColor: 'rgba(0, 0, 0, 0)', color: 'rgb(247, 107, 28)'}} id="ui-id-32"></i>
                                     </div>
-                                    <h3 className=" font-weight-600 display-block margin-two-bottom tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-42">Fast</h3>
-                                    <div className=" tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-41"><p><span>Listeners enjoy your audios on the go right after they buy</span>
+                                    <h3 className=" font-weight-600 display-block margin-two-bottom tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-42">Intimate</h3>
+                                    <div className=" tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-41"><p><span>Listeners can enjoy your audios from their phone IMMEDIATELY after they buy.</span>
                                     </p></div>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-12 features-box margin-six-bottom xs-text-center xs-margin-nine-bottom">
                                     <div className="margin-seven-bottom xs-margin-three-bottom">
-                                        <i className="fas fa-hdd text-orange icon-medium tz-icon-color" aria-hidden="true" data-selector=".tz-icon-color"></i>
+                                        <i className="fas fa-hdd icon-medium tz-icon-color" aria-hidden="true" data-selector=".tz-icon-color" style={{color: Colors.mainOrange}}></i>
                                     </div>
                                     <h3 className=" font-weight-600 display-block margin-two-bottom tz-text" data-selector=".tz-text" style={{color: 'rgb(40, 40, 40)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}}  id="ui-id-43">Secure</h3>
-                                    <div className=" tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}}  id="ui-id-44"><p>Your audios files are never exposed. To prevent unauthorized copying
+                                    <div className=" tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}}  id="ui-id-44"><p>Your audios files are never exposed. No need to worry about unauthorized copying.
                                     </p></div>
                                 </div>
                                 <div className="col-md-6 col-sm-6 col-xs-12 features-box xs-margin-eleven-bottom xs-text-center xs-margin-nine-bottom">
@@ -307,7 +307,7 @@ class _LandingPageSelling extends Component {
                                         <i className="fas fa-laptop icon-medium tz-icon-color ti-gallery" aria-hidden="true" data-selector=".tz-icon-color" style={{fontSize: 30, backgroundColor: 'rgba(0, 0, 0, 0)', color: 'rgb(247, 107, 28)'}}id="ui-id-35"></i>
                                     </div>
                                     <h3 className="text-large text-dark-gray font-weight-600 display-block margin-two-bottom tz-text" data-selector=".tz-text" >Easy</h3>
-                                    <div className=" tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-46"><p>Allow listeners to consume your content from both computer and phone</p></div>
+                                    <div className=" tz-text" data-selector=".tz-text" style={{color: 'rgb(112, 112, 112)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 400, fontFamily: "Open Sans, sans-serif", borderRadius: 0, fontSize: 18}} id="ui-id-46"><p>Your customers can listen from all their devices with progress remembered.</p></div>
                                 </div>
                             </div>
                         </div>
@@ -413,12 +413,15 @@ class _LandingPageSelling extends Component {
             <div className="container">
                 <div className="row equalize">
                     <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{height: 47}}>
-                        <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-medium sm-title-medium" data-selector=".tz-text" >30-day money back guarantee. No risk involved.</div>
+                        <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-medium sm-title-medium" data-selector=".tz-text" >30-day money back guarantee. No risk required.</div>
                         <Link to='/pricing' className="btn-large btn text-white highlight-button-white-border btn-circle"  data-selector="a.btn, button.btn" ><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Montserrat, sans-serif", fontSize: 18}} id="ui-id-61">START SELLING</span></Link>
                     </div>
                 </div>
             </div>
         </section>
+        <Footer
+          showPricing={true}
+        ></Footer>
       </div>
     )
   }
