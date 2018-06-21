@@ -86,7 +86,7 @@ export default class SoundcastInCart extends Component {
                     </p>
                     <div style={styles.underName}>
                         <div>
-                            <span>{soundcast.prices[checked].paymentPlan}</span>
+                            <span>{soundcast.prices[checked || 0].paymentPlan}</span>
                         </div>
                         <div style={styles.feeRow}>
                             <div className="" style={styles.priceWrapper}>
