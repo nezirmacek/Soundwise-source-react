@@ -70,12 +70,12 @@ export default class Billing extends Component {
     }
   }
 
-  async createCoupon(userName, stripeId, count) {
+  async createCoupon(userName, stripe_user_id, count) {
     const couponText = (userName + (count || '')).toLowerCase();
     const coupon = await firebase.database().ref(`coupons/${couponText}`).once('value');
     if (coupon.val()) { // coupon exist
       count++;
-      this.createCoupon(userName, stripeId, count); // recursion
+      this.createCoupon(userName, stripe_user_id, count); // recursion
     } else {
       await firebase.database().ref(`coupons/${couponText}`).set({
         count: 0,
@@ -84,7 +84,7 @@ export default class Billing extends Component {
         frequency: "all",
         percentOff: 0,
         trialPeriod: 30,
-        affiliate: stripeId
+        affiliate: stripe_user_id
       });
       this.setState({ couponText });
     }
@@ -95,14 +95,14 @@ export default class Billing extends Component {
     if (!userInfo || !userInfo.publisher) {
       return alert('Empty user/publisher value');
     }
-    const stripeId = userInfo.publisher.stripe_user_id;
-    if (!stripeId) {
+    const {stripe_user_id} = userInfo.publisher;
+    if (!stripe_user_id) {
       // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user
       alert('Please connect your payout account first.');
       // TODO redirect/show card input form (example client/containers/checkout.js)
     } else {
       // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
-      this.createCoupon(userInfo.publisher.name.replace(/[^A-Za-z]/g, ''), stripeId, 0);
+      this.createCoupon(userInfo.publisher.name.replace(/[^A-Za-z]/g, ''), stripe_user_id, 0);
       await firebase.database().ref(`publishers/${userInfo.publisherID}/affiliate`)
       .set(true);
       this.setState({ affiliate: true });
