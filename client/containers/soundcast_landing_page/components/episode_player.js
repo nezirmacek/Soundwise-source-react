@@ -110,6 +110,10 @@ export default class EpisodePlayer extends Component {
         }
     }
 
+    showAlert() {
+        alert('You need to purchase this soundcast first to listen to this part.');
+    }
+
     render () {
         const { episode, showDialogCb } = this.props;
         const { duration, currentTime, isPlaying } = this.state;
@@ -131,7 +135,7 @@ export default class EpisodePlayer extends Component {
 
         return (
             <tr
-              onClick={episode.publicEpisode && this.handlePlayOrPause.bind(this, null) || showDialogCb}
+              onClick={episode.publicEpisode && this.handlePlayOrPause.bind(this, null) || this.showAlert.bind(this)}
               style={styles.wrapper}>
                 <td>
                     <i

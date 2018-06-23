@@ -28,7 +28,7 @@ import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../compo
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
-<p>Thanks for subscribing to [soundcast title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p>
+<p>Thanks for signing up to [soundcast title]. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p>
 <p><strong>
 <span>iPhone user: Download the app </span>
 <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8"><span style="border-bottom: 2px solid currentColor;">here</span></a>.
@@ -435,7 +435,6 @@ export default class AddSoundcast extends Component {
       this.setState({
         long_description: editorState,
       })
-
   }
 
   onConfirmationStateChange(editorState) {
@@ -517,8 +516,8 @@ export default class AddSoundcast extends Component {
 
         {/*Long Description*/}
         <span style={{...styles.titleText, marginBottom: 5}}>
-                    Long Description
-                </span>
+            Long Description
+        </span>
         <div>
           <Editor
             editorState = {long_description}
@@ -530,9 +529,9 @@ export default class AddSoundcast extends Component {
 
         {/*Host/Instructor Name*/}
         <div>
-                    <span style={styles.titleText}>
-                        Host/Instructor Name
-                    </span>
+          <span style={styles.titleText}>
+              Host/Instructor Name
+          </span>
           <div style={{...styles.inputTitleWrapper, width: '35%'}}>
             <input
               type="text"
@@ -547,9 +546,9 @@ export default class AddSoundcast extends Component {
         {/*Host/Instructor Bio*/}
         <div>
           <div >
-                        <span style={styles.titleText}>
-                            Host/Instructor Bio
-                        </span>
+            <span style={styles.titleText}>
+                Host/Instructor Bio
+            </span>
           </div>
           <textarea
             style={styles.inputDescription}
@@ -563,9 +562,9 @@ export default class AddSoundcast extends Component {
         {/*Host/Instructor Profile Picture*/}
         <div style={{marginTop: 10, }} className='row'>
           <div style={{marginBottom: 10}} className='col-md-12'>
-                        <span style={styles.titleText}>
-                            Host/Instructor Profile Picture
-                        </span>
+            <span style={styles.titleText}>
+                Host/Instructor Profile Picture
+            </span>
           </div>
 
           <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}} className='col-md-3'/>

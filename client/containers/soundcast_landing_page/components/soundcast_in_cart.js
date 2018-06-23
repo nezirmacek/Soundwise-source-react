@@ -56,7 +56,7 @@ export default class SoundcastInCart extends Component {
       const {price, promoCode, promoApplied} = this.state;
       let fee = price == 'free' ? 0 : Math.floor(price * 0.03 *100) / 100;
       fee = 0.00;
-      if (soundcast && !checked) {
+      if (soundcast && Number.isNaN(checked)) {
         return ( // show only cover image and title
             <div className="row" style={styles.course}>
               <div className="col-md-12 col-sm-12 col-xs-12">
@@ -86,7 +86,7 @@ export default class SoundcastInCart extends Component {
                     </p>
                     <div style={styles.underName}>
                         <div>
-                            <span>{soundcast.prices[checked].paymentPlan}</span>
+                            <span>{soundcast.prices[checked || 0].paymentPlan}</span>
                         </div>
                         <div style={styles.feeRow}>
                             <div className="" style={styles.priceWrapper}>

@@ -232,6 +232,7 @@ class _SoundcastCheckout extends Component {
         </div>
       )
     } else if(soundcast && this.state.lastStep) {
+      console.log('soundcast 1: ', soundcast);
       return (
         <div>
           <PageHeader />
@@ -296,6 +297,7 @@ class _SoundcastCheckout extends Component {
         </div>
       )
     } else if(soundcast && !this.state.success) {
+      console.log('soundcast 2: ', soundcast);
       return (
         <div>
           <PageHeader />
