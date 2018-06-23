@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import {Helmet} from "react-helmet"
+
 import * as firebase from "firebase"
 import { bindActionCreators } from 'redux'
 import IconMenu from 'material-ui/IconMenu'
