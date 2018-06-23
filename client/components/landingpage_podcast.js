@@ -207,7 +207,7 @@ class _LandingPagePodcast extends Component {
                     </div>
                     <div className="col-lg-7 col-md-6 col-sm-6 xs-12 xs-text-center display-table" style={{height: 651}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img alt="" src="images/application-screenshot-img-06.png" data-img-size="(W)800px X (H)785px" data-selector="img" />
+                            <img alt="" src="images/1-A.png" data-img-size="(W)800px X (H)785px" data-selector="img" />
                         </div>
                     </div>
                 </div>
@@ -218,7 +218,7 @@ class _LandingPagePodcast extends Component {
                 <div className="row equalize xs-equalize-auto equalize-display-inherit">
                     <div className="col-md-5 display-table col-md-pull-1 col-sm-pull-0 col-sm-12 col-xs-12 xs-margin-nineteen-bottom sm-height-auto" style={{height: 650}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img className="img-responsive sm-width-60 xs-width-100 margin-lr-auto sm-margin-twenty-bottom" src="images/infographic-2.png" data-img-size="(W)984px X (H)1376px" alt="" data-selector="img" />
+                            <img className="img-responsive sm-width-60 xs-width-100 margin-lr-auto sm-margin-twenty-bottom" src="images/1-B.png" data-img-size="(W)984px X (H)1376px" alt="" data-selector="img" />
                         </div>
                     </div>
                     <div className="col-md-7 col-sm-12 col-xs-12 display-table sm-height-auto" style={{height: 650}}>
@@ -265,7 +265,7 @@ class _LandingPagePodcast extends Component {
         <section className="bg-gray builder-bg border-none" id="content-section20" data-selector=".builder-bg" >
             <div className="container-fluid">
                 <div className="row equalize">
-                    <div className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten" style={{height: 833}}>
+                    <div className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten" style={{height: 773}}>
                         <div className="display-table-cell-vertical-middle padding-twenty-two md-padding-seven xs-no-padding-lr">
                             <div className="col-md-12 col-sm-12 col-xs-12 margin-nine-top xs-no-padding-lr">
                                 <h2 className=" sm-title-extra-large xs-title-extra-large   margin-three-bottom xs-margin-fifteen-bottom tz-text" data-selector=".tz-text" style={{backgroundColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Open Sans, sans-serif', borderRadius: 0, color: 'rgb(247, 107, 28)', fontSize: 42, fontWeight: 700}} id="ui-id-52">Take your listener relationship from casual to committed.
@@ -304,7 +304,7 @@ class _LandingPagePodcast extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-6 col-sm-12 col-xs-12 tz-builder-bg-image sm-height-600-px xs-height-400-px cover-background" data-img-size="(W)1000px X (H)800px" style={{background: 'linear-gradient(rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.01)), url("images/bg-image/hero-bg22.jpg")', height: 833}} data-selector=".tz-builder-bg-image"></div>
+                    <div className="col-md-6 col-sm-12 col-xs-12 tz-builder-bg-image sm-height-600-px xs-height-400-px cover-background" data-img-size="(W)1000px X (H)800px" style={{background: 'linear-gradient(rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.01)), url("images/1-C.png', height: 833}} data-selector=".tz-builder-bg-image"></div>
                 </div>
             </div>
         </section>
@@ -314,7 +314,7 @@ class _LandingPagePodcast extends Component {
                 <div className="row equalize xs-equalize-auto equalize-display-inherit">
                     <div className="col-md-6 col-sm-6 xs-12 xs-text-center display-table" style={{height: 481}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img alt="" src="images/content-50.jpg" data-img-size="(W)800px X (H)681px" data-selector="img" />
+                            <img alt="" src="images/1-D.png" data-img-size="(W)800px X (H)681px" data-selector="img" />
                         </div>
                     </div>
                     <div className="col-md-6 col-sm-6 xs-12 xs-text-center xs-margin-nineteen-bottom display-table" style={{height: 481}}>
@@ -342,7 +342,7 @@ class _LandingPagePodcast extends Component {
                     </div>
                     <div className="col-md-6 col-sm-6 xs-12 xs-text-center display-table" style={{height: 481}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img alt="" src="images/content-51.jpg" data-img-size="(W)800px X (H)681px" data-selector="img" />
+                            <img alt="" src="images/1-E.png" data-img-size="(W)800px X (H)681px" data-selector="img" />
                         </div>
                     </div>
                 </div>
@@ -367,7 +367,7 @@ class _LandingPagePodcast extends Component {
                     </div>
                     <div className="col-md-6 col-sm-6 col-xs-12 display-table text-right xs-margin-lr-auto xs-fl-none xs-no-padding-bottom" style={{height: 585}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img src="images/design-screenshot6.png" data-img-size="(W)800px X (H)828px" alt="" data-selector="img" />
+                            <img src="images/1-F.png" data-img-size="(W)800px X (H)828px" alt="" data-selector="img" />
                         </div>
                     </div>
                 </div>

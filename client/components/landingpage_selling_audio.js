@@ -200,7 +200,7 @@ class _LandingPageSelling extends Component {
                 <div className="row equalize xs-equalize-auto equalize-display-inherit">
                     <div className="col-md-7 col-sm-7 col-xs-12 xs-text-center xs-margin-nineteen-bottom display-table" style={{height: 510}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img alt="" src="images/application-screenshot-img-08.png" data-img-size="(W)800px X (H)788px" data-selector="img" />
+                            <img alt="" src="images/2-A.png" data-img-size="(W)800px X (H)788px" data-selector="img" />
                         </div>
                     </div>
                     <div className="col-md-5 col-sm-5 col-xs-12 xs-text-center display-table" style={{height: 510}}>
@@ -256,7 +256,7 @@ class _LandingPageSelling extends Component {
                     </div>
                     <div className="col-lg-7 col-md-6 col-sm-6 xs-12 xs-text-center display-table" style={{height: 652}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img alt="" src="images/application-screenshot-img-06.png" data-img-size="(W)800px X (H)785px" data-selector="img" />
+                            <img alt="" src="images/2-B.png" data-img-size="(W)800px X (H)785px" data-selector="img" />
                         </div>
                     </div>
                 </div>
@@ -267,7 +267,7 @@ class _LandingPageSelling extends Component {
                 <div className="row equalize xs-equalize-auto equalize-display-inherit">
                     <div className="col-md-5 col-sm-5 col-xs-12 text-center xs-margin-fifteen-bottom display-table" style={{height: 603}}>
                         <div className="display-table-cell-vertical-middle">
-                        <img src="images/application-features-mobile01.png" data-img-size="(W)296px X (H)603px" alt="" data-selector="img" />
+                        <img src="images/2-C.png" data-img-size="(W)296px X (H)603px" alt="" data-selector="img" />
                         </div>
                     </div>
                     <div className="col-md-7 col-sm-7 col-xs-12 display-table" style={{height: 603}}>
@@ -329,7 +329,7 @@ class _LandingPageSelling extends Component {
                     </div>
                     <div className="col-md-6 col-sm-6 xs-12 xs-text-center display-table" style={{height: 481}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img alt="" src="images/content-51.jpg" data-img-size="(W)800px X (H)681px" data-selector="img" />
+                            <img alt="" src="images/2-D.png" data-img-size="(W)800px X (H)681px" data-selector="img" />
                         </div>
                     </div>
                 </div>
@@ -403,7 +403,7 @@ class _LandingPageSelling extends Component {
                     </div>
                     <div className="col-md-6 col-sm-6 col-xs-12 display-table text-right xs-margin-lr-auto xs-fl-none xs-no-padding-bottom" style={{height: 585}}>
                         <div className="display-table-cell-vertical-middle">
-                            <img src="images/design-screenshot6.png" data-img-size="(W)800px X (H)828px" alt="" data-selector="img" />
+                            <img src="images/2-E.png" data-img-size="(W)800px X (H)828px" alt="" data-selector="img" />
                         </div>
                     </div>
                 </div>
@@ -412,7 +412,7 @@ class _LandingPageSelling extends Component {
         <section className="padding-60px-tb builder-bg border-none" id="callto-action2" data-selector=".builder-bg" style={{padding: '60px 0px', borderColor: 'rgb(112, 112, 112)', backgroundColor: 'rgb(247, 107, 28)'}}>
             <div className="container">
                 <div className="row equalize">
-                    <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{height: 47}}>
+                    <div className="col-md-12 col-sm-12 col-xs-12 text-center sm-margin-twenty-one-bottom" style={{height: 47}}>
                         <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-medium sm-title-medium" data-selector=".tz-text" >30-day money back guarantee. No risk required.</div>
                         <Link to='/pricing' className="btn-large btn text-white highlight-button-white-border btn-circle"  data-selector="a.btn, button.btn" ><span className="tz-text" data-selector=".tz-text" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', fontWeight: 600, fontFamily: "Montserrat, sans-serif", fontSize: 18}} id="ui-id-61">START SELLING</span></Link>
                     </div>
