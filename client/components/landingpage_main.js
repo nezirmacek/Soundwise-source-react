@@ -165,8 +165,8 @@ class _HomePage extends Component {
                             </button>
                             <div id="bs-example-navbar-collapse-1" className="collapse navbar-collapse pull-right">
                                 <ul className="nav navbar-nav">
-                                    <li className="propClone"><Link to='/podcast' className="inner-link"  data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-18">PODCAST HOSTS</Link></li>
-                                    <li className="propClone"><Link className="inner-link" to='/selling' data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-19">SELLING AUDIOS</Link></li>
+                                    <li className="propClone"><Link to='/podcast' className="inner-link"  data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-18">GROW LISTENER TRIBE</Link></li>
+                                    <li className="propClone"><Link className="inner-link" to='/selling' data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-19">SELL MORE AUDIOS</Link></li>
                                     <li className="propClone"><Link className="inner-link" to='/pricing' data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-20">PRICING</Link></li>
                                     {this.renderLogin()}
                                 </ul>
@@ -204,7 +204,7 @@ class _HomePage extends Component {
 
             <section id="clients-section4" className="padding-110px-tb bg-white builder-bg clients-section4 xs-padding-60px-tb" data-selector=".builder-bg" >
                 <div className="container">
-                    <div className="row">
+                    <div className="row center-col">
                         <div className="col-md-3 col-sm-6 col-xs-12">
                             <div className="client-logo-outer"><div className="client-logo-inner"><img src="images/huffington-post-logo.png" data-img-size="(W)800px X (H)500px" alt="" data-selector="img"/></div></div>
                         </div>
