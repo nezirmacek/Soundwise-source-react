@@ -156,11 +156,11 @@ class _LandingPagePodcast extends Component {
         <Helmet>
           <meta property="og:type" content="website"/>
           <meta property="og:url" content="https://mysoundwise.com/" />
-          <meta property="og:title" content="Soundwise"/>
+          <meta property="og:title" content="Soundwise: Turn Casual Podcast Listeners Into Loyal Customers"/>
           <meta property="fb:app_id" content='1726664310980105' />
-          <meta property="og:description" content="Soundwise is the best audio publishing platform for podcasters and experts to build their audience and monetize their audio content."/>
+          <meta property="og:description" content="For coaches, consultants, and entrepreneurial experts. Build an engaged, loyal listener community for your podcast with Soundwise. So that you can turn more listeners into customers. "/>
           <meta property="og:image" content="https://mysoundwise.com/images/soundwise-podcast.png" />
-          <title>Soundwise: Turn Casual Listeners Into Loyal Customers</title>
+          <title>Soundwise: Turn Casual Podcast Listeners Into Loyal Customers</title>
           <meta name="description" content="For coaches, consultants, and entrepreneurial experts. Build an engaged, loyal listener community for your podcast with Soundwise. So that you can turn more listeners into customers. " />
           <meta name="keywords" content="soundwise, sell audios, on-demand audios, audio courses, podcast conversion, podcasting, audio training, online education, podcast software, podcast hosting,  soundwise, audio publishing, content management system, audio learning, online learning, online course, podcast mobile app" />
         </Helmet>

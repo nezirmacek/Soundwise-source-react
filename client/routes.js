@@ -220,12 +220,12 @@ class _Routes extends Component {
             <Helmet>
               <meta property="og:type" content="website"/>
               <meta property="og:url" content="https://mysoundwise.com/" />
-              <meta property="og:title" content="Soundwise"/>
+              <meta property="og:title" content="Soundwise: Grow An Engaged Podcast Audience & Sell On-Demand Audios"/>
               <meta property="fb:app_id" content='1726664310980105' />
-              <meta property="og:description" content="Soundwise is the best audio publishing platform for podcasters and experts to build their audience and monetize their audio content."/>
+              <meta property="og:description" content="Soundwise is the premium solution for entrepreneurial experts to grow an engaged podcast audience, convert listeners to customers, and sell on-demand audios."/>
               <meta property="og:image" content="https://mysoundwise.com/images/soundwise-home.png" />
-              <title>Soundwise: The premium platform for experts and influencers to grow an engaged podcast audience and sell on-demand audios.</title>
-              <meta name="description" content="The premium solution for entrepreneurial experts to grow an engaged podcast audience, convert listeners to customers, and sell on-demand audios." />
+              <title>Soundwise: Grow An Engaged Podcast Audience & Sell On-Demand Audios.</title>
+              <meta name="description" content="Soundwise is the premium solution for entrepreneurial experts to grow an engaged podcast audience, convert listeners to customers, and sell on-demand audios." />
               <meta name="keywords" content="soundwise, podcast hosting, sell audios, on-demand audios, audio courses, podcast conversion, podcasting, audio training, online education, podcast software, soundwise, audio publishing, content management system, audio learning, online learning, online course, podcast mobile app" />
             </Helmet>
             <Switch>
