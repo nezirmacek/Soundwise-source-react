@@ -1,6 +1,3 @@
-/**
- * Created by developer on 10.08.17.
- */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -15,6 +12,7 @@ import { Editor } from 'react-draft-wysiwyg';
 import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
 // import Toggle from 'material-ui/Toggle';
 import Toggle from 'react-toggle';
+import Datetime from 'react-datetime';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
 import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
@@ -85,29 +83,22 @@ export default class AddSoundcast extends Component {
   }
 
   componentDidMount() {
-    if(this.props.userInfo.publisher) {
-      this.checkUserStatus(this.props.userInfo);
-    }
+    this.props.userInfo.publisher && this.checkUserStatus(this.props.userInfo);
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.userInfo.publisher && !this.state.proUser) {
+    if(!this.state.proUser && nextProps.userInfo.publisher) {
       this.checkUserStatus(nextProps.userInfo);
     }
   }
 
   checkUserStatus(userInfo) {
-    let plan, proUser;
-    if(userInfo.publisher && userInfo.publisher.plan) {
-        plan = userInfo.publisher.plan;
-        proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+    if(userInfo.publisher.plan &&
+       userInfo.publisher.current_period_end > moment().format('X') ||
+       userInfo.publisher.beta
+    ) {
+      this.setState({ proUser: true });
     }
-    if(userInfo.publisher && userInfo.publisher.beta) {
-        proUser = true;
-    }
-    this.setState({
-      proUser,
-    });
   }
 
   _uploadToAws (file, hostImg) {
@@ -195,17 +186,14 @@ export default class AddSoundcast extends Component {
   }
 
   submit (publish) {
-    let { title, imageURL, subscribers, short_description,
-      long_description, landingPage,
-      features, hostName, hostBio, hostImageURL,
-      forSale, prices, confirmationEmail, introUrl, outroUrl} = this.state;
+    let {title, imageURL, subscribers, short_description, long_description, landingPage,
+      features, hostName, hostBio, hostImageURL, forSale, prices, confirmationEmail,
+      introUrl, outroUrl} = this.state;
     if(title.length == 0) {
-      alert('Please enter a soundcast title before saving.');
-      return;
+      return alert('Please enter a soundcast title before saving.');
     }
     if(short_description == 0) {
-      alert('Please enter a short description for the soundcast before saving.');
-      return;
+      return alert('Please enter a short description for the soundcast before saving.');
     }
     if(prices.length === 0) { //if pricing isn't specified, then this is a free soundcast
       prices = [{price: 'free'}];
@@ -226,16 +214,14 @@ export default class AddSoundcast extends Component {
 
     // send email invitations to invited listeners
     const subject = `${userInfo.publisher.name} invites you to subscribe to ${title}`;
-   const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+that.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
+    const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+that.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
     inviteListeners(subscribersArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
 
     const invited = {};
-    const inviteeArr = [];
     subscribersArr.map((email, i) => {
       let _email = email.replace(/\./g, "(dot)");
       _email = _email.trim().toLowerCase();
       invited[_email] = moment().format('X');  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
-      inviteeArr[i] = _email;
     });
 
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
@@ -303,6 +289,15 @@ export default class AddSoundcast extends Component {
                   title
                 }).then(
                   res => {
+                    if (prices.length && userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                      Axios.post('/api/createUpdatePlans', {
+                        soundcastID: that.soundcastID,
+                        publisherID: userInfo.publisherID,
+                        stripe_account: userInfo.publisher.stripe_user_id,
+                        title,
+                        prices,
+                      }).catch(err => alert(`Error creating plans ${err}`));
+                    }
                     return res;
                   }
                 ).catch(
@@ -448,18 +443,19 @@ export default class AddSoundcast extends Component {
     if(proUser) {
       this.setState({showIntroOutro: !showIntroOutro});
     } else {
-      this.setState({
-        showPricingModal: true,
-      })
+      this.setState({showPricingModal: ['Upgrade to add intro and outro',
+        'Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.'
+      ]})
     }
   }
 
   renderAdditionalInputs() {
     const featureNum = this.state.features.length;
-    const {hostImageURL, long_description, hostImgUploaded, landingPage, forSale, prices,
-       confirmationEmail, proUser, showIntroOutro, showPricingModal} = this.state;
+    const {hostImageURL, long_description, hostImgUploaded, landingPage,
+           forSale, prices, confirmationEmail, proUser, showIntroOutro} = this.state;
     const {userInfo} = this.props;
     const that = this;
+    const isProOrPlus = ['pro', 'plus'].includes(userInfo.publisher && userInfo.publisher.plan);
 
     const actions = [
       <FlatButton
@@ -754,65 +750,89 @@ export default class AddSoundcast extends Component {
                       || null
                     }
                     {
-                      price.coupons &&
-                      <div className='' style={{marginLeft: 23, width: '100%',marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
-                        <div className=' ' style={{marginRight: 10,}}>
+                     price.coupons && price.coupons.map((coupon, j) => (
+                      <div key={`price${i}coupon${j}`} style={{marginLeft: 23, width: '100%',
+                        marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
+                        <div style={{marginRight: 10}}>
                           <span>Coupon Code</span>
                           <div>
                             <input
                               type="text"
                               style={{...styles.inputTitle}}
                               name="couponCode"
-                              onChange={(e) => {
-                                prices[i].coupons[0].code = e.target.value;
+                              onChange={e => {
+                                prices[i].coupons[j].code = e.target.value;
                                 that.setState({prices});
                               }}
-                              value={price.coupons[0].code}
+                              value={price.coupons[j].code}
                             />
                           </div>
                         </div>
-                        <div className=' ' style={{marginRight: 10,}}>
+                        <div style={{marginRight: 13, width: 110, minWidth: 110}}>
                           <span>Discount Percent</span>
                           <div>
                             <input
                               type="text"
-                              style={{...styles.inputTitle, width: '70%'}}
+                              style={{...styles.inputTitle, width: '50%'}}
                               name="discountPercent"
-                              onChange={(e) => {
-                                prices[i].coupons[0].percentOff = e.target.value;
+                              onChange={e => {
+                                prices[i].coupons[j].percentOff = e.target.value;
                                 that.setState({prices});
                               }}
-                              value={price.coupons[0].percentOff}
+                              value={price.coupons[j].percentOff}
                             />
                             <span style={{fontSize: 18,}}>{` % off`}</span>
                           </div>
                         </div>
-                        <div className=' ' style={{marginRight: 10,}}>
+                        <div style={{marginRight: 13, height: 67, width: 125, minWidth: 125}}>
                           <span>Price After Discount</span>
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 5}}>
-                            <span style={{fontSize: 18,}}>{`$${(Math.round(price.price * (100 - price.coupons[0].percentOff)) / 100).toFixed(2)}`}</span>
+                          <div style={{display: 'flex', alignItems: 'center', marginTop: 14}}>
+                            <span style={{fontSize: 20}}>{`$${(Math.round(price.price * (100 - price.coupons[j].percentOff) / 100)).toFixed(2)}`}</span>
+                          </div>
+                        </div>
+                        <div style={{marginRight: 10, height: 67, width: 165, minWidth: 165}}>
+                          <span>Expires on</span>
+                          <div style={{minWidth: 145, marginTop: 8}}>
+                            <Datetime value={moment.unix(coupon.expiration)} onChange={date => {
+                              if (date.unix) {
+                                prices[i].coupons[j].expiration = date.unix();
+                                that.setState({prices});
+                              }
+                            }} />
                           </div>
                         </div>
                         <div style={{marginTop: 30}}>
                           <span
                             style={{marginLeft: 5, cursor: 'pointer', fontSize: 20, }}
                             onClick={() => {
-                              prices[i].coupons = null;
+                              prices[i].coupons.splice(j, 1);
                               that.setState({prices});
                             }}>
                               <i className="fa fa-times " aria-hidden="true"></i>
                           </span>
                         </div>
                       </div>
-                      ||
-                      !price.coupons && priceTag > 0 &&
+                     )) // coupons.map
+                    }
+                    {
+                      priceTag > 0 &&
                       <div style={{marginLeft: 25, marginTop: 5, marginBottom: 5, fontSize: 14, color: Colors.mainOrange, cursor: 'pointer'}}>
-                        <span onClick={() => {
-                          prices[i].coupons = [{code: '', percentOff: 0, expiration: 4670438400}]; //default is coupon never expires
+                        <span onClick={() => {  // not pro or plus
+                          if (!isProOrPlus) {
+                            return this.setState({showPricingModal: ['Upgrade to add promo codes',
+                              'Creating promo plans is available on PLUS and PRO plans. Please upgrade to access this feature.'
+                            ]});
+                          }
+                          if (!prices[i].coupons) {
+                            prices[i].coupons = [];
+                          }
+                          const expiration = moment().add(3, 'months').unix();
+                          prices[i].coupons.push({code: '', percentOff: 0, expiration});
                           that.setState({prices});
-                        }}>Add a coupon</span>
+                        }}>Add a coupon {!isProOrPlus && <span
+                            style={{color:Colors.link, fontWeight:700, fontSize:12}}> PRO</span>}
+                        </span>
                       </div>
-                      || null
                     }
                   </div>
                   )
@@ -820,7 +840,7 @@ export default class AddSoundcast extends Component {
               }
               <div
                 onClick={this.addPriceOption.bind(this)}
-                style={styles.addFeature}
+                style={{...styles.addFeature, marginTop: 25, marginBottom: 30, display: 'inline-block'}}
               >
                 Add another price option
               </div>
@@ -828,10 +848,8 @@ export default class AddSoundcast extends Component {
           }
         </div>
         }
-
       </div>
     )
-
   }
 
   handlePriceInputs(i, e) {
@@ -919,11 +937,18 @@ export default class AddSoundcast extends Component {
     return (
       <MuiThemeProvider >
         <div className='padding-30px-tb'>
-          <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
-            <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
-              <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+
+          {/*Upgrade account block*/}
+          <div onClick={() => that.setState({showPricingModal: false})}
+              style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0,
+                      left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
+            <div style={{transform: 'translate(-50%, -50%)', backgroundColor: 'white', top: '50%',
+                         left: '50%', position: 'fixed', width: '66%', zIndex: 103}}>
+              <div className='title-medium' style={{margin: 25, fontWeight: 800}}>
+                {showPricingModal && showPricingModal[0]}
+              </div>
               <div className='title-small' style={{margin: 25}}>
-                Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                {showPricingModal && showPricingModal[1]}
               </div>
               <div className="center-col">
                 <OrangeSubmitButton
@@ -934,6 +959,7 @@ export default class AddSoundcast extends Component {
               </div>
             </div>
           </div>
+
           <ImageCropModal
             open={modalOpen}
             handleClose={this.handleModalClose.bind(this)}
@@ -1109,6 +1135,7 @@ const styles = {
     fontSize: 18,
     borderRadius: 4,
     marginBottom: 0,
+    marginTop: 5,
   },
   inputDescription: {
     height: 100,

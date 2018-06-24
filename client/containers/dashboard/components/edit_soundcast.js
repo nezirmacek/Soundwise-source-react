@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -14,6 +13,7 @@ import FlatButton from 'material-ui/FlatButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Toggle from 'react-toggle'
 import "react-toggle/style.css"
+import Datetime from 'react-datetime';
 import Dots from 'react-activity/lib/Dots';
 
 import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
@@ -101,10 +101,8 @@ export default class EditSoundcast extends Component {
 
     componentWillReceiveProps(nextProps) {
       const { userInfo, history } = nextProps;
-      if (!this.state.proUser) {
-        if (userInfo.publisher) {
-          this.checkUserStatus(userInfo);
-        }
+      if (!this.state.proUser && userInfo.publisher) {
+        this.checkUserStatus(userInfo);
       }
       const _state = history.location.state;
       const publisherName = userInfo.publisher && userInfo.publisher.name;
@@ -129,9 +127,11 @@ export default class EditSoundcast extends Component {
 
     setSoundcastState(soundcast) {
       const { userInfo } = this.props;
-      const {title, subscribed, imageURL, short_description,
-             long_description, landingPage,
-             features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes, itunesTitle, itunesHost, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion, autoSubmitPodcast} = soundcast;
+      const {title, subscribed, imageURL, short_description, long_description, landingPage,
+        features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale,
+        prices, confirmationEmail, showSubscriberCount, showTimeStamps, isPodcast, episodes,
+        itunesTitle, itunesHost, itunesExplicit, itunesCategory, itunesImage, podcastFeedVersion,
+        autoSubmitPodcast} = soundcast;
       // const {title0, subscribed0, imageURL0, short_description0,
       //        long_description0, landingPage0,
       //        features0, hostName0, hostBio0, hostImageURL0,
@@ -184,17 +184,12 @@ export default class EditSoundcast extends Component {
     }
 
     checkUserStatus(userInfo) {
-      let plan, proUser;
-      if(userInfo.publisher.plan) {
-          plan = userInfo.publisher.plan;
-          proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
+      if(userInfo.publisher.plan &&
+         userInfo.publisher.current_period_end > moment().format('X') ||
+         userInfo.publisher.beta
+      ) {
+        this.setState({ proUser: true });
       }
-      if(userInfo.publisher.beta) {
-          proUser = true;
-      }
-      this.setState({
-        proUser,
-      });
     }
 
     _uploadToAws (file, imageType) {
@@ -327,9 +322,10 @@ export default class EditSoundcast extends Component {
     }
 
     submit (publish, noAlert) {
-        const { title, imageURL, subscribed, short_description,
-                long_description, landingPage,
-                features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2, forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesTitle, itunesHost, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
+        const {title, imageURL, subscribed, short_description, long_description, landingPage,
+          features, hostName, hostBio, hostImageURL, hostName2, hostBio2, hostImageURL2,
+          forSale, prices, confirmationEmail, showSubscriberCount, showTimeStamps, itunesTitle,
+          itunesHost, itunesImage, itunesExplicit, itunesCategory, autoSubmitPodcast} = this.state;
         const { userInfo, history } = this.props;
         const that = this;
 
@@ -380,6 +376,15 @@ export default class EditSoundcast extends Component {
                         title
                       })
                       .then(() => {
+                        if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                          Axios.post('/api/createUpdatePlans', {
+                            soundcastID: history.location.state.id,
+                            publisherID: userInfo.publisherID,
+                            stripe_account: userInfo.publisher.stripe_user_id,
+                            title,
+                            prices,
+                          }).catch(err => alert(`Error creating plans ${err}`));
+                        }
                         if(!noAlert) {
                           alert('Soundcast changes are saved.');
                         }
@@ -486,13 +491,13 @@ export default class EditSoundcast extends Component {
     }
 
     showIntroOutro() {
-      const {showIntroOutro, proUser, showPricingModal} = this.state;
+      const {showIntroOutro, proUser} = this.state;
       if (proUser) {
         this.setState({showIntroOutro: !showIntroOutro});
       } else {
-        this.setState({
-          showPricingModal: true,
-        })
+        this.setState({showPricingModal: ['Upgrade to add intro and outro',
+          'Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.'
+        ]})
       }
     }
 
@@ -517,6 +522,8 @@ export default class EditSoundcast extends Component {
       const that = this;
       const {userInfo, history} = this.props;
       const soundcast = history.location.state && history.location.state.soundcast;
+      const id = window.history.state.state.id;
+      const isProOrPlus = ['pro', 'plus'].includes(userInfo.publisher && userInfo.publisher.plan);
       const actions = [
         <FlatButton
           label="OK"
@@ -806,72 +813,103 @@ export default class EditSoundcast extends Component {
                           || null
                         }
                         {
-                          price.coupons &&
-                          <div className='' style={{marginLeft: 23, width: '100%',marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
-                            <div className=' ' style={{marginRight: 10,}}>
+                          price.coupons && price.coupons.map((coupon, j) => (
+                          <div key={`price${i}coupon${j}`} style={{marginLeft: 23, width: '100%',
+                            marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
+                            <div style={{marginRight: 10}}>
                               <span>Coupon Code</span>
                               <div>
                                 <input
                                   type="text"
                                   style={{...styles.inputTitle}}
                                   name="couponCode"
-                                  onChange={(e) => {
-                                    prices[i].coupons[0].code = e.target.value;
+                                  onChange={e => {
+                                    prices[i].coupons[j].code = e.target.value;
                                     that.setState({prices});
                                   }}
-                                  value={price.coupons[0].code}
+                                  value={price.coupons[j].code}
                                 />
                               </div>
                             </div>
-                            <div className=' ' style={{marginRight: 10,}}>
+                            <div style={{marginRight: 13, width: 110, minWidth: 110}}>
                               <span>Discount Percent</span>
                               <div>
                                 <input
                                   type="text"
-                                  style={{...styles.inputTitle, width: '70%'}}
+                                  style={{...styles.inputTitle, width: '50%'}}
                                   name="discountPercent"
-                                  onChange={(e) => {
-                                    prices[i].coupons[0].percentOff = e.target.value;
+                                  onChange={e => {
+                                    prices[i].coupons[j].percentOff = e.target.value;
                                     that.setState({prices});
                                   }}
-                                  value={price.coupons[0].percentOff}
+                                  value={price.coupons[j].percentOff}
                                 />
                                 <span style={{fontSize: 18,}}>{` % off`}</span>
                               </div>
                             </div>
-                            <div className=' ' style={{marginRight: 10,}}>
+                            <div style={{marginRight: 13, height: 67, width: 125, minWidth: 125}}>
                               <span>Price After Discount</span>
-                              <div style={{display: 'flex', alignItems: 'center', marginTop: 5}}>
-                                <span style={{fontSize: 18,}}>{`$${(Math.round(price.price * (100 - price.coupons[0].percentOff)) / 100).toFixed(2)}`}</span>
+                              <div style={{display: 'flex', alignItems: 'center', marginTop: 14}}>
+                                <span style={{fontSize: 20}}>{`$${(Math.round(price.price * (100 - price.coupons[j].percentOff) / 100)).toFixed(2)}`}</span>
                               </div>
+                            </div>
+                            <div style={{marginRight: 10, height: 67, width: 165, minWidth: 165}}>
+                              <span>Expires on</span>
+                              <div style={{minWidth: 145, marginTop: 8}}>
+                                <Datetime value={moment.unix(coupon.expiration)} onChange={date => {
+                                  if (date.unix) {
+                                    prices[i].coupons[j].expiration = date.unix();
+                                    that.setState({prices});
+                                  }
+                                }} />
+                              </div>
+                            </div>
+                            <div style={{marginRight: 10}}>
+                              <a style={{color: Colors.link, fontWeight:700, fontSize: 14, marginTop: 23,
+                                  display: 'inline-block'}} target='_blank' href={`https://mysoundwise.com/soundcasts/${
+                                        id || soundcast.id}/?c=${prices[i].coupons[j].code}`}>
+                                Promo Landing Page
+                              </a>
                             </div>
                             <div style={{marginTop: 30}}>
                               <span
                                 style={{marginLeft: 5, cursor: 'pointer', fontSize: 20, }}
                                 onClick={() => {
-                                  prices[i].coupons = null;
+                                  prices[i].coupons.splice(j, 1);
                                   that.setState({prices});
                                 }}>
                                   <i className="fa fa-times " aria-hidden="true"></i>
                               </span>
                             </div>
                           </div>
-                          ||
-                          !price.coupons && priceTag > 0 &&
+                         )) // coupons.map
+                        }
+                        {
+                          priceTag > 0 &&
                           <div style={{marginLeft: 25, marginTop: 5, marginBottom: 5, fontSize: 14, color: Colors.mainOrange, cursor: 'pointer'}}>
                             <span onClick={() => {
-                              prices[i].coupons = [{code: '', percentOff: 0, expiration: 4670438400}]; //default is coupon never expires
+                              if (!isProOrPlus) {  // not pro or plus
+                                return this.setState({showPricingModal: ['Upgrade to add promo codes',
+                                  'Creating promo plans is available on PLUS and PRO plans. Please upgrade to access this feature.'
+                                ]});
+                              }
+                              if (!prices[i].coupons) {
+                                prices[i].coupons = [];
+                              }
+                              const expiration = moment().add(3, 'months').unix();
+                              prices[i].coupons.push({code: '', percentOff: 0, expiration});
                               that.setState({prices});
-                            }}>Add a coupon</span>
+                            }}>Add a coupon {!isProOrPlus && <span
+                                style={{color:Colors.link, fontWeight:700, fontSize:12}}> PRO</span>}
+                            </span>
                           </div>
-                          || null
                         }
                       </div>
                     )
                   }) /* prices.map */ }
-                  <div className=''
+                  <div
                       onClick={this.addPriceOption.bind(this)}
-                      style={{...styles.addFeature, marginTop: 25, marginBottom: 30, width: '100%'}}
+                      style={{...styles.addFeature, marginTop: 25, marginBottom: 30, display: 'inline-block'}}
                   >
                       Add another price option
                   </div>
@@ -1344,11 +1382,16 @@ export default class EditSoundcast extends Component {
             <div className='padding-30px-tb' style={{}}>
 
               {/*Upgrade account block*/}
-              <div onClick={() => {that.setState({showPricingModal: false})}} style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0, left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100,}}>
-                <div style={{transform: 'translate(-50%)', backgroundColor: 'white', top: 1450, left: '50%', position: 'absolute', width: '70%', zIndex: 103}}>
-                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>Upgrade to add intro and outro</div>
+              <div onClick={() => that.setState({showPricingModal: false})}
+                  style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0,
+                          left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
+                <div style={{transform: 'translate(-50%, -50%)', backgroundColor: 'white', top: '50%',
+                             left: '50%', position: 'fixed', width: '66%', zIndex: 103}}>
+                  <div className='title-medium' style={{margin: 25, fontWeight: 800}}>
+                    {showPricingModal && showPricingModal[0]}
+                  </div>
                   <div className='title-small' style={{margin: 25}}>
-                    Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.
+                    {showPricingModal && showPricingModal[1]}
                   </div>
                   <div className="center-col">
                     <OrangeSubmitButton

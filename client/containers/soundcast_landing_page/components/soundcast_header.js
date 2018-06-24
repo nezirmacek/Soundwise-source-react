@@ -83,25 +83,9 @@ class _SoundcastHeader extends Component {
   }
 
   render() {
-
-    const soundcastName = this.props.soundcast.title.split(' ').join('%20');
     const {soundcast} = this.props;
-    let {prices, forSale} = soundcast;
-    let displayedPrice = '';
-    let pre = '', post = '';
-    if(forSale) {
-        pre = prices.length > 1 ? `From ` : '';
-        displayedPrice = prices[0].price ? `$${Number(prices[0].price).toFixed(2)}` : '';
-        if(prices[0].billingCycle == 'rental') {
-            post = `/ ${prices[0].rentalPeriod}-Day Access`;
-        } else if(prices[0].billingCycle == 'monthly') {
-            post = '/ month';
-        } else if(prices[0].billingCycle == 'quarterly') {
-            post = '/ quarter';
-        } else if(prices[0].billingCycle == 'annual') {
-            post = '/ year';
-        }
-    }
+    const soundcastName = soundcast.title.split(' ').join('%20');
+    const {originalPrice, displayedPrice, pre, post} = this.props.getPrice(soundcast, 'per');
 
     return (
       <div>
@@ -140,7 +124,15 @@ class _SoundcastHeader extends Component {
                             <div className="row" style={{paddingBottom: '30px'}}>
                                 <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center xs-margin-bottom-10px">
                                 { soundcast.prices && soundcast.prices[0] &&
-                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}><strong>{`${pre}${ forSale ? displayedPrice : 'Free'} ${post}`}</strong></span>
+                                  <span className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text" style={{fontWeight: 550}}>
+                                    <strong>
+                                      { originalPrice && <span style={{color:'red', paddingRight:10}}>
+                                          <s>{`\u00A0$${Number(originalPrice).toFixed(2)}\u00A0`}</s>
+                                        </span>
+                                      }
+                                      {`${pre}${displayedPrice}`}<i>{` ${post}`}</i>
+                                    </strong>
+                                  </span>
                                 }
                                 </div>
                                 <div className="col-md-5 col-sm-6 col-xs-12 text-center ">

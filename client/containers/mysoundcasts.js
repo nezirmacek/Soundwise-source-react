@@ -205,6 +205,7 @@ class _MySoundcasts extends Component {
                     customer: that.props.userInfo.stripe_id,
                     billingCycle: soundcast.billingCycle,
                     planID: soundcast.planID,
+                    publisherID,
                     description: `${soundcast.title}: ${soundcast.planID}`,
                     statement_descriptor: `${soundcast.title}: ${soundcast.planID}`,
                 })

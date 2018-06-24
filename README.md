@@ -89,6 +89,12 @@ npm run-script start:server
 npm run-script start
 ```
 
+### Start the webpack bundle compiler in dev mode (stripe testing)
+
+```
+NODE_ENV=dev npm run-script start
+```
+
 ### Compile JSX
 
 ```

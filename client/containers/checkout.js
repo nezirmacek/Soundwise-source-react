@@ -1,3 +1,7 @@
+//
+// Old checkout page
+// TODO (compare with soundwise_checkout, soundcast_checkout) / remove
+//
 import React, {Component} from 'react';
 import Axios from 'axios';
 import { bindActionCreators } from 'redux';
@@ -38,8 +42,12 @@ class _Checkout extends Component {
     }
 
     componentDidMount() {
-        // stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
-        stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        if (process.env.NODE_ENV === 'dev') {
+          console.log('Stripe: setting test key');
+          stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+        } else {
+          stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        }
         this.setState({
             totalPay: this.props.total
         });
@@ -198,7 +206,7 @@ class _Checkout extends Component {
                                 <div style={styles.totalRow}>
                                     <div style={styles.totalWrapper}>
                                         <div style={styles.totalText}>Total:</div>
-                                        <div style={styles.totalPriceText}>{`$${subtotal}`}</div>
+                                        <div style={styles.subTotal}>{`$${subtotal}`}</div>
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
@@ -311,7 +319,7 @@ const styles = {
         marginRight: 50,
         float: 'left',
     },
-    totalPriceText: {
+    subTotal: {
         width: 53,
         float: 'right',
         textAlign: 'right',

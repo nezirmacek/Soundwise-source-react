@@ -51,7 +51,13 @@ class _UserProfile extends Component {
 
   componentDidMount() {
     const that = this;
-    Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+    if (process.env.NODE_ENV === 'dev') {
+      console.log('Stripe: setting test key');
+      Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+    } else {
+      Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+    }
+
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             if(that.props.userInfo.firstName) {

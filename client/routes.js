@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
-// window.firebase = firebase;
+if (process.env.NODE_ENV === 'dev') {
+  console.log('Running DEV mode');
+  window.firebase = firebase;
+}
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {Helmet} from 'react-helmet';

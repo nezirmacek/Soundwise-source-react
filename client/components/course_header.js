@@ -151,11 +151,11 @@ class _CourseHeader extends Component {
     const amount = this.props.course.price *100 //in cents
     const email = this.props.userInfo.email
     const that = this
-    const customer = this.props.userInfo.stripe_id
+    const {stripe_id} = this.props.userInfo
 
     Axios.post('/api/charge', {
       amount,
-      customer: that.props.userInfo.stripe_id,
+      customer: stripe_id,
       currency: 'usd',
       receipt_email: email,
       description: that.props.course.name,
@@ -202,7 +202,7 @@ class _CourseHeader extends Component {
     const updates = {}
     updates['/users/' + userId + '/courses/' + this.props.course.id] = {category, id, img_url_mobile, keywords, modules, name, price, run_time, teacher, teacher_bio, teacher_profession, description, teacher_img, teacher_thumbnail, sectionProgress}
     // store stripe customer ID info: (only works with real credit cards)
-    // updates['/users/' + userId + '/stripeId'] = stripeId
+    // updates['/users/' + userId + '/stripe_id'] = stripe_id
     updates['/courses/' + this.props.course.id + '/users/' + userId] = userId
     firebase.database().ref().update(updates)
 

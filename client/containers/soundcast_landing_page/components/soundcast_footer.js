@@ -14,23 +14,8 @@ export default class SoundcastFooter extends Component {
   }
 
   render() {
-    const {soundcast} = this.props;
-    let displayedPrice = 'Free';
-    let {prices} = soundcast;
-    let pre = '', post = '';
-    if(soundcast.forSale) {
-        pre = prices.length > 1 ? 'From' : '';
-        displayedPrice = `$${Number(prices[0].price).toFixed(2)}`;
-        if(prices[0].billingCycle == 'rental') {
-            post = `/ ${prices[0].rentalPeriod}-Day Access`;
-        } else if(prices[0].billingCycle == 'monthly') {
-            post = '/ month';
-        } else if(prices[0].billingCycle == 'quarterly') {
-            post = '/ quarter';
-        } else if(prices[0].billingCycle == 'annual') {
-            post = '/ year';
-        }
-    }
+    const {displayedPrice, post} = this.props.getPrice();
+
     return (
             <section className=" builder-bg border-none" id="callto-action2" style={{backgroundColor: '#F76B1C', paddingBottom: '90px', paddingTop: '90px'}}>
                 <div className="container">
@@ -45,4 +30,3 @@ export default class SoundcastFooter extends Component {
     )
   }
 }
-

@@ -7,7 +7,7 @@ import firebase from 'firebase';
 import moment from 'moment';
 import Dots from 'react-activity/lib/Dots';
 
-import  PageHeader  from './components/page_header';
+import PageHeader from './components/page_header';
 import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
@@ -30,9 +30,11 @@ class _SoundcastCheckout extends Component {
       lastName: '',
       email: '',
       password: '',
+      coupon: '',
       runSignIn: false,
       showFacebook: true,
       showPassword: true,
+      hideCardInputs: false,
     }
 
     this.publisherID = moment().format('x') + 'p';
@@ -40,6 +42,7 @@ class _SoundcastCheckout extends Component {
     this.handleStripeId = this.handleStripeId.bind(this);
     this.signupCallback = this.signupCallback.bind(this);
     this.signinCallback = this.signinCallback.bind(this);
+    this.setAddSoundcastToUser = this.setAddSoundcastToUser.bind(this);
   }
 
   async componentDidMount() {
@@ -78,41 +81,50 @@ class _SoundcastCheckout extends Component {
     });
   }
 
-  setTotalPrice(totalPrice) {
-    this.setState({ totalPrice });
+  setTotalPrice(totalPrice, coupon) {
+    this.setState({ totalPrice, coupon });
+    if (Number(totalPrice) === 0) {
+      const {userInfo} = this.props;
+      if (userInfo && userInfo.email) { // logged in
+        this.addSoundcastToUser(null, userInfo);
+      } else {
+        this.setState({ hideCardInputs: true }); // skip card input
+      }
+    }
   }
 
-  handleStripeId(charge, userInfo, state, addSoundcastToUser) { // success payment callback
+  setAddSoundcastToUser(addSoundcastToUser) {
+    this.addSoundcastToUser = addSoundcastToUser;
+  }
+
+  handleStripeId(charge, state) { // success payment callback
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
-    if (!(userInfo && userInfo.email)) { // not logged in
-      const {email, firstName, lastName} = state;
-      firebase.auth().fetchSignInMethodsForEmail(email)
-      .then(providerInfo => {
-        const newState = {
-          lastStep: true,
-          charge,
-          email,
-          firstName,
-          lastName,
-          addSoundcastToUser,
-        };
-        // TODO add firstName, lastName, email validation
-        // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
-        // if the user doesn't have account, the providerInfo returns empty array, []
-        if (providerInfo && providerInfo.length) { // registered
-          // If yes, app should sign in the user with the password entered or through FB;
-          newState.runSignIn = true;
-          newState.showFacebook = providerInfo.indexOf('facebook.com') !== -1;
-          newState.showPassword = providerInfo.indexOf('password') !== -1;
-        }
-        // If no, app should create a new account
-        this.setState(newState);
-      })
-      .catch(err => {
-        console.log('Payments fetchSignInMethodsForEmail', err);
-      });
-    }
+    const {email, firstName, lastName} = state;
+    firebase.auth().fetchSignInMethodsForEmail(email)
+    .then(providerInfo => {
+      const newState = {
+        lastStep: true,
+        charge,
+        email,
+        firstName,
+        lastName,
+      };
+      // TODO add firstName, lastName, email validation
+      // if user has an account, the providerInfo is either ['facebook.com'] or ['password']
+      // if the user doesn't have account, the providerInfo returns empty array, []
+      if (providerInfo && providerInfo.length) { // registered
+        // If yes, app should sign in the user with the password entered or through FB;
+        newState.runSignIn = true;
+        newState.showFacebook = providerInfo.indexOf('facebook.com') !== -1;
+        newState.showPassword = providerInfo.indexOf('password') !== -1;
+      }
+      // If no, app should create a new account
+      this.setState(newState);
+    })
+    .catch(err => {
+      console.log('Payments fetchSignInMethodsForEmail', err);
+    });
   }
 
   handleChange(field, e) {
@@ -120,8 +132,8 @@ class _SoundcastCheckout extends Component {
   }
 
   handleFBAuth() {
-    const {runSignIn, firstName, lastName, charge} = this.state;
-    const {signinUser, signupUser, history, match} = this.props;
+    const {runSignIn} = this.state;
+    const {signinUser, history} = this.props;
     if(runSignIn) {
       signInFacebook(this.signinCallback, error => this.setState({ message: error.toString() }));
     } else { // sign up
@@ -186,13 +198,13 @@ class _SoundcastCheckout extends Component {
   signupCallback(user) {
     console.log('Success signup', user);
     this.props.signupUser(user);
-    this.state.addSoundcastToUser(this.state.charge, user);
+    this.addSoundcastToUser(this.state.charge, user);
   }
 
   signinCallback(user) {
     console.log('Success signin', user);
     this.props.signinUser(user);
-    this.state.addSoundcastToUser(this.state.charge, user, this.props.signinUser);
+    this.addSoundcastToUser(this.state.charge, user, this.props.signinUser);
   }
 
   async submitPassword() {
@@ -213,7 +225,8 @@ class _SoundcastCheckout extends Component {
   }
 
   render() {
-    const {soundcast, soundcastID, checked, sumTotal, totalPrice, message} = this.state;
+    const {soundcast, soundcastID, checked, sumTotal,
+           totalPrice, message, coupon, hideCardInputs} = this.state;
     const {userInfo, history} = this.props;
 
     if(!soundcast) {
@@ -243,7 +256,10 @@ class _SoundcastCheckout extends Component {
                   <div className="container">
                     <div className="row equalize sm-equalize-auto equalize-display-inherit">
                       <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{textAlign: 'center'}}>
-                        <SoundcastInCart soundcast={soundcast} />
+                        <SoundcastInCart
+                          lastStep={true}
+                          soundcast={soundcast}
+                        />
                         <div style={{fontSize: 19, fontWeight: 700, padding: '55px 0 25px'}}>
                           {this.state.runSignIn ? 'Final step: sign in to your Soundwise account'
                                                 : 'One last step...'}
@@ -309,6 +325,7 @@ class _SoundcastCheckout extends Component {
                     <div className="row equalize sm-equalize-auto equalize-display-inherit">
                       <div className="col-md-6 col-sm-12 center-col sm-no-margin" style={{height: ''}}>
                         <SoundcastInCart
+                          history={history}
                           soundcast={soundcast}
                           checked={checked}
                           sumTotal={sumTotal}
@@ -325,13 +342,16 @@ class _SoundcastCheckout extends Component {
             soundcast={soundcast}
             soundcastID={soundcastID}
             checked={checked}
-            total={totalPrice}
+            totalPrice={totalPrice}
             userInfo={userInfo}
             sumTotal={sumTotal}
             history={history}
+            coupon={coupon}
             isEmailSent={this.props.isEmailSent}
             sendEmail={this.props.sendEmail}
             handleStripeId={this.handleStripeId}
+            setAddSoundcastToUser={this.setAddSoundcastToUser}
+            hideCardInputs={hideCardInputs}
           />
         </div>
       )

@@ -6,7 +6,7 @@ import draftToHtml from 'draftjs-to-html';
 import * as firebase from 'firebase';
 import moment from 'moment';
 
-import  PageHeader  from './page_header';
+import PageHeader from './page_header';
 import Colors from '../../../styles/colors';
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import {addToEmailList} from '../../../helpers/addToEmailList';
@@ -42,9 +42,14 @@ export default class Payment extends Component {
     }
 
     componentDidMount() {
-        Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
-        // Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+        if (process.env.NODE_ENV === 'dev') {
+          console.log('Stripe: setting test key');
+          Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+        } else {
+          Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+        }
         this.updateProps(this.props);
+        this.props.setAddSoundcastToUser(this.addSoundcastToUser);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -53,23 +58,24 @@ export default class Payment extends Component {
 
     updateProps(props) {
         this.setState({
-            totalPay: props.total
+            totalPay: props.totalPrice
         });
-        if(props.userInfo && props.userInfo.email) {
-            if(props.total === 0 || props.total == 'free') {
-                // if it's free course, then no need for credit card info.
-                // add soundcast to user and then redirect
-                this.addSoundcastToUser(null, props.userInfo);
-            } else if(props.userInfo.stripe_id && !this.state.submitDisabled) { // have stripe_id
-                // this.setState({ startPaymentSubmission: true, submitDisabled: true, paymentError: '' });
-                // this.stripeTokenHandler(null, {}); // charge user
-            }
+        if(props.soundcast && props.userInfo && props.userInfo.email) {
+          const isFree = props.totalPrice === 0 || props.totalPrice == 'free'
+          if (!isFree && props.soundcast.prices && props.soundcast.prices.some(i => i.coupons)) {
+            return // ignore if soundcast not free and have coupons
+          }
+          if(isFree) {
+            // if it's free course, then no need for credit card info.
+            // add soundcast to user and then redirect
+            this.addSoundcastToUser(null, props.userInfo);
+          }
         }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         if(  this.props.isEmailSent != nextProps.isEmailSent
-          || this.props.total != nextProps.total
+          || this.props.totalPrice != nextProps.totalPrice
           || this.props.userInfo.email !== nextProps.userInfo.email
           || nextState.paymentError
           || nextState.startPaymentSubmission
@@ -154,7 +160,7 @@ export default class Payment extends Component {
                 })
             }
 
-            firebase.auth().onAuthStateChanged(function(user) {
+            firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     const userId = user.uid;
                     const connectedCustomer = charge && charge.connectedCustomer ? charge.connectedCustomer : null;
@@ -219,6 +225,9 @@ export default class Payment extends Component {
 
     async onSubmit(event) {
         event.preventDefault();
+        if (this.props.hideCardInputs) { // skip card input
+          return this.props.handleStripeId(null, this.state);
+        }
         if (this.state.startPaymentSubmission) { return }
         const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
         if ((Date.now() - lastSubmitDate) < 10000) { // 10 seconds since last success call not passed
@@ -236,11 +245,11 @@ export default class Payment extends Component {
     }
 
     stripeTokenHandler(status, response) {
-        const amount = Number(this.state.totalPay || this.props.total).toFixed(2) * 100; // in cents
+        const amount = Number(this.state.totalPay || this.props.totalPrice).toFixed(2) * 100; // in cents
         const userInfo = this.props.userInfo;
         const {email, stripe_id} = userInfo;
         const receipt_email = (email && email[0]) || this.state.email;
-        const {soundcast, checked, soundcastID, handleStripeId} = this.props;
+        const {soundcast, checked, soundcastID, handleStripeId, coupon} = this.props;
         const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
         const that = this;
 
@@ -256,22 +265,24 @@ export default class Payment extends Component {
             .then(snapshot => {
                if(snapshot.val() && snapshot.val().stripe_user_id) {
                     const stripe_user_id = snapshot.val().stripe_user_id; // publisher's id for stripe connected account
+                    const planID = (`${soundcast.publisherID}-${soundcastID}`
+                                 + `-${soundcast.title}-${billingCycle}-${price}`);
                     if(billingCycle == 'one time' || billingCycle == 'rental') { //if purchase or rental, post to api/charge
                         Axios.post('/api/transactions/handleOnetimeCharge', {
                             amount,
                             source: response.id,
                             currency: 'usd',
                             receipt_email,
-                            customer: stripe_id,
+                            // customer: stripe_id,
                             billingCycle,
                             publisherID: soundcast.publisherID,
                             stripe_user_id,
                             soundcastID,
-                            planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
+                            planID,
                             description: `${soundcast.title}: ${paymentPlan || billingCycle}`,
                             statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
                         })
-                        .then(function (response) {
+                        .then(response => {
                             const paid = response.data.res.paid; //boolean
                             if(paid) {  // if payment made, push course to user data, and redirect to a thank you page
                                 localStorage.setItem('paymentPaidBilCycleOneTimeRental', Date.now());
@@ -282,13 +293,11 @@ export default class Payment extends Component {
                                 if (userInfo && userInfo.email) { // logged in
                                   that.addSoundcastToUser(response.data.res); //add soundcast to user database and redirect
                                 } else {
-                                  handleStripeId && handleStripeId(
-                                    response.data.res, userInfo, that.state, that.addSoundcastToUser
-                                  );
+                                  handleStripeId(response.data.res, that.state);
                                 }
                             }
                         })
-                        .catch(function (error) {
+                        .catch(error => {
                             console.log('error from stripe: ', error)
                             that.setState({
                                 paymentError: 'Your payment is declined :( Please check your credit card information.',
@@ -297,23 +306,17 @@ export default class Payment extends Component {
                         })
                     } else {  //if subscription, post to api/recurring_charge
                         Axios.post('/api/recurring_charge', {
-                            amount,
                             source: response.id,
-                            currency: 'usd',
-                            receipt_email: email[0],
-                            customer: stripe_id,
+                            receipt_email,
+                            platformCustomer: stripe_id,
+                            stripe_account: stripe_user_id,
+                            planID,
                             publisherID: soundcast.publisherID,
-                            stripe_user_id,
-                            soundcastID,
-                            billingCycle,
-                            planID: `${soundcast.publisherID}-${soundcastID}-${soundcast.title}-${billingCycle}-${price}`,
-                            description: `${soundcast.title}: ${paymentPlan}`,
-                            statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
+                            coupon,
                         })
-                        .then(function (response) {
-                            const subscription = response.data; //boolean
-                            const customer = response.data.customer;
-                            // console.log('subscription: ', subscription);
+                        .then(response => {
+                            console.log('recurring_charge response: ', response);
+                            const subscription = response.data;
                             if(subscription.plan) {  // if payment made, push course to user data, and redirect to a thank you page
                                 localStorage.setItem('paymentPaid', Date.now());
                                 that.setState({
@@ -323,13 +326,11 @@ export default class Payment extends Component {
                                 if (userInfo && userInfo.email) { // logged in
                                   that.addSoundcastToUser(subscription); //add soundcast to user database and redirect
                                 } else {
-                                  handleStripeId && handleStripeId(
-                                    subscription, userInfo, that.state, that.addSoundcastToUser
-                                  );
+                                  handleStripeId(subscription, that.state);
                                 }
                             }
                         })
-                        .catch(function (error) {
+                        .catch(error => {
                             console.log('error from stripe: ', error)
                             that.setState({
                                 paymentError: 'Your payment is declined :( Please check your credit card information.',
@@ -339,7 +340,7 @@ export default class Payment extends Component {
                     }
                } else {
                     this.setState({
-                        paymentError: "Unable to process this payment. Sorry!",
+                        paymentError: 'Unable to process this payment. Sorry!',
                         submitDisabled: false,
                         startPaymentSubmission: false
                     })
@@ -359,7 +360,7 @@ export default class Payment extends Component {
     }
 
     render() {
-        const {total} = this.props;
+        const {totalPrice, hideCardInputs} = this.props;
         const showInputs = !(this.props.userInfo && this.props.userInfo.firstName);
 
         const monthOptions = [];
@@ -378,7 +379,9 @@ export default class Payment extends Component {
                                 <div style={styles.totalRow}>
                                     <div style={styles.totalWrapper}>
                                         <div style={styles.totalText}>Total:</div>
-                                        <div style={styles.totalPriceText}>{`$${Number(total).toFixed(2)}`}</div>
+                                        <div style={styles.totalPriceText}>
+                                          {`$${Number(totalPrice).toFixed(2)}`}
+                                        </div>
                                     </div>
                                 </div>
                                 <form onSubmit={this.onSubmit}>
@@ -421,6 +424,7 @@ export default class Payment extends Component {
                                             style={{ ...styles.input, margin: '20px 0 0 0' }}
                                         />
                                       }
+                                      {!hideCardInputs &&
                                         <input
                                             onChange={this.handleChange}
                                             required
@@ -432,10 +436,14 @@ export default class Payment extends Component {
                                             autoComplete='new-password'
                                             style={styles.input}
                                         />
+                                      }
+                                      {!hideCardInputs &&
                                         <img src="../../../images/card_types.png" style={styles.cardsImage} />
+                                      }
                                     </div>
 
                                     {/*Expiration*/}
+                                    {!hideCardInputs &&
                                     <div className=''>
                                         {/*month*/}
                                         <div style={styles.selectBlock} className="border-radius-4" >
@@ -479,9 +487,20 @@ export default class Payment extends Component {
                                             style={Object.assign({}, styles.input, styles.cvc)}
                                         />
                                     </div>
+                                    }
 
                                     {/*button*/}
-                                    <div style={styles.buttonWrapper}>
+                                    {hideCardInputs &&
+                                      <div style={styles.buttonWrapper}>
+                                         <button type='submit'
+                                             className='contact-submit btn propClone btn-3d text-white width-100 builder-bg tz-text'
+                                             style={{...styles.button, marginTop: 20}}
+                                         >
+                                             SUBMIT
+                                         </button>
+                                      </div>
+                                     ||
+                                      <div style={styles.buttonWrapper}>
                                         {
                                             this.state.paymentError &&
                                             <span style={{color: 'red'}}>{ this.state.paymentError }</span>
@@ -501,7 +520,8 @@ export default class Payment extends Component {
                                             <img src="../../../images/powered_by_stripe.png" style={styles.stripeImage}/>
                                         </div>
                                         {this.renderProgressBar()}
-                                    </div>
+                                      </div>
+                                    }
                                 </form>
                             </div>
                         </div>

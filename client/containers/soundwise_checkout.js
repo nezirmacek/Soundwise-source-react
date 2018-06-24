@@ -40,8 +40,12 @@ class _SoundwiseCheckout extends Component {
   }
 
   componentDidMount() {
-    Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
-    // Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+    if (process.env.NODE_ENV === 'dev') {
+      console.log('Stripe: setting test key');
+      Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
+    } else {
+      Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+    }
     const {plan, frequency, price} = this.props.history.location.state;
     this.setState({
       total: frequency == 'annual' ? price * 12 : price,
@@ -257,9 +261,10 @@ class _SoundwiseCheckout extends Component {
                                         !this.state.enterPromoCode &&
                                         <div
                                           style={{cursor: 'pointer'}}
-                                          onClick={() => that.setState({
-                                            enterPromoCode: true
-                                          })}>Have a promo code?</div>
+                                          onClick={() => {
+                                            that.setState({ enterPromoCode: true });
+                                            setTimeout(() => that.refs.promoCodeInput.focus(), 250);
+                                          }}>Have a promo code?</div>
                                         ||
                                         <div>
                                           <input
@@ -270,6 +275,7 @@ class _SoundwiseCheckout extends Component {
                                               size='20'
                                               type='text'
                                               name='promo'
+                                              ref='promoCodeInput'
                                               placeholder="Enter promo code"
                                               value={this.state.promoCode}
                                               style={{width: '50%', fontSize: 14, height: 35}}

@@ -22,59 +22,56 @@ class _PricingModal extends Component {
     if(this.props.soundcast && this.props.soundcast.prices[0].price) {
       const {prices} = this.props.soundcast;
       const {checked} = this.state;
-      this.setState({
-        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${Number(prices[checked].price).toFixed(2)}`
-      })
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!this.props.soundcast.prices[0].price && nextProps.soundcast.prices[0].price) {
-      const {prices} = nextProps.soundcast;
-      const {checked} = this.state;
-      // console.log('prices[checked].price: ', prices[checked].price);
-      this.setState({
-        sumTotal: prices[checked].price == 'free' ? '' : `Total today: $${Number(prices[checked].price).toFixed(2)}`
-      })
-    }
-    const soundcast = this.props.soundcast || nextProps.soundcast;
     const open = this.props.open || nextProps.open;
-    if(open && soundcast && soundcast.prices && soundcast.prices.length === 1) {
-      this.handleCheckout(); // checkout if having only one price
+    if (open && !this.checkedPriceSet) {
+      this.checkedPriceSet = true;
+      this.handleCheck(nextProps.checkedPrice); // load checked price
+      if(this.props.soundcast.prices.length === 1) {
+        this.handleCheckout(); // checkout if having only one price
+      }
     }
   }
 
-  handleCheck(i, e) {
+  handleCheck(checked) {
     const {prices} = this.props.soundcast;
-    this.setState({
-      checked: i,
-      sumTotal: prices[i].price == 'free' ? '' : `Total today: $${Number(prices[i].price).toFixed(2)}`
-    })
+    let sumTotal = '';
+    if (prices[checked].price != 'free') {
+      sumTotal = `Total today: $${Number(prices[checked].price).toFixed(2)}`;
+      if (this.props.coupon && prices[checked].coupons) { // check coupon
+        prices[checked].coupons.some(coupon => {
+          if(coupon.code === this.props.coupon &&
+             coupon.expiration > Date.now()/1000 // in future
+          ) {
+            const price = Number(prices[checked].price) * (100 - Number(coupon.percentOff)) / 100;
+            sumTotal = `Total today: $${Number(Math.round(price)).toFixed(2)}`;
+            return true;
+          }
+        });
+      }
+    }
+    this.setState({ checked, sumTotal });
   }
 
   handleCheckout() {
-    const {history, soundcast, soundcastID} = this.props;
+    const {history, soundcast, soundcastID, coupon} = this.props;
     const {checked, sumTotal} = this.state;
 
-    firebase.auth().onAuthStateChanged(function(user) {
-      if(user) {
-        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
+    firebase.auth().onAuthStateChanged(user => {
+      if(user || soundcast.forSale) {
+        history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal, coupon});
       } else {
-        // console.log('soundcast: ', soundcast);
-        if (soundcast.forSale) {
-          history.push('/soundcast_checkout', {soundcast, soundcastID, checked, sumTotal});
-        } else {
-          history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal});
-        }
+        history.push('/signup/soundcast_user', {soundcast, soundcastID, checked, sumTotal, coupon});
       }
     })
   }
 
   handleModalClose() {
-    this.setState({
-      checked: 0,
-      sumTotal: null,
-    });
+    this.setState({ checked: 0, sumTotal: null });
+    this.checkedPriceSet = false;
     this.props.handleModal();
   }
 
@@ -84,13 +81,12 @@ class _PricingModal extends Component {
     const {prices} = soundcast;
 
     const actions = [
-        <FlatButton
-          label="Checkout"
-          // primary={true}
-          labelStyle={{color: Colors.mainOrange}}
-          onClick={this.handleCheckout.bind(this)}
-        />
-      ,
+      <FlatButton
+        label="Checkout"
+        // primary={true}
+        labelStyle={{color: Colors.mainOrange}}
+        onClick={this.handleCheckout.bind(this)}
+      />,
       <FlatButton
         label="Cancel"
         primary={false}
@@ -111,30 +107,43 @@ class _PricingModal extends Component {
          {
           prices && prices.length > 0 && prices[0].price &&
           prices.map((price, i) => {
-            const isChecked = (checked == i);
-            let currentPrice = `USD $${Number(price.price).toFixed(2)} / month`;
+            const isChecked = checked == i;
+            let _price = price;
+            let displayedPrice = Number(price.price), originalPrice;
+            price.coupons && price.coupons.some(coupon => {
+              if(coupon.code === this.props.coupon &&
+                 coupon.expiration > Date.now()/1000 // in future
+              ) {
+                originalPrice = displayedPrice.toFixed(2);
+                displayedPrice = Number(price.price) * (100 - Number(coupon.percentOff)) / 100;
+                return true;
+              }
+            });
+
+            let currentPrice = `${displayedPrice.toFixed(2)} / month`;
             let billing = 'billed monthly';
             let paymentPlan = price.paymentPlan || 'Free Access';
             if(price.billingCycle == 'annual') {
-              currentPrice = `USD $${(Math.floor(price.price / 12 * 100) / 100).toFixed(2)} / month`;
+              currentPrice = `${(Math.floor(displayedPrice / 12 * 100) / 100).toFixed(2)} / month`;
+              originalPrice =   (Math.ceil (originalPrice  / 12 * 100) / 100).toFixed(2);
               billing = 'billed annually';
               paymentPlan = price.paymentPlan || 'Annual Subscription';
             } else if(price.billingCycle == 'quarterly') {
-              currentPrice = `USD $${(Math.floor(price.price / 3 * 100) / 100).toFixed(2)} / month`;
+              currentPrice = `${(Math.floor(displayedPrice / 3 * 100) / 100).toFixed(2)} / month`;
+              originalPrice =   (Math.ceil (originalPrice  / 3 * 100) / 100).toFixed(2);
               billing = 'billed quarterly';
               paymentPlan = price.paymentPlan || 'Annual Subscription';
             } else if(price.billingCycle == 'one time') {
-              currentPrice = `USD $${Number(price.price).toFixed(2)}`
+              currentPrice = `${Number(displayedPrice).toFixed(2)}`
               billing = 'one time charge';
               paymentPlan = price.paymentPlan || 'Permanent Access';
             } else if(price.billingCycle == 'rental') {
-              currentPrice = `USD $${Number(price.price).toFixed(2)}`
+              currentPrice = `${Number(displayedPrice).toFixed(2)}`
               billing = `one time charge (${price.rentalPeriod}-day access)`;
               paymentPlan = price.paymentPlan || `${price.rentalPeriod}-Day Access`;
             }
 
             if(price.price == 'free') {
-              currentPrice = 'Free';
               billing = '';
             }
 
@@ -149,13 +158,21 @@ class _PricingModal extends Component {
                   </div>
                   <div>
                     <div style={styles.priceDiv}>
-                      <div style={styles.price}>{currentPrice}</div>
+                      { price.price == 'free' &&
+                          <div style={styles.price}>Free</div>
+                        ||
+                          <div style={styles.price}>USD {
+                              originalPrice &&
+                                <s style={{color:'red'}}>${originalPrice}</s> || null
+                            }{`$${currentPrice}`}</div>
+                      }
                     </div>
                     <div style={{display: 'inline-block', width: '30%', fontSize: 16}}>
                       <span>{billing}</span>
                     </div>
                     <div style={{display: 'inline-block', width: '10%'}}>
                       <input
+                        style={{cursor:'pointer'}}
                         type='checkbox'
                         checked = {isChecked}
                         onChange={this.handleCheck.bind(this, i)}

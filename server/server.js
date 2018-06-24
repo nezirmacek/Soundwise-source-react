@@ -18,30 +18,25 @@ var cors = require('cors');
 const moment = require('moment');
 // var request = require('request');
 const request = require('request-promise');
-var handlePayment = require('./scripts/payment.js').handlePayment;
-var handleRecurringPayment = require('./scripts/payment.js').handleRecurringPayment;
-var updateCreditCard = require('./scripts/payment.js').updateCreditCard;
-var retrieveCustomer = require('./scripts/payment.js').retrieveCustomer;
-var createSubscription = require('./scripts/createPlatformCharges.js').createSubscription;
-var renewSubscription = require('./scripts/createPlatformCharges.js').renewSubscription;
-var cancelSubscription = require('./scripts/createPlatformCharges.js').cancelSubscription;
-var handleEmailSignup = require('./scripts/emailSignup.js').handleEmailSignup;
-var handleReferral = require('./scripts/emailSignup.js').handleReferral;
-var handleTrialRequest = require('./scripts/emailSignup.js').handleTrialRequest;
-var Emails = require('./scripts/sendEmails.js');
 
-var createFeed = require('./scripts/feed.js').createFeed;
-var requestFeed = require('./scripts/feed.js').requestFeed;
-var parseFeed = require('./scripts/parseFeed.js').parseFeed;
-var createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
-var audioProcessing = require('./scripts/audioProcessing').audioProcessing;
-var audioProcessingReplace = require('./scripts/audioProcessing').audioProcessingReplace;
+const {handlePayment, handleRecurringPayment,
+       updateCreditCard, retrieveCustomer, createUpdatePlans} = require('./scripts/payment.js');
+const {createSubscription,
+       renewSubscription, cancelSubscription} = require('./scripts/createPlatformCharges.js');
+const {handleEmailSignup,
+       handleReferral, handleTrialRequest} = require('./scripts/emailSignup.js');
+const Emails = require('./scripts/sendEmails.js');
 
-var sendNotification = require('./scripts/messaging.js').sendNotification;
+const {createFeed, requestFeed} = require('./scripts/feed.js');
+const createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
+const {audioProcessing, audioProcessingReplace} = require('./scripts/audioProcessing');
+
+const parseFeed = require('./scripts/parseFeed.js').parseFeed;
+const sendNotification = require('./scripts/messaging.js').sendNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
-var unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
-var createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
-var requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
+const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
+const createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
+const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
 var Raven = require('raven');
 var database = require('../database');
 
@@ -153,6 +148,7 @@ app.get('/rss/:id', requestFeed);
 app.post('/api/parse_feed', parseFeed);
 app.get('/api/retrieveCustomer', retrieveCustomer);
 app.post('/api/updateCreditCard', updateCreditCard);
+app.post('/api/createUpdatePlans', createUpdatePlans);
 app.post('/api/buy', createSubscription);
 
 app.post('/api/send_email_invites', Emails.sendTransactionalEmails); // this is for transactional emails;

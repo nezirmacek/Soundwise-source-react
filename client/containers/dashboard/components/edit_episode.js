@@ -107,17 +107,14 @@ export default class EditEpisode extends Component {
     }
 
     checkUserStatus(userInfo) {
-      let plan, proUser;
+      let proUser;
       if(userInfo.publisher && userInfo.publisher.plan) {
-          plan = userInfo.publisher.plan;
           proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
       }
       if(userInfo.publisher && userInfo.publisher.beta) {
           proUser = true;
       }
-      this.setState({
-        proUser,
-      });
+      this.setState({ proUser });
     }
 
     componentWillUnmount() {
