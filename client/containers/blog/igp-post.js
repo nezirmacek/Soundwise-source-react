@@ -88,7 +88,7 @@ export default class IGPPost extends Component {
             <meta name="twitter:image" content={post.featured_image}/>
             <meta name="twitter:card" content={post.featured_image} />
           </Helmet>
-          <SoundwiseHeader showIcon={true}/>
+          <SoundwiseHeader showIcon={true} blog={true}/>
           <section className="padding-70px-tb xs-padding-60px-tb blog-style2 blog-post-style bg-white builder-bg" id="blog-section1" >
               <div className="container post-container md-padding-twenty-five-left md-padding-twenty-five-right xs-padding-nine-left xs-padding-nine-right" >
                 <div className="row">
@@ -156,8 +156,7 @@ export default class IGPPost extends Component {
       return (
         <div>
           <SoundwiseHeader showIcon={true}
-            blog={true}
-          />
+            blog={true} />
           <div>Loading...</div>
           <div style={{bottom: 0, width: '100%', position: 'absolute'}}>
             <Footer />

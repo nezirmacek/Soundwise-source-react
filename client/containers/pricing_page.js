@@ -38,6 +38,19 @@ import Pricing from '../components/pricing'
     this.changeFrequency = this.changeFrequency.bind(this);
   }
 
+    signoutUser() {
+        let that = this;
+        firebase.auth().signOut().then(
+            function() {
+                that.props.signoutUser();
+                that.props.history.push('/signin')
+            },
+            function(error) {
+                console.error('Sign Out Error', error);
+            }
+        );
+    }
+
   goToCheckout(plan, frequency, price) {
     this.props.history.push({
       pathname: '/buy',
@@ -186,7 +199,7 @@ import Pricing from '../components/pricing'
           <meta name="twitter:image" content="https://mysoundwise.com/images/soundwise_homepage.png"/>
           <meta name="twitter:card" content="https://mysoundwise.com/images/soundwise_homepage.png" />
         </Helmet>
-        <div className="">
+        <div style={{paddingBottom: 80}} className="">
             <header className="header-style8" id="header-section16">
                 <nav className="navbar tz-header-bg no-margin alt-font navigation-menu dark-header" data-selector=".tz-header-bg" >
                     <div className="pull-left">

@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Butter from 'buttercms';
 import moment from 'moment';
+import {Helmet} from 'react-helmet';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import {SoundwiseHeader2} from '../../components/soundwise_header2';
 import Footer from '../../components/footer'
 
 const butter = Butter('f8b408f99e5169af2c3ccf1f95b4ff7e679b2cbd');
@@ -48,7 +49,21 @@ export default class IGPList extends Component {
       const { next_page, previous_page } = this.state.resp.meta;
       return (
         <div>
-          <SoundwiseHeader showIcon={true}/>
+          <Helmet>
+            <title>{'Inner Game of Podcasting | Soundwise'}</title>
+            <meta property="og:url" content='https://mysoundwise.com/igp' />
+            <meta property="fb:app_id" content='1726664310980105' />
+            <meta property="og:title" content='Inner Game of Podcasting | Soundwise'/>
+            <meta property="og:description" content={"Celebrating extraordinary audio creators and their stories."}/>
+            <meta property="og:image" content="https://mysoundwise.com/images/soundwise-home.png" />
+            <meta name="description" content={"Celebrating extraordinary audio creators and their stories."} />
+            <meta name="keywords" content="soundwise, training, online education, education software, subscription, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app" />
+            <meta name="twitter:title" content='Inner Game of Podcasting | Soundwise'/>
+            <meta name="twitter:description" content="Celebrating extraordinary audio creators and their stories."/>
+            <meta name="twitter:image" content="https://mysoundwise.com/images/soundwise-home.png"/>
+            <meta name="twitter:card" content="https://mysoundwise.com/images/soundwise-home.png" />
+          </Helmet>
+          <SoundwiseHeader2 />
           <section className="padding-110px-tb xs-padding-60px-tb blog-style1 bg-white builder-bg" id="blog-section1">
               <div className="container">
                   <div className="row">
@@ -85,7 +100,7 @@ export default class IGPList extends Component {
     } else {
       return (
         <div>
-          <SoundwiseHeader showIcon={true}
+          <SoundwiseHeader2 showIcon={true}
             blog={true}
           />
           <div></div>
