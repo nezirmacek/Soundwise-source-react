@@ -36,8 +36,10 @@ const Footer = (props) => (
             </li>
             <li className="tz-text text-medium-gray">
               <Link to='/igp'>
-                <span className='text-light-gray tz-text'>Inner Game of Podcasting</span>
+                <span className='text-light-gray tz-text'>Inner Game of Podcasting (IGP)</span>
               </Link>
+            </li>
+            <li className="tz-text text-medium-gray">
               <a target='_blank' href='https://goo.gl/forms/lJovqK4KRHzinTna2'>
                 <span className='text-light-gray tz-text'>Get Featured on IGP</span>
               </a>

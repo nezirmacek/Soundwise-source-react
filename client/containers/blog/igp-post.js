@@ -22,7 +22,7 @@ export default class IGPPost extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     let slug = this.props.match.params.slug;
 
     butter.post.retrieve(slug).then((resp) => {
@@ -32,9 +32,19 @@ export default class IGPPost extends Component {
         category: resp.data.data.categories[0].name,
       });
     });
+    this.fetchPosts()
   }
 
-  componentDidMount() {
+  componentWillReceiveProps(nextProps) {
+    let slug = nextProps.match.params.slug;
+
+    butter.post.retrieve(slug).then((resp) => {
+      this.setState({
+        loaded: true,
+        post: resp.data.data,
+        category: resp.data.data.categories[0].name,
+      });
+    });
     this.fetchPosts();
   }
 
@@ -44,7 +54,7 @@ export default class IGPPost extends Component {
       const currentPost = this.state.post;
       const filteredPosts = [];
       posts.forEach(post => {
-        if(post.slug != currentPost.slug) {
+        if(post.slug !== currentPost.slug) {
           filteredPosts.push(post);
         }
       })
