@@ -2,7 +2,6 @@ const moment = require('moment');
 
 var stripe_key =  require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
-// stripe.plans.list({ limit: 30 }, (err, plans) => console.log(err, plans)); // get plan list
 
 module.exports.handlePayment = (req, res) => {
 // create customer: to be used in real version
