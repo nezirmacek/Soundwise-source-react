@@ -8,18 +8,19 @@ import Footer from '../../components/footer'
 
 const butter = Butter('f8b408f99e5169af2c3ccf1f95b4ff7e679b2cbd');
 
-export default class HelpDocs extends Component {
+export default class IGPList extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       loaded: false,
+      posts: null,
       resp: null,
     };
   }
 
   fetchPosts(page) {
-    butter.post.list({category_slug: 'help-docs'}).then((resp) => {
+    butter.post.list({category_slug: 'igp'}).then((resp) => {
       const posts = resp.data.data;
       this.setState({
         loaded: true,
@@ -52,28 +53,27 @@ export default class HelpDocs extends Component {
               <div className="container">
                   <div className="row">
                       <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
-                          <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-thirteen-bottom  xs-margin-nineteen-bottom tz-text">KNOWLEDGE BASE</h2>
+                          <h1 className="title-extra-large-2 sm-title-extra-large xs-title-large text-dark-gray font-weight-700 alt-font margin-five-bottom  xs-margin-nine-bottom tz-text">THE INNER GAME OF PODCASTING</h1>
+                          <h2 style={{fontStyle: 'italic'}} className="title-medium sm-title-small xs-title-small text-dark-gray alt-font margin-thirteen-bottom  xs-margin-nineteen-bottom tz-text">Celebrating extraordinary audio creators and their stories</h2>
                       </div>
                   </div>
                   <div className="row">
                     {this.state.posts.map((post) => {
                       return (
-                      <div key={post.slug} className="center-col col-md-8 col-sm-6 col-xs-12 margin-seven-bottom xs-margin-nineteen-bottom ">
-                        <Link to={`/blog/post/${post.slug}`}>
+                      <div key={post.slug} className="col-md-4 col-sm-4 col-xs-12 margin-seven-bottom xs-margin-nineteen-bottom ">
+                        <Link to={`/igp/${post.slug}`}>
                           <div className="blog-post">
-                              <div className="post-details bg-gray tz-background-color">
-                                  <div  className="tz-text text-dark-gray  section-title-small sm-section-title-small xs-section-title-small font-weight-600 margin-five-bottom display-inline-block md-margin-five-bottom">{post.title}</div>
+                              <div className="blog-image">
+                                  <img className="img100" alt="" src={post.featured_image} data-img-size="(W)800px X (H)507px"/>
+                              </div>
+                              <div style={{padding: 20}} className=" bg-gray tz-background-color">
+                                  <div className="text-extra-large sm-text-large xs-text-large text-dark-gray tz-text">{post.summary.length > 300 ? `${post.summary.slice(0, 300)}...` : post.summary}</div>
                               </div>
                           </div>
                         </Link>
                       </div>
                       )
                     })}
-                  </div>
-                  <br />
-                  <div>
-                    {previous_page && <Link to={`/p/${previous_page}`}>Prev</Link> || null}
-                    {next_page && <Link to={`/p/${next_page}`}>Next</Link> || null}
                   </div>
               </div>
           </section>
@@ -96,4 +96,5 @@ export default class HelpDocs extends Component {
       )
     }
   }
+
 }

@@ -517,7 +517,39 @@ header .row { align-items: center; display: flex; height: auto;}
     margin-bottom: 1.25em;
     font-weight: 400;
     letter-spacing: -.003em;
-  }
+}
+
+.blog-style2  ul, ol {
+    margin-bottom: 1.25em ;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: #1e1e1e;
+    line-height: 1.58;
+    margin-bottom: 1.25em;
+    font-weight: 400;
+    letter-spacing: -.003em;
+}
+
+.blog-style2   li {
+    margin-bottom: 0.25em ;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: color: #1e1e1e;
+    line-height: 1.58;
+    margin-bottom: 1.25em;
+    font-weight: 400;
+    letter-spacing: -.003em;
+}
+
+.blog-style2  p {
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 24px;
+    color: #1e1e1e;
+    line-height: 1.58;
+    margin-bottom: 1.25em;
+    font-weight: 400;
+    letter-spacing: -.003em;
+}
 
   /* Responsive default image width */
 .blog-style1 > img {

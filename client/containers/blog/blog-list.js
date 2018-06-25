@@ -20,17 +20,11 @@ export default class BlogList extends Component {
   }
 
   fetchPosts(page) {
-    butter.post.list({page: page, page_size: 10}).then((resp) => {
+    butter.post.list({category_slug: 'tutorials'}).then((resp) => {
       const posts = resp.data.data;
-      const filteredPosts = []; // select the posts that are not help docs
-      posts.forEach(post => {
-        if(post.categories[0].name != 'help-docs') {
-          filteredPosts.push(post);
-        }
-      })
       this.setState({
         loaded: true,
-        posts: filteredPosts,
+        posts: posts,
         resp: resp.data,
       });
     });
@@ -72,7 +66,6 @@ export default class BlogList extends Component {
                                   <img className="img100" alt="" src={post.featured_image} data-img-size="(W)800px X (H)507px"/>
                               </div>
                               <div className="post-details bg-gray tz-background-color">
-                                  <div className="post-author tz-background-color margin-thirteen-bottom md-margin-eleven-bottom xs-margin-eight-bottom" style={{backgroundColor: '#f76b1c'}}><span className="tz-text">{moment(post.published).format('MMMM Do YYYY')}</span></div>
                                   <div  className="tz-text text-dark-gray  section-title-small sm-section-title-small xs-section-title-small font-weight-600 margin-five-bottom display-inline-block md-margin-five-bottom">{post.title}</div>
                                   <div className="text-medium tz-text">{post.summary.length > 137 ? `${post.summary.slice(0, 137)}...` : post.summary}</div>
                               </div>

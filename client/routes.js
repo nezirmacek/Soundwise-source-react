@@ -56,6 +56,8 @@ import {SoundcastPage} from './containers/soundcast_landing_page/soundcast_page'
 import BlogList from './containers/blog/blog-list';
 import HelpDocs from './containers/blog/help-docs';
 import BlogPost from './containers/blog/blog-post';
+import IGPList from './containers/blog/igp-list';
+import IGPPost from './containers/blog/igp-post';
 import {EpisodePage} from './containers/soundcast_landing_page/components/episode_page';
 import {SoundcastCheckout} from './containers/soundcast_landing_page/soundcast_checkout';
 import NotFound from './components/page_404';
@@ -249,6 +251,8 @@ class _Routes extends Component {
                 <Route path="/terms" component={Terms} />
                 <Route path="/wave_video" component={WaveVideoInputs} />
                 <Route exact={true} path="/blog" component={BlogList} />
+                <Route exact={true} path="/igp" component={IGPList} />
+                <Route exact={true} path="/igp/:slug" component={IGPPost} />
                 <Route exact={true} path="/knowledge" component={HelpDocs} />
                 <Route path="/blog/p/:page" component={BlogList} />
                 <Route exact={true} path="/blog/post/:slug" component={BlogPost} />

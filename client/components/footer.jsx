@@ -34,6 +34,14 @@ const Footer = (props) => (
                 <span className='text-light-gray tz-text'>Articles</span>
               </Link>
             </li>
+            <li className="tz-text text-medium-gray">
+              <Link to='/igp'>
+                <span className='text-light-gray tz-text'>Inner Game of Podcasting</span>
+              </Link>
+              <a target='_blank' href='https://goo.gl/forms/lJovqK4KRHzinTna2'>
+                <span className='text-light-gray tz-text'>Get Featured on IGP</span>
+              </a>
+            </li>
           </ul>
         </div>
         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12 xs-text-center xs-margin-four-bottom display-table text-left">
@@ -43,7 +51,15 @@ const Footer = (props) => (
               props.showPricing &&
               <li className="tz-text text-medium-gray">
                 <Link to='/pricing'>
-                  <span className="text-light-gray tz-text">Plans and Pricing</span>
+                  <span className="text-light-gray tz-text">Plans And Pricing</span>
+                </Link>
+              </li>
+            }
+            {
+              props.showPricing &&
+              <li className="tz-text text-medium-gray">
+                <Link to='/blog/post/how-to-become-a-soundwise-affiliate'>
+                  <span className="text-light-gray tz-text">Become An Affiliate</span>
                 </Link>
               </li>
             }
