@@ -19,7 +19,7 @@ module.exports.createFeed = async (req, res) => {
           email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, short_description, hostName, autoSubmitPodcast, itunesHost } = soundcastVal;
+  const { title, itunesTitle, itunesHost, short_description, hostName, autoSubmitPodcast, itunesHost } = soundcastVal;
   const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
@@ -50,19 +50,19 @@ module.exports.createFeed = async (req, res) => {
   const itunesOwner = autoSubmitPodcast ? {name: 'Soundwise', email: 'support@mysoundwise.com'} : {name: hostName, email};
   const googleplayEmail = autoSubmitPodcast ? 'support@mysoundwise.com' : email;
   const podcastObj = {
-    title,
+    title: itunesTitle ? itunesTitle : title,
     description: short_description,
     generator: 'https://mysoundwise.com',
     feedUrl: `https://mysoundwise.com/rss/${soundcastId}`, // '1508293913676s' is the soundcast id
     siteUrl: `https://mysoundwise.com/soundcasts/${soundcastId}`,
     imageUrl: itunesImage,
-    author: hostName,
+    author: itunesHost ? itunesHost : hostName,
     copyright: `${new Date().getFullYear()} ${itunesHost}`,
     language: 'en',
     categories,
     pubDate: moment().toDate(),
     itunesAuthor: itunesHost,
-    itunesSubtitle: title,
+    itunesSubtitle: itunesTitle ? itunesTitle : title,
     itunesSummary, // need to be < 4000 characters
     itunesOwner,
     itunesExplicit,
