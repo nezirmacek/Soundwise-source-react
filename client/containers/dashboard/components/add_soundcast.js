@@ -289,13 +289,13 @@ export default class AddSoundcast extends Component {
                   title
                 }).then(
                   res => {
-                    if (forSale && prices.length && userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                    if (prices.length && userInfo.publisher && userInfo.publisher.stripe_user_id) {
                       Axios.post('/api/createUpdatePlans', {
                         soundcastID: that.soundcastID,
                         publisherID: userInfo.publisherID,
                         stripe_account: userInfo.publisher.stripe_user_id,
                         title,
-                        prices,
+                        prices: forSale ? prices : [],
                       }).catch(err => alert(`Error creating plans ${err}`));
                     }
                     return res;

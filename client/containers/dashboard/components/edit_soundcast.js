@@ -376,13 +376,13 @@ export default class EditSoundcast extends Component {
                         title
                       })
                       .then(() => {
-                        if (forSale && userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                        if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
                           Axios.post('/api/createUpdatePlans', {
                             soundcastID: history.location.state.id,
                             publisherID: userInfo.publisherID,
                             stripe_account: userInfo.publisher.stripe_user_id,
                             title,
-                            prices,
+                            prices: forSale ? prices : [],
                           }).catch(err => alert(`Error creating plans ${err}`));
                         }
                         if(!noAlert) {
