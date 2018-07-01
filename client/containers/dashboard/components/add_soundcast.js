@@ -295,7 +295,7 @@ export default class AddSoundcast extends Component {
                         publisherID: userInfo.publisherID,
                         stripe_account: userInfo.publisher.stripe_user_id,
                         title,
-                        prices: forSale ? prices : [],
+                        prices: (landingPage && forSale) ? prices : [],
                       }).catch(err => alert(`Error creating plans ${err}`));
                     }
                     return res;
