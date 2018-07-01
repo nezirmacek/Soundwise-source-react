@@ -163,10 +163,16 @@ function addOrUpdateCommentRecord(comment) {
   if (comment.val()) {
     const {episodeID, announcementID, soundcastId, userID, content, timestamp} = comment.val();
     const commentId = comment.key;
+    // const parsedIDs = commentId.split('-');
+    // let parentId;
+    // if(parsedIDs.length == 3) {
+    //   parentId = parsedIDs[1];
+    // }
     const commentObj = {
       commentId,
       userId: userID,
       soundcastId,
+      // parentId,
       episodeId: episodeID || null,
       announcementId: announcementID || null,
       content,

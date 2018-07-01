@@ -1,3 +1,19 @@
+// *** adding parentId to child comments in firebase
+// const commentsRef = firebase.database().ref('/comments');
+
+// commentsRef.on('child_added', comment => {
+//   const commentObj = comment.val();
+//   const commentId = comment.key;
+//   const parsedIDs = commentId.split('-');
+//   let parentId;
+//   if(parsedIDs.length == 3) {
+//     parentId = parsedIDs[1];
+//   }
+//   if(parentId) {
+//     firebase.database().ref(`/comments/${commentId}/parentId`).set(parentId);
+//   }
+// });
+
 // *** Move messages from under soundcasts to messages node in firebase
 // const soundcastsRef = firebase.database().ref('/soundcasts');
 // const messagesRef = firebase.database().ref('/messages');
