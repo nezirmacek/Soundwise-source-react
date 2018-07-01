@@ -121,7 +121,6 @@ export default class EditEpisode extends Component {
         const { id } = this.state;
         const { content_saved, handleContentSaving } = this.props;
         handleContentSaving(id, false);
-
     }
 
     _uploadToAws (file, type) {
@@ -251,14 +250,14 @@ export default class EditEpisode extends Component {
                   firstName: userInfo.firstName,
                 })
                 .then(response => {
-                  that.checkToPublish(toPublish, () => {
+                  that.checkToPublish(toPublish, changedEpisode, () => {
                     alert("Request submitted. We'll email you when processing is done.");
                   });
                 })
                 .catch(err => that.catchError(err));
               })
             } else {
-              that.checkToPublish(toPublish, null, () => {
+              that.checkToPublish(toPublish, changedEpisode, null, () => {
                 that.setState({
                   startProcessingEpisode: false,
                   doneProcessingEpisode: true,
@@ -269,10 +268,11 @@ export default class EditEpisode extends Component {
         });
     }
 
-    checkToPublish(toPublish, callbackRequestSubmitted, callbackSaved) {
+    checkToPublish(toPublish, episode, callbackRequestSubmitted, callbackSaved) {
       const {isPublished, doReprocess, soundcastID} = this.state;
-      const {history} = this.props;
+      const {history, userInfo} = this.props;
       const {id} = history.location.state;
+      const soundcast = userInfo.soundcasts_managed[soundcastID];
       if(toPublish && !isPublished) { // if publishing for the first time
         if(doReprocess) {
           this.runProcessing(toPublish, () => {
@@ -280,7 +280,7 @@ export default class EditEpisode extends Component {
             alert('The episode will be published after processing is finished.');
             history.goBack();
           });
-        } else {
+        } else if (episode.editedUrl) { // have edited url
           Axios.post('/api/audio_processing_replace', {
             episodeId: id,
             soundcastId: soundcastID,
@@ -288,6 +288,20 @@ export default class EditEpisode extends Component {
             alert('Episode is published.');
             history.goBack();
           }).catch(err => this.catchError(err));
+        } else {
+          Axios.post('/api/episode', {
+              episodeId: id,
+              soundcastId: soundcastID,
+              title: episode.title,
+              soundcastTitle: soundcast.title,
+          }).then(res => {
+            this.notifySubscribers();
+            alert('Episode is published.');
+            history.goBack();
+          }).catch(err => {
+            console.log(err);
+            alert(err.toString());
+          });
         }
       } else {
         if(doReprocess) {
