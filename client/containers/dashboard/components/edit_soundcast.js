@@ -376,7 +376,7 @@ export default class EditSoundcast extends Component {
                         title
                       })
                       .then(() => {
-                        if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                        if (forSale && userInfo.publisher && userInfo.publisher.stripe_user_id) {
                           Axios.post('/api/createUpdatePlans', {
                             soundcastID: history.location.state.id,
                             publisherID: userInfo.publisherID,

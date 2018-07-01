@@ -289,7 +289,7 @@ export default class AddSoundcast extends Component {
                   title
                 }).then(
                   res => {
-                    if (prices.length && userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                    if (forSale && prices.length && userInfo.publisher && userInfo.publisher.stripe_user_id) {
                       Axios.post('/api/createUpdatePlans', {
                         soundcastID: that.soundcastID,
                         publisherID: userInfo.publisherID,
