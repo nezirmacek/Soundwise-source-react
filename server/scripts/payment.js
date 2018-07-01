@@ -92,18 +92,24 @@ module.exports.createUpdatePlans = async (req, res) => {
         return resolve(); // no coupons
       }
       Promise.all(coupons.map(coupon => new Promise(resolve2 => {
-        stripe.coupons.del(coupon.code, { stripe_account }, () => stripe.coupons.create({
-          percent_off: Number(coupon.percentOff),
-          duration: 'forever',
-          redeem_by: coupon.expiration,
-          id: coupon.code,
-        }, { stripe_account }, (err, result) => {
-          if (err) {
-            console.log(`Error: payment.js coupon creation ${planID} ${err}`, coupon);
-            return reject(`${planID} coupon ${JSON.stringify(coupon)} ${err}`);
+        stripe.coupons.del(coupon.code, { stripe_account }, () => {
+          if ((coupon.expiration - 10) < Date.now()/1000) { // outdated
+            resolve2();
+          } else {
+            stripe.coupons.create({
+              percent_off: Number(coupon.percentOff),
+              duration: 'forever',
+              redeem_by: coupon.expiration,
+              id: coupon.code,
+            }, { stripe_account }, (err, result) => {
+              if (err) {
+                console.log(`Error: payment.js coupon creation ${planID} ${err}`, coupon);
+                return reject(`${planID} coupon ${JSON.stringify(coupon)} ${err}`);
+              }
+              resolve2(); // coupon creation success
+            });
           }
-          resolve2(); // coupon creation success
-        }));
+        });
       }))).then(() => resolve());
     });
   })))
