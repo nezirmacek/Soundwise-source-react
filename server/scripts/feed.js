@@ -19,7 +19,7 @@ module.exports.createFeed = async (req, res) => {
           email, firstName } = req.body, categories = [];
   const soundcast = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
   const soundcastVal = soundcast.val();
-  const { title, itunesTitle, itunesHost, short_description, hostName, autoSubmitPodcast, itunesHost } = soundcastVal;
+  const { title, itunesTitle, itunesHost, short_description, hostName, autoSubmitPodcast } = soundcastVal;
   const episodes = Object.keys(soundcastVal.episodes || {});
   const itunesCategory = req.body.itunesCategory.map(i => { // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
