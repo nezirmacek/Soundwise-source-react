@@ -44,7 +44,13 @@ module.exports.handlePayment = (req, res) => {
 };
 
 module.exports.createUpdatePlans = async (req, res) => {
-  const {publisherID, soundcastID, stripe_account, title, prices} = req.body;
+  const {publisherID, soundcastID, stripe_account, title, prices, couponsToRemove} = req.body;
+
+  if (couponsToRemove) { // old coupons removal
+    for (const code of couponsToRemove) {
+      await new Promise(resolve => stripe.coupons.del(code, { stripe_account }, () => resolve()));
+    }
+  }
 
   // Remove all old plans with this particular publisherID-soundcastID key
   await new Promise(resolve => stripe.plans.list({ stripe_account }, (err, list) => {
