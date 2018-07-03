@@ -366,6 +366,10 @@ export default class EditSoundcast extends Component {
                   firebase.database().ref(`soundcasts/${history.location.state.id}`)
                   .once('value')
                   .then(snapshot => {
+                    const couponsToRemove = [];
+                    (snapshot.val().prices || []).forEach(price => {
+                      (price.coupons || []).forEach(coupon => couponsToRemove.push(coupon.code));
+                    });
                     const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
                     firebase.database().ref(`soundcasts/${history.location.state.id}`)
                     .set(changedSoundcast)
@@ -383,6 +387,7 @@ export default class EditSoundcast extends Component {
                             stripe_account: userInfo.publisher.stripe_user_id,
                             title,
                             prices: (landingPage && forSale) ? prices : [],
+                            couponsToRemove, // old coupons removal
                           }).catch(err => alert(`Error creating plans ${err}`));
                         }
                         if(!noAlert) {
