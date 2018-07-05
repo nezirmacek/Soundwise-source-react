@@ -48,8 +48,8 @@ class _SoundcastCheckout extends Component {
   async componentDidMount() {
     const {location} = this.props.history;
     if(location.state && location.state.soundcast) {
-      const {soundcast, soundcastID, checked, sumTotal} = location.state;
-      this.setSoundcastData(soundcast, soundcastID, checked, sumTotal);
+      const {soundcast, soundcastID, checked, sumTotal, userInfo, soundcastUser} = location.state;
+      this.setSoundcastData(soundcast, soundcastID, checked, sumTotal, userInfo, soundcastUser);
     } else if (location.search.includes('?soundcast_id=')) {
       const params = new URLSearchParams(location.search);
       const soundcastID = params.get('soundcast_id');
@@ -65,7 +65,7 @@ class _SoundcastCheckout extends Component {
     }
   }
 
-  setSoundcastData(soundcast, soundcastID, checked, sumTotal) {
+  setSoundcastData(soundcast, soundcastID, checked, sumTotal, userInfo, soundcastUser) {
     let totalPrice;
     if(soundcast.prices[checked].price == 'free') {
       totalPrice = 0;
@@ -79,6 +79,16 @@ class _SoundcastCheckout extends Component {
       checked,
       sumTotal,
     });
+    if (soundcastUser) {
+      const that = this;
+      (function timer() {
+        if (that.addSoundcastToUser) {
+          that.addSoundcastToUser(null, userInfo);
+        } else {
+          setTimeout(timer, 150);
+        }
+      }());
+    }
   }
 
   setTotalPrice(totalPrice, coupon) {

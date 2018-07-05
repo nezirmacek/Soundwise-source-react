@@ -4,11 +4,7 @@ import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import 'url-search-params-polyfill';
 import {orange500, blue500} from 'material-ui/styles/colors';
-import {
-    Route,
-    Link,
-    Redirect
-} from 'react-router-dom';
+import {Route, Link, Redirect} from 'react-router-dom';
 import { withRouter } from 'react-router';
 
 import { signinUser } from '../actions/index';
@@ -42,18 +38,19 @@ class _AppSignin extends Component {
             this.publisherID = this.props.match.params.id;
         }
         if(this.props.history.location.state) {
-            const {soundcast, soundcastID, checked, sumTotal} = this.props.history.location.state;
+            const {soundcast, soundcastID, checked, sumTotal, soundcastUser} = this.props.history.location.state;
             soundcast && this.setState({
                 soundcast,
                 soundcastID,
                 checked,
+                soundcastUser,
                 sumTotal
             });
         }
     }
 
     signInClick() {
-      const {email, password} = this.state;
+      const {email, password, soundcastUser} = this.state;
       const {signinUser, history, match} = this.props;
       signInPassword(email, password,
         user => {
@@ -67,6 +64,7 @@ class _AppSignin extends Component {
               checked: history.location.state.checked,
               sumTotal: history.location.state.sumTotal,
               userInfo: user,
+              soundcastUser,
             });
           } else if (user.admin && !match.params.id) {
             compileUser(user, signinUser);
@@ -117,6 +115,7 @@ class _AppSignin extends Component {
 
     handleFBAuth() {
       const {signinUser, history, match} = this.props;
+      const {soundcastUser} = this.state;
       signInFacebook(
         user => {
           console.log('Success signInFacebook', user);
@@ -129,6 +128,7 @@ class _AppSignin extends Component {
                 soundcastID: history.location.state.soundcastID,
                 checked: history.location.state.checked,
                 sumTotal: history.location.state.sumTotal,
+                soundcastUser,
               });
             } else if (user.admin && !match.params.id) {
               compileUser(user, signinUser);
