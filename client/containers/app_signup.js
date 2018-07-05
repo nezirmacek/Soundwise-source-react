@@ -6,12 +6,7 @@ import Axios from 'axios';
 import PropTypes from 'prop-types';
 import 'url-search-params-polyfill';
 import {orange500, blue500} from 'material-ui/styles/colors';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 import { withRouter } from 'react-router';
 import moment from 'moment';
 
@@ -677,6 +672,7 @@ class _AppSignup extends Component {
                                                     soundcast,
                                                     soundcastID,
                                                     checked,
+                                                    soundcastUser: match.params.mode === 'soundcast_user',
                                                     sumTotal
                                                 }
                                               }}
