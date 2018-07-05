@@ -52,10 +52,10 @@ var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
 var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners;
 
 // sync firebase with Algolia and postgres
-algoliaIndex();
+// algoliaIndex();
 transferLikes();
 transferMessages();
-// firebaseListeners();
+firebaseListeners();
 
 var app = module.exports = loopback();
 app.start = function() {
