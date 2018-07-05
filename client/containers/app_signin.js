@@ -301,10 +301,7 @@ class _AppSignin extends Component {
                                   <Link  to='/password_reset'>Forgot your password? </Link>
                                 </div>
                                 <div style={{marginBottom: 10, marginTop: 15,}}>
-                                    <span style={styles.italicText}>Don't have an account? </span>
-                                    <Link to="/signup/admin" style={{...styles.italicText, color: Colors.link, marginLeft: 5}}>
-                                        Sign up >
-                                    </Link>
+
                                 </div>
                             </div>
                         </div>
