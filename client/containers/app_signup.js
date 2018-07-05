@@ -561,9 +561,9 @@ class _AppSignup extends Component {
       // for user -> goTo myPrograms, for admin need to register publisher first
       if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
         history.push('/myprograms');
-      } else if(match.params.mode == 'soundcast_user' && history.location.state) {
-        const { soundcast, soundcastID, checked, sumTotal } = history.location.state;
-        history.push('/soundcast_checkout', { soundcast, soundcastID, checked, sumTotal });
+      } else if(match.params.mode == 'soundcast_user') {
+        const {soundcast, soundcastID, checked, sumTotal} = (history.location.state || this.state);
+        history.push('/soundcast_checkout', {soundcastID, soundcast, checked, sumTotal, soundcastUser: true});
       }
     }
 
