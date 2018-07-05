@@ -55,7 +55,7 @@ var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners
 // algoliaIndex();
 transferLikes();
 transferMessages();
-// firebaseListeners();
+firebaseListeners();
 
 var app = module.exports = loopback();
 app.start = function() {
