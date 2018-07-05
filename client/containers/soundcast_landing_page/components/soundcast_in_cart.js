@@ -9,6 +9,8 @@ export default class SoundcastInCart extends Component {
         super(props);
 
         const promoCode = this.props.history && this.props.history.location.state.coupon || null;
+        const promoCode = (this.props.history && this.props.history.location && this.props.history.location.state
+                           && this.props.history.location.state.coupon) || null;
         this.state = {
           enterPromoCode: !!promoCode,
           promoCode,
