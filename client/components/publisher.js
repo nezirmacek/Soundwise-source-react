@@ -82,31 +82,31 @@ export default class Publisher extends Component {
                             <div className='col-md-12 social social-icon-color' style={{marginTop: '1em', marginBottom: '1em'}}>
                               {
                                 publisher.website &&
-                                <a href={publisher.website} target='_blank' className='margin-eight-right'>
+                                <a href={publisher.website.slice(0, 4) == 'http' ? publisher.website : `http://${publisher.website}`} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fa fa-link tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.facebook &&
-                                <a href={publisher.facebook} target='_blank' className='margin-eight-right'>
+                                <a href={publisher.facebook.slice(0, 4) == 'http' ? publisher.facebook : `http://${publisher.facebook}`} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fab fa-facebook-f tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.twitter &&
-                                <a href={publisher.twitter} target='_blank' className='margin-eight-right'>
+                                <a href={publisher.twitter.slice(0, 4) == 'http' ? publisher.twitter : `http://${publisher.twitter}`} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fab fa-twitter tz-icon-color"></i>
                                 </a> || null
                               }
                               {
                                 publisher.linkedin &&
-                                <a href={publisher.linkedin} target='_blank' className='margin-eight-right'>
+                                <a href={publisher.linkedin.slice(0, 4) == 'http' ? publisher.linkedin : `http://${publisher.linkedin}`} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fab fa-linkedin-in tz-icon-color"></i>
                                 </a>
                               }
                               {
                                 publisher.instagram &&
-                                <a href={publisher.instagram} target='_blank' className='margin-eight-right'>
+                                <a href={publisher.instagram.slice(0, 4) == 'http' ? publisher.instagram : `http://${publisher.instagram}`} target='_blank' className='margin-eight-right'>
                                   <i className="icon-small sm-icon-extra-small fab fa-instagram tz-icon-color"></i>
                                 </a>
                               }
@@ -136,11 +136,11 @@ export default class Publisher extends Component {
                             if(soundcast.prices[0].billingCycle == 'monthly') {
                               post = ' / month';
                             } else if(soundcast.prices[0].billingCycle == 'quarterly') {
-                              post = ' / month';
-                              price = Math.floor(price / 3 *100) / 100;
+                              post = ' / quarter';
+                              // price = Math.floor(price / 3 *100) / 100;
                             } else if(soundcast.prices[0].billingCycle == 'annual') {
-                              post = ' / month';
-                              price = Math.floor(price.price / 12 *100) / 100;
+                              post = ' / year';
+                              // price = Math.floor(price.price / 12 *100) / 100;
                             }
                           }
                           return (
