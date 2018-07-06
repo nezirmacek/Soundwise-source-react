@@ -53,8 +53,8 @@ var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners
 
 // sync firebase with Algolia and postgres
 // algoliaIndex();
-transferLikes();
-transferMessages();
+// transferLikes();
+// transferMessages();
 // firebaseListeners();
 
 var app = module.exports = loopback();
