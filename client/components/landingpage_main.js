@@ -141,7 +141,7 @@ class _HomePage extends Component {
             return (
                 <ul className="nav navbar-nav">
                                     <li className="propClone"><Link to="/signin" className="inner-link" data-selector="nav a" style={{color: 'rgb(255, 255, 255)', backgroundColor: 'rgba(0, 0, 0, 0)', borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-21">LOG IN</Link></li>
-                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/signup_options"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
+                                    <li className="nav-button propClone float-left btn-medium sm-no-margin-tb"><Link className="inner-link" to="/pricing"  className="sm-text-medium display-block sm-bg-white text-black sm-padding-nav-btn width-100 sm-display-inline-block sm-width-auto" data-selector="nav a" style={{color: 'rgb(0, 0, 0)', backgroundColor: 'rgb(255, 255, 255)', borderColor: 'rgba(0, 0, 0, 0)', fontFamily: 'Montserrat, sans-serif', textTransform: 'none', fontSize: '16px', fontWeight: 700}} id="ui-id-17">SIGN UP</Link></li>
                 </ul>
             );
         }

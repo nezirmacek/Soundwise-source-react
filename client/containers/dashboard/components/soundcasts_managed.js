@@ -141,17 +141,19 @@ export default class SoundcastsManaged extends Component {
       const _soundcasts_managed = [];
       for (let id in userInfo.soundcasts_managed) {
         const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
-        if (_soundcast.title) {
-          _soundcast.id = id;
-          if (_soundcast.episodes) {
-            _soundcast.last_update = 0;
-            for (let episodeId in _soundcast.episodes) {
-              if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
-                _soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
+        if(!_soundcast.bundle) { // only renders on this page if not a bundle
+          if (_soundcast.title) {
+            _soundcast.id = id;
+            if (_soundcast.episodes) {
+              _soundcast.last_update = 0;
+              for (let episodeId in _soundcast.episodes) {
+                if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
+                  _soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
+                }
               }
             }
+            _soundcasts_managed.push(_soundcast);
           }
-          _soundcasts_managed.push(_soundcast);
         }
       }
 
@@ -180,7 +182,7 @@ export default class SoundcastsManaged extends Component {
                 return (
                   <div className="row" key={i} style={{...styles.row,        }}>
                     <div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-
+                      <div className='row'>
                         <div className='col-md-2 col-sm-2 col-xs-2'>
                           <img src={soundcast.imageURL} style={styles.soundcastImage} />
                         </div>
@@ -195,33 +197,6 @@ export default class SoundcastsManaged extends Component {
                             </div>
                             ||
                             null
-                          }
-                          {
-                            soundcast.landingPage
-                            &&
-                            <div style={{...styles.soundcastUpdated, }}>
-                              <a
-                                target='_blank'
-                                href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
-                                style={{cursor: 'pointer'}}>
-                                <span
-                                  datatoggle="tooltip" dataplacement="top" title="view soundcast landing page"
-                                  style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
-                              </a>
-                              <a
-                                target='_blank'
-                                href={soundcast.prices && soundcast.prices[0].price > 0 && `https://mysoundwise.com/soundcast_checkout?soundcast_id=${soundcast.id}` || `https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
-                                style={{paddingLeft: 15}}>
-                                <span
-                                  datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
-                                  style={{color: Colors.link}}><strong>Signup form</strong></span>
-                              </a>
-                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
-                            </div>
-                            ||
-                            <div style={{...styles.soundcastUpdated, }}>
-                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)}  style={{ cursor: 'pointer'}}>Delete</span>
-                            </div>
                           }
                         </div>
                         <div className='col-md-3 col-sm-4 col-xs-12'
@@ -238,7 +213,50 @@ export default class SoundcastsManaged extends Component {
                             Invite
                           </span>
                         </div>
-
+                      </div>
+                      <div className='row' style={{marginTop: 10}}>
+                        <div className='col-md-12'>
+                          {
+                            soundcast.landingPage
+                            &&
+                            <div style={{...styles.soundcastUpdated, }}>
+                              <a
+                                target='_blank'
+                                href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
+                                style={{cursor: 'pointer'}}>
+                                <span
+                                  datatoggle="tooltip" dataplacement="top" title="view soundcast landing page"
+                                  style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
+                              </a>
+                              <a
+                                target='_blank'
+                                href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
+                                style={{paddingLeft: 15}}>
+                                <span
+                                  datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
+                                  style={{color: Colors.link}}><strong>Signup form</strong></span>
+                              </a>
+                              {
+                                soundcast.prices && soundcast.prices[0].price > 0 &&
+                                <a
+                                  target='_blank'
+                                  href={`https://mysoundwise.com/soundcast_checkout?soundcast_id=${soundcast.id}`}
+                                  style={{paddingLeft: 15}}>
+                                  <span
+                                    datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
+                                    style={{color: Colors.mainGreen}}><strong>Checkout form</strong></span>
+                                </a>
+                                || null
+                              }
+                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
+                            </div>
+                            ||
+                            <div style={{...styles.soundcastUpdated, }}>
+                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)}  style={{ cursor: 'pointer'}}>Delete</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                       <div className="col-md-4 col-sm-4 col-xs-12"

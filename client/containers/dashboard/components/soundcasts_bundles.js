@@ -1,6 +1,3 @@
-/**
- * Created by developer on 09.08.17.
- */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
@@ -141,63 +138,79 @@ export default class SoundcastsBundles extends Component {
                 return (
                   <div className="row" key={i} style={{...styles.row,        }}>
                     <div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
-
-                        <div className='col-md-2 col-sm-2 col-xs-2'>
-                          <img src={soundcast.imageURL} style={styles.soundcastImage} />
+                        <div className='row'>
+                          <div className='col-md-2 col-sm-2 col-xs-2'>
+                            <img src={soundcast.imageURL} style={styles.soundcastImage} />
+                          </div>
+                          <div className='col-md-7 col-sm-6 col-xs-10'
+                            style={styles.soundcastDescription}>
+                            <span style={styles.soundcastTitle}>{soundcast.title}</span>
+                            {
+                              soundcast.last_update
+                              &&
+                              <div style={styles.soundcastUpdated}>
+                                                      Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
+                              </div>
+                              ||
+                              null
+                            }
+                          </div>
+                          <div className='col-md-3 col-sm-4 col-xs-12'
+                            style={{...styles.subscribers, textAlign:'center'}}>
+                            <span style={styles.soundcastUpdated}>
+                                {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
+                            </span>
+                            <span
+                              datatoggle="tooltip" dataplacement="top" title="invite listeners"
+                              onClick={() => this.handleModal(soundcast)}
+                              style={styles.addLink}>
+                              Invite
+                            </span>
+                          </div>
                         </div>
-                        <div className='col-md-7 col-sm-6 col-xs-10'
-                          style={styles.soundcastDescription}>
-                          <span style={styles.soundcastTitle}>{soundcast.title}</span>
-                          {
-                            soundcast.last_update
-                            &&
-                            <div style={styles.soundcastUpdated}>
-                                                    Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
-                            </div>
-                            ||
-                            null
-                          }
-                          {
-                            soundcast.landingPage
-                            &&
-                            <div style={{...styles.soundcastUpdated, }}>
-                              <a
-                                target='_blank'
-                                href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
-                                style={{cursor: 'pointer'}}>
-                                <span
-                                  datatoggle="tooltip" dataplacement="top" title="view soundcast landing page"
-                                  style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
-                              </a>
-                              <a
-                                target='_blank'
-                                href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
-                                style={{paddingLeft: 15}}>
-                                <span
-                                  datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
-                                  style={{color: Colors.link}}><strong>Signup form</strong></span>
-                              </a>
-                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
-                            </div>
-                            ||
-                            <div style={{...styles.soundcastUpdated, }}>
-                              <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)}  style={{ cursor: 'pointer'}}>Delete</span>
-                            </div>
-                          }
+                        <div className='row' style={{marginTop: 10}}>
+                          <div className='col-md-12'>
+                            {
+                              soundcast.landingPage
+                              &&
+                              <div style={{...styles.soundcastUpdated, }}>
+                                <a
+                                  target='_blank'
+                                  href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
+                                  style={{cursor: 'pointer'}}>
+                                  <span
+                                    datatoggle="tooltip" dataplacement="top" title="view soundcast landing page"
+                                    style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
+                                </a>
+                                <a
+                                  target='_blank'
+                                  href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
+                                  style={{paddingLeft: 15}}>
+                                  <span
+                                    datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
+                                    style={{color: Colors.link}}><strong>Signup form</strong></span>
+                                </a>
+                                {
+                                  soundcast.prices && soundcast.prices[0].price > 0 &&
+                                  <a
+                                    target='_blank'
+                                    href={`https://mysoundwise.com/soundcast_checkout?soundcast_id=${soundcast.id}`}
+                                    style={{paddingLeft: 15}}>
+                                    <span
+                                      datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
+                                      style={{color: Colors.mainGreen}}><strong>Checkout form</strong></span>
+                                  </a>
+                                  || null
+                                }
+                                <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
+                              </div>
+                              ||
+                              <div style={{...styles.soundcastUpdated, }}>
+                                <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)}  style={{ cursor: 'pointer'}}>Delete</span>
+                              </div>
+                            }
+                          </div>
                         </div>
-                        <div className='col-md-3 col-sm-4 col-xs-12'
-                          style={{...styles.subscribers, textAlign:'center'}}>
-                          <span style={styles.soundcastUpdated}>
-                              {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
-                          </span>
-                          <span
-                            datatoggle="tooltip" dataplacement="top" title="invite listeners"
-                            onClick={() => this.handleModal(soundcast)}
-                            style={styles.addLink}>
-                            Invite
-                          </span>
-                        </div>
-
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                       <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
