@@ -10,7 +10,6 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
   const soundcastsRef = firebase.database().ref('/soundcasts');
   const episodesRef = firebase.database().ref('/episodes');
   const likesRef = firebase.database().ref('/likes');
-  var newLikeId;
   // soundcastsRef.on('child_changed', soundcast => {
   //   const soundcastObj = soundcast.val();
   //   const soundcastId = soundcast.key;
@@ -18,7 +17,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
   //     for(var key in soundcastObj.announcements) {
   //       if(soundcastObj.announcements[key].likes) {
   //         for(var userId in soundcastObj.announcements[key].likes) {
-  //           newLikeId = `${userId}-${key}`;
+  //           const newLikeId = `${userId}-${key}`;
   //           firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
   //             if(!snapshot.val()) { // if data doesn't already exist
   //               firebase.database().ref(`/likes/${newLikeId}`).set({
@@ -39,7 +38,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
     const episodeId = episode.key;
     if(episodeObj.likes) {
       for(var key in episodeObj.likes) {
-          newLikeId = `${key}-${episodeId}`;
+          const newLikeId = `${key}-${episodeId}`;
           firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
             if(!snapshot.val()) {
               firebase.database().ref(`/likes/${newLikeId}`).set({
@@ -58,7 +57,6 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
 module.exports.transferMessages = () => { // add or delete data from messages node and likes node in firebase according to changes to 'announcements' under soundcast node
   const soundcastsRef = firebase.database().ref('/soundcasts');
   const messagesRef = firebase.database().ref('/messages');
-  var newLikeId;
   soundcastsRef.on('child_changed', soundcast => {
     const soundcastObj = soundcast.val();
     const soundcastId = soundcast.key;
@@ -73,7 +71,7 @@ module.exports.transferMessages = () => { // add or delete data from messages no
         });
         if(soundcastObj.announcements[key].likes) {
           for(var userId in soundcastObj.announcements[key].likes) {
-            newLikeId = `${userId}-${key}`;
+            const newLikeId = `${userId}-${key}`;
             firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
               if(!snapshot.val()) { // if data doesn't already exist
                 firebase.database().ref(`/likes/${newLikeId}`).set({
