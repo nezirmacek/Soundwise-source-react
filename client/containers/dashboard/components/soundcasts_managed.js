@@ -205,7 +205,7 @@ export default class SoundcastsManaged extends Component {
                                 href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
                                 style={{cursor: 'pointer'}}>
                                 <span
-                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
+                                  datatoggle="tooltip" dataplacement="top" title="view soundcast landing page"
                                   style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
                               </a>
                               <a
@@ -213,7 +213,7 @@ export default class SoundcastsManaged extends Component {
                                 href={soundcast.prices && soundcast.prices[0].price > 0 && `https://mysoundwise.com/soundcast_checkout?soundcast_id=${soundcast.id}` || `https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
                                 style={{paddingLeft: 15}}>
                                 <span
-                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast signup form"
+                                  datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
                                   style={{color: Colors.link}}><strong>Signup form</strong></span>
                               </a>
                               <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
@@ -232,7 +232,7 @@ export default class SoundcastsManaged extends Component {
                           }
                           </span>
                           <span
-                            dataToggle="tooltip" dataPlacement="top" title="invite listeners"
+                            datatoggle="tooltip" dataplacement="top" title="invite listeners"
                             onClick={() => this.handleModal(soundcast)}
                             style={styles.addLink}>
                             Invite
@@ -242,10 +242,10 @@ export default class SoundcastsManaged extends Component {
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                       <div className="col-md-4 col-sm-4 col-xs-12"
-                        dataToggle="tooltip" dataPlacement="top" title="existing episodes"
+                        datatoggle="tooltip" dataplacement="top" title="existing episodes"
                         style={{...styles.button, borderColor: Colors.link, color: Colors.link}} onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}><span>Episodes</span></div>
                       <div className="col-md-4 col-sm-4 col-xs-12"
-                        dataToggle="tooltip" dataPlacement="top" title="show soundcast analytics"
+                        datatoggle="tooltip" dataplacement="top" title="show soundcast analytics"
                         onClick={() => history.push({
                         pathname: '/dashboard/analytics',
                         state: {
@@ -253,7 +253,7 @@ export default class SoundcastsManaged extends Component {
                         }
                       })} style={{...styles.button, borderColor: Colors.mainOrange, color: Colors.mainOrange}}><span>Analytics</span></div>
                       <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
-                        <span dataToggle="tooltip" dataPlacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
+                        <span datatoggle="tooltip" dataplacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
                           Edit
                         </span>
                       </div>

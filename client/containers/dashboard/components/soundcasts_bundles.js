@@ -166,7 +166,7 @@ export default class SoundcastsBundles extends Component {
                                 href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
                                 style={{cursor: 'pointer'}}>
                                 <span
-                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast landing page"
+                                  datatoggle="tooltip" dataplacement="top" title="view soundcast landing page"
                                   style={{color: Colors.mainOrange}}><strong>Landing page</strong></span>
                               </a>
                               <a
@@ -174,7 +174,7 @@ export default class SoundcastsBundles extends Component {
                                 href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
                                 style={{paddingLeft: 15}}>
                                 <span
-                                  dataToggle="tooltip" dataPlacement="top" title="view soundcast signup form"
+                                  datatoggle="tooltip" dataplacement="top" title="view soundcast signup form"
                                   style={{color: Colors.link}}><strong>Signup form</strong></span>
                               </a>
                               <span className='text-dark-gray' onClick={() => that.deleteSoundcast(soundcast.id)} style={{paddingLeft: 15,  cursor: 'pointer'}}>Delete</span>
@@ -191,7 +191,7 @@ export default class SoundcastsBundles extends Component {
                               {soundcast.subscribed && Object.keys(soundcast.subscribed).length || 0} subscribed
                           </span>
                           <span
-                            dataToggle="tooltip" dataPlacement="top" title="invite listeners"
+                            datatoggle="tooltip" dataplacement="top" title="invite listeners"
                             onClick={() => this.handleModal(soundcast)}
                             style={styles.addLink}>
                             Invite
@@ -201,7 +201,7 @@ export default class SoundcastsBundles extends Component {
                     </div>
                     <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                       <div className="col-md-2 col-sm-2 col-xs-12" style={{...styles.button, borderWidth: 0, color: Colors.link}}>
-                        <span dataToggle="tooltip" dataPlacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
+                        <span datatoggle="tooltip" dataplacement="top" title="edit soundcast"  onClick={() => this.editSoundcast(soundcast.id, soundcast)}>
                           Edit
                         </span>
                       </div>

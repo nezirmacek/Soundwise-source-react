@@ -40,17 +40,17 @@ import {Notice} from './components/notice';
 import {AppSignup} from './containers/app_signup';
 import {AppSignin} from './containers/app_signin';
 import SignupOptions from './containers/signup_options';
-import {Courses} from './containers/courses';
-import {MyCourses} from './containers/mycourses';
+// import {Courses} from './containers/courses';
+// import {MyCourses} from './containers/mycourses';
 import {MySoundcasts} from './containers/mysoundcasts';
 import {SoundcastPlayingPage} from './containers/soundcast_player/soundcast_playing_page';
 import {UserProfile} from './containers/user_profile';
-import {Course} from './containers/course_page';
-import {Staged_Course} from './containers/staged_course_page';
-import {Course_Purchased} from './containers/course_page_purchased';
+// import {Course} from './containers/course_page';
+// import {Staged_Course} from './containers/staged_course_page';
+// import {Course_Purchased} from './containers/course_page_purchased';
 import {Cart} from './containers/cart/cart';
 import {Checkout} from './containers/checkout';
-import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
+// import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import {Dashboard} from './containers/dashboard/dashboard';
 import {SoundcastPage} from './containers/soundcast_landing_page/soundcast_page';
 import BlogList from './containers/blog/blog-list';
@@ -257,16 +257,12 @@ class _Routes extends Component {
                 <Route path="/blog/p/:page" component={BlogList} />
                 <Route exact={true} path="/blog/post/:slug" component={BlogPost} />
                 <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
-                <Route exact path="/myprograms" component={MyCourses}/>
                 <Route exact path="/mysoundcasts" component={MySoundcasts}/>
                 <Route exact path="/mysoundcasts/:soundcastId" component={SoundcastPlayingPage}/>
                 <Route exact path="/mysoundcasts/:soundcastId/:episodeId" component={SoundcastPlayingPage}/>
                 <Route exact path="/myprofile" component={UserProfile}/>
-                <Route path="/myprograms/:courseId" component={Course_Purchased}/>
                 <Route path="/cart" component={Cart} />
                 <Route path="/confirmation" component={OrderConfirmation} />
-                <Route path="/courses/:courseId" component={Course} />
-                <Route path="/staging/:courseId" component={Staged_Course} />
                 <Route path="/password_reset" component={PassRecovery} />
                 <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
                 <Route path="/dashboard/:tab/:id" component={Dashboard} />

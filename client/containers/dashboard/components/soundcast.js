@@ -233,7 +233,7 @@ export default class Soundcast extends Component {
                       return (
                         <Draggable key={episode.index} draggableId={episode.index}>
                           {(provided, snapshot) => (
-                            <div className='' style={{cursor: 'move'}} dataToggle="tooltip" dataPlacement="top" title="drag to reorder">
+                            <div className='' style={{cursor: 'move'}} datatoggle="tooltip" dataplacement="top" title="drag to reorder">
                               <div
                                 ref={provided.innerRef}
                                 className='col-md-12'
@@ -283,7 +283,7 @@ export default class Soundcast extends Component {
                                   <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</div>
                                   <div
                                     onClick={() => that.setCurrentEpisode(episode)}
-                                    className='col-md-2' style={{...styles.td, textAlign: 'center'}} dataToggle="tooltip" dataPlacement="top" title="episode analytics">
+                                    className='col-md-2' style={{...styles.td, textAlign: 'center'}} datatoggle="tooltip" dataplacement="top" title="episode analytics">
 
                                     <i  className="fas fa-2x fa-chart-bar" style={styles.itemChartIcon}></i>
                                   </div>

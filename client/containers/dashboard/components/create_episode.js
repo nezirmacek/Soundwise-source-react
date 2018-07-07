@@ -678,7 +678,7 @@ class _CreateEpisode extends Component {
                     <div style={styles.recordButton} onClick={e => that.handleMicrophone(e)}>
                         <span className="fa-layers  fa-4x">
                           <FontAwesomeIcon icon={faCircle} color={Colors.mainOrange}/>
-                          <FontAwesomeIcon icon={isRecording ? faStop : faMicrophone} color='white' inverse transform="shrink-8"/>
+                          <FontAwesomeIcon icon={isRecording ? faStop : faMicrophone} color='white' inverse='true' transform="shrink-8"/>
                         </span>
                     </div>
                     <div style={styles.micWrapper}>
