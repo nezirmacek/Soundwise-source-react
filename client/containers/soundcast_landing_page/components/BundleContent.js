@@ -26,33 +26,7 @@ export default class BundleContent extends Component {
     super(props);
 
     this.state = {
-      soundcasts: [
-        {
-          short_description: "True Divine Nature",
-          title: "Matt Kahn0",
-          imageURL:
-            "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        },
-        {
-          short_description: "Inspirations from True Divine Nature",
-          title: "Matt Kahn1",
-          imageURL:
-            "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        },
-        {
-          short_description: "Inspirations from True Divine Nature12345",
-          title: "Matt Kahn241",
-          imageURL:
-            "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        }
-        // {
-        //   short_description: "Inspirations from True Divine Nature12345",
-        //   title: "Matt Kahn22",
-        //   imageURL:
-        //     "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        // },
-      ],
-      cardHeight: 0
+      soundcasts: []
     };
 
     this.settings = {
@@ -93,6 +67,23 @@ export default class BundleContent extends Component {
     };
   }
 
+  componentDidMount() {
+    let soundcasts = [];
+    const { soundcastsIds } = this.props;
+    const promises = soundcastsIds.map(id =>
+      firebase
+        .database()
+        .ref(`soundcasts/${id}`)
+        .once("value")
+        .then(snapshot => {
+          const soundcast = { id: snapshot.key, ...snapshot.val() };
+          soundcasts.push(soundcast);
+        })
+        .catch(e => console.log(e))
+    );
+    Promise.all(promises).then(() => this.setState({ soundcasts }));
+  }
+
   setMaxCardHeight(height) {
     if (!this.state.cardHeight || height > this.state.cardHeight) {
       this.setState({ cardHeight: height });
@@ -100,6 +91,7 @@ export default class BundleContent extends Component {
   }
 
   render() {
+    console.log(this.state.soundcasts);
     return (
       <section className=" bg-white related-courses">
         <div className="container">

@@ -19,7 +19,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Levels from 'react-activity/lib/Levels';
 import Spinner from 'react-activity/lib/Spinner';
 // import CircularProgressbar from 'react-circular-progressbar';
-import ProgressLabel from 'react-progress-label';
+// import ProgressLabel from 'react-progress-label';
 import PDF from 'react-pdf-js';
 import { IoChevronLeft, IoChevronRight } from 'react-icons/lib/io';
 
@@ -588,7 +588,7 @@ class _CourseSection extends Component {
                         <div className='row' style={{display: 'flex', alignItems: 'center'}}>
                             <div className=''
                                  style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'center', width: '8%', paddingLeft: '0.5em'}}>
-                                <ProgressLabel
+                                {/* <ProgressLabel
                                     progress={progress}
                                     startDegree={60}
                                     progressWidth={4}
@@ -598,7 +598,7 @@ class _CourseSection extends Component {
                                     fillColor="white"
                                     trackColor="#D3D3D3"
                                     progressColor="#F76B1C">
-                                </ProgressLabel>
+                                </ProgressLabel> */}
                             </div>
                             <div className='row'
                                  style={{paddingLeft: '1em', display: 'flex', alignItems: 'center', width: '75%'}}>
