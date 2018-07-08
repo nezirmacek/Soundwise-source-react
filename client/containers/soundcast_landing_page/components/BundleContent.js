@@ -1,6 +1,25 @@
 import React, { Component } from "react";
 import firebase from "firebase";
 import Slider from "react-slick";
+import SoundcastCard from "./SoundcastCard";
+
+function SliderNextArrow(props) {
+  const { onClick } = props;
+  return (
+    <div className="slick-override-arrow -next-arrow" onClick={onClick}>
+      <i className="ti-angle-right" />
+    </div>
+  );
+}
+
+function SliderPrevArrow(props) {
+  const { onClick } = props;
+  return (
+    <div className="slick-override-arrow -prev-arrow" onClick={onClick}>
+      <i className="ti-angle-left" />
+    </div>
+  );
+}
 
 export default class BundleContent extends Component {
   constructor(props) {
@@ -25,106 +44,124 @@ export default class BundleContent extends Component {
           title: "Matt Kahn241",
           imageURL:
             "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        },
-        {
-          short_description: "Inspirations from True Divine Nature12345",
-          title: "Matt Kahn22",
-          imageURL:
-            "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        },
-        {
-          short_description: "Inspirations from True Divine Nature12345",
-          title: "Matt Kahn21",
-          imageURL:
-            "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
-        },
-        {
-          short_description: "Nature12345",
-          title: "Matt Kahn3",
-          imageURL:
-            "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
         }
-      ]
+        // {
+        //   short_description: "Inspirations from True Divine Nature12345",
+        //   title: "Matt Kahn22",
+        //   imageURL:
+        //     "https://s3.amazonaws.com/soundwiseinc/demo/69c4cfd0-a395-11e7-8d5d-ef57ff420759.jpg"
+        // },
+      ],
+      cardHeight: 0
+    };
+
+    this.settings = {
+      dots: this.state.soundcasts.length > 3,
+      infinite: this.state.soundcasts.length > 3,
+      speed: 500,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      arrows: this.state.soundcasts.length > 3,
+      autoplay: false,
+      swipe: true,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 1,
+            arrows: this.state.soundcasts.length > 2,
+            infinite: this.state.soundcasts.length > 2,
+            dots: true,
+            autoplay: false
+          }
+        },
+        {
+          breakpoint: 600,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: this.state.soundcasts.length > 1,
+            infinite: this.state.soundcasts.length > 1,
+            dots: true,
+            autoplay: false
+          }
+        }
+      ],
+      nextArrow: <SliderNextArrow />,
+      prevArrow: <SliderPrevArrow />
     };
   }
 
-  componentDidMount() {
-    // const that = this;
-    // let tempSoundcasts = [];
-    // console.log(this.props.soundcastsIds);
-    // const promises = this.props.soundcastsIds.map(id =>
-    //   firebase
-    //     .database()
-    //     .ref(`soundcasts/${id}`)
-    //     .once("value")
-    //     .then(snapshot => console.log(1) /*;soundcasts.push(snapshot.val())}*/)
-    //     .catch(x => console.log(x))
-    // );
-    // console.log(promises);
-    // Promise.all(promises).then(() =>
-    //   that.setState({ soundcasts: tempSoundcasts })
-    // );
+  setMaxCardHeight(height) {
+    if (!this.state.cardHeight || height > this.state.cardHeight) {
+      this.setState({ cardHeight: height });
+    }
   }
 
   render() {
-    const { soundcasts } = this.state;
     return (
-      <div>
-        <div className="row">
-          <div className="col-md-12 col-sm-12 col-xs-12 text-center padding-40px-tb">
-            <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
-              CONTENT
-            </h2>
+      <section className=" bg-white related-courses">
+        <div className="container">
+          <div className="padding-30px-tb xs-padding-30px-tb">
+            <div className="row ">
+              <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                <h2
+                  className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text"
+                  id="tz-slider-text125"
+                >
+                  {this.props.title}
+                </h2>
+              </div>
+            </div>
+            <div style={style.sliderWrapper} className="row ">
+              {(this.state.soundcasts.length <= 2 && (
+                <div
+                  className="col-md-12 center-col slick-slide"
+                  style={{ display: "flex", justifyContent: "space-evenly" }}
+                >
+                  {this.state.soundcasts.map((soundcast, i) => {
+                    return (
+                      <div key={i} className="col-md-4 col-sm-4 col-xs-12 ">
+                        <SoundcastCard
+                          soundcast={soundcast}
+                          cb={this.setMaxCardHeight.bind(this)}
+                          index={i}
+                          blockIndex={this.props.index}
+                          cardHeight={this.state.cardHeight}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )) || (
+                <Slider {...this.settings}>
+                  {this.state.soundcasts.map((soundcast, i) => {
+                    return (
+                      <div key={i}>
+                        <SoundcastCard
+                          soundcast={soundcast}
+                          cb={this.setMaxCardHeight.bind(this)}
+                          index={i}
+                          blockIndex={this.props.index}
+                          cardHeight={this.state.cardHeight}
+                        />
+                      </div>
+                    );
+                  })}
+                </Slider>
+              )}
+            </div>
           </div>
         </div>
-        <div>
-          <Slider centerPadding={0} lidesToShow={3}>
-            {soundcasts.map(soundcast => {
-              return (
-                <div style={styles.soundcastContainer}>
-                  <img
-                    src={soundcast.imageURL}
-                    style={{ width: 250, height: 250 }}
-                  />
-                  <div>
-                    <h4 style={styles.title}>{soundcast.title}</h4>
-                    <h5 style={styles.description}>
-                      {soundcast.short_description}
-                    </h5>
-                  </div>
-                </div>
-              );
-            })}
-          </Slider>
-        </div>
-      </div>
+      </section>
     );
   }
 }
 
-const styles = {
-  soundcastContainer: {
-    // alignItems: "center",
-    // justifyContent: "center",
-    width: "250px",
-    height: "400px",
-    borderStyle: "solid",
-    borderWidth: "3px",
-    borderColor: "red"
-  },
-  title: {
-    margin: 0,
-    width: "250px",
-    fontSize: "22px",
-    fontWeight: "bold",
-    fontStyle: "normal",
-    textAlign: "left"
-  },
-  description: {
-    margin: 0,
-    width: "250px",
-    fontSize: "16px",
-    fontStyle: "normal",
-    textAlign: "left"
+const style = {
+  sliderWrapper: {
+    width: "90%",
+    margin: "0 auto"
   }
 };
