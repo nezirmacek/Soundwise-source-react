@@ -76,9 +76,7 @@ export default class BundleContent extends Component {
         .ref(`soundcasts/${id}`)
         .once("value")
         .then(snapshot => {
-          console.log(snapshot);
-          const soundcast = snapshot.val();
-          console.log(snapshot.val());
+          const soundcast = { id: snapshot.key, ...snapshot.val() };
           soundcasts.push(soundcast);
         })
         .catch(e => console.log(e))
@@ -93,6 +91,7 @@ export default class BundleContent extends Component {
   }
 
   render() {
+    console.log(this.state.soundcasts);
     return (
       <section className=" bg-white related-courses">
         <div className="container">
