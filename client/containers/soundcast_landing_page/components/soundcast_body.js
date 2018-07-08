@@ -195,7 +195,10 @@ export default class SoundcastBody extends Component {
           {soundcast.long_description && this.renderDescription()}
           {this.props.bundle
             ? soundcast.soundcastsIncluded && (
-                <BundleContent soundcastsIds={soundcast.soundcastsIncluded} />
+                <BundleContent
+                  title="Content"
+                  soundcastsIds={soundcast.soundcastsIncluded}
+                />
               )
             : soundcast.episodes && (
                 <SoundcastContent
