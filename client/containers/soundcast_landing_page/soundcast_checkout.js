@@ -348,9 +348,11 @@ class _SoundcastCheckout extends Component {
               </div>
             </div>
           </section>
+          {
           <Payment
             soundcast={soundcast}
-            soundcastID={soundcastID}
+            soundcastID={soundcast.bundle? soundcast.soundcastsIncluded :soundcastID}
+            isBundle={soundcast.bundle}
             checked={checked}
             totalPrice={totalPrice}
             userInfo={userInfo}
@@ -363,6 +365,7 @@ class _SoundcastCheckout extends Component {
             setAddSoundcastToUser={this.setAddSoundcastToUser}
             hideCardInputs={hideCardInputs}
           />
+          }
         </div>
       )
     } else {

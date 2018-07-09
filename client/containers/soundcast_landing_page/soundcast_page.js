@@ -30,6 +30,7 @@ class _SoundcastPage extends Component {
     this.state = {
       soundcastID: '',
       soundcast: {
+        bundle: false,
         title: '',
         short_description: '',
         forSale: true,
@@ -90,6 +91,7 @@ class _SoundcastPage extends Component {
         publisherID: soundcast.val().publisherID,
         expiration,
         checkedPrice,
+        bundle:  soundcast.val().bundle,
       });
       const publisher = await firebase.database().ref('publishers/' + soundcast.val().publisherID).once('value');
       if(publisher.val()) {
@@ -189,12 +191,13 @@ class _SoundcastPage extends Component {
   render() {
     const soundcastID = this.props.match.params.id;
     const {soundcast, modalOpen, showBanner, publisherName,
-      publisherImg, publisherID, timerDigits, coupon, checkedPrice} = this.state;
+      publisherImg, publisherID, timerDigits, coupon, checkedPrice, bundle} = this.state;
     if(!soundcastID || !soundcast || (soundcast && soundcast.title && !soundcast.landingPage)) {
       return (
         <Redirect to="/notfound"/>
       )
     }
+
     return (
       <div>
         <Helmet>
@@ -279,7 +282,8 @@ class _SoundcastPage extends Component {
                     cb={this.setMaxCardHeight.bind(this)}
                     userInfo={this.props.userInfo}
                     history={this.props.history}
-              />
+                    bundle={bundle}
+                    />
             </div>
             {
               showBanner &&
