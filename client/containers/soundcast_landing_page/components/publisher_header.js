@@ -186,7 +186,7 @@ class _PublisherHeader extends Component {
                 <nav className="navbar bg-white tz-header-bg no-margin alt-font shrink-header light-header">
                     <div className="container navigation-menu">
                         <div className="row">
-                            <div className="col-md-3 col-sm-6 col-xs-9">
+                            <div className="col-md-6 col-sm-6 col-xs-9">
                                 <Link to={`/publishers/${publisherID}`}>
                                   <div style={{display: 'flex', alignItems: 'center'}}>
                                     <div style={{...styles.profileImage, backgroundImage: `url(${publisherImg ? publisherImg : ''})`}}>
@@ -195,7 +195,7 @@ class _PublisherHeader extends Component {
                                   </div>
                                 </Link>
                             </div>
-                            <div className="col-md-9 col-sm-6 col-xs-3 position-inherit">
+                            <div className="col-md-6 col-sm-6 col-xs-3 position-inherit">
                                 {/*menu button for md, sm, xs*/}
                                 <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" className="navbar-toggle collapsed" type="button">
                                     <span className="sr-only">Toggle navigation</span>

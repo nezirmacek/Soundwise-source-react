@@ -398,8 +398,4 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 7976206f1c2c04480041071937c5f09a12f0cf4e

@@ -47,7 +47,7 @@ export default class Publisher extends Component {
         let soundcast;
         for(let i = 0; i < soundcastsArr.length; i++) {
           soundcast = await firebase.database().ref(`soundcasts/${soundcastsArr[i]}`).once('value');
-          if(soundcast.val().landingPage && soundcast.val().published) {
+          if(soundcast.val() && soundcast.val().landingPage && soundcast.val().published) {
             soundcasts.push({...soundcast.val(), id: soundcastsArr[i]});
           }
         }

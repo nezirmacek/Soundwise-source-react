@@ -93,7 +93,7 @@ export default class SoundcastBody extends Component {
                 .once("value")
                 .then(soundcastSnapshot => {
                   if (
-                    soundcastSnapshot.val().published &&
+                    soundcastSnapshot.val() && soundcastSnapshot.val().published &&
                     soundcastSnapshot.val().landingPage
                   ) {
                     const relatedSoundcast = soundcastSnapshot.val();

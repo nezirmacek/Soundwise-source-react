@@ -108,9 +108,9 @@ class _SoundcastHeader extends Component {
                     <div className="col-md-12 col-sm-12 col-xs-12">
                       <div
                         style={{
-                          height: 80,
-                          display: "flex",
-                          alignItems: "center"
+                          // height: 80,
+                          // display: "flex",
+                          // alignItems: "center"
                         }}
                       >
                         <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text">
