@@ -5,6 +5,7 @@ import SoundcastCard from "./SoundcastCard";
 
 function SliderNextArrow(props) {
   const { onClick } = props;
+
   return (
     <div className="slick-override-arrow -next-arrow" onClick={onClick}>
       <i className="ti-angle-right" />
@@ -30,12 +31,12 @@ export default class BundleContent extends Component {
     };
 
     this.settings = {
-      dots: this.state.soundcasts.length > 3,
-      infinite: this.state.soundcasts.length > 3,
+      dots: true,
+      infinite: true,
       speed: 500,
       slidesToShow: 3,
       slidesToScroll: 1,
-      arrows: this.state.soundcasts.length > 3,
+      arrows: true,
       autoplay: false,
       swipe: true,
       responsive: [
@@ -70,16 +71,19 @@ export default class BundleContent extends Component {
   componentDidMount() {
     let soundcasts = [];
     const { soundcastsIds } = this.props;
-    const promises = soundcastsIds.map(id =>
-      firebase
+    console.log(soundcastsIds);
+    const promises = soundcastsIds.map(id => {
+      console.log(id);
+      return firebase
         .database()
-        .ref(`/soundcasts/${id}`)
-        .once("value", snapshot => {
+        .ref(`soundcasts/${id}`)
+        .once("value")
+        .then(snapshot => {
           const soundcast = { id: snapshot.key, ...snapshot.val() };
           soundcasts.push(soundcast);
         })
-        .catch(e => console.log(e))
-    );
+        .catch(e => console.log(e));
+    });
     Promise.all(promises).then(() => this.setState({ soundcasts }));
   }
 
@@ -90,7 +94,6 @@ export default class BundleContent extends Component {
   }
 
   render() {
-    console.log(this.state.soundcasts);
     return (
       <section className=" bg-white related-courses">
         <div className="container">
@@ -106,7 +109,7 @@ export default class BundleContent extends Component {
               </div>
             </div>
             <div style={style.sliderWrapper} className="row ">
-              {(this.state.soundcasts.length <= 2 && (
+              {this.state.soundcasts.length < 4 ? (
                 <div
                   className="col-md-12 center-col slick-slide"
                   style={{ display: "flex", justifyContent: "space-evenly" }}
@@ -125,7 +128,7 @@ export default class BundleContent extends Component {
                     );
                   })}
                 </div>
-              )) || (
+              ) : (
                 <Slider {...this.settings}>
                   {this.state.soundcasts.map((soundcast, i) => {
                     return (
@@ -152,6 +155,7 @@ export default class BundleContent extends Component {
 
 const style = {
   sliderWrapper: {
+    paddingTop: "55px",
     width: "90%",
     margin: "0 auto"
   }

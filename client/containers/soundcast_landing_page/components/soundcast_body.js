@@ -10,6 +10,7 @@ import Instructor from "./instructor";
 import SoundcastContent from "./soundcast_content";
 import BundleContent from "./BundleContent";
 import RelatedSoundcasts from "./related_soundcasts";
+import { LexRuntime } from "aws-sdk";
 // import RelatedCourses from './related_courses';
 // import AddCourseToUser from '../helpers/add_course_to_user'; // this need to contain { props: { course, userInfo, history } }
 
@@ -20,6 +21,7 @@ export default class SoundcastBody extends Component {
     this.state = {
       soundcastID: "",
       soundcast: {
+        bundle: false,
         title: "",
         short_description: "",
         imageURL: "",
@@ -69,7 +71,7 @@ export default class SoundcastBody extends Component {
 
   retrieveRelatedSoundcasts(soundcast, soundcastID) {
     const that = this;
-    const soundcastsArr = [];
+    let soundcastsArr = [];
     firebase
       .database()
       .ref(`publishers/${soundcast.publisherID}`)

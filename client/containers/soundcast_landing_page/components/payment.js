@@ -274,7 +274,7 @@ export default class Payment extends Component {
                     .database()
                     .ref(
                       `publishers/${
-                        soundcasta.publisherID
+                        soundcast.publisherID
                       }/freeSubscribers/${userId}/${soundcastID}`
                     )
                     .set(true)
