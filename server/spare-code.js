@@ -54,7 +54,7 @@
 //         json: newSession
 //       };
 //       request(newOption).
-//       then(data => {})
+//       then(data => {console.log('session changed')})
 //       .catch(err => console.log(err));
 //     }
 //   });
