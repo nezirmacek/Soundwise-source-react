@@ -73,9 +73,8 @@ export default class BundleContent extends Component {
     const promises = soundcastsIds.map(id =>
       firebase
         .database()
-        .ref(`soundcasts/${id}`)
-        .once("value")
-        .then(snapshot => {
+        .ref(`/soundcasts/${id}`)
+        .once("value", snapshot => {
           const soundcast = { id: snapshot.key, ...snapshot.val() };
           soundcasts.push(soundcast);
         })
