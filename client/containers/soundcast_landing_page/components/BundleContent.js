@@ -69,22 +69,27 @@ export default class BundleContent extends Component {
   }
 
   componentDidMount() {
-    let soundcasts = [];
+    let tempSoundcasts = [];
     const { soundcastsIds } = this.props;
-    console.log(soundcastsIds);
+
     const promises = soundcastsIds.map(id => {
-      console.log(id);
-      return firebase
-        .database()
-        .ref(`soundcasts/${id}`)
-        .once("value")
-        .then(snapshot => {
-          const soundcast = { id: snapshot.key, ...snapshot.val() };
-          soundcasts.push(soundcast);
-        })
-        .catch(e => console.log(e));
+      const ref = firebase.database().ref(`soundcasts/${id}`);
+      const promise = this.sleep(500).then(() => ref.once("value"));
+
+      return promise.then(snapshot => {
+        const soundcast = { id: snapshot.key, ...snapshot.val() };
+        tempSoundcasts.push(soundcast);
+      });
     });
-    Promise.all(promises).then(() => this.setState({ soundcasts }));
+
+    Promise.all(promises).then(() => {
+      console.log(tempSoundcasts);
+      this.setState({ soundcasts: tempSoundcasts });
+    });
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   setMaxCardHeight(height) {
