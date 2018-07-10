@@ -10,7 +10,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
   const soundcastsRef = firebase.database().ref('/soundcasts');
   const episodesRef = firebase.database().ref('/episodes');
   const likesRef = firebase.database().ref('/likes');
-  // soundcastsRef.on('child_changed', soundcast => {
+  // soundcastsRef.limitToLast(1).on('child_added', soundcast => {
   //   const soundcastObj = soundcast.val();
   //   const soundcastId = soundcast.key;
   //   if(soundcastObj.announcements) {
@@ -33,7 +33,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
   //     }
   //   }
   // });
-  episodesRef.on('child_changed', episode => {
+  episodesRef.limitToLast(1).on('child_added', episode => {
     const episodeObj = episode.val();
     const episodeId = episode.key;
     if(episodeObj.likes) {
@@ -57,7 +57,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
 module.exports.transferMessages = () => { // add or delete data from messages node and likes node in firebase according to changes to 'announcements' under soundcast node
   const soundcastsRef = firebase.database().ref('/soundcasts');
   const messagesRef = firebase.database().ref('/messages');
-  soundcastsRef.on('child_changed', soundcast => {
+  soundcastsRef.limitToLast(1).on('child_added', soundcast => {
     const soundcastObj = soundcast.val();
     const soundcastId = soundcast.key;
     if(soundcastObj.announcements) {
