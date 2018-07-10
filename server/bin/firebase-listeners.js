@@ -95,6 +95,8 @@ module.exports.firebaseListeners = () => {  // sync firebase with postgres
   const commentsRef = firebase.database().ref('/comments');
   const likesRef = firebase.database().ref('/likes');
   const soundcastsRef = firebase.database().ref('/soundcasts');
+  const episodesRef = firebase.database().ref('/episodes');
+  const messagesRef = firebase.database().ref('/messages');
 
   usersRef.on('child_added', addOrUpdateUserRecord);
   usersRef.on('child_changed', addOrUpdateUserRecord);
@@ -110,6 +112,16 @@ module.exports.firebaseListeners = () => {  // sync firebase with postgres
   soundcastsRef.on('child_added', addOrUpdateSoundcastRecord);
   soundcastsRef.on('child_changed', addOrUpdateSoundcastRecord);
   soundcastsRef.on('child_removed', deleteSoundcastRecord);
+
+  // Events table
+  episodesRef.on('child_added', addEpisodeEvent);
+  episodesRef.on('child_removed', removeEpisodeEvent);
+  likesRef.on('child_added', addLikeEvent);
+  likesRef.on('child_removed', removeLikeEvent);
+  commentsRef.on('child_added', addCommentOrReplyEvent);
+  commentsRef.on('child_removed', removeCommentOrReplyEvent);
+  messagesRef.on('child_added', addMessageEvent);
+  messagesRef.on('child_removed', removeMessageEvents);
 };
 
 function addOrUpdateUserRecord(user) {
@@ -312,5 +324,260 @@ function deleteSoundcastRecord(soundcast) {
   })
   .catch(err => {
       console.log('error deleting soundcast data: ', err);
+  });
+};
+
+// functions for the Events table
+function getFirebaseUserById(userId) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref(`/users/${userId}`).once('value', snapshot => {
+      const user = snapshot.val();
+      if(user) {
+        return resolve(user);
+      } else {
+        return resolve({});
+      }
+    });
+  });
+}
+
+function getSoundcastById(soundcastID) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref(`/soundcasts/${soundcastID}`).once('value', snapshot => {
+      const soundcast = snapshot.val();
+      if(soundcast) {
+        return resolve(soundcast);
+      } else {
+        return resolve({});
+      }
+    });
+  });
+}
+
+function getEpisodeById(episodeId) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref(`/episodes/${episodeId}`).once('value', snapshot => {
+      const episode = snapshot.val();
+      if(soundcast) {
+        return resolve(episode);
+      } else {
+        return resolve({});
+      }
+    });
+  });
+}
+
+function getParentComment(parentId) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref(`/comments/${parentId}`).once('value', snapshot => {
+      const parentComment = snapshot.val();
+      if(parentComment) {
+        return resolve(parentComment);
+      } else {
+        return resolve({});
+      }
+    });
+  });
+}
+
+async function addEpisodeEvent(episode) {
+  if (episode.val()) {
+    const { creatorID, soundcastID, publisherID, title } = episode.val();
+    const episodeId = episode.key;
+    const user = await getFirebaseUserById(creatorID);
+    const soundcast = await getSoundcastById(soundcastID);
+    const eventObj = {
+      type: 'episode',
+      story: `${soundcast.title} published ${title}`,
+      userId: creatorID,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: soundcast.imageURL,
+      episodeId,
+      soundcastId: soundcastID,
+      publisherId: publisherID
+    };
+
+    // Add event
+    return database.Event.create(eventObj)
+    .catch(err => {
+      console.log('error creating episode event: ', err);
+    });
+  }
+};
+
+function removeEpisodeEvent(episode) {
+  const episodeId = episode.key;
+  database.Event.findOne({
+    where: { type: 'episode', episodeId }
+  })
+  .then(eventData => {
+    if(eventData) {
+      return eventData.destroy();
+    }
+  })
+  .catch(err => {
+      console.log('error deleting episode event: ', err);
+  });
+};
+
+async function addLikeEvent(like) {
+  if (like.val()) {
+    const {
+      userId,
+      episodeId,
+      soundcastId,
+      announcementId,
+      commentId,
+      commentUserId
+    } = like.val();
+    const likeId = like.key;
+    const user = await getFirebaseUserById(userId);
+    const episode = await getEpisodeById(episodeId);
+    const eventObj = {
+      type: 'like',
+      story: `${user.firstName} ${user.lastName} liked ${episode.title}`,
+      likeId,
+      userId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.pic_url,
+      episodeId,
+      soundcastId,
+      messageId: announcementId,
+      commentId,
+      commentUserId
+    };
+
+    // Add event
+    return database.Event.create(eventObj)
+    .catch(err => {
+      console.log('error creating like event: ', err);
+    });
+  }
+};
+
+function removeLikeEvent(like) {
+  const likeId = like.key;
+  database.Event.findOne({
+    where: { type: 'like', likeId }
+  })
+  .then(eventData => {
+    if(eventData) {
+      return eventData.destroy();
+    }
+  })
+  .catch(err => {
+      console.log('error deleting like event: ', err);
+  });
+};
+
+async function addCommentOrReplyEvent(comment) {
+  if (comment.val()) {
+    const commentId = comment.key;
+    const nHyphens = (commentId.match(/-/g) || []).length;
+    let type = '';
+    if (nHyphens === 1) type = 'comment';
+    if (nHyphens === 2) type = 'reply';
+    if (!type) return;
+    let parentId = null;
+    if (type  === 'reply') {
+      parentId = `${commentId.split('-', 2)[1]}-${commentId.split('-', 3)[2]}`
+    }
+    const {
+      userID,
+      episodeID,
+      soundcastId,
+      announcementID,
+    } = comment.val();
+    const user = await getFirebaseUserById(userID);
+    let episode, soundcast;
+    if(episodeID) {
+       episode = await getEpisodeById(episodeID);
+    } else {
+       soundcast = await getSoundcastById(soundcastId);
+    }
+    const parentComment = await getParentComment(parentId);
+    const story = episodeID ? `${user.firstName} ${user.lastName} commented on ${episode.title}` : `${user.firstName} ${user.lastName} commented on ${soundcast.title}'s message`;
+    const eventObj = {
+      type,
+      story,
+      userId: userID,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.pic_url,
+      episodeId: episodeID,
+      soundcastId,
+      messageId: announcementID,
+      commentId,
+      parentId,
+      parentUserId: parentComment.userID
+    };
+
+    // Add event
+    return database.Event.create(eventObj)
+    .catch(err => {
+      console.log('error creating comment or reply event: ', err);
+    });
+  }
+};
+
+function removeCommentOrReplyEvent(comment) {
+  const commentId = comment.key;
+  const nHyphens = (commentId.match(/-/g) || []).length;
+    let type = '';
+    if (nHyphens === 1) type = 'comment';
+    if (nHyphens === 2) type = 'reply';
+    if (!type) return;
+  database.Event.findOne({
+    where: { type, commentId }
+  })
+  .then(eventData => {
+    if(eventData) {
+      return eventData.destroy();
+    }
+  })
+  .catch(err => {
+      console.log('error deleting comment or reply event: ', err);
+  });
+};
+
+async function addMessageEvent(message) {
+  if (message.val()) {
+    const { creatorID, soundcastID, publisherID } = message.val();
+    const messageId = message.key;
+    const user = await getFirebaseUserById(creatorID);
+    const eventObj = {
+      type: 'message',
+      story: `${user.firstName} ${user.lastName} sent you a message`,
+      userId: creatorID,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.pic_url,
+      soundcastId,
+      messageId,
+      publisherId
+    };
+
+    // Add event
+    return database.Event.create(eventObj)
+    .catch(err => {
+      console.log('error creating message event: ', err);
+    });
+  }
+};
+
+function removeMessageEvents(message) {
+  const messageId = message.key;
+  database.Event.findOne({
+    where: { type: 'message', messageId }
+  })
+  .then(eventData => {
+    if(eventData) {
+      return eventData.destroy();
+    }
+  })
+  .catch(err => {
+      console.log('error deleting message event: ', err);
   });
 };

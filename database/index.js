@@ -157,6 +157,24 @@ var Transfers = db.define('Transfers', {
   ]
 });
 
+var Event = db.define('Event', {
+  type: { type: Sequelize.STRING, allowNull: false },
+  story: { type: Sequelize.STRING, allowNull: false },
+  userId: { type: Sequelize.STRING, allowNull: true },
+  firstName: { type: Sequelize.STRING, allowNull: true },
+  lastName: { type: Sequelize.STRING, allowNull: true },
+  avatarUrl: { type: Sequelize.STRING, allowNull: true },
+  episodeId: { type: Sequelize.STRING, allowNull: true },
+  likeId: { type: Sequelize.STRING, allowNull: true },
+  soundcastId: { type: Sequelize.STRING, allowNull: true },
+  messageId: { type: Sequelize.STRING, allowNull: true },
+  publisherId: { type: Sequelize.STRING, allowNull: true },
+  commentId: { type: Sequelize.STRING, allowNull: true },
+  commentUserId: { type: Sequelize.STRING, allowNull: true },
+  parentId: { type: Sequelize.STRING, allowNull: true },
+  parentUserId: { type: Sequelize.STRING, allowNull: true }
+});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -230,6 +248,7 @@ Transaction.sync({force: false, alter: true});
 Payout.sync({force: false, alter: true});
 PlatformCharges.sync({force: false, alter: true});
 Transfers.sync({force: false, alter: true});
+Event.sync({force: false, alter: true});
 
 module.exports = {
   User: User,
