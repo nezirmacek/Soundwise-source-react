@@ -14,7 +14,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
   //   const soundcastObj = soundcast.val();
   //   const soundcastId = soundcast.key;
   //   if(soundcastObj.announcements) {
-  //     for(var key in soundcastObj.announcements) {
+  //     for(const key in soundcastObj.announcements) {
   //       if(soundcastObj.announcements[key].likes) {
   //         for(var userId in soundcastObj.announcements[key].likes) {
   //           const newLikeId = `${userId}-${key}`;
@@ -37,7 +37,7 @@ module.exports.transferLikes = () => { // add or delete data from likes node in 
     const episodeObj = episode.val();
     const episodeId = episode.key;
     if(episodeObj.likes) {
-      for(var key in episodeObj.likes) {
+      for(const key of episodeObj.likes) {
           const newLikeId = `${key}-${episodeId}`;
           firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
             if(!snapshot.val()) {
@@ -62,7 +62,7 @@ module.exports.transferMessages = () => { // add or delete data from messages no
     const soundcastId = soundcast.key;
     if(soundcastObj.announcements) {
       // console.log(Object.keys(soundcastObj.announcements));
-      for(var key in soundcastObj.announcements) {
+      for(const key of soundcastObj.announcements) {
         const {content, creatorID, date_created, id, isPublished, publisherID, soundcastID} = soundcastObj.announcements[key];
         firebase.database().ref(`/messages/${key}`).once('value', snapshot => {
           if(!snapshot.val()) { // if data doesn't already exist
@@ -70,7 +70,7 @@ module.exports.transferMessages = () => { // add or delete data from messages no
           }
         });
         if(soundcastObj.announcements[key].likes) {
-          for(var userId in soundcastObj.announcements[key].likes) {
+          for(const userId of soundcastObj.announcements[key].likes) {
             const newLikeId = `${userId}-${key}`;
             firebase.database().ref(`/likes/${newLikeId}`).once('value', snapshot => {
               if(!snapshot.val()) { // if data doesn't already exist
