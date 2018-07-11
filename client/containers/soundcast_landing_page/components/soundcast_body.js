@@ -182,7 +182,7 @@ export default class SoundcastBody extends Component {
             soundcast.features[0].length > 0 && (
               <div className=" padding-40px-tb center-col ">
                 <div className="col-md-11 col-sm-12 col-xs-12 text-center">
-                  <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
+                    <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
                     WHAT YOU WILL GET
                   </h2>
                 </div>
