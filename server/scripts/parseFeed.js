@@ -89,18 +89,15 @@ async function parseFeed(req, res) {
   const url = urlParsed.host + urlParsed.path; // use url as a key
 
   if (!feedUrls[url]) { // wasn't obtained
-    // 1. Search for the podcast title under 'importedFeeds' node in our firebase db
-    const podcastObj = await firebase.database().ref('importedFeeds')
-                               .orderByChild('feedUrl').equalTo(url).once('value');
-    const podcasts = podcastObj.val(); // returns: { 1522801382898s: {...} } or null
-    if (podcasts) {
-      const soundcastId = Object.keys(podcasts)[0]; // take first
-      const podcast = podcasts[soundcastId];
+    // 1. Search for the podcast
+    const podcasts = await database.ImportedFeed.findAll({ where: { feedUrl: url } });
+    if (podcasts.length) {
+      const podcast = podcasts[0]; // take first
       if (!podcast.claimed) {
         // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
         if (importFeedUrl) {
           const { publisherId, userId } = req.body;
-          firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
+          firebase.database().ref(`users/${userId}/soundcasts_managed/${podcast.soundcastId}`).set(true);
           firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
           firebase.database().ref(`users/${userId}/publisherID`).set(publisherId)
         } else {
@@ -254,12 +251,13 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
 
   // 2-b. add to importedFeeds node in firebase
   const importedFeedObj = {
+    soundcastId,
     published: isPublished,
     title,
     feedUrl: url,
     originalUrl,
     imageURL: image.url,
-    updated: moment().unix(),
+    updated: Number(moment().unix()),
     publisherId,
     userId,
     // category, // TODO
@@ -268,7 +266,11 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   if (itunesId) {
     importedFeedObj.itunesId = itunesId; // store the iTunesID under the importedFeed node
   }
-  await firebase.database().ref(`importedFeeds/${soundcastId}`).set(importedFeedObj);
+  if (title.length       > 255) { importedFeedObj.title       =       title.slice(0, 255) }
+  if (url.length         > 255) { importedFeedObj.feedUrl     =         url.slice(0, 255) }
+  if (image.url.length   > 255) { importedFeedObj.imageURL    =   image.url.slice(0, 255) }
+  if (originalUrl.length > 255) { importedFeedObj.originalUrl = originalUrl.slice(0, 255) }
+  await database.ImportedFeed.create(importedFeedObj);
 
   // 2-c. add to postgres
   database.Soundcast.findOrCreate({
@@ -374,47 +376,63 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
 
 // Need to update all the published soundcasts from imported feeds every hour
 async function feedInterval() {
-  // await firebase.database().ref('importedFeeds/1523423408085s').remove(); return;
   // 1. go through every item under 'importedFeeds' node in firebase
   const podcastObj = await firebase.database().ref('importedFeeds').once('value');
   const podcasts = podcastObj.val();
-  const ids = Object.keys(podcasts || {});
-  ids.forEach(soundcastId => {
-    const item = podcasts[soundcastId];
-    // 2. for each item, if it's published, parse the feedUrl again,
-    //    and find feed items that are created after the last time feed was parsed
-    if (item.published) {
-      getFeed(item.originalUrl, async (err, results) => {
-        if (err) {
-          return logErr(`feedInterval getFeed ${err}`);
-        }
-        const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
-        const soundcastVal = soundcastObj.val();
-        let i = Object.keys(soundcastVal.episodes).length; // episodes count
-        const { metadata } = results;
-        const { userId, publisherId } = item;
+  const imported_f_count = await database.ImportedFeed.count();
+  let offset = 0;
+  while (offset <= imported_f_count) {
+    const podcasts = await database.ImportedFeed.findAll({
+      order: [['soundcastId', 'ASC']],
+      offset,
+      limit: 3000, // step
+    });
+    for (const item of podcasts) {
+      await new Promise(resolve => {
+        const {soundcastId} = item;
+        // 2. for each item, if it's published, parse the feedUrl again,
+        //    and find feed items that are created after the last time feed was parsed
+        if (item.published) {
+          getFeed(item.originalUrl, async (err, results) => {
+            if (err) {
+              logErr(`feedInterval getFeed ${err}`);
+              return resolve();
+            }
+            const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+            const soundcastVal = soundcastObj.val();
+            let i = Object.keys(soundcastVal.episodes).length; // episodes count
+            const { metadata } = results;
+            const { userId, publisherId } = item;
 
-        results.feedItems.sort((a, b) => { // sort feedItems by date or pubdate or pubDate
-          return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
-        });
+            results.feedItems.sort((a, b) => { // sort feedItems by date or pubdate or pubDate
+              return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
+            });
 
-        for (const feed of results.feedItems) {
-          const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
-          if (pub_date && pub_date > item.updated) {
-            // 3. create new episodes from the new feed items, and add them to their respective soundcast
-            //    *episode.index for the new episodes should be the number of existing episodes
-            //     in the  soundcast + 1
-            const soundcast = {};
-            soundcast.imageURL = metadata && metadata.image && metadata.image.url;
-            soundcast.title = metadata && metadata.title;
-            await addFeedEpisode(feed, userId, publisherId, soundcastId, soundcast, metadata, i);
-            i++;
-            firebase.database().ref(`importedFeeds/${soundcastId}/updated`).set(pub_date);
-          }
+            for (const feed of results.feedItems) {
+              const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
+              if (pub_date && pub_date > item.updated) {
+                // 3. create new episodes from the new feed items, and add them to their respective soundcast
+                //    *episode.index for the new episodes should be the number of existing episodes
+                //     in the  soundcast + 1
+                const soundcast = {};
+                soundcast.imageURL = metadata && metadata.image && metadata.image.url;
+                soundcast.title = metadata && metadata.title;
+                await addFeedEpisode(feed, userId, publisherId, soundcastId, soundcast, metadata, i);
+                i++;
+                item.updated = pub_date;
+                await item.save();
+              }
+            }
+            resolve();
+          });
+        } else {
+          resolve();
         }
       });
     }
-  });
+    offset+=3000; // step
+  }
+
   // 4. repeat the update checking every hour (what's the best way to do this? Assuming the number of feeds that need to be updated will eventually get to around 500,000. Will it be a problem for the server?)
   setTimeout(feedInterval, 3600*1000); // hour
 }
