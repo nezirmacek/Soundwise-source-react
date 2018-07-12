@@ -105,7 +105,7 @@ class _SoundcastHeader extends Component {
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="row" style={{ height: "80%" }}>
-                    <div>
+                    <div style={{paddingRight: 25,paddingLeft: 25}}>
                       <div
                         style={{
                           display: "flex",
