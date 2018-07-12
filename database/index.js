@@ -175,6 +175,26 @@ var Event = db.define('Event', {
   parentUserId: { type: Sequelize.STRING, allowNull: true }
 });
 
+var ImportedFeed = db.define('ImportedFeed', {
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  published: { type: Sequelize.BOOLEAN, allowNull: false },
+  title: { type: Sequelize.STRING, allowNull: false },
+  feedUrl: { type: Sequelize.STRING, allowNull: false },
+  originalUrl: { type: Sequelize.STRING, allowNull: false },
+  imageURL: { type: Sequelize.STRING, allowNull: false },
+  updated: { type: Sequelize.BIGINT, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  userId: { type: Sequelize.STRING, allowNull: false },
+  claimed: { type: Sequelize.BOOLEAN, allowNull: false },
+  itunesId: { type: Sequelize.STRING, allowNull: true },
+}, {
+  indexes: [
+    { fields: ['soundcastId'] },
+    { fields: ['publisherId'] },
+    { fields: ['feedUrl'] }
+  ]
+});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -249,17 +269,21 @@ Payout.sync({force: false, alter: true});
 PlatformCharges.sync({force: false, alter: true});
 Transfers.sync({force: false, alter: true});
 Event.sync({force: false, alter: true});
+ImportedFeed.sync({force: false, alter: true});
 
 module.exports = {
-  User: User,
-  Publisher: Publisher,
-  Comment: Comment,
-  Announcement: Announcement,
-  Like: Like,
-  Soundcast: Soundcast,
-  Episode: Episode,
-  ListeningSession: ListeningSession,
-  Transaction: Transaction,
-  Payout: Payout,
-  db: db,
+  User,
+  Publisher,
+  Comment,
+  Announcement,
+  Like,
+  Soundcast,
+  Episode,
+  ListeningSession,
+  Transaction,
+  Payout,
+  PlatformCharges,
+  Transfers,
+  ImportedFeed,
+  db,
 };
