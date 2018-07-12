@@ -162,7 +162,7 @@ module.exports.firebaseListeners = () => {
   messagesRef.on("child_removed", removeMessageEvents);
 };
 
-function clearRelatedEntities(path, id, field) {
+function clearRelatedEntities(path, id, field, relatedPath) {
   firebase
     .database()
     .ref(`${path}/${id}/${field}`)
@@ -170,10 +170,10 @@ function clearRelatedEntities(path, id, field) {
     .then(
       snapshot =>
         snapshot &&
-        snapshot.val().forEach(id => {
+        Object.keys(snapshot.val()).forEach(id => {
           firebase
             .database()
-            .ref(`${path}/${id}`)
+            .ref(`${relatedPath}/${id}`)
             .remove();
         })
     );
@@ -218,10 +218,12 @@ function subsctibeOnSoundcast(user) {
     .database()
     .ref(`invitations/${user.email}`)
     .once("value")
-    .then(
-      snapshot =>
-        snapshot &&
+    .then(snapshot => {
+      console.log(snapshot);
+      console.log(snapshot.val());
+      snapshot &&
         Object.keys(snapshot.val()).forEach(soundcastId => {
+          console.log(soundcastId);
           firebase
             .database()
             .ref(`soundcasts/${soundcastId}/subscribed`)
@@ -231,10 +233,10 @@ function subsctibeOnSoundcast(user) {
             .ref(`soundcasts/${soundcastId}`)
             .once("value")
             .then(snapshot => {
-              if (!snapshot) return;
+              if (snapshot === 'undefined') return;
               const moment = require("moment");
-              const soundcats = snapshot.val();
-              const current_period_end = rentalPeriod
+              const soundcast = snapshot.val();
+              const current_period_end = soundcast.rentalPeriod
                 ? moment()
                     .add(Number(rentalPeriod), "days")
                     .format("X")
@@ -244,7 +246,7 @@ function subsctibeOnSoundcast(user) {
                 .ref(`user/${user.userId}/soundcasts`)
                 .set({
                   [soundcastId]: {
-                    billingCycle: soundcats.prices[0].billingCycle,
+                    billingCycle: soundcast.prices[0].billingCycle || 'free',
                     current_period_end,
                     date_subscribed: Date.now(),
                     subscribed: true
@@ -255,8 +257,8 @@ function subsctibeOnSoundcast(user) {
             .database()
             .ref(`invitations/${user.email}`)
             .remove();
-        })
-    );
+        });
+    });
 }
 
 function deleteUserRecord(user) {
@@ -328,7 +330,7 @@ function deleteCommentRecord(comment) {
   })
     .then(data => {
       if (data) {
-        clearRelatedEntities("comments", commentId, "children");
+        clearRelatedEntities("comments", commentId, "children", "comments");
         return data.destroy();
       }
     })
@@ -551,7 +553,7 @@ function removeEpisodeEvent(episode) {
   })
     .then(eventData => {
       if (eventData) {
-        clearRelatedEntities("episodes", episodeId, "likes");
+        clearRelatedEntities("episodes", episodeId, "likes", "likes");
         return eventData.destroy();
       }
     })
