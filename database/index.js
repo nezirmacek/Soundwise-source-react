@@ -282,6 +282,8 @@ module.exports = {
   ListeningSession,
   Transaction,
   Payout,
+  PlatformCharges,
+  Transfers,
   ImportedFeed,
   db,
 };
