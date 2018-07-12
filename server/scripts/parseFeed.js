@@ -435,7 +435,8 @@ async function feedInterval() {
   setTimeout(feedInterval, 3600*1000); // hour
 }
 
-if (require.main.filename.indexOf('iTunesUrls.js') === -1) { // except iTunesUrls
+if (process.env.NODE_ENV !== 'dev') {
+  console.log('Starting feedInterval');
   setTimeout(feedInterval, 30*1000); // 30 seconds after app starts
 }
 
