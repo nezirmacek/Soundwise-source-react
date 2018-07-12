@@ -238,7 +238,7 @@ function subsctibeOnSoundcast(user) {
               const soundcast = snapshot.val();
               const current_period_end = soundcast.rentalPeriod
                 ? moment()
-                    .add(Number(rentalPeriod), "days")
+                    .add(Number(soundcast.rentalPeriod), "days")
                     .format("X")
                 : 4638902400;
               firebase
