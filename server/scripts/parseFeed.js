@@ -376,9 +376,7 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
 
 // Need to update all the published soundcasts from imported feeds every hour
 async function feedInterval() {
-  // 1. go through every item under 'importedFeeds' node in firebase
-  const podcastObj = await firebase.database().ref('importedFeeds').once('value');
-  const podcasts = podcastObj.val();
+  // 1. go through every row under 'ImportedFeed' table
   const imported_f_count = await database.ImportedFeed.count();
   let offset = 0;
   while (offset <= imported_f_count) {
