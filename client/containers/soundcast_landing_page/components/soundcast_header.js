@@ -105,23 +105,25 @@ class _SoundcastHeader extends Component {
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="row" style={{ height: "80%" }}>
-                    <div className="col-md-12 col-sm-12 col-xs-12">
+                    <div>
                       <div
                         style={{
-                          // height: 80,
-                          // display: "flex",
-                          // alignItems: "center"
+                          display: "flex",
+                          alignItems: "center"
                         }}
                       >
-                        <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text">
+                        <h2
+                          style={{ margin: 0 }}
+                          className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text"
+                        >
                           {this.props.soundcast.title}
                         </h2>
                       </div>
-                      {/* <div style={{ height: 160, paddingTop: 15 }}> */}
-                      <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${
-                        this.props.soundcast.short_description
-                      }`}</span>
-                      {/* </div> */}
+                      <div style={{ paddingTop: 25 }}>
+                        <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${
+                          this.props.soundcast.short_description
+                        }`}</span>
+                      </div>
                       <div
                         className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
                         style={{ display: "flex", alignItems: "center" }}
