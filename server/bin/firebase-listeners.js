@@ -182,10 +182,12 @@ function clearRelatedEntities(path, id, field) {
 function addOrUpdateUserRecord(user) {
   // Get Firebase object
   if (user.val()) {
-    const { firstName, lastName, pic_url } = user.val();
+    const { firstName, lastName, pic_url, email, token } = user.val();
     const userId = user.key;
     const userObj = {
       userId,
+      token,
+      email,
       firstName,
       lastName,
       picURL: pic_url
@@ -201,6 +203,7 @@ function addOrUpdateUserRecord(user) {
           return userData.update(userObj);
         } else {
           // create
+          subsctibeOnSoundcast(userObj);
           return database.User.create(userObj);
         }
       })
@@ -208,6 +211,52 @@ function addOrUpdateUserRecord(user) {
         console.log("error saving user data: ", err);
       });
   }
+}
+
+function subsctibeOnSoundcast(user) {
+  firebase
+    .database()
+    .ref(`invitations/${user.email}`)
+    .once("value")
+    .then(
+      snapshot =>
+        snapshot &&
+        Object.keys(snapshot.val()).forEach(soundcastId => {
+          firebase
+            .database()
+            .ref(`soundcasts/${soundcastId}/subscribed`)
+            .set({ [user.userId]: { 0: user.token } });
+          firebase
+            .database()
+            .ref(`soundcasts/${soundcastId}`)
+            .once("value")
+            .then(snapshot => {
+              if (!snapshot) return;
+              const moment = require("moment");
+              const soundcats = snapshot.val();
+              const current_period_end = rentalPeriod
+                ? moment()
+                    .add(Number(rentalPeriod), "days")
+                    .format("X")
+                : 4638902400;
+              firebase
+                .database()
+                .ref(`user/${user.userId}/soundcasts`)
+                .set({
+                  [soundcastId]: {
+                    billingCycle: soundcats.prices[0].billingCycle,
+                    current_period_end,
+                    date_subscribed: Date.now(),
+                    subscribed: true
+                  }
+                });
+            });
+          firebase
+            .database()
+            .ref(`invitations/${user.email}`)
+            .remove();
+        })
+    );
 }
 
 function deleteUserRecord(user) {
