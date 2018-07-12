@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import { Card, CardMedia } from "material-ui/Card";
+import { CardMedia } from "material-ui/Card";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -37,38 +36,48 @@ export default class SoundcastCard extends Component {
 
     return (
       <div className="col-md-12 col-sm-12 col-xs-12">
-        <Link to={`/soundcasts/${soundcast.id}`}>
+        {soundcast.landingPage && (
+          <Link
+            style={{
+              position: "absolute",
+              margin: "auto",
+              height: "90%",
+              width: "90%",
+              zIndex: 1
+            }}
+            to={`/soundcasts/${soundcast.id}`}
+          />
+        )}
+        <div
+          className="float-left width-100 bottom-shadowed"
+          style={{ height: cardHeight }}
+        >
           <div
-            className="float-left width-100 bottom-shadowed"
-            style={{ height: cardHeight }}
+            ref={image => (this.references.image = image)}
+            className="feature-box-image"
+            style={{
+              width: "100%",
+              backgroundColor: "white"
+            }}
           >
-            <div
-              ref={image => (this.references.image = image)}
-              className="feature-box-image"
-              style={{
-                width: "100%",
-                backgroundColor: "white"
-              }}
-            >
-              <CardMedia>
-                <img
-                  alt=""
-                  src={soundcast.imageURL}
-                  data-img-size="(W)800px X (H)533px"
-                  style={{ objectFit: "cover" }}
-                />
-              </CardMedia>
+            <CardMedia>
+              <img
+                alt=""
+                src={soundcast.imageURL}
+                data-img-size="(W)800px X (H)533px"
+                style={{ objectFit: "cover" }}
+              />
+            </CardMedia>
+          </div>
+          <div ref={content => (this.references.content = content)}>
+            <div style={style.title}>
+              {soundcast.title.slice(0, 43) + "..."}
             </div>
-            <div ref={content => (this.references.content = content)}>
-              <div style={style.title}>
-                {soundcast.title.slice(0, 43) + "..."}
-              </div>
-              <div style={style.courseDescription}>
-                {soundcast.short_description.slice(0, 120) + "..."}
-              </div>
+            <div style={style.courseDescription}>
+              {soundcast.short_description.slice(0, 120) + "..."}
             </div>
           </div>
-        </Link>
+        </div>
       </div>
     );
   }

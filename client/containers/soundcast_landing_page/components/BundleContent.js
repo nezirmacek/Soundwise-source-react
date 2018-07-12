@@ -74,7 +74,7 @@ export default class BundleContent extends Component {
 
     const promises = soundcastsIds.map(id => {
       const ref = firebase.database().ref(`soundcasts/${id}`);
-      const promise = this.sleep(500).then(() => ref.once("value"));
+      const promise = this.sleep(1000).then(() => ref.once("value"));
 
       return promise.then(snapshot => {
         const soundcast = { id: snapshot.key, ...snapshot.val() };
