@@ -864,7 +864,7 @@ export default class CreateBundle extends Component {
                                 }}
                                 target="_blank"
                                 href={`https://mysoundwise.com/soundcasts/${
-                                  soundcast.id
+                                  soundcast
                                 }/?c=${prices[i].coupons[j].code}`}
                               >
                                 Promo Landing Page
