@@ -195,6 +195,28 @@ var ImportedFeed = db.define('ImportedFeed', {
   ]
 });
 
+var Category = db.define('Category', { // records of payouts
+  name: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  iconUrl: Sequelize.STRING,
+}, {
+  indexes: [
+    { fields: ['name'] },
+    { fields: ['soundcastId'] }
+  ]
+});
+
+var PodcasterEmail = db.define('PodcasterEmail', { // records of payouts
+  podcastTitle: { type: Sequelize.STRING, allowNull: false },
+  publisherEmail: { type: Sequelize.STRING, allowNull: false },
+  last_update: { type: Sequelize.STRING, allowNull: false },
+}, {
+  indexes: [
+    { fields: ['publisherEmail'] },
+    { fields: ['last_update'] },
+  ]
+});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -256,6 +278,9 @@ var ImportedFeed = db.define('ImportedFeed', {
 // Payout.belongsTo(Publisher, {foreignKey: 'publisherId'});
 // Publisher.hasMany(Payout, {as: 'Payouts'});
 
+// Category.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
+// Soundcast.hasMany(Category, {as: 'Categories'});
+
 User.sync({force: false, alter: true});
 Publisher.sync({force: false, alter: true});
 Comment.sync({force: false, alter: true});
@@ -270,6 +295,8 @@ PlatformCharges.sync({force: false, alter: true});
 Transfers.sync({force: false, alter: true});
 Event.sync({force: false, alter: true});
 ImportedFeed.sync({force: false, alter: true});
+Category.sync({force: false, alter: true});
+PodcasterEmail.sync({force: false, alter: true});
 
 module.exports = {
   User,
@@ -286,4 +313,6 @@ module.exports = {
   Transfers,
   ImportedFeed,
   db,
+  Category,
+  PodcasterEmail,
 };

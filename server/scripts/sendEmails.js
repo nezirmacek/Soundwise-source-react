@@ -169,6 +169,9 @@ const addToEmailList = (req, res) => {
         res.status(400).send(err.message);
       });
     }
+  }).catch(err => {
+    console.log('error sendEmails recipients request: ', err, err.message);
+    res.status(400).send(err.message);
   });
 };
 
