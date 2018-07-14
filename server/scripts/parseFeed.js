@@ -272,7 +272,7 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
           name = subcategory['@'].text;
         }
         try {
-          await database.Category.create({ name: name.toLowerCase(), soundcastId });
+          await database.Category.create({ name, soundcastId });
         } catch(err) {
           logErr(`Category create ${err}`);
         }
