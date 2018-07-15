@@ -96,7 +96,7 @@ class _SoundcastCheckout extends Component {
     if (Number(totalPrice) === 0) {
       const {userInfo} = this.props;
       if (userInfo && userInfo.email) { // logged in
-        this.addSoundcastToUser(null, userInfo);
+        this.addSoundcastToUser(null, userInfo, this.props.signinUser, this.state.soundcastID);
       } else {
         this.setState({ hideCardInputs: true }); // skip card input
       }
@@ -208,13 +208,13 @@ class _SoundcastCheckout extends Component {
   signupCallback(user) {
     console.log('Success signup', user);
     this.props.signupUser(user);
-    this.addSoundcastToUser(this.state.charge, user);
+    this.addSoundcastToUser(this.state.charge, user, this.props.signinUser, this.state.soundcastID);
   }
 
   signinCallback(user) {
     console.log('Success signin', user);
     this.props.signinUser(user);
-    this.addSoundcastToUser(this.state.charge, user, this.props.signinUser);
+    this.addSoundcastToUser(this.state.charge, user, this.props.signinUser, this.state.soundcastID);
   }
 
   async submitPassword() {
