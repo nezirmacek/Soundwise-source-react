@@ -83,7 +83,7 @@ class _SoundcastCheckout extends Component {
       const that = this;
       (function timer() {
         if (that.addSoundcastToUser) {
-          that.addSoundcastToUser(null, userInfo);
+          that.addSoundcastToUser(null, userInfo, that.props.signinUser, soundcastID);
         } else {
           setTimeout(timer, 150);
         }
