@@ -142,6 +142,7 @@
     "css-loader": "^0.28.7",
     "eslint": "^3.17.1",
     "eslint-config-loopback": "^8.0.0",
+    "html-entities": "^1.2.1",
     "jsdom": "^8.1.0",
     "json-loader": "^0.5.7",
     "nodemon": "^1.11.0",

@@ -176,6 +176,9 @@ module.exports.createAudioWaveVid = async (req, res) => {
                 fs.unlink(imagePath, err => 0);
                 fs.unlink(videoPath, err => 0);
               }).catch(err => console.log(`Error: soundwaveVideo sendgrid ${err}`));
+            }).catch(err => {
+              console.log('Error: soundwaveVideo recipients request: ', err, err.message);
+              res.status(400).send(err.message);
             });
           });
         }).catch(err => sendError(res, `${err}`));

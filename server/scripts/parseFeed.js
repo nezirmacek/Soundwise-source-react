@@ -22,6 +22,8 @@ const database = require('../../database/index');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
+const Entities = require('html-entities').AllHtmlEntities;
+const entities = new Entities();
 const { logErr } = require('./utils')('parseFeed.js');
 
 // // Test the getFeed function:
@@ -38,7 +40,7 @@ const { logErr } = require('./utils')('parseFeed.js');
 // function to parse a given feed url:
 function getFeed (urlfeed, callback) {
   try {
-    var req = request (urlfeed);
+    var req = request(urlfeed, {timeout: 20000}); // timeout 20 sec
   } catch(err) {
     return callback(err);
   }
@@ -49,10 +51,13 @@ function getFeed (urlfeed, callback) {
     var stream = this;
     if (response.statusCode == 200) {
       stream.pipe (feedparser);
+    } else {
+      callback("getFeed: wrong response status: " + response.statusCode)
     }
   });
   req.on ("error", function (err) {
     console.log ("getFeed: err.message == " + err.message);
+    callback(err);
   });
   feedparser.on("meta", function (meta) {
     metadata = meta;
@@ -66,6 +71,7 @@ function getFeed (urlfeed, callback) {
       }
     } catch (err) {
       console.log ("getFeed: err.message == " + err.message);
+      callback(err);
     }
   });
   feedparser.on ("end", function () {
@@ -174,8 +180,10 @@ function sendVerificationMail(to, soundcastTitle, verificationCode) {
 async function runFeedImport(req, res, url, feedObj, isPublished,
     isVerified, isClaimed, callback, itunesId, soundcastId) {
 
-  const { metadata, feedItems, publisherEmail, verified, originalUrl } = feedObj;
+  const { metadata, publisherEmail, verified, originalUrl } = feedObj;
   const { publisherId, userId, publisherName } = req.body;
+
+  let feedItems = feedObj.feedItems;
 
   if (!verified) { // verificationCode checked
     return res.status(400).send('Error: not verified');
@@ -185,14 +193,25 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
   });
 
+  if (feedItems.length > 100) {
+    // if a feed has more than 100 items, let's only import the most recent 100 episodes
+    feedItems = feedItems.slice(-100);
+  }
+
   let last_update = metadata.date || metadata.pubdate || metadata.pubDate;
   if (!last_update) { // take first episode's date
     const newestEpisode = feedItems[feedItems.length - 1]; // last in array
     last_update = newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
   }
-  if (!last_update) {
+  if (!last_update || moment(last_update).format('X') === 'Invalid date') {
     // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
-    logErr(`can't obtain last_update url:${url}, originalUrl:${originalUrl}`);
+    logErr(`can't obtain last_update ${originalUrl}`);
+    return
+  }
+  if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) { // have empty enclosures
+    // If enclosures is empty, we shouldn't import the item.
+    // We should only import items that have an audio file in enclosures.
+    logErr(`empty enclosures array ${originalUrl}`);
     return
   }
 
@@ -204,7 +223,7 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     creatorID: userId,
     publisherID: publisherId,
     publisherName,
-    short_description: description,
+    short_description: entities.decode(description),
     imageURL: image.url,
     hostName: (metadata['itunes:author'] && metadata['itunes:author']['#']) || author,
     last_update: moment(last_update).format('X'),
@@ -212,7 +231,7 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     forSale: false,
     landingPage: true,
     prices: [{billingCycle: 'free', price: 'free'}],
-    published: true, // set this to true from client after ownership is verified
+    published: isPublished, // set this to true from client after ownership is verified
     verified: true, // ownership verification, set to true from client after ownership is verified
     showSubscriberCount: true,
     showTimeStamps: true,
@@ -226,22 +245,37 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   }
   await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
 
+  // store the publisher's email address in a separate table in the database,
+  // for podcasts that are "active", i.e. has been updated in the last year
+  const yearAgo = moment().subtract(1, 'years').unix();
+  if (moment(last_update).unix() > yearAgo) { // updated in the last year
+    try {
+      await database.PodcasterEmail.create({
+        podcastTitle: title,
+        publisherEmail,
+        last_update: moment(last_update).format('X')
+      });
+    } catch(err) {
+      logErr(`PodcasterEmail create ${err}`);
+    }
+  }
+
   // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
   // This should be similar to the upload setup on the /dashboard/add_episode page
   const categories = metadata['itunes:category'];
   if (categories && categories.length) {
     for (const category of categories) {
       if (category && category['@'] && category['@'].text) {
-        const _category = category['@'].text.toLowerCase();
+        let name = category['@'].text;
         const subcategory = category['itunes:category'];
-        let categoryRef;
-        if (subcategory && subcategory['@'] && subcategory['@'].text) {
-          const _subcategory = subcategory['@'].text.toLowerCase();
-          categoryRef = `categories/${_category}/${_subcategory}/${soundcastId}`;
-        } else {
-          categoryRef = `categories/${_category}/${soundcastId}`;
+        if (subcategory && subcategory['@'] && subcategory['@'].text) { // have subcategory
+          name = subcategory['@'].text;
         }
-        await firebase.database().ref(categoryRef).set(true);
+        try {
+          await database.Category.create({ name, soundcastId });
+        } catch(err) {
+          logErr(`Category create ${err}`);
+        }
       }
     }
   }
@@ -336,12 +370,14 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
   });
   */
 
+  const date_created = moment(date || metadata.date).format('X');
   const episode = {
     title,
     coverArtUrl: image.url || soundcast.imageURL,
     creatorID: userId,
-    date_created: moment(date || metadata.date).format('X'),
-    description: description || summary,
+    date_created: date_created === 'Invalid date' ? Math.floor(Date.now()/1000) : Number(date_created),
+    description: (description && entities.decode(description)) || (
+                      summary && entities.decode(summary)),
     duration,
     id3Tagged: true,
     index: i + 1,

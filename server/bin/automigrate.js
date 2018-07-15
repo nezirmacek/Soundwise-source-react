@@ -13,3 +13,5 @@ ds.automigrate('publisher');
 ds.automigrate('comment');
 ds.automigrate('like');
 // ds.automigrate('announcement');
+ds.automigrate('category');
+// ds.automigrate('categorysoundcast');
