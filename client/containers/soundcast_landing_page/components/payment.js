@@ -1,15 +1,18 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Axios from "axios";
 import Dots from "react-activity/lib/Dots";
 import draftToHtml from "draftjs-to-html";
 import * as firebase from "firebase";
 import moment from "moment";
 
+import { signinUser } from '../../../actions/index';
 import Colors from "../../../styles/colors";
 import { inviteListeners } from "../../../helpers/invite_listeners";
 import { addToEmailList } from "../../../helpers/addToEmailList";
 
-export default class Payment extends Component {
+export default class _Payment extends Component {
   constructor(props) {
     super(props);
 
@@ -70,12 +73,7 @@ export default class Payment extends Component {
       if (isFree) {
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
-        const { soundcastID, isBundle } = this.props;
-        isBundle
-          ? soundcastID.forEach(id =>
-              this.addSoundcastToUser(null, props.userInfo, null, id)
-            )
-          : this.addSoundcastToUser(null, props.userInfo, null, soundcastID);
+        addSoundcastToUser(null, props.userInfo, (props.soundcastID || this.props.soundcastID));
       }
     }
   }
@@ -105,82 +103,108 @@ export default class Payment extends Component {
     });
   }
 
-  addSoundcastToUser(charge, userInfoFromProp, signinUser, soundcastID) {
-    console.log(soundcastID);
+  addSoundcastToUser(charge, userInfoFromProp, soundcastID) {
+    // console.log(`soundcastID: ${soundcastID} userInfo: ${userInfo} charge: ${charge}`);
     const userInfo = userInfoFromProp || this.props.userInfo;
-    if (userInfo && userInfo.email) {
-      // if logged in
+    if (userInfo && userInfo.email) { // if logged in
       const that = this;
       const { soundcast, checked, sumTotal, history } = this.props;
       const { confirmationEmail } = soundcast;
       const { totalPay } = this.state;
-      let _email, content;
+      const _email = userInfo.email[0].replace(/\./g, "(dot)");
 
-      // console.log('userInfo: ', userInfo);
-      _email = userInfo.email[0].replace(/\./g, "(dot)");
-
-      const {
-        billingCycle,
-        paymentPlan,
-        price,
-        rentalPeriod
-      } = soundcast.prices[checked];
-      let current_period_end = rentalPeriod
-        ? moment()
-            .add(Number(rentalPeriod), "days")
-            .format("X")
+      const { billingCycle, paymentPlan, price, rentalPeriod } = soundcast.prices[checked];
+      let current_period_end = rentalPeriod ? moment().add(Number(rentalPeriod), "days").format("X")
         : 4638902400; // rental period or forever (2117/1/1 )
 
-      const paymentID = charge && charge.id ? charge.id : null;
-      const planID = charge && charge.plan ? charge.plan.id : null;
-      current_period_end =
-        charge && charge.current_period_end
-          ? charge.current_period_end
-          : current_period_end; //if it's not a recurring billing ('one time' or 'rental'), set the end period to 2117/1/1 or rental expiration date.
+      const paymentID = charge && charge.id || null
+      const planID = charge && charge.plan && charge.plan.id || null;
+      current_period_end = (charge && charge.current_period_end) ? charge.current_period_end
+        : current_period_end; //if it's not a recurring billing ('one time' or 'rental'), set the end period to 2117/1/1 or rental expiration date.
 
       // send email invitations to subscribers
-      const subject = `${
-        userInfo.firstName
-      }, here's how to access your soundcast`;
+      const subject = `${userInfo.firstName}, here's how to access your soundcast`;
+      let content;
       if (confirmationEmail) {
         const editorState = JSON.parse(confirmationEmail);
         const confirmEmailHTML = draftToHtml(editorState);
-        content = confirmEmailHTML.replace(
-          "[subscriber first name]",
-          userInfo.firstName
-        );
+        content = confirmEmailHTML.replace("[subscriber first name]", userInfo.firstName);
         content = content.replace("[soundcast title]", soundcast.title);
       } else {
-        content = `<p>Hi ${
-          userInfo.firstName
-        }!</p><p></p><p>Thanks for signing up for ${
-          soundcast.title
-        }. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to sign up for this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
+        content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for signing up for ${soundcast.title}. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to sign up for this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
       }
 
-      if (!that.props.isEmailSent && !that.state.confirmationEmailSent) {
-        that.setState({
-          confirmationEmailSent: true
-        });
-        that.props.sendEmail();
-        firebase
-          .database()
-          .ref(`publishers/${soundcast.publisherID}`)
-          .once("value", snapshot => {
-            const publisherEmail =
-              snapshot.val().email || snapshot.val().paypalEmail;
-            addToEmailList(
-              soundcastID,
-              [
-                {
-                  email: userInfo.email[0],
-                  firstName: userInfo.firstName,
-                  lastName: userInfo.lastName
-                }
-              ],
-              "subscriberEmailList",
-              soundcast.subscriberEmailList
-            ).then(listId => {
+      firebase.auth().onAuthStateChanged(async user => {
+        if (user) {
+          const userId = user.uid;
+          const connectedCustomer = charge && charge.connectedCustomer || null;
+          const platformCustomer = charge ? charge.platformCustomer || charge.stripe_id : null;
+          const soundcastsIds = soundcast.bundle ? soundcast.soundcastsIncluded : [soundcastID];
+          for (const soundcastID of soundcastsIds) {
+            // add soundcast to user
+            await firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
+              .set({
+                subscribed: true,
+                paymentID,
+                customerID: connectedCustomer,
+                current_period_end,
+                billingCycle: billingCycle ? billingCycle : null,
+                planID,
+                date_subscribed: moment().format("X")
+              });
+
+            // add stripe_id to user data if not already exists
+            if (platformCustomer && user.stripe_id !== platformCustomer) {
+              await firebase.database().ref(`users/${userId}/stripe_id`).set(platformCustomer);
+              user.stripe_id = platformCustomer;
+              that.props.signinUser(user);
+            }
+
+            // add user to soundcast
+            await firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`).set(moment().format("X"));
+
+            // remove from invited list
+            await firebase.database().ref(`soundcasts/${soundcastID}/invited/${_email}`).remove();
+
+            // if it's a free soundcast, add subscriber to publisher
+            if (totalPay == 0 || totalPay == "free") {
+              const snapshot = await firebase.database()
+                .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}`)
+                .once("value");
+              if (!snapshot.val()) {
+                await firebase.database()
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
+                  .set(true);
+                const snapshot = await firebase.database()
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
+                  .once('value');
+                await firebase.database()
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
+                  .set(snapshot.val() ? snapshot.val() + 1 : 1);
+              } else {
+                await firebase.database()
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
+                  .set(true);
+              }
+            }
+          }
+        } else {
+          console.log('Error payment addSoundcastToUser empty user variable');
+        }
+
+        if (!that.props.isEmailSent && !that.state.confirmationEmailSent) {
+          that.setState({ confirmationEmailSent: true });
+          that.props.sendEmail();
+          firebase.database().ref(`publishers/${soundcast.publisherID}`).once('value', snapshot => {
+            if (!snapshot.val()) {
+              return console.log('Error payment addSoundcastToUser empty publisher')
+            }
+            const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
+            addToEmailList(soundcastID, [{
+              email: userInfo.email[0],
+              firstName: userInfo.firstName,
+              lastName: userInfo.lastName
+            }], "subscriberEmailList", soundcast.subscriberEmailList).then(listId => {
               inviteListeners(
                 [userInfo.email[0]],
                 subject,
@@ -192,9 +216,7 @@ export default class Payment extends Component {
 
               // Redirect to /notice page
               that.setState({ success: true });
-              const text = `Thanks for signing up to ${
-                soundcast.title
-              }. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+              const text = `Thanks for signing up to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
               history.push({
                 pathname: "/notice",
                 state: {
@@ -204,123 +226,12 @@ export default class Payment extends Component {
                   soundcastID,
                   checked,
                   sumTotal,
-                  ios:
-                    "https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8",
-                  android:
-                    "https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"
+                  ios: "https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8",
+                  android: "https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"
                 }
               });
             });
           });
-      }
-
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          const userId = user.uid;
-          const connectedCustomer =
-            charge && charge.connectedCustomer
-              ? charge.connectedCustomer
-              : null;
-          // console.log('charge: ', charge);
-          const platformCustomer = charge
-            ? charge.platformCustomer || charge.stripe_id
-            : null;
-          // add soundcast to user
-          firebase
-            .database()
-            .ref(`users/${userId}/soundcasts/${soundcastID}`)
-            .set({
-              subscribed: true,
-              paymentID: paymentID ? paymentID : null,
-              customerID: connectedCustomer,
-              current_period_end,
-              billingCycle: billingCycle ? billingCycle : null,
-              planID: planID ? planID : null,
-              date_subscribed: moment().format("X")
-            });
-
-          // add stripe_id to user data if not already exists
-          if (platformCustomer && user.stripe_id !== platformCustomer) {
-            firebase
-              .database()
-              .ref(`users/${userId}/stripe_id`)
-              .set(platformCustomer);
-            user.stripe_id = platformCustomer;
-            signinUser && signinUser(user);
-          }
-
-          //add user to soundcast
-          firebase
-            .database()
-            .ref(`soundcasts/${soundcastID}/subscribed/${userId}`)
-            .set(moment().format("X"));
-          //remove from invited list
-          firebase
-            .database()
-            .ref(`soundcasts/${soundcastID}/invited/${_email}`)
-            .remove();
-
-          //if it's a free soundcast, add subscriber to publisher
-          if (totalPay == 0 || totalPay == "free") {
-            firebase
-              .database()
-              .ref(
-                `publishers/${soundcast.publisherID}/freeSubscribers/${userId}`
-              )
-              .once("value")
-              .then(snapshot => {
-                if (!snapshot.val()) {
-                  firebase
-                    .database()
-                    .ref(
-                      `publishers/${
-                        soundcast.publisherID
-                      }/freeSubscribers/${userId}/${soundcastID}`
-                    )
-                    .set(true)
-                    .then(() => {
-                      firebase
-                        .database()
-                        .ref(
-                          `publishers/${
-                            soundcast.publisherID
-                          }/freeSubscriberCount`
-                        )
-                        .once("value")
-                        .then(snapshot => {
-                          if (snapshot.val()) {
-                            firebase
-                              .database()
-                              .ref(
-                                `publishers/${
-                                  soundcast.publisherID
-                                }/freeSubscriberCount`
-                              )
-                              .set(snapshot.val() + 1);
-                          } else {
-                            firebase
-                              .database()
-                              .ref(
-                                `publishers/${
-                                  soundcast.publisherID
-                                }/freeSubscriberCount`
-                              )
-                              .set(1);
-                          }
-                        });
-                    });
-                } else {
-                  firebase
-                    .database()
-                    .ref(
-                      `publishers/${
-                        soundcast.publisherID
-                      }/freeSubscribers/${userId}/${soundcastID}`
-                    )
-                    .set(true);
-                }
-              });
-          }
         }
       });
     }
@@ -366,14 +277,7 @@ export default class Payment extends Component {
     const userInfo = this.props.userInfo;
     const { email, stripe_id } = userInfo;
     const receipt_email = (email && email[0]) || this.state.email;
-    const {
-      soundcast,
-      checked,
-      soundcastID,
-      handleStripeId,
-      coupon,
-      isBundle
-    } = this.props;
+    const { soundcast, checked, soundcastID, handleStripeId, coupon } = this.props;
     const { billingCycle, paymentPlan, price } = soundcast.prices[checked];
     const that = this;
 
@@ -423,24 +327,8 @@ export default class Payment extends Component {
                       paid,
                       startPaymentSubmission: false
                     });
-                    if (userInfo && userInfo.email) {
-                      // logged in
-                      isBundle
-                        ? soundcastID.forEach(
-                            id =>
-                              that.addSoundcastToUser(
-                                response.data.res,
-                                null,
-                                null,
-                                id
-                              ) //add soundcast to user database and redirect
-                          )
-                        : that.addSoundcastToUser(
-                            response.data.res,
-                            null,
-                            null,
-                            soundcastID
-                          ); //add soundcast to user database and redirect
+                    if (userInfo && userInfo.email) { // logged in
+                      that.addSoundcastToUser(response.data.res, null, soundcastID);
                     } else {
                       handleStripeId(response.data.res, that.state);
                     }
@@ -475,23 +363,8 @@ export default class Payment extends Component {
                       paid: true,
                       startPaymentSubmission: false
                     });
-                    if (userInfo && userInfo.email) {
-                      // logged in
-                      isBundle
-                        ? soundcastID.forEach(id =>
-                            this.addSoundcastToUser(
-                              subscription,
-                              null,
-                              null,
-                              id
-                            )
-                          )
-                        : this.addSoundcastToUser(
-                            subscription,
-                            null,
-                            null,
-                            soundcastID
-                          );
+                    if (userInfo && userInfo.email) { // logged in
+                      that.addSoundcastToUser(subscription, null, soundcastID);
                     } else {
                       handleStripeId(subscription, that.state);
                     }
@@ -732,6 +605,12 @@ export default class Payment extends Component {
     );
   }
 }
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ signinUser }, dispatch);
+}
+
+export const Payment = connect(null, mapDispatchToProps)(_Payment);
 
 const styles = {
   totalRow: {

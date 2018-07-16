@@ -83,7 +83,7 @@ class _SoundcastCheckout extends Component {
       const that = this;
       (function timer() {
         if (that.addSoundcastToUser) {
-          that.addSoundcastToUser(null, userInfo, that.props.signinUser, soundcastID);
+          that.addSoundcastToUser(null, userInfo, soundcastID);
         } else {
           setTimeout(timer, 150);
         }
@@ -96,7 +96,7 @@ class _SoundcastCheckout extends Component {
     if (Number(totalPrice) === 0) {
       const {userInfo} = this.props;
       if (userInfo && userInfo.email) { // logged in
-        this.addSoundcastToUser(null, userInfo, this.props.signinUser, this.state.soundcastID);
+        this.addSoundcastToUser(null, userInfo, this.state.soundcastID);
       } else {
         this.setState({ hideCardInputs: true }); // skip card input
       }
@@ -208,13 +208,13 @@ class _SoundcastCheckout extends Component {
   signupCallback(user) {
     console.log('Success signup', user);
     this.props.signupUser(user);
-    this.addSoundcastToUser(this.state.charge, user, this.props.signinUser, this.state.soundcastID);
+    this.addSoundcastToUser(this.state.charge, user, this.state.soundcastID);
   }
 
   signinCallback(user) {
     console.log('Success signin', user);
     this.props.signinUser(user);
-    this.addSoundcastToUser(this.state.charge, user, this.props.signinUser, this.state.soundcastID);
+    this.addSoundcastToUser(this.state.charge, user, this.state.soundcastID);
   }
 
   async submitPassword() {
@@ -351,8 +351,7 @@ class _SoundcastCheckout extends Component {
           {
           <Payment
             soundcast={soundcast}
-            soundcastID={soundcast.bundle? soundcast.soundcastsIncluded :soundcastID}
-            isBundle={soundcast.bundle}
+            soundcastID={soundcastID}
             checked={checked}
             totalPrice={totalPrice}
             userInfo={userInfo}
