@@ -8,7 +8,7 @@ import moment from 'moment';
 import Dots from 'react-activity/lib/Dots';
 
 import PageHeader from './components/page_header';
-import Payment from './components/payment';
+import {Payment} from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
 import { sendEmail, signinUser, signupUser } from '../../actions/index';

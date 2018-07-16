@@ -12,7 +12,7 @@ import Colors from "../../../styles/colors";
 import { inviteListeners } from "../../../helpers/invite_listeners";
 import { addToEmailList } from "../../../helpers/addToEmailList";
 
-export default class _Payment extends Component {
+class _Payment extends Component {
   constructor(props) {
     super(props);
 
