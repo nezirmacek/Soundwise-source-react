@@ -73,7 +73,7 @@ class _Payment extends Component {
       if (isFree) {
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
-        addSoundcastToUser(null, props.userInfo, (props.soundcastID || this.props.soundcastID));
+        this.addSoundcastToUser(null, props.userInfo, (props.soundcastID || this.props.soundcastID));
       }
     }
   }
