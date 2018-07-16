@@ -170,7 +170,7 @@ export default class CreateBundle extends Component {
         .database()
         .ref(`soundcasts/${soundcastsArr[i]}`)
         .once("value");
-      if (soundcast.val() && soundcast.val().published) {
+      if (soundcast.val() && soundcast.val().published && !soundcast.val().bundle) { // only add the soundcasts that are not bundles
         soundcasts.push({ title: soundcast.val().title, id: soundcastsArr[i] });
       }
     }
@@ -500,7 +500,7 @@ export default class CreateBundle extends Component {
       } else {
         this.setState({
           forSale: !forSale,
-          prices: [{ paymentPlan: "", billingCycle: "", price: "0" }]
+          prices: [{ paymentPlan: "soundcast purchase", billingCycle: "one time", price: "0" }]
         });
       }
     } else {
@@ -971,7 +971,7 @@ export default class CreateBundle extends Component {
   addPriceOption() {
     let prices = [...this.state.prices];
     const price = {
-      paymentPlan: "",
+      paymentPlan: "soundcast purchase",
       billingCycle: "one time",
       price: "0"
     };
@@ -987,9 +987,9 @@ export default class CreateBundle extends Component {
       prices.splice(i, 1);
     } else {
       prices[0] = {
-        paymentPlan: "",
+        paymentPlan: "soundcast purchase",
         billingCycle: "monthly",
-        price: ""
+        price: "0"
       };
     }
     this.setState({

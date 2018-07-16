@@ -65,7 +65,7 @@ export default class SoundcastBody extends Component {
       );
     }
     if (nextProps.isVisible && !this.props.isVisible) {
-      console.log("is showing!");
+      // console.log("is showing!");
     }
   }
 

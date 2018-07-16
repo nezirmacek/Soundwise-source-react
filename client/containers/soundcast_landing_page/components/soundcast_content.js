@@ -42,8 +42,8 @@ export default class SoundcastContent extends Component {
         .ref(`episodes/${id}`)
         .once("value")
         .then(snapshot => {
-          console.log(snapshot);
-          console.log(snapshot.val());
+          // console.log(snapshot);
+          // console.log(snapshot.val());
           if (snapshot.val()) {
             const episode = snapshot.val();
             if (episode.isPublished) {
