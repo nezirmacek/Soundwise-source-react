@@ -1,4 +1,5 @@
 const moment = require('moment');
+const firebase = require('firebase-admin');
 
 var stripe_key =  require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
@@ -125,7 +126,7 @@ module.exports.createUpdatePlans = async (req, res) => {
 
 module.exports.handleRecurringPayment = async (req, res) => {
   const {source, receipt_email, platformCustomer, stripe_account, planID, coupon, publisherID} = req.body;
-  const publisherObj = await admin.database().ref(`publishers/${publisherID}`).once('value');
+  const publisherObj = await firebase.database().ref(`publishers/${publisherID}`).once('value');
   const publisher = publisherObj.val();
 
   let soundwiseFeePercent = 0;
