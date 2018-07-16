@@ -348,7 +348,6 @@ class _SoundcastCheckout extends Component {
               </div>
             </div>
           </section>
-          {
           <Payment
             soundcast={soundcast}
             soundcastID={soundcastID}
@@ -364,7 +363,6 @@ class _SoundcastCheckout extends Component {
             setAddSoundcastToUser={this.setAddSoundcastToUser}
             hideCardInputs={hideCardInputs}
           />
-          }
         </div>
       )
     } else {

@@ -610,7 +610,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ signinUser }, dispatch);
 }
 
-export const Payment = connect(null, mapDispatchToProps)(_Payment);
+const Payment = connect(null, mapDispatchToProps)(_Payment);
+export default Payment;
 
 const styles = {
   totalRow: {
