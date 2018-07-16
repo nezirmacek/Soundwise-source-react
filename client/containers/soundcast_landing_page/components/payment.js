@@ -7,7 +7,7 @@ import draftToHtml from "draftjs-to-html";
 import * as firebase from "firebase";
 import moment from "moment";
 
-import { signinUser } from '../../../actions/index';
+import { sendEmail, signinUser } from '../../../actions/index';
 import Colors from "../../../styles/colors";
 import { inviteListeners } from "../../../helpers/invite_listeners";
 import { addToEmailList } from "../../../helpers/addToEmailList";
@@ -156,8 +156,7 @@ class _Payment extends Component {
             // add stripe_id to user data if not already exists
             if (platformCustomer && user.stripe_id !== platformCustomer) {
               await firebase.database().ref(`users/${userId}/stripe_id`).set(platformCustomer);
-              user.stripe_id = platformCustomer;
-              that.props.signinUser(user);
+              that.props.signinUser({ stripe_id: platformCustomer }); // set userInfo.stripe_id
             }
 
             // add user to soundcast
@@ -606,11 +605,17 @@ class _Payment extends Component {
   }
 }
 
+const mapStateToProps = state => {
+    const { isEmailSent } = state.user;
+    return { isEmailSent };
+};
+
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ signinUser }, dispatch);
+  return bindActionCreators({ sendEmail, signinUser }, dispatch);
 }
 
-export const Payment = connect(null, mapDispatchToProps)(_Payment);
+const Payment = connect(mapStateToProps, mapDispatchToProps)(_Payment);
+export default Payment;
 
 const styles = {
   totalRow: {

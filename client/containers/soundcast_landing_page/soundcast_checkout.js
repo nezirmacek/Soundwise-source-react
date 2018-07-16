@@ -11,7 +11,7 @@ import PageHeader from './components/page_header';
 import {Payment} from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
-import { sendEmail, signinUser, signupUser } from '../../actions/index';
+import { signinUser, signupUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
@@ -348,7 +348,6 @@ class _SoundcastCheckout extends Component {
               </div>
             </div>
           </section>
-          {
           <Payment
             soundcast={soundcast}
             soundcastID={soundcastID}
@@ -358,13 +357,10 @@ class _SoundcastCheckout extends Component {
             sumTotal={sumTotal}
             history={history}
             coupon={coupon}
-            isEmailSent={this.props.isEmailSent}
-            sendEmail={this.props.sendEmail}
             handleStripeId={this.handleStripeId}
             setAddSoundcastToUser={this.setAddSoundcastToUser}
             hideCardInputs={hideCardInputs}
           />
-          }
         </div>
       )
     } else {
@@ -392,12 +388,12 @@ const styles = {
 }
 
 const mapStateToProps = state => {
-    const { userInfo, isLoggedIn, isEmailSent } = state.user;
-    return { userInfo, isLoggedIn, isEmailSent};
+    const { userInfo } = state.user;
+    return { userInfo };
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ sendEmail, signinUser, signupUser }, dispatch);
+    return bindActionCreators({ signinUser, signupUser }, dispatch);
 }
 
 const Checkout_worouter = connect(mapStateToProps, mapDispatchToProps)(_SoundcastCheckout);
