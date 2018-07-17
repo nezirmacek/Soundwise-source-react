@@ -368,6 +368,13 @@ const fixCategories = async () => {
     const categories = (await db_original.query(
       `SELECT * FROM "Categories" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
     for (const category of categories) {
+      if (['Arts', 'Comedy', 'Education', 'Kids & Family', 'Health',
+      'TV & Film', 'Music', 'News & Politics', 'Religion & Spirituality',
+      'Science & Medicine', 'Sports & Recreation', 'Technology', 'Business',
+      'Games & Hobbies', 'Society & Culture', 'Government & Organizations'].indexOf(category.name)) {
+        continue
+      }
+
       const feed = (await db_original.query(
         `SELECT * FROM "ImportedFeeds" WHERE "soundcastId"='${category.soundcastId}'`))[0]
       if (feed.length && feed[0].itunesId) {
