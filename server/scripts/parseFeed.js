@@ -24,7 +24,7 @@ const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
-const { logErr } = require('./utils')('parseFeed.js');
+const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 
 // // Test the getFeed function:
 // setTimeout(() =>
@@ -260,17 +260,26 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     }
   }
 
+  const categoriesNames = Object.keys(podcastCategories).map(
+                            i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
   // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
   // This should be similar to the upload setup on the /dashboard/add_episode page
   const categories = metadata['itunes:category'];
   if (categories && categories.length) {
     for (const category of categories) {
+      let name;
       if (category && category['@'] && category['@'].text) {
-        let name = category['@'].text;
+        if (categoriesNames.indexOf(category['@'].text) !== -1) {
+          name = category['@'].text;
+        }
         const subcategory = category['itunes:category'];
         if (subcategory && subcategory['@'] && subcategory['@'].text) { // have subcategory
-          name = subcategory['@'].text;
+          if (categoriesNames.indexOf(subcategory['@'].text) !== -1) {
+            name = subcategory['@'].text;
+          }
         }
+      }
+      if (name) {
         try {
           await database.Category.create({ name, soundcastId });
         } catch(err) {
