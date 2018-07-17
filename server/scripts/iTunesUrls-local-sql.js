@@ -1,5 +1,8 @@
-// To run: $ nohup node iTunesUrls-local-sql.js 2>&1 > output.log &
-// To run import: $ IMPORT_TABLES=true nohup node iTunesUrls-local-sql.js 2>&1 >> import_local.log &
+// Run options:
+// $ CREATE_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local1.log &
+// $ IMPORT_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
+// $ FIX_CATEGORIES=true NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
+// $ RUN_IMPORT=true     NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
 
 const request = require('request');
 const cheerio = require('cheerio');
@@ -9,6 +12,8 @@ const moment = require('moment');
 const Sequelize = require('sequelize');
 const firebase = require('firebase-admin');
 const serviceAccount = require('../../serviceAccountKey.json');
+const database = require('../../database/index');
+const { podcastCategories } = require('./utils')('iTunes-local-sql.js');
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
@@ -148,7 +153,7 @@ if (process.env.CREATE_TABLES) {
   return
 }
 
-const importTables = async () => {
+const importTables = async () => { // import tables from soundwise_local_sql to firebase/soundwise
   console.log('Importing tables')
   const soundcasts_count   = (await db.query(`SELECT COUNT(*) FROM "Soundcasts"`))[0][0].count
   const episodes_count     = (await db.query(`SELECT COUNT(*) FROM "Episodes"`))[0][0].count
@@ -351,6 +356,79 @@ const importTables = async () => {
 if (process.env.IMPORT_TABLES) {
   importTables()
   return
+}
+
+const fixCategories = async () => {
+  console.log('Fix categories run')
+  const categories_count = (await db_original.query(`SELECT COUNT(*) FROM "Categories"`))[0][0].count
+  const podcastCategoriesMainIds = Object.keys(podcastCategories)
+  let i = 0
+  while (i <= categories_count) {
+    console.log(`Querying "Categories" OFFSET ${i}`)
+    const categories = (await db_original.query(
+      `SELECT * FROM "Categories" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
+    for (const category of categories) {
+      if (['Arts', 'Comedy', 'Education', 'Kids & Family', 'Health',
+      'TV & Film', 'Music', 'News & Politics', 'Religion & Spirituality',
+      'Science & Medicine', 'Sports & Recreation', 'Technology', 'Business',
+      'Games & Hobbies', 'Society & Culture', 'Government & Organizations'].indexOf(category.name)) {
+        continue
+      }
+
+      const feed = (await db_original.query(
+        `SELECT * FROM "ImportedFeeds" WHERE "soundcastId"='${category.soundcastId}'`))[0]
+      if (feed.length && feed[0].itunesId) {
+        await new Promise(resolve => {
+          request.get(`https://itunes.apple.com/lookup?id=${feed[0].itunesId}&entity=podcast`, async (err, res, body) => {
+            if (err) {
+              console.log(`request.get fixCategories ${feed[0].itunesId} ${err}`)
+              return resolve();
+            }
+            let data
+            try {
+              data = JSON.parse(body)
+            } catch(err){}
+            if (data && data.results && data.results.length && data.results[0].genreIds) {
+              const genreIds = data.results[0].genreIds
+              let newCategories = {}
+              for (const genreId of genreIds) {
+                for (const id of podcastCategoriesMainIds) {
+                  if (id === genreId) {
+                    newCategories[podcastCategories[id].name] = true
+                  } else { // check subCategories
+                    const subCategoriesIds = Object.keys(podcastCategories[id].subCategories)
+                    if (subCategoriesIds.indexOf(genreId) !== -1) { // contains genreId
+                      newCategories[podcastCategories[id].name] = true
+                    }
+                  }
+                }
+              }
+              newCategories = Object.keys(newCategories)
+              if (newCategories.length) {
+                await db_original.query(`DELETE FROM "Categories" WHERE "soundcastId"='${category.soundcastId}'`)
+                for (const name of newCategories) {
+                  await database.Category.create({ name, soundcastId: category.soundcastId })
+                }
+              }
+            }
+            resolve()
+          })
+        })
+      }
+    }
+    i+=10000
+  }
+
+  process.exit()
+}
+if (process.env.FIX_CATEGORIES) {
+  fixCategories()
+  return
+}
+
+if (!process.env.RUN_IMPORT) {
+  console.log('No correct prefix was found, exiting')
+  return process.exit();
 }
 
 console.log('Running import script')
