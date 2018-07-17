@@ -360,20 +360,36 @@ if (process.env.IMPORT_TABLES) {
 
 const fixCategories = async () => {
   console.log('Fix categories run')
-  const categories_count = (await db_original.query(`SELECT COUNT(*) FROM "Categories"`))[0][0].count
+  // const categories_count = (await db_original.query(`SELECT COUNT(*) FROM "Categories"`))[0][0].count
   const podcastCategoriesMainIds = Object.keys(podcastCategories)
   let i = 0
-  while (i <= categories_count) {
+  const categoriesNames = Object.keys(podcastCategories).map(
+                            i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
+  const soundcastIdsWithoutCategory = [];
+  // while (i <= categories_count) {
     console.log(`Querying "Categories" OFFSET ${i}`)
     const categories = (await db_original.query(
-      `SELECT * FROM "Categories" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "Categories" WHERE "name" NOT IN (
+        'Arts', 'Comedy', 'Education', 'Kids & Family', 'Health',
+        'TV & Film', 'Music', 'News & Politics', 'Religion & Spirituality',
+        'Science & Medicine', 'Sports & Recreation', 'Technology', 'Business',
+        'Games & Hobbies', 'Society & Culture', 'Government & Organizations'
+      ) OFFSET 0 LIMIT 10000`
+      // `SELECT * FROM "Categories" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
+    ))[0]
+    debugger
     for (const category of categories) {
-      if (['Arts', 'Comedy', 'Education', 'Kids & Family', 'Health',
-      'TV & Film', 'Music', 'News & Politics', 'Religion & Spirituality',
-      'Science & Medicine', 'Sports & Recreation', 'Technology', 'Business',
-      'Games & Hobbies', 'Society & Culture', 'Government & Organizations'].indexOf(category.name)) {
+      if (categoriesNames.indexOf(category.name) !== -1) {
         continue
       }
+
+      // if (categoriesNames.indexOf(category.name.replace('&amp;', '&')) !== -1 ||
+      //     categoriesNames.indexOf(category.name.replace('&amp;', '&').replace('&amp;', '&')) !== -1
+      // ) {
+      //   await database.Category.update({
+      //     name: category.name.replace('&amp;', '&').replace('&amp;', '&')
+      //   }, { where: { id: category.id}})
+      // }
 
       const feed = (await db_original.query(
         `SELECT * FROM "ImportedFeeds" WHERE "soundcastId"='${category.soundcastId}'`))[0]
@@ -382,12 +398,15 @@ const fixCategories = async () => {
           request.get(`https://itunes.apple.com/lookup?id=${feed[0].itunesId}&entity=podcast`, async (err, res, body) => {
             if (err) {
               console.log(`request.get fixCategories ${feed[0].itunesId} ${err}`)
+              debugger
               return resolve();
             }
             let data
             try {
               data = JSON.parse(body)
-            } catch(err){}
+            } catch(err){
+              debugger
+            }
             if (data && data.results && data.results.length && data.results[0].genreIds) {
               const genreIds = data.results[0].genreIds
               let newCategories = {}
@@ -409,16 +428,24 @@ const fixCategories = async () => {
                 for (const name of newCategories) {
                   await database.Category.create({ name, soundcastId: category.soundcastId })
                 }
+              } else {
+                soundcastIdsWithoutCategory.push(category.soundcastId)
               }
+            } else {
+              console.log(`Soundcast without genreIds ${category.soundcastId} ${feed[0].itunesId}`)
             }
             resolve()
           })
         })
+      } else {
+        console.log(`Soundcast without itunesId ${category.soundcastId}`)
       }
     }
-    i+=10000
-  }
+  //   i+=10000
+  // }
 
+  console.log('soundcastIdsWithoutCategory:', soundcastIdsWithoutCategory);
+  debugger
   process.exit()
 }
 if (process.env.FIX_CATEGORIES) {
