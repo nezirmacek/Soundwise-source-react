@@ -23,6 +23,7 @@ import {LandingPagePodcast} from './components/landingpage_podcast';
 import {LandingPageSelling} from './components/landingpage_selling_audio';
 import PageRealEstate from './components/page_realestate';
 import ConversionCourse from './components/conversion_course';
+import PodcastingCourse from './components/podcasting_course_landing_page';
 import PageExperts from './components/page_experts';
 import {PricingPage} from './containers/pricing_page';
 import {SoundwiseCheckout} from './containers/soundwise_checkout';
@@ -235,7 +236,7 @@ class _Routes extends Component {
                 <Route exact path='/podcast' component={LandingPagePodcast}/>
                 <Route exact path='/selling' component={LandingPageSelling}/>
                 <Route path="/about" component={About}/>
-                <Route path="/conversion" component={ConversionCourse}/>
+                <Route path="/conversion" component={PodcastingCourse}/>
                 <Route path="/realestate" component={PageRealEstate}/>
                 <Route path="/experts" component={PageExperts}/>
                 <Route exact={true} path='/signup/:mode' component={AppSignup} />

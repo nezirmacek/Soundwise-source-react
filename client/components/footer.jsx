@@ -44,6 +44,11 @@ const Footer = (props) => (
                 <span className='text-light-gray tz-text'>Get Featured on IGP</span>
               </a>
             </li>
+            <li className="tz-text text-medium-gray">
+              <Link to='/conversion'>
+                <span className='text-light-gray tz-text'>Podcast Conversion Course</span>
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12 xs-text-center xs-margin-four-bottom display-table text-left">

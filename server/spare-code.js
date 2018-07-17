@@ -6,28 +6,28 @@ firebase.initializeApp({
 });
 
 // Add subscribed soundcasts to user
-// var userId = '90rxWLk6K5cRkJD7RFVDx7o70YG2';
-// var soundcastsIncluded = [
-//   '1531419211997s',
-//   '1531441638240s',
-//   '1531459034687s',
-//   '1531496828981s',
-//   '1531502612113s'];
-// var subscribedObj = {
-//   billingCycle: 'one time',
-//   subscribed: true,
-//   date_subscribed: 1531755224,
-//   current_period_end: 4638902400
-// };
+var userId = 'y5MtgSCJPshAomDuFyfReQfajVW2';
+var soundcastsIncluded = [
+  '1531419211997s',
+  '1531441638240s',
+  '1531459034687s',
+  '1531496828981s',
+  '1531502612113s'];
+var subscribedObj = {
+  billingCycle: 'one time',
+  subscribed: true,
+  date_subscribed: 1531755224,
+  current_period_end: 4638902400
+};
 
-// soundcastsIncluded.forEach(soundcastId => {
-//   firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}`)
-//   .set(subscribedObj);
-//   firebase.database().ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-//   .set('1531755224');
-// });
-// firebase.database().ref(`soundcasts/1531504770898s/subscribed/${userId}`)
-// .set('1531755224');
+soundcastsIncluded.forEach(soundcastId => {
+  firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}`)
+  .set(subscribedObj);
+  firebase.database().ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+  .set('1531755224');
+});
+firebase.database().ref(`soundcasts/1531504770898s/subscribed/${userId}`)
+.set('1531755224');
 
 
 // Compile iTunes category ID list
