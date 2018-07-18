@@ -95,7 +95,7 @@ const sendCommentNotification = async (req, res) => {
 
 const addToEmailList = (req, res) => {
   // req.body: {soundcastId: [string], emailListId: [number], emailAddressArr: [array]}
-  const {soundcastId, emailListId, emailAddressArr, listName} = req.body;
+  const {soundcastId, emailAddressArr, listName, emailListId} = req.body;
   let recipients;
   const emails = emailAddressArr.map(email => {
     if(typeof email == 'string') {
@@ -133,7 +133,6 @@ const addToEmailList = (req, res) => {
         res.status(400).send(err.message);
       });
     } else { // if list doesn't exist, create list and then add recipients
-      let listId;
       const data1 = {
         method: 'POST',
         url: '/v3/contactdb/lists',
@@ -142,8 +141,7 @@ const addToEmailList = (req, res) => {
       // console.log('data1: ', data1);
       client.request(data1)
       .then(([response, body]) => {
-        listId = body.id;
-        return listId;
+        return body.id;
       })
       .then(listId => {
         const data2 = {

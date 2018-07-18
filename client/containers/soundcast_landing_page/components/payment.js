@@ -186,7 +186,7 @@ class _Payment extends Component {
         if (!that.props.isEmailSent && !that.state.confirmationEmailSent) {
           that.setState({ confirmationEmailSent: true });
           that.props.sendEmail();
-          firebase.database().ref(`publishers/${soundcast.publisherID}`).once('value', snapshot => {
+          firebase.database().ref(`publishers/${soundcast.publisherID}`).once('value', async snapshot => {
             if (!snapshot.val()) {
               return console.log('Error payment addSoundcastToUser empty publisher')
             }

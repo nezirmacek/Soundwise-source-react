@@ -4,8 +4,8 @@ export function addToEmailList (soundcastId, emailAddressArr, listName, emailLis
   return Axios.post('/api/add_emails', {
     soundcastId,
     emailAddressArr,
-    emailListId,
     listName,
+    emailListId,
   })
     .then(res => {
       return res.data.emailListId;
