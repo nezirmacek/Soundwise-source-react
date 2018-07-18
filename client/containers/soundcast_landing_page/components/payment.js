@@ -153,12 +153,6 @@ class _Payment extends Component {
                 date_subscribed: moment().format("X")
               });
 
-            // add stripe_id to user data if not already exists
-            if (platformCustomer && user.stripe_id !== platformCustomer) {
-              await firebase.database().ref(`users/${userId}/stripe_id`).set(platformCustomer);
-              that.props.signinUser({ stripe_id: platformCustomer }); // set userInfo.stripe_id
-            }
-
             // add user to soundcast
             await firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`).set(moment().format("X"));
 
@@ -167,25 +161,23 @@ class _Payment extends Component {
 
             // if it's a free soundcast, add subscriber to publisher
             if (totalPay == 0 || totalPay == "free") {
+              await firebase.database()
+                .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`).set(true);
               const snapshot = await firebase.database()
-                .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}`)
-                .once("value");
+                .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}`).once('value');
               if (!snapshot.val()) {
-                await firebase.database()
-                  .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
-                  .set(true);
                 const snapshot = await firebase.database()
-                  .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
-                  .once('value');
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`).once('value');
                 await firebase.database()
                   .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
-                  .set(snapshot.val() ? snapshot.val() + 1 : 1);
-              } else {
-                await firebase.database()
-                  .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
-                  .set(true);
+                  .set(snapshot.val() ? snapshot.val() + 1 : 1); // increment or set 1
               }
             }
+          }
+          // add stripe_id to user data if not already exists
+          if (platformCustomer && user.stripe_id !== platformCustomer) {
+            await firebase.database().ref(`users/${userId}/stripe_id`).set(platformCustomer);
+            that.props.signinUser({ stripe_id: platformCustomer }); // set userInfo.stripe_id
           }
         } else {
           console.log('Error payment addSoundcastToUser empty user variable');
@@ -199,11 +191,8 @@ class _Payment extends Component {
               return console.log('Error payment addSoundcastToUser empty publisher')
             }
             const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
-            addToEmailList(soundcastID, [{
-              email: userInfo.email[0],
-              firstName: userInfo.firstName,
-              lastName: userInfo.lastName
-            }], "subscriberEmailList", soundcast.subscriberEmailList).then(listId => {
+            addToEmailList(soundcastID, [userInfo.email[0]], 'subscriberEmailList', soundcast.subscriberEmailList)
+             .then(listId => {
               inviteListeners(
                 [userInfo.email[0]],
                 subject,
