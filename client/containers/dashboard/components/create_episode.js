@@ -386,7 +386,7 @@ class _CreateEpisode extends Component {
                             description: description.getCurrentContent().hasText() ?
                               draftToHtml(convertToRaw(description.getCurrentContent())) : null,
                             actionstep: actions.length > 0 ? actions : null,
-                            date_created: moment().format('X'),
+                            date_created: Number(moment().format('X')),
                             creatorID,
                             publisherID: userInfo.publisherID,
                             url: recordedAudioUrl || uploadedAudioUrl,
@@ -419,7 +419,12 @@ class _CreateEpisode extends Component {
                                 }
                             );
 
-                            firebase.database().ref(`soundcasts/${that.currentSoundcastId}/last_update`).set(newEpisode.date_created);
+                            firebase.database().ref(`soundcasts/${that.currentSoundcastId}/last_update`)
+                              .set(newEpisode.date_created);
+                            Axios.post('/api/soundcast', {
+                              soundcastId: that.currentSoundcastId,
+                              updateDate: newEpisode.date_created,
+                            });
 
                             firebase.database().ref(`soundcasts/${that.currentSoundcastId}/episodes/${that.episodeId}`).set(true).then(
                                 res => {

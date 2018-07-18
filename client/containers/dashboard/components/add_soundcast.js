@@ -227,6 +227,7 @@ export default class AddSoundcast extends Component {
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
           if (user && that.firebaseListener) {
               const creatorID = user.uid;
+              const last_update = Number(moment().format('X'));
               const newSoundcast = {
                 title,
                 imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
@@ -244,6 +245,7 @@ export default class AddSoundcast extends Component {
                 hostImageURL,
                 forSale,
                 prices,
+                last_update,
                 published: publish,
                 intro: introUrl || null,
                 outro: outroUrl || null,
@@ -286,6 +288,7 @@ export default class AddSoundcast extends Component {
                 Axios.post('/api/soundcast', {
                   soundcastId: that.soundcastId,
                   publisherId: userInfo.publisherID,
+                  updateDate: last_update,
                   title
                 }).then(
                   res => {

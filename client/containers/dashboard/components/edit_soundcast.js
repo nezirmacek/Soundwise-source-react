@@ -332,6 +332,7 @@ export default class EditSoundcast extends Component {
         this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
               if (user && that.firebaseListener) {
                   const creatorID = user.uid;
+                  const last_update = Number(moment().format('X'));
                   const editedSoundcast = {
                       title,
                       short_description,
@@ -359,6 +360,7 @@ export default class EditSoundcast extends Component {
                       itunesImage,
                       itunesExplicit,
                       itunesCategory,
+                      last_update,
                       autoSubmitPodcast
                   };
 
@@ -377,6 +379,7 @@ export default class EditSoundcast extends Component {
                       Axios.post('/api/soundcast', {
                         soundcastId: history.location.state.id,
                         publisherId: userInfo.publisherID,
+                        updateDate: last_update,
                         title
                       })
                       .then(() => {
