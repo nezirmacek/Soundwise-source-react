@@ -191,33 +191,33 @@ class _Payment extends Component {
               return console.log('Error payment addSoundcastToUser empty publisher')
             }
             const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
-            addToEmailList(soundcastID, [userInfo.email[0]], 'subscriberEmailList', soundcast.subscriberEmailList)
-             .then(listId => {
-              inviteListeners(
-                [userInfo.email[0]],
-                subject,
-                content,
-                snapshot.val().name,
-                snapshot.val().imageUrl,
-                publisherEmail
-              ); // use transactional email for this
+            if (soundcast.subscriberEmailList) {
+              await addToEmailList(soundcastID, [userInfo.email[0]], 'subscriberEmailList', soundcast.subscriberEmailList);
+            }
+            inviteListeners(
+              [userInfo.email[0]],
+              subject,
+              content,
+              snapshot.val().name,
+              snapshot.val().imageUrl,
+              publisherEmail
+            ); // use transactional email for this
 
-              // Redirect to /notice page
-              that.setState({ success: true });
-              const text = `Thanks for signing up to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
-              history.push({
-                pathname: "/notice",
-                state: {
-                  text,
-                  soundcastTitle: soundcast.title,
-                  soundcast,
-                  soundcastID,
-                  checked,
-                  sumTotal,
-                  ios: "https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8",
-                  android: "https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"
-                }
-              });
+            // Redirect to /notice page
+            that.setState({ success: true });
+            const text = `Thanks for signing up to ${soundcast.title}. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
+            history.push({
+              pathname: "/notice",
+              state: {
+                text,
+                soundcastTitle: soundcast.title,
+                soundcast,
+                soundcastID,
+                checked,
+                sumTotal,
+                ios: "https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8",
+                android: "https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android"
+              }
             });
           });
         }
