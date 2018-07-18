@@ -191,9 +191,11 @@ class _Payment extends Component {
               return console.log('Error payment addSoundcastToUser empty publisher')
             }
             const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
-            if (soundcast.subscriberEmailList) {
-              await addToEmailList(soundcastID, [userInfo.email[0]], 'subscriberEmailList', soundcast.subscriberEmailList);
-            }
+            await addToEmailList(soundcastID, [{
+              email: userInfo.email[0],
+              firstName: userInfo.firstName,
+              lastName: userInfo.lastName
+            }], 'subscriberEmailList', soundcast.subscriberEmailList);
             inviteListeners(
               [userInfo.email[0]],
               subject,
