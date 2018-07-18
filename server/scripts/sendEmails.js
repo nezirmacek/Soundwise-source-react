@@ -96,7 +96,6 @@ const sendCommentNotification = async (req, res) => {
 const addToEmailList = (req, res) => {
   // req.body: {soundcastId: [string], emailListId: [number], emailAddressArr: [array]}
   const {soundcastId, emailAddressArr, listName, emailListId} = req.body;
-  let recipients;
   const emails = emailAddressArr.map(email => {
     if(typeof email == 'string') {
       return {
@@ -117,7 +116,7 @@ const addToEmailList = (req, res) => {
   };
   client.request(options)
   .then(([response, body]) => {
-    recipients = body.persisted_recipients; // array of recipient IDs
+    const recipients = body.persisted_recipients; // array of recipient IDs
     if (emailListId) { // if list already exists, add recipients to list
       const data = {
         method: 'POST',
@@ -140,33 +139,54 @@ const addToEmailList = (req, res) => {
       };
       // console.log('data1: ', data1);
       client.request(data1)
-      .then(([response, body]) => {
-        return body.id;
-      })
-      .then(listId => {
-        const data2 = {
-          method: 'POST',
-          url: `/v3/contactdb/lists/${listId}/recipients`,
-          body: recipients,
-        };
-        client.request(data2)
-        .then(([response, body]) => { // save listId in firebase
-          firebase.database().ref(`soundcasts/${soundcastId}/${listName}`)
-          .set(listId);
-        })
-        .then(() => {
-          res.status(200).send({emailListId: listId});
-        })
-        .catch(err => {
-          console.log('error adding recipients: ', err.message);
-          res.status(400).send(err.message);
-        });
-      })
+      .then(([response, body]) => body.id)
+      .then(listId => addRecipients(listId))
       .catch(err => {
-        console.log('error creating list: ', err.message);
-        res.status(400).send(err.message);
+        let message;
+        try {
+          message = err.response.body.errors[0].message;
+        } catch(err){}
+        if (message === 'This list name is already in use. Please choose a new, unique name.') {
+          client.request({ method: 'GET', url: '/v3/contactdb/lists' })
+          .then(([response, body]) => {
+            const list = body.lists.find(i => i.name === `${soundcastId}-${listName}`);
+            if (list) {
+              addRecipients(list.id);
+            } else {
+              console.log('error list not found');
+              res.status(400).send('error list not found');
+            }
+          })
+          .catch(err => {
+            console.log('error getting lists: ', err.message);
+            res.status(400).send(err.message);
+          });
+        } else {
+          console.log('error creating list: ', err.message, message);
+          res.status(400).send(err.message + ' ' + message);
+        }
       });
     }
+
+    const addRecipients = listId => {
+      const data2 = {
+        method: 'POST',
+        url: `/v3/contactdb/lists/${listId}/recipients`,
+        body: recipients,
+      };
+      client.request(data2)
+      .then(([response, body]) => { // save listId in firebase
+        firebase.database().ref(`soundcasts/${soundcastId}/${listName}`)
+        .set(listId);
+      })
+      .then(() => {
+        res.status(200).send({emailListId: listId});
+      })
+      .catch(err => {
+        console.log('error adding recipients: ', err.message);
+        res.status(400).send(err.message);
+      });
+    };
   }).catch(err => {
     console.log('error sendEmails recipients request: ', err, err.message);
     res.status(400).send(err.message);
