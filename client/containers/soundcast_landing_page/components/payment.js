@@ -98,6 +98,11 @@ class _Payment extends Component {
   }
 
   handleChange(e) {
+    if (e.target.value) { // cache values (bug #58)
+      if (e.target.name === 'firstName') { localStorage.setItem('soundwiseSignupFName', e.target.value) }
+      if (e.target.name === 'lastName' ) { localStorage.setItem('soundwiseSignupLName', e.target.value) }
+      if (e.target.name === 'email'    ) { localStorage.setItem('soundwiseSignupEmail', e.target.value) }
+    }
     this.setState({
       [e.target.name]: e.target.value
     });

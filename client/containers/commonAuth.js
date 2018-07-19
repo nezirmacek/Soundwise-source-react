@@ -143,8 +143,10 @@ const compileUser = async (_user, signinUser) => {
 }
 
 const signupCommon = (_user, isAdmin, successCallback) => {
-  const { firstName, lastName, email, pic_url } = _user;
-  const picture = pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
+  const firstName = _user.firstName || localStorage.getItem('soundwiseSignupFName')
+  const lastName  = _user.lastName  || localStorage.getItem('soundwiseSignupLName')
+  const email     = _user.email     || localStorage.getItem('soundwiseSignupEmail')
+  const picture   = _user.pic_url   || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
   firebase.auth().onAuthStateChanged(user => {
     if(user) {
       const userId = user.uid;
