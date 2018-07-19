@@ -13,7 +13,6 @@ var paypal = require('paypal-rest-sdk');
 var firebase = require('firebase-admin');
 const sendinblue = require('sendinblue-api');
 const database = require('../../database/index');
-const _ = require('lodash');
 const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
 const parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
@@ -24,15 +23,10 @@ var stripeFeeFixed = 0.3;
 var stripeFeePercent = 0.029;
 var soundwiseFeePercent = 0;
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 module.exports = function(app) {
   paypal.configure(paypalConfig);
 
   var rankSoundcasts = schedule.scheduleJob('* * 1 * * 1', function() {
-    console.log('job');
     const currentDate = Date.now();
     let soundcastsListens = [];
     let maxListnes = 0;
@@ -63,7 +57,6 @@ module.exports = function(app) {
   });
 
   var detectSubscriptionsExpiration = schedule.scheduleJob('* * 23 * * *', function() {
-    console.log('job');
     const currentDate = Date.now();
     let users = [];
     firebase.database().ref('users').once('value').then(snapshots => {
