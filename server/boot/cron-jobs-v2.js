@@ -12,6 +12,8 @@ var moment = require('moment');
 var paypal = require('paypal-rest-sdk');
 var firebase = require('firebase-admin');
 const sendinblue = require('sendinblue-api');
+const database = require('../../database/index');
+const _ = require('lodash');
 const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
 const parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
@@ -22,8 +24,67 @@ var stripeFeeFixed = 0.3;
 var stripeFeePercent = 0.029;
 var soundwiseFeePercent = 0;
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = function(app) {
   paypal.configure(paypalConfig);
+
+  var rankSoundcasts = schedule.scheduleJob('* * 1 * * 1', function() {
+    console.log('job');
+    const currentDate = Date.now();
+    let soundcastsListens = [];
+    let maxListnes = 0;
+    database.Soundcast.findAll().then(soundcasts => {
+      const promises = soundcasts.map(soundcast => {
+        return database.ListeningSession
+          .count({where: {soundcastId: soundcast.soundcastId}})
+          .then(countListnes => {
+            maxListnes = maxListnes < countListnes ? countListnes : maxListnes;
+            soundcastsListens.push(
+              {
+                id: soundcast.soundcastId,
+                countListnes: countListnes,
+                updateDate: soundcast.updateDate || new Date(soundcast.updatedAt).getTime(),
+              }
+            );
+          });
+      });
+      Promise.all(promises).then(() => {
+        soundcastsListens.forEach(soundcast => {
+          const rank = (soundcast.countListnes / maxListnes > 0.1 ?
+            (soundcast.countListnes / maxListnes - 0.1) : 0) +
+            soundcast.updateDate / currentDate * 0.1;
+          firebase.database().ref(`soundcasts/${soundcast.id}/rank`).set(rank.toFixed(4));
+        });
+      });
+    });
+  });
+
+  var detectSubscriptionsExpiration = schedule.scheduleJob('* * 23 * * *', function() {
+    console.log('job');
+    const currentDate = Date.now();
+    let users = [];
+    firebase.database().ref('users').once('value').then(snapshots => {
+      snapshots.forEach(snapshot => {
+        if (snapshot) {
+          const user =  Object.assign({id: snapshot.key}, snapshot.val());
+          if (user.soundcasts) {
+            Object.keys(user.soundcasts).forEach(key => {
+              const soundcast = user.soundcasts[key];
+              if (soundcast.current_period_end < currentDate && soundcast.billingCycle !== 'free') {
+                if (soundcast.billingCycle && soundcast.subscribed) {
+                  firebase.database().ref(`users/${user.id}/soundcasts/${key}/subscribed`).set(false);
+                  firebase.database().ref(`soundcasts/${key}/subscribed/${user.id}`).remove();
+                }
+              }
+            });
+          }
+        }
+      });
+    });
+  });
 
   var j = schedule.scheduleJob('0 0 10 1 * *', function() {
     const periodBegin = moment().startOf('month').subtract(2, 'months')
@@ -61,7 +122,7 @@ module.exports = function(app) {
               - (+transaction.amount - fees);
           }
         });
-
+  
         const publishersArr = [];
         let publisherObj;
         for (let publisherId in publishersObj) {
@@ -71,7 +132,7 @@ module.exports = function(app) {
             publishersArr.push(publisherObj);
           }
         }
-
+  
         // if there's nothing to payout, return and call it a day
         if (publishersArr.length == 0) {
           const input = {'to': {['natasha@mysoundwise.com']: 'Natasha Che'},
@@ -84,7 +145,7 @@ module.exports = function(app) {
           });
           return;
         }
-
+  
         // ************** step 3
         const getPaypalEmailPromises = publishersArr.map((publisher, i) => {
           return firebase.database().ref(`publishers/${publisher.id}`)
@@ -95,7 +156,7 @@ module.exports = function(app) {
             })
             .then(res => res, err => console.log(err));
         });
-
+  
         Promise.all(getPaypalEmailPromises)
         .then(res => {
           // publisherObj = {id, paypalEmail, payoutAmount}
@@ -113,7 +174,7 @@ module.exports = function(app) {
               sender_item_id: publisherObj.id, //publisherID
             });
           });
-
+  
           // create payout
           const senderBatchId = Math.random().toString(36).substring(9);
           const payoutObj = {
