@@ -144,11 +144,9 @@ class _AppSignup extends Component {
 
     signUpInvitedAdmin(user) {
       const that = this;
-      const { match, history, signupUser } = this.props;
-      const { firstName, lastName, email, password, pic_url,
-              publisher_name, publisherImage, isFBauth } = this.state;
+      const { match, history } = this.props;
 
-      if(!isFBauth) {
+      if(!this.state.isFBauth) {
         this._signUp().then(res => {
           firebase.auth().onAuthStateChanged(function(user) {
             if (user) {

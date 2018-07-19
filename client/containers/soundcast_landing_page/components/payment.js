@@ -140,6 +140,9 @@ class _Payment extends Component {
           const connectedCustomer = charge && charge.connectedCustomer || null;
           const platformCustomer = charge ? charge.platformCustomer || charge.stripe_id : null;
           const soundcastsIds = soundcast.bundle ? soundcast.soundcastsIncluded : [soundcastID];
+          if (soundcast.bundle) { // add user to bundle
+            await firebase.database().ref(`soundcasts/${soundcastID}/subscribed/${userId}`).set(moment().format("X"));
+          }
           for (const soundcastID of soundcastsIds) {
             // add soundcast to user
             await firebase.database().ref(`users/${userId}/soundcasts/${soundcastID}`)
@@ -160,7 +163,7 @@ class _Payment extends Component {
             await firebase.database().ref(`soundcasts/${soundcastID}/invited/${_email}`).remove();
 
             // if it's a free soundcast, add subscriber to publisher
-            if (totalPay == 0 || totalPay == "free") {
+            if (totalPay == 0 || totalPay == "free") { // TODO review block
               await firebase.database()
                 .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`).set(true);
               const snapshot = await firebase.database()

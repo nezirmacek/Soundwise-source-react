@@ -192,10 +192,7 @@ class _SoundcastCheckout extends Component {
           // Facebook account successfully linked to the existing Firebase user.
           firebase.auth().onAuthStateChanged(user => {
             if (user) {
-              const userId = user.uid;
-              firebase.database().ref('users/' + userId)
-              .once('value')
-              .then(snapshot => {
+              firebase.database().ref(`users/${user.uid}`).once('value').then(snapshot => {
                 signupCommon(snapshot.val(), null, this.signupCallback);
               });
             }
