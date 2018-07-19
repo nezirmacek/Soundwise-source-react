@@ -1,3 +1,7 @@
 {
-  "extends": "loopback"
+  "extends": "loopback",
+  "rules": {
+    "object-curly-spacing": ["error", "always"],
+    "operator-linebreak": "off"
+  }
 }

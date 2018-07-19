@@ -52,4 +52,9 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
+# VSCode
+.vscode
 
+# Build outputs
+bundle.js
+bundle.js.map
