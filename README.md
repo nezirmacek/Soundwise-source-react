@@ -116,6 +116,12 @@ node .
 - Course landing page: `localhost:8080/courses/120`
 - Course page: `localhost:8080/myprograms/120`
 
+### Coding style
+
+Install https://github.com/prettier/prettier  
+Check _package.json > "prettier"_ configuration
+
+
 ## api
 ```
 sudo npm i -g strongloop
