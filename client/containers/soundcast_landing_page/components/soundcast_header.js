@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import { Link, Redirect } from "react-router-dom";
-import { withRouter } from "react-router";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import ReactStars from "react-stars";
-import { orange50 } from "material-ui/styles/colors";
-import Spinner from "react-activity/lib/Spinner";
-import Axios from "axios";
-import * as firebase from "firebase";
+import React, {Component} from 'react';
+import {Link, Redirect} from 'react-router-dom';
+import {withRouter} from 'react-router';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import ReactStars from 'react-stars';
+import {orange50} from 'material-ui/styles/colors';
+import Spinner from 'react-activity/lib/Spinner';
+import Axios from 'axios';
+import * as firebase from 'firebase';
 
-import SoundcastSignup from "../soundcast_signup";
+import SoundcastSignup from '../soundcast_signup';
 // import SocialShare from './socialshare'
 // import { openSignupbox, openConfirmationbox, addSoundcastToCart } from '../actions/index'
 
@@ -17,13 +17,13 @@ const styles = {
   iconWrap: {
     // width: '100%',
     // height: '100%',
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     transform: `translate(${0}, -${50}%)`,
-    top: "50%",
+    top: '50%',
     // zIndex: 10,
-    textAlign: "center"
+    textAlign: 'center',
     // verticalAlign: 'bottom'
     // background: hsla(0, 100%, 50%, 0.4)
   },
@@ -32,25 +32,25 @@ const styles = {
     // top: 0,
     // right: '-10px',
     // bottom: '-10px',
-    fontSize: "40px"
+    fontSize: '40px',
     // color: 'white'
-  }
+  },
 };
 
 class _SoundcastHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      soundcastID: "",
+      soundcastID: '',
       soundcast: {
-        title: "",
-        short_description: "",
-        imageURL: "",
-        long_description: ""
+        title: '',
+        short_description: '',
+        imageURL: '',
+        long_description: '',
       },
       paid: false,
       startPaymentSubmission: false,
-      paymentError: ""
+      paymentError: '',
     };
 
     this.checkOut = this.checkOut.bind(this);
@@ -70,7 +70,7 @@ class _SoundcastHeader extends Component {
     if (this.state.startPaymentSubmission) {
       return (
         <Spinner
-          style={{ display: "flex", paddingLeft: "0.5em" }}
+          style={{display: 'flex', paddingLeft: '0.5em'}}
           color="#727981"
           size={16}
           speed={1}
@@ -80,11 +80,11 @@ class _SoundcastHeader extends Component {
   }
 
   render() {
-    const { soundcast } = this.props;
-    const soundcastName = soundcast.title.split(" ").join("%20");
-    const { originalPrice, displayedPrice, pre, post } = this.props.getPrice(
+    const {soundcast} = this.props;
+    const soundcastName = soundcast.title.split(' ').join('%20');
+    const {originalPrice, displayedPrice, pre, post} = this.props.getPrice(
       soundcast,
-      "per"
+      'per'
     );
 
     return (
@@ -94,39 +94,39 @@ class _SoundcastHeader extends Component {
             <div
               className="row equalize sm-equalize-auto equalize-display-inherit"
               style={{
-                borderBottom: "0.5px solid lightgrey",
+                borderBottom: '0.5px solid lightgrey',
                 paddingBottom: 15,
-                paddingTop: 35
+                paddingTop: 35,
               }}
             >
               <div
                 className="col-md-7 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin"
-                style={{ height: "378px" }}
+                style={{height: '378px'}}
               >
                 <div className="display-table-cell-vertical-middle">
-                  <div className="row" style={{ height: "80%" }}>
-                    <div style={{paddingRight: 25,paddingLeft: 25}}>
+                  <div className="row" style={{height: '80%'}}>
+                    <div style={{paddingRight: 25, paddingLeft: 25}}>
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center"
+                          display: 'flex',
+                          alignItems: 'center',
                         }}
                       >
                         <h2
-                          style={{ margin: 0 }}
+                          style={{margin: 0}}
                           className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text"
                         >
                           {this.props.soundcast.title}
                         </h2>
                       </div>
-                      <div style={{ paddingTop: 25 }}>
+                      <div style={{paddingTop: 25}}>
                         <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${
                           this.props.soundcast.short_description
                         }`}</span>
                       </div>
                       <div
                         className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
-                        style={{ display: "flex", alignItems: "center" }}
+                        style={{display: 'flex', alignItems: 'center'}}
                       >
                         <span className="margin-eight-right title-small sm-title-small">
                           Share this soundcast:
@@ -170,19 +170,17 @@ class _SoundcastHeader extends Component {
                       </div>
                     </div>
                   </div>
-                  <div className="row" style={{ paddingBottom: "30px" }}>
+                  <div className="row" style={{paddingBottom: '30px'}}>
                     <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center xs-margin-bottom-10px">
                       {soundcast.prices &&
                         soundcast.prices[0] && (
                           <span
                             className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
-                            style={{ fontWeight: 550 }}
+                            style={{fontWeight: 550}}
                           >
                             <strong>
                               {originalPrice && (
-                                <span
-                                  style={{ color: "red", paddingRight: 10 }}
-                                >
+                                <span style={{color: 'red', paddingRight: 10}}>
                                   <s>{`\u00A0$${Number(originalPrice).toFixed(
                                     2
                                   )}\u00A0`}</s>
@@ -198,14 +196,14 @@ class _SoundcastHeader extends Component {
                       <a
                         className="btn-medium btn btn-circle text-white no-letter-spacing"
                         onClick={this.props.openModal}
-                        style={{ backgroundColor: "#F76B1C" }}
+                        style={{backgroundColor: '#F76B1C'}}
                       >
                         <span className="text-extra-large sm-text-extra-large tz-text">
                           GET ACCESS
                         </span>
                         {this.renderProgressBar()}
                       </a>
-                      <div style={{ color: "red" }}>
+                      <div style={{color: 'red'}}>
                         {this.state.paymentError}
                       </div>
                     </div>
@@ -215,18 +213,18 @@ class _SoundcastHeader extends Component {
               <div
                 className="col-md-4 col-sm-12 col-xs-12  sm-margin-fifteen-bottom text-center center-col"
                 style={{
-                  height: "378px",
-                  display: "flex",
-                  justifyContent: "center"
+                  height: '378px',
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
                 <div
                   className=""
                   style={{
-                    display: "inline-block",
-                    position: "relative",
-                    width: "350px",
-                    height: "350px"
+                    display: 'inline-block',
+                    position: 'relative',
+                    width: '350px',
+                    height: '350px',
                   }}
                 >
                   <img
@@ -234,9 +232,9 @@ class _SoundcastHeader extends Component {
                     data-img-size="(W)450px X (H)450px"
                     alt=""
                     style={{
-                      width: "350px",
-                      height: "350px",
-                      display: "block"
+                      width: '350px',
+                      height: '350px',
+                      display: 'block',
                     }}
                   />
                 </div>
@@ -251,12 +249,12 @@ class _SoundcastHeader extends Component {
 }
 
 const mapStateToProps = state => {
-  const { userInfo, isLoggedIn } = state.user;
-  const { signupFormOpen } = state.signupBox;
+  const {userInfo, isLoggedIn} = state.user;
+  const {signupFormOpen} = state.signupBox;
   return {
     isLoggedIn,
     userInfo,
-    signupFormOpen
+    signupFormOpen,
   };
 };
 

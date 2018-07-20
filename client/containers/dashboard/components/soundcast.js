@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import axios from 'axios';
 import firebase from 'firebase';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 import EpisodeStatsModal from './episode_stats_modal';
@@ -56,36 +56,37 @@ export default class Soundcast extends Component {
   }
 
   componentDidMount() {
-    if(this.props.userInfo) {
-      const { userInfo } = this.props;
+    if (this.props.userInfo) {
+      const {userInfo} = this.props;
       this.setState({
-        userInfo
+        userInfo,
       });
       this.loadEpisodes(userInfo);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.userInfo && nextProps.userInfo != this.props.userInfo) {
-      const { userInfo } = nextProps;
+    if (nextProps.userInfo && nextProps.userInfo != this.props.userInfo) {
+      const {userInfo} = nextProps;
       this.setState({
-        userInfo
+        userInfo,
       });
       this.loadEpisodes(userInfo);
     }
   }
 
   loadEpisodes(userInfo) {
-    const { history, id } = this.props;
+    const {history, id} = this.props;
     let _soundcast = {};
-    if(userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
+    if (userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
       _soundcast = userInfo.soundcasts_managed[id];
       const _episodes = [];
       const episodeIdCount = {};
-      if(_soundcast.episodes) {
+      if (_soundcast.episodes) {
         for (let id in _soundcast.episodes) {
           const _episode = _soundcast.episodes[id];
-          if (typeof(_episode)==='object' && !episodeIdCount[id]) { // prevent duplicate episodes
+          if (typeof _episode === 'object' && !episodeIdCount[id]) {
+            // prevent duplicate episodes
             _episode.id = id;
             _episodes.push(_episode);
             episodeIdCount[id] = 1;
@@ -96,12 +97,12 @@ export default class Soundcast extends Component {
         });
         this.setState({
           episodes: _episodes,
-        })
+        });
       }
       this.setState({
         soundcast: _soundcast,
-      })
-    };
+      });
+    }
   }
 
   onDragEnd(result) {
@@ -120,21 +121,23 @@ export default class Soundcast extends Component {
     });
     const total = episodes.length;
     const promises = episodes.map((episode, i) => {
-      return firebase.database().ref(`episodes/${episode.id}/index`)
+      return firebase
+        .database()
+        .ref(`episodes/${episode.id}/index`)
         .set(total - i);
     });
     Promise.all(promises);
   }
 
   handleStatsModal() {
-    if(!this.state.showStatsModal) {
+    if (!this.state.showStatsModal) {
       this.setState({
         showStatsModal: true,
-      })
+      });
     } else {
       this.setState({
-        showStatsModal: false
-      })
+        showStatsModal: false,
+      });
     }
   }
 
@@ -146,37 +149,58 @@ export default class Soundcast extends Component {
   }
 
   editEpisode(episode) {
-    const { userInfo, history, id } = this.props;
+    const {userInfo, history, id} = this.props;
     history.push({
       pathname: `/dashboard/edit_episode/${episode.id}`,
       state: {
         id: episode.id,
-        episode
-      }
-    })
+        episode,
+      },
+    });
   }
 
   async deleteEpisode(episode) {
     const title = episode.title;
-    if(confirm(`Are you sure you want to delete ${title}? You won't be able to go back.`)) {
-      await firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`).remove();
+    if (
+      confirm(
+        `Are you sure you want to delete ${title}? You won't be able to go back.`
+      )
+    ) {
+      await firebase
+        .database()
+        .ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`)
+        .remove();
       // firebase.database().ref(`episodes/${episode.id}/isPublished`).set(false);
-      await firebase.database().ref(`episodes/${episode.id}`).remove();
-      const episodes = await firebase.database().ref(`soundcasts/${episode.soundcastID}/episodes`).once('value');
+      await firebase
+        .database()
+        .ref(`episodes/${episode.id}`)
+        .remove();
+      const episodes = await firebase
+        .database()
+        .ref(`soundcasts/${episode.soundcastID}/episodes`)
+        .once('value');
       const episodesKeys = Object.keys(episodes.val());
-      let episodesArr = [], episodeIndex;
-      for(var i = 0; i < episodesKeys.length; i++) {
-        episodeIndex = await firebase.database().ref(`episodes/${episodesKeys[i]}/index`).once('value');
+      let episodesArr = [],
+        episodeIndex;
+      for (var i = 0; i < episodesKeys.length; i++) {
+        episodeIndex = await firebase
+          .database()
+          .ref(`episodes/${episodesKeys[i]}/index`)
+          .once('value');
         episodesArr.push({
           id: episodesKeys[i],
-          index: episodeIndex.val()
+          index: episodeIndex.val(),
         });
       }
-      episodesArr.sort((a, b) => { // sort in ascending order
-        return a.index - b.index
+      episodesArr.sort((a, b) => {
+        // sort in ascending order
+        return a.index - b.index;
       });
-      for(var j = 0; j < episodesArr.length; j++) {
-        await firebase.database().ref(`episodes/${episodesArr[j].id}/index`).set(j + 1);
+      for (var j = 0; j < episodesArr.length; j++) {
+        await firebase
+          .database()
+          .ref(`episodes/${episodesArr[j].id}/index`)
+          .set(j + 1);
       }
       alert(`${title} has been deleted`);
       return;
@@ -184,222 +208,325 @@ export default class Soundcast extends Component {
   }
 
   render() {
-    const { userInfo, episodes, soundcast } = this.state;
-    const { history, id } = this.props;
+    const {userInfo, episodes, soundcast} = this.state;
+    const {history, id} = this.props;
     const that = this;
     return (
-        <div className='' style={styles.itemContainer}>
-          <EpisodeStatsModal
-            isShown={this.state.showStatsModal}
-            episode={this.state.currentEpisode}
-            onClose={this.handleStatsModal}
-            userInfo={this.props.userInfo}
-          />
-          <div className='row ' style={styles.itemHeader}>
-            <div className='col-lg-9 col-md-9 col-sm-8 col-xs-12'
-              style={styles.itemTitle}>{soundcast.title} - Episodes</div>
-            <div className='col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center'
-              style={{...styles.button}}
-              onClick={() => history.push({
-                pathname:'/dashboard/add_episode',
-                state: {soundcastID: id},
-              })}
-            >
-              Add episode
-            </div>
+      <div className="" style={styles.itemContainer}>
+        <EpisodeStatsModal
+          isShown={this.state.showStatsModal}
+          episode={this.state.currentEpisode}
+          onClose={this.handleStatsModal}
+          userInfo={this.props.userInfo}
+        />
+        <div className="row " style={styles.itemHeader}>
+          <div
+            className="col-lg-9 col-md-9 col-sm-8 col-xs-12"
+            style={styles.itemTitle}
+          >
+            {soundcast.title} - Episodes
           </div>
-          <div className='row' style={{...styles.tr, margin: 0}}>
-            <div className='col-md-12' style={{ padding: 20,}}>
-              <div style={{padding: grid * 2, margin: `0 0 ${grid}px 0`,}}>
-                <div className='col-md-6' style={{...styles.th, }}>
-                  TITLE
-                </div>
-                <div className='col-md-2' style={{...styles.th, textAlign: 'center'}}>PUBLISHED ON</div>
-                <div className='col-md-2' style={{...styles.th, textAlign: 'center'}}>LENGTH</div>
-                <div className='col-md-2' style={{...styles.th, textAlign: 'center'}}>ANALYTICS</div>
+          <div
+            className="col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center"
+            style={{...styles.button}}
+            onClick={() =>
+              history.push({
+                pathname: '/dashboard/add_episode',
+                state: {soundcastID: id},
+              })
+            }
+          >
+            Add episode
+          </div>
+        </div>
+        <div className="row" style={{...styles.tr, margin: 0}}>
+          <div className="col-md-12" style={{padding: 20}}>
+            <div style={{padding: grid * 2, margin: `0 0 ${grid}px 0`}}>
+              <div className="col-md-6" style={{...styles.th}}>
+                TITLE
+              </div>
+              <div
+                className="col-md-2"
+                style={{...styles.th, textAlign: 'center'}}
+              >
+                PUBLISHED ON
+              </div>
+              <div
+                className="col-md-2"
+                style={{...styles.th, textAlign: 'center'}}
+              >
+                LENGTH
+              </div>
+              <div
+                className="col-md-2"
+                style={{...styles.th, textAlign: 'center'}}
+              >
+                ANALYTICS
               </div>
             </div>
           </div>
-          <div>
-            <DragDropContext onDragEnd={this.onDragEnd}>
-              <Droppable droppableId="droppable">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
-                  >
-                    {this.state.episodes.map(episode => {
-                      episode.creator = userInfo.publisher.administrators[episode.creatorID];
-                      return (
-                        <Draggable key={episode.index} draggableId={episode.index}>
-                          {(provided, snapshot) => (
-                            <div className='' style={{cursor: 'move'}} datatoggle="tooltip" dataplacement="top" title="drag to reorder">
-                              <div
-                                ref={provided.innerRef}
-                                className='col-md-12'
-                                style={getItemStyle(
-                                  provided.draggableStyle,
-                                  snapshot.isDragging
-                                )}
-                                {...provided.dragHandleProps}
-                              >
-                                  <div className='col-md-6'
-                                    style={{...styles.td}}>
-                                    <div style={{marginRight: 20}}>
-                                      <div style={{marginTop: 0, cursor: 'move'}}>{episode.title}</div>
-                                      <div style={{marginBottom: 5}}>
-                                        <span
-                                          style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: 'red'}}
-                                          onClick={() => this.deleteEpisode(episode)}>
-                                            Delete
-                                        </span>
-                                        <span
-                                          style={{marginRight: 10, cursor: 'pointer', fontSize: 15, color: Colors.link}}
-                                          onClick={() => this.editEpisode(episode)}>
-                                          Edit
-                                        </span>
-                                        {
-                                          episode.publicEpisode &&
-                                          <a target='_blank' href={`https://mysoundwise.com/episodes/${episode.id}`}>
-                                            <span className='text-dark-gray'
-                                              style={{marginRight: 10, cursor: 'pointer', fontSize: 15}}>
-                                              View
-                                            </span>
-                                          </a>
-                                          || null
-                                        }
-                                        {
-                                          episode.publicEpisode &&
-                                          <CopyToClipboard text={episode.url}
-                                            onCopy={() => {alert('Audio file URL copied to clipboard.')}}>
-                                            <span style={{cursor: 'pointer', fontSize: 15, color: Colors.mainGreen}}>Copy audio file URL</span>
-                                          </CopyToClipboard>
-                                          || null
-                                        }
-                                      </div>
-                                    </div>
+        </div>
+        <div>
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver)}
+                >
+                  {this.state.episodes.map(episode => {
+                    episode.creator =
+                      userInfo.publisher.administrators[episode.creatorID];
+                    return (
+                      <Draggable
+                        key={episode.index}
+                        draggableId={episode.index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            className=""
+                            style={{cursor: 'move'}}
+                            datatoggle="tooltip"
+                            dataplacement="top"
+                            title="drag to reorder"
+                          >
+                            <div
+                              ref={provided.innerRef}
+                              className="col-md-12"
+                              style={getItemStyle(
+                                provided.draggableStyle,
+                                snapshot.isDragging
+                              )}
+                              {...provided.dragHandleProps}
+                            >
+                              <div className="col-md-6" style={{...styles.td}}>
+                                <div style={{marginRight: 20}}>
+                                  <div style={{marginTop: 0, cursor: 'move'}}>
+                                    {episode.title}
                                   </div>
-                                  <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.isPublished &&moment(episode.date_created * 1000).format('MMM DD YYYY') || 'draft'}</div>
-                                  <div className='col-md-2' style={{...styles.td, textAlign: 'center', cursor: 'move'}}>{episode.duration && `${Math.round(episode.duration / 60)} minutes` || '-'}</div>
-                                  <div
-                                    onClick={() => that.setCurrentEpisode(episode)}
-                                    className='col-md-2' style={{...styles.td, textAlign: 'center'}} datatoggle="tooltip" dataplacement="top" title="episode analytics">
-
-                                    <i  className="fas fa-2x fa-chart-bar" style={styles.itemChartIcon}></i>
+                                  <div style={{marginBottom: 5}}>
+                                    <span
+                                      style={{
+                                        marginRight: 10,
+                                        cursor: 'pointer',
+                                        fontSize: 15,
+                                        color: 'red',
+                                      }}
+                                      onClick={() =>
+                                        this.deleteEpisode(episode)
+                                      }
+                                    >
+                                      Delete
+                                    </span>
+                                    <span
+                                      style={{
+                                        marginRight: 10,
+                                        cursor: 'pointer',
+                                        fontSize: 15,
+                                        color: Colors.link,
+                                      }}
+                                      onClick={() => this.editEpisode(episode)}
+                                    >
+                                      Edit
+                                    </span>
+                                    {(episode.publicEpisode && (
+                                      <a
+                                        target="_blank"
+                                        href={`https://mysoundwise.com/episodes/${
+                                          episode.id
+                                        }`}
+                                      >
+                                        <span
+                                          className="text-dark-gray"
+                                          style={{
+                                            marginRight: 10,
+                                            cursor: 'pointer',
+                                            fontSize: 15,
+                                          }}
+                                        >
+                                          View
+                                        </span>
+                                      </a>
+                                    )) ||
+                                      null}
+                                    {(episode.publicEpisode && (
+                                      <CopyToClipboard
+                                        text={episode.url}
+                                        onCopy={() => {
+                                          alert(
+                                            'Audio file URL copied to clipboard.'
+                                          );
+                                        }}
+                                      >
+                                        <span
+                                          style={{
+                                            cursor: 'pointer',
+                                            fontSize: 15,
+                                            color: Colors.mainGreen,
+                                          }}
+                                        >
+                                          Copy audio file URL
+                                        </span>
+                                      </CopyToClipboard>
+                                    )) ||
+                                      null}
                                   </div>
                                 </div>
-                              {provided.placeholder}
+                              </div>
+                              <div
+                                className="col-md-2"
+                                style={{
+                                  ...styles.td,
+                                  textAlign: 'center',
+                                  cursor: 'move',
+                                }}
+                              >
+                                {(episode.isPublished &&
+                                  moment(episode.date_created * 1000).format(
+                                    'MMM DD YYYY'
+                                  )) ||
+                                  'draft'}
+                              </div>
+                              <div
+                                className="col-md-2"
+                                style={{
+                                  ...styles.td,
+                                  textAlign: 'center',
+                                  cursor: 'move',
+                                }}
+                              >
+                                {(episode.duration &&
+                                  `${Math.round(
+                                    episode.duration / 60
+                                  )} minutes`) ||
+                                  '-'}
+                              </div>
+                              <div
+                                onClick={() => that.setCurrentEpisode(episode)}
+                                className="col-md-2"
+                                style={{...styles.td, textAlign: 'center'}}
+                                datatoggle="tooltip"
+                                dataplacement="top"
+                                title="episode analytics"
+                              >
+                                <i
+                                  className="fas fa-2x fa-chart-bar"
+                                  style={styles.itemChartIcon}
+                                />
+                              </div>
                             </div>
-                          )}
-                        </Draggable>
-                      )
-                    })}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
+      </div>
     );
   }
 }
 
 const styles = {
-    titleText: {
-        fontSize: 12,
-    },
-    row: {
-        marginTop: 10,
-        marginRight: 10,
-        marginBottom: 10,
-        marginLeft: 0,
-        backgroundColor: Colors.mainWhite,
-    },
-    soundcastInfo: {
-        // height: 96,
-        backgroundColor: Colors.mainWhite,
-        paddingTop: 15,
-        paddingBottom: 15,
-    },
-    soundcastImage: {
-        width: '100%',
-        height: '100%',
-        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
-        // marginRight: 30,
-        // float: 'left',
-    },
-    soundcastDescription: {
-        // height: 46,
-        // float: 'left',
-        // width: '65%',
-    },
-    soundcastTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        // display: 'block',
-    },
-    soundcastUpdated: {
-        fontSize: 16,
-    },
-    edit: {
-      height: 30,
-      display: 'inline-block'
-    },
-    editLink: {
-      paddingTop: 15,
-      paddingLeft: 20,
-      fontSize: 16,
-      color: Colors.link,
-      float: 'right',
-      cursor: 'pointer'
-      // display: 'block'
-    },
-    subscribers: {
-        paddingTop: 10,
-        // float: 'right',
-        fontSize: 15,
-        display: 'block',
-    },
-    addLink: {
-        color: Colors.link,
-        fontSize: 15,
-        display: 'block',
-        // height: 11,
-        // lineHeight: '11px',
-        position: 'relative',
-        bottom: 5,
-        // width: 17,
-        margin: '0 auto',
-        paddingTop: 6,
-        cursor: 'pointer'
-    },
-    button: {
-        height: 30,
-        textAlign: 'center',
-        color: Colors.mainWhite,
-        fontWeight: 'bold',
-        borderRadius: 14,
-        fontSize: 12,
-        letterSpacing: 2,
-        wordSpacing: 4,
-        display: 'inline-block',
-        paddingTop: 5,
-        paddingRight: 15,
-        paddingBottom: 5,
-        paddingLeft: 15,
-        borderWidth: 0,
-        marginTop: 10,
-        marginRight: 15,
-        borderStyle: 'solid',
-        cursor: 'pointer',
-        backgroundColor: Colors.mainOrange,
-    },
+  titleText: {
+    fontSize: 12,
+  },
+  row: {
+    marginTop: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    marginLeft: 0,
+    backgroundColor: Colors.mainWhite,
+  },
+  soundcastInfo: {
+    // height: 96,
+    backgroundColor: Colors.mainWhite,
+    paddingTop: 15,
+    paddingBottom: 15,
+  },
+  soundcastImage: {
+    width: '100%',
+    height: '100%',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+    // marginRight: 30,
+    // float: 'left',
+  },
+  soundcastDescription: {
+    // height: 46,
+    // float: 'left',
+    // width: '65%',
+  },
+  soundcastTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    // display: 'block',
+  },
+  soundcastUpdated: {
+    fontSize: 16,
+  },
+  edit: {
+    height: 30,
+    display: 'inline-block',
+  },
+  editLink: {
+    paddingTop: 15,
+    paddingLeft: 20,
+    fontSize: 16,
+    color: Colors.link,
+    float: 'right',
+    cursor: 'pointer',
+    // display: 'block'
+  },
+  subscribers: {
+    paddingTop: 10,
+    // float: 'right',
+    fontSize: 15,
+    display: 'block',
+  },
+  addLink: {
+    color: Colors.link,
+    fontSize: 15,
+    display: 'block',
+    // height: 11,
+    // lineHeight: '11px',
+    position: 'relative',
+    bottom: 5,
+    // width: 17,
+    margin: '0 auto',
+    paddingTop: 6,
+    cursor: 'pointer',
+  },
+  button: {
+    height: 30,
+    textAlign: 'center',
+    color: Colors.mainWhite,
+    fontWeight: 'bold',
+    borderRadius: 14,
+    fontSize: 12,
+    letterSpacing: 2,
+    wordSpacing: 4,
+    display: 'inline-block',
+    paddingTop: 5,
+    paddingRight: 15,
+    paddingBottom: 5,
+    paddingLeft: 15,
+    borderWidth: 0,
+    marginTop: 10,
+    marginRight: 15,
+    borderStyle: 'solid',
+    cursor: 'pointer',
+    backgroundColor: Colors.mainOrange,
+  },
   itemContainer: {
-      marginTop: 30,
-      marginRight: 20,
-      marginBottom: 20,
-      marginLeft: 15,
+    marginTop: 30,
+    marginRight: 20,
+    marginBottom: 20,
+    marginLeft: 15,
     backgroundColor: Colors.mainWhite,
     paddingTop: 10,
     paddingRight: 0,
@@ -414,7 +541,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'start',
     alignItems: 'center',
-
   },
   itemTitle: {
     fontSize: 24,
@@ -423,7 +549,7 @@ const styles = {
     lineHeight: '30px',
   },
   addEpisodeLink: {
-      // float: 'left',
+    // float: 'left',
     fontSize: 16,
     color: Colors.mainOrange,
     // marginLeft: 20,
@@ -435,7 +561,7 @@ const styles = {
     padding: 20,
   },
   tr: {
-      borderBottomWidth: 1,
+    borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,
     borderBottomStyle: 'solid',
   },
@@ -448,7 +574,7 @@ const styles = {
     wordWrap: 'break-word',
   },
   td: {
-      color: Colors.fontDarkGrey,
+    color: Colors.fontDarkGrey,
     fontSize: 17,
     color: 'black',
     overflow: 'hidden',
@@ -458,10 +584,10 @@ const styles = {
     verticalAlign: 'middle',
   },
   itemCheckbox: {
-      marginTop: 7,
+    marginTop: 7,
   },
   itemChartIcon: {
-      // fontSize: 12,
+    // fontSize: 12,
     color: Colors.fontBlack,
     cursor: 'pointer',
   },

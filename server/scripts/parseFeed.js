@@ -11,12 +11,12 @@
 // 5. front end assigns the newly created soundcast to the user.
 // 6. server checks the feed url every hour to see if there are new episodes. If so, update the soundcast with new episodes.
 
-const request = require ('request');
+const request = require('request');
 // const requestPromise = require('request-promise');
-const path = require ('path');
-const fs = require ('fs');
+const path = require('path');
+const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
-const FeedParser = require ('feedparser');
+const FeedParser = require('feedparser');
 const firebase = require('firebase-admin');
 const database = require('../../database/index');
 const moment = require('moment');
@@ -24,7 +24,7 @@ const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
-const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
+const {logErr, podcastCategories} = require('./utils')('parseFeed.js');
 
 // // Test the getFeed function:
 // setTimeout(() =>
@@ -38,48 +38,50 @@ const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 // , 1000);
 
 // function to parse a given feed url:
-function getFeed (urlfeed, callback) {
+function getFeed(urlfeed, callback) {
   try {
     var req = request(urlfeed, {timeout: 20000}); // timeout 20 sec
-  } catch(err) {
+  } catch (err) {
     return callback(err);
   }
-  var feedparser = new FeedParser ();
+  var feedparser = new FeedParser();
   var feedItems = [];
   var metadata = '';
-  req.on ("response", function (response) {
+  req.on('response', function(response) {
     var stream = this;
     if (response.statusCode == 200) {
-      stream.pipe (feedparser);
+      stream.pipe(feedparser);
     } else {
-      callback("getFeed: wrong response status: " + response.statusCode)
+      callback('getFeed: wrong response status: ' + response.statusCode);
     }
   });
-  req.on ("error", function (err) {
-    console.log ("getFeed: err.message == " + err.message);
+  req.on('error', function(err) {
+    console.log('getFeed: err.message == ' + err.message);
     callback(err);
   });
-  feedparser.on("meta", function (meta) {
+  feedparser.on('meta', function(meta) {
     metadata = meta;
     // console.log('metadata: ', meta);
   });
-  feedparser.on ("readable", function () {
+  feedparser.on('readable', function() {
     try {
-      var item = this.read (), flnew;
-      if (item !== null) { //2/9/17 by DW
-        feedItems.push (item);
+      var item = this.read(),
+        flnew;
+      if (item !== null) {
+        //2/9/17 by DW
+        feedItems.push(item);
       }
     } catch (err) {
-      console.log ("getFeed: err.message == " + err.message);
+      console.log('getFeed: err.message == ' + err.message);
       callback(err);
     }
   });
-  feedparser.on ("end", function () {
-    callback (undefined, {metadata, feedItems});
+  feedparser.on('end', function() {
+    callback(undefined, {metadata, feedItems});
   });
-  feedparser.on ("error", function (err) {
-    console.log ("getFeed: err.message == " + err.message);
-    callback (err);
+  feedparser.on('error', function(err) {
+    console.log('getFeed: err.message == ' + err.message);
+    callback(err);
   });
 }
 
@@ -87,51 +89,77 @@ const feedUrls = {}; // in-memory cache object for obtained (but not imported to
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 async function parseFeed(req, res) {
-  const { feedUrl, submitCode, resend, importFeedUrl } = req.body;
+  const {feedUrl, submitCode, resend, importFeedUrl} = req.body;
   if (!feedUrl) {
     return res.status(400).send(`Error: empty feedUrl field`);
   }
   const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
   const url = urlParsed.host + urlParsed.path; // use url as a key
 
-  if (!feedUrls[url]) { // wasn't obtained
+  if (!feedUrls[url]) {
+    // wasn't obtained
     // 1. Search for the podcast
-    const podcasts = await database.ImportedFeed.findAll({ where: { feedUrl: url } });
+    const podcasts = await database.ImportedFeed.findAll({
+      where: {feedUrl: url},
+    });
     if (podcasts.length) {
       const podcast = podcasts[0]; // take first
       if (!podcast.claimed) {
         // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
         if (importFeedUrl) {
-          const { publisherId, userId } = req.body;
-          firebase.database().ref(`users/${userId}/soundcasts_managed/${podcast.soundcastId}`).set(true);
-          firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
-          firebase.database().ref(`users/${userId}/publisherID`).set(publisherId)
+          const {publisherId, userId} = req.body;
+          firebase
+            .database()
+            .ref(`users/${userId}/soundcasts_managed/${podcast.soundcastId}`)
+            .set(true);
+          firebase
+            .database()
+            .ref(`publishers/${publisherId}/administrators/${userId}`)
+            .set(true);
+          firebase
+            .database()
+            .ref(`users/${userId}/publisherID`)
+            .set(publisherId);
         } else {
-          res.json({ imageUrl: podcast.imageURL, notClaimed: true });
+          res.json({imageUrl: podcast.imageURL, notClaimed: true});
         }
       } else {
         // If the feed has already been claimed, that means it's already associated with a existing active publisher on Soundwise. In that case, we need to return an error to client, which says "This feed is already on Soundwise. If you think this is a mistake, please contact support." The user submission process should continue only if the feed is NOT already imported, or if it's imported but not 'claimed'. That's why we need to move the checking step to before the submission of verification code.
-        res.status(400).send('Error: This feed is already on Soundwise. If you think this is a mistake, please contact support.');
+        res
+          .status(400)
+          .send(
+            'Error: This feed is already on Soundwise. If you think this is a mistake, please contact support.'
+          );
       }
-    } else { // feed url wasn't imported
+    } else {
+      // feed url wasn't imported
       getFeed(feedUrl, async (err, results) => {
         if (err) {
           return res.status(400).send(`Error: obtaining feed ${err}`);
         }
-        const { metadata, feedItems } = results;
-        const verificationCode = Date.now().toString().slice(-4);
+        const {metadata, feedItems} = results;
+        const verificationCode = Date.now()
+          .toString()
+          .slice(-4);
         console.log('verificationCode: ', verificationCode);
-        const itunesEmail = metadata['itunes:owner']
-                         && metadata['itunes:owner']['itunes:email']
-                         && metadata['itunes:owner']['itunes:email']['#'];
-        const managingEmail = metadata['rss:managingeditor']
-                           && metadata['rss:managingeditor']['email'];
+        const itunesEmail =
+          metadata['itunes:owner'] &&
+          metadata['itunes:owner']['itunes:email'] &&
+          metadata['itunes:owner']['itunes:email']['#'];
+        const managingEmail =
+          metadata['rss:managingeditor'] &&
+          metadata['rss:managingeditor']['email'];
         const publisherEmail = itunesEmail || managingEmail || null;
         if (!publisherEmail) {
           // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
-          return res.status(400).send("Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!");
+          return res
+            .status(400)
+            .send(
+              "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!"
+            );
         }
-        feedUrls[url] = { // set in-memory object
+        feedUrls[url] = {
+          // set in-memory object
           metadata,
           feedItems,
           publisherEmail,
@@ -139,21 +167,22 @@ async function parseFeed(req, res) {
           originalUrl: feedUrl,
         };
         sendVerificationMail(publisherEmail, metadata.title, verificationCode);
-        res.json({ imageUrl: metadata.image.url, publisherEmail });
+        res.json({imageUrl: metadata.image.url, publisherEmail});
       });
     }
-    return
+    return;
   } // if feedUrls[url] empty
 
-  const { metadata, publisherEmail, verificationCode } = feedUrls[url];
-  if (submitCode) { // check verification code
+  const {metadata, publisherEmail, verificationCode} = feedUrls[url];
+  if (submitCode) {
+    // check verification code
     if (submitCode === verificationCode) {
       feedUrls[url].verified = true;
       res.send('Success_code');
     } else {
       res.status(400).send(`Error: incorrect verfication code`);
     }
-    return
+    return;
   }
   if (resend) {
     sendVerificationMail(publisherEmail, metadata.title, verificationCode);
@@ -165,32 +194,46 @@ async function parseFeed(req, res) {
       res.send('Success_import');
     });
   }
-  res.json({ imageUrl: metadata.image.url, publisherEmail });
+  res.json({imageUrl: metadata.image.url, publisherEmail});
 } // parseFeed
 
 function sendVerificationMail(to, soundcastTitle, verificationCode) {
   // console.log(verificationCode); return; // uncomment to test
   sgMail.send({
-    to, from: 'support@mysoundwise.com',
+    to,
+    from: 'support@mysoundwise.com',
     subject: 'Your confirmation code for Soundwise',
     html: `<p>Hello,</p><p>Here's your code to verify that you are the publisher of ${soundcastTitle}:</p><p style="font-size:24px; letter-spacing: 2px;"><strong>${verificationCode}</strong></p><p>Folks at Soundwise</p>`,
   });
 }
 
-async function runFeedImport(req, res, url, feedObj, isPublished,
-    isVerified, isClaimed, callback, itunesId, soundcastId) {
-
-  const { metadata, publisherEmail, verified, originalUrl } = feedObj;
-  const { publisherId, userId, publisherName } = req.body;
+async function runFeedImport(
+  req,
+  res,
+  url,
+  feedObj,
+  isPublished,
+  isVerified,
+  isClaimed,
+  callback,
+  itunesId,
+  soundcastId
+) {
+  const {metadata, publisherEmail, verified, originalUrl} = feedObj;
+  const {publisherId, userId, publisherName} = req.body;
 
   let feedItems = feedObj.feedItems;
 
-  if (!verified) { // verificationCode checked
+  if (!verified) {
+    // verificationCode checked
     return res.status(400).send('Error: not verified');
   }
 
-  feedItems.sort((a, b) => { // sort feedItems by date or pubdate or pubDate
-    return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
+  feedItems.sort((a, b) => {
+    // sort feedItems by date or pubdate or pubDate
+    return (
+      (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate)
+    );
   });
 
   if (feedItems.length > 100) {
@@ -199,20 +242,23 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   }
 
   let last_update = metadata.date || metadata.pubdate || metadata.pubDate;
-  if (!last_update) { // take first episode's date
+  if (!last_update) {
+    // take first episode's date
     const newestEpisode = feedItems[feedItems.length - 1]; // last in array
-    last_update = newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
+    last_update =
+      newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
   }
   if (!last_update || moment(last_update).format('X') === 'Invalid date') {
     // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
     logErr(`can't obtain last_update ${originalUrl}`);
-    return
+    return;
   }
-  if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) { // have empty enclosures
+  if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) {
+    // have empty enclosures
     // If enclosures is empty, we shouldn't import the item.
     // We should only import items that have an audio file in enclosures.
     logErr(`empty enclosures array ${originalUrl}`);
-    return
+    return;
   }
 
   // 1. create a new soundcast from the feed
@@ -225,7 +271,8 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     publisherName,
     short_description: entities.decode(description),
     imageURL: image.url,
-    hostName: (metadata['itunes:author'] && metadata['itunes:author']['#']) || author,
+    hostName:
+      (metadata['itunes:author'] && metadata['itunes:author']['#']) || author,
     last_update: moment(last_update).format('X'),
     fromParsedFeed: true, // this soundcast is imported from a RSS feed
     forSale: false,
@@ -235,7 +282,8 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     verified: true, // ownership verification, set to true from client after ownership is verified
     showSubscriberCount: true,
     showTimeStamps: true,
-    hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png'
+    hostImageURL:
+      'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
   };
 
   // 2. add the new soundcast to firebase and postgreSQL
@@ -243,25 +291,32 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   if (!soundcastId) {
     soundcastId = `${moment().format('x')}s`;
   }
-  await firebase.database().ref(`soundcasts/${soundcastId}`).set(soundcast);
+  await firebase
+    .database()
+    .ref(`soundcasts/${soundcastId}`)
+    .set(soundcast);
 
   // store the publisher's email address in a separate table in the database,
   // for podcasts that are "active", i.e. has been updated in the last year
-  const yearAgo = moment().subtract(1, 'years').unix();
-  if (moment(last_update).unix() > yearAgo) { // updated in the last year
+  const yearAgo = moment()
+    .subtract(1, 'years')
+    .unix();
+  if (moment(last_update).unix() > yearAgo) {
+    // updated in the last year
     try {
       await database.PodcasterEmail.create({
         podcastTitle: title,
         publisherEmail,
-        last_update: moment(last_update).format('X')
+        last_update: moment(last_update).format('X'),
       });
-    } catch(err) {
+    } catch (err) {
       logErr(`PodcasterEmail create ${err}`);
     }
   }
 
   const categoriesNames = Object.keys(podcastCategories).map(
-                            i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
+    i => podcastCategories[i].name
+  ); // main 16 categories ('Arts', 'Comedy', ...)
   // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
   // This should be similar to the upload setup on the /dashboard/add_episode page
   const categories = metadata['itunes:category'];
@@ -273,7 +328,8 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
           name = category['@'].text;
         }
         const subcategory = category['itunes:category'];
-        if (subcategory && subcategory['@'] && subcategory['@'].text) { // have subcategory
+        if (subcategory && subcategory['@'] && subcategory['@'].text) {
+          // have subcategory
           if (categoriesNames.indexOf(subcategory['@'].text) !== -1) {
             name = subcategory['@'].text;
           }
@@ -281,8 +337,8 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       }
       if (name) {
         try {
-          await database.Category.create({ name, soundcastId });
-        } catch(err) {
+          await database.Category.create({name, soundcastId});
+        } catch (err) {
           logErr(`Category create ${err}`);
         }
       }
@@ -290,7 +346,10 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   }
 
   // 2-a. add to publisher node in firebase
-  await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+  await firebase
+    .database()
+    .ref(`publishers/${publisherId}/soundcasts/${soundcastId}`)
+    .set(true);
 
   // 2-b. add to importedFeeds node in firebase
   const importedFeedObj = {
@@ -305,46 +364,83 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
     userId,
     // category, // TODO
     claimed: isClaimed, // when 'claimed == true', this imported soundcast is managed by the RSS feed owner
-  }
+  };
   if (itunesId) {
     importedFeedObj.itunesId = itunesId; // store the iTunesID under the importedFeed node
   }
-  if (title.length       > 255) { importedFeedObj.title       =       title.slice(0, 255) }
-  if (url.length         > 255) { importedFeedObj.feedUrl     =         url.slice(0, 255) }
-  if (image.url.length   > 255) { importedFeedObj.imageURL    =   image.url.slice(0, 255) }
-  if (originalUrl.length > 255) { importedFeedObj.originalUrl = originalUrl.slice(0, 255) }
+  if (title.length > 255) {
+    importedFeedObj.title = title.slice(0, 255);
+  }
+  if (url.length > 255) {
+    importedFeedObj.feedUrl = url.slice(0, 255);
+  }
+  if (image.url.length > 255) {
+    importedFeedObj.imageURL = image.url.slice(0, 255);
+  }
+  if (originalUrl.length > 255) {
+    importedFeedObj.originalUrl = originalUrl.slice(0, 255);
+  }
   await database.ImportedFeed.create(importedFeedObj);
 
   // 2-c. add to postgres
   database.Soundcast.findOrCreate({
-      where: { soundcastId },
-      defaults: {
-        soundcastId,
-        publisherId,
-        title,
-      }
-    })
+    where: {soundcastId},
+    defaults: {
+      soundcastId,
+      publisherId,
+      title,
+    },
+  })
     .then(async data => {
       // console.log('DB response: ', data);
       // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
       let i = 0;
       for (const item of feedItems) {
-        await addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i);
+        await addFeedEpisode(
+          item,
+          userId,
+          publisherId,
+          soundcastId,
+          soundcast,
+          metadata,
+          i
+        );
         i++;
       }
-      firebase.database().ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
-      firebase.database().ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
-      firebase.database().ref(`soundcasts/${soundcastId}/published`).set(isPublished);
-      firebase.database().ref(`soundcasts/${soundcastId}/verified`).set(isVerified);
+      firebase
+        .database()
+        .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
+        .set(true);
+      firebase
+        .database()
+        .ref(`publishers/${publisherId}/administrators/${userId}`)
+        .set(true);
+      firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}/published`)
+        .set(isPublished);
+      firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}/verified`)
+        .set(isVerified);
       callback && callback();
     })
     .catch(err => logErr(`Soundcast.findOrCreate ${err}`, res));
 } // runFeedImport
 
-async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i) {
+async function addFeedEpisode(
+  item,
+  userId,
+  publisherId,
+  soundcastId,
+  soundcast,
+  metadata,
+  i
+) {
   const {title, description, summary, date, image, enclosures} = item;
   let duration = null;
-  if (item['itunes:duration'] && item['itunes:duration']['#']) { // duration not empty
+  if (item['itunes:duration'] && item['itunes:duration']['#']) {
+    // duration not empty
     duration = item['itunes:duration']['#'].toString(); // '323' (seconds) or '14:23'
     if (duration.includes(':')) {
       if (duration.split(':').length === 2) {
@@ -384,9 +480,13 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     title,
     coverArtUrl: image.url || soundcast.imageURL,
     creatorID: userId,
-    date_created: date_created === 'Invalid date' ? Math.floor(Date.now()/1000) : Number(date_created),
-    description: (description && entities.decode(description)) || (
-                      summary && entities.decode(summary)),
+    date_created:
+      date_created === 'Invalid date'
+        ? Math.floor(Date.now() / 1000)
+        : Number(date_created),
+    description:
+      (description && entities.decode(description)) ||
+      (summary && entities.decode(summary)),
     duration,
     id3Tagged: true,
     index: i + 1,
@@ -398,26 +498,31 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
   };
   const episodeId = `${moment().format('x')}e`;
   // add to episodes node in firebase
-  await firebase.database().ref(`episodes/${episodeId}`).set(episode);
+  await firebase
+    .database()
+    .ref(`episodes/${episodeId}`)
+    .set(episode);
   // add to the soundcast
-  await firebase.database().ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
+  await firebase
+    .database()
+    .ref(`soundcasts/${soundcastId}/episodes/${episodeId}`)
+    .set(true);
   // add to postgres
   database.Episode.findOrCreate({
-      where: { episodeId },
-      defaults: {
-        episodeId,
-        soundcastId,
-        publisherId,
-        title: episode.title,
-        soundcastTitle: soundcast.title,
-      }
-    })
+    where: {episodeId},
+    defaults: {
+      episodeId,
+      soundcastId,
+      publisherId,
+      title: episode.title,
+      soundcastTitle: soundcast.title,
+    },
+  })
     .then(data => {
       // console.log('parseFeed.js findOrCreate then');
     })
     .catch(err => logErr(`Episode.findOrCreate ${err}`));
 }
-
 
 // Need to update all the published soundcasts from imported feeds every hour
 async function feedInterval() {
@@ -441,26 +546,44 @@ async function feedInterval() {
               logErr(`feedInterval getFeed ${err}`);
               return resolve();
             }
-            const soundcastObj = await firebase.database().ref(`soundcasts/${soundcastId}`).once('value');
+            const soundcastObj = await firebase
+              .database()
+              .ref(`soundcasts/${soundcastId}`)
+              .once('value');
             const soundcastVal = soundcastObj.val();
             let i = Object.keys(soundcastVal.episodes).length; // episodes count
-            const { metadata } = results;
-            const { userId, publisherId } = item;
+            const {metadata} = results;
+            const {userId, publisherId} = item;
 
-            results.feedItems.sort((a, b) => { // sort feedItems by date or pubdate or pubDate
-              return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
+            results.feedItems.sort((a, b) => {
+              // sort feedItems by date or pubdate or pubDate
+              return (
+                (a.date || a.pubdate || a.pubDate) -
+                (b.date || b.pubdate || b.pubDate)
+              );
             });
 
             for (const feed of results.feedItems) {
-              const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
+              const pub_date = Number(
+                moment(feed.pubdate || feed.pubDate).format('X')
+              );
               if (pub_date && pub_date > item.updated) {
                 // 3. create new episodes from the new feed items, and add them to their respective soundcast
                 //    *episode.index for the new episodes should be the number of existing episodes
                 //     in the  soundcast + 1
                 const soundcast = {};
-                soundcast.imageURL = metadata && metadata.image && metadata.image.url;
+                soundcast.imageURL =
+                  metadata && metadata.image && metadata.image.url;
                 soundcast.title = metadata && metadata.title;
-                await addFeedEpisode(feed, userId, publisherId, soundcastId, soundcast, metadata, i);
+                await addFeedEpisode(
+                  feed,
+                  userId,
+                  publisherId,
+                  soundcastId,
+                  soundcast,
+                  metadata,
+                  i
+                );
                 i++;
                 item.updated = pub_date;
                 await item.save();
@@ -473,16 +596,16 @@ async function feedInterval() {
         }
       });
     }
-    offset+=3000; // step
+    offset += 3000; // step
   }
 
   // 4. repeat the update checking every hour (what's the best way to do this? Assuming the number of feeds that need to be updated will eventually get to around 500,000. Will it be a problem for the server?)
-  setTimeout(feedInterval, 3600*1000); // hour
+  setTimeout(feedInterval, 3600 * 1000); // hour
 }
 
 if (process.env.NODE_ENV !== 'dev') {
   console.log('Starting feedInterval');
-  setTimeout(feedInterval, 30*1000); // 30 seconds after app starts
+  setTimeout(feedInterval, 30 * 1000); // 30 seconds after app starts
 }
 
-module.exports = { getFeed, parseFeed, runFeedImport };
+module.exports = {getFeed, parseFeed, runFeedImport};

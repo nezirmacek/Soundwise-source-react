@@ -1,10 +1,5 @@
 import React, {Component} from 'react';
 
-
-const SoundcastSignup = () => (
-  <div>
-  </div>
-
-);
+const SoundcastSignup = () => <div />;
 
 export default SoundcastSignup;

@@ -1,27 +1,27 @@
-import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import 'url-search-params-polyfill'
-import {Helmet} from "react-helmet"
-import firebase from 'firebase'
-import { withRouter } from 'react-router'
-import { Redirect } from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import { EditorState, convertToRaw } from 'draft-js'
+import React, {Component} from 'react';
+import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import 'url-search-params-polyfill';
+import {Helmet} from 'react-helmet';
+import firebase from 'firebase';
+import {withRouter} from 'react-router';
+import {Redirect} from 'react-router-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import {EditorState, convertToRaw} from 'draft-js';
 
-import { SoundcastHeader } from './components/soundcast_header'
-import Footer from '../../components/footer'
+import {SoundcastHeader} from './components/soundcast_header';
+import Footer from '../../components/footer';
 
-import SoundcastBody  from './components/soundcast_body'
-import SoundcastFooter from './components/soundcast_footer'
-import Banner from './components/banner'
-import {PricingModal} from './components/pricing_modal'
+import SoundcastBody from './components/soundcast_body';
+import SoundcastFooter from './components/soundcast_footer';
+import Banner from './components/banner';
+import {PricingModal} from './components/pricing_modal';
 
-import PageHeader  from './components/page_header'
-import {PublisherHeader} from './components/publisher_header'
-import RelatedSoundcasts from './components/related_soundcasts'
+import PageHeader from './components/page_header';
+import {PublisherHeader} from './components/publisher_header';
+import RelatedSoundcasts from './components/related_soundcasts';
 // import {CourseSignup} from './course_signup'
 
 class _SoundcastPage extends Component {
@@ -35,9 +35,11 @@ class _SoundcastPage extends Component {
         short_description: '',
         forSale: true,
         imageURL: '',
-        long_description: JSON.stringify(convertToRaw(EditorState.createEmpty().getCurrentContent())),
+        long_description: JSON.stringify(
+          convertToRaw(EditorState.createEmpty().getCurrentContent())
+        ),
         prices: [{}],
-        modalOpen: false
+        modalOpen: false,
       },
       cardHeight: 0,
       showBanner: false,
@@ -46,7 +48,7 @@ class _SoundcastPage extends Component {
       publisherImg: '',
       timerDigits: [],
       checkedPrice: 0,
-    }
+    };
     this.nv = null;
     this.handleScroll = this.handleScroll.bind(this);
     this.retrieveSoundcast = this.retrieveSoundcast.bind(this);
@@ -58,14 +60,14 @@ class _SoundcastPage extends Component {
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
     const params = new URLSearchParams(this.props.location.search);
-    if(params.get('c')) {
-      this.setState({ coupon: params.get('c') });
+    if (params.get('c')) {
+      this.setState({coupon: params.get('c')});
       this.startTimer();
     }
     this.retrieveSoundcast(soundcastID);
-    if(params.get('custom_token')) {
-        const customToken = params.get('custom_token');
-        await firebase.auth().signInWithCustomToken(customToken);
+    if (params.get('custom_token')) {
+      const customToken = params.get('custom_token');
+      await firebase.auth().signInWithCustomToken(customToken);
     }
     // this.nv.addEventListener('scroll', this.handleScroll);
     window.addEventListener('scroll', this.handleScroll);
@@ -73,7 +75,7 @@ class _SoundcastPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {history} = this.props;
-    if(nextProps.match.params.id !== this.props.match.params.id) {
+    if (nextProps.match.params.id !== this.props.match.params.id) {
       const soundcastID = nextProps.match.params.id;
       // console.log('soundcastID: ', soundcastID);
       this.retrieveSoundcast(soundcastID);
@@ -82,22 +84,28 @@ class _SoundcastPage extends Component {
 
   async retrieveSoundcast(soundcastID) {
     const {history} = this.props;
-    const soundcast = await firebase.database().ref('soundcasts/' + soundcastID).once('value');
-    if(soundcast.val()) {
-      const {expiration, checkedPrice} = this.getPrice(soundcast.val())
+    const soundcast = await firebase
+      .database()
+      .ref('soundcasts/' + soundcastID)
+      .once('value');
+    if (soundcast.val()) {
+      const {expiration, checkedPrice} = this.getPrice(soundcast.val());
       this.setState({
         soundcast: soundcast.val(),
         soundcastID,
         publisherID: soundcast.val().publisherID,
         expiration,
         checkedPrice,
-        bundle:  soundcast.val().bundle,
+        bundle: soundcast.val().bundle,
       });
-      const publisher = await firebase.database().ref('publishers/' + soundcast.val().publisherID).once('value');
-      if(publisher.val()) {
+      const publisher = await firebase
+        .database()
+        .ref('publishers/' + soundcast.val().publisherID)
+        .once('value');
+      if (publisher.val()) {
         this.setState({
           publisherImg: publisher.val().imageUrl,
-          publisherName: publisher.val().name
+          publisherName: publisher.val().name,
         });
       }
     } else {
@@ -106,37 +114,58 @@ class _SoundcastPage extends Component {
   }
 
   getPrice(soundcast = this.state.soundcast, slashSign = '/') {
-    let price, checkedPrice = 0, expiration, originalPrice, couponPrice, displayedPrice = 'Free', pre = '', post = '';
-    if(this.state.coupon) {
+    let price,
+      checkedPrice = 0,
+      expiration,
+      originalPrice,
+      couponPrice,
+      displayedPrice = 'Free',
+      pre = '',
+      post = '';
+    if (this.state.coupon) {
       price = soundcast.prices.find((price, index) => {
-        if (price.coupons && price.coupons.some(coupon => {
-          if(coupon.code === this.state.coupon &&
-             coupon.expiration > Date.now()/1000 // in future
-          ) {
-            expiration = coupon.expiration; // set coupon's expiration value
-            originalPrice = price.price;
-            couponPrice = Math.round(Number(price.price) * (100 - Number(coupon.percentOff)) / 100);
-            return true;
-          }
-        })) {
+        if (
+          price.coupons &&
+          price.coupons.some(coupon => {
+            if (
+              coupon.code === this.state.coupon &&
+              coupon.expiration > Date.now() / 1000 // in future
+            ) {
+              expiration = coupon.expiration; // set coupon's expiration value
+              originalPrice = price.price;
+              couponPrice = Math.round(
+                (Number(price.price) * (100 - Number(coupon.percentOff))) / 100
+              );
+              return true;
+            }
+          })
+        ) {
           checkedPrice = index;
           return true;
         }
       });
     }
-    if(!price) {
+    if (!price) {
       price = soundcast.prices[0];
     }
-    if(soundcast.forSale) {
+    if (soundcast.forSale) {
       if (!couponPrice && soundcast.prices.length > 1) {
         pre = 'From ';
       }
       displayedPrice = `$${Number(couponPrice || price.price || 0).toFixed(2)}`;
-      switch(price.billingCycle) {
-        case 'rental'   : post = `${slashSign} ${price.rentalPeriod}-Day Access`; break;
-        case 'monthly'  : post = `${slashSign} month`; break;
-        case 'quarterly': post = `${slashSign} quarter`; break;
-        case 'annual'   : post = `${slashSign} year`; break;
+      switch (price.billingCycle) {
+        case 'rental':
+          post = `${slashSign} ${price.rentalPeriod}-Day Access`;
+          break;
+        case 'monthly':
+          post = `${slashSign} month`;
+          break;
+        case 'quarterly':
+          post = `${slashSign} quarter`;
+          break;
+        case 'annual':
+          post = `${slashSign} year`;
+          break;
       }
     }
     return {checkedPrice, expiration, originalPrice, displayedPrice, pre, post};
@@ -144,44 +173,59 @@ class _SoundcastPage extends Component {
 
   componentWillUnmount() {
     // Make sure to remove the DOM listener when the component is unmounted.
-    window.removeEventListener("scroll", this.handleScroll);
+    window.removeEventListener('scroll', this.handleScroll);
   }
 
-  handleScroll(e) { // TODO http://underscorejs.org/#throttle
+  handleScroll(e) {
+    // TODO http://underscorejs.org/#throttle
     const headerHeight = this.header.clientHeight;
     const bodyHeigher = this.body.clientHeight;
-    const showBanner = window.pageYOffset > headerHeight && window.pageYOffset < bodyHeigher;
-    this.setState({ showBanner });
+    const showBanner =
+      window.pageYOffset > headerHeight && window.pageYOffset < bodyHeigher;
+    this.setState({showBanner});
   }
 
-  setMaxCardHeight (cardHeight) {
+  setMaxCardHeight(cardHeight) {
     if (cardHeight > this.state.cardHeight) {
-      this.setState({ cardHeight });
+      this.setState({cardHeight});
     }
-  };
+  }
 
   handleModal() {
-    this.setState({ modalOpen: !this.state.modalOpen })
+    this.setState({modalOpen: !this.state.modalOpen});
   }
 
   startTimer() {
     setInterval(() => {
       if (this.state.expiration) {
-        let available = Math.floor(this.state.expiration - Date.now()/1000);
+        let available = Math.floor(this.state.expiration - Date.now() / 1000);
         if (available > 0) {
-          let days = Math.floor(available/(24*60*60));
-          available -= days*24*60*60;
-          let hours = Math.floor(available/(60*60));
-          available -= hours*60*60;
-          let minutes = Math.floor(available/60);
-          let seconds = available%60;
-          if (days    > 99) { days = 99 }
-          if (seconds <= 9) { seconds = '0' + seconds }
-          if (minutes <= 9) { minutes = '0' + minutes }
-          if (hours   <= 9) { hours   = '0' + hours   }
-          if (days    <= 9) { days    = '0' + days    }
-          if (Number(days) <= 3) { // within 3 days
-            this.setState({ timerDigits: `${days}${hours}${minutes}${seconds}`.split('') });
+          let days = Math.floor(available / (24 * 60 * 60));
+          available -= days * 24 * 60 * 60;
+          let hours = Math.floor(available / (60 * 60));
+          available -= hours * 60 * 60;
+          let minutes = Math.floor(available / 60);
+          let seconds = available % 60;
+          if (days > 99) {
+            days = 99;
+          }
+          if (seconds <= 9) {
+            seconds = '0' + seconds;
+          }
+          if (minutes <= 9) {
+            minutes = '0' + minutes;
+          }
+          if (hours <= 9) {
+            hours = '0' + hours;
+          }
+          if (days <= 9) {
+            days = '0' + days;
+          }
+          if (Number(days) <= 3) {
+            // within 3 days
+            this.setState({
+              timerDigits: `${days}${hours}${minutes}${seconds}`.split(''),
+            });
           }
         }
       }
@@ -190,43 +234,86 @@ class _SoundcastPage extends Component {
 
   render() {
     const soundcastID = this.props.match.params.id;
-    const {soundcast, modalOpen, showBanner, publisherName,
-      publisherImg, publisherID, timerDigits, coupon, checkedPrice, bundle} = this.state;
-    if(!soundcastID || !soundcast || (soundcast && soundcast.title && !soundcast.landingPage)) {
-      return (
-        <Redirect to="/notfound"/>
-      )
+    const {
+      soundcast,
+      modalOpen,
+      showBanner,
+      publisherName,
+      publisherImg,
+      publisherID,
+      timerDigits,
+      coupon,
+      checkedPrice,
+      bundle,
+    } = this.state;
+    if (
+      !soundcastID ||
+      !soundcast ||
+      (soundcast && soundcast.title && !soundcast.landingPage)
+    ) {
+      return <Redirect to="/notfound" />;
     }
 
     return (
       <div>
         <Helmet>
-          {
-            soundcast.podcastFeedVersion &&
-            <link rel="alternate" type="application/rss+xml" title={`${soundcast.title}`}
-              href={`https://mysoundwise.com/rss/${soundcastID}`}/>
-            || null
-          }
+          {(soundcast.podcastFeedVersion && (
+            <link
+              rel="alternate"
+              type="application/rss+xml"
+              title={`${soundcast.title}`}
+              href={`https://mysoundwise.com/rss/${soundcastID}`}
+            />
+          )) ||
+            null}
           <title>{`${soundcast.title} | Soundwise`}</title>
-          <meta property="og:url" content={`https://mysoundwise.com/soundcasts/${soundcastID}`} />
-          <meta property="fb:app_id" content='1726664310980105' />
-          <meta property="og:title" content={soundcast.title}/>
-          <meta property="og:description" content={soundcast.short_description}/>
+          <meta
+            property="og:url"
+            content={`https://mysoundwise.com/soundcasts/${soundcastID}`}
+          />
+          <meta property="fb:app_id" content="1726664310980105" />
+          <meta property="og:title" content={soundcast.title} />
+          <meta
+            property="og:description"
+            content={soundcast.short_description}
+          />
           <meta property="og:image" content={soundcast.imageURL} />
           <meta name="description" content={soundcast.short_description} />
           <meta name="keywords" content={soundcast.keywords} />
-          <meta name="twitter:title" content={soundcast.title}/>
-          <meta name="twitter:description" content={soundcast.short_description}/>
-          <meta name="twitter:image" content={soundcast.imageURL}/>
+          <meta name="twitter:title" content={soundcast.title} />
+          <meta
+            name="twitter:description"
+            content={soundcast.short_description}
+          />
+          <meta name="twitter:image" content={soundcast.imageURL} />
           <meta name="twitter:card" content={soundcast.imageURL} />
         </Helmet>
-        <MuiThemeProvider >
+        <MuiThemeProvider>
           <div>
-            { timerDigits.length &&
-              <div style={{backgroundColor: '#61e1fb', color: '#f76b1c', position: 'fixed', width: '100%',
-                  zIndex: 1002, textAlign: 'center', fontSize: 32, padding: '14px 0 7px', fontWeight: 800}}>
-                <span style={{color: 'white', top: '-38px', position: 'relative',
-                    paddingRight: 20}}>This Offer Expires In</span>
+            {(timerDigits.length && (
+              <div
+                style={{
+                  backgroundColor: '#61e1fb',
+                  color: '#f76b1c',
+                  position: 'fixed',
+                  width: '100%',
+                  zIndex: 1002,
+                  textAlign: 'center',
+                  fontSize: 32,
+                  padding: '14px 0 7px',
+                  fontWeight: 800,
+                }}
+              >
+                <span
+                  style={{
+                    color: 'white',
+                    top: '-38px',
+                    position: 'relative',
+                    paddingRight: 20,
+                  }}
+                >
+                  This Offer Expires In
+                </span>
                 <span style={styles.timerBlock}>
                   <span style={styles.timerDigit}>{timerDigits[0]}</span>
                   <span style={styles.timerDigit}>{timerDigits[1]}</span>
@@ -250,9 +337,13 @@ class _SoundcastPage extends Component {
                   <span style={styles.timerDigit}>{timerDigits[7]}</span>
                   <div style={styles.timerLabel}>Seconds</div>
                 </span>
-              </div> || null
-            }
-            <div ref={elem => this.header = elem} style={{paddingTop: timerDigits.length ? 118 : 0}}>
+              </div>
+            )) ||
+              null}
+            <div
+              ref={elem => (this.header = elem)}
+              style={{paddingTop: timerDigits.length ? 118 : 0}}
+            >
               <PublisherHeader
                 soundcastID={soundcastID}
                 publisherID={publisherID}
@@ -265,65 +356,65 @@ class _SoundcastPage extends Component {
                 coupon={coupon}
                 checkedPrice={checkedPrice}
                 open={modalOpen}
-                handleModal={this.handleModal.bind(this)}/>
+                handleModal={this.handleModal.bind(this)}
+              />
               <SoundcastHeader
                 getPrice={this.getPrice}
                 soundcast={soundcast}
                 soundcastID={soundcastID}
-                openModal={this.handleModal.bind(this)}/>
+                openModal={this.handleModal.bind(this)}
+              />
             </div>
-            <div ref={(elem) => this.body = elem}>
+            <div ref={elem => (this.body = elem)}>
               <SoundcastBody
-                    showBanner={showBanner}
-                    soundcast={soundcast}
-                    soundcastID={soundcastID}
-                    openModal={this.handleModal.bind(this)}
-                    // relatedsoundcasts={_relatedsoundcasts}
-                    cb={this.setMaxCardHeight.bind(this)}
-                    userInfo={this.props.userInfo}
-                    history={this.props.history}
-                    bundle={bundle}
-                    />
+                showBanner={showBanner}
+                soundcast={soundcast}
+                soundcastID={soundcastID}
+                openModal={this.handleModal.bind(this)}
+                // relatedsoundcasts={_relatedsoundcasts}
+                cb={this.setMaxCardHeight.bind(this)}
+                userInfo={this.props.userInfo}
+                history={this.props.history}
+                bundle={bundle}
+              />
             </div>
-            {
-              showBanner &&
+            {(showBanner && (
               <Banner
                 getPrice={this.getPrice}
-                openModal={this.handleModal.bind(this)}/>
-              || null
-            }
+                openModal={this.handleModal.bind(this)}
+              />
+            )) ||
+              null}
             <SoundcastFooter
               getPrice={this.getPrice}
-              openModal={this.handleModal.bind(this)}/>
-            <Footer
-              soundcastID={soundcastID}
-              showPricing={false}
+              openModal={this.handleModal.bind(this)}
             />
+            <Footer soundcastID={soundcastID} showPricing={false} />
           </div>
         </MuiThemeProvider>
       </div>
-    )
+    );
   }
 }
-
-
 
 // function mapDispatchToProps(dispatch) {
 //   return bindActionCreators({ setCurrentPlaylist, setCurrentCourse, loadCourses }, dispatch)
 // }
 
 const mapStateToProps = state => {
-  const { userInfo, isLoggedIn } = state.user
+  const {userInfo, isLoggedIn} = state.user;
   return {
-    userInfo, isLoggedIn
-  }
-}
+    userInfo,
+    isLoggedIn,
+  };
+};
 
+const SP_worouter = connect(
+  mapStateToProps,
+  null
+)(_SoundcastPage);
 
-const SP_worouter = connect(mapStateToProps, null)(_SoundcastPage)
-
-export const SoundcastPage = withRouter(SP_worouter)
-
+export const SoundcastPage = withRouter(SP_worouter);
 
 const styles = {
   timerBlock: {
@@ -350,4 +441,4 @@ const styles = {
     position: 'relative',
     display: 'inline-block',
   },
-}
+};

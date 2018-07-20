@@ -13,7 +13,7 @@ const Sequelize = require('sequelize');
 const firebase = require('firebase-admin');
 const serviceAccount = require('../../serviceAccountKey.json');
 const database = require('../../database/index');
-const { podcastCategories } = require('./utils')('iTunes-local-sql.js');
+const {podcastCategories} = require('./utils')('iTunes-local-sql.js');
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
@@ -30,20 +30,20 @@ const db = new Sequelize('soundwise_local_sql', 'root', '111', {
 });
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
-const { getFeed } = require('./parseFeed.js');
+const {getFeed} = require('./parseFeed.js');
 
 const createTables = async () => {
-  console.log('Creating tables')
+  console.log('Creating tables');
   try {
-    await db.query(`DROP TABLE "publishers_firebase"`)
-    await db.query(`DROP TABLE "soundcasts_firebase"`)
-    await db.query(`DROP TABLE "PodcasterEmails"`)
-    await db.query(`DROP TABLE "Categories"`)
-    await db.query(`DROP TABLE "importedFeeds_firebase"`)
-    await db.query(`DROP TABLE "Soundcasts"`)
-    await db.query(`DROP TABLE "episodes_firebase"`)
-    await db.query(`DROP TABLE "Episodes"`)
-  } catch(err) {}
+    await db.query(`DROP TABLE "publishers_firebase"`);
+    await db.query(`DROP TABLE "soundcasts_firebase"`);
+    await db.query(`DROP TABLE "PodcasterEmails"`);
+    await db.query(`DROP TABLE "Categories"`);
+    await db.query(`DROP TABLE "importedFeeds_firebase"`);
+    await db.query(`DROP TABLE "Soundcasts"`);
+    await db.query(`DROP TABLE "episodes_firebase"`);
+    await db.query(`DROP TABLE "Episodes"`);
+  } catch (err) {}
   try {
     await db.query(`CREATE TABLE "publishers_firebase" (
       "publisherId"    TEXT PRIMARY KEY      NOT NULL,
@@ -52,7 +52,7 @@ const createTables = async () => {
       "imageUrl"       TEXT                          ,
       "email"          TEXT                  NOT NULL,
       "soundcasts"     TEXT                  NOT NULL
-    )`)
+    )`);
     await db.query(`CREATE TABLE "soundcasts_firebase" (
       "soundcastId"          TEXT PRIMARY KEY      NOT NULL,
       "title"                TEXT                  NOT NULL,
@@ -73,16 +73,16 @@ const createTables = async () => {
       "showSubscriberCount"  TEXT                  NOT NULL,
       "showTimeStamps"       TEXT                  NOT NULL,
       "hostImageURL"         TEXT                  NOT NULL
-    )`)
+    )`);
     await db.query(`CREATE TABLE "PodcasterEmails" (
       "publisherEmail" TEXT                  NOT NULL,
       "podcastTitle"   TEXT                  NOT NULL,
       "last_update"    TEXT                  NOT NULL
-    )`)
+    )`);
     await db.query(`CREATE TABLE "Categories" (
       "name"           TEXT                  NOT NULL,
       "soundcastId"    TEXT                  NOT NULL
-    )`)
+    )`);
     await db.query(`CREATE TABLE "importedFeeds_firebase" (
       "soundcastId"    TEXT PRIMARY KEY      NOT NULL,
       "published"      TEXT                  NOT NULL,
@@ -95,12 +95,12 @@ const createTables = async () => {
       "userId"         TEXT                  NOT NULL,
       "claimed"        TEXT                  NOT NULL,
       "itunesId"       TEXT
-    )`)
+    )`);
     await db.query(`CREATE TABLE "Soundcasts" (
       "soundcastId"    TEXT PRIMARY KEY      NOT NULL,
       "title"          TEXT                  NOT NULL,
       "publisherId"    TEXT                  NOT NULL
-    )`)
+    )`);
     await db.query(`CREATE TABLE "episodes_firebase" (
       "episodeId"      TEXT PRIMARY KEY      NOT NULL,
       "title"          TEXT                  NOT NULL,
@@ -116,139 +116,209 @@ const createTables = async () => {
       "publisherID"    TEXT                  NOT NULL,
       "soundcastID"    TEXT                  NOT NULL,
       "url"            TEXT                  NOT NULL
-    )`)
+    )`);
     await db.query(`CREATE TABLE "Episodes" (
       "episodeId"      TEXT PRIMARY KEY      NOT NULL,
       "soundcastId"    TEXT                  NOT NULL,
       "publisherId"    TEXT                  NOT NULL,
       "title"          TEXT                  NOT NULL,
       "soundcastTitle" TEXT                  NOT NULL
-    )`)
-    await db.query(`CREATE INDEX "idx_publisher_f"       ON "publishers_firebase"("publisherId")`)
-    await db.query(`CREATE INDEX "idx_soundcast_f"       ON "soundcasts_firebase"("soundcastId")`)
-    await db.query(`CREATE INDEX "idx_soundcast_f_pubid" ON "soundcasts_firebase"("publisherID")`)
-    await db.query(`CREATE INDEX "idx_podcaster"         ON "PodcasterEmails"("publisherEmail")`)
-    await db.query(`CREATE INDEX "idx_categories"        ON "Categories"("name")`)
-    await db.query(`CREATE INDEX "idx_categories_scid"   ON "Categories"("soundcastId")`)
-    await db.query(`CREATE INDEX "idx_imported_f_scid"   ON "importedFeeds_firebase"("soundcastId")`)
-    await db.query(`CREATE INDEX "idx_imported_f_pubid"  ON "importedFeeds_firebase"("publisherId")`)
-    await db.query(`CREATE INDEX "idx_imported_f_ourl"   ON "importedFeeds_firebase"("originalUrl")`)
-    await db.query(`CREATE INDEX "idx_soundcasts"        ON "Soundcasts"("soundcastId")`)
-    await db.query(`CREATE INDEX "idx_soundcasts_pubid"  ON "Soundcasts"("publisherId")`)
-    await db.query(`CREATE INDEX "idx_episodes_f"        ON "episodes_firebase"("episodeId")`)
-    await db.query(`CREATE INDEX "idx_episodes_f_pubid"  ON "episodes_firebase"("publisherID")`)
-    await db.query(`CREATE INDEX "idx_episodes_f_scid"   ON "episodes_firebase"("soundcastID")`)
-    await db.query(`CREATE INDEX "idx_episodes"          ON "Episodes"("episodeId")`)
-    await db.query(`CREATE INDEX "idx_episodes_pubid"    ON "Episodes"("publisherId")`)
-    await db.query(`CREATE INDEX "idx_episodes_scid"     ON "Episodes"("soundcastId")`)
+    )`);
+    await db.query(
+      `CREATE INDEX "idx_publisher_f"       ON "publishers_firebase"("publisherId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_soundcast_f"       ON "soundcasts_firebase"("soundcastId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_soundcast_f_pubid" ON "soundcasts_firebase"("publisherID")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_podcaster"         ON "PodcasterEmails"("publisherEmail")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_categories"        ON "Categories"("name")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_categories_scid"   ON "Categories"("soundcastId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_imported_f_scid"   ON "importedFeeds_firebase"("soundcastId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_imported_f_pubid"  ON "importedFeeds_firebase"("publisherId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_imported_f_ourl"   ON "importedFeeds_firebase"("originalUrl")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_soundcasts"        ON "Soundcasts"("soundcastId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_soundcasts_pubid"  ON "Soundcasts"("publisherId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_episodes_f"        ON "episodes_firebase"("episodeId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_episodes_f_pubid"  ON "episodes_firebase"("publisherID")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_episodes_f_scid"   ON "episodes_firebase"("soundcastID")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_episodes"          ON "Episodes"("episodeId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_episodes_pubid"    ON "Episodes"("publisherId")`
+    );
+    await db.query(
+      `CREATE INDEX "idx_episodes_scid"     ON "Episodes"("soundcastId")`
+    );
 
-    console.log('Done')
-  } catch(err) {
-    logErr(err)
+    console.log('Done');
+  } catch (err) {
+    logErr(err);
   }
-  process.exit()
-}
+  process.exit();
+};
 if (process.env.CREATE_TABLES) {
-  createTables()
-  return
+  createTables();
+  return;
 }
 
-const importTables = async () => { // import tables from soundwise_local_sql to firebase/soundwise
-  console.log('Importing tables')
-  const soundcasts_count   = (await db.query(`SELECT COUNT(*) FROM "Soundcasts"`))[0][0].count
-  const episodes_count     = (await db.query(`SELECT COUNT(*) FROM "Episodes"`))[0][0].count
-  const categories_count   = (await db.query(`SELECT COUNT(*) FROM "Categories"`))[0][0].count
-  const podcaster_count    = (await db.query(`SELECT COUNT(*) FROM "PodcasterEmails"`))[0][0].count
-  const publishers_f_count = (await db.query(`SELECT COUNT(*) FROM "publishers_firebase"`))[0][0].count
-  const soundcasts_f_count = (await db.query(`SELECT COUNT(*) FROM "soundcasts_firebase"`))[0][0].count
-  const imported_f_count   = (await db.query(`SELECT COUNT(*) FROM "importedFeeds_firebase"`))[0][0].count
-  const episodes_f_count   = (await db.query(`SELECT COUNT(*) FROM "episodes_firebase"`))[0][0].count
-  console.log(`"Soundcasts"             COUNT ${soundcasts_count}`)
-  console.log(`"Episodes"               COUNT ${episodes_count}`)
-  console.log(`"Categories"             COUNT ${categories_count}`)
-  console.log(`"PodcasterEmails"        COUNT ${podcaster_count}`)
-  console.log(`"publishers_firebase"    COUNT ${publishers_f_count}`)
-  console.log(`"soundcasts_firebase"    COUNT ${soundcasts_f_count}`)
-  console.log(`"importedFeeds_firebase" COUNT ${imported_f_count}`)
-  console.log(`"episodes_firebase"      COUNT ${episodes_f_count}`)
+const importTables = async () => {
+  // import tables from soundwise_local_sql to firebase/soundwise
+  console.log('Importing tables');
+  const soundcasts_count = (await db.query(
+    `SELECT COUNT(*) FROM "Soundcasts"`
+  ))[0][0].count;
+  const episodes_count = (await db.query(
+    `SELECT COUNT(*) FROM "Episodes"`
+  ))[0][0].count;
+  const categories_count = (await db.query(
+    `SELECT COUNT(*) FROM "Categories"`
+  ))[0][0].count;
+  const podcaster_count = (await db.query(
+    `SELECT COUNT(*) FROM "PodcasterEmails"`
+  ))[0][0].count;
+  const publishers_f_count = (await db.query(
+    `SELECT COUNT(*) FROM "publishers_firebase"`
+  ))[0][0].count;
+  const soundcasts_f_count = (await db.query(
+    `SELECT COUNT(*) FROM "soundcasts_firebase"`
+  ))[0][0].count;
+  const imported_f_count = (await db.query(
+    `SELECT COUNT(*) FROM "importedFeeds_firebase"`
+  ))[0][0].count;
+  const episodes_f_count = (await db.query(
+    `SELECT COUNT(*) FROM "episodes_firebase"`
+  ))[0][0].count;
+  console.log(`"Soundcasts"             COUNT ${soundcasts_count}`);
+  console.log(`"Episodes"               COUNT ${episodes_count}`);
+  console.log(`"Categories"             COUNT ${categories_count}`);
+  console.log(`"PodcasterEmails"        COUNT ${podcaster_count}`);
+  console.log(`"publishers_firebase"    COUNT ${publishers_f_count}`);
+  console.log(`"soundcasts_firebase"    COUNT ${soundcasts_f_count}`);
+  console.log(`"importedFeeds_firebase" COUNT ${imported_f_count}`);
+  console.log(`"episodes_firebase"      COUNT ${episodes_f_count}`);
 
-  let i
+  let i;
 
-  const date = '2018-01-01 00:00:00.000+00'
+  const date = '2018-01-01 00:00:00.000+00';
 
-  i = 0
+  i = 0;
   while (i <= soundcasts_count) {
-    console.log(`Querying "Soundcasts" OFFSET ${i}`)
+    console.log(`Querying "Soundcasts" OFFSET ${i}`);
     const soundcasts = (await db.query(
-      `SELECT * FROM "Soundcasts" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "Soundcasts" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
+    ))[0];
     for (const soundcast of soundcasts) {
       const {soundcastId, title, publisherId} = soundcast;
       await db_original.query(`INSERT INTO "Soundcasts" (
         "soundcastId"    ,  "title"                  , "publisherId"    , "createdAt" , "updatedAt"
       ) VALUES (
-        '${soundcastId}' , '${title.slice(0, 255)}'  , '${publisherId}' , '${date}'   , '${date}'
-      )`)
+        '${soundcastId}' , '${title.slice(
+        0,
+        255
+      )}'  , '${publisherId}' , '${date}'   , '${date}'
+      )`);
     }
-    i+=10000
+    i += 10000;
   }
 
-  i = 0
+  i = 0;
   while (i <= episodes_count) {
-    console.log(`Querying "Episodes" OFFSET ${i}`)
+    console.log(`Querying "Episodes" OFFSET ${i}`);
     const episodes = (await db.query(
-      `SELECT * FROM "Episodes" ORDER BY "episodeId" OFFSET ${i} LIMIT 30000`))[0]
+      `SELECT * FROM "Episodes" ORDER BY "episodeId" OFFSET ${i} LIMIT 30000`
+    ))[0];
     for (const episode of episodes) {
-      const {episodeId, soundcastId, publisherId, title, soundcastTitle} = episode;
+      const {
+        episodeId,
+        soundcastId,
+        publisherId,
+        title,
+        soundcastTitle,
+      } = episode;
       await db_original.query(`INSERT INTO "Episodes" (
         "episodeId"                      , "soundcastId"   , "publisherId"   , "title"                 ,
         "soundcastTitle"                 , "createdAt"      , "updatedAt"
       ) VALUES (
-        '${episodeId}'                   , '${soundcastId}', '${publisherId}', '${title.slice(0, 255)}',
+        '${episodeId}'                   , '${soundcastId}', '${publisherId}', '${title.slice(
+        0,
+        255
+      )}',
         '${soundcastTitle.slice(0, 255)}', '${date}'       , '${date}'
-      )`)
+      )`);
     }
-    i+=30000
+    i += 30000;
   }
 
-  i = 0
+  i = 0;
   while (i <= categories_count) {
-    console.log(`Querying "Categories" OFFSET ${i}`)
+    console.log(`Querying "Categories" OFFSET ${i}`);
     const categories = (await db.query(
-      `SELECT * FROM "Categories" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "Categories" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
+    ))[0];
     for (const category of categories) {
       const {name, soundcastId} = category;
       await db_original.query(`INSERT INTO "Categories" (
         "name"                 , "soundcastId"   , "createdAt", "updatedAt"
       ) VALUES (
         '${name.slice(0, 255)}', '${soundcastId}', '${date}'  , '${date}'
-      )`)
+      )`);
     }
-    i+=10000
+    i += 10000;
   }
 
-  i = 0
+  i = 0;
   while (i <= podcaster_count) {
-    console.log(`Querying "PodcasterEmails" OFFSET ${i}`)
+    console.log(`Querying "PodcasterEmails" OFFSET ${i}`);
     const emails = (await db.query(
-      `SELECT * FROM "PodcasterEmails" ORDER BY "publisherEmail" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "PodcasterEmails" ORDER BY "publisherEmail" OFFSET ${i} LIMIT 10000`
+    ))[0];
     for (const email of emails) {
       const {podcastTitle, publisherEmail, last_update} = email;
       await db_original.query(`INSERT INTO "PodcasterEmails" (
         "podcastTitle"                 , "publisherEmail"                             ,
         "last_update"                  ,   "createdAt"         , "updatedAt"
       ) VALUES (
-        '${podcastTitle.slice(0, 255)}', '${(publisherEmail || 'null').slice(0, 255).toLowerCase()}',
+        '${podcastTitle.slice(0, 255)}', '${(publisherEmail || 'null')
+        .slice(0, 255)
+        .toLowerCase()}',
         '${last_update}'               ,   '${date}'           , '${date}'
-      )`)
+      )`);
     }
-    i+=10000
+    i += 10000;
   }
 
-  i = 0
+  i = 0;
   while (i <= publishers_f_count) {
-    console.log(`Querying "publishers_firebase" OFFSET ${i}`)
+    console.log(`Querying "publishers_firebase" OFFSET ${i}`);
     const publishers = (await db.query(
-      `SELECT * FROM "publishers_firebase" ORDER BY "publisherId" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "publishers_firebase" ORDER BY "publisherId" OFFSET ${i} LIMIT 10000`
+    ))[0];
     for (const publisher of publishers) {
       const {publisherId, name, imageUrl, email, soundcasts} = publisher;
       const newPublisher = {
@@ -256,21 +326,37 @@ const importTables = async () => { // import tables from soundwise_local_sql to 
         unAssigned: true, // this publisher hasn't been claimed by any user
         imageUrl,
         email: email.toLowerCase(),
-        soundcasts: JSON.parse(soundcasts) // [{id of the new soundcast: true}]
+        soundcasts: JSON.parse(soundcasts), // [{id of the new soundcast: true}]
       };
-      await firebase.database().ref(`publishers/${publisherId}`).set(newPublisher);
+      await firebase
+        .database()
+        .ref(`publishers/${publisherId}`)
+        .set(newPublisher);
     }
-    i+=10000
+    i += 10000;
   }
 
-  i = 0
+  i = 0;
   while (i <= soundcasts_f_count) {
-    console.log(`Querying "soundcasts_firebase" OFFSET ${i}`)
+    console.log(`Querying "soundcasts_firebase" OFFSET ${i}`);
     const soundcasts = (await db.query(
-      `SELECT * FROM "soundcasts_firebase" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "soundcasts_firebase" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
+    ))[0];
     for (const soundcast of soundcasts) {
-      const {soundcastId, title, publisherEmail, creatorID, publisherID, publisherName,
-             short_description, imageURL, hostName, last_update, published, hostImageURL} = soundcast;
+      const {
+        soundcastId,
+        title,
+        publisherEmail,
+        creatorID,
+        publisherID,
+        publisherName,
+        short_description,
+        imageURL,
+        hostName,
+        last_update,
+        published,
+        hostImageURL,
+      } = soundcast;
       const newSoundcast = {
         title,
         publisherEmail: (publisherEmail || 'null').toLowerCase(),
@@ -289,21 +375,36 @@ const importTables = async () => { // import tables from soundwise_local_sql to 
         verified: true, // ownership verification, set to true from client after ownership is verified
         showSubscriberCount: true,
         showTimeStamps: true,
-        hostImageURL
+        hostImageURL,
       };
-      await firebase.database().ref(`soundcasts/${soundcastId}`).set(newSoundcast);
+      await firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}`)
+        .set(newSoundcast);
     }
-    i+=10000
+    i += 10000;
   }
 
-  i = 0
+  i = 0;
   while (i <= imported_f_count) {
-    console.log(`Querying "importedFeeds_firebase" OFFSET ${i}`)
+    console.log(`Querying "importedFeeds_firebase" OFFSET ${i}`);
     const feeds = (await db.query(
-      `SELECT * FROM "importedFeeds_firebase" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "importedFeeds_firebase" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
+    ))[0];
     for (const feed of feeds) {
-      const {soundcastId, published, title, feedUrl, originalUrl,
-             imageURL, updated, publisherId, userId, claimed, itunesId} = feed;
+      const {
+        soundcastId,
+        published,
+        title,
+        feedUrl,
+        originalUrl,
+        imageURL,
+        updated,
+        publisherId,
+        userId,
+        claimed,
+        itunesId,
+      } = feed;
       const importedFeedObj = {
         published: published === 'true',
         title,
@@ -318,24 +419,42 @@ const importTables = async () => { // import tables from soundwise_local_sql to 
       if (itunesId) {
         importedFeedObj.itunesId = itunesId; // store the iTunesID under the importedFeed node
       }
-      await firebase.database().ref(`importedFeeds/${soundcastId}`).set(importedFeedObj);
+      await firebase
+        .database()
+        .ref(`importedFeeds/${soundcastId}`)
+        .set(importedFeedObj);
     }
-    i+=10000
+    i += 10000;
   }
 
-  i = 0
+  i = 0;
   while (i <= episodes_f_count) {
-    console.log(`Querying "episodes_firebase" OFFSET ${i}`)
+    console.log(`Querying "episodes_firebase" OFFSET ${i}`);
     const episodes = (await db.query(
-      `SELECT * FROM "episodes_firebase" ORDER BY "episodeId" OFFSET ${i} LIMIT 30000`))[0]
+      `SELECT * FROM "episodes_firebase" ORDER BY "episodeId" OFFSET ${i} LIMIT 30000`
+    ))[0];
     for (const episode of episodes) {
-      const {episodeId, title, coverArtUrl, creatorID, date_created,
-             description, duration, index, publisherID, soundcastID, url} = episode;
+      const {
+        episodeId,
+        title,
+        coverArtUrl,
+        creatorID,
+        date_created,
+        description,
+        duration,
+        index,
+        publisherID,
+        soundcastID,
+        url,
+      } = episode;
       const newEpisode = {
         title,
         coverArtUrl,
         creatorID,
-        date_created: date_created === 'Invalid date' ? Math.floor(Date.now()/1000) : Number(date_created),
+        date_created:
+          date_created === 'Invalid date'
+            ? Math.floor(Date.now() / 1000)
+            : Number(date_created),
         description,
         duration,
         id3Tagged: true,
@@ -346,29 +465,36 @@ const importTables = async () => { // import tables from soundwise_local_sql to 
         soundcastID,
         url,
       };
-      await firebase.database().ref(`episodes/${episodeId}`).set(newEpisode);
+      await firebase
+        .database()
+        .ref(`episodes/${episodeId}`)
+        .set(newEpisode);
     }
-    i+=30000
+    i += 30000;
   }
 
-  process.exit()
-}
+  process.exit();
+};
 if (process.env.IMPORT_TABLES) {
-  importTables()
-  return
+  importTables();
+  return;
 }
 
 const fixCategories = async () => {
-  console.log('Fix categories run')
-  const imported_feeds_count = (await db_original.query(`SELECT COUNT(*) FROM "ImportedFeeds"`))[0][0].count
-  const podcastCategoriesMainIds = Object.keys(podcastCategories)
+  console.log('Fix categories run');
+  const imported_feeds_count = (await db_original.query(
+    `SELECT COUNT(*) FROM "ImportedFeeds"`
+  ))[0][0].count;
+  const podcastCategoriesMainIds = Object.keys(podcastCategories);
   const categoriesNames = Object.keys(podcastCategories).map(
-                            i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
-  let i = 0
+    i => podcastCategories[i].name
+  ); // main 16 categories ('Arts', 'Comedy', ...)
+  let i = 0;
   while (i <= imported_feeds_count) {
-    console.log(`Querying "Categories" OFFSET ${i}`)
+    console.log(`Querying "Categories" OFFSET ${i}`);
     const feeds = (await db_original.query(
-      `SELECT * FROM "ImportedFeeds" ORDER BY "id" OFFSET ${i} LIMIT 10000`))[0]
+      `SELECT * FROM "ImportedFeeds" ORDER BY "id" OFFSET ${i} LIMIT 10000`
+    ))[0];
 
     // `SELECT * FROM "Categories" WHERE "name" NOT IN (
     //   'Arts', 'Comedy', 'Education', 'Kids & Family', 'Health',
@@ -379,49 +505,74 @@ const fixCategories = async () => {
 
     for (const feed of feeds) {
       if (!feed.itunesId) {
-        continue // skip
+        continue; // skip
       }
       const categories = (await db_original.query(
-        `SELECT * FROM "Categories" WHERE "soundcastId"='z${feed.soundcastId}'`))[0]
-      if (!categories.length) { // wasn't imported
+        `SELECT * FROM "Categories" WHERE "soundcastId"='z${feed.soundcastId}'`
+      ))[0];
+      if (!categories.length) {
+        // wasn't imported
         await new Promise(resolve => {
-          request.get(`https://itunes.apple.com/lookup?id=${feed.itunesId}&entity=podcast`, async (err, res, body) => {
-            if (err) {
-              console.log(`request.get fixCategories ${feed.soundcastId} ${feed.itunesId} ${err}`)
-              return resolve();
-            }
-            let data
-            try {
-              data = JSON.parse(body)
-            } catch(err){
-              console.log(`JSON.parse error ${feed.soundcastId} ${feed.itunesId}`)
-            }
-            if (data && data.results && data.results.length && data.results[0].genreIds) {
-              const genreIds = data.results[0].genreIds
-              let newCategories = {}
-              for (const genreId of genreIds) {
-                for (const id of podcastCategoriesMainIds) {
-                  if (genreId === id) {
-                    newCategories[podcastCategories[id].name] = true
-                  } else { // check subCategories
-                    const subCategoriesIds = Object.keys(podcastCategories[id].subCategories)
-                    if (subCategoriesIds.indexOf(genreId) !== -1) { // contains genreId
-                      newCategories[podcastCategories[id].name] = true
+          request.get(
+            `https://itunes.apple.com/lookup?id=${
+              feed.itunesId
+            }&entity=podcast`,
+            async (err, res, body) => {
+              if (err) {
+                console.log(
+                  `request.get fixCategories ${feed.soundcastId} ${
+                    feed.itunesId
+                  } ${err}`
+                );
+                return resolve();
+              }
+              let data;
+              try {
+                data = JSON.parse(body);
+              } catch (err) {
+                console.log(
+                  `JSON.parse error ${feed.soundcastId} ${feed.itunesId}`
+                );
+              }
+              if (
+                data &&
+                data.results &&
+                data.results.length &&
+                data.results[0].genreIds
+              ) {
+                const genreIds = data.results[0].genreIds;
+                let newCategories = {};
+                for (const genreId of genreIds) {
+                  for (const id of podcastCategoriesMainIds) {
+                    if (genreId === id) {
+                      newCategories[podcastCategories[id].name] = true;
+                    } else {
+                      // check subCategories
+                      const subCategoriesIds = Object.keys(
+                        podcastCategories[id].subCategories
+                      );
+                      if (subCategoriesIds.indexOf(genreId) !== -1) {
+                        // contains genreId
+                        newCategories[podcastCategories[id].name] = true;
+                      }
                     }
                   }
                 }
-              }
-              newCategories = Object.keys(newCategories)
-              if (newCategories.length) {
-                // await db_original.query(`DELETE FROM "Categories" WHERE "soundcastId"='${feed.soundcastId}'`)
-                for (const name of newCategories) {
-                  await database.Category.create({ name, soundcastId: feed.soundcastId })
+                newCategories = Object.keys(newCategories);
+                if (newCategories.length) {
+                  // await db_original.query(`DELETE FROM "Categories" WHERE "soundcastId"='${feed.soundcastId}'`)
+                  for (const name of newCategories) {
+                    await database.Category.create({
+                      name,
+                      soundcastId: feed.soundcastId,
+                    });
+                  }
                 }
               }
+              resolve();
             }
-            resolve()
-          })
-        })
+          );
+        });
       }
       // if (categoriesNames.indexOf(category.name) !== -1) {
       //   continue
@@ -434,22 +585,22 @@ const fixCategories = async () => {
       //   }, { where: { id: category.id}})
       // }
     }
-    i+=10000
+    i += 10000;
   }
 
-  process.exit()
-}
+  process.exit();
+};
 if (process.env.FIX_CATEGORIES) {
-  fixCategories()
-  return
+  fixCategories();
+  return;
 }
 
 if (!process.env.RUN_IMPORT) {
-  console.log('No correct prefix was found, exiting')
+  console.log('No correct prefix was found, exiting');
   return process.exit();
 }
 
-console.log('Running import script')
+console.log('Running import script');
 
 const podcastIds = {};
 
@@ -460,22 +611,30 @@ function loadPodcasts($) {
   for (const podcast of podcasts) {
     // obtaining id from href; example:
     //  'https://itunes.apple.com/us/podcast/idn-onair/id302962930?mt=2' > 302962930
-    const id = Number(podcast.attribs.href.split('/').pop().split('?')[0].replace('id', ''));
+    const id = Number(
+      podcast.attribs.href
+        .split('/')
+        .pop()
+        .split('?')[0]
+        .replace('id', '')
+    );
     if (Number.isNaN(id)) {
-      console.log(`Error: iTunesUrls-local-sql.js NaN ${id} ${podcast.attribs.href}`);
+      console.log(
+        `Error: iTunesUrls-local-sql.js NaN ${id} ${podcast.attribs.href}`
+      );
     } else {
       podcastIds[id] = true; // save unique id
     }
   }
 }
 
-fs.writeFileSync(`errors`, '') // clear errors log file
+fs.writeFileSync(`errors`, ''); // clear errors log file
 
 const logError = err => {
   console.log(`Error: iTunesUrls-local-sql.js ${err}`);
-  fs.appendFileSync(`errors`, `Error: iTunesUrls-local-sql.js ${err}\n`)
+  fs.appendFileSync(`errors`, `Error: iTunesUrls-local-sql.js ${err}\n`);
   // process.exit();
-}
+};
 const logErr = logError; // replace utils' logErr
 const prep = _string => entities.encode(_string); // prepare string
 
@@ -483,69 +642,84 @@ async function runImport(links) {
   let ids = [];
 
   try {
-    ids = JSON.parse(fs.readFileSync('podcastIds').toString()) // ids cache file
-  } catch(err) {}
+    ids = JSON.parse(fs.readFileSync('podcastIds').toString()); // ids cache file
+  } catch (err) {}
 
   // links = [links[0]]; // Test first
   for (const link of links) {
     if (ids.length) {
-      console.log(`Loaded podcastIds file ${ids.length}`) // ids cache file
-      break
+      console.log(`Loaded podcastIds file ${ids.length}`); // ids cache file
+      break;
     }
     console.log(`Loading link ${link}`);
-    await new Promise(resolve => request.get(link, async (err, res, body) => {
-      if (err) {
-        return logError(`request.get link ${link} ${err}`);
-      }
-      const $ = cheerio.load(body);
-      loadPodcasts($); // load links from main page
+    await new Promise(resolve =>
+      request.get(link, async (err, res, body) => {
+        if (err) {
+          return logError(`request.get link ${link} ${err}`);
+        }
+        const $ = cheerio.load(body);
+        loadPodcasts($); // load links from main page
 
-      // LETTERS
-      const letters = Array.from($('#selectedgenre > .list.alpha > li > a')); // 26 letters + '#'
-      if (letters.length !== 27) {
-        return logError(`wrong letters length ${letters.length}`);
-      }
-      for (const letter of letters) {
-      // for (const letter of letters.slice(0, 1)) { // Test letter A
-        const href = letter.attribs.href;
-        process.stdout.write(`Loading letter ${letter.children[0].data}: 1`);
-        await new Promise(resolve => request.get(href, async (err, res, body) => {
-          if (err) {
-            return logError(`request.get letter ${href} ${err}`);
-          }
-
-          // NUMBERS
-          const $ = cheerio.load(body);
-          loadPodcasts($); // first page loading
-          const pages = Array.from($('#selectedgenre > .list.paginate').first().find('li > a'));
-          if (pages.length) { // have pagination
-            for (const page of pages) { // page numbers
-              if (page.children[0].data !== '1' && page.children[0].data !== 'Next') {
-                process.stdout.write(',' + page.children[0].data);
-                const href = page.attribs.href;
-                await new Promise(resolve => request.get(href, async (err, res, body) => {
-                  if (err) {
-                    return logError(`request.get page ${href} ${err}`);
-                  }
-                  loadPodcasts(cheerio.load(body));
-                  resolve();
-                }));
+        // LETTERS
+        const letters = Array.from($('#selectedgenre > .list.alpha > li > a')); // 26 letters + '#'
+        if (letters.length !== 27) {
+          return logError(`wrong letters length ${letters.length}`);
+        }
+        for (const letter of letters) {
+          // for (const letter of letters.slice(0, 1)) { // Test letter A
+          const href = letter.attribs.href;
+          process.stdout.write(`Loading letter ${letter.children[0].data}: 1`);
+          await new Promise(resolve =>
+            request.get(href, async (err, res, body) => {
+              if (err) {
+                return logError(`request.get letter ${href} ${err}`);
               }
-            }
-          }
-          process.stdout.write(`\n`); // new line
-          resolve();
-        }));
-      }
-      resolve();
-    }));
+
+              // NUMBERS
+              const $ = cheerio.load(body);
+              loadPodcasts($); // first page loading
+              const pages = Array.from(
+                $('#selectedgenre > .list.paginate')
+                  .first()
+                  .find('li > a')
+              );
+              if (pages.length) {
+                // have pagination
+                for (const page of pages) {
+                  // page numbers
+                  if (
+                    page.children[0].data !== '1' &&
+                    page.children[0].data !== 'Next'
+                  ) {
+                    process.stdout.write(',' + page.children[0].data);
+                    const href = page.attribs.href;
+                    await new Promise(resolve =>
+                      request.get(href, async (err, res, body) => {
+                        if (err) {
+                          return logError(`request.get page ${href} ${err}`);
+                        }
+                        loadPodcasts(cheerio.load(body));
+                        resolve();
+                      })
+                    );
+                  }
+                }
+              }
+              process.stdout.write(`\n`); // new line
+              resolve();
+            })
+          );
+        }
+        resolve();
+      })
+    );
   }
   console.log(`Obtained ${Object.keys(podcastIds).length} podcast ids`); // 415528
 
   if (Object.keys(podcastIds).length) {
-    ids = Object.keys(podcastIds)
-    console.log('Saving podcastIds file')
-    fs.writeFileSync('podcastIds', JSON.stringify(ids))  // ids cache file
+    ids = Object.keys(podcastIds);
+    console.log('Saving podcastIds file');
+    fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
   }
 
   let j = 0;
@@ -553,116 +727,156 @@ async function runImport(links) {
     j++;
     // if (j <= 398737) { continue } // skip ids
     await new Promise(resolve => {
-      request.get(`https://itunes.apple.com/lookup?id=${itunesId}&entity=podcast`, async (err, res, body) => {
-        if (err) {
-          logError(`request.get lookup ${itunesId} ${err}`);
-          return resolve();
-        }
-        try {
-          const feedUrl = JSON.parse(body).results[0].feedUrl; // originalUrl
-
-          const rowExist = await db.query(
-            `SELECT 1 FROM "importedFeeds_firebase" WHERE "originalUrl"='${feedUrl}' LIMIT 1`
-          );
-          if (rowExist[0].length) {
-            return resolve(); // skip already imported
+      request.get(
+        `https://itunes.apple.com/lookup?id=${itunesId}&entity=podcast`,
+        async (err, res, body) => {
+          if (err) {
+            logError(`request.get lookup ${itunesId} ${err}`);
+            return resolve();
           }
+          try {
+            const feedUrl = JSON.parse(body).results[0].feedUrl; // originalUrl
 
-          const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
-          const url = urlParsed.host + urlParsed.pathname; // use url as a key
-          // Send request to feedUrl, and parse the feed data
-          console.log(`getFeed request [${j}/${ids.length}] ${itunesId} ${feedUrl}`)
-          getFeed(feedUrl, async (err, results) => {
-            if (err) {
-              logError(`getFeed obtaining feed ${feedUrl} ${err}`);
-              return resolve();
+            const rowExist = await db.query(
+              `SELECT 1 FROM "importedFeeds_firebase" WHERE "originalUrl"='${feedUrl}' LIMIT 1`
+            );
+            if (rowExist[0].length) {
+              return resolve(); // skip already imported
             }
-            const { metadata, feedItems } = results;
-            const itunesEmail = metadata['itunes:owner'] // same block as in parseFeed.js
-                             && metadata['itunes:owner']['itunes:email']
-                             && metadata['itunes:owner']['itunes:email']['#'];
-            const managingEmail = metadata['rss:managingeditor']
-                               && metadata['rss:managingeditor']['email'];
-            const publisherEmail = itunesEmail || managingEmail || null;
 
-            const feedObj = {
-              metadata,
-              feedItems,
-              publisherEmail,
-              verified: true,
-              originalUrl: feedUrl,
-            };
+            const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
+            const url = urlParsed.host + urlParsed.pathname; // use url as a key
+            // Send request to feedUrl, and parse the feed data
+            console.log(
+              `getFeed request [${j}/${ids.length}] ${itunesId} ${feedUrl}`
+            );
+            getFeed(feedUrl, async (err, results) => {
+              if (err) {
+                logError(`getFeed obtaining feed ${feedUrl} ${err}`);
+                return resolve();
+              }
+              const {metadata, feedItems} = results;
+              const itunesEmail =
+                metadata['itunes:owner'] && // same block as in parseFeed.js
+                metadata['itunes:owner']['itunes:email'] &&
+                metadata['itunes:owner']['itunes:email']['#'];
+              const managingEmail =
+                metadata['rss:managingeditor'] &&
+                metadata['rss:managingeditor']['email'];
+              const publisherEmail = itunesEmail || managingEmail || null;
 
-            // Since these new soundcasts don’t have publishers/users they are associated with, we need to create a new publisher for each of them:
-            const soundcastId = `${moment().format('x')}s`;
-            const publisherId = `${moment().format('x')}p`;
-            const soundcastObj = {};
-            soundcastObj[soundcastId] = true;
-            const publisherName = metadata.title; // name(?) TODO check
-            try {
-              let newPublisher = {
-                name: publisherName,
-                unAssigned: true, // this publisher hasn't been claimed by any user
-                imageUrl: metadata.image.url,
-                email: publisherEmail,
-                soundcasts: [soundcastObj] // [{id of the new soundcast: true}]
+              const feedObj = {
+                metadata,
+                feedItems,
+                publisherEmail,
+                verified: true,
+                originalUrl: feedUrl,
               };
-              // await firebase.database().ref(`publishers/${publisherId}`).set(newPublisher);
-              await db.query(`INSERT INTO "publishers_firebase" (
+
+              // Since these new soundcasts don’t have publishers/users they are associated with, we need to create a new publisher for each of them:
+              const soundcastId = `${moment().format('x')}s`;
+              const publisherId = `${moment().format('x')}p`;
+              const soundcastObj = {};
+              soundcastObj[soundcastId] = true;
+              const publisherName = metadata.title; // name(?) TODO check
+              try {
+                let newPublisher = {
+                  name: publisherName,
+                  unAssigned: true, // this publisher hasn't been claimed by any user
+                  imageUrl: metadata.image.url,
+                  email: publisherEmail,
+                  soundcasts: [soundcastObj], // [{id of the new soundcast: true}]
+                };
+                // await firebase.database().ref(`publishers/${publisherId}`).set(newPublisher);
+                await db.query(`INSERT INTO "publishers_firebase" (
                 "publisherId"       , "name"                 , "unAssigned", "imageUrl",
                 "email"             , "soundcasts"
               ) VALUES (
-                '${publisherId}'   , '${prep(publisherName)}', 'true'      , '${metadata.image.url}',
+                '${publisherId}'   , '${prep(publisherName)}', 'true'      , '${
+                  metadata.image.url
+                }',
                 '${publisherEmail}', '${JSON.stringify([soundcastObj])}'
-              )`)
+              )`);
 
-              const req = { body: { // mock req object
-                publisherId, publisherName, userId: 'Soundcast_userId_iTunesUrls',
-              }};
-              const res = { // mock res object
-                send: msg => console.log(`iTunesUrls resObject ${msg}`),
-                status: status => ({
-                  send: msg => console.log(`iTunesUrls resObject ${status} ${msg}`)
-                })
-              };
-              // since the imported podcasts don't have an active Soundwise user associated with it, we'll need to set verified = false under the soundcast node. also please set published = false.
-              const isPublished = false, isVerified = false, isClaimed = false;
-              // Save theses podcasts and their episodes as new soundcasts and episodes in our firebase and postgres databases
-              // Save the podcasts and feedUrl under the importedFeeds node in firebase
-              await runFeedImport(req, res, url, feedObj, isPublished,
-                                  isVerified, isClaimed, null, itunesId, soundcastId);
-            } catch(err) {
-              logErr(`publishers_firebase ${feedUrl} ${err}`)
-            }
+                const req = {
+                  body: {
+                    // mock req object
+                    publisherId,
+                    publisherName,
+                    userId: 'Soundcast_userId_iTunesUrls',
+                  },
+                };
+                const res = {
+                  // mock res object
+                  send: msg => console.log(`iTunesUrls resObject ${msg}`),
+                  status: status => ({
+                    send: msg =>
+                      console.log(`iTunesUrls resObject ${status} ${msg}`),
+                  }),
+                };
+                // since the imported podcasts don't have an active Soundwise user associated with it, we'll need to set verified = false under the soundcast node. also please set published = false.
+                const isPublished = false,
+                  isVerified = false,
+                  isClaimed = false;
+                // Save theses podcasts and their episodes as new soundcasts and episodes in our firebase and postgres databases
+                // Save the podcasts and feedUrl under the importedFeeds node in firebase
+                await runFeedImport(
+                  req,
+                  res,
+                  url,
+                  feedObj,
+                  isPublished,
+                  isVerified,
+                  isClaimed,
+                  null,
+                  itunesId,
+                  soundcastId
+                );
+              } catch (err) {
+                logErr(`publishers_firebase ${feedUrl} ${err}`);
+              }
+              resolve();
+            });
+          } catch (err) {
+            logError(`catch ${body} ${err}`);
             resolve();
-          });
-        } catch(err) {
-          logError(`catch ${body} ${err}`);
-          resolve();
+          }
         }
-      });
+      );
     });
   } // for itunesId of ids
 }
 
-
 ////////////////////////////////////////////////////////////////
 // parseFeed version to use with iTunes-local-sql.js
 //
-async function runFeedImport(req, res, url, feedObj, isPublished,
-                             isVerified, isClaimed, callback, itunesId, soundcastId) {
-
-  const { metadata, publisherEmail, verified, originalUrl } = feedObj;
-  const { publisherId, userId, publisherName } = req.body;
+async function runFeedImport(
+  req,
+  res,
+  url,
+  feedObj,
+  isPublished,
+  isVerified,
+  isClaimed,
+  callback,
+  itunesId,
+  soundcastId
+) {
+  const {metadata, publisherEmail, verified, originalUrl} = feedObj;
+  const {publisherId, userId, publisherName} = req.body;
 
   let feedItems = feedObj.feedItems;
 
-  if (!verified) { // verificationCode checked
+  if (!verified) {
+    // verificationCode checked
     return res.status(400).send('Error: not verified');
   }
 
-  feedItems.sort((a, b) => { // sort feedItems by date or pubdate or pubDate
-    return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
+  feedItems.sort((a, b) => {
+    // sort feedItems by date or pubdate or pubDate
+    return (
+      (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate)
+    );
   });
 
   if (feedItems.length > 100) {
@@ -671,26 +885,31 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   }
 
   let last_update = metadata.date || metadata.pubdate || metadata.pubDate;
-  if (!last_update) { // take first episode's date
+  if (!last_update) {
+    // take first episode's date
     const newestEpisode = feedItems[feedItems.length - 1]; // last in array
-    last_update = newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
+    last_update =
+      newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
   }
   if (!last_update || moment(last_update).format('X') === 'Invalid date') {
     // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
     logErr(`can't obtain last_update ${originalUrl}`);
-    return
+    return;
   }
-  if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) { // have empty enclosures
+  if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) {
+    // have empty enclosures
     // If enclosures is empty, we shouldn't import the item.
     // We should only import items that have an audio file in enclosures.
     logErr(`empty enclosures array ${originalUrl}`);
-    return
+    return;
   }
 
   // 1. create a new soundcast from the feed
   const {title, description, author, image} = metadata;
-  const hostImageURL = 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
-  const hostName = (metadata['itunes:author'] && metadata['itunes:author']['#']) || author;
+  const hostImageURL =
+    'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
+  const hostName =
+    (metadata['itunes:author'] && metadata['itunes:author']['#']) || author;
   const _last_update = moment(last_update).format('X');
   let soundcast;
   try {
@@ -712,7 +931,7 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       verified: true, // ownership verification, set to true from client after ownership is verified
       showSubscriberCount: true,
       showTimeStamps: true,
-      hostImageURL
+      hostImageURL,
     };
 
     // 2. add the new soundcast to firebase and postgreSQL
@@ -731,20 +950,27 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       "showTimeStamps"        , "hostImageURL"
     ) VALUES (
       '${soundcastId}'        ,
-      '${prep(title)}'        , '${prep(publisherEmail)}'  , '${userId}'   , '${publisherId}'     ,
-      '${prep(publisherName)}', '${prep(description)}'     , '${image.url}', '${prep(hostName)}'  ,
+      '${prep(title)}'        , '${prep(
+      publisherEmail
+    )}'  , '${userId}'   , '${publisherId}'     ,
+      '${prep(publisherName)}', '${prep(description)}'     , '${
+      image.url
+    }', '${prep(hostName)}'  ,
       '${_last_update}'       , 'true'                     , 'false'       , 'true'               ,
       '${prices}'             , '${isPublished}'           , 'true'        , 'true'               ,
       'true'                  , '${prep(hostImageURL)}'
-    )`)
-  } catch(err) {
-    logErr(`soundcasts_firebase ${originalUrl} ${err}`)
+    )`);
+  } catch (err) {
+    logErr(`soundcasts_firebase ${originalUrl} ${err}`);
   }
 
   // store the publisher's email address in a separate table in the database,
   // for podcasts that are "active", i.e. has been updated in the last year
-  const yearAgo = moment().subtract(111, 'years').unix();
-  if (moment(last_update).unix() > yearAgo) { // updated in the last year
+  const yearAgo = moment()
+    .subtract(111, 'years')
+    .unix();
+  if (moment(last_update).unix() > yearAgo) {
+    // updated in the last year
     try {
       // await database.PodcasterEmail.create({
       //   podcastTitle: title,
@@ -754,10 +980,12 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       await db.query(`INSERT INTO "PodcasterEmails" (
         "podcastTitle"    , "publisherEmail"          , "last_update"
       ) VALUES (
-        '${prep(title)}'  , '${prep(publisherEmail)}' , '${moment(last_update).format('X')}'
-      )`)
-    } catch(err) {
-      logErr(`PodcasterEmail ${originalUrl} ${err}`)
+        '${prep(title)}'  , '${prep(publisherEmail)}' , '${moment(
+        last_update
+      ).format('X')}'
+      )`);
+    } catch (err) {
+      logErr(`PodcasterEmail ${originalUrl} ${err}`);
     }
   }
 
@@ -769,7 +997,8 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       if (category && category['@'] && category['@'].text) {
         let name = category['@'].text;
         const subcategory = category['itunes:category'];
-        if (subcategory && subcategory['@'] && subcategory['@'].text) { // have subcategory
+        if (subcategory && subcategory['@'] && subcategory['@'].text) {
+          // have subcategory
           name = subcategory['@'].text;
         }
         try {
@@ -778,9 +1007,9 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
             "name"         , "soundcastId"
           ) VALUES (
             '${prep(name)}', '${soundcastId}'
-          )`)
-        } catch(err) {
-          logErr(`Category ${originalUrl} ${err}`)
+          )`);
+        } catch (err) {
+          logErr(`Category ${originalUrl} ${err}`);
         }
       }
     }
@@ -801,7 +1030,7 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       publisherId,
       userId,
       claimed: isClaimed, // when 'claimed == true', this imported soundcast is managed by the RSS feed owner
-    }
+    };
     if (itunesId) {
       importedFeedObj.itunesId = itunesId; // store the iTunesID under the importedFeed node
     }
@@ -811,12 +1040,16 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       "imageURL"             , "updated"           , "publisherId"    , "userId"   , "claimed"       ,
       "itunesId"
     ) VALUES (
-      '${soundcastId}'       , '${isPublished}'    , '${prep(title)}' , '${url}'   , '${originalUrl}',
-      '${prep(image.url)}'   , '${moment().unix()}', '${publisherId}' , '${userId}', '${isClaimed}'  ,
+      '${soundcastId}'       , '${isPublished}'    , '${prep(
+      title
+    )}' , '${url}'   , '${originalUrl}',
+      '${prep(
+        image.url
+      )}'   , '${moment().unix()}', '${publisherId}' , '${userId}', '${isClaimed}'  ,
       '${itunesId || 'NULL'}'
-    )`)
-  } catch(err) {
-    logErr(`importedFeeds_firebase ${originalUrl} ${err}`)
+    )`);
+  } catch (err) {
+    logErr(`importedFeeds_firebase ${originalUrl} ${err}`);
   }
 
   // 2-c. add to postgres
@@ -837,14 +1070,23 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
       "soundcastId"    ,  "title"         , "publisherId"
     ) VALUES (
       '${soundcastId}' , '${prep(title)}' , '${publisherId}'
-    )`)
-  } catch(err) {
-    logErr(`Soundcasts ${originalUrl} ${err}`)
+    )`);
+  } catch (err) {
+    logErr(`Soundcasts ${originalUrl} ${err}`);
   }
 
   let i = 0;
   for (const item of feedItems) {
-    await addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i, originalUrl);
+    await addFeedEpisode(
+      item,
+      userId,
+      publisherId,
+      soundcastId,
+      soundcast,
+      metadata,
+      i,
+      originalUrl
+    );
     i++;
   }
 
@@ -859,11 +1101,21 @@ async function runFeedImport(req, res, url, feedObj, isPublished,
   //   .catch(err => logErr(`Soundcast.findOrCreate ${err}`, res));
 }
 
-async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i, originalUrl) {
+async function addFeedEpisode(
+  item,
+  userId,
+  publisherId,
+  soundcastId,
+  soundcast,
+  metadata,
+  i,
+  originalUrl
+) {
   const {title, description, summary, date, image, enclosures} = item;
 
   let duration = null;
-  if (item['itunes:duration'] && item['itunes:duration']['#']) { // duration not empty
+  if (item['itunes:duration'] && item['itunes:duration']['#']) {
+    // duration not empty
     duration = item['itunes:duration']['#'].toString(); // '323' (seconds) or '14:23'
     if (duration.includes(':')) {
       if (duration.split(':').length === 2) {
@@ -878,14 +1130,15 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
   const episodeId = `${moment().format('x')}e`;
   let episode;
   try {
-    const date_created = moment(date || metadata.date).format('X')
+    const date_created = moment(date || metadata.date).format('X');
     episode = {
       title,
       coverArtUrl: image.url || soundcast.imageURL,
       creatorID: userId,
       date_created,
-      description: (description && entities.decode(description)) || (
-                        summary && entities.decode(summary)),
+      description:
+        (description && entities.decode(description)) ||
+        (summary && entities.decode(summary)),
       duration,
       id3Tagged: true,
       index: i + 1,
@@ -904,13 +1157,16 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
       "index"          , "isPublished"    , "publicEpisode"                     , "publisherID",
       "soundcastID"    , "url"
     ) VALUES (
-      '${episodeId}'   , '${prep(title)}' , '${prep(image.url || soundcast.imageURL)}', '${userId}',
+      '${episodeId}'   , '${prep(title)}' , '${prep(
+      image.url || soundcast.imageURL
+    )}', '${userId}',
       '${date_created}', '${_description}', '${duration}'                       ,  '${true}'       ,
-      '${i + 1}'       , '${true}'        ,  '${true}'                          ,  '${publisherId}',
+      '${i +
+        1}'       , '${true}'        ,  '${true}'                          ,  '${publisherId}',
       '${soundcastId}' , '${prep(enclosures[0].url)}'
-    )`)
-  } catch(err) {
-    logErr(`episodes_firebase ${originalUrl} ${err}`)
+    )`);
+  } catch (err) {
+    logErr(`episodes_firebase ${originalUrl} ${err}`);
   }
 
   // add to the soundcast
@@ -941,14 +1197,13 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     ) VALUES (
       '${episodeId}'          , '${soundcastId}'            , '${publisherId}',
       '${prep(episode.title)}', '${prep(soundcast.title)}'
-    )`)
-  } catch(err) {
-    logErr(`Episodes ${originalUrl} ${err}`)
+    )`);
+  } catch (err) {
+    logErr(`Episodes ${originalUrl} ${err}`);
   }
 }
 //
 ////////////////////////////////////////////////////////////////
-
 
 const links = [
   'https://itunes.apple.com/us/genre/podcasts-arts/id1301?mt=2',
@@ -1017,7 +1272,7 @@ const links = [
   'https://itunes.apple.com/us/genre/podcasts-technology-gadgets/id1446?mt=2',
   'https://itunes.apple.com/us/genre/podcasts-technology-podcasting/id1450?mt=2',
   'https://itunes.apple.com/us/genre/podcasts-technology-software-how-to/id1480?mt=2',
-  'https://itunes.apple.com/us/genre/podcasts-technology-tech-news/id1448?mt=2'
+  'https://itunes.apple.com/us/genre/podcasts-technology-tech-news/id1448?mt=2',
 ];
 
 runImport(links);

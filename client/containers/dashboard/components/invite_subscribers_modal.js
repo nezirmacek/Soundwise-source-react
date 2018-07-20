@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import firebase from 'firebase';
@@ -8,86 +8,138 @@ import draftToHtml from 'draftjs-to-html';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import moment from 'moment';
 import Papa from 'papaparse';
-import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
+import {Editor} from 'react-draft-wysiwyg';
+import {
+  convertFromRaw,
+  convertToRaw,
+  EditorState,
+  convertFromHTML,
+  createFromBlockArray,
+  ContentState,
+} from 'draft-js';
 
-import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
+import {
+  minLengthValidator,
+  maxLengthValidator,
+} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 import {addToEmailList} from '../../../helpers/addToEmailList';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
-import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
+import {
+  OrangeSubmitButton,
+  TransparentShortSubmitButton,
+} from '../../../components/buttons/buttons';
 
 export default class InviteSubscribersModal extends Component {
   constructor(props) {
     super(props);
-    this.state={
+    this.state = {
       inviteeList: '',
       submitted: false,
       invitation: EditorState.createEmpty(),
-    }
+    };
 
     this.closeModal = this.closeModal.bind(this);
     this.inviteListeners = this.inviteListeners.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { soundcast, userInfo } = nextProps;
+    const {soundcast, userInfo} = nextProps;
     let editorState;
-    if(userInfo.publisher && soundcast && nextProps != this.props) {
-      if(soundcast.invitationEmail) {
-        let contentState = convertFromRaw(JSON.parse(soundcast.invitationEmail));
+    if (userInfo.publisher && soundcast && nextProps != this.props) {
+      if (soundcast.invitationEmail) {
+        let contentState = convertFromRaw(
+          JSON.parse(soundcast.invitationEmail)
+        );
         editorState = EditorState.createWithContent(contentState);
       } else {
-        const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/'+soundcast.id : ''}" target="_blank">${soundcast.title}</a> on Soundwise.</p><p>You can access it <a href="https://mysoundwise.com/signup/soundcast_user/${soundcast.id}">here.</a></p><p>Alternatively, you can access the soundcast directly from your phone. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: </strong>Download the app <strong><a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</strong></p><p><strong>Android user: </strong>Download the app <strong><a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</strong></p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p>`;
-          const invitationEmail = convertFromHTML(content);
-          const invitation = ContentState.createFromBlockArray(
-            invitationEmail.contentBlocks,
-            invitationEmail.entityMap
-          );
-          editorState = EditorState.createWithContent(invitation);
+        const content = `<p>Hi there!</p><p></p><p>${
+          userInfo.publisher.name
+        } has invited you to subscribe to <a href="${
+          soundcast.landingPage
+            ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
+            : ''
+        }" target="_blank">${
+          soundcast.title
+        }</a> on Soundwise.</p><p>You can access it <a href="https://mysoundwise.com/signup/soundcast_user/${
+          soundcast.id
+        }">here.</a></p><p>Alternatively, you can access the soundcast directly from your phone. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: </strong>Download the app <strong><a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</strong></p><p><strong>Android user: </strong>Download the app <strong><a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</strong></p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p>`;
+        const invitationEmail = convertFromHTML(content);
+        const invitation = ContentState.createFromBlockArray(
+          invitationEmail.contentBlocks,
+          invitationEmail.entityMap
+        );
+        editorState = EditorState.createWithContent(invitation);
       }
-        this.setState({
-          invitation: editorState,
-        })
+      this.setState({
+        invitation: editorState,
+      });
     }
   }
 
   async inviteListeners() {
     const inviteeArr = this.state.inviteeList.split(',');
     const that = this;
-    const { soundcast, userInfo } = this.props;
+    const {soundcast, userInfo} = this.props;
     const {invitation} = this.state;
-    for(var i = inviteeArr.length -1; i >= 0; i--) {
-        if (inviteeArr[i].indexOf('@') == -1) {
-            inviteeArr.splice(i, 1);
-        }
+    for (var i = inviteeArr.length - 1; i >= 0; i--) {
+      if (inviteeArr[i].indexOf('@') == -1) {
+        inviteeArr.splice(i, 1);
+      }
     }
     const content = draftToHtml(convertToRaw(invitation.getCurrentContent()));
     // send email invitations to invited listeners
-    const subject = `${userInfo.publisher.name} invites you to subscribe to ${soundcast.title}`;
+    const subject = `${userInfo.publisher.name} invites you to subscribe to ${
+      soundcast.title
+    }`;
 
-    addToEmailList(soundcast.id, inviteeArr, 'inviteeEmailList', soundcast.inviteeEmailList)
-    .then(listId => {
-      inviteListeners (inviteeArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl, userInfo.publisher.email); // use transactional email for this
+    addToEmailList(
+      soundcast.id,
+      inviteeArr,
+      'inviteeEmailList',
+      soundcast.inviteeEmailList
+    ).then(listId => {
+      inviteListeners(
+        inviteeArr,
+        subject,
+        content,
+        userInfo.publisher.name,
+        userInfo.publisher.imageUrl,
+        userInfo.publisher.email
+      ); // use transactional email for this
     });
 
     var invitationPromise = inviteeArr.map(email => {
-        let _email = email.replace(/\./g, "(dot)");
-        _email = _email.trim().toLowerCase();
-        if(_email) {
-          return firebase.database().ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`).set(moment().format('X'))//invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+      let _email = email.replace(/\./g, '(dot)');
+      _email = _email.trim().toLowerCase();
+      if (_email) {
+        return firebase
+          .database()
+          .ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`)
+          .set(moment().format('X')) //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
           .then(() => {
-              firebase.database().ref(`invitations/${_email}`)
+            firebase
+              .database()
+              .ref(`invitations/${_email}`)
               .once('value')
               .then(snapshot => {
-                if(snapshot.val()) {
-                  const update = {...snapshot.val(), [that.props.soundcast.id]: true};
-                  firebase.database().ref(`invitations/${_email}`).update(update);
+                if (snapshot.val()) {
+                  const update = {
+                    ...snapshot.val(),
+                    [that.props.soundcast.id]: true,
+                  };
+                  firebase
+                    .database()
+                    .ref(`invitations/${_email}`)
+                    .update(update);
                 } else {
-                  firebase.database().ref(`invitations/${_email}/${that.props.soundcast.id}`).set(true);
+                  firebase
+                    .database()
+                    .ref(`invitations/${_email}/${that.props.soundcast.id}`)
+                    .set(true);
                 }
               })
               .then(
@@ -97,18 +149,21 @@ export default class InviteSubscribersModal extends Component {
                 err => {
                   console.log('ERROR adding invitee: ', err);
                   Promise.reject(err);
-                })
+                }
+              );
           });
-        } else {
-          return null;
-        }
+      } else {
+        return null;
+      }
     });
 
-    Promise.all(invitationPromise)
-    .then(
+    Promise.all(invitationPromise).then(
       res => {
-        firebase.database().ref(`soundcasts/${that.props.soundcast.id}/invitationEmail`).set(JSON.stringify(convertToRaw(invitation.getCurrentContent())))
-        .catch(err => console.log('error'));
+        firebase
+          .database()
+          .ref(`soundcasts/${that.props.soundcast.id}/invitationEmail`)
+          .set(JSON.stringify(convertToRaw(invitation.getCurrentContent())))
+          .catch(err => console.log('error'));
         return res;
       },
       err => {
@@ -117,7 +172,7 @@ export default class InviteSubscribersModal extends Component {
     );
 
     this.setState({
-      submitted: true
+      submitted: true,
     });
   }
 
@@ -133,7 +188,7 @@ export default class InviteSubscribersModal extends Component {
   onInvitationStateChange(editorState) {
     this.setState({
       invitation: editorState,
-    })
+    });
   }
 
   setFileName(e) {
@@ -141,27 +196,32 @@ export default class InviteSubscribersModal extends Component {
     const emailList = [];
     if (e.target.value) {
       const file = document.getElementById('upload_csv').files[0];
-      if(file.name.slice(-3) == 'csv') {
+      if (file.name.slice(-3) == 'csv') {
         Papa.parse(file, {
           complete: function(results) {
-            if(results.data) {
-              let targetCol = prompt('Which column is the emails stored in? (Enter the column number)');
-              if(Number.isInteger(Number(targetCol)) && Number(targetCol) > 0) {
+            if (results.data) {
+              let targetCol = prompt(
+                'Which column is the emails stored in? (Enter the column number)'
+              );
+              if (
+                Number.isInteger(Number(targetCol)) &&
+                Number(targetCol) > 0
+              ) {
                 results.data.forEach(row => {
                   let email = row[targetCol - 1] ? row[targetCol - 1] : '';
-                  if(email.indexOf('@') > 0) {
+                  if (email.indexOf('@') > 0) {
                     email = email.toLowerCase().trim();
                     emailList.push(email);
                   }
                 });
                 that.setState({
                   inviteeList: emailList.join(','),
-                })
+                });
               } else {
                 alert('Please enter a valid column number.');
               }
             }
-          }
+          },
         });
       } else {
         alert('Please upload a valid csv file.');
@@ -170,107 +230,116 @@ export default class InviteSubscribersModal extends Component {
   }
 
   render() {
-    const { soundcast, userInfo } = this.props;
+    const {soundcast, userInfo} = this.props;
     const actions = [
       <FlatButton
         label="Submit"
         labelStyle={{color: Colors.link}}
         onClick={this.inviteListeners}
       />,
-      <FlatButton
-        label="Cancel"
-        onClick={this.closeModal}
-      />,
+      <FlatButton label="Cancel" onClick={this.closeModal} />,
     ];
     const actionsSubmitted = [
       <FlatButton
         label="OK"
         labelStyle={{color: Colors.link}}
         onClick={this.closeModal}
-      />
+      />,
     ];
-    if(!this.props.isShown) {
+    if (!this.props.isShown) {
       return null;
     }
 
-    if(this.state.submitted) {
+    if (this.state.submitted) {
       return (
-      <div>
-        <MuiThemeProvider>
-          <Dialog
-            title='Your invitations have been sent'
-            titleStyle={{borderBottom: '0px'}}
-            actions={actionsSubmitted}
-            modal={false}
-            open={this.props.isShown}
-          >
-          </Dialog>
-        </MuiThemeProvider>
-      </div>
-      )
+        <div>
+          <MuiThemeProvider>
+            <Dialog
+              title="Your invitations have been sent"
+              titleStyle={{borderBottom: '0px'}}
+              actions={actionsSubmitted}
+              modal={false}
+              open={this.props.isShown}
+            />
+          </MuiThemeProvider>
+        </div>
+      );
     }
 
     return (
       <div>
         <MuiThemeProvider>
-        <Dialog
-          title={`Invite subscribers to ${soundcast.title}`}
-          titleStyle={{borderBottom: '0px'}}
-          actions={actions}
-          modal={false}
-          open={this.props.isShown}
-          contentStyle={{width: '80%', maxWidth: 'none', height: 700, maxHeight: 'none'}}
-          autoScrollBodyContent={true}
-        >
-            <div className='col-md-12' style={{height: 100}}>
+          <Dialog
+            title={`Invite subscribers to ${soundcast.title}`}
+            titleStyle={{borderBottom: '0px'}}
+            actions={actions}
+            modal={false}
+            open={this.props.isShown}
+            contentStyle={{
+              width: '80%',
+              maxWidth: 'none',
+              height: 700,
+              maxHeight: 'none',
+            }}
+            autoScrollBodyContent={true}
+          >
+            <div className="col-md-12" style={{height: 100}}>
               <textarea
-                  style={styles.inputDescription}
-                  placeholder={'Enter listener email addresses, separated by commas'}
-                  onChange={(e) => {this.setState({inviteeList: e.target.value})}}
-                  value={this.state.inviteeList}
-              >
-              </textarea>
+                style={styles.inputDescription}
+                placeholder={
+                  'Enter listener email addresses, separated by commas'
+                }
+                onChange={e => {
+                  this.setState({inviteeList: e.target.value});
+                }}
+                value={this.state.inviteeList}
+              />
             </div>
-            <div className='col-md-12' style={{}}>
-              <div className='text-medium col-md-12'
+            <div className="col-md-12" style={{}}>
+              <div
+                className="text-medium col-md-12"
                 style={{display: 'flex', justifyContent: 'center'}}
-                >
+              >
                 <span>OR</span>
               </div>
-              <div className='col-md-6 center-col'>
+              <div className="col-md-6 center-col">
                 <input
-                    type="file"
-                    name="upload"
-                    id="upload_csv"
-                    onChange={this.setFileName.bind(this)}
-                    style={styles.inputFileHidden}
+                  type="file"
+                  name="upload"
+                  id="upload_csv"
+                  onChange={this.setFileName.bind(this)}
+                  style={styles.inputFileHidden}
                 />
-                <div className='btn'
-                    style={{...styles.draftButton,}}
-                    onClick={() => {document.getElementById('upload_csv').click();}}
+                <div
+                  className="btn"
+                  style={{...styles.draftButton}}
+                  onClick={() => {
+                    document.getElementById('upload_csv').click();
+                  }}
                 >
-                    <span>Upload invitee email list in CSV file</span>
+                  <span>Upload invitee email list in CSV file</span>
                 </div>
               </div>
             </div>
             {/*Confirmation email*/}
-            <div className='col-md-12' style={{paddingTop: 25, paddingBottom: 25,}}>
+            <div
+              className="col-md-12"
+              style={{paddingTop: 25, paddingBottom: 25}}
+            >
               <div>
-                <span style={styles.titleText}>
-                  Invitation Message
-                </span>
+                <span style={styles.titleText}>Invitation Message</span>
                 <Editor
-                  editorState = {this.state.invitation}
+                  editorState={this.state.invitation}
                   editorStyle={styles.editorStyle}
                   wrapperStyle={styles.wrapperStyle}
                   onEditorStateChange={this.onInvitationStateChange.bind(this)}
                 />
               </div>
             </div>
-        </Dialog>
+          </Dialog>
         </MuiThemeProvider>
       </div>
-    )
+    );
   }
 }
 
@@ -282,7 +351,7 @@ const styles = {
     top: '0px',
     left: '0px',
     zIndex: '9998',
-    background: 'rgba(0, 0, 0, 0.3)'
+    background: 'rgba(0, 0, 0, 0.3)',
   },
   modal: {
     position: 'absolute',
@@ -292,20 +361,20 @@ const styles = {
     height: '60%',
     transform: 'translate(-50%, -50%)',
     zIndex: '9999',
-    background: '#fff'
+    background: '#fff',
   },
-  successText:{
+  successText: {
     height: '50%',
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   successButtonWrap: {
     height: 50,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   titleText: {
     marginTop: 30,
@@ -335,19 +404,17 @@ const styles = {
     // padding: '10px 10px',
     fontSize: 16,
     borderRadius: 4,
-
   },
-    inputFileHidden: {
-        position: 'absolute',
-        display: 'block',
-        overflow: 'hidden',
-        width: 0,
-        height: 0,
-        border: 0,
-        padding: 0,
-    },
-  buttonsWrap: {
+  inputFileHidden: {
+    position: 'absolute',
+    display: 'block',
+    overflow: 'hidden',
+    width: 0,
+    height: 0,
+    border: 0,
+    padding: 0,
   },
+  buttonsWrap: {},
   button: {
     height: 35,
     display: 'inline-block',
@@ -373,28 +440,27 @@ const styles = {
   submitButton: {
     backgroundColor: Colors.mainOrange,
     color: Colors.mainWhite,
-    borderColor: Colors.mainOrange
+    borderColor: Colors.mainOrange,
   },
-    draftButton: {
-        // backgroundColor: Colors.link,
-        color: Colors.fontBlack,
-        borderColor: Colors.fontBlack,
-        borderWidth: 1.5,
-        borderStyle: 'solid',
-        fontSize: 16,
-        height: '40px',
-        lineHeight: '40px',
-        borderRadius: 10,
-        marginTop: 15,
-        marginRight: 'auto',
-        marginBottom: 20,
-        marginLeft: 'auto',
-        // textAlign: 'center',
-        paddingTop: 5,
+  draftButton: {
+    // backgroundColor: Colors.link,
+    color: Colors.fontBlack,
+    borderColor: Colors.fontBlack,
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    fontSize: 16,
+    height: '40px',
+    lineHeight: '40px',
+    borderRadius: 10,
+    marginTop: 15,
+    marginRight: 'auto',
+    marginBottom: 20,
+    marginLeft: 'auto',
+    // textAlign: 'center',
+    paddingTop: 5,
     cursor: 'pointer',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-}
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+};

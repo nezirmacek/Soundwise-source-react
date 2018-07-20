@@ -1,28 +1,32 @@
-import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import {Helmet} from "react-helmet"
-import firebase from 'firebase'
-import { withRouter } from 'react-router'
-import { Redirect } from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import React, {Component} from 'react';
+import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {Helmet} from 'react-helmet';
+import firebase from 'firebase';
+import {withRouter} from 'react-router';
+import {Redirect} from 'react-router-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import { CourseHeader } from '../components/course_header'
-import { CourseHeaderPurchased } from '../components/course_header_purchased'
-import Footer from '../components/footer'
+import {CourseHeader} from '../components/course_header';
+import {CourseHeaderPurchased} from '../components/course_header_purchased';
+import Footer from '../components/footer';
 
-import { CourseBody } from '../containers/course_body'
-import { CourseFooter } from '../components/course_footer'
-import SocialShare from '../components/socialshare'
-import { SoundwiseHeader } from '../components/soundwise_header'
-import {CourseSignup} from './course_signup'
-import {setCurrentPlaylist, setCurrentCourse, loadCourses} from '../actions/index'
+import {CourseBody} from '../containers/course_body';
+import {CourseFooter} from '../components/course_footer';
+import SocialShare from '../components/socialshare';
+import {SoundwiseHeader} from '../components/soundwise_header';
+import {CourseSignup} from './course_signup';
+import {
+  setCurrentPlaylist,
+  setCurrentCourse,
+  loadCourses,
+} from '../actions/index';
 
 class _Staged_Course extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       course: {
         runtime: '',
@@ -31,26 +35,26 @@ class _Staged_Course extends Component {
         description: '',
         modules: [
           {
-            sections: []
-          }
-        ]
+            sections: [],
+          },
+        ],
       },
       userCourses: {},
-        cardHeight: 0,
-    }
+      cardHeight: 0,
+    };
   }
 
   componentDidMount() {
-    const that = this
+    const that = this;
 
-
-      firebase.database().ref('staging/' + this.props.match.params.courseId)
-        .on('value', snapshot => {
-          that.setState({
-            course: snapshot.val()
-          })
-        })
-
+    firebase
+      .database()
+      .ref('staging/' + this.props.match.params.courseId)
+      .on('value', snapshot => {
+        that.setState({
+          course: snapshot.val(),
+        });
+      });
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -88,11 +92,11 @@ class _Staged_Course extends Component {
   //   }
   // }
 
-    setMaxCardHeight (height) {
-      if (height > this.state.cardHeight) {
-        this.setState({ cardHeight: height });
-      }
-    };
+  setMaxCardHeight(height) {
+    if (height > this.state.cardHeight) {
+      this.setState({cardHeight: height});
+    }
+  }
 
   render() {
     // const course = this.props.courses[this.props.match.params.courseId]
@@ -108,44 +112,60 @@ class _Staged_Course extends Component {
       <div>
         <Helmet>
           <title>{`${_course.name} | Soundwise`}</title>
-          <meta property="og:url" content={`https://mysoundwise.com/staging/${_course.id}`} />
-          <meta property="fb:app_id" content='1726664310980105' />
-          <meta property="og:title" content={_course.name}/>
-          <meta property="og:description" content={_course.description}/>
+          <meta
+            property="og:url"
+            content={`https://mysoundwise.com/staging/${_course.id}`}
+          />
+          <meta property="fb:app_id" content="1726664310980105" />
+          <meta property="og:title" content={_course.name} />
+          <meta property="og:description" content={_course.description} />
           <meta property="og:image" content={_course.img_url_mobile} />
           <meta name="description" content={_course.description} />
           <meta name="keywords" content={_course.keywords} />
         </Helmet>
         <SoundwiseHeader />
-        <CourseHeader course={_course}/>
+        <CourseHeader course={_course} />
 
-        <MuiThemeProvider >
-          <CourseBody  course={_course} relatedCourses={_relatedCourses} cb={this.setMaxCardHeight.bind(this)}/>
+        <MuiThemeProvider>
+          <CourseBody
+            course={_course}
+            relatedCourses={_relatedCourses}
+            cb={this.setMaxCardHeight.bind(this)}
+          />
         </MuiThemeProvider>
         <CourseFooter course={_course} />
         <Footer />
       </div>
-    )
+    );
   }
 }
 
-        // <SocialShare />
+// <SocialShare />
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse, loadCourses }, dispatch)
+  return bindActionCreators(
+    {setCurrentPlaylist, setCurrentCourse, loadCourses},
+    dispatch
+  );
 }
 
 const mapStateToProps = state => {
-  const { userInfo, isLoggedIn } = state.user
-  const { courses, currentPlaylist, currentCourse } = state.setCourses
+  const {userInfo, isLoggedIn} = state.user;
+  const {courses, currentPlaylist, currentCourse} = state.setCourses;
   return {
-    userInfo, isLoggedIn, courses, currentPlaylist, currentCourse
-  }
-}
+    userInfo,
+    isLoggedIn,
+    courses,
+    currentPlaylist,
+    currentCourse,
+  };
+};
 
 // export const Course = connect(mapStateToProps, mapDispatchToProps)(_Course)
 
-const Staged_Course_worouter = connect(mapStateToProps, mapDispatchToProps)(_Staged_Course)
+const Staged_Course_worouter = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(_Staged_Course);
 
-export const Staged_Course = withRouter(Staged_Course_worouter)
-
+export const Staged_Course = withRouter(Staged_Course_worouter);

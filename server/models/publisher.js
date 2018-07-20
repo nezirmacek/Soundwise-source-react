@@ -1,5 +1,3 @@
 'use strict';
 
-module.exports = function(Publisher) {
-
-};
+module.exports = function(Publisher) {};

@@ -158,7 +158,6 @@
 //                         })
 //                         .catch(err => console.log('Payouts creation error: ', err));
 
-
 //                     // paypal.payout.create(payoutsObj, function (error, payout) {
 //                     //     if (error) {
 //                     //         console.log(error.response);

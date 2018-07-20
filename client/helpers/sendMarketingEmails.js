@@ -1,6 +1,14 @@
 import Axios from 'axios';
 
-export function sendMarketingEmails (listIds, subject, content, publisherName, publisherImage, publisherEmail, unsubscribeGroup) {
+export function sendMarketingEmails(
+  listIds,
+  subject,
+  content,
+  publisherName,
+  publisherImage,
+  publisherEmail,
+  unsubscribeGroup
+) {
   return Axios.post('/api/send_marketing_emails', {
     listIds,
     subject,
