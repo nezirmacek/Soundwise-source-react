@@ -6,27 +6,14 @@
 // step 6: write payout data into Payouts table when a batch payout succeeds; send an email to alert administrator if a batch payout fails.
 
 'use strict';
-var schedule = require('node-schedule');
-var moment = require('moment');
-var paypal = require('paypal-rest-sdk');
-var firebase = require('firebase-admin');
-const sendinblue = require('sendinblue-api');
+const schedule = require('node-schedule');
+const firebase = require('firebase-admin');
+const moment = require('moment');
 const database = require('../../database/index');
-const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
-
-const parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
-const sendinObj = new sendinblue(parameters);
-var paypalConfig = require('../../config').paypalConfig;
-
-var stripeFeeFixed = 0.3;
-var stripeFeePercent = 0.029;
-var soundwiseFeePercent = 0;
 
 module.exports = function(app) {
-  paypal.configure(paypalConfig);
-
   var rankSoundcasts = schedule.scheduleJob('* * 1 * * 1', function() {
-    const currentDate = Date.now();
+    const currentDate = moment().format('X');
     let soundcastsListens = [];
     let maxListnes = 0;
     database.Soundcast.findAll().then(soundcasts => {
@@ -56,24 +43,29 @@ module.exports = function(app) {
   });
 
   var detectSubscriptionsExpiration = schedule.scheduleJob('* * 23 * * *', function() {
-    console.log('job2');
-    const currentDate = Date.now();
-    let users = [];
-    firebase.database().ref('users').once('value').then(snapshots => {
-      snapshots.forEach(snapshot => {
-        if (snapshot) {
-          const user =  Object.assign({id: snapshot.key}, snapshot.val());
-          if (user.soundcasts) {
-            Object.keys(user.soundcasts).forEach(key => {
-              const soundcast = user.soundcasts[key];
-              if (soundcast.current_period_end < currentDate && soundcast.billingCycle !== 'free') {
-                if (soundcast.billingCycle && soundcast.subscribed) {
-                  firebase.database().ref(`users/${user.id}/soundcasts/${key}/subscribed`).set(false);
-                  firebase.database().ref(`soundcasts/${key}/subscribed/${user.id}`).remove();
+    const usersRef = firebase.database().ref('/users');
+    let currentDate = moment().format('X');
+    firebase.database().ref('/users').once('value', snapshotArray => {
+      snapshotArray.forEach(snapshot => {
+        const userId = snapshot.key;
+        const tokenId = snapshot.val().token ? snapshot.val().token[0] : null;
+        const soundcasts = snapshot.val().soundcasts;
+        if (userId != 'undefined' && soundcasts) {
+          Object.keys(soundcasts).forEach(key => {
+            if (key != 'undefined') {
+              const soundcast = soundcasts[key];
+              if (Number(soundcast.current_period_end) < currentDate && soundcast.subscribed) {
+                if (soundcast.billingCicle != 'free') {
+                  firebase.database().ref(`users/${userId}/soundcasts/${key}/subscribed`).set(true);
+                  if (tokenId) {
+                    firebase.database().ref(`soundcasts/${key}/subscribed/${userId}`).set({'0': tokenId});
+                  } else {
+                    firebase.database().ref(`soundcasts/${key}/subscribed/${userId}`).set(soundcast.date_subscribed);
+                  }
                 }
               }
-            });
-          }
+            }
+          });
         }
       });
     });
