@@ -1052,7 +1052,7 @@ export default class EditSoundcast extends Component {
                           </span>
                           <select
                             type="text"
-                            style={styles.inputTitle}
+                            style={{...styles.inputTitle, paddingTop: 6}}
                             name="billingCycle"
                             onChange={this.handlePriceInputs.bind(this, i)}
                             value={prices[i].billingCycle}

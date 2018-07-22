@@ -938,7 +938,7 @@ export default class AddSoundcast extends Component {
                           <span>Billing</span>
                           <select
                             type="text"
-                            style={styles.inputTitle}
+                            style={{...styles.inputTitle, paddingTop: 6}}
                             name="billingCycle"
                             onChange={this.handlePriceInputs.bind(this, i)}
                             value={prices[i].billingCycle}
