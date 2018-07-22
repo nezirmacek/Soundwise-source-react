@@ -1088,6 +1088,9 @@ export default class AddSoundcast extends Component {
 
   handlePriceInputs(i, e) {
     let prices = [...this.state.prices];
+    if (e.target.name === 'billingCycle') {
+      prices[i].coupons.forEach(i => i.couponType = 'discount');
+    }
     prices[i][e.target.name] = e.target.value;
     this.setState({
       prices,
