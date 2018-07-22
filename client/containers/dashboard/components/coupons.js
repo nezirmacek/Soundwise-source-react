@@ -23,10 +23,17 @@ export default class Coupons extends Component {
               marginTop: 10,
               marginBottom: 15,
               display: 'flex',
+              flexFlow: 'row wrap',
               alignItems: 'center',
             }}
           >
-            <div style={{marginRight: 10}}>
+            <div
+              style={{
+                marginRight: 10,
+                width: 200,
+                minWidth: 200,
+              }}
+            >
               <span>Coupon Code</span>
               <div>
                 <input
@@ -41,6 +48,46 @@ export default class Coupons extends Component {
                 />
               </div>
             </div>
+            <div
+              style={{
+                marginRight: 10,
+                width: 160,
+                minWidth: 160,
+              }}
+            >
+              <span>Coupon Type</span>
+              <div>
+                <select
+                  type="text"
+                  style={{...styles.inputTitle, paddingTop: 6}}
+                  name="couponType"
+                  onChange={e => {
+                    prices[i].coupons[j].couponType = e.target.value;
+                    setState({prices});
+                  }}
+                  value={price.coupons[j].couponType}
+                >
+                  <option value="discount">Discount</option>
+                  <option value="trial_period">Trial Period</option>
+                </select>
+              </div>
+            </div>
+            <div style={{marginTop: 30}}>
+              <span
+                style={{
+                  marginLeft: 5,
+                  cursor: 'pointer',
+                  fontSize: 20,
+                }}
+                onClick={() => {
+                  prices[i].coupons.splice(j, 1);
+                  setState({prices});
+                }}
+              >
+                <i className="fa fa-times " aria-hidden="true" />
+              </span>
+            </div>
+            <div style={{width: '100%', height: 10 /* break line */}} />
             <div
               style={{
                 marginRight: 13,
@@ -88,12 +135,15 @@ export default class Coupons extends Component {
               style={{
                 marginRight: 10,
                 height: 67,
-                width: 165,
-                minWidth: 165,
+                width: 195,
+                minWidth: 195,
               }}
             >
               <span>Expires on</span>
-              <div style={{minWidth: 145, marginTop: 8}}>
+              <div
+                className="dateTimeInput"
+                style={{minWidth: 145, marginTop: 5}}
+              >
                 <Datetime
                   value={moment.unix(coupon.expiration)}
                   onChange={date => {
@@ -124,21 +174,6 @@ export default class Coupons extends Component {
                 </a>
               </div>
             )}
-            <div style={{marginTop: 30}}>
-              <span
-                style={{
-                  marginLeft: 5,
-                  cursor: 'pointer',
-                  fontSize: 20,
-                }}
-                onClick={() => {
-                  prices[i].coupons.splice(j, 1);
-                  setState({prices});
-                }}
-              >
-                <i className="fa fa-times " aria-hidden="true" />
-              </span>
-            </div>
           </div>
         )) // coupons.map
         }
