@@ -12,6 +12,8 @@ export default class Coupons extends Component {
   render() {
     const i = this.props.priceIndex;
     const {price, prices, setState, soundcastId} = this.props;
+
+    const isSubscription = !['one time', 'rental'].includes(price.billingCycle);
     return (
       <div>
         {price.coupons.map((coupon, j) => (
@@ -68,7 +70,9 @@ export default class Coupons extends Component {
                   value={price.coupons[j].couponType}
                 >
                   <option value="discount">Discount</option>
-                  <option value="trial_period">Trial Period</option>
+                  {isSubscription && (
+                    <option value="trial_period">Trial Period</option>
+                  )}
                 </select>
               </div>
             </div>
@@ -88,49 +92,79 @@ export default class Coupons extends Component {
               </span>
             </div>
             <div style={{width: '100%', height: 10 /* break line */}} />
-            <div
-              style={{
-                marginRight: 13,
-                width: 110,
-                minWidth: 110,
-              }}
-            >
-              <span>Discount Percent</span>
-              <div>
-                <input
-                  type="text"
-                  style={{...styles.inputTitle, width: '50%'}}
-                  name="discountPercent"
-                  onChange={e => {
-                    prices[i].coupons[j].percentOff = e.target.value;
-                    setState({prices});
-                  }}
-                  value={price.coupons[j].percentOff}
-                />
-                <span style={{fontSize: 18}}>{` % off`}</span>
-              </div>
-            </div>
-            <div
-              style={{
-                marginRight: 13,
-                height: 67,
-                width: 125,
-                minWidth: 125,
-              }}
-            >
-              <span>Price After Discount</span>
+            {(!coupon.couponType || coupon.couponType === 'discount') && (
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginTop: 14,
+                  marginRight: 13,
+                  marginLeft: 13,
+                  width: 110,
+                  minWidth: 110,
                 }}
               >
-                <span style={{fontSize: 20}}>{`$${Math.round(
-                  (price.price * (100 - price.coupons[j].percentOff)) / 100
-                ).toFixed(2)}`}</span>
+                <span>Discount Percent</span>
+                <div>
+                  <input
+                    type="text"
+                    style={{...styles.inputTitle, width: '50%'}}
+                    name="discountPercent"
+                    onChange={e => {
+                      prices[i].coupons[j].percentOff = e.target.value;
+                      setState({prices});
+                    }}
+                    value={price.coupons[j].percentOff}
+                  />
+                  <span style={{fontSize: 18}}>{` % off`}</span>
+                </div>
               </div>
-            </div>
+            )}
+            {(!coupon.couponType || coupon.couponType === 'discount') && (
+              <div
+                style={{
+                  marginRight: 13,
+                  height: 67,
+                  width: 125,
+                  minWidth: 125,
+                }}
+              >
+                <span>Price After Discount</span>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginTop: 14,
+                  }}
+                >
+                  <span style={{fontSize: 20}}>{`$${Math.round(
+                    (price.price * (100 - price.coupons[j].percentOff)) / 100
+                  ).toFixed(2)}`}</span>
+                </div>
+              </div>
+            )}
+            {coupon.couponType === 'trial_period' && (
+              <div
+                style={{
+                  marginRight: 13,
+                  marginLeft: 13,
+                  width: 110,
+                  minWidth: 110,
+                }}
+              >
+                <span>Trial length</span>
+                <div>
+                  <input
+                    type="text"
+                    style={{...styles.inputTitle, width: '50%'}}
+                    name="trialLength"
+                    onChange={e => {
+                      prices[i].coupons[j].trialLength = e.target.value;
+                      setState({prices});
+                    }}
+                    value={price.coupons[j].trialLength || 0}
+                  />
+                  <span style={{fontSize: 18}}>{` Days`}</span>
+                </div>
+              </div>
+            )}
             <div
               style={{
                 marginRight: 10,
