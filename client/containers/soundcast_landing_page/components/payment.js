@@ -367,6 +367,7 @@ class _Payment extends Component {
       soundcastID,
       handleStripeId,
       coupon,
+      isTrial,
     } = this.props;
     const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
     const that = this;
@@ -447,6 +448,7 @@ class _Payment extends Component {
                 planID,
                 publisherID: soundcast.publisherID,
                 coupon,
+                isTrial,
               })
                 .then(response => {
                   console.log('recurring_charge response: ', response);
