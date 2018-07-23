@@ -937,7 +937,7 @@ export default class AddSoundcast extends Component {
                           <span>Billing</span>
                           <select
                             type="text"
-                            style={styles.inputTitle}
+                            style={{...styles.inputTitle, paddingTop: 6}}
                             name="billingCycle"
                             onChange={this.handlePriceInputs.bind(this, i)}
                             value={prices[i].billingCycle}
@@ -1087,6 +1087,9 @@ export default class AddSoundcast extends Component {
 
   handlePriceInputs(i, e) {
     let prices = [...this.state.prices];
+    if (e.target.name === 'billingCycle') {
+      prices[i].coupons.forEach(i => i.couponType = 'discount');
+    }
     prices[i][e.target.name] = e.target.value;
     this.setState({
       prices,
