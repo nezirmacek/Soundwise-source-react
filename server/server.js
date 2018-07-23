@@ -189,6 +189,7 @@ app.post('/api/send_marketing_emails', Emails.sendMarketingEmails);
 app.post('/api/delete_emails', Emails.deleteFromEmailList);
 app.post('/api/add_emails', Emails.addToEmailList);
 
+app.get('/api/test_request', (req, res) => res.end('Test Request'));
 app.post('/api/send_notification', sendNotification);
 app.post('/api/subscription_renewal', renewSubscription);
 app.post('/api/cancel_plan', cancelSubscription);
