@@ -120,6 +120,7 @@ class _SoundcastPage extends Component {
       originalPrice,
       couponPrice,
       displayedPrice = 'Free',
+      trialLength,
       pre = '',
       post = '';
     if (this.state.coupon) {
@@ -133,9 +134,16 @@ class _SoundcastPage extends Component {
             ) {
               expiration = coupon.expiration; // set coupon's expiration value
               originalPrice = price.price;
-              couponPrice = Math.round(
-                (Number(price.price) * (100 - Number(coupon.percentOff))) / 100
-              );
+              if (coupon.couponType === 'trial_period') {
+                trialLength = coupon.trialLength;
+                couponPrice;
+              } else {
+                // discount coupon type (default)
+                couponPrice = Math.round(
+                  (Number(price.price) * (100 - Number(coupon.percentOff))) /
+                    100
+                );
+              }
               return true;
             }
           })
@@ -149,7 +157,7 @@ class _SoundcastPage extends Component {
       price = soundcast.prices[0];
     }
     if (soundcast.forSale) {
-      if (!couponPrice && soundcast.prices.length > 1) {
+      if (!couponPrice && !trialLength && soundcast.prices.length > 1) {
         pre = 'From ';
       }
       displayedPrice = `$${Number(couponPrice || price.price || 0).toFixed(2)}`;
@@ -167,6 +175,10 @@ class _SoundcastPage extends Component {
           post = `${slashSign} year`;
           break;
       }
+    }
+    if (trialLength) {
+      displayedPrice = `${trialLength} days free trial`;
+      post = ``;
     }
     return {checkedPrice, expiration, originalPrice, displayedPrice, pre, post};
   }
