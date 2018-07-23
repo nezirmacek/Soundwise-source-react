@@ -70,9 +70,10 @@ class _Payment extends Component {
       ) {
         return; // ignore if soundcast not free and have coupons
       }
-      if (isFree) {
+      if (isFree && !props.isTrial) {
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
+        // - prevent audocheckout if trial coupon used
         this.addSoundcastToUser(
           null,
           props.userInfo,

@@ -141,8 +141,11 @@ module.exports.createUpdatePlans = async (req, res) => {
                   coupon =>
                     new Promise(resolve2 => {
                       stripe.coupons.del(coupon.code, {stripe_account}, () => {
-                        if (coupon.expiration - 10 < Date.now() / 1000) {
-                          // outdated
+                        if (
+                          coupon.couponType === 'trial_period' ||
+                          coupon.expiration - 10 < Date.now() / 1000
+                        ) {
+                          // trial period or outdated
                           resolve2();
                         } else {
                           stripe.coupons.create(
