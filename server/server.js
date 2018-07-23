@@ -63,7 +63,7 @@ Raven.config(
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
+  databaseURL: 'https://soundwise-testbase.firebaseio.com',
 });
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
 var transferLikes = require('./bin/firebase-listeners.js').transferLikes;

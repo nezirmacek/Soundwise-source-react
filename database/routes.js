@@ -6,11 +6,37 @@ const soundcastService = require('../server/services').soundcastService;
 module.exports = app => {
   app.post('/api/user', (req, res) => {
     database.User.findOrCreate({
-      where: {userId: req.body.userId},
+      where: {
+        userId: req.body.userId,
+      },
       defaults: req.body,
     })
       .then(data => {
         console.log('data: ', data);
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+
+  app.post('/api/coupon', (req, res) => {
+    database.Coupon.create(req.body)
+      .then(data => {
+        console.log('data: ', data);
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+
+  app.get('/api/coupon', (req, res) => {
+    const publisherId = JSON.parse(req.query.filter).publisherId;
+    database.Coupon.findAll({
+      where: {publisherId: publisherId},
+    })
+      .then(data => {
         res.send(data);
       })
       .catch(err => {
