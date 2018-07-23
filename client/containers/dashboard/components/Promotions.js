@@ -18,61 +18,28 @@ import {
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 
-export default class Payouts extends Component {
+export default class Promotions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      payouts: [
-        {
-          createdAt: '',
-          amount: 0,
-        },
-      ],
+      coupons: [],
     };
   }
 
   componentDidMount() {
     if (this.props.userInfo.publisher) {
-      this.retrievePayouts(this.props.userInfo.publisher.id);
+      const publisherId = this.props.userInfo.publisher.id;
+      this.retrieveCoupons(publisherId);
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.userInfo.publisher &&
-      nextProps.userInfo.publisher !== this.props.userInfo.publisher
-    ) {
-      this.retrievePayouts(nextProps.userInfo.publisher.id);
-    }
-  }
-
-  retrievePayouts(publisherId) {
-    const that = this;
-    const filter = {
-      params: {
-        filter: {
-          where: {
-            publisherId,
-            // date: {
-            //     lte: moment().format('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]'),
-            // },
-          },
-        },
-      },
-    };
-
-    Axios.get('https://mysoundwise.com/api/payouts', filter)
+  retrieveCoupons(publisherId) {
+    Axios.get('/api/coupon', {params: {filter: {publisherId: publisherId}}})
       .then(res => {
-        const payouts = res.data;
-        payouts.sort((a, b) => {
-          return b.createdAt - a.createdAt;
-        });
-        that.setState({
-          payouts,
-        });
+        this.setState({coupons: res.data});
       })
       .catch(err => {
-        console.log('error retrieving payouts: ', err);
+        console.log('error retrieving: ', err);
       });
   }
 
@@ -102,10 +69,15 @@ export default class Payouts extends Component {
               <span style={{fontSize: 15, fontWeight: 600}}>Transactions</span>
             </Link>
           </li>
+          <li role="presentation">
+            <Link to="/dashboard/publisher/payouts">
+              <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
+            </Link>
+          </li>
           <li role="presentation" className="active">
             <Link
               style={{backgroundColor: 'transparent'}}
-              to="/dashboard/publisher/payouts"
+              to="/dashboard/publisher/promotions"
             >
               <span
                 style={{
@@ -114,13 +86,8 @@ export default class Payouts extends Component {
                   color: Colors.mainOrange,
                 }}
               >
-                Payouts
+                Promotions
               </span>
-            </Link>
-          </li>
-          <li role="presentation">
-            <Link to="/dashboard/publisher/coupons">
-              <span style={{fontSize: 15, fontWeight: 600}}>Coupons</span>
             </Link>
           </li>
           <li role="presentation">
@@ -129,7 +96,7 @@ export default class Payouts extends Component {
             </Link>
           </li>
         </ul>
-        {(this.state.payouts.length > 0 && (
+        {(this.state.coupons.length > 0 && (
           <row>
             <div
               className="col-md-12 col-sm-12 col-xs-12 table-responsive"
@@ -139,18 +106,23 @@ export default class Payouts extends Component {
                 <thead>
                   <tr style={styles.tr}>
                     <th style={{...styles.th}}>DATE</th>
-                    <th style={{...styles.th}}>AMOUNT</th>
+                    <th style={{...styles.th}}>COUPON CODE</th>
+                    <th style={{...styles.th}}>SOUNDCAST TITLE</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.payouts.map((payout, i) => {
+                  {this.state.coupons.map((coupon, i) => {
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{...styles.td}}>
-                          {payout.createdAt.slice(0, 10)}
+                          {moment()
+                            .millisecond(Number('1532289881'))
+                            .format('YYYY-MM-DD')}
                         </td>
-                        <td style={{...styles.td}}>{`$${payout.amount /
-                          100}`}</td>
+                        <td style={{...styles.td}}>{coupon.coupon}</td>
+                        <td style={{...styles.td}}>{`${
+                          coupon.soundcastTitle
+                        }`}</td>
                       </tr>
                     );
                   })}
