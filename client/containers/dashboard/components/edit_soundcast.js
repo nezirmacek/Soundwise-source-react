@@ -1153,13 +1153,13 @@ export default class EditSoundcast extends Component {
                               if (!prices[i].coupons) {
                                 prices[i].coupons = [];
                               }
-                              const expiration = moment()
-                                .add(3, 'months')
-                                .unix();
                               prices[i].coupons.push({
                                 code: '',
                                 percentOff: 0,
-                                expiration,
+                                couponType: 'discount',
+                                expiration: moment()
+                                  .add(3, 'months')
+                                  .unix(),
                               });
                               that.setState({prices});
                             }}
@@ -1305,7 +1305,7 @@ export default class EditSoundcast extends Component {
   handlePriceInputs(i, e) {
     let prices = [...this.state.prices];
     if (e.target.name === 'billingCycle' && prices[i].coupons) {
-      prices[i].coupons.forEach(i => i.couponType = 'discount');
+      prices[i].coupons.forEach(i => (i.couponType = 'discount'));
     }
     prices[i][e.target.name] = e.target.value;
     this.setState({

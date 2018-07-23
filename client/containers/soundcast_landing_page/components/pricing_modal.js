@@ -194,9 +194,10 @@ class _PricingModal extends Component {
                           )) || (
                             <div style={styles.price}>
                               USD{' '}
-                              {(originalPrice && (
-                                <s style={{color: 'red'}}>${originalPrice}</s>
-                              )) ||
+                              {(originalPrice &&
+                                !isNaN(originalPrice) && (
+                                  <s style={{color: 'red'}}>${originalPrice}</s>
+                                )) ||
                                 null}
                               {`$${currentPrice}`}
                             </div>
