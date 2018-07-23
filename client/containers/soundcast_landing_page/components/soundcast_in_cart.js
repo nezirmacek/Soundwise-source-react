@@ -45,7 +45,7 @@ export default class SoundcastInCart extends Component {
       const index = validPromoCodes.indexOf(promoCode);
       const coupon = soundcast.prices[checked].coupons[index];
       if (moment().format('X') < coupon.expiration) {
-        const isTrial = coupon.couponType === 'trial_period';
+        const isTrial = coupon.couponType === 'trial_period' ? coupon.trialLength.toString() : false;
         const total = isTrial
           ? 0
           : Math.round(
