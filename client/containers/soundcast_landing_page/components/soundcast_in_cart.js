@@ -32,6 +32,7 @@ export default class SoundcastInCart extends Component {
 
   applyPromoCode() {
     this.setState({
+      promoCodeInfo: '',
       promoCodeError: '',
       promoApplied: false,
     });
@@ -42,17 +43,24 @@ export default class SoundcastInCart extends Component {
     );
     if (validPromoCodes.indexOf(promoCode) > -1) {
       const index = validPromoCodes.indexOf(promoCode);
-      if (
-        moment().format('X') <
-        soundcast.prices[checked].coupons[index].expiration
-      ) {
-        const total = Math.round(
-          (price *
-            (100 - soundcast.prices[checked].coupons[index].percentOff)) /
-            100
-        ).toFixed(2);
-        this.setState({price: total, promoApplied: true});
-        setTotalPrice(total, promoCode);
+      const coupon = soundcast.prices[checked].coupons[index];
+      if (moment().format('X') < coupon.expiration) {
+        const isTrial = coupon.couponType === 'trial_period';
+        const total = isTrial
+          ? 0
+          : Math.round(
+              (price *
+                (100 - coupon.percentOff)) /
+                100
+            ).toFixed(2);
+        this.setState({
+          price: total,
+          promoApplied: true,
+          promoCodeInfo: isTrial
+            ? `* ${coupon.trialLength} day trial period`
+            : `* ${coupon.percentOff} percent discount`,
+        });
+        setTotalPrice(total, promoCode, isTrial);
       } else {
         this.setState({promoCodeError: 'This promo code has expired.'});
       }
@@ -158,6 +166,7 @@ export default class SoundcastInCart extends Component {
                     Apply
                   </button>
                 )}
+                <div style={{fontStyle: 'italic'}}>{this.state.promoCodeInfo}</div>
                 <div style={{color: 'red'}}>{this.state.promoCodeError}</div>
               </div>
             )}
