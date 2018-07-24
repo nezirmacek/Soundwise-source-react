@@ -119,8 +119,8 @@ export default class Payouts extends Component {
             </Link>
           </li>
           <li role="presentation">
-            <Link to="/dashboard/publisher/coupons">
-              <span style={{fontSize: 15, fontWeight: 600}}>Coupons</span>
+            <Link to="/dashboard/publisher/promotions">
+              <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
             </Link>
           </li>
           <li role="presentation">

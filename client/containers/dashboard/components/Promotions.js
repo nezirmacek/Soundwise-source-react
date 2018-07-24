@@ -1,22 +1,8 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
-import firebase from 'firebase';
 import {Link} from 'react-router-dom';
-
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
-
-import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
-import {
-  OrangeSubmitButton,
-  TransparentShortSubmitButton,
-} from '../../../components/buttons/buttons';
 
 export default class Promotions extends Component {
   constructor(props) {
@@ -112,11 +98,12 @@ export default class Promotions extends Component {
                 </thead>
                 <tbody>
                   {this.state.coupons.map((coupon, i) => {
+                    console.log(Number(coupon.timeStamp));
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{...styles.td}}>
-                          {moment()
-                            .millisecond(Number('1532289881'))
+                          {moment
+                            .unix(Number(coupon.timeStamp))
                             .format('YYYY-MM-DD')}
                         </td>
                         <td style={{...styles.td}}>{coupon.coupon}</td>
@@ -142,7 +129,7 @@ export default class Promotions extends Component {
                   backgroundColor: Colors.mainWhite,
                 }}
               >
-                <span>There're no payouts to show.</span>
+                <span>There're no cupons to show.</span>
               </div>
             </div>
           </row>
@@ -153,32 +140,6 @@ export default class Promotions extends Component {
 }
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
-  inputDescription: {
-    height: 80,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginTop: 10,
-    marginBottom: 20,
-  },
   tableWrapper: {
     marginTop: 25,
     backgroundColor: Colors.mainWhite,
@@ -194,7 +155,6 @@ const styles = {
   th: {
     fontSize: 16,
     color: Colors.fontGrey,
-    // height: 35,
     fontWeight: 'regular',
     verticalAlign: 'middle',
     wordWrap: 'break-word',
@@ -202,7 +162,6 @@ const styles = {
   td: {
     color: Colors.softBlack,
     fontSize: 16,
-    // height: 40,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     verticalAlign: 'middle',
