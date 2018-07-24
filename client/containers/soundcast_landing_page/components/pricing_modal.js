@@ -49,9 +49,11 @@ class _PricingModal extends Component {
             coupon.expiration > Date.now() / 1000 // in future
           ) {
             const price =
-              (Number(prices[checked].price) *
-                (100 - Number(coupon.percentOff))) /
-              100;
+              coupon.couponType === 'trial_period'
+                ? 0
+                : (Number(prices[checked].price) *
+                    (100 - Number(coupon.percentOff))) /
+                  100;
             sumTotal = `Total today: $${Number(Math.round(price)).toFixed(2)}`;
             return true;
           }
@@ -194,9 +196,10 @@ class _PricingModal extends Component {
                           )) || (
                             <div style={styles.price}>
                               USD{' '}
-                              {(originalPrice && (
-                                <s style={{color: 'red'}}>${originalPrice}</s>
-                              )) ||
+                              {(originalPrice &&
+                                !isNaN(originalPrice) && (
+                                  <s style={{color: 'red'}}>${originalPrice}</s>
+                                )) ||
                                 null}
                               {`$${currentPrice}`}
                             </div>

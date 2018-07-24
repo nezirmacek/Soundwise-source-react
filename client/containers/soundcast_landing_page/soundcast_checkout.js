@@ -125,9 +125,9 @@ class _SoundcastCheckout extends Component {
     }
   }
 
-  setTotalPrice(totalPrice, coupon) {
-    this.setState({totalPrice, coupon});
-    if (Number(totalPrice) === 0) {
+  setTotalPrice(totalPrice, coupon, isTrial) {
+    this.setState({totalPrice, coupon, isTrial});
+    if (Number(totalPrice) === 0 && !isTrial) {
       const {userInfo} = this.props;
       if (userInfo && userInfo.email) {
         // logged in
@@ -300,6 +300,7 @@ class _SoundcastCheckout extends Component {
       checked,
       sumTotal,
       totalPrice,
+      isTrial,
       message,
       coupon,
       hideCardInputs,
@@ -463,6 +464,7 @@ class _SoundcastCheckout extends Component {
             soundcastID={soundcastID}
             checked={checked}
             totalPrice={totalPrice}
+            isTrial={isTrial}
             userInfo={userInfo}
             sumTotal={sumTotal}
             history={history}
