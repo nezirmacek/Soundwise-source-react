@@ -96,12 +96,6 @@ NODE_ENV=dev node --inspect server/server.js
 NODE_ENV=dev npm run-script start
 ```
 
-### Compile JSX
-
-```
-npm run-script build
-```
-
 ### Start loppback api
 
 ```
@@ -143,9 +137,9 @@ node .
 
 # Server update:
 
-Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*
-Run:  
->npm run-script build
+Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*  
+Run webpack bundle compiler:  
+>npm run-script build  
 >git push live --force
 
 *you can check git configuration with *"git remote -v"* command,  
@@ -154,8 +148,11 @@ to add live remote run:
 
 additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
 
-copy uglified bundle.js/bundle.js.map files to the server:
+copy uglified *bundle.js/bundle.js.map* files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
+
+under root(!) on server run:
+>pm2 restart soundwise
 
 
 # Issues:
