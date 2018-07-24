@@ -145,15 +145,15 @@ export default class Coupons extends Component {
                 style={{
                   marginRight: 13,
                   marginLeft: 13,
-                  width: 110,
-                  minWidth: 110,
+                  width: 115,
+                  minWidth: 115,
                 }}
               >
                 <span>Trial length</span>
                 <div>
                   <input
                     type="text"
-                    style={{...styles.inputTitle, width: '50%'}}
+                    style={{...styles.inputTitle, width: '56%'}}
                     name="trialLength"
                     onChange={e => {
                       prices[i].coupons[j].trialLength = e.target.value;
