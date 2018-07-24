@@ -98,7 +98,6 @@ export default class Promotions extends Component {
                 </thead>
                 <tbody>
                   {this.state.coupons.map((coupon, i) => {
-                    console.log(Number(coupon.timeStamp));
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{...styles.td}}>
