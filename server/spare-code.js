@@ -1,33 +1,63 @@
 var firebase = require("firebase-admin");
+const moment = require("moment");
 var serviceAccount = require("../serviceAccountKey.json");
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: "https://soundwise-a8e6f.firebaseio.com"
 });
 
-// Add subscribed soundcasts to user
-var userId = 'y5MtgSCJPshAomDuFyfReQfajVW2';
-var soundcastsIncluded = [
-  '1531419211997s',
-  '1531441638240s',
-  '1531459034687s',
-  '1531496828981s',
-  '1531502612113s'];
-var subscribedObj = {
-  billingCycle: 'one time',
-  subscribed: true,
-  date_subscribed: 1531755224,
-  current_period_end: 4638902400
-};
-
-soundcastsIncluded.forEach(soundcastId => {
-  firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}`)
-  .set(subscribedObj);
-  firebase.database().ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-  .set('1531755224');
+const usersRef = firebase.database().ref("/users");
+let users = [];
+let currentDate = moment().format('X');
+firebase.database().ref('/users')
+.once('value', snapshotArray => {
+  snapshotArray.forEach(snapshot => {
+    const userId = snapshot.key;
+    const tokenId = snapshot.val().token ? snapshot.val().token[0] : null;
+    const soundcasts = snapshot.val().soundcasts;
+    if(userId && userId !='undefined' && soundcasts) {
+      Object.keys(soundcasts).forEach(key => {
+        if(key && key != 'undefined') {
+          const soundcast = soundcasts[key];
+          if(Number(soundcast.current_period_end) > moment().format('X') && !soundcast.subscribed) {
+            firebase.database().ref(`users/${userId}/soundcasts/${key}/subscribed`).set(true);
+            if(tokenId) {
+              firebase.database().ref(`soundcasts/${key}/subscribed/${userId}`).set({
+                '0': tokenId
+              });
+            } else {
+              firebase.database().ref(`soundcasts/${key}/subscribed/${userId}`).set(soundcast.date_subscribed);
+            }
+          }
+        }
+      })
+    }
+  })
 });
-firebase.database().ref(`soundcasts/1531504770898s/subscribed/${userId}`)
-.set('1531755224');
+
+// Add subscribed soundcasts to user
+// var userId = 'y5MtgSCJPshAomDuFyfReQfajVW2';
+// var soundcastsIncluded = [
+//   '1531419211997s',
+//   '1531441638240s',
+//   '1531459034687s',
+//   '1531496828981s',
+//   '1531502612113s'];
+// var subscribedObj = {
+//   billingCycle: 'one time',
+//   subscribed: true,
+//   date_subscribed: 1531755224,
+//   current_period_end: 4638902400
+// };
+
+// soundcastsIncluded.forEach(soundcastId => {
+//   firebase.database().ref(`users/${userId}/soundcasts/${soundcastId}`)
+//   .set(subscribedObj);
+//   firebase.database().ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+//   .set('1531755224');
+// });
+// firebase.database().ref(`soundcasts/1531504770898s/subscribed/${userId}`)
+// .set('1531755224');
 
 
 // Compile iTunes category ID list
