@@ -116,6 +116,12 @@ node .
 - Course landing page: `localhost:8080/courses/120`
 - Course page: `localhost:8080/myprograms/120`
 
+### Coding style
+
+Install https://github.com/prettier/prettier  
+Check _package.json > "prettier"_ configuration
+
+
 ## api
 ```
 sudo npm i -g strongloop
@@ -167,3 +173,11 @@ https://github.com/facebook/react-native/issues/12814
 2. Select your Pods project
 3. In TARGETS delete React.
 4. Clean (Product > Clean) & archive/build/whatever.
+
+## Database backup
+
+Run command `crontab -e`
+```
+00 00 * * * /usr/bin/pg_dump soundwise > /root/database_backups/soundwise_`date +\%Y_\%m_\%d`.sql && tar -cjf /root/database_backups/soundwise_`date +\%Y_\%m_\%d`.sql.tar.bz2 /root/database_backups/soundwise_`date +\%Y_\%m_\%d`.sql && rm /root/database_backups/soundwise_`date +\%Y_\%m_\%d`.sql
+00 00 * * * /usr/bin/find /root/database_backups/ -mtime +30 -exec rm {} \;
+```

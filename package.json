@@ -24,6 +24,7 @@
     "aws-sdk": "^2.175.0",
     "axios": "^0.15.3",
     "babel-preset-stage-1": "^6.1.18",
+    "blob-to-buffer": "^1.2.8",
     "body-parser": "^1.15.2",
     "buttercms": "^1.1.0",
     "chart.js": "^2.6.0",
@@ -47,6 +48,7 @@
     "html-entities": "^1.2.1",
     "image-size": "^0.6.2",
     "immutable": "^3.8.1",
+    "jimp": "0.2.27",
     "jwt-decode": "^2.1.0",
     "localforage": "^1.5.0",
     "lodash": "^4.17.4",
@@ -107,7 +109,7 @@
     "react-scrollbar": "^0.5.1",
     "react-slick": "^0.14.11",
     "react-star-rating": "^1.4.2",
-    "react-stars": "git+https://github.com/n49/react-stars.git",
+    "react-stars": "^2.2.5",
     "react-swipeable-views": "^0.12.12",
     "react-tap-event-plugin": "^3.0.2",
     "react-tappable": "^1.0.2",
@@ -130,6 +132,7 @@
     "url-loader": "^0.5.7",
     "url-search-params-polyfill": "^2.0.3",
     "video-react": "^0.9.4",
+    "videojs": "^1.0.0",
     "videojs-record": "^2.1.2",
     "webpack": "^1.13.2",
     "whatwg-fetch": "^2.0.3",
@@ -157,5 +160,10 @@
     "type": "git",
     "url": ""
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "prettier": {
+    "bracketSpacing": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
 }

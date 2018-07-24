@@ -1,5 +1,3 @@
 'use strict';
 
-module.exports = function(Transfers) {
-
-};
+module.exports = function(Transfers) {};

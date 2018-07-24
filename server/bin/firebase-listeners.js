@@ -1,16 +1,16 @@
-"use strict";
+'use strict';
 
 // **** listening for firebase data changes for users, soundcasts,
 // **** comments, likes, and make changes in postgres accordingly ****
 
-var firebase = require("firebase-admin");
-const database = require("../../database/index");
+var firebase = require('firebase-admin');
+const database = require('../../database/index');
 
 module.exports.transferLikes = () => {
   // add or delete data from likes node in firebase according to changes to likes in announcements and episodes
-  const soundcastsRef = firebase.database().ref("/soundcasts");
-  const episodesRef = firebase.database().ref("/episodes");
-  const likesRef = firebase.database().ref("/likes");
+  const soundcastsRef = firebase.database().ref('/soundcasts');
+  const episodesRef = firebase.database().ref('/episodes');
+  const likesRef = firebase.database().ref('/likes');
   // soundcastsRef.limitToLast(1).on('child_added', soundcast => {
   //   const soundcastObj = soundcast.val();
   //   const soundcastId = soundcast.key;
@@ -34,7 +34,7 @@ module.exports.transferLikes = () => {
   //     }
   //   }
   // });
-  episodesRef.limitToLast(1).on("child_added", episode => {
+  episodesRef.limitToLast(1).on('child_added', episode => {
     const episodeObj = episode.val();
     const episodeId = episode.key;
     if (episodeObj.likes) {
@@ -43,7 +43,7 @@ module.exports.transferLikes = () => {
         firebase
           .database()
           .ref(`/likes/${newLikeId}`)
-          .once("value", snapshot => {
+          .once('value', snapshot => {
             if (!snapshot.val()) {
               firebase
                 .database()
@@ -52,7 +52,7 @@ module.exports.transferLikes = () => {
                   episodeId,
                   userId: key,
                   soundcastId: episodeObj.soundcastID,
-                  timeStamp: episodeObj.likes[key]
+                  timeStamp: episodeObj.likes[key],
                 });
             }
           });
@@ -63,9 +63,9 @@ module.exports.transferLikes = () => {
 
 module.exports.transferMessages = () => {
   // add or delete data from messages node and likes node in firebase according to changes to 'announcements' under soundcast node
-  const soundcastsRef = firebase.database().ref("/soundcasts");
-  const messagesRef = firebase.database().ref("/messages");
-  soundcastsRef.limitToLast(1).on("child_added", soundcast => {
+  const soundcastsRef = firebase.database().ref('/soundcasts');
+  const messagesRef = firebase.database().ref('/messages');
+  soundcastsRef.limitToLast(1).on('child_added', soundcast => {
     const soundcastObj = soundcast.val();
     const soundcastId = soundcast.key;
     if (soundcastObj.announcements) {
@@ -78,12 +78,12 @@ module.exports.transferMessages = () => {
           id,
           isPublished,
           publisherID,
-          soundcastID
+          soundcastID,
         } = soundcastObj.announcements[key];
         firebase
           .database()
           .ref(`/messages/${key}`)
-          .once("value", snapshot => {
+          .once('value', snapshot => {
             if (!snapshot.val()) {
               // if data doesn't already exist
               firebase
@@ -96,7 +96,7 @@ module.exports.transferMessages = () => {
                   id,
                   isPublished,
                   publisherID,
-                  soundcastID
+                  soundcastID,
                 });
             }
           });
@@ -106,7 +106,7 @@ module.exports.transferMessages = () => {
             firebase
               .database()
               .ref(`/likes/${newLikeId}`)
-              .once("value", snapshot => {
+              .once('value', snapshot => {
                 if (!snapshot.val()) {
                   // if data doesn't already exist
                   firebase
@@ -116,7 +116,7 @@ module.exports.transferMessages = () => {
                       announcementId: key,
                       userId,
                       soundcastId,
-                      timeStamp: soundcastObj.announcements[key].likes[userId]
+                      timeStamp: soundcastObj.announcements[key].likes[userId],
                     });
                 }
               });
@@ -129,44 +129,44 @@ module.exports.transferMessages = () => {
 
 module.exports.firebaseListeners = () => {
   // sync firebase with postgres
-  const usersRef = firebase.database().ref("/users");
-  const commentsRef = firebase.database().ref("/comments");
-  const likesRef = firebase.database().ref("/likes");
-  const soundcastsRef = firebase.database().ref("/soundcasts");
-  const episodesRef = firebase.database().ref("/episodes");
-  const messagesRef = firebase.database().ref("/messages");
+  const usersRef = firebase.database().ref('/users');
+  const commentsRef = firebase.database().ref('/comments');
+  const likesRef = firebase.database().ref('/likes');
+  const soundcastsRef = firebase.database().ref('/soundcasts');
+  const episodesRef = firebase.database().ref('/episodes');
+  const messagesRef = firebase.database().ref('/messages');
 
-  usersRef.on("child_added", addOrUpdateUserRecord);
-  usersRef.on("child_changed", addOrUpdateUserRecord);
-  usersRef.on("child_removed", deleteUserRecord);
+  usersRef.on('child_added', addOrUpdateUserRecord);
+  usersRef.on('child_changed', addOrUpdateUserRecord);
+  usersRef.on('child_removed', deleteUserRecord);
 
-  commentsRef.on("child_added", addOrUpdateCommentRecord);
-  commentsRef.on("child_changed", addOrUpdateCommentRecord);
-  commentsRef.on("child_removed", deleteCommentRecord);
+  commentsRef.on('child_added', addOrUpdateCommentRecord);
+  commentsRef.on('child_changed', addOrUpdateCommentRecord);
+  commentsRef.on('child_removed', deleteCommentRecord);
 
-  likesRef.on("child_added", addOrUpdateLikeRecord);
-  likesRef.on("child_removed", deleteLikeRecord);
+  likesRef.on('child_added', addOrUpdateLikeRecord);
+  likesRef.on('child_removed', deleteLikeRecord);
 
-  soundcastsRef.on("child_added", addOrUpdateSoundcastRecord);
-  soundcastsRef.on("child_changed", addOrUpdateSoundcastRecord);
-  soundcastsRef.on("child_removed", deleteSoundcastRecord);
+  soundcastsRef.on('child_added', addOrUpdateSoundcastRecord);
+  soundcastsRef.on('child_changed', addOrUpdateSoundcastRecord);
+  soundcastsRef.on('child_removed', deleteSoundcastRecord);
 
   // Events table
-  episodesRef.on("child_added", addEpisodeEvent);
-  episodesRef.on("child_removed", removeEpisodeEvent);
-  likesRef.on("child_added", addLikeEvent);
-  likesRef.on("child_removed", removeLikeEvent);
-  commentsRef.on("child_added", addCommentOrReplyEvent);
-  commentsRef.on("child_removed", removeCommentOrReplyEvent);
-  messagesRef.on("child_added", addMessageEvent);
-  messagesRef.on("child_removed", removeMessageEvents);
+  episodesRef.on('child_added', addEpisodeEvent);
+  episodesRef.on('child_removed', removeEpisodeEvent);
+  likesRef.on('child_added', addLikeEvent);
+  likesRef.on('child_removed', removeLikeEvent);
+  commentsRef.on('child_added', addCommentOrReplyEvent);
+  commentsRef.on('child_removed', removeCommentOrReplyEvent);
+  messagesRef.on('child_added', addMessageEvent);
+  messagesRef.on('child_removed', removeMessageEvents);
 };
 
 function clearRelatedEntities(path, id, field, relatedPath) {
   firebase
     .database()
     .ref(`${path}/${id}/${field}`)
-    .once("value")
+    .once('value')
     .then(
       snapshot =>
         snapshot &&
@@ -182,7 +182,7 @@ function clearRelatedEntities(path, id, field, relatedPath) {
 function addOrUpdateUserRecord(user) {
   // Get Firebase object
   if (user.val()) {
-    const { firstName, lastName, pic_url, email, token } = user.val();
+    const {firstName, lastName, pic_url, email, token} = user.val();
     const userId = user.key;
     const userObj = {
       userId,
@@ -190,12 +190,12 @@ function addOrUpdateUserRecord(user) {
       email,
       firstName,
       lastName,
-      picURL: pic_url
+      picURL: pic_url,
     };
 
     // Add or update object
     database.User.findOne({
-      where: { userId }
+      where: {userId},
     })
       .then(userData => {
         if (userData) {
@@ -208,7 +208,7 @@ function addOrUpdateUserRecord(user) {
         }
       })
       .catch(err => {
-        console.log("error saving user data: ", err);
+        console.log('error saving user data: ', err);
       });
   }
 }
@@ -217,7 +217,7 @@ function subsctibeOnSoundcast(user) {
   firebase
     .database()
     .ref(`invitations/${user.email}`)
-    .once("value")
+    .once('value')
     .then(snapshot => {
       console.log(snapshot);
       console.log(snapshot.val());
@@ -227,19 +227,19 @@ function subsctibeOnSoundcast(user) {
           firebase
             .database()
             .ref(`soundcasts/${soundcastId}/subscribed`)
-            .set({ [user.userId]: { 0: user.token } });
+            .set({[user.userId]: {0: user.token}});
           firebase
             .database()
             .ref(`soundcasts/${soundcastId}`)
-            .once("value")
+            .once('value')
             .then(snapshot => {
               if (snapshot === 'undefined') return;
-              const moment = require("moment");
+              const moment = require('moment');
               const soundcast = snapshot.val();
               const current_period_end = soundcast.rentalPeriod
                 ? moment()
-                    .add(Number(soundcast.rentalPeriod), "days")
-                    .format("X")
+                    .add(Number(soundcast.rentalPeriod), 'days')
+                    .format('X')
                 : 4638902400;
               firebase
                 .database()
@@ -249,8 +249,8 @@ function subsctibeOnSoundcast(user) {
                     billingCycle: soundcast.prices[0].billingCycle || 'free',
                     current_period_end,
                     date_subscribed: Date.now(),
-                    subscribed: true
-                  }
+                    subscribed: true,
+                  },
                 });
             });
           firebase
@@ -264,7 +264,7 @@ function subsctibeOnSoundcast(user) {
 function deleteUserRecord(user) {
   const userId = user.key;
   database.User.findOne({
-    where: { userId }
+    where: {userId},
   })
     .then(userData => {
       if (userData) {
@@ -272,7 +272,7 @@ function deleteUserRecord(user) {
       }
     })
     .catch(err => {
-      console.log("error deleting user data: ", err);
+      console.log('error deleting user data: ', err);
     });
 }
 
@@ -285,7 +285,7 @@ function addOrUpdateCommentRecord(comment) {
       soundcastId,
       userID,
       content,
-      timestamp
+      timestamp,
     } = comment.val();
     const commentId = comment.key;
     // const parsedIDs = commentId.split('-');
@@ -301,12 +301,12 @@ function addOrUpdateCommentRecord(comment) {
       episodeId: episodeID || null,
       announcementId: announcementID || null,
       content,
-      timeStamp: Number(timestamp)
+      timeStamp: Number(timestamp),
     };
 
     // Add or update object
     database.Comment.findOne({
-      where: { commentId }
+      where: {commentId},
     })
       .then(commentData => {
         if (commentData) {
@@ -318,7 +318,7 @@ function addOrUpdateCommentRecord(comment) {
         }
       })
       .catch(err => {
-        console.log("error saving comment data: ", err);
+        console.log('error saving comment data: ', err);
       });
   }
 }
@@ -326,16 +326,16 @@ function addOrUpdateCommentRecord(comment) {
 function deleteCommentRecord(comment) {
   const commentId = comment.key;
   database.Comment.findOne({
-    where: { commentId }
+    where: {commentId},
   })
     .then(data => {
       if (data) {
-        clearRelatedEntities("comments", commentId, "children", "comments");
+        clearRelatedEntities('comments', commentId, 'children', 'comments');
         return data.destroy();
       }
     })
     .catch(err => {
-      console.log("error deleting comment data: ", err);
+      console.log('error deleting comment data: ', err);
     });
 }
 
@@ -348,7 +348,7 @@ function addOrUpdateLikeRecord(like) {
       commentId,
       soundcastId,
       userId,
-      timeStamp
+      timeStamp,
     } = like.val();
     const likeId = like.key;
     const likeObj = {
@@ -358,12 +358,12 @@ function addOrUpdateLikeRecord(like) {
       episodeId: episodeId || null,
       announcementId: announcementId || null,
       commentId: commentId || null,
-      timeStamp: Number(timeStamp)
+      timeStamp: Number(timeStamp),
     };
 
     // Add or update object
     database.Like.findOne({
-      where: { likeId }
+      where: {likeId},
     })
       .then(likeData => {
         if (likeData) {
@@ -375,7 +375,7 @@ function addOrUpdateLikeRecord(like) {
         }
       })
       .catch(err => {
-        console.log("error saving like data: ", err);
+        console.log('error saving like data: ', err);
       });
   }
 }
@@ -383,7 +383,7 @@ function addOrUpdateLikeRecord(like) {
 function deleteLikeRecord(like) {
   const likeId = like.key;
   database.Like.findOne({
-    where: { likeId }
+    where: {likeId},
   })
     .then(data => {
       if (data) {
@@ -391,7 +391,7 @@ function deleteLikeRecord(like) {
       }
     })
     .catch(err => {
-      console.log("error deleting like data: ", err);
+      console.log('error deleting like data: ', err);
     });
 }
 
@@ -407,7 +407,7 @@ function addOrUpdateSoundcastRecord(soundcast) {
       rank,
       last_update,
       published,
-      landingPage
+      landingPage,
     } = soundcast.val();
     const soundcastId = soundcast.key;
     const soundcastObj = {
@@ -419,12 +419,12 @@ function addOrUpdateSoundcastRecord(soundcast) {
       category,
       updateDate: last_update,
       published,
-      landingPage
+      landingPage,
     };
 
     // Add or update object
     database.Soundcast.findOne({
-      where: { soundcastId }
+      where: {soundcastId},
     })
       .then(soundcastData => {
         if (soundcastData) {
@@ -436,7 +436,7 @@ function addOrUpdateSoundcastRecord(soundcast) {
         }
       })
       .catch(err => {
-        console.log("error saving soundcast data: ", err);
+        console.log('error saving soundcast data: ', err);
       });
   }
 }
@@ -444,7 +444,7 @@ function addOrUpdateSoundcastRecord(soundcast) {
 function deleteSoundcastRecord(soundcast) {
   const soundcastId = soundcast.key;
   database.Soundcast.findOne({
-    where: { soundcastId }
+    where: {soundcastId},
   })
     .then(soundcastData => {
       if (soundcastData) {
@@ -452,7 +452,7 @@ function deleteSoundcastRecord(soundcast) {
       }
     })
     .catch(err => {
-      console.log("error deleting soundcast data: ", err);
+      console.log('error deleting soundcast data: ', err);
     });
 }
 
@@ -462,7 +462,7 @@ function getFirebaseUserById(userId) {
     firebase
       .database()
       .ref(`/users/${userId}`)
-      .once("value", snapshot => {
+      .once('value', snapshot => {
         const user = snapshot.val();
         if (user) {
           return resolve(user);
@@ -478,7 +478,7 @@ function getSoundcastById(soundcastID) {
     firebase
       .database()
       .ref(`/soundcasts/${soundcastID}`)
-      .once("value", snapshot => {
+      .once('value', snapshot => {
         const soundcast = snapshot.val();
         if (soundcast) {
           return resolve(soundcast);
@@ -494,7 +494,7 @@ function getEpisodeById(episodeId) {
     firebase
       .database()
       .ref(`/episodes/${episodeId}`)
-      .once("value", snapshot => {
+      .once('value', snapshot => {
         const episode = snapshot.val();
         if (soundcast) {
           return resolve(episode);
@@ -510,7 +510,7 @@ function getParentComment(parentId) {
     firebase
       .database()
       .ref(`/comments/${parentId}`)
-      .once("value", snapshot => {
+      .once('value', snapshot => {
         const parentComment = snapshot.val();
         if (parentComment) {
           return resolve(parentComment);
@@ -523,12 +523,12 @@ function getParentComment(parentId) {
 
 async function addEpisodeEvent(episode) {
   if (episode.val()) {
-    const { creatorID, soundcastID, publisherID, title } = episode.val();
+    const {creatorID, soundcastID, publisherID, title} = episode.val();
     const episodeId = episode.key;
     const user = await getFirebaseUserById(creatorID);
     const soundcast = await getSoundcastById(soundcastID);
     const eventObj = {
-      type: "episode",
+      type: 'episode',
       story: `${soundcast.title} published ${title}`,
       userId: creatorID,
       firstName: user.firstName,
@@ -536,12 +536,12 @@ async function addEpisodeEvent(episode) {
       avatarUrl: soundcast.imageURL,
       episodeId,
       soundcastId: soundcastID,
-      publisherId: publisherID
+      publisherId: publisherID,
     };
 
     // Add event
     return database.Event.create(eventObj).catch(err => {
-      console.log("error creating episode event: ", err);
+      console.log('error creating episode event: ', err);
     });
   }
 }
@@ -549,16 +549,16 @@ async function addEpisodeEvent(episode) {
 function removeEpisodeEvent(episode) {
   const episodeId = episode.key;
   database.Event.findOne({
-    where: { type: "episode", episodeId }
+    where: {type: 'episode', episodeId},
   })
     .then(eventData => {
       if (eventData) {
-        clearRelatedEntities("episodes", episodeId, "likes", "likes");
+        clearRelatedEntities('episodes', episodeId, 'likes', 'likes');
         return eventData.destroy();
       }
     })
     .catch(err => {
-      console.log("error deleting episode event: ", err);
+      console.log('error deleting episode event: ', err);
     });
 }
 
@@ -570,13 +570,13 @@ async function addLikeEvent(like) {
       soundcastId,
       announcementId,
       commentId,
-      commentUserId
+      commentUserId,
     } = like.val();
     const likeId = like.key;
     const user = await getFirebaseUserById(userId);
     const episode = await getEpisodeById(episodeId);
     const eventObj = {
-      type: "like",
+      type: 'like',
       story: `${user.firstName} ${user.lastName} liked ${episode.title}`,
       likeId,
       userId,
@@ -587,12 +587,12 @@ async function addLikeEvent(like) {
       soundcastId,
       messageId: announcementId,
       commentId,
-      commentUserId
+      commentUserId,
     };
 
     // Add event
     return database.Event.create(eventObj).catch(err => {
-      console.log("error creating like event: ", err);
+      console.log('error creating like event: ', err);
     });
   }
 }
@@ -600,7 +600,7 @@ async function addLikeEvent(like) {
 function removeLikeEvent(like) {
   const likeId = like.key;
   database.Event.findOne({
-    where: { type: "like", likeId }
+    where: {type: 'like', likeId},
   })
     .then(eventData => {
       if (eventData) {
@@ -608,7 +608,7 @@ function removeLikeEvent(like) {
       }
     })
     .catch(err => {
-      console.log("error deleting like event: ", err);
+      console.log('error deleting like event: ', err);
     });
 }
 
@@ -616,15 +616,15 @@ async function addCommentOrReplyEvent(comment) {
   if (comment.val()) {
     const commentId = comment.key;
     const nHyphens = (commentId.match(/-/g) || []).length;
-    let type = "";
-    if (nHyphens === 1) type = "comment";
-    if (nHyphens === 2) type = "reply";
+    let type = '';
+    if (nHyphens === 1) type = 'comment';
+    if (nHyphens === 2) type = 'reply';
     if (!type) return;
     let parentId = null;
-    if (type === "reply") {
-      parentId = `${commentId.split("-", 2)[1]}-${commentId.split("-", 3)[2]}`;
+    if (type === 'reply') {
+      parentId = `${commentId.split('-', 2)[1]}-${commentId.split('-', 3)[2]}`;
     }
-    const { userID, episodeID, soundcastId, announcementID } = comment.val();
+    const {userID, episodeID, soundcastId, announcementID} = comment.val();
     const user = await getFirebaseUserById(userID);
     let episode, soundcast;
     if (episodeID) {
@@ -650,12 +650,12 @@ async function addCommentOrReplyEvent(comment) {
       messageId: announcementID,
       commentId,
       parentId,
-      parentUserId: parentComment.userID
+      parentUserId: parentComment.userID,
     };
 
     // Add event
     return database.Event.create(eventObj).catch(err => {
-      console.log("error creating comment or reply event: ", err);
+      console.log('error creating comment or reply event: ', err);
     });
   }
 }
@@ -663,12 +663,12 @@ async function addCommentOrReplyEvent(comment) {
 function removeCommentOrReplyEvent(comment) {
   const commentId = comment.key;
   const nHyphens = (commentId.match(/-/g) || []).length;
-  let type = "";
-  if (nHyphens === 1) type = "comment";
-  if (nHyphens === 2) type = "reply";
+  let type = '';
+  if (nHyphens === 1) type = 'comment';
+  if (nHyphens === 2) type = 'reply';
   if (!type) return;
   database.Event.findOne({
-    where: { type, commentId }
+    where: {type, commentId},
   })
     .then(eventData => {
       if (eventData) {
@@ -676,17 +676,17 @@ function removeCommentOrReplyEvent(comment) {
       }
     })
     .catch(err => {
-      console.log("error deleting comment or reply event: ", err);
+      console.log('error deleting comment or reply event: ', err);
     });
 }
 
 async function addMessageEvent(message) {
   if (message.val()) {
-    const { creatorID, soundcastID, publisherID } = message.val();
+    const {creatorID, soundcastID, publisherID} = message.val();
     const messageId = message.key;
     const user = await getFirebaseUserById(creatorID);
     const eventObj = {
-      type: "message",
+      type: 'message',
       story: `${user.firstName} ${user.lastName} sent you a message`,
       userId: creatorID,
       firstName: user.firstName,
@@ -694,12 +694,12 @@ async function addMessageEvent(message) {
       avatarUrl: user.pic_url,
       soundcastId,
       messageId,
-      publisherId
+      publisherId,
     };
 
     // Add event
     return database.Event.create(eventObj).catch(err => {
-      console.log("error creating message event: ", err);
+      console.log('error creating message event: ', err);
     });
   }
 }
@@ -707,7 +707,7 @@ async function addMessageEvent(message) {
 function removeMessageEvents(message) {
   const messageId = message.key;
   database.Event.findOne({
-    where: { type: "message", messageId }
+    where: {type: 'message', messageId},
   })
     .then(eventData => {
       if (eventData) {
@@ -715,6 +715,6 @@ function removeMessageEvents(message) {
       }
     })
     .catch(err => {
-      console.log("error deleting message event: ", err);
+      console.log('error deleting message event: ', err);
     });
 }

@@ -1,5 +1,3 @@
 'use strict';
 
-module.exports = function(Listener) {
-
-};
+module.exports = function(Listener) {};

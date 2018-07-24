@@ -1,9 +1,9 @@
 import Axios from 'axios';
 
-export function sendNotifications (registrationTokens, payload) {
+export function sendNotifications(registrationTokens, payload) {
   Axios.post('/api/send_notification', {
     registrationTokens,
-    payload
+    payload,
   })
     .then(res => {
       console.log('notification response: ', res);

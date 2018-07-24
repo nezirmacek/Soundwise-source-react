@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import firebase from "firebase";
+import React, {Component} from 'react';
+import firebase from 'firebase';
 
-import SoundcastSignup from "../soundcast_signup";
-import EpisodePlayer from "./episode_player";
+import SoundcastSignup from '../soundcast_signup';
+import EpisodePlayer from './episode_player';
 
 export default class SoundcastContent extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ export default class SoundcastContent extends Component {
 
     this.state = {
       episodes: [],
-      playingEpisode: ""
+      playingEpisode: '',
     };
 
     this.references = {};
@@ -40,7 +40,7 @@ export default class SoundcastContent extends Component {
       return firebase
         .database()
         .ref(`episodes/${id}`)
-        .once("value")
+        .once('value')
         .then(snapshot => {
           // console.log(snapshot);
           // console.log(snapshot.val());
@@ -65,7 +65,7 @@ export default class SoundcastContent extends Component {
       }
 
       that.setState({
-        episodes: episodesArr
+        episodes: episodesArr,
       });
     });
   }
@@ -75,7 +75,7 @@ export default class SoundcastContent extends Component {
       this.references.audio.pause();
       this.references.audio.currentTime = 0;
     }
-    this.setState({ playingEpisode: episode });
+    this.setState({playingEpisode: episode});
     this.references.audioSource = episode.url;
   }
 
@@ -95,7 +95,7 @@ export default class SoundcastContent extends Component {
         >
           <div
             className="container padding-30px-tb xs-padding-30px-tb"
-            style={{ borderBottom: "0.5px solid lightgrey" }}
+            style={{borderBottom: '0.5px solid lightgrey'}}
           >
             <div className="row">
               <div className="col-md-12 col-sm-12 col-xs-12 text-center padding-40px-tb">
@@ -106,13 +106,13 @@ export default class SoundcastContent extends Component {
             </div>
             <div className="row">
               <div className="col-md-12 col-sm-12 col-xs-12">
-                <div className="table-responsive" style={{ maxHeight: 450 }}>
+                <div className="table-responsive" style={{maxHeight: 450}}>
                   <table className="table table-hover">
                     <thead>
                       <tr>
-                        <th style={{ fontSize: 16 }} />
-                        <th style={{ fontSize: 16 }}>TITLE</th>
-                        <th style={{ fontSize: 16 }}>DURATION</th>
+                        <th style={{fontSize: 16}} />
+                        <th style={{fontSize: 16}}>TITLE</th>
+                        <th style={{fontSize: 16}}>DURATION</th>
                       </tr>
                     </thead>
                     <tbody>

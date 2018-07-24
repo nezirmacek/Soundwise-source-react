@@ -1,24 +1,25 @@
-import React, {Component} from 'react'
-import { render } from 'react-dom'
-import { browserHistory } from 'react-router'
+import React, {Component} from 'react';
+import {render} from 'react-dom';
+import {browserHistory} from 'react-router';
 
-import { syncHistoryWithStore } from 'react-router-redux'
-import thunkMiddleware from 'redux-thunk'  //check out https://github.com/gaearon/redux-thunk for how to use this
-import { applyMiddleware, createStore, compose } from 'redux';
-import {persistStore, autoRehydrate} from 'redux-persist'
-import localForage from 'localforage'
+import {syncHistoryWithStore} from 'react-router-redux';
+import thunkMiddleware from 'redux-thunk'; //check out https://github.com/gaearon/redux-thunk for how to use this
+import {applyMiddleware, createStore, compose} from 'redux';
+import {persistStore, autoRehydrate} from 'redux-persist';
+import localForage from 'localforage';
 // import { offline } from 'redux-offline';
 // import offlineConfig from 'redux-offline/lib/defaults';
-import { Provider } from 'react-redux'
-import * as firebase from 'firebase'
-import Raven from 'raven-js'
+import {Provider} from 'react-redux';
+import * as firebase from 'firebase';
+import Raven from 'raven-js';
 
-import { config } from '../config'
-import {Routes} from './routes'
-import rootReducer from './reducers'
+import {config} from '../config';
+import {Routes} from './routes';
+import rootReducer from './reducers';
 
-
-Raven.config('https://3fbd789e281e40f4bb05c2374e87b9e2@sentry.io/256844').install();
+Raven.config(
+  'https://3fbd789e281e40f4bb05c2374e87b9e2@sentry.io/256844'
+).install();
 
 // let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
 // let store = createStoreWithMiddleware(rootReducer)
@@ -26,11 +27,11 @@ const store = createStore(
   rootReducer,
   {},
   compose(
-    applyMiddleware(thunkMiddleware),
+    applyMiddleware(thunkMiddleware)
     // offline(offlineConfig)
     // autoRehydrate()
   )
-)
+);
 
 // const persistor = persistStore(store, {storage: localForage, blacklist: ['setPlayer', 'setCurrentSection']})
 
@@ -38,40 +39,35 @@ const store = createStore(
 
 // const history = syncHistoryWithStore(browserHistory, store)
 
+const expiration = new Date(2099, 7, 31);
 
-const expiration = new Date(2099, 7, 31)
-
-
-firebase.initializeApp(config)
+firebase.initializeApp(config);
 
 const admin = {
-  "firstName": "Denis",
-  "lastName": "Yakovenko",
-  "admin": true,
-  "publisherID": "smoeist9oveshvi",
-  "soundcasts_managed": {
-    "5a83201c-76bd-11e7-b5a5-be2e44b06b34": true,
-    "35546702-76cb-11e7-b5a5-be2e44b06b34": true
+  firstName: 'Denis',
+  lastName: 'Yakovenko',
+  admin: true,
+  publisherID: 'smoeist9oveshvi',
+  soundcasts_managed: {
+    '5a83201c-76bd-11e7-b5a5-be2e44b06b34': true,
+    '35546702-76cb-11e7-b5a5-be2e44b06b34': true,
   },
-  "email": [
-    "denis@me.come"
-  ],
-  "subscriptions": {
-    "5a83201c-76bd-11e7-b5a5-be2e44b06b34": true,
-    "35546702-76cb-11e7-b5a5-be2e44b06b34": true
-  }
-}
-
+  email: ['denis@me.come'],
+  subscriptions: {
+    '5a83201c-76bd-11e7-b5a5-be2e44b06b34': true,
+    '35546702-76cb-11e7-b5a5-be2e44b06b34': true,
+  },
+};
 
 export default class App extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
-      rehydrated: false
-    }
+      rehydrated: false,
+    };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // firebase.database().ref('invitations/xc22@georgetown(dot)edu')
     // .once('value')
     // .then(snapshot => {
@@ -90,12 +86,11 @@ export default class App extends Component {
     //   return <div>Loading...</div>
     // }
     return (
-      <Provider store = { store }>
+      <Provider store={store}>
         <Routes />
       </Provider>
-    )
+    );
   }
 }
 
-render(<App />, document.getElementById('root'))
-
+render(<App />, document.getElementById('root'));

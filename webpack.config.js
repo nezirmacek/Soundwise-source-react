@@ -1,6 +1,6 @@
-const path = require('path')
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
-const webpack = require('webpack')
+const path = require('path');
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   context: __dirname,
@@ -8,12 +8,9 @@ module.exports = {
     // console: 'empty',
     fs: 'empty',
     net: 'empty',
-    tls: 'empty'
+    tls: 'empty',
   },
-  entry: [
-    'babel-polyfill',
-    './client/index.js'
-  ],
+  entry: ['babel-polyfill', './client/index.js'],
   output: {
     path: path.resolve(__dirname, 'client/'),
     publicPath: '/',
@@ -21,56 +18,59 @@ module.exports = {
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
   },
   module: {
-      loaders: [
-          {
-              test: /\.json$/,
-              loader: 'json-loader'
-          },
-          {
-              exclude: /node_modules/,
-              loader: 'babel',
-              query: {
-                  presets: ['react', 'es2015', 'stage-1']
-              }
-          },
-          {
-              test: /\.(jpg|png)$/,
-              loader: 'url-loader?mimetype=image/png'
-          },
-          {
-            test: /\.css$/,
-            exclude: /Draft\.css$/,
-            loaders: [
-              'style-loader',
-              'css-loader?modules'
-            ]
-          },
-          {
-            test: /Draft\.css$/,
-            loader: 'style-loader!css-loader',
-          },
-          {
-            test: /\.(eot|svg|ttf|woff|woff2)$/,
-            loader: 'url-loader'
-          }
-      ]
+    loaders: [
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+      },
+      {
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: {
+          presets: ['react', 'es2015', 'stage-1'],
+        },
+      },
+      {
+        test: /\.(jpg|png)$/,
+        loader: 'url-loader?mimetype=image/png',
+      },
+      {
+        test: /\.css$/,
+        exclude: /Draft\.css$/,
+        loaders: ['style-loader', 'css-loader?modules'],
+      },
+      {
+        test: /Draft\.css$/,
+        loader: 'style-loader!css-loader',
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        loader: 'url-loader',
+      },
+    ],
   },
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json']
+    extensions: ['', '.js', '.jsx', '.json'],
+    alias: {
+      videojs: 'video.js',
+      WaveSurfer: 'wavesurfer.js',
+    },
   },
   devServer: {
     historyApiFallback: true,
-    contentBase: './client'
+    contentBase: './client',
   },
   plugins: [
     new webpack.SourceMapDevToolPlugin({
-       filename: '[file].map',
+      filename: '[file].map',
     }),
     new webpack.ProvidePlugin({
-        videojs: 'video.js', 'window.videojs': 'video.js',
-        RecordRTC: 'recordrtc', 'window.RecordRTC': 'recordrtc',
+      videojs: 'video.js/dist/video.cjs.js',
+      'window.videojs': 'video.js/dist/video.cjs.js',
+      RecordRTC: 'recordrtc',
+      'window.RecordRTC': 'recordrtc',
     }),
-    new webpack.optimize.UglifyJsPlugin(),
+    // new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),

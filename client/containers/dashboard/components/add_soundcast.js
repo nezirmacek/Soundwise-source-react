@@ -1,28 +1,38 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
-import { Link } from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import Checkbox from 'material-ui/Checkbox';
+import jimp from 'jimp';
+import toBuffer from 'blob-to-buffer';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
-import { Editor } from 'react-draft-wysiwyg';
-import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, createFromBlockArray, ContentState} from 'draft-js';
-// import Toggle from 'material-ui/Toggle';
+import {Editor} from 'react-draft-wysiwyg';
+import {
+  convertToRaw,
+  EditorState,
+  convertFromHTML,
+  ContentState,
+} from 'draft-js';
 import Toggle from 'react-toggle';
-import Datetime from 'react-datetime';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight'
-import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight';
+import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown';
 import ImageCropModal from './image_crop_modal';
-import {minLengthValidator, maxLengthValidator} from '../../../helpers/validators';
+import {
+  minLengthValidator,
+  maxLengthValidator,
+} from '../../../helpers/validators';
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import S3FileUploader from '../../../components/s3_file_uploader';
 import Colors from '../../../styles/colors';
-import { OrangeSubmitButton, TransparentShortSubmitButton } from '../../../components/buttons/buttons';
+import {
+  OrangeSubmitButton,
+  TransparentShortSubmitButton,
+} from '../../../components/buttons/buttons';
+import Coupons from './coupons';
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -37,14 +47,16 @@ const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscr
 </strong></p><p></p>
 <p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
 </div>`;
-const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
+const subscriptionConfirmationEmail = convertFromHTML(
+  subscriptionConfirmEmailHtml
+);
 const confirmationEmail = ContentState.createFromBlockArray(
   subscriptionConfirmationEmail.contentBlocks,
   subscriptionConfirmationEmail.entityMap
 );
 
 export default class AddSoundcast extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -53,12 +65,14 @@ export default class AddSoundcast extends Component {
       short_description: '',
       long_description: EditorState.createEmpty(),
       imageURL: '',
+      blurredImageURL: '',
       fileUploaded: false,
       landingPage: true,
       features: [''],
       hostName: '',
       hostBio: '',
-      hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
+      hostImageURL:
+        'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
       hostImgUploaded: '',
       forSale: false,
       prices: [],
@@ -87,93 +101,138 @@ export default class AddSoundcast extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!this.state.proUser && nextProps.userInfo.publisher) {
+    if (!this.state.proUser && nextProps.userInfo.publisher) {
       this.checkUserStatus(nextProps.userInfo);
     }
   }
 
   checkUserStatus(userInfo) {
-    if(userInfo.publisher.plan &&
-       userInfo.publisher.current_period_end > moment().format('X') ||
-       userInfo.publisher.beta
+    if (
+      (userInfo.publisher.plan &&
+        userInfo.publisher.current_period_end > moment().format('X')) ||
+      userInfo.publisher.beta
     ) {
-      this.setState({ proUser: true });
+      this.setState({proUser: true});
     }
   }
 
-  _uploadToAws (file, hostImg) {
-    const _self = this;
+  _uploadToAws(file, hostImg) {
     let data = new FormData();
     const splittedFileName = file.type.split('/');
-    const ext = (splittedFileName)[splittedFileName.length - 1];
-    let fileName = '';
-    if(hostImg) {
-      fileName = `host-image-${moment().format('x')}.${ext}`;
-    } else {
-      fileName = `${moment().format('x')}.${ext}`;
-    }
+    const ext = splittedFileName[splittedFileName.length - 1];
+    const fileName = `${hostImg ? 'host-image-' : ''}${moment().format(
+      'x'
+    )}.${ext}`;
+
     data.append('file', file, fileName);
-    // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
+
     Axios.post('/api/upload', data)
-      .then(function (res) {
+      .then(res => {
         // POST succeeded...
         console.log('success upload to aws s3: ', res);
 
         //replace 'http' with 'https'
         let url = res.data[0].url;
-        if(url.slice(0, 5) !== 'https') {
+        if (url.slice(0, 5) !== 'https') {
           url = url.replace(/http/i, 'https');
         }
 
-        if(hostImg) {
-          _self.setState({hostImageURL: url});
+        if (hostImg) {
+          this.setState({hostImageURL: url});
         } else {
-          _self.setState({imageURL: url});
+          this.setState({imageURL: url});
+        }
+
+        if (!hostImg) {
+          let blurredData = new FormData();
+
+          toBuffer(file, (err, buffer) => {
+            if (err) throw err;
+
+            jimp.read(buffer).then(f =>
+              f
+                .resize(600, jimp.AUTO)
+                .blur(30)
+                .brightness(0.1)
+                .getBuffer(jimp.AUTO, (err, buffer) => {
+                  if (!err) {
+                    blurredData.append(
+                      'file',
+                      new Blob([buffer]),
+                      `blurred-${fileName}`
+                    );
+
+                    Axios.post('/api/upload', blurredData)
+                      .then(res => {
+                        // POST succeeded...
+                        console.log('success upload to aws s3: ', res);
+
+                        //replace 'http' with 'https'
+                        let url = res.data[0].url;
+                        if (url.slice(0, 5) !== 'https') {
+                          url = url.replace(/http/i, 'https');
+                        }
+
+                        this.setState({blurredImageURL: url});
+                      })
+                      .catch(function(err) {
+                        // POST failed...
+                        console.log('ERROR upload to aws s3: ', err);
+                      });
+                  }
+                })
+            );
+          });
         }
       })
-      .catch(function (err) {
+      .catch(function(err) {
         // POST failed...
         console.log('ERROR upload to aws s3: ', err);
       });
   }
 
-  setFileName (hostImg, e) {
-        // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
-        if(hostImg) {
-            // this._uploadToAws(this.hostImgInputRef.files[0], true);
-            if(this.hostImgInputRef.files[0]) {
-                this.setState({
-                  hostImgUploaded: true,
-                  hostImg: true,
-                });
-                this.currentImageRef = this.hostImgInputRef.files[0];
-            }
-        } else {
-            // this._uploadToAws(this.fileInputRef.files[0], null)
-            if (this.fileInputRef.files[0]) {
-                this.setState({
-                  fileUploaded: true,
-                  hostImg: false,
-                });
-                this.currentImageRef = this.fileInputRef.files[0];
-            }
-        }
+  setFileName(hostImg, e) {
+    // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
+    if (hostImg) {
+      // this._uploadToAws(this.hostImgInputRef.files[0], true);
+      if (this.hostImgInputRef.files[0]) {
+        this.setState({
+          hostImgUploaded: true,
+          hostImg: true,
+        });
+        this.currentImageRef = this.hostImgInputRef.files[0];
+      }
+    } else {
+      // this._uploadToAws(this.fileInputRef.files[0], null)
+      if (this.fileInputRef.files[0]) {
+        this.setState({
+          fileUploaded: true,
+          hostImg: false,
+        });
+        this.currentImageRef = this.fileInputRef.files[0];
+      }
+    }
 
-        const allowedFileTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
-        if(allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
-          alert('Only .png or .jpeg files are accepted. Please upload a new file.');
-          if(hostImg) {
-            this.setState({
-              hostImgUploaded: false,
-            })
-          } else {
-            this.setState({
-              fileUploaded: false,
-            })
-          }
-          return;
-        }
-        this.handleModalOpen();
+    const allowedFileTypes = [
+      'image/png',
+      'image/jpeg',
+      'image/jpg',
+      'image/gif',
+    ];
+    if (allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
+      alert('Only .png or .jpeg files are accepted. Please upload a new file.');
+      if (hostImg) {
+        this.setState({
+          hostImgUploaded: false,
+        });
+      } else {
+        this.setState({
+          fileUploaded: false,
+        });
+      }
+      return;
+    }
+    this.handleModalOpen();
   }
 
   getRandomColor() {
@@ -185,20 +244,38 @@ export default class AddSoundcast extends Component {
     return color;
   }
 
-  submit (publish) {
-    let {title, imageURL, subscribers, short_description, long_description, landingPage,
-      features, hostName, hostBio, hostImageURL, forSale, prices, confirmationEmail,
-      introUrl, outroUrl} = this.state;
-    if(title.length == 0) {
+  submit(publish) {
+    let {
+      title,
+      imageURL,
+      blurredImageURL,
+      subscribers,
+      short_description,
+      long_description,
+      landingPage,
+      features,
+      hostName,
+      hostBio,
+      hostImageURL,
+      forSale,
+      prices,
+      confirmationEmail,
+      introUrl,
+      outroUrl,
+    } = this.state;
+    if (title.length == 0) {
       return alert('Please enter a soundcast title before saving.');
     }
-    if(short_description == 0) {
-      return alert('Please enter a short description for the soundcast before saving.');
+    if (short_description == 0) {
+      return alert(
+        'Please enter a short description for the soundcast before saving.'
+      );
     }
-    if(prices.length === 0) { //if pricing isn't specified, then this is a free soundcast
+    if (prices.length === 0) {
+      //if pricing isn't specified, then this is a free soundcast
       prices = [{price: 'free'}];
     }
-    const { userInfo, history } = this.props;
+    const {userInfo, history} = this.props;
     // const host = [{hostName, hostBio, hostImageURL}];
     const that = this;
 
@@ -206,188 +283,242 @@ export default class AddSoundcast extends Component {
     subscribers = subscribers.replace(/\s/g, '');
 
     const subscribersArr = subscribers.split(',');
-    for(var i = subscribersArr.length -1; i >= 0; i--) {
+    for (var i = subscribersArr.length - 1; i >= 0; i--) {
       if (subscribersArr[i].indexOf('@') === -1) {
         subscribersArr.splice(i, 1);
       }
     }
 
     // send email invitations to invited listeners
-    const subject = `${userInfo.publisher.name} invites you to subscribe to ${title}`;
-    const content = `<p>Hi there!</p><p></p><p>${userInfo.publisher.name} has invited you to subscribe to <a href="${landingPage ? 'https://mysoundwise.com/soundcasts/'+that.soundcastId : ''}" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
-    inviteListeners(subscribersArr, subject, content, userInfo.publisher.name, userInfo.publisher.imageUrl);
+    const subject = `${
+      userInfo.publisher.name
+    } invites you to subscribe to ${title}`;
+    const content = `<p>Hi there!</p><p></p><p>${
+      userInfo.publisher.name
+    } has invited you to subscribe to <a href="${
+      landingPage
+        ? 'https://mysoundwise.com/soundcasts/' + that.soundcastId
+        : ''
+    }" target="_blank">${title}</a> on Soundwise. If you don't already have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
+    inviteListeners(
+      subscribersArr,
+      subject,
+      content,
+      userInfo.publisher.name,
+      userInfo.publisher.imageUrl
+    );
 
     const invited = {};
     subscribersArr.map((email, i) => {
-      let _email = email.replace(/\./g, "(dot)");
+      let _email = email.replace(/\./g, '(dot)');
       _email = _email.trim().toLowerCase();
-      invited[_email] = moment().format('X');  //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
+      invited[_email] = moment().format('X'); //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
     });
 
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
-          if (user && that.firebaseListener) {
-              const creatorID = user.uid;
-              const newSoundcast = {
-                title,
-                imageURL: imageURL ? imageURL : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(title)}`,
-                creatorID,
-                short_description,
-                long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
-                confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
-                date_created: moment().format('X'),
-                publisherID: userInfo.publisherID,
-                invited,
-                landingPage,
-                features,
-                hostName,
-                hostBio,
-                hostImageURL,
-                forSale,
-                prices,
-                published: publish,
-                intro: introUrl || null,
-                outro: outroUrl || null,
-              };
+      if (user && that.firebaseListener) {
+        const creatorID = user.uid;
+        const last_update = Number(moment().format('X'));
+        const newSoundcast = {
+          title,
+          imageURL: imageURL
+            ? imageURL
+            : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+                title
+              )}`,
+          blurredImageURL,
+          creatorID,
+          short_description,
+          long_description: JSON.stringify(
+            convertToRaw(long_description.getCurrentContent())
+          ),
+          confirmationEmail: JSON.stringify(
+            convertToRaw(confirmationEmail.getCurrentContent())
+          ),
+          date_created: moment().format('X'),
+          publisherID: userInfo.publisherID,
+          invited,
+          landingPage,
+          features,
+          hostName,
+          hostBio,
+          hostImageURL,
+          forSale,
+          prices,
+          last_update,
+          published: publish,
+          intro: introUrl || null,
+          outro: outroUrl || null,
+        };
 
-              let _promises_1 = [
-                // add soundcast
-                firebase.database().ref(`soundcasts/${that.soundcastId}`).set(newSoundcast).then(
-                  res => {
-                    // console.log('success add soundcast: ', res);
-                    return res;
-                  },
-                  err => {
-                    console.log('ERROR add soundcast: ', err);
-                    Promise.reject(err);
-                  }
-                ),
-                // add soundcast to publisher
-                firebase.database().ref(`publishers/${userInfo.publisherID}/soundcasts/${that.soundcastId}`).set(true).then(
-                  res => {
-                    // console.log('success add soundcast to publisher: ', res);
-                    return res;
-                  },
-                  err => {
-                    console.log('ERROR add soundcast to publisher: ', err);
-                    Promise.reject(err);
-                  }
-                ),
-                // add soundcast to admin
-                firebase.database().ref(`users/${creatorID}/soundcasts_managed/${that.soundcastId}`).set(true).then(
-                    res => {
-                        // console.log('success add soundcast to admin.soundcasts_managed: ', res);
-                        return res;
-                    },
-                    err => {
-                        console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-                        Promise.reject(err);
-                    }
-                ),
-                Axios.post('/api/soundcast', {
-                  soundcastId: that.soundcastId,
-                  publisherId: userInfo.publisherID,
-                  title
-                }).then(
-                  res => {
-                    if (prices.length && userInfo.publisher && userInfo.publisher.stripe_user_id) {
-                      Axios.post('/api/createUpdatePlans', {
-                        soundcastID: that.soundcastID,
-                        publisherID: userInfo.publisherID,
-                        stripe_account: userInfo.publisher.stripe_user_id,
-                        title,
-                        prices: (landingPage && forSale) ? prices : [],
-                      }).catch(err => alert(`Error creating plans ${err}`));
-                    }
-                    return res;
-                  }
-                ).catch(
-                  err => {
-                    console.log('ERROR API post soundcast: ', err);
-                    Promise.reject(err)
-                  }
-                )
-              ];
+        let _promises_1 = [
+          // add soundcast
+          firebase
+            .database()
+            .ref(`soundcasts/${that.soundcastId}`)
+            .set(newSoundcast)
+            .then(
+              res => {
+                // console.log('success add soundcast: ', res);
+                return res;
+              },
+              err => {
+                console.log('ERROR add soundcast: ', err);
+                Promise.reject(err);
+              }
+            ),
+          // add soundcast to publisher
+          firebase
+            .database()
+            .ref(
+              `publishers/${userInfo.publisherID}/soundcasts/${
+                that.soundcastId
+              }`
+            )
+            .set(true)
+            .then(
+              res => {
+                // console.log('success add soundcast to publisher: ', res);
+                return res;
+              },
+              err => {
+                console.log('ERROR add soundcast to publisher: ', err);
+                Promise.reject(err);
+              }
+            ),
+          // add soundcast to admin
+          firebase
+            .database()
+            .ref(`users/${creatorID}/soundcasts_managed/${that.soundcastId}`)
+            .set(true)
+            .then(
+              res => {
+                // console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                return res;
+              },
+              err => {
+                console.log(
+                  'ERROR add soundcast to admin.soundcasts_managed: ',
+                  err
+                );
+                Promise.reject(err);
+              }
+            ),
+          Axios.post('/api/soundcast', {
+            soundcastId: that.soundcastId,
+            publisherId: userInfo.publisherID,
+            updateDate: last_update,
+            title,
+          })
+            .then(res => {
+              if (
+                prices.length &&
+                userInfo.publisher &&
+                userInfo.publisher.stripe_user_id
+              ) {
+                Axios.post('/api/createUpdatePlans', {
+                  soundcastID: that.soundcastID,
+                  publisherID: userInfo.publisherID,
+                  stripe_account: userInfo.publisher.stripe_user_id,
+                  title,
+                  prices: landingPage && forSale ? prices : [],
+                }).catch(err => alert(`Error creating plans ${err}`));
+              }
+              return res;
+            })
+            .catch(err => {
+              console.log('ERROR API post soundcast: ', err);
+              Promise.reject(err);
+            }),
+        ];
 
-              //add soundcast to admins
-              let adminArr = Object.keys(userInfo.publisher.administrators);
+        //add soundcast to admins
+        let adminArr = Object.keys(userInfo.publisher.administrators);
 
-              let _promises_2 = adminArr.map(adminId => {
-                return firebase.database().ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`).set(true)
-                  .then(
-                    res => {
-                      // console.log('success add soundcast to admin.soundcasts_managed: ', res);
-                      return res;
-                    },
-                    err => {
-                      console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
-                      Promise.reject(err);
-                    })
-              });
+        let _promises_2 = adminArr.map(adminId => {
+          return firebase
+            .database()
+            .ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`)
+            .set(true)
+            .then(
+              res => {
+                // console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                return res;
+              },
+              err => {
+                console.log(
+                  'ERROR add soundcast to admin.soundcasts_managed: ',
+                  err
+                );
+                Promise.reject(err);
+              }
+            );
+        });
 
-              // let _promises = _promises_1.concat(_promises_2, _promises_3);
-              let _promises = _promises_1.concat(_promises_2);
-              Promise.all(_promises).then(
-                res => {
-                  console.log('completed adding soundcast');
-                  alert('New soundcast created.');
-                  history.goBack();
-                },
-                err => {
-                  console.log('failed to complete adding soundcast');
-                }
-              );
-          } else {
-              // alert('Soundcast saving failed. Please try again later.');
+        // let _promises = _promises_1.concat(_promises_2, _promises_3);
+        let _promises = _promises_1.concat(_promises_2);
+        Promise.all(_promises).then(
+          res => {
+            console.log('completed adding soundcast');
+            alert('New soundcast created.');
+            history.goBack();
+          },
+          err => {
+            console.log('failed to complete adding soundcast');
           }
+        );
+      } else {
+        // alert('Soundcast saving failed. Please try again later.');
+      }
     });
     this.firebaseListener && this.firebaseListener();
   }
 
   componentWillUnmount() {
-      this.firebaseListener = null;
+    this.firebaseListener = null;
   }
 
   handleCheck() {
     const {landingPage} = this.state;
     this.setState({
       landingPage: !landingPage,
-    })
+    });
   }
 
   setFeatures(i, event) {
     const features = [...this.state.features];
     features[i] = event.target.value;
     this.setState({
-      features
-    })
+      features,
+    });
   }
 
   deleteFeature(i, event) {
     const features = [...this.state.features];
-    if(features.length >= 2) {
+    if (features.length >= 2) {
       features.splice(i, 1);
     } else {
       features[0] = '';
     }
     this.setState({
-      features
-    })
+      features,
+    });
   }
 
   addFeature() {
     const features = [...this.state.features];
     features.push('');
     this.setState({
-      features
-    })
+      features,
+    });
   }
 
   handleChargeOption() {
     const {forSale} = this.state;
     const {userInfo} = this.props;
 
-    if(!forSale) {
-      if(!userInfo.publisher.stripe_user_id) {
+    if (!forSale) {
+      if (!userInfo.publisher.stripe_user_id) {
         this.submit.bind(this, false);
         this.setState({
           paypalModalOpen: true,
@@ -395,67 +526,83 @@ export default class AddSoundcast extends Component {
       } else {
         this.setState({
           forSale: !forSale,
-          prices: [{paymentPlan: '', billingCycle: '', price: '0'}]
-        })
+          prices: [{paymentPlan: '', billingCycle: '', price: '0'}],
+        });
       }
     } else {
       this.setState({
         forSale: !forSale,
         prices: [{price: 'free'}],
-      })
+      });
     }
   }
 
   handlePaypalModalClose() {
-    if(this.state.paypalModalOpen) {
+    if (this.state.paypalModalOpen) {
       this.setState({
         paypalModalOpen: false,
-      })
+      });
     }
   }
 
   handlePaypalInput() {
     const {paypalEmail, forSale} = this.state;
     const {userInfo} = this.props;
-    firebase.database().ref(`publishers/${userInfo.publisherID}/paypalEmail`)
-    .set(paypalEmail);
+    firebase
+      .database()
+      .ref(`publishers/${userInfo.publisherID}/paypalEmail`)
+      .set(paypalEmail);
     this.setState({
       paypalModalOpen: false,
       forSale: !forSale,
       prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}],
-    })
+    });
   }
 
   onEditorStateChange(editorState, confirmationEmail) {
-      this.setState({
-        long_description: editorState,
-      })
+    this.setState({
+      long_description: editorState,
+    });
   }
 
   onConfirmationStateChange(editorState) {
-      this.setState({
-        confirmationEmail: editorState,
-      })
+    this.setState({
+      confirmationEmail: editorState,
+    });
   }
 
   showIntroOutro() {
     const {showIntroOutro, proUser, showPricingModal} = this.state;
-    if(proUser) {
+    if (proUser) {
       this.setState({showIntroOutro: !showIntroOutro});
     } else {
-      this.setState({showPricingModal: ['Upgrade to add intro and outro',
-        'Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.'
-      ]})
+      this.setState({
+        showPricingModal: [
+          'Upgrade to add intro and outro',
+          'Automatic insertion of intro and outro is available on PLUS and PRO plans. Please upgrade to access this feature.',
+        ],
+      });
     }
   }
 
   renderAdditionalInputs() {
     const featureNum = this.state.features.length;
-    const {hostImageURL, long_description, hostImgUploaded, landingPage,
-           forSale, prices, confirmationEmail, proUser, showIntroOutro} = this.state;
+    const {
+      hostImageURL,
+      long_description,
+      hostImgUploaded,
+      landingPage,
+      forSale,
+      prices,
+      confirmationEmail,
+      proUser,
+      showIntroOutro,
+    } = this.state;
     const {userInfo} = this.props;
     const that = this;
-    const isProOrPlus = ['pro', 'plus'].includes(userInfo.publisher && userInfo.publisher.plan);
+    const isProOrPlus = ['pro', 'plus'].includes(
+      userInfo.publisher && userInfo.publisher.plan
+    );
 
     const actions = [
       <FlatButton
@@ -466,57 +613,52 @@ export default class AddSoundcast extends Component {
     ];
 
     return (
-      <div style={{marginTop: 25, marginBottom: 25,}}>
+      <div style={{marginTop: 25, marginBottom: 25}}>
         {/*What Listeners Will Get*/}
         <span style={{...styles.titleText, marginBottom: 5}}>
           What Listeners Will Get
-                </span>
+        </span>
         <span>
-          <i>
-            {` (list the main benefits and features of this soundcast)`}
-          </i>
-                </span>
+          <i>{` (list the main benefits and features of this soundcast)`}</i>
+        </span>
         <div style={{width: '100%', marginBottom: 30}}>
-          {
-            this.state.features.map((feature, i) => {
-              return (
-                <div key={i} style={styles.inputTitleWrapper}>
-                  <span style={styles.titleText}>{`${i + 1}. `}</span>
-                  <input
-                    type="text"
-                    style={{...styles.inputTitle, width: '85%'}}
-                    placeholder={'e.g. Learn how to analyze financial statement with ease'}
-                    onChange={this.setFeatures.bind(this,i)}
-                    value={this.state.features[i]}
-                  />
-                  <span
-                    style={{marginLeft: 5, cursor: 'pointer'}}
-                    onClick={this.deleteFeature.bind(this, i)}
-                  >
-                    <i className="fa fa-times " aria-hidden="true"></i>
-                  </span>
-                  {
-                    i == featureNum -1
-                    &&
-                    <span style={styles.addFeature} onClick={this.addFeature}>
-                      Add
-                    </span>
-                    ||
-                    null
+          {this.state.features.map((feature, i) => {
+            return (
+              <div key={i} style={styles.inputTitleWrapper}>
+                <span style={styles.titleText}>{`${i + 1}. `}</span>
+                <input
+                  type="text"
+                  style={{...styles.inputTitle, width: '85%'}}
+                  placeholder={
+                    'e.g. Learn how to analyze financial statement with ease'
                   }
-                </div>
-              )
-            })
-          }
+                  onChange={this.setFeatures.bind(this, i)}
+                  value={this.state.features[i]}
+                />
+                <span
+                  style={{marginLeft: 5, cursor: 'pointer'}}
+                  onClick={this.deleteFeature.bind(this, i)}
+                >
+                  <i className="fa fa-times " aria-hidden="true" />
+                </span>
+                {(i == featureNum - 1 && (
+                  <span style={styles.addFeature} onClick={this.addFeature}>
+                    Add
+                  </span>
+                )) ||
+                  null}
+              </div>
+            );
+          })}
         </div>
 
         {/*Long Description*/}
         <span style={{...styles.titleText, marginBottom: 5}}>
-            Long Description
+          Long Description
         </span>
         <div>
           <Editor
-            editorState = {long_description}
+            editorState={long_description}
             editorStyle={styles.editorStyle}
             wrapperStyle={styles.wrapperStyle}
             onEditorStateChange={this.onEditorStateChange.bind(this)}
@@ -525,15 +667,15 @@ export default class AddSoundcast extends Component {
 
         {/*Host/Instructor Name*/}
         <div>
-          <span style={styles.titleText}>
-              Host/Instructor Name
-          </span>
+          <span style={styles.titleText}>Host/Instructor Name</span>
           <div style={{...styles.inputTitleWrapper, width: '35%'}}>
             <input
               type="text"
               style={styles.inputTitle}
               placeholder={''}
-              onChange={(e) => {this.setState({hostName: e.target.value})}}
+              onChange={e => {
+                this.setState({hostName: e.target.value});
+              }}
               value={this.state.hostName}
             />
           </div>
@@ -541,30 +683,35 @@ export default class AddSoundcast extends Component {
 
         {/*Host/Instructor Bio*/}
         <div>
-          <div >
-            <span style={styles.titleText}>
-                Host/Instructor Bio
-            </span>
+          <div>
+            <span style={styles.titleText}>Host/Instructor Bio</span>
           </div>
           <textarea
             style={styles.inputDescription}
             placeholder={'Who will be teaching?'}
-            onChange={(e) => {this.setState({hostBio: e.target.value})}}
+            onChange={e => {
+              this.setState({hostBio: e.target.value});
+            }}
             value={this.state.hostBio}
-          >
-          </textarea>
+          />
         </div>
 
         {/*Host/Instructor Profile Picture*/}
-        <div style={{marginTop: 10, }} className='row'>
-          <div style={{marginBottom: 10}} className='col-md-12'>
+        <div style={{marginTop: 10}} className="row">
+          <div style={{marginBottom: 10}} className="col-md-12">
             <span style={styles.titleText}>
-                Host/Instructor Profile Picture
+              Host/Instructor Profile Picture
             </span>
           </div>
 
-          <div style={{...styles.hostImage, backgroundImage: `url(${hostImageURL})`}} className='col-md-3'/>
-          <div style={styles.loaderWrapper} className='col-md-9'>
+          <div
+            style={{
+              ...styles.hostImage,
+              backgroundImage: `url(${hostImageURL})`,
+            }}
+            className="col-md-3"
+          />
+          <div style={styles.loaderWrapper} className="col-md-9">
             <div style={{...styles.inputFileWrapper, marginTop: 0}}>
               <input
                 type="file"
@@ -573,70 +720,135 @@ export default class AddSoundcast extends Component {
                 accept="image/*"
                 onChange={this.setFileName.bind(this, true)}
                 style={styles.inputFileHidden}
-                ref={input => this.hostImgInputRef = input}
+                ref={input => (this.hostImgInputRef = input)}
               />
-              {
-                hostImgUploaded
-                &&
+              {(hostImgUploaded && (
                 <div>
                   <span>{this.hostImgInputRef.files[0].name}</span>
-                  <span style={styles.cancelImg}
-                      onClick={() => {
-                        that.setState({hostImgUploaded: false, hostImageURL: ''});
-                        that.hostImgInputRef = null;
-                        document.getElementById('upload_hidden_cover_2').value = null;
-                      }}
+                  <span
+                    style={styles.cancelImg}
+                    onClick={() => {
+                      that.setState({
+                        hostImgUploaded: false,
+                        hostImageURL: '',
+                      });
+                      that.hostImgInputRef = null;
+                      document.getElementById(
+                        'upload_hidden_cover_2'
+                      ).value = null;
+                    }}
                   >
                     Cancel
                   </span>
                 </div>
-                ||
+              )) || (
                 <div>
                   <button
-                    onClick={() => {document.getElementById('upload_hidden_cover_2').click();}}
-                    style={{...styles.uploadButton, backgroundColor:  Colors.mainOrange}}
+                    onClick={() => {
+                      document.getElementById('upload_hidden_cover_2').click();
+                    }}
+                    style={{
+                      ...styles.uploadButton,
+                      backgroundColor: Colors.mainOrange,
+                    }}
                   >
                     Upload
                   </button>
-                  <span style={styles.fileTypesLabel}>jpg or png files accepted</span>
+                  <span style={styles.fileTypesLabel}>
+                    jpg or png files accepted
+                  </span>
                 </div>
-              }
+              )}
             </div>
           </div>
         </div>
 
         {/*Upload outro/intro*/}
-        <div style={{ marginBottom: 40 }} className='row'>
-          <div class="col-md-12" style={{marginBottom: 10}}>
-            <div onClick={this.showIntroOutro} style={{...styles.titleText, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>
-              <div style={{display: 'inline-block', width: 15}}><FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} /></div>
+        <div style={{marginBottom: 40}} className="row">
+          <div className="col-md-12" style={{marginBottom: 10}}>
+            <div
+              onClick={this.showIntroOutro}
+              style={{
+                ...styles.titleText,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <div style={{display: 'inline-block', width: 15}}>
+                <FontAwesomeIcon
+                  icon={showIntroOutro ? faCaretDown : faCaretRight}
+                />
+              </div>
               <span>Intro And Outro</span>
-             {
-              !proUser &&
-              <span style={{fontSize:10,fontWeight: 800, color: 'red', marginLeft: 5}}>PLUS</span>
-              || <span></span>
-             }
+              {(!proUser && (
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: 'red',
+                    marginLeft: 5,
+                  }}
+                >
+                  PLUS
+                </span>
+              )) || <span />}
             </div>
-            <div style={{...styles.fileTypesLabel, marginBottom: 10, marginLeft: 10,}}>Automatically add intro/outro to episodes. mp3 or m4a files accepted</div>
+            <div
+              style={{
+                ...styles.fileTypesLabel,
+                marginBottom: 10,
+                marginLeft: 10,
+              }}
+            >
+              Automatically add intro/outro to episodes. mp3 or m4a files
+              accepted
+            </div>
           </div>
-          <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}>
-            <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Intro</span>
+          <div
+            className="col-md-6"
+            style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}
+          >
+            <span
+              style={{
+                ...styles.titleText,
+                display: 'inline-block',
+                marginRight: 12,
+              }}
+            >
+              Intro
+            </span>
             <S3FileUploader
               s3NewFileName={`${this.soundcastId}_intro`}
               onUploadedCallback={ext => {
                 that.setState({
-                  introUrl: `https://mysoundwise.com/tracks/${that.soundcastId}_intro.${ext}`
+                  introUrl: `https://mysoundwise.com/tracks/${
+                    that.soundcastId
+                  }_intro.${ext}`,
                 });
               }}
             />
           </div>
-          <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
-            <span style={{ ...styles.titleText, display: 'inline-block', marginRight: 12 }}>Outro</span>
+          <div
+            className="col-md-6"
+            style={{display: showIntroOutro ? '' : 'none'}}
+          >
+            <span
+              style={{
+                ...styles.titleText,
+                display: 'inline-block',
+                marginRight: 12,
+              }}
+            >
+              Outro
+            </span>
             <S3FileUploader
               s3NewFileName={`${this.soundcastId}_outro`}
               onUploadedCallback={ext => {
                 that.setState({
-                  outroUrl: `https://mysoundwise.com/tracks/${that.soundcastId}_outro.${ext}`
+                  outroUrl: `https://mysoundwise.com/tracks/${
+                    that.soundcastId
+                  }_outro.${ext}`,
                 });
               }}
             />
@@ -644,220 +856,241 @@ export default class AddSoundcast extends Component {
         </div>
 
         {/*Pricing*/}
-        { landingPage &&
-        <div>
-          <span style={styles.titleText}>Pricing</span>
-          <div style={{marginTop: 15, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
-            <Toggle
-              id='charging-status'
-              aria-labelledby='charging-label'
-              // label="Charge subscribers for this soundcast?"
-              checked={this.state.forSale}
-              onChange={this.handleChargeOption.bind(this)}
-              // thumbSwitchedStyle={styles.thumbSwitched}
-              // trackSwitchedStyle={styles.trackSwitched}
-              // style={{fontSize: 20, width: '50%'}}
-            />
-            <span id='charging-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>Charge for this soundcast</span>
-            <Dialog
-              title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
-              actions={actions}
-              modal={true}
-              open={this.state.paypalModalOpen}
-              onRequestClose={this.handlePaypalModalClose}
+        {landingPage && (
+          <div>
+            <span style={styles.titleText}>Pricing</span>
+            <div
+              style={{
+                marginTop: 15,
+                marginBottom: 15,
+                display: 'flex',
+                alignItems: 'center',
+              }}
             >
-              <div style={{fontSize: 17,}}>
-                <span>You need a payout account so that we could send you your sales proceeds. Please save this soundcast, and go to publisher setting to enter your payout method, before setting up soundcast pricing.</span>
-              </div>
-            </Dialog>
-          </div>
-          {
-            forSale &&
-            <div style={{width: '100%,'}}>
-              {
-                prices.map((price, i) => {
+              <Toggle
+                id="charging-status"
+                aria-labelledby="charging-label"
+                // label="Charge subscribers for this soundcast?"
+                checked={this.state.forSale}
+                onChange={this.handleChargeOption.bind(this)}
+                // thumbSwitchedStyle={styles.thumbSwitched}
+                // trackSwitchedStyle={styles.trackSwitched}
+                // style={{fontSize: 20, width: '50%'}}
+              />
+              <span
+                id="charging-label"
+                style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}
+              >
+                Charge for this soundcast
+              </span>
+              <Dialog
+                title={`Hold on, ${
+                  userInfo.firstName
+                }! Please set up payout first. `}
+                actions={actions}
+                modal={true}
+                open={!!this.state.paypalModalOpen}
+                onRequestClose={this.handlePaypalModalClose}
+              >
+                <div style={{fontSize: 17}}>
+                  <span>
+                    You need a payout account so that we could send you your
+                    sales proceeds. Please save this soundcast, and go to
+                    publisher setting to enter your payout method, before
+                    setting up soundcast pricing.
+                  </span>
+                </div>
+              </Dialog>
+            </div>
+            {forSale && (
+              <div style={{width: '100%,'}}>
+                {prices.map((price, i) => {
                   const priceTag = price.price == 'free' ? 0 : price.price;
                   return (
-                  <div key={i} className='' style={{marginBottom: 10}}>
-                    <div style={{width: '100%'}}>
-                      <span style={styles.titleText}>{`${i + 1}. `}</span>
-                      <div style={{width: '45%', display: 'inline-block', marginRight: 10,}}>
-                        <span>Payment Plan Name</span>
-                        <input
-                          type="text"
-                          style={styles.inputTitle}
-                          name="paymentPlan"
-                          placeholder='e.g. 3 day access, monthly subscription, etc'
-                          onChange={this.handlePriceInputs.bind(this, i)}
-                          value={prices[i].paymentPlan}
-                        />
-                      </div>
-                      <div style={{width: '25%', display: 'inline-block', marginRight: 10,}}>
-                        <span>Billing</span>
-                        <select
-                          type="text"
-                          style={styles.inputTitle}
-                          name="billingCycle"
-                          onChange={this.handlePriceInputs.bind(this, i)}
-                          value={prices[i].billingCycle}
+                    <div key={i} className="" style={{marginBottom: 10}}>
+                      <div style={{width: '100%'}}>
+                        <span style={styles.titleText}>{`${i + 1}. `}</span>
+                        <div
+                          style={{
+                            width: '45%',
+                            display: 'inline-block',
+                            marginRight: 10,
+                          }}
                         >
-                          <option value='one time'>one time purchase</option>
-                          <option value='rental'>one time rental</option>
-                          <option value='monthly'>monthly subscription</option>
-                          <option value='quarterly'>quarterly subscription</option>
-                          <option value='annual'>annual subscription</option>
-
-                        </select>
-                      </div>
-                      <div style={{width: '20%', display: 'inline-block',}}>
-                        <span>Price</span>
-                        <div>
-                          <span style={{fontSize: 18}}>{`$ `}</span>
+                          <span>Payment Plan Name</span>
                           <input
                             type="text"
-                            style={{...styles.inputTitle, width: '85%'}}
-                            name="price"
-                            placeholder={''}
+                            style={styles.inputTitle}
+                            name="paymentPlan"
+                            placeholder="e.g. 3 day access, monthly subscription, etc"
                             onChange={this.handlePriceInputs.bind(this, i)}
-                            value={prices[i].price}
+                            value={prices[i].paymentPlan}
                           />
                         </div>
-                      </div>
-                      <span
-                        style={{marginLeft: 5, cursor: 'pointer', fontSize:20}}
-                        onClick={this.deletePriceOption.bind(this, i)}>
-                                      <i className="fa fa-times " aria-hidden="true"></i>
-                      </span>
-                    </div>
-                    {
-                      prices[i].billingCycle == 'rental' &&
-                      <div className='col-md-12' style={{marginTop: 10, marginBottom: 15, }}>
-                        <div className='col-md-4 col-md-offset-6' style={{marginRight: 10,}}>
-                          <span>Rental period</span>
+                        <div
+                          style={{
+                            width: '25%',
+                            display: 'inline-block',
+                            marginRight: 10,
+                          }}
+                        >
+                          <span>Billing</span>
+                          <select
+                            type="text"
+                            style={styles.inputTitle}
+                            name="billingCycle"
+                            onChange={this.handlePriceInputs.bind(this, i)}
+                            value={prices[i].billingCycle}
+                          >
+                            <option value="one time">one time purchase</option>
+                            <option value="rental">one time rental</option>
+                            <option value="monthly">
+                              monthly subscription
+                            </option>
+                            <option value="quarterly">
+                              quarterly subscription
+                            </option>
+                            <option value="annual">annual subscription</option>
+                          </select>
+                        </div>
+                        <div style={{width: '20%', display: 'inline-block'}}>
+                          <span>Price</span>
                           <div>
+                            <span style={{fontSize: 18}}>{`$ `}</span>
                             <input
                               type="text"
-                              style={{...styles.inputTitle, width: '70%'}}
-                              name="rentalPeriod"
-                              placeholder={'2'}
+                              style={{...styles.inputTitle, width: '85%'}}
+                              name="price"
+                              placeholder={''}
                               onChange={this.handlePriceInputs.bind(this, i)}
-                              value={prices[i].rentalPeriod}
-                            />
-                            <span style={{fontSize: 18,}}>{` days`}</span>
-                          </div>
-                        </div>
-                      </div>
-                      || null
-                    }
-                    {
-                     price.coupons && price.coupons.map((coupon, j) => (
-                      <div key={`price${i}coupon${j}`} style={{marginLeft: 23, width: '100%',
-                        marginTop: 10, marginBottom: 15, display: 'flex', alignItems: 'center'}}>
-                        <div style={{marginRight: 10}}>
-                          <span>Coupon Code</span>
-                          <div>
-                            <input
-                              type="text"
-                              style={{...styles.inputTitle}}
-                              name="couponCode"
-                              onChange={e => {
-                                prices[i].coupons[j].code = e.target.value;
-                                that.setState({prices});
-                              }}
-                              value={price.coupons[j].code}
+                              value={prices[i].price}
                             />
                           </div>
                         </div>
-                        <div style={{marginRight: 13, width: 110, minWidth: 110}}>
-                          <span>Discount Percent</span>
-                          <div>
-                            <input
-                              type="text"
-                              style={{...styles.inputTitle, width: '50%'}}
-                              name="discountPercent"
-                              onChange={e => {
-                                prices[i].coupons[j].percentOff = e.target.value;
-                                that.setState({prices});
-                              }}
-                              value={price.coupons[j].percentOff}
-                            />
-                            <span style={{fontSize: 18,}}>{` % off`}</span>
-                          </div>
-                        </div>
-                        <div style={{marginRight: 13, height: 67, width: 125, minWidth: 125}}>
-                          <span>Price After Discount</span>
-                          <div style={{display: 'flex', alignItems: 'center', marginTop: 14}}>
-                            <span style={{fontSize: 20}}>{`$${(Math.round(price.price * (100 - price.coupons[j].percentOff) / 100)).toFixed(2)}`}</span>
-                          </div>
-                        </div>
-                        <div style={{marginRight: 10, height: 67, width: 165, minWidth: 165}}>
-                          <span>Expires on</span>
-                          <div style={{minWidth: 145, marginTop: 8}}>
-                            <Datetime value={moment.unix(coupon.expiration)} onChange={date => {
-                              if (date.unix) {
-                                prices[i].coupons[j].expiration = date.unix();
-                                that.setState({prices});
-                              }
-                            }} />
-                          </div>
-                        </div>
-                        <div style={{marginTop: 30}}>
-                          <span
-                            style={{marginLeft: 5, cursor: 'pointer', fontSize: 20, }}
-                            onClick={() => {
-                              prices[i].coupons.splice(j, 1);
-                              that.setState({prices});
-                            }}>
-                              <i className="fa fa-times " aria-hidden="true"></i>
-                          </span>
-                        </div>
-                      </div>
-                     )) // coupons.map
-                    }
-                    {
-                      priceTag > 0 &&
-                      <div style={{marginLeft: 25, marginTop: 5, marginBottom: 5, fontSize: 14, color: Colors.mainOrange, cursor: 'pointer'}}>
-                        <span onClick={() => {  // not pro or plus
-                          if (!isProOrPlus) {
-                            return this.setState({showPricingModal: ['Upgrade to add promo codes',
-                              'Creating promo plans is available on PLUS and PRO plans. Please upgrade to access this feature.'
-                            ]});
-                          }
-                          if (!prices[i].coupons) {
-                            prices[i].coupons = [];
-                          }
-                          const expiration = moment().add(3, 'months').unix();
-                          prices[i].coupons.push({code: '', percentOff: 0, expiration});
-                          that.setState({prices});
-                        }}>Add a coupon {!isProOrPlus && <span
-                            style={{color:Colors.link, fontWeight:700, fontSize:12}}> PRO</span>}
+                        <span
+                          style={{
+                            marginLeft: 5,
+                            cursor: 'pointer',
+                            fontSize: 20,
+                          }}
+                          onClick={this.deletePriceOption.bind(this, i)}
+                        >
+                          <i className="fa fa-times " aria-hidden="true" />
                         </span>
                       </div>
-                    }
-                  </div>
-                  )
-                })
-              }
-              <div
-                onClick={this.addPriceOption.bind(this)}
-                style={{...styles.addFeature, marginTop: 25, marginBottom: 30, display: 'inline-block'}}
-              >
-                Add another price option
+                      {(prices[i].billingCycle == 'rental' && (
+                        <div
+                          className="col-md-12"
+                          style={{marginTop: 10, marginBottom: 15}}
+                        >
+                          <div
+                            className="col-md-4 col-md-offset-6"
+                            style={{marginRight: 10}}
+                          >
+                            <span>Rental period</span>
+                            <div>
+                              <input
+                                type="text"
+                                style={{...styles.inputTitle, width: '70%'}}
+                                name="rentalPeriod"
+                                placeholder={'2'}
+                                onChange={this.handlePriceInputs.bind(this, i)}
+                                value={prices[i].rentalPeriod}
+                              />
+                              <span style={{fontSize: 18}}>{` days`}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )) ||
+                        null}
+                      {price.coupons && (
+                        <Coupons
+                          price={price}
+                          priceIndex={i}
+                          prices={prices}
+                          setState={that.setState.bind(that)}
+                        />
+                      )}
+                      {priceTag > 0 && (
+                        <div
+                          style={{
+                            marginLeft: 25,
+                            marginTop: 5,
+                            marginBottom: 5,
+                            fontSize: 14,
+                            color: Colors.mainOrange,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <span
+                            onClick={() => {
+                              // not pro or plus
+                              if (!isProOrPlus) {
+                                return this.setState({
+                                  showPricingModal: [
+                                    'Upgrade to add promo codes',
+                                    'Creating promo plans is available on PLUS and PRO plans. Please upgrade to access this feature.',
+                                  ],
+                                });
+                              }
+                              if (!prices[i].coupons) {
+                                prices[i].coupons = [];
+                              }
+                              const expiration = moment()
+                                .add(3, 'months')
+                                .unix();
+                              prices[i].coupons.push({
+                                code: '',
+                                percentOff: 0,
+                                expiration,
+                              });
+                              that.setState({prices});
+                            }}
+                          >
+                            Add a coupon{' '}
+                            {!isProOrPlus && (
+                              <span
+                                style={{
+                                  color: Colors.link,
+                                  fontWeight: 700,
+                                  fontSize: 12,
+                                }}
+                              >
+                                {' '}
+                                PRO
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                <div
+                  onClick={this.addPriceOption.bind(this)}
+                  style={{
+                    ...styles.addFeature,
+                    marginTop: 25,
+                    marginBottom: 30,
+                    display: 'inline-block',
+                  }}
+                >
+                  Add another price option
+                </div>
               </div>
-            </div>
-          }
-        </div>
-        }
+            )}
+          </div>
+        )}
       </div>
-    )
+    );
   }
 
   handlePriceInputs(i, e) {
     let prices = [...this.state.prices];
     prices[i][e.target.name] = e.target.value;
     this.setState({
-      prices
-    })
+      prices,
+    });
   }
 
   addPriceOption() {
@@ -865,41 +1098,41 @@ export default class AddSoundcast extends Component {
     const price = {
       paymentPlan: '',
       billingCycle: 'one time',
-      price: '0'
-    }
+      price: '0',
+    };
     prices.push(price);
     this.setState({
-      prices
-    })
+      prices,
+    });
   }
 
   deletePriceOption(i) {
     let prices = [...this.state.prices];
-    if(prices.length > 1) {
+    if (prices.length > 1) {
       prices.splice(i, 1);
     } else {
       prices[0] = {
         paymentPlan: '',
         billingCycle: 'monthly',
-        price: ''
-      }
+        price: '',
+      };
     }
     this.setState({
-      prices
-    })
+      prices,
+    });
   }
 
   handleModalOpen() {
     this.setState({
       modalOpen: true,
-    })
+    });
   }
 
   handleModalClose() {
     this.setState({
       modalOpen: false,
     });
-    if(this.state.hostImg) {
+    if (this.state.hostImg) {
       this.setState({
         hostImgUploaded: false,
       });
@@ -917,43 +1150,77 @@ export default class AddSoundcast extends Component {
       fileCropped: true,
       modalOpen: false,
     });
-    if(hostImg) {
+
+    if (hostImg) {
       this.setState({
         hostImgUploaded: true,
-      })
+      });
     } else {
       this.setState({
         fileUploaded: true,
-      })
+      });
     }
+
     this._uploadToAws(fileBlob, hostImg);
   }
 
   render() {
-    const { imageURL, title, subscribers, fileUploaded,landingPage, modalOpen, hostImg, showPricingModal } = this.state;
-    const { userInfo, history } = this.props;
+    const {
+      imageURL,
+      title,
+      subscribers,
+      fileUploaded,
+      landingPage,
+      modalOpen,
+      hostImg,
+      showPricingModal,
+    } = this.state;
+    const {userInfo, history} = this.props;
     const that = this;
 
     return (
-      <MuiThemeProvider >
-        <div className='padding-30px-tb'>
-
+      <MuiThemeProvider>
+        <div className="padding-30px-tb">
           {/*Upgrade account block*/}
-          <div onClick={() => that.setState({showPricingModal: false})}
-              style={{display: showPricingModal ? '' : 'none', background: 'rgba(0, 0, 0, 0.7)', top:0,
-                      left: 0, height: '100%', width: '100%', position: 'absolute', zIndex: 100}}>
-            <div style={{transform: 'translate(-50%, -50%)', backgroundColor: 'white', top: '50%',
-                         left: '50%', position: 'fixed', width: '66%', zIndex: 103}}>
-              <div className='title-medium' style={{margin: 25, fontWeight: 800}}>
+          <div
+            onClick={() => that.setState({showPricingModal: false})}
+            style={{
+              display: showPricingModal ? '' : 'none',
+              background: 'rgba(0, 0, 0, 0.7)',
+              top: 0,
+              left: 0,
+              height: '100%',
+              width: '100%',
+              position: 'absolute',
+              zIndex: 100,
+            }}
+          >
+            <div
+              style={{
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: 'white',
+                top: '50%',
+                left: '50%',
+                position: 'fixed',
+                width: '66%',
+                zIndex: 103,
+              }}
+            >
+              <div
+                className="title-medium"
+                style={{margin: 25, fontWeight: 800}}
+              >
                 {showPricingModal && showPricingModal[0]}
               </div>
-              <div className='title-small' style={{margin: 25}}>
+              <div className="title-small" style={{margin: 25}}>
                 {showPricingModal && showPricingModal[1]}
               </div>
               <div className="center-col">
                 <OrangeSubmitButton
-                  label='Upgrade'
-                  onClick={() => that.props.history.push({pathname: '/pricing'})}
+                  label="Upgrade"
+                  onClick={() =>
+                    that.props.history.push({pathname: '/pricing'})
+                  }
                   styles={{width: '60%'}}
                 />
               </div>
@@ -967,39 +1234,55 @@ export default class AddSoundcast extends Component {
             hostImg={hostImg}
             file={this.currentImageRef}
           />
-          <div className='padding-bottom-20px'>
-                    <span className='title-medium '>
-                        Add A Soundcast
-                    </span>
+          <div className="padding-bottom-20px">
+            <span className="title-medium ">Add A Soundcast</span>
           </div>
           <div className="col-lg-10 col-md-11 col-sm-12 col-xs-12">
-            <div className=''  style={{marginTop: 15, marginBottom: 25, display: 'flex', alignItems: 'center'}}>
-                <Toggle
-                  id='landing-status'
-                  aria-labelledby='landing-label'
-                  checked={this.state.landingPage}
-                  onChange={this.handleCheck.bind(this)}
-                />
-                <span id='landing-label' style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}>This is a public soundcast</span>
+            <div
+              className=""
+              style={{
+                marginTop: 15,
+                marginBottom: 25,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Toggle
+                id="landing-status"
+                aria-labelledby="landing-label"
+                checked={this.state.landingPage}
+                onChange={this.handleCheck.bind(this)}
+              />
+              <span
+                id="landing-label"
+                style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}
+              >
+                This is a public soundcast
+              </span>
             </div>
             {/*Title*/}
             <span style={styles.titleText}>Title</span>
             <span style={{...styles.titleText, color: 'red'}}>*</span>
-            <span style={{fontSize: 17}}><i> (60 characters max)</i></span>
+            <span style={{fontSize: 17}}>
+              <i> (60 characters max)</i>
+            </span>
             <ValidatedInput
               type="text"
               styles={styles.inputTitle}
               wrapperStyles={styles.inputTitleWrapper}
               placeholder={'Soundcast title'}
-              onChange={(e) => {this.setState({title: e.target.value})}}
+              onChange={e => {
+                this.setState({title: e.target.value});
+              }}
               value={this.state.title}
-              validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
+              validators={[
+                minLengthValidator.bind(null, 1),
+                maxLengthValidator.bind(null, 60),
+              ]}
             />
 
             {/*Short Description*/}
-            <span style={styles.titleText}>
-              Short Description
-            </span>
+            <span style={styles.titleText}>Short Description</span>
             <span style={{...styles.titleText, color: 'red'}}>*</span>
             <span style={{fontSize: 17}}>
               <i> (300 characters max)</i>
@@ -1010,22 +1293,24 @@ export default class AddSoundcast extends Component {
                 type="text"
                 style={styles.inputDescription}
                 placeholder={'A short description of this soundcast'}
-                onChange={(e) => {this.setState({short_description: e.target.value})}}
+                onChange={e => {
+                  this.setState({short_description: e.target.value});
+                }}
                 value={this.state.short_description}
               />
             </div>
 
             {/*Soundcast cover art*/}
-            <div style={{marginBottom: 30, marginTop: 30,}} className='row'>
-              <div className='col-md-3'>
+            <div style={{marginBottom: 30, marginTop: 30}} className="row">
+              <div className="col-md-3">
                 <div style={styles.image}>
                   <img src={imageURL} />
                 </div>
               </div>
-              <div className='col-md-9'>
+              <div className="col-md-9">
                 <div style={styles.loaderWrapper}>
                   <div style={{...styles.titleText, marginLeft: 10}}>
-                      Soundcast cover art
+                    Soundcast cover art
                   </div>
                   <div style={{...styles.inputFileWrapper, marginTop: 0}}>
                     <input
@@ -1035,31 +1320,50 @@ export default class AddSoundcast extends Component {
                       accept="image/*"
                       onChange={this.setFileName.bind(this, null)}
                       style={styles.inputFileHidden}
-                      ref={input => this.fileInputRef = input}
+                      ref={input => (this.fileInputRef = input)}
                     />
-                    {
-                      fileUploaded
-                      &&
+                    {(fileUploaded && (
                       <div>
                         <span>{this.fileInputRef.files[0].name}</span>
-                        <span style={styles.cancelImg}
-                            onClick={() => {
-                              that.setState({fileUploaded: false, imageURL: ''});
-                              document.getElementById('upload_hidden_cover').value = null;
-                            }}>Cancel</span>
+                        <span
+                          style={styles.cancelImg}
+                          onClick={() => {
+                            that.setState({
+                              fileUploaded: false,
+                              imageURL: '',
+                              blurredImageURL: '',
+                            });
+                            document.getElementById(
+                              'upload_hidden_cover'
+                            ).value = null;
+                          }}
+                        >
+                          Cancel
+                        </span>
                       </div>
-                      ||
+                    )) || (
                       <div>
                         <button
-                          onClick={() => {document.getElementById('upload_hidden_cover').click();}}
-                          style={{...styles.uploadButton, backgroundColor:  Colors.link}}
+                          onClick={() => {
+                            document
+                              .getElementById('upload_hidden_cover')
+                              .click();
+                          }}
+                          style={{
+                            ...styles.uploadButton,
+                            backgroundColor: Colors.link,
+                          }}
                         >
                           Upload
                         </button>
-                        <div style={styles.fileTypesLabel}><span>(jpg or png files accepted; square image, recommended at least 800px by 800px)</span>
+                        <div style={styles.fileTypesLabel}>
+                          <span>
+                            (jpg or png files accepted; square image,
+                            recommended at least 800px by 800px)
+                          </span>
                         </div>
                       </div>
-                    }
+                    )}
                   </div>
                 </div>
               </div>
@@ -1067,28 +1371,40 @@ export default class AddSoundcast extends Component {
             {this.renderAdditionalInputs()}
 
             {/*Confirmation email*/}
-            <div style={{borderTop: '0.3px solid #9b9b9b', paddingTop: 25, borderBottom: '0.3px solid #9b9b9b', paddingBottom: 25,}}>
+            <div
+              style={{
+                borderTop: '0.3px solid #9b9b9b',
+                paddingTop: 25,
+                borderBottom: '0.3px solid #9b9b9b',
+                paddingBottom: 25,
+              }}
+            >
               <div>
                 <span style={styles.titleText}>
                   Subsciption Confirmation Message
                 </span>
                 <Editor
-                  editorState = {this.state.confirmationEmail}
+                  editorState={this.state.confirmationEmail}
                   editorStyle={styles.editorStyle}
                   wrapperStyle={styles.wrapperStyle}
-                  onEditorStateChange={this.onConfirmationStateChange.bind(this)}
+                  onEditorStateChange={this.onConfirmationStateChange.bind(
+                    this
+                  )}
                 />
               </div>
             </div>
 
             {/*Bubmission buttons*/}
-            <div className='row'>
+            <div className="row">
               <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                  <OrangeSubmitButton
-                      label="Save Draft"
-                      styles={{backgroundColor: Colors.link, borderColor: Colors.link}}
-                      onClick={this.submit.bind(this, false)}
-                  />
+                <OrangeSubmitButton
+                  label="Save Draft"
+                  styles={{
+                    backgroundColor: Colors.link,
+                    borderColor: Colors.link,
+                  }}
+                  onClick={this.submit.bind(this, false)}
+                />
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <OrangeSubmitButton
@@ -1104,19 +1420,16 @@ export default class AddSoundcast extends Component {
               </div>
             </div>
           </div>
-
         </div>
       </MuiThemeProvider>
     );
   }
-};
+}
 
 AddSoundcast.propTypes = {
   userInfo: PropTypes.object,
   history: PropTypes.object,
 };
-
-
 
 const styles = {
   titleText: {
@@ -1243,13 +1556,13 @@ const styles = {
     color: Colors.mainWhite,
     fontSize: 18,
     border: 0,
-    marginTop: 5
+    marginTop: 5,
   },
   cancelImg: {
     color: Colors.link,
     marginLeft: 20,
     fontSize: 16,
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 16,

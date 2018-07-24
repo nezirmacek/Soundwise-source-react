@@ -1,9 +1,10 @@
 var firebase = require("firebase-admin");
 const moment = require("moment");
 var serviceAccount = require("../serviceAccountKey.json");
+
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: "https://soundwise-a8e6f.firebaseio.com"
+  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 
 const usersRef = firebase.database().ref("/users");

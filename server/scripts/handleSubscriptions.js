@@ -1,8 +1,8 @@
 'use strict';
 
-var admin = require("firebase-admin");
+var admin = require('firebase-admin');
 
-var stripe_key =  require('../../config').stripe_key;
+var stripe_key = require('../../config').stripe_key;
 
 var stripe = require('stripe')(stripe_key);
 
@@ -34,7 +34,8 @@ var stripe = require('stripe')(stripe_key);
 module.exports.unsubscribe = (req, res) => {
   if (req.body.paymentID.slice(0, 3) == 'sub') {
     stripe.subscriptions.del(
-      req.body.paymentID, {
+      req.body.paymentID,
+      {
         stripe_account: req.body.publisher,
       },
       function(err, confirmation) {

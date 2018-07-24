@@ -13,16 +13,17 @@ const algolia = algoliasearch(
   algoliaConfig.ALGOLIA_API_KEY
 );
 const index = algolia.initIndex(algoliaConfig.ALGOLIA_INDEX_NAME);
-index.setSettings({
-  'searchableAttributes': [
-    'title',
-    'hostName',
-    'publisherName',
-    'short_description',
-  ],
-}, function(err, content) {
-
-});
+index.setSettings(
+  {
+    searchableAttributes: [
+      'title',
+      'hostName',
+      'publisherName',
+      'short_description',
+    ],
+  },
+  function(err, content) {}
+);
 
 module.exports.algoliaIndex = () => {
   const soundcastsRef = database.ref('/soundcasts');
@@ -35,7 +36,13 @@ function addOrUpdateIndexRecord(soundcast) {
   // Get Firebase object
   if (soundcast.val().published && soundcast.val().landingPage) {
     // Specify Algolia's objectID using the Firebase object key
-    const {title, hostName, publisherName, short_description, imageURL} = soundcast.val();
+    const {
+      title,
+      hostName,
+      publisherName,
+      short_description,
+      imageURL,
+    } = soundcast.val();
     const record = {
       title,
       short_description,
@@ -54,7 +61,7 @@ function addOrUpdateIndexRecord(soundcast) {
         console.error('Error when indexing soundcast into Algolia', error);
         process.exit(1);
       });
-  } else if(soundcast.val().published == false) {
+  } else if (soundcast.val().published == false) {
     deleteIndexRecord(soundcast);
   }
 }
@@ -73,4 +80,3 @@ function deleteIndexRecord(soundcast) {
       process.exit(1);
     });
 }
-
