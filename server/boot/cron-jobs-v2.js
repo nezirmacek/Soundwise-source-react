@@ -23,6 +23,9 @@ var stripeFeePercent = 0.029;
 var soundwiseFeePercent = 0;
 
 module.exports = function(app) {
+
+  return // prevent from running
+
   paypal.configure(paypalConfig);
 
   var j = schedule.scheduleJob('0 0 10 1 * *', function() {

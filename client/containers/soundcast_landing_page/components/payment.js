@@ -70,9 +70,10 @@ class _Payment extends Component {
       ) {
         return; // ignore if soundcast not free and have coupons
       }
-      if (isFree) {
+      if (isFree && !props.isTrial) {
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
+        // - prevent audocheckout if trial coupon used
         this.addSoundcastToUser(
           null,
           props.userInfo,
@@ -366,6 +367,7 @@ class _Payment extends Component {
       soundcastID,
       handleStripeId,
       coupon,
+      isTrial,
     } = this.props;
     const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
     const that = this;
@@ -446,6 +448,7 @@ class _Payment extends Component {
                 planID,
                 publisherID: soundcast.publisherID,
                 coupon,
+                isTrial,
               })
                 .then(response => {
                   console.log('recurring_charge response: ', response);

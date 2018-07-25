@@ -141,8 +141,11 @@ module.exports.createUpdatePlans = async (req, res) => {
                   coupon =>
                     new Promise(resolve2 => {
                       stripe.coupons.del(coupon.code, {stripe_account}, () => {
-                        if (coupon.expiration - 10 < Date.now() / 1000) {
-                          // outdated
+                        if (
+                          coupon.couponType === 'trial_period' ||
+                          coupon.expiration - 10 < Date.now() / 1000
+                        ) {
+                          // trial period or outdated
                           resolve2();
                         } else {
                           stripe.coupons.create(
@@ -189,8 +192,9 @@ module.exports.handleRecurringPayment = async (req, res) => {
     platformCustomer,
     stripe_account,
     planID,
-    coupon,
     publisherID,
+    coupon,
+    isTrial,
   } = req.body;
   const publisherObj = await firebase
     .database()
@@ -249,8 +253,11 @@ module.exports.handleRecurringPayment = async (req, res) => {
         application_fee_percent: soundwiseFeePercent,
         items: [{plan: planID}],
       };
-      if (coupon) {
+      if (!isTrial && coupon) {
         newSub.coupon = coupon;
+      }
+      if (isTrial) {
+        newSub.trial_end = moment().add(isTrial, 'days').unix();
       }
       stripe.subscriptions.create(
         newSub,

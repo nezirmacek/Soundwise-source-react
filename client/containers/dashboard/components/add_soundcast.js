@@ -16,7 +16,6 @@ import {
   ContentState,
 } from 'draft-js';
 import Toggle from 'react-toggle';
-import Datetime from 'react-datetime';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight';
 import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown';
@@ -33,6 +32,7 @@ import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
+import Coupons from './coupons';
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -778,7 +778,7 @@ export default class AddSoundcast extends Component {
 
         {/*Upload outro/intro*/}
         <div style={{marginBottom: 40}} className="row">
-          <div class="col-md-12" style={{marginBottom: 10}}>
+          <div className="col-md-12" style={{marginBottom: 10}}>
             <div
               onClick={this.showIntroOutro}
               style={{
@@ -819,7 +819,7 @@ export default class AddSoundcast extends Component {
             </div>
           </div>
           <div
-            class="col-md-6"
+            className="col-md-6"
             style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}
           >
             <span
@@ -842,7 +842,10 @@ export default class AddSoundcast extends Component {
               }}
             />
           </div>
-          <div class="col-md-6" style={{display: showIntroOutro ? '' : 'none'}}>
+          <div
+            className="col-md-6"
+            style={{display: showIntroOutro ? '' : 'none'}}
+          >
             <span
               style={{
                 ...styles.titleText,
@@ -899,7 +902,7 @@ export default class AddSoundcast extends Component {
                 }! Please set up payout first. `}
                 actions={actions}
                 modal={true}
-                open={this.state.paypalModalOpen}
+                open={!!this.state.paypalModalOpen}
                 onRequestClose={this.handlePaypalModalClose}
               >
                 <div style={{fontSize: 17}}>
@@ -947,7 +950,7 @@ export default class AddSoundcast extends Component {
                           <span>Billing</span>
                           <select
                             type="text"
-                            style={styles.inputTitle}
+                            style={{...styles.inputTitle, paddingTop: 6}}
                             name="billingCycle"
                             onChange={this.handlePriceInputs.bind(this, i)}
                             value={prices[i].billingCycle}
@@ -1013,124 +1016,14 @@ export default class AddSoundcast extends Component {
                         </div>
                       )) ||
                         null}
-                      {price.coupons &&
-                        price.coupons.map((coupon, j) => (
-                          <div
-                            key={`price${i}coupon${j}`}
-                            style={{
-                              marginLeft: 23,
-                              width: '100%',
-                              marginTop: 10,
-                              marginBottom: 15,
-                              display: 'flex',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <div style={{marginRight: 10}}>
-                              <span>Coupon Code</span>
-                              <div>
-                                <input
-                                  type="text"
-                                  style={{...styles.inputTitle}}
-                                  name="couponCode"
-                                  onChange={e => {
-                                    prices[i].coupons[j].code = e.target.value;
-                                    that.setState({prices});
-                                  }}
-                                  value={price.coupons[j].code}
-                                />
-                              </div>
-                            </div>
-                            <div
-                              style={{
-                                marginRight: 13,
-                                width: 110,
-                                minWidth: 110,
-                              }}
-                            >
-                              <span>Discount Percent</span>
-                              <div>
-                                <input
-                                  type="text"
-                                  style={{...styles.inputTitle, width: '50%'}}
-                                  name="discountPercent"
-                                  onChange={e => {
-                                    prices[i].coupons[j].percentOff =
-                                      e.target.value;
-                                    that.setState({prices});
-                                  }}
-                                  value={price.coupons[j].percentOff}
-                                />
-                                <span style={{fontSize: 18}}>{` % off`}</span>
-                              </div>
-                            </div>
-                            <div
-                              style={{
-                                marginRight: 13,
-                                height: 67,
-                                width: 125,
-                                minWidth: 125,
-                              }}
-                            >
-                              <span>Price After Discount</span>
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  marginTop: 14,
-                                }}
-                              >
-                                <span style={{fontSize: 20}}>{`$${Math.round(
-                                  (price.price *
-                                    (100 - price.coupons[j].percentOff)) /
-                                    100
-                                ).toFixed(2)}`}</span>
-                              </div>
-                            </div>
-                            <div
-                              style={{
-                                marginRight: 10,
-                                height: 67,
-                                width: 165,
-                                minWidth: 165,
-                              }}
-                            >
-                              <span>Expires on</span>
-                              <div style={{minWidth: 145, marginTop: 8}}>
-                                <Datetime
-                                  value={moment.unix(coupon.expiration)}
-                                  onChange={date => {
-                                    if (date.unix) {
-                                      prices[i].coupons[
-                                        j
-                                      ].expiration = date.unix();
-                                      that.setState({prices});
-                                    }
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <div style={{marginTop: 30}}>
-                              <span
-                                style={{
-                                  marginLeft: 5,
-                                  cursor: 'pointer',
-                                  fontSize: 20,
-                                }}
-                                onClick={() => {
-                                  prices[i].coupons.splice(j, 1);
-                                  that.setState({prices});
-                                }}
-                              >
-                                <i
-                                  className="fa fa-times "
-                                  aria-hidden="true"
-                                />
-                              </span>
-                            </div>
-                          </div>
-                        )) // coupons.map
-                      }
+                      {price.coupons && (
+                        <Coupons
+                          price={price}
+                          priceIndex={i}
+                          prices={prices}
+                          setState={that.setState.bind(that)}
+                        />
+                      )}
                       {priceTag > 0 && (
                         <div
                           style={{
@@ -1156,13 +1049,13 @@ export default class AddSoundcast extends Component {
                               if (!prices[i].coupons) {
                                 prices[i].coupons = [];
                               }
-                              const expiration = moment()
-                                .add(3, 'months')
-                                .unix();
                               prices[i].coupons.push({
                                 code: '',
                                 percentOff: 0,
-                                expiration,
+                                couponType: 'discount',
+                                expiration: moment()
+                                  .add(3, 'months')
+                                  .unix(),
                               });
                               that.setState({prices});
                             }}
@@ -1207,6 +1100,9 @@ export default class AddSoundcast extends Component {
 
   handlePriceInputs(i, e) {
     let prices = [...this.state.prices];
+    if (e.target.name === 'billingCycle' && prices[i].coupons) {
+      prices[i].coupons.forEach(i => (i.couponType = 'discount'));
+    }
     prices[i][e.target.name] = e.target.value;
     this.setState({
       prices,
