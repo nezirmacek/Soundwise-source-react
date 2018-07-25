@@ -237,6 +237,15 @@ var PodcasterEmail = db.define(
   }
 );
 
+var Coupon = db.define('Coupon', {
+  coupon: {type: Sequelize.STRING, allowNull: false},
+  soundcastId: {type: Sequelize.STRING, allowNull: false},
+  soundcastTitle: {type: Sequelize.STRING, allowNull: false},
+  publisherId: Sequelize.STRING,
+  userId: Sequelize.STRING,
+  timeStamp: Sequelize.BIGINT,
+});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -310,6 +319,7 @@ Episode.sync({force: false, alter: true});
 ListeningSession.sync({force: false, alter: true});
 Transaction.sync({force: false, alter: true});
 Payout.sync({force: false, alter: true});
+Coupon.sync({force: false, alter: true});
 PlatformCharges.sync({force: false, alter: true});
 Transfers.sync({force: false, alter: true});
 Event.sync({force: false, alter: true});
@@ -328,6 +338,7 @@ module.exports = {
   ListeningSession,
   Transaction,
   Payout,
+  Coupon,
   PlatformCharges,
   Transfers,
   ImportedFeed,

@@ -41,6 +41,7 @@ class _SoundcastPage extends Component {
         prices: [{}],
         modalOpen: false,
       },
+      coupon: '',
       cardHeight: 0,
       showBanner: false,
       publisherID: '',
@@ -60,8 +61,10 @@ class _SoundcastPage extends Component {
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
     const params = new URLSearchParams(this.props.location.search);
+
     if (params.get('c')) {
       this.setState({coupon: params.get('c')});
+      // cooooupon
       this.startTimer();
     }
     this.retrieveSoundcast(soundcastID);

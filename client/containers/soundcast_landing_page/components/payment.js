@@ -44,7 +44,6 @@ class _Payment extends Component {
 
   componentDidMount() {
     if (process.env.NODE_ENV === 'dev') {
-      console.log('Stripe: setting test key');
       Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     } else {
       Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
@@ -213,7 +212,15 @@ class _Payment extends Component {
               .ref(`soundcasts/${soundcastID}/invited/${_email}`)
               .remove();
 
-            // if it's a free soundcast, add subscriber to publisher
+            await Axios.post('/api/coupon', {
+              coupon: this.props.coupon,
+              soundcastId: soundcastID,
+              soundcastTitle: soundcast.title,
+              publisherId: soundcast.publisherID,
+              userId: userId,
+              timeStamp: moment().format('X'),
+            }).catch(err => console.log('err: ', err));
+
             if (totalPay == 0 || totalPay == 'free') {
               // TODO review block
               await firebase

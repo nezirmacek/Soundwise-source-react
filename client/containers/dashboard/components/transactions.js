@@ -122,6 +122,11 @@ export default class Transactions extends Component {
             </Link>
           </li>
           <li role="presentation">
+            <Link to="/dashboard/publisher/promotions">
+              <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
+            </Link>
+          </li>
+          <li role="presentation">
             <Link to="/dashboard/publisher/settings">
               <span style={{fontSize: 15, fontWeight: 600}}>Settings</span>
             </Link>

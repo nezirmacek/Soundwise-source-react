@@ -1,78 +1,31 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
-import firebase from 'firebase';
 import {Link} from 'react-router-dom';
-
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
-
-import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
-import {
-  OrangeSubmitButton,
-  TransparentShortSubmitButton,
-} from '../../../components/buttons/buttons';
 
-export default class Payouts extends Component {
+export default class Promotions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      payouts: [
-        {
-          createdAt: '',
-          amount: 0,
-        },
-      ],
+      coupons: [],
     };
   }
 
   componentDidMount() {
     if (this.props.userInfo.publisher) {
-      this.retrievePayouts(this.props.userInfo.publisher.id);
+      const publisherId = this.props.userInfo.publisher.id;
+      this.retrieveCoupons(publisherId);
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.userInfo.publisher &&
-      nextProps.userInfo.publisher !== this.props.userInfo.publisher
-    ) {
-      this.retrievePayouts(nextProps.userInfo.publisher.id);
-    }
-  }
-
-  retrievePayouts(publisherId) {
-    const that = this;
-    const filter = {
-      params: {
-        filter: {
-          where: {
-            publisherId,
-            // date: {
-            //     lte: moment().format('YYYY-MM-DD[T]HH:mm:ss.SSS[Z]'),
-            // },
-          },
-        },
-      },
-    };
-
-    Axios.get('https://mysoundwise.com/api/payouts', filter)
+  retrieveCoupons(publisherId) {
+    Axios.get('/api/coupon', {params: {filter: {publisherId: publisherId}}})
       .then(res => {
-        const payouts = res.data;
-        payouts.sort((a, b) => {
-          return b.createdAt - a.createdAt;
-        });
-        that.setState({
-          payouts,
-        });
+        this.setState({coupons: res.data});
       })
       .catch(err => {
-        console.log('error retrieving payouts: ', err);
+        console.log('error retrieving: ', err);
       });
   }
 
@@ -102,10 +55,15 @@ export default class Payouts extends Component {
               <span style={{fontSize: 15, fontWeight: 600}}>Transactions</span>
             </Link>
           </li>
+          <li role="presentation">
+            <Link to="/dashboard/publisher/payouts">
+              <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
+            </Link>
+          </li>
           <li role="presentation" className="active">
             <Link
               style={{backgroundColor: 'transparent'}}
-              to="/dashboard/publisher/payouts"
+              to="/dashboard/publisher/promotions"
             >
               <span
                 style={{
@@ -114,13 +72,8 @@ export default class Payouts extends Component {
                   color: Colors.mainOrange,
                 }}
               >
-                Payouts
+                Promotions
               </span>
-            </Link>
-          </li>
-          <li role="presentation">
-            <Link to="/dashboard/publisher/promotions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
             </Link>
           </li>
           <li role="presentation">
@@ -129,7 +82,7 @@ export default class Payouts extends Component {
             </Link>
           </li>
         </ul>
-        {(this.state.payouts.length > 0 && (
+        {(this.state.coupons.length > 0 && (
           <row>
             <div
               className="col-md-12 col-sm-12 col-xs-12 table-responsive"
@@ -139,18 +92,23 @@ export default class Payouts extends Component {
                 <thead>
                   <tr style={styles.tr}>
                     <th style={{...styles.th}}>DATE</th>
-                    <th style={{...styles.th}}>AMOUNT</th>
+                    <th style={{...styles.th}}>COUPON CODE</th>
+                    <th style={{...styles.th}}>SOUNDCAST TITLE</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.payouts.map((payout, i) => {
+                  {this.state.coupons.map((coupon, i) => {
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{...styles.td}}>
-                          {payout.createdAt.slice(0, 10)}
+                          {moment
+                            .unix(Number(coupon.timeStamp))
+                            .format('YYYY-MM-DD')}
                         </td>
-                        <td style={{...styles.td}}>{`$${payout.amount /
-                          100}`}</td>
+                        <td style={{...styles.td}}>{coupon.coupon}</td>
+                        <td style={{...styles.td}}>{`${
+                          coupon.soundcastTitle
+                        }`}</td>
                       </tr>
                     );
                   })}
@@ -170,7 +128,7 @@ export default class Payouts extends Component {
                   backgroundColor: Colors.mainWhite,
                 }}
               >
-                <span>There're no payouts to show.</span>
+                <span>There're no cupons to show.</span>
               </div>
             </div>
           </row>
@@ -181,32 +139,6 @@ export default class Payouts extends Component {
 }
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
-  inputDescription: {
-    height: 80,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginTop: 10,
-    marginBottom: 20,
-  },
   tableWrapper: {
     marginTop: 25,
     backgroundColor: Colors.mainWhite,
@@ -222,7 +154,6 @@ const styles = {
   th: {
     fontSize: 16,
     color: Colors.fontGrey,
-    // height: 35,
     fontWeight: 'regular',
     verticalAlign: 'middle',
     wordWrap: 'break-word',
@@ -230,7 +161,6 @@ const styles = {
   td: {
     color: Colors.softBlack,
     fontSize: 16,
-    // height: 40,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     verticalAlign: 'middle',

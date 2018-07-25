@@ -205,6 +205,11 @@ export default class Billing extends Component {
                 <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
               </Link>
             </li>
+            <li role="presentation">
+              <Link to="/dashboard/publisher/promotions">
+                <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
+              </Link>
+            </li>
             <li role="presentation" className="active">
               <Link
                 style={{backgroundColor: 'transparent'}}
