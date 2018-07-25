@@ -96,11 +96,13 @@ app.use(cors());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-app.use(
-  require('prerender-node')
-    .set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k')
-    .set('protocol', 'https')
-);
+const prerender = require('prerender-node')
+  .set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k')
+  .set('protocol', 'https');
+prerender.crawlerUserAgents.push('googlebot');
+prerender.crawlerUserAgents.push('bingbot');
+prerender.crawlerUserAgents.push('yandex');
+app.use(prerender);
 
 AWS.config.update(awsConfig);
 AWS.Request.prototype.forwardToExpress = function forwardToExpress(
