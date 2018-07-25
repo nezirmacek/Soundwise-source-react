@@ -321,7 +321,7 @@ class _Routes extends Component {
               <Route exact path="/podcast" component={LandingPagePodcast} />
               <Route exact path="/selling" component={LandingPageSelling} />
               <Route path="/about" component={About} />
-              <Route path="/conversion" component={ConversionCourse} />
+              <Route path="/conversion" component={PodcastingCourse} />
               <Route path="/realestate" component={PageRealEstate} />
               <Route path="/experts" component={PageExperts} />
               <Route exact={true} path="/signup/:mode" component={AppSignup} />
