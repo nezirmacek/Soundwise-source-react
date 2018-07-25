@@ -77,6 +77,8 @@ export default class AddSoundcast extends Component {
       forSale: false,
       prices: [],
       modalOpen: false,
+      categories: [],
+      selectedCategory: null,
       paypalEmail: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
       showIntroOutro: false,
@@ -98,6 +100,7 @@ export default class AddSoundcast extends Component {
 
   componentDidMount() {
     this.props.userInfo.publisher && this.checkUserStatus(this.props.userInfo);
+    this.getCategories();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -114,6 +117,15 @@ export default class AddSoundcast extends Component {
     ) {
       this.setState({proUser: true});
     }
+  }
+
+  getCategories() {
+    Axios.get('/api/category')
+      .then(res => this.setState({categories: res.data}))
+      .catch(e => {
+        this.setState({categories: []});
+        console.log(e);
+      });
   }
 
   _uploadToAws(file, hostImg) {
@@ -340,6 +352,7 @@ export default class AddSoundcast extends Component {
           invited,
           landingPage,
           features,
+          category: selectedCategory.id,
           hostName,
           hostBio,
           hostImageURL,
@@ -1274,15 +1287,14 @@ export default class AddSoundcast extends Component {
   render() {
     const {
       imageURL,
-      title,
-      subscribers,
       fileUploaded,
-      landingPage,
       modalOpen,
       hostImg,
       showPricingModal,
+      selectedCategory,
+      categories,
     } = this.state;
-    const {userInfo, history} = this.props;
+    const {history} = this.props;
     const that = this;
 
     return (
@@ -1405,6 +1417,38 @@ export default class AddSoundcast extends Component {
                 }}
                 value={this.state.short_description}
               />
+            </div>
+
+            {/*Category*/}
+            <span style={styles.titleText}>Category</span>
+            <span style={{...styles.titleText, color: 'red'}}>*</span>
+            <div className="dropdown">
+              <div
+                style={{padding: 0, marginTop: 20}}
+                className="btn dropdown-toggle"
+                data-toggle="dropdown"
+              >
+                <div style={styles.dropdownTitle}>
+                  <span>
+                    {selectedCategory !== null && selectedCategory !== undefined
+                      ? selectedCategory.name
+                      : 'Choose category'}
+                  </span>
+                  <span style={{marginLeft: 300}} className="caret" />
+                </div>
+              </div>
+              <ul style={{padding: 0}} className="dropdown-menu">
+                {categories.map(category => (
+                  <li style={{fontSize: '16px'}}>
+                    <button
+                      style={styles.categoryButton}
+                      onClick={() => this.setState({selectedCategory: category})}
+                    >
+                      {category.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/*Soundcast cover art*/}
@@ -1556,6 +1600,22 @@ const styles = {
     borderRadius: 4,
     marginBottom: 0,
     marginTop: 5,
+  },
+  dropdownTitle: {
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: 'black',
+    backgroundColor: 'white',
+    padding: 10,
+    borderColor: 'black',
+    fontSize: '16px',
+  },
+  categoryButton: {
+    width: 370, 
+    borderBottomWidth: 1, 
+    borderBottomColor: 'gray', 
+    backgroundColor: 'white', 
+    padding: 10
   },
   inputDescription: {
     height: 100,

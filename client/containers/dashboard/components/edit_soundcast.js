@@ -99,6 +99,8 @@ export default class EditSoundcast extends Component {
       createPodcast: false,
       editPodcast: false,
       podcastError: '',
+      categories: [],
+      selectedCategory: null,
       doneProcessingPodcast: false,
       startProcessingPodcast: false,
       podcastFeedVersion: null,
@@ -142,10 +144,27 @@ export default class EditSoundcast extends Component {
       return;
     }
     this.setSoundcastState(soundcast);
+    this.getCategories(soundcast.category);
+  }
+
+  getCategories(category) {
+    Axios.get('/api/category')
+      .then(res => {
+        const categories = res.data;
+        this.setState({
+          categories, 
+          selectedCategory: categories.find(c => c.id === category),
+        })
+      })
+      .catch(e => {
+        this.setState({categories: []});
+        console.log(e);
+      });
   }
 
   setSoundcastState(soundcast) {
     const {userInfo} = this.props;
+    const {categories, selectedCategory} = this.state;
     const {
       title,
       subscribed,
@@ -163,6 +182,7 @@ export default class EditSoundcast extends Component {
       hostImageURL2,
       forSale,
       prices,
+      category,
       confirmationEmail,
       showSubscriberCount,
       showTimeStamps,
@@ -197,6 +217,7 @@ export default class EditSoundcast extends Component {
     } else {
       confirmEmailEditorState = this.state.confirmationEmail;
     }
+    
     this.setState({
       title,
       imageURL: imageURL ? imageURL : null,
@@ -216,6 +237,7 @@ export default class EditSoundcast extends Component {
       showSubscriberCount: showSubscriberCount ? showSubscriberCount : false,
       isPodcast: isPodcast ? isPodcast : false,
       episodes: episodes ? episodes : null,
+      selectedCategory,
       itunesTitle: itunesTitle ? itunesTitle : title,
       itunesHost: itunesHost ? itunesHost : this.props.userInfo.publisher.name,
       itunesCategory: itunesCategory ? itunesCategory : null,
@@ -449,6 +471,7 @@ export default class EditSoundcast extends Component {
       hostImageURL,
       hostName2,
       hostBio2,
+      selectedCategory,
       hostImageURL2,
       forSale,
       prices,
@@ -493,6 +516,7 @@ export default class EditSoundcast extends Component {
           hostImageURL2,
           forSale,
           prices,
+          category: selectedCategory.id,
           last_update,
           showTimeStamps,
           showSubscriberCount,
@@ -1867,6 +1891,8 @@ export default class EditSoundcast extends Component {
       hostImg,
       isPodcast,
       createPodcast,
+      selectedCategory,
+      categories,
       editPodcast,
       episodes,
       forSale,
@@ -1880,7 +1906,7 @@ export default class EditSoundcast extends Component {
     } = this.state;
     const {userInfo, history, id} = this.props;
     const that = this;
-
+    console.log(selectedCategory)
     return (
       <MuiThemeProvider>
         <div className="padding-30px-tb" style={{}}>
@@ -2045,7 +2071,39 @@ export default class EditSoundcast extends Component {
                   value={this.state.short_description}
                 />
               </div>
-              <div style={{height: 150}}>
+              {/*Category*/}
+              <span style={styles.titleText}>Category</span>
+              <span style={{...styles.titleText, color: 'red'}}>*</span>
+              <div className="dropdown">
+                <div
+                  style={{padding: 0, marginTop: 20}}
+                  className="btn dropdown-toggle"
+                  data-toggle="dropdown"
+                >
+                  <div style={styles.dropdownTitle}>
+                    <span>
+                      {selectedCategory !== null && selectedCategory !== undefined? 
+                        selectedCategory.name 
+                        : 'Choose category'}
+                    </span>
+                    <span style={{marginLeft: 300}} className="caret" />
+                  </div>
+                </div>
+                <ul style={{padding: 0}} className="dropdown-menu">
+                  {categories.map(category => (
+                    <li style={{fontSize: '16px'}}>
+                      <button 
+                        style={styles.categoryButton}
+                        onClick={() => this.setState({selectedCategory: category})}
+                      >
+                        {category.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div style={{marginTop: 40, height: 150}}>
                 <div style={styles.image}>
                   <img src={imageURL} />
                 </div>
@@ -2445,6 +2503,22 @@ const styles = {
     paddingLeft: 20,
     width: 'calc(100% - 133px)',
     float: 'left',
+  },
+  dropdownTitle: {
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: 'black',
+    backgroundColor: 'white',
+    padding: 10,
+    borderColor: 'black',
+    fontSize: '16px',
+  },
+  categoryButton: {
+    width: 370, 
+    borderBottomWidth: 1, 
+    borderBottomColor: 'gray', 
+    backgroundColor: 'white', 
+    padding: 10
   },
   checkbox: {
     display: 'inline-block',
