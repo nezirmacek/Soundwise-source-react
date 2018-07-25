@@ -96,12 +96,6 @@ NODE_ENV=dev node --inspect server/server.js
 NODE_ENV=dev npm run-script start
 ```
 
-### Compile JSX
-
-```
-npm run-script build
-```
-
 ### Start loppback api
 
 ```
@@ -141,7 +135,27 @@ node server/bin/create-lb-tables.js
 node .
 ```
 
-### Issues:
+# Server update:
+
+Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*  
+Run webpack bundle compiler:  
+>npm run-script build  
+>git push live --force
+
+*you can check git configuration with *"git remote -v"* command,  
+to add live remote run:  
+>git remote add live ssh://USER@IP/PATH/TO/GIT/REPO.git
+
+additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
+
+copy uglified *bundle.js/bundle.js.map* files to the server:
+>scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
+
+under root(!) on server run:
+>pm2 restart soundwise
+
+
+# Issues:
 
 #### - express-fileuploader module changes files names when upload to aws s3:
 api/node_modules/express-fileuploader/lib/index.js:91-93
