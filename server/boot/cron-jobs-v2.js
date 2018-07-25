@@ -6,170 +6,92 @@
 // step 6: write payout data into Payouts table when a batch payout succeeds; send an email to alert administrator if a batch payout fails.
 
 'use strict';
-var schedule = require('node-schedule');
-var moment = require('moment');
-// var firebase = require('firebase');
-var paypal = require('paypal-rest-sdk');
-var firebase = require('firebase-admin');
-const sendinblue = require('sendinblue-api');
-const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
-
-const parameters = {apiKey: sendinBlueApiKey, timeout: 5000};
-const sendinObj = new sendinblue(parameters);
-var paypalConfig = require('../../config').paypalConfig;
-
-var stripeFeeFixed = 0.3;
-var stripeFeePercent = 0.029;
-var soundwiseFeePercent = 0;
+const schedule = require('node-schedule');
+const firebase = require('firebase-admin');
+const moment = require('moment');
+const database = require('../../database/index');
 
 module.exports = function(app) {
-
-  return // prevent from running
-
-  paypal.configure(paypalConfig);
-
-  var j = schedule.scheduleJob('0 0 10 1 * *', function() {
-    const periodBegin = moment()
-      .startOf('month')
-      .subtract(2, 'months')
-      .add(15, 'days')
-      .format('YYYY-MM-DD');
-    const periodEnd = moment()
-      .startOf('month')
-      .subtract(1, 'months')
-      .add(14, 'days')
-      .format('YYYY-MM-DD');
-    const Transaction = app.models.Transaction;
-    // ************** step 1
-    const publishersObj = {};
-    Transaction.find({
-      where: {
-        date: {
-          between: [
-            // be sure it runs at the START of the month
-            periodBegin,
-            periodEnd,
-          ],
-        },
-      },
-    }).then(transactions => {
-      if (transactions.length > 0) {
-        // ************** step 2
-        transactions.map(transaction => {
-          const fees =
-            transaction.amount * (stripeFeePercent + soundwiseFeePercent) +
-            stripeFeeFixed;
-          if (!publishersObj[transaction.publisherId]) {
-            publishersObj[transaction.publisherId] = {
-              payoutAmount:
-                transaction.type == 'charge'
-                  ? +transaction.amount - fees
-                  : -(+transaction.amount - fees),
-            };
-          } else {
-            publishersObj[transaction.publisherId].payoutAmount +=
-              transaction.type == 'charge'
-                ? +transaction.amount - fees
-                : -(+transaction.amount - fees);
-          }
-        });
-
-        const publishersArr = [];
-        let publisherObj;
-        for (let publisherId in publishersObj) {
-          if (publishersObj[publisherId].payoutAmount > 0) {
-            publisherObj = publishersObj[publisherId];
-            publisherObj.id = publisherId;
-            publishersArr.push(publisherObj);
-          }
-        }
-
-        // if there's nothing to payout, return and call it a day
-        if (publishersArr.length == 0) {
-          const input = {
-            to: {['natasha@mysoundwise.com']: 'Natasha Che'},
-            from: ['support@mysoundwise.com', 'Soundwise'],
-            subject: 'There is no payouts this month',
-            html: '<p>Yippee!</p>',
-          };
-          sendinObj.send_email(input, function(err, response) {
-            return;
+  var rankSoundcasts = schedule.scheduleJob('* * 1 * * 1', function() {
+    const currentDate = moment().format('X');
+    let soundcastsListens = [];
+    let maxListnes = 0;
+    database.Soundcast.findAll().then(soundcasts => {
+      const promises = soundcasts.map(soundcast => {
+        return database.ListeningSession.count({
+          where: {soundcastId: soundcast.soundcastId},
+        }).then(countListnes => {
+          maxListnes = maxListnes < countListnes ? countListnes : maxListnes;
+          soundcastsListens.push({
+            id: soundcast.soundcastId,
+            countListnes: countListnes,
+            updateDate:
+              soundcast.updateDate || new Date(soundcast.updatedAt).getTime(),
           });
-          return;
-        }
-
-        // ************** step 3
-        const getPaypalEmailPromises = publishersArr.map((publisher, i) => {
-          return firebase
-            .database()
-            .ref(`publishers/${publisher.id}`)
-            .once('value')
-            .then(paypalEmailSnapshot => {
-              if (paypalEmailSnapshot.val()) {
-                publisher.paypalEmail = paypalEmailSnapshot.val().paypalEmail;
-              }
-            })
-            .then(res => res, err => console.log(err));
         });
-
-        Promise.all(getPaypalEmailPromises)
-          .then(res => {
-            // publisherObj = {id, paypalEmail, payoutAmount}
-            // ************** step 4
-            const payoutItemsArr = [];
-            publishersArr.forEach(publisherObj => {
-              payoutItemsArr.push({
-                recipient_type: 'EMAIL',
-                amount: {
-                  value: publisherObj.payoutAmount.toFixed(2),
-                  currency: 'USD',
-                },
-                receiver: publisherObj.paypalEmail,
-                note: `Payout from Soundiwse for ${periodBegin} to ${periodEnd}`,
-                sender_item_id: publisherObj.id, //publisherID
-              });
-            });
-
-            // create payout
-            const senderBatchId = Math.random()
-              .toString(36)
-              .substring(9);
-            const payoutObj = {
-              sender_batch_header: {
-                sender_batch_id: senderBatchId,
-                email_subject: `You received a payment from Soundiwse for ${periodBegin} to ${periodEnd}`,
-              },
-              items: payoutItemsArr,
-            };
-            paypal.payout.create(payoutObj, function(error, payout) {
-              if (error) {
-                console.log('paypal payout creation error: ', error.response);
-                const errorEmail = {
-                  to: {['natasha@mysoundwise.com']: 'Natasha Che'},
-                  from: ['support@mysoundwise.com', 'Soundwise'],
-                  subject: "There is a problem with this month's payout!",
-                  html: `<p>Check server logs.</p>
-                  <div>${JSON.stringify(error)}</div>`,
-                };
-                sendinObj.send_email(errorEmail, function(err, response) {
-                  return;
-                });
-              } else {
-                console.log('payout response: ', payout);
-                const successEmail = {
-                  to: {['natasha@mysoundwise.com']: 'Natasha Che'},
-                  from: ['support@mysoundwise.com', 'Soundwise'],
-                  subject: "This month's payout is successfully generated!",
-                  html: '<p>Yippee!</p>',
-                };
-                sendinObj.send_email(successEmail, function(err, response) {
-                  return;
-                });
-              }
-            });
-          })
-          .catch(err => console.log('paypal email retrieval error: ', err));
-      }
+      });
+      Promise.all(promises).then(() => {
+        soundcastsListens.forEach(soundcast => {
+          const rank =
+            (soundcast.countListnes / maxListnes > 0.1
+              ? soundcast.countListnes / maxListnes - 0.1
+              : 0) +
+            (soundcast.updateDate / currentDate) * 0.1;
+          firebase
+            .database()
+            .ref(`soundcasts/${soundcast.id}/rank`)
+            .set(rank.toFixed(4));
+        });
+      });
     });
   });
+
+  var detectSubscriptionsExpiration = schedule.scheduleJob(
+    '* * 23 * * *',
+    function() {
+      const usersRef = firebase.database().ref('/users');
+      let currentDate = moment().format('X');
+      firebase
+        .database()
+        .ref('/users')
+        .once('value', snapshotArray => {
+          snapshotArray.forEach(snapshot => {
+            const userId = snapshot.key;
+            const tokenId = snapshot.val().token
+              ? snapshot.val().token[0]
+              : null;
+            const soundcasts = snapshot.val().soundcasts;
+            if (userId != 'undefined' && soundcasts) {
+              Object.keys(soundcasts).forEach(key => {
+                if (key != 'undefined') {
+                  const soundcast = soundcasts[key];
+                  if (
+                    Number(soundcast.current_period_end) < currentDate &&
+                    soundcast.subscribed
+                  ) {
+                    if (soundcast.billingCicle != 'free') {
+                      firebase
+                        .database()
+                        .ref(`users/${userId}/soundcasts/${key}/subscribed`)
+                        .set(true);
+                      if (tokenId) {
+                        firebase
+                          .database()
+                          .ref(`soundcasts/${key}/subscribed/${userId}`)
+                          .set({'0': tokenId});
+                      } else {
+                        firebase
+                          .database()
+                          .ref(`soundcasts/${key}/subscribed/${userId}`)
+                          .set(soundcast.date_subscribed);
+                      }
+                    }
+                  }
+                }
+              });
+            }
+          });
+        });
+    }
+  );
 };
