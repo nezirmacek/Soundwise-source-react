@@ -51,7 +51,6 @@ import {UserProfile} from './containers/user_profile';
 // import {Course_Purchased} from './containers/course_page_purchased';
 import {Cart} from './containers/cart/cart';
 import {Checkout} from './containers/checkout';
-// import {CoursesCatalog} from './containers/courses_catalog/courses_catalog';
 import {Dashboard} from './containers/dashboard/dashboard';
 import {SoundcastPage} from './containers/soundcast_landing_page/soundcast_page';
 import BlogList from './containers/blog/blog-list';
