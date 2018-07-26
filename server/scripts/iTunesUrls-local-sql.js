@@ -507,6 +507,15 @@ const fixCategories = async () => {
       if (!feed.itunesId) {
         continue; // skip
       }
+
+      // #64 Issue - Feel Soundcasts itunesId column
+      await database.Soundcast.update({
+        itunesId: feed.itunesId,
+      }, { where: { soundcastId: feed.soundcastId }});
+
+      continue
+
+      console.log('Categories fix')
       const categories = (await db_original.query(
         `SELECT * FROM "Categories" WHERE "soundcastId"='z${feed.soundcastId}'`
       ))[0];
