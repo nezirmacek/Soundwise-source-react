@@ -11,8 +11,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {EditorState, convertToRaw} from 'draft-js';
 
-import {SoundcastHeader} from './components/soundcast_header';
-import Footer from '../../components/footer';
+import { SoundcastHeader } from './components/soundcast_header'
+import SoundwiseFooter from './components/footer'
 
 import SoundcastBody from './components/soundcast_body';
 import SoundcastFooter from './components/soundcast_footer';
@@ -402,9 +402,9 @@ class _SoundcastPage extends Component {
               null}
             <SoundcastFooter
               getPrice={this.getPrice}
-              openModal={this.handleModal.bind(this)}
+              openModal={this.handleModal.bind(this)}/>
+            <SoundwiseFooter
             />
-            <Footer soundcastID={soundcastID} showPricing={false} />
           </div>
         </MuiThemeProvider>
       </div>

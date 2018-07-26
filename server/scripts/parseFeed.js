@@ -365,8 +365,16 @@ async function runFeedImport(
     // category, // TODO
     claimed: isClaimed, // when 'claimed == true', this imported soundcast is managed by the RSS feed owner
   };
+
+  const postgresSoundcast = {
+    soundcastId,
+    publisherId,
+    title,
+  };
+
   if (itunesId) {
     importedFeedObj.itunesId = itunesId; // store the iTunesID under the importedFeed node
+    postgresSoundcast.itunesId = itunesId;
   }
   if (title.length > 255) {
     importedFeedObj.title = title.slice(0, 255);
@@ -385,11 +393,7 @@ async function runFeedImport(
   // 2-c. add to postgres
   database.Soundcast.findOrCreate({
     where: {soundcastId},
-    defaults: {
-      soundcastId,
-      publisherId,
-      title,
-    },
+    defaults: postgresSoundcast,
   })
     .then(async data => {
       // console.log('DB response: ', data);
