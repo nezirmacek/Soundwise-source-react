@@ -508,10 +508,10 @@ const fixCategories = async () => {
         continue; // skip
       }
 
-      // #64 Issue - Feel Soundcasts itunesId column
       await database.Soundcast.update({
-        itunesId: feed.itunesId,
+        published: true,
       }, { where: { soundcastId: feed.soundcastId }});
+      await firebase.database().ref(`soundcasts/${feed.soundcastId}/published`).set(true);
 
       continue
 
