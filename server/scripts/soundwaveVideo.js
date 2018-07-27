@@ -184,67 +184,63 @@ module.exports.createAudioWaveVid = async (req, res) => {
                     },
                   })
                 );
-                uploader1
-                  .upload(
-                    's3',
-                    {
-                      path: videoPath,
-                      name: `${videoPath.replace('/tmp/', '')}`,
-                    },
-                    (err, files) => {
-                      if (err) {
-                        return console.log(
-                          `Error: uploading wavevideo ${videoPath} to S3 ${err}`
-                        );
-                      }
-                      const videoUrl = files[0].url.replace('http', 'https');
-                      console.log(
-                        `Wavevideo ${videoPath} uploaded to: ${videoUrl}`
+                uploader1.upload(
+                  's3',
+                  {
+                    path: videoPath,
+                    name: `${videoPath.replace('/tmp/', '')}`,
+                  },
+                  (err, files) => {
+                    if (err) {
+                      return console.log(
+                        `Error: uploading wavevideo ${videoPath} to S3 ${err}`
                       );
-                      // **** step 4: email the user the download link of the video file. If there is a processing error, notify user by email that there is an error.
-                      sgMail.send({
-                        // send email
-                        to: email,
-                        from: 'support@mysoundwise.com',
-                        subject: 'Your soundwave video is ready for download!',
-                        html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p><p>p.s. Do you know you get unlimited podcast hosting for FREE on Soundwise? <a href="http://bit.ly/2GyGNz0">Check it out</a>.</p><p>p.p.s. Want to get your podcast subscribers' emails? <a href="http://bit.ly/2GyGNz0">Find out how</a>.</p>`,
-                      });
-
-                      // **** step 5: save user email in our email contact database
-                      client
-                        .request({
-                          method: 'POST',
-                          url: '/v3/contactdb/recipients',
-                          body: [{email}],
-                        })
-                        .then(([response, body]) =>
-                          client.request({
-                            method: 'POST',
-                            url: `/v3/contactdb/lists/2910467/recipients`,
-                            body: body.persisted_recipients, // array of recipient IDs
-                          })
-                        )
-                        .then(([response, body]) => {
-                          console.log(`Sendgrid Success: ${body}`);
-
-                          // **** step 6: delete the image, audio and video files from temp folder.
-                          fs.unlink(audioTrimmedPath, err => 0);
-                          fs.unlink(imagePath, err => 0);
-                          fs.unlink(videoPath, err => 0);
-                        })
-                        .catch(err =>
-                          console.log(`Error: soundwaveVideo sendgrid ${err}`)
-                        );
                     }
-                  )
-                  .catch(err => {
+                    const videoUrl = files[0].url.replace('http', 'https');
                     console.log(
-                      'Error: soundwaveVideo recipients request: ',
-                      err,
-                      err.message
+                      `Wavevideo ${videoPath} uploaded to: ${videoUrl}`
                     );
-                    res.status(400).send(err.message);
-                  });
+                    // **** step 4: email the user the download link of the video file. If there is a processing error, notify user by email that there is an error.
+                    sgMail.send({
+                      // send email
+                      to: email,
+                      from: 'support@mysoundwise.com',
+                      subject: 'Your soundwave video is ready for download!',
+                      html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p><p>p.s. Do you know you get unlimited podcast hosting for FREE on Soundwise? <a href="http://bit.ly/2GyGNz0">Check it out</a>.</p><p>p.p.s. Want to get your podcast subscribers' emails? <a href="http://bit.ly/2GyGNz0">Find out how</a>.</p>`,
+                    });
+
+                    // **** step 5: save user email in our email contact database
+                    client
+                      .request({
+                        method: 'POST',
+                        url: '/v3/contactdb/recipients',
+                        body: [{email}],
+                      })
+                      .then(([response, body]) =>
+                        client.request({
+                          method: 'POST',
+                          url: `/v3/contactdb/lists/2910467/recipients`,
+                          body: body.persisted_recipients, // array of recipient IDs
+                        })
+                      )
+                      .then(([response, body]) => {
+                        console.log(`Sendgrid Success: ${body}`);
+
+                        // **** step 6: delete the image, audio and video files from temp folder.
+                        fs.unlink(audioTrimmedPath, err => 0);
+                        fs.unlink(imagePath, err => 0);
+                        fs.unlink(videoPath, err => 0);
+                      })
+                      .catch(err => {
+                        console.log(
+                          'Error: soundwaveVideo sendgrid recipients request: ',
+                          err,
+                          err.message
+                        );
+                        res.status(400).send(err.message);
+                      });
+                  }
+                );
               });
             })
             .catch(err => sendError(res, `${err}`));
