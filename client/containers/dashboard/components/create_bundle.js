@@ -330,6 +330,7 @@ export default class CreateBundle extends Component {
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
       if (user && that.firebaseListener) {
         const creatorID = user.uid;
+        const last_update = Number(moment().format('X'));
         const newSoundcast = {
           title,
           bundle: true,
@@ -353,6 +354,7 @@ export default class CreateBundle extends Component {
           features,
           forSale,
           prices,
+          last_update,
           published: publish,
         };
 
@@ -394,9 +396,30 @@ export default class CreateBundle extends Component {
           Axios.post('/api/soundcast', {
             soundcastId: that.soundcastId,
             publisherId: userInfo.publisherID,
+            updateDate: last_update,
             title,
           })
-            .then(res => {
+            .then(async res => {
+              if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
+                const snapshot = await firebase
+                  .database()
+                  .ref(`soundcasts/${that.soundcastId}`)
+                  .once('value');
+                const couponsToRemove = [];
+                (snapshot.val().prices || []).forEach(price => {
+                  (price.coupons || []).forEach(coupon =>
+                    couponsToRemove.push(coupon.code)
+                  );
+                });
+                Axios.post('/api/createUpdatePlans', {
+                  soundcastID: that.soundcastId,
+                  publisherID: userInfo.publisherID,
+                  stripe_account: userInfo.publisher.stripe_user_id,
+                  title,
+                  prices: landingPage && forSale ? prices : [],
+                  couponsToRemove, // old coupons removal
+                }).catch(err => alert(`Error creating plans ${err}`));
+              }
               return res;
             })
             .catch(err => {
