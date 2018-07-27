@@ -144,7 +144,7 @@ export default class SoundcastInCart extends Component {
                   name="promo"
                   ref="promoCodeInput"
                   placeholder="Enter promo code"
-                  value={this.state.promoCode}
+                  value={this.state.promoCode || ''}
                   style={{width: '50%', fontSize: 14, height: 35}}
                 />
                 {(promoApplied && (
