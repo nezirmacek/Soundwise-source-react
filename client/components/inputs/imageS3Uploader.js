@@ -1,12 +1,10 @@
-/**
- * Created by developer on 11.08.17.
- */
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import moment from 'moment';
 
 import Colors from '../../styles/colors';
+import commonStyles from '../../styles/commonStyles';
 import ImageCropModal from '../../containers/dashboard/components/image_crop_modal';
 
 export default class ImageS3Uploader extends Component {
@@ -181,6 +179,7 @@ ImageS3Uploader.propTypes = {
 };
 
 const _styles = {
+  inputFileHidden: {...commonStyles.inputFileHidden},
   fileUploader: {
     height: 133,
   },
@@ -212,21 +211,6 @@ const _styles = {
     backgroundColor: Colors.mainWhite,
     overflow: 'hidden',
     marginBottom: 0,
-    float: 'left',
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 32,
     float: 'left',
   },
   uploadButton: {

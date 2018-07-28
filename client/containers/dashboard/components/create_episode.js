@@ -33,6 +33,7 @@ import {
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {sendNotifications} from '../../../helpers/send_notifications';
 import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
 
@@ -1876,6 +1877,8 @@ const loaderOptions = {
 };
 
 const styles = {
+  inputTitle: {...commonStyles.inputTitle, fontSize: 16},
+  inputFileHidden: {...commonStyles.inputFileHidden},
   titleText: {
     fontSize: 20,
     fontWeight: 600,
@@ -2004,34 +2007,9 @@ const styles = {
     marginBottom: 0,
     float: 'left',
   },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 35,
-    fontSize: 14,
-    float: 'left',
-  },
-
   inputTitleWrapper: {
     width: '100%',
     marginTop: 20,
-    marginBottom: 10,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
     marginBottom: 10,
   },
   inputDescription: {

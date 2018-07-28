@@ -27,6 +27,7 @@ import {
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -699,7 +700,6 @@ export default class EditEpisode extends Component {
           <span
             style={{
               ...styles.titleText,
-              fontWeight: 600,
               verticalAlign: 'middle',
             }}
           >
@@ -1269,23 +1269,11 @@ EditEpisode.propTypes = {
 };
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
+  titleText: {...commonStyles.titleText},
+  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
+  inputTitle: {...commonStyles.inputTitle, fontSize: 16},
+  hostImage: {...commonStyles.hostImage, float: 'left'},
+  inputFileHidden: {...commonStyles.inputFileHidden},
   inputDescription: {
     height: 120,
     fontSize: 16,
@@ -1316,19 +1304,6 @@ const styles = {
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: Colors.lightGrey,
-  },
-  hostImage: {
-    width: 100,
-    height: 100,
-    float: 'left',
-    borderRadius: '50%',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center center',
-    backgroundSize: 'cover',
   },
   loaderWrapper: {
     height: 133,
@@ -1367,21 +1342,6 @@ const styles = {
     // backgroundColor: Colors.mainWhite,
     overflow: 'hidden',
     marginBottom: 0,
-    float: 'left',
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 40,
     float: 'left',
   },
   uploadButton: {
@@ -1467,11 +1427,6 @@ const styles = {
     height: '300px',
     width: '100%',
     backgroundColor: Colors.mainWhite,
-  },
-  wrapperStyle: {
-    borderRadius: 4,
-    marginBottom: 25,
-    marginTop: 15,
   },
   toggleLabel: {
     fontSize: 16,

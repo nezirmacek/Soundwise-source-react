@@ -1,6 +1,3 @@
-/**
- * Created by developer on 08.08.17.
- */
 import * as CONFIG from '../config/regexp_config';
 
 export function minLengthValidator(limit, value) {

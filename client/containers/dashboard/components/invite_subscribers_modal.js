@@ -28,6 +28,7 @@ import {addToEmailList} from '../../../helpers/addToEmailList';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -344,6 +345,7 @@ export default class InviteSubscribersModal extends Component {
 }
 
 const styles = {
+  inputFileHidden: {...commonStyles.inputFileHidden},
   backDrop: {
     position: 'absolute',
     width: '100%',
@@ -404,15 +406,6 @@ const styles = {
     // padding: '10px 10px',
     fontSize: 16,
     borderRadius: 4,
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
   },
   buttonsWrap: {},
   button: {

@@ -1,6 +1,3 @@
-/**
- * Created by developer on 09.08.17.
- */
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
@@ -577,9 +574,6 @@ const styles = {
     // height: 22,
     // lineHeight: '22px',
     cursor: 'pointer',
-  },
-  tableWrapper: {
-    padding: 20,
   },
   tr: {
     borderBottomWidth: 1,

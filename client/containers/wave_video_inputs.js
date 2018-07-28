@@ -30,6 +30,7 @@ import {
 import {CirclePicker, CompactPicker} from 'react-color';
 
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 import {emailValidator} from '../helpers/validators';
 import {
   OrangeSubmitButton,
@@ -937,22 +938,8 @@ class _WaveVideoInputs extends Component {
 }
 
 const styles = {
-  radioButton: {
-    marginBottom: 16,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 18,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
+  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
+  inputTitle: {...commonStyles.inputTitle},
 };
 
 const mapStateToProps = state => {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Datetime from 'react-datetime';
 import moment from 'moment';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 
 export default class Coupons extends Component {
   constructor(props) {
@@ -155,13 +156,5 @@ Coupons.propTypes = {
 };
 
 const styles = {
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 18,
-    borderRadius: 4,
-    marginBottom: 0,
-    marginTop: 5,
-  },
+  inputTitle: {...commonStyles.inputTitle, marginTop: 5},
 };

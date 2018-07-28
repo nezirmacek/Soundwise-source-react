@@ -1,7 +1,3 @@
-/**
- * Created by developer on 12.06.17.
- */
-
 const DIALOG_CONFIG = {
   lessonDisabled: {
     title: "You haven't signed up for the course",

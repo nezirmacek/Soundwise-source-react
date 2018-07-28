@@ -14,6 +14,7 @@ import ImageCropModal from './dashboard/components/image_crop_modal';
 import Footer from '../components/footer';
 import {SoundwiseHeader} from '../components/soundwise_header';
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 import {OrangeSubmitButton} from '../components/buttons/buttons';
 
 class _UserProfile extends Component {
@@ -857,23 +858,10 @@ class _UserProfile extends Component {
 }
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
+  titleText: {...commonStyles.titleText},
+  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
+  inputTitle: {...commonStyles.inputTitle, fontSize: 16},
+  inputFileHidden: {...commonStyles.inputFileHidden},
   profileImage: {
     width: 100,
     height: 100,
@@ -903,21 +891,6 @@ const styles = {
     // backgroundColor: Colors.mainWhite,
     overflow: 'hidden',
     marginBottom: 0,
-    float: 'left',
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 40,
     float: 'left',
   },
   uploadButton: {

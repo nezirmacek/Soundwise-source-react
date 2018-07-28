@@ -1,6 +1,3 @@
-/**
- * Created by developer on 09.06.17.
- */
 import * as firebase from 'firebase';
 import Axios from 'axios';
 

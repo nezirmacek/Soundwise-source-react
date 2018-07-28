@@ -1,6 +1,3 @@
-/**
- * Created by developer on 10.08.17.
- */
 import React, {Component} from 'react';
 import Colors from '../../styles/colors';
 import PropTypes from 'prop-types';

@@ -479,9 +479,6 @@ const styles = {
     // lineHeight: '22px',
     cursor: 'pointer',
   },
-  tableWrapper: {
-    padding: 20,
-  },
   tr: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,

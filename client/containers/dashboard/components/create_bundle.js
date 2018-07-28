@@ -28,6 +28,7 @@ import {
 import {inviteListeners} from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -1344,23 +1345,11 @@ CreateBundle.propTypes = {
 };
 
 const styles = {
-  titleText: {
-    fontSize: 20,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 18,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
+  titleText: {...commonStyles.inputTitle, fontSize: 20},
+  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
+  inputTitle: {...commonStyles.inputTitle},
+  inputFileHidden: {...commonStyles.inputFileHidden},
+  hostImage: {...commonStyles.hostImage, marginLeft: 10},
   inputDescription: {
     height: 100,
     fontSize: 18,
@@ -1391,20 +1380,6 @@ const styles = {
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: Colors.lightGrey,
-  },
-  hostImage: {
-    width: 100,
-    height: 100,
-    // float: 'left',
-    marginLeft: 10,
-    borderRadius: '50%',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center center',
-    backgroundSize: 'cover',
   },
   loaderWrapper: {
     height: 133,
@@ -1444,21 +1419,6 @@ const styles = {
     marginBottom: 0,
     float: 'left',
   },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 40,
-    float: 'left',
-  },
   uploadButton: {
     backgroundColor: Colors.link,
     width: 80,
@@ -1479,9 +1439,6 @@ const styles = {
     fontSize: 16,
     marginLeft: 0,
     display: 'block',
-  },
-  radioButton: {
-    marginBottom: 16,
   },
   thumbSwitched: {
     backgroundColor: Colors.link,

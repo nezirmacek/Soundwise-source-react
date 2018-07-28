@@ -35,6 +35,7 @@ import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight';
 import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown';
 import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {itunesCategories} from '../../../helpers/itunes_categories';
 import {
   OrangeSubmitButton,
@@ -2248,24 +2249,11 @@ EditSoundcast.propTypes = {
 };
 
 const styles = {
-  titleText: {
-    fontSize: 20,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 18,
-    borderRadius: 4,
-    marginBottom: 0,
-    marginTop: 5,
-  },
+  titleText: {...commonStyles.titleText, fontSize: 20},
+  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
+  inputTitle: {...commonStyles.inputTitle, marginTop: 5},
+  hostImage: {...commonStyles.hostImage, float: 'left'},
+  inputFileHidden: {...commonStyles.inputFileHidden},
   inputDescription: {
     height: 80,
     backgroundColor: Colors.mainWhite,
@@ -2296,19 +2284,6 @@ const styles = {
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: Colors.lightGrey,
-  },
-  hostImage: {
-    width: 100,
-    height: 100,
-    float: 'left',
-    borderRadius: '50%',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center center',
-    backgroundSize: 'cover',
   },
   loaderWrapper: {
     height: 133,
@@ -2347,21 +2322,6 @@ const styles = {
     // backgroundColor: Colors.mainWhite,
     overflow: 'hidden',
     marginBottom: 0,
-    float: 'left',
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 40,
     float: 'left',
   },
   uploadButton: {

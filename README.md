@@ -89,8 +89,9 @@ npm run-script start:server
 npm run-script start
 ```
 
-### Start the server.js and webpack bundle compiler in dev mode (stripe testing)
+### Start the server.js and webpack bundle compiler in development mode (stripe testing)
 
+Comment out *new webpack.optimize.UglifyJsPlugin(),* line in *webpack.config.js*, run:
 ```
 NODE_ENV=dev node --inspect server/server.js
 NODE_ENV=dev npm run-script start

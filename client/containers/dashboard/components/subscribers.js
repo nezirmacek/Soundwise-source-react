@@ -11,6 +11,7 @@ import {
 } from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -791,13 +792,7 @@ const styles = {
     borderColor: Colors.darkGrey,
     textAlign: 'center',
   },
-  tableWrapper: {
-    marginTop: 25,
-    backgroundColor: Colors.mainWhite,
-    padding: 25,
-    overflow: 'auto',
-    height: 550,
-  },
+  tableWrapper: {...commonStyles.tableWrapper, height: 550},
   tr: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,
