@@ -13,6 +13,7 @@ import {inviteListeners} from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -176,39 +177,7 @@ export default class Payouts extends Component {
 }
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
-  inputDescription: {
-    height: 80,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  tableWrapper: {
-    marginTop: 25,
-    backgroundColor: Colors.mainWhite,
-    padding: 25,
-    overflow: 'auto',
-    maxHeight: 650,
-  },
+  tableWrapper: {...commonStyles.tableWrapper},
   tr: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,

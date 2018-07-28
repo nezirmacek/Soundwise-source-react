@@ -266,15 +266,6 @@ const styles = {
     marginBottom: 20,
     marginLeft: 20,
   },
-  inputDescription: {
-    height: '50%',
-    width: '90%',
-    paddingLeft: 20,
-    marginLeft: 20,
-    // padding: '10px 10px',
-    fontSize: 16,
-    borderRadius: 4,
-  },
   closeButtonWrap: {
     marginTop: 20,
   },

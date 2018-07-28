@@ -1,6 +1,3 @@
-/**
- * Created by developer on 05.07.17.
- */
 const Colors = {
   fontBlack: '#3c3d41',
   fontGrey: '#9b9b9b',

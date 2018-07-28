@@ -18,6 +18,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 import {inviteListeners} from '../helpers/invite_listeners';
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -226,24 +227,7 @@ export default class ContentDownload extends Component {
 }
 
 const styles = {
-  radioButton: {
-    marginBottom: 16,
-  },
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 18,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
+  titleText: {...commonStyles.titleText},
+  inputTitle: {...commonStyles.inputTitle},
+  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
 };

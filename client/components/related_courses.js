@@ -1,6 +1,3 @@
-/**
- * Created by developer on 05.06.17.
- */
 import React, {Component} from 'react';
 import RelatedCourseCard from './related_course_card';
 import Slider from 'react-slick';

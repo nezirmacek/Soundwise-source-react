@@ -9,7 +9,6 @@ import Dots from 'react-activity/lib/Dots';
 
 import Footer from './footer';
 import {SoundwiseHeader} from './soundwise_header';
-import Colors from '../styles/colors';
 
 export default class Publisher extends Component {
   constructor(props) {
@@ -271,11 +270,3 @@ export default class Publisher extends Component {
     );
   }
 }
-
-const styles = {
-  footer: {
-    // position: 'fixed',
-    bottom: 0,
-    width: '100%',
-  },
-};

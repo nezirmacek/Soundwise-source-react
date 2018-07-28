@@ -1,6 +1,3 @@
-/**
- * Created by developer on 07.06.17.
- */
 import React, {Component} from 'react';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Levels from 'react-activity/lib/Levels';

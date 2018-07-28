@@ -1,6 +1,3 @@
-/**
- * Created by developer on 05.06.17.
- */
 import React, {Component} from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Card, CardMedia} from 'material-ui/Card';

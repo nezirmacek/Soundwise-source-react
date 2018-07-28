@@ -1,6 +1,3 @@
-/**
- * Created by developer on 05.06.17.
- */
 import React, {Component} from 'react';
 import RelatedSoundcastCard from './related_soundcast_card';
 import Slider from 'react-slick';
