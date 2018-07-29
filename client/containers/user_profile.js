@@ -862,6 +862,12 @@ const styles = {
   inputTitleWrapper: {...commonStyles.inputTitleWrapper},
   inputTitle: {...commonStyles.inputTitle, fontSize: 16},
   inputFileHidden: {...commonStyles.inputFileHidden},
+  loaderWrapper: {
+    ...commonStyles.loaderWrapper,
+    width: 'calc(100% - 133px)',
+    float: 'left',
+  },
+  cancelImg: {...commonStyles.cancelImg, fontSize: 14},
   profileImage: {
     width: 100,
     height: 100,
@@ -874,15 +880,6 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center center',
     backgroundSize: 'cover',
-  },
-  loaderWrapper: {
-    height: 133,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 20,
-    width: 'calc(100% - 133px)',
-    float: 'left',
   },
   inputFileWrapper: {
     margin: 10,
@@ -902,12 +899,6 @@ const styles = {
     fontSize: 14,
     border: 0,
     marginTop: 5,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 14,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 11,
