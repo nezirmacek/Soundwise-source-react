@@ -58,7 +58,7 @@ const Pricing = props => (
               className="title-medium xs-title-medium "
               style={{marginLeft: '0.2em'}}
             >
-              (save 40%)
+              (save 20%)
             </span>
           </div>
         </div>

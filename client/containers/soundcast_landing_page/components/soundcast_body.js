@@ -121,17 +121,25 @@ export default class SoundcastBody extends Component {
   /*RENDER*/
 
   renderDescription() {
-    const {long_description} = this.state.soundcast;
+    const {long_description, short_description} = this.state.soundcast;
     if (long_description) {
       const editorState = JSON.parse(long_description);
       const longDescriptionHTML = draftToHtml(editorState);
+      var tag = document.createElement('div');
+      tag.innerHTML = longDescriptionHTML;
+      var longDescriptionText = tag.textContent || tag.innerText || '';
       return (
         <div className="row ">
           <div
             className="col-md-12 col-sm-12 col-xs-12 bg-cream"
             style={{padding: '4%'}}
           >
-            <div className="container">{renderHTML(longDescriptionHTML)}</div>
+            {
+              long_description && longDescriptionText.length > 1 &&
+              <div className="container">{renderHTML(longDescriptionHTML)}</div>
+              ||
+              <div className="container text-extra-large" >{renderHTML(short_description)}</div>
+            }
           </div>
         </div>
       );
@@ -195,7 +203,7 @@ export default class SoundcastBody extends Component {
                 </div>
               </div>
             )}
-          {soundcast.long_description && this.renderDescription()}
+          {this.renderDescription()}
           {this.props.bundle
             ? soundcast.soundcastsIncluded && (
                 <BundleContent
