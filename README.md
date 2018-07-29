@@ -1,6 +1,6 @@
 # Soundwise
 
-A marketplace for short-form audio courses in business and personal development.
+Mobile-focused audio publishing platform for coaches, consultants, and entrepreneurial experts to sell and deliver on-demand audio programs, and leverage their podcast to build their email list and an engaged audience.
 
 ## Development
 
@@ -112,7 +112,7 @@ node .
 
 ### Coding style
 
-Install https://github.com/prettier/prettier  
+Install https://github.com/prettier/prettier
 Check _package.json > "prettier"_ configuration
 
 
@@ -137,19 +137,21 @@ node .
 
 # Server update:
 
-Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*  
-Run webpack bundle compiler:  
->npm run-script build  
+Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*
+Run webpack bundle compiler:
+>npm run-script build
 >git push live --force
 
-*you can check git configuration with *"git remote -v"* command,  
-to add live remote run:  
+*you can check git configuration with *"git remote -v"* command,
+to add live remote run:
 >git remote add live ssh://USER@IP/PATH/TO/GIT/REPO.git
 
 additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
 
 copy uglified *bundle.js/bundle.js.map* files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
+for example, if under root folder:
+> scp ./client/bundle.js* root@162.243.196.88:/var/www/mysoundwise.com/client/
 
 under root(!) on server run:
 >pm2 restart soundwise

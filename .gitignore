@@ -56,4 +56,5 @@ coverage
 .vscode
 
 # Build outputs
-
+bundle.js
+bundle.js.map
