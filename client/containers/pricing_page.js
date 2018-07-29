@@ -25,12 +25,12 @@ class _PricingPage extends Component {
       priceChosen: null,
       prices: {
         annual: {
-          pro: 68,
-          plus: 28,
+          pro: 79,
+          plus: 39,
         },
         monthly: {
-          pro: 113,
-          plus: 47,
+          pro: 99,
+          plus: 49,
         },
       },
     };

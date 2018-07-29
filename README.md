@@ -151,6 +151,7 @@ additional info: https://digitalocean.com/community/tutorials/how-to-set-up-auto
 
 copy uglified *bundle.js/bundle.js.map* files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
+
 for example, if under root folder:
 > scp ./client/bundle.js* root@162.243.196.88:/var/www/mysoundwise.com/client/
 
