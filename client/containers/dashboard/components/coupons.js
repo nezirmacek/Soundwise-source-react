@@ -36,7 +36,7 @@ export default class Coupons extends Component {
                 minWidth: 200,
               }}
             >
-              <span>Coupon Code</span>
+              <span>Coupon Code (no space)</span>
               <div>
                 <input
                   type="text"
