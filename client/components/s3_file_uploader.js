@@ -4,6 +4,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 import Dots from 'react-activity/lib/Dots';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 
 export default class S3FileUploader extends Component {
   constructor(props) {
@@ -174,6 +175,7 @@ export default class S3FileUploader extends Component {
 }
 
 const styles = {
+  cancelImg: {...commonStyles.cancelImg},
   uploadButton: {
     backgroundColor: Colors.link,
     width: 80,
@@ -183,11 +185,5 @@ const styles = {
     fontSize: 18,
     border: 0,
     marginTop: 5,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 16,
-    cursor: 'pointer',
   },
 };

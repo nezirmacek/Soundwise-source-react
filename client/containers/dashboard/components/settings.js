@@ -914,6 +914,13 @@ const styles = {
   inputTitleWrapper: {...commonStyles.inputTitleWrapper},
   inputTitle: {...commonStyles.inputTitle, fontSize: 16},
   inputFileHidden: {...commonStyles.inputFileHidden},
+  image: {...commonStyles.image, float: 'left'},
+  loaderWrapper: {
+    ...commonStyles.loaderWrapper,
+    width: 'calc(100% - 133px)',
+    float: 'left',
+  },
+  cancelImg: {...commonStyles.cancelImg, fontSize: 14},
   editorStyle: {
     padding: '5px',
     borderRadius: 4,
@@ -925,24 +932,6 @@ const styles = {
     borderRadius: 4,
     marginBottom: 25,
     marginTop: 15,
-  },
-  image: {
-    width: 133,
-    height: 133,
-    float: 'left',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-  },
-  loaderWrapper: {
-    height: 133,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 20,
-    width: 'calc(100% - 133px)',
-    float: 'left',
   },
   inputFileWrapper: {
     margin: 10,
@@ -962,12 +951,6 @@ const styles = {
     fontSize: 14,
     border: 0,
     marginTop: 5,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 14,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 11,

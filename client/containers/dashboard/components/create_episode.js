@@ -1879,10 +1879,14 @@ const loaderOptions = {
 const styles = {
   inputTitle: {...commonStyles.inputTitle, fontSize: 16},
   inputFileHidden: {...commonStyles.inputFileHidden},
-  titleText: {
-    fontSize: 20,
-    fontWeight: 600,
+  titleText: {...commonStyles.titleText, fontSize: 20},
+  loaderWrapper: {
+    ...commonStyles.loaderWrapper,
+    height: 'auto',
+    paddingLeft: 0,
   },
+  image: {...commonStyles.image, width: 'auto', float: 'left'},
+  cancelImg: {...commonStyles.cancelImg, fontSize: 15},
   audioRecorder: {
     boxShadow: '0 0 8px rgba(0, 0, 0, 0.5)',
     borderRadius: 8,
@@ -1979,25 +1983,6 @@ const styles = {
     color: Colors.mainOrange,
     marginLeft: 10,
   },
-  loaderWrapper: {
-    // height: 133,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    // width: 'calc(100% - 133px)',
-    // float: 'left',
-  },
-  image: {
-    height: 133,
-    // width: 133,
-    float: 'left',
-    // marginRight: 10,
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-  },
   inputFileWrapper: {
     margin: 1,
     // width: 'calc(100% - 20px)',
@@ -2087,12 +2072,6 @@ const styles = {
     fontSize: 16,
     border: 0,
     marginTop: 5,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 15,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 15,

@@ -1274,6 +1274,9 @@ const styles = {
   inputTitle: {...commonStyles.inputTitle, fontSize: 16},
   hostImage: {...commonStyles.hostImage, float: 'left'},
   inputFileHidden: {...commonStyles.inputFileHidden},
+  image: {...commonStyles.image, width: 'auto', float: 'left'},
+  loaderWrapper: {...commonStyles.loaderWrapper, paddingLeft: 0, float: 'left'},
+  cancelImg: {...commonStyles.cancelImg, fontSize: 14},
   inputDescription: {
     height: 120,
     fontSize: 16,
@@ -1294,25 +1297,6 @@ const styles = {
     borderRadius: 4,
     marginBottom: 25,
     marginTop: 15,
-  },
-  image: {
-    height: 133,
-    // width: 133,
-    float: 'left',
-    // marginRight: 10,
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-  },
-  loaderWrapper: {
-    height: 133,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    // width: 'calc(100% - 133px)',
-    float: 'left',
   },
   checkbox: {
     display: 'inline-block',
@@ -1353,12 +1337,6 @@ const styles = {
     fontSize: 14,
     border: 0,
     marginTop: 5,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 14,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 11,

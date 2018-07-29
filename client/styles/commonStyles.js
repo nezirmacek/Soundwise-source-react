@@ -52,6 +52,27 @@ const commonStyles = {
     overflow: 'auto',
     maxHeight: 650,
   },
+  cancelImg: {
+    color: Colors.link,
+    marginLeft: 20,
+    fontSize: 16,
+    cursor: 'pointer',
+  },
+  loaderWrapper: {
+    height: 133,
+    paddingTop: 20,
+    paddingRight: 0,
+    paddingBottom: 0,
+    paddingLeft: 20,
+  },
+  image: {
+    width: 133,
+    height: 133,
+    backgroundColor: Colors.mainWhite,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: Colors.lightGrey,
+  },
 };
 
 export default commonStyles;

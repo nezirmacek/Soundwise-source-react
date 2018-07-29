@@ -180,30 +180,16 @@ ImageS3Uploader.propTypes = {
 
 const _styles = {
   inputFileHidden: {...commonStyles.inputFileHidden},
-  fileUploader: {
-    height: 133,
-  },
-  image: {
-    width: 133,
-    height: 133,
-    float: 'left',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-  },
   loaderWrapper: {
+    ...commonStyles.loaderWrapper,
     height: 143,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 20,
     width: 'calc(100% - 133px)',
     float: 'left',
   },
-  titleText: {
-    fontSize: 14,
-  },
+  image: {...commonStyles.image, float: 'left'},
+  cancelImg: {...commonStyles.cancelImg, fontSize: 14},
+  fileUploader: {height: 133},
+  titleText: {fontSize: 14},
   inputFileWrapper: {
     margin: 10,
     width: 'calc(100% - 20px)',
@@ -220,12 +206,6 @@ const _styles = {
     color: Colors.mainWhite,
     fontSize: 12,
     border: 0,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 14,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 11,
