@@ -193,9 +193,38 @@ module.exports.handleRecurringPayment = async (req, res) => {
     stripe_account,
     planID,
     publisherID,
+    soundcastID,
     coupon,
     isTrial,
   } = req.body;
+  if (coupon) {
+    // Checking coupon
+    const snapshot = await firebase
+      .database()
+      .ref(`soundcasts/${soundcastID}/prices`)
+      .once('value');
+    const prices = snapshot.val();
+    let errMsg = `Error cannot obtain soundcast prices ${soundcastID}`;
+    if (!prices || !prices.length) {
+      return res.status(500).send(errMsg);
+    }
+    const allCoupons = [];
+    prices.forEach(i => {
+      if (i.coupons && i.coupons.length) {
+        i.coupons.forEach(j => allCoupons.push(j));
+      }
+    });
+    const usedCoupon = allCoupons.find(i => i.code === coupon);
+    if (!usedCoupon) {
+      errMsg = `Error cannot obtain soundcast used coupon ${soundcastID} ${coupon}`;
+      return res.status(500).send(errMsg);
+    }
+    if (isTrial && usedCoupon.couponType !== 'trial_period') {
+      errMsg = `Error coupon incorrect trial property ${soundcastID} ${coupon} ${isTrial}`;
+      return res.status(500).send(errMsg);
+    }
+  }
+
   const publisherObj = await firebase
     .database()
     .ref(`publishers/${publisherID}`)
@@ -257,7 +286,9 @@ module.exports.handleRecurringPayment = async (req, res) => {
         newSub.coupon = coupon;
       }
       if (isTrial) {
-        newSub.trial_end = moment().add(isTrial, 'days').unix();
+        newSub.trial_end = moment()
+          .add(isTrial, 'days')
+          .unix();
       }
       stripe.subscriptions.create(
         newSub,
