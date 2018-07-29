@@ -48,7 +48,7 @@ export default class IGPPost extends Component {
   }
 
   fetchPosts(page) {
-    butter.post.list({category_slug: 'igp'}).then(resp => {
+    butter.post.list({category_slug: 'igp', page: 1, page_size: 60}).then(resp => {
       const posts = resp.data.data;
       const currentPost = this.state.post;
       const filteredPosts = [];

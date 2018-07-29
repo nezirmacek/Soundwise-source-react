@@ -10,12 +10,12 @@ firebase.initializeApp({
 });
 
 // retrieve stripe product
-stripe.products.retrieve(
-  "prod_D3nYV0LbBizW8s",{stripe_account: 'acct_1Bdla1BEkT8zqJaI'}, function(err, product) {
-    if(err) console.log(err);
-    console.log(product);
-  }
-);
+// stripe.products.retrieve(
+//   "prod_D3nYV0LbBizW8s",{stripe_account: 'acct_1Bdla1BEkT8zqJaI'}, function(err, product) {
+//     if(err) console.log(err);
+//     console.log(product);
+//   }
+// );
 
 // Add subscribed soundcasts to user
 // var userId = 'KAyqJEcOfwhculAwxIHPoQLtbIi2';
