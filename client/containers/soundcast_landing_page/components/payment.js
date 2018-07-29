@@ -447,6 +447,7 @@ class _Payment extends Component {
                 stripe_account: stripe_user_id,
                 planID,
                 publisherID: soundcast.publisherID,
+                soundcastID,
                 coupon,
                 isTrial,
               })
