@@ -46,10 +46,11 @@ class _SignupOptions extends Component {
       feedSubmitting: true,
     });
     const that = this;
-    const {podcastTitle, feedUrl} = this.state;
-    Axios.post('/api/parse_feed', {podcastTitle, feedUrl})
+    const {feedUrl, podcastTitle} = this.state;
+    Axios.post('/api/parse_feed', {feedUrl, podcastTitle})
       .then(res => {
-        res.data && that.setState({...res.data, feedSubmitting: false}); // setting imageUrl, publisherEmail
+        // setting imageUrl, publisherEmail or notClaimed
+        res.data && that.setState({...res.data, feedSubmitting: false});
       })
       .catch(err => {
         const errMsg =
@@ -508,7 +509,6 @@ const styles = {
     height: 16,
     lineHeight: '16px',
   },
-
   inputLabel: {
     fontSize: 16,
     marginBottom: 3,

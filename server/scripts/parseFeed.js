@@ -85,11 +85,18 @@ function getFeed(urlfeed, callback) {
   });
 }
 
-const feedUrls = {}; // in-memory cache object for obtained (but not imported to db) feeds
+const feedUrls = {}; // in-memory cache object for obtained (but not yet imported to db) feeds
 
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 async function parseFeed(req, res) {
-  const {feedUrl, submitCode, resend, importFeedUrl} = req.body;
+  const {
+    feedUrl,
+    submitCode,
+    resend,
+    importFeedUrl,
+    publisherId,
+    userId,
+  } = req.body;
   if (!feedUrl) {
     return res.status(400).send(`Error: empty feedUrl field`);
   }
@@ -107,19 +114,52 @@ async function parseFeed(req, res) {
       if (!podcast.claimed) {
         // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
         if (importFeedUrl) {
-          const {publisherId, userId} = req.body;
-          firebase
+          const soundcastId = podcast.soundcastId;
+          await firebase
             .database()
-            .ref(`users/${userId}/soundcasts_managed/${podcast.soundcastId}`)
+            .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
             .set(true);
-          firebase
+          await firebase
             .database()
             .ref(`publishers/${publisherId}/administrators/${userId}`)
             .set(true);
-          firebase
+          await firebase
             .database()
             .ref(`users/${userId}/publisherID`)
             .set(publisherId);
+          await database.ImportedFeed.update(
+            {claimed: true, userId, publisherId},
+            {where: {soundcastId}}
+          );
+          await database.Soundcast.update(
+            {publisherId},
+            {where: {soundcastId}}
+          );
+          await firebase
+            .database()
+            .ref(`soundcasts/${soundcastId}/publisherID`)
+            .set(publisherId);
+          await firebase
+            .database()
+            .ref(`soundcasts/${soundcastId}/creatorID`)
+            .set(userId);
+
+          const episodes = await database.Episode.findAll({
+            where: {soundcastId},
+          });
+          if (episodes.length) {
+            await database.Episode.update({publisherId}, {where: {soundcastId}});
+            for (const episode of episodes) {
+              await firebase
+                .database()
+                .ref(`episodes/${episode.episodeId}/publisherID`)
+                .set(publisherId);
+              await firebase
+                .database()
+                .ref(`episodes/${episode.episodeId}/creatorID`)
+                .set(userId);
+            }
+          }
         } else {
           res.json({imageUrl: podcast.imageURL, notClaimed: true});
         }
