@@ -213,6 +213,15 @@ class _Payment extends Component {
               .ref(`soundcasts/${soundcastID}/invited/${_email}`)
               .remove();
 
+            await Axios.post('/api/coupon', { // TODO review
+              coupon: this.props.coupon,
+              soundcastId: soundcastID,
+              soundcastTitle: soundcast.title,
+              publisherId: soundcast.publisherID,
+              userId: userId,
+              timeStamp: moment().format('X'),
+            }).catch(err => console.log('err: ', err));
+
             // if it's a free soundcast, add subscriber to publisher
             if (totalPay == 0 || totalPay == 'free') {
               // TODO review block

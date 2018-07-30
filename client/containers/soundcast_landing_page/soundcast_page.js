@@ -11,8 +11,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {EditorState, convertToRaw} from 'draft-js';
 
-import { SoundcastHeader } from './components/soundcast_header'
-import SoundwiseFooter from './components/footer'
+import {SoundcastHeader} from './components/soundcast_header';
+import SoundwiseFooter from './components/footer';
 
 import SoundcastBody from './components/soundcast_body';
 import SoundcastFooter from './components/soundcast_footer';
@@ -41,6 +41,7 @@ class _SoundcastPage extends Component {
         prices: [{}],
         modalOpen: false,
       },
+      coupon: '',
       cardHeight: 0,
       showBanner: false,
       publisherID: '',
@@ -60,6 +61,8 @@ class _SoundcastPage extends Component {
     const {history} = this.props;
     const soundcastID = this.props.match.params.id;
     const params = new URLSearchParams(this.props.location.search);
+
+    // check coupon parameter
     if (params.get('c')) {
       this.setState({coupon: params.get('c')});
       this.startTimer();
@@ -399,9 +402,9 @@ class _SoundcastPage extends Component {
               null}
             <SoundcastFooter
               getPrice={this.getPrice}
-              openModal={this.handleModal.bind(this)}/>
-            <SoundwiseFooter
+              openModal={this.handleModal.bind(this)}
             />
+            <SoundwiseFooter />
           </div>
         </MuiThemeProvider>
       </div>
