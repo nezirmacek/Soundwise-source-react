@@ -71,7 +71,7 @@ export default class EditSoundcast extends Component {
     this.state = {
       title: '',
       imageURL: '',
-      blurredImageURL: '',
+      blurredImageURL: null,
       short_description: '',
       long_description: EditorState.createEmpty(),
       subscribed: {},
@@ -201,7 +201,7 @@ export default class EditSoundcast extends Component {
     this.setState({
       title,
       imageURL: imageURL ? imageURL : null,
-      blurredImageURL: imageURL ? imageURL : null,
+      blurredImageURL: blurredImageURL || null,
       short_description,
       landingPage,
       hostName: hostName ? hostName : null,
@@ -1953,7 +1953,7 @@ export default class EditSoundcast extends Component {
                             that.setState({
                               fileUploaded: false,
                               imageURL: '',
-                              blurredImageURL: '',
+                              blurredImageURL: null,
                             });
                             document.getElementById(
                               'upload_hidden_cover'

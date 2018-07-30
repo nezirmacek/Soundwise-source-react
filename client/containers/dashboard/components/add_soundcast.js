@@ -66,7 +66,7 @@ export default class AddSoundcast extends Component {
       short_description: '',
       long_description: EditorState.createEmpty(),
       imageURL: '',
-      blurredImageURL: '',
+      blurredImageURL: null,
       fileUploaded: false,
       landingPage: true,
       features: [''],
@@ -1335,7 +1335,7 @@ export default class AddSoundcast extends Component {
                             that.setState({
                               fileUploaded: false,
                               imageURL: '',
-                              blurredImageURL: '',
+                              blurredImageURL: null,
                             });
                             document.getElementById(
                               'upload_hidden_cover'
