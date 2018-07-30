@@ -114,6 +114,7 @@ node .
 ### Coding style
 
 Install https://github.com/prettier/prettier
+
 Check _package.json > "prettier"_ configuration
 
 
@@ -139,12 +140,16 @@ node .
 # Server update:
 
 Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*
+
 Run webpack bundle compiler:
+
 >npm run-script build
 >git push live --force
 
 *you can check git configuration with *"git remote -v"* command,
+
 to add live remote run:
+
 >git remote add live ssh://USER@IP/PATH/TO/GIT/REPO.git
 
 additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
