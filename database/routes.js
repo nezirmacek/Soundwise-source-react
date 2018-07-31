@@ -11,24 +11,14 @@ module.exports = app => {
       },
       defaults: req.body,
     })
-      .then(data => {
-        console.log('data: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/coupon', (req, res) => {
-    database.Coupon.create(req.body)
-      .then(data => {
-        console.log('data: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+    database.Coupon.findOrCreate(req.body)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/coupon', (req, res) => {
@@ -36,12 +26,8 @@ module.exports = app => {
     database.Coupon.findAll({
       where: {publisherId: publisherId},
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/episode', (req, res) => {
@@ -49,51 +35,30 @@ module.exports = app => {
       where: {episodeId: req.body.episodeId},
       defaults: req.body,
     })
-      .then(data => {
-        console.log('response: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        console.log('error: ', err);
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/soundcast', (req, res) => {
     soundcastService
       .createOrUpdate(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/category', (req, res) => {
-    database.Category.create(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+    database.Category.findOrCreate(req.body)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/listening_session', (req, res) => {
-    const data = Object.assign({}, req.body, {date: new Date(req.body.date)});
-    database.ListeningSession.create(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+    database.ListeningSession.findOrCreate(req.body)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user', (req, res) => {
-    // console.log('req.query: ', req.query);
     database.ListeningSession.findAll({
       where: {
         userId: req.query.userId,
@@ -104,25 +69,16 @@ module.exports = app => {
       },
       order: [['date', 'ASC']],
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/category', (req, res) => {
-    // console.log('req.query: ', req.query);
     database.Category.findAll({
       order: [['name', 'ASC']],
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user_publisher', (req, res) => {
@@ -137,13 +93,8 @@ module.exports = app => {
       },
       order: [['date', 'ASC']],
     })
-      .then(data => {
-        console.log('data sent: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_episode', (req, res) => {
@@ -158,9 +109,7 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_soundcast', (req, res) => {
@@ -175,10 +124,7 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user_episode', (req, res) => {
@@ -194,8 +140,6 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 };
