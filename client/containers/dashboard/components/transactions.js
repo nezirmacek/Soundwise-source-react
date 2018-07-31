@@ -69,7 +69,7 @@ export default class Transactions extends Component {
         // console.log('transactions: ', res);
         const transactions = res.data;
         transactions.sort((a, b) => {
-          return b.createdAt - a.createdAt;
+          return moment(b.createdAt).format('X') - moment(a.createdAt).format('X');
         });
         that.setState({
           transactions,
@@ -82,6 +82,7 @@ export default class Transactions extends Component {
 
   render() {
     const {userInfo} = this.props;
+    const plan = userInfo.publisher.plan;
     return (
       <div className="padding-30px-tb">
         <div className="padding-bottom-20px">
@@ -154,12 +155,19 @@ export default class Transactions extends Component {
                       transaction.type == 'charge' ? 'Sale' : 'Refund';
                     const price = Number(transaction.amount).toFixed(2);
                     const creditCardCharge = (price * 0.029 + 0.3).toFixed(2); // Stripe charge
-                    const soundwiseFee = 0.0;
-                    const amount = (
+                    let soundwiseFee;
+                    if (plan == 'plus') {
+                      soundwiseFee = (0.05 * price).toFixed(2) ;
+                    } else if (plan == 'basic' || !plan) {
+                      soundwiseFee = (0.1 * price).toFixed(2);
+                    } else if(plan == 'pro') {
+                      soundwiseFee = 0.00;
+                    }
+                    const amount = transaction.type == 'charge' ? (
                       price -
                       creditCardCharge -
                       soundwiseFee
-                    ).toFixed(2);
+                    ).toFixed(2) : (+ price).toFixed(2);
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{...styles.td}}>
@@ -180,17 +188,21 @@ export default class Transactions extends Component {
                           <div style={{fontSize: 12, color: Colors.fontGrey}}>
                             {`(Price: ${
                               transaction.type == 'charge' ? '' : '-'
-                            }$${price}`}
+                            }$${price}${transaction.type == 'charge' ? '' : ')'}`}
                           </div>
                           <div style={{fontSize: 12, color: Colors.fontGrey}}>
-                            {`Credit card processing fee: ${
+                            {transaction.type == 'charge' && `Credit card processing fee: ${
                               transaction.type == 'charge' ? '-' : ''
-                            }$${creditCardCharge}`}
+                            }$${creditCardCharge}`
+                            || null
+                            }
                           </div>
                           <div style={{fontSize: 12, color: Colors.fontGrey}}>
-                            {`Soundwise fee: ${
+                            {transaction.type == 'charge' && `Soundwise fee: ${
                               transaction.type == 'charge' ? '-' : ''
-                            }$${soundwiseFee})`}
+                            }$${soundwiseFee})`
+                            || null
+                            }
                           </div>
                         </td>
                       </tr>

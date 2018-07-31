@@ -128,7 +128,7 @@ export default class Promotions extends Component {
                   backgroundColor: Colors.mainWhite,
                 }}
               >
-                <span>There're no cupons to show.</span>
+                <span>There're no coupon usage records to show.</span>
               </div>
             </div>
           </row>
