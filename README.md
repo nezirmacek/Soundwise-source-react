@@ -143,8 +143,11 @@ Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*
 
 Run webpack bundle compiler:
 
+> webpack
+
+or
+
 >npm run-script build
->git push live --force
 
 *you can check git configuration with *"git remote -v"* command,
 
@@ -154,13 +157,16 @@ to add live remote run:
 
 additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
 
+Push to deployed server
+>git push live master
+
 copy uglified *bundle.js/bundle.js.map* files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
 
 for example, if under root folder:
 > scp ./client/bundle.js* root@162.243.196.88:/var/www/mysoundwise.com/client/
 
-under root(!) on server run:
+under root(!) on remote server run:
 >pm2 restart soundwise
 
 
