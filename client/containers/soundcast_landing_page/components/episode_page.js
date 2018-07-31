@@ -293,6 +293,7 @@ class _EpisodePage extends Component {
     const playlist = [
       {
         url,
+        // url: url.replace('https://mysoundwise.com', 'http://localhost:3000'),
         displayText: title,
       },
     ];
