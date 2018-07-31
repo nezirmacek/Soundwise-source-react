@@ -66,7 +66,7 @@ export default class Payouts extends Component {
       .then(res => {
         const payouts = res.data;
         payouts.sort((a, b) => {
-          return b.createdAt - a.createdAt;
+          return moment(b.createdAt).format('X') - moment(a.createdAt).format('X');
         });
         that.setState({
           payouts,

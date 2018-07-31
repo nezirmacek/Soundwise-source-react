@@ -28,6 +28,7 @@ module.exports = function(Payout) {
                 const date = moment()
                   .utc()
                   .format();
+                console.log('payout object received: ', data.data.object);
                 const payout = {
                   batchId: data.data.object.id,
                   amount: Math.trunc(data.data.object.amount),
@@ -40,7 +41,7 @@ module.exports = function(Payout) {
                   createdAt: date,
                   updatedAt: date,
                 };
-                console.log('new payout data: ', payout);
+                console.log('new payout recorded: ', payout);
 
                 Payout.create(payout)
                   .then(res => {
