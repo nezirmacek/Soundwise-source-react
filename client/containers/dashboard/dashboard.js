@@ -166,11 +166,11 @@ class _Dashboard extends Component {
         userId,
         publisherId: publisherID,
         publisherName: publisher.name,
-        importFeedUrl: true,
+        importFeedUrl: true, // run import or claim
       };
       Axios.post('/api/parse_feed', reqObj)
         .then(res => {
-          // if (res.data === 'Success_import') {
+          // if (res.data === 'Success_import' || res.data === 'Success_claim') {
           that.props.setFeedVerified(false);
           // }
         })

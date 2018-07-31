@@ -46,8 +46,10 @@ class _SignupOptions extends Component {
       feedSubmitting: true,
     });
     const that = this;
-    const {feedUrl, podcastTitle} = this.state;
-    Axios.post('/api/parse_feed', {feedUrl, podcastTitle})
+    Axios.post('/api/parse_feed', {
+      feedUrl: this.state.feedUrl,
+      // podcastTitle: this.state.podcastTitle, // not used currently
+    })
       .then(res => {
         // setting imageUrl, publisherEmail or notClaimed
         res.data && that.setState({...res.data, feedSubmitting: false});
@@ -77,11 +79,11 @@ class _SignupOptions extends Component {
 
   submitCode() {
     const {codeSign1, codeSign2, codeSign3, codeSign4} = this.refs;
-    const {feedUrl, publisherEmail} = this.state;
+    const {feedUrl, publisherEmail, notClaimed} = this.state;
     const submitCode =
       codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
-    Axios.post('/api/parse_feed', {feedUrl, submitCode})
+    Axios.post('/api/parse_feed', {feedUrl, submitCode, notClaimed})
       .then(res => {
         if (res.data === 'Success_code') {
           this.props.setFeedVerified({feedUrl, publisherEmail});
