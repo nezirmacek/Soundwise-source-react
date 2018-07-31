@@ -19,7 +19,6 @@ var Axios = require('axios');
 const moment = require('moment');
 // var request = require('request');
 const request = require('request-promise');
-const proxy = require('http-proxy-middleware');
 
 const {
   handlePayment,
@@ -250,14 +249,34 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
-app.use(
-  '/tracks/:id',
-  proxy({
-    target: 'https://s3.amazonaws.com',
-    pathRewrite: path => `/soundwiseinc/soundcasts/${path.split('/')[2]}`,
-    changeOrigin: true,
-  })
-);
+app.get('/tracks/:id', (request, response, next) => {
+  const path = String(request.path).slice(8);
+  const s3 = new S3();
+  // console.log('mp3 request header: ', request.headers);
+  var Range;
+  var parts = [0, 100 * 1024]; // defa
+  var range = request.headers['range']
+    ? request.headers['range'].split('bytes=')[1]
+    : null;
+  // console.log('range: ', range);
+  if (range) {
+    parts = range.split('-');
+    if (!parseInt(parts[1]) || parseInt(parts[1]) < parseInt(parts[0])) {
+      parts[1] = parseInt(parts[0]) + 100 * 1024;
+    }
+    Range = 'bytes=' + parts[0] + '-' + parts[1];
+    s3.getObject({
+      Bucket: 'soundwiseinc',
+      Key: `soundcasts/${path}`,
+      Range,
+    }).forwardToExpress(request, response, next);
+  } else {
+    s3.getObject({
+      Bucket: 'soundwiseinc',
+      Key: `soundcasts/${path}`,
+    }).forwardToExpressNoStream(response, next);
+  }
+});
 
 // database API routes:
 require('../database/routes.js')(app);

@@ -167,22 +167,22 @@ async function runImport(links) {
                 .ref(`publishers/${publisherId}`)
                 .set(newPublisher);
 
+              // mock req and res objects
               const req = {
                 body: {
-                  // mock req object
                   publisherId,
                   publisherName,
                   userId: 'Soundcast_userId_iTunesUrls',
                 },
               };
               const res = {
-                // mock res object
                 send: msg => console.log(`iTunesUrls resObject ${msg}`),
                 status: status => ({
                   send: msg =>
                     console.log(`iTunesUrls resObject ${status} ${msg}`),
                 }),
               };
+
               // since the imported podcasts don't have an active Soundwise user associated with it, we'll need to set verified = false under the soundcast node. also please set published = false.
               const isPublished = false,
                 isVerified = false,
