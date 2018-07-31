@@ -16,7 +16,7 @@ module.exports = app => {
   });
 
   app.post('/api/coupon', (req, res) => {
-    database.Coupon.findOrCreate(req.body)
+    database.Coupon.create(req.body)
       .then(data => res.send(data))
       .catch(err => res.status(500).send(err));
   });
@@ -47,13 +47,13 @@ module.exports = app => {
   });
 
   app.post('/api/category', (req, res) => {
-    database.Category.findOrCreate(req.body)
+    database.Category.create(req.body)
       .then(data => res.send(data))
       .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/listening_session', (req, res) => {
-    database.ListeningSession.findOrCreate(req.body)
+    database.ListeningSession.create(req.body)
       .then(data => res.send(data))
       .catch(err => res.status(500).send(err));
   });
