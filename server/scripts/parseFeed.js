@@ -88,6 +88,11 @@ function getFeed(urlfeed, callback) {
 const feedUrls = {}; // in-memory cache object for obtained (but not yet imported to db) feeds
 const feedUrlsImported = {}; // not claimed imported feeds
 
+// Steps flow:
+// 1. submit feedUrl (!submitCode && !resend && !importFeedUrl)
+// 2. submitCode:CODE
+// 3. resend:true[optional]
+// 4. importFeedUrl:true[from dashboard] - claim on imported or import new feed
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 async function parseFeed(req, res) {
   const {
@@ -104,113 +109,109 @@ async function parseFeed(req, res) {
   }
   const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
   const url = urlParsed.host + urlParsed.path; // use url as a key
+  let verificationCode = Date.now()
+    .toString()
+    .slice(-4);
 
-  if (!feedUrls[url]) {
-    // - feed wasn't obtained/cached
+  // 1. Search for the podcast
+  const podcasts = await database.ImportedFeed.findAll({
+    where: {feedUrl: url},
+  });
 
-    // 1. Search for the podcast
-    const podcasts = await database.ImportedFeed.findAll({
-      where: {feedUrl: url},
-    });
-    if (podcasts.length) {
-      // - feed was already imported (no need to run runFeedImport)
-      const podcast = podcasts[0]; // take first
-      if (podcast.claimed) {
-        // If the feed has already been claimed, that means it's already associated with a existing active publisher on Soundwise. In that case, we need to return an error to client. The user submission process should continue only if the feed is NOT already imported, or if it's imported but not 'claimed'. That's why we need to move the checking step to before the submission of verification code.
-        res
-          .status(400)
-          .send(
-            'Error: This feed is already on Soundwise. If you think this is a mistake, please contact support.'
-          );
+  if (podcasts.length) {
+    // feed found in ImportedFeed (no need to run runFeedImport)
+    const podcast = podcasts[0]; // take first
+    if (podcast.claimed) {
+      // If the feed has already been claimed, that means it's already associated with a existing active publisher on Soundwise. In that case, we need to return an error to client. The user submission process should continue only if the feed is NOT already imported, or if it's imported but not 'claimed'. That's why we need to move the checking step to before the submission of verification code.
+      const errMsg =
+        'Error: This feed is already on Soundwise. If you think this is a mistake, please contact support.';
+      return res.status(400).send(errMsg);
+    }
+
+    const soundcastId = podcast.soundcastId;
+    const snapshot = await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}`)
+      .once(`value`);
+    const {publisherEmail, title} = snapshot.val();
+
+    if (!submitCode && !resend && !importFeedUrl) {
+      // first step - submitting feedUrl/trying to claim
+      feedUrlsImported[url] = verificationCode;
+      sendVerificationMail(publisherEmail, title, verificationCode);
+      return res.json({
+        imageUrl: podcast.imageURL,
+        publisherEmail,
+        notClaimed: true,
+      });
+    }
+
+    if (submitCode) {
+      // check verification code
+      if (submitCode === feedUrlsImported[url]) {
+        return res.send('Success_code');
       } else {
-        const soundcastId = podcast.soundcastId;
-        // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
-        if (importFeedUrl) {
-          await firebase
-            .database()
-            .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
-            .set(true);
-          await firebase
-            .database()
-            .ref(`publishers/${publisherId}/administrators/${userId}`)
-            .set(true);
-          await firebase
-            .database()
-            .ref(`users/${userId}/publisherID`)
-            .set(publisherId);
-          await database.ImportedFeed.update(
-            {claimed: true, userId, publisherId},
-            {where: {soundcastId}}
-          );
-          await database.Soundcast.update(
-            {publisherId},
-            {where: {soundcastId}}
-          );
-          await firebase
-            .database()
-            .ref(`soundcasts/${soundcastId}/publisherID`)
-            .set(publisherId);
-          await firebase
-            .database()
-            .ref(`soundcasts/${soundcastId}/creatorID`)
-            .set(userId);
+        return res.status(400).send(`Error: incorrect verfication code`);
+      }
+    }
 
-          const episodes = await database.Episode.findAll({
-            where: {soundcastId},
-          });
-          if (episodes.length) {
-            await database.Episode.update(
-              {publisherId},
-              {where: {soundcastId}}
-            );
-            for (const episode of episodes) {
-              await firebase
-                .database()
-                .ref(`episodes/${episode.episodeId}/publisherID`)
-                .set(publisherId);
-              await firebase
-                .database()
-                .ref(`episodes/${episode.episodeId}/creatorID`)
-                .set(userId);
-            }
-          }
-          delete feedUrlsImported[url];
-          return res.send('Success_claim');
-        } else {
-          // - feed
-          // default: user trying to claim on imported soundcast
-          const snapshot = await firebase
+    if (resend) {
+      sendVerificationMail(publisherEmail, title, feedUrlsImported[url]);
+      return res.send('Success_resend');
+    }
+
+    // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
+    if (importFeedUrl) {
+      await firebase
+        .database()
+        .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
+        .set(true);
+      await firebase
+        .database()
+        .ref(`publishers/${publisherId}/administrators/${userId}`)
+        .set(true);
+      await firebase
+        .database()
+        .ref(`users/${userId}/publisherID`)
+        .set(publisherId);
+      await database.ImportedFeed.update(
+        {claimed: true, userId, publisherId},
+        {where: {soundcastId}}
+      );
+      await database.Soundcast.update({publisherId}, {where: {soundcastId}});
+      await firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}/publisherID`)
+        .set(publisherId);
+      await firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}/creatorID`)
+        .set(userId);
+
+      const episodes = await database.Episode.findAll({
+        where: {soundcastId},
+      });
+      if (episodes.length) {
+        await database.Episode.update({publisherId}, {where: {soundcastId}});
+        for (const episode of episodes) {
+          await firebase
             .database()
-            .ref(`soundcasts/${soundcastId}`)
-            .once(`value`);
-          const {publisherEmail, title} = snapshot.val();
-          if (submitCode) {
-            // check verification code
-            if (submitCode === feedUrlsImported[url]) {
-              return res.send('Success_code');
-            } else {
-              return res.status(400).send(`Error: incorrect verfication code`);
-            }
-          }
-          if (resend) {
-            sendVerificationMail(publisherEmail, title, feedUrlsImported[url]);
-            return res.send('Success_resend');
-          }
-          const verificationCode = Date.now()
-            .toString()
-            .slice(-4);
-          feedUrlsImported[url] = verificationCode;
-          sendVerificationMail(publisherEmail, title, verificationCode);
-          return res.json({
-            imageUrl: podcast.imageURL,
-            publisherEmail,
-            notClaimed: true,
-          });
+            .ref(`episodes/${episode.episodeId}/publisherID`)
+            .set(publisherId);
+          await firebase
+            .database()
+            .ref(`episodes/${episode.episodeId}/creatorID`)
+            .set(userId);
         }
       }
-    } else {
-      // - feed wasn't imported
-      getFeed(feedUrl, async (err, results) => {
+      delete feedUrlsImported[url];
+      return res.send('Success_claim');
+    }
+  } else {
+    // not found in ImportedFeed (feed wasn't imported)
+    if (!submitCode && !resend && !importFeedUrl) {
+      // first step - submitting feedUrl
+      return getFeed(feedUrl, async (err, results) => {
         if (err) {
           return res.status(400).send(`Error: obtaining feed ${err}`);
         }
@@ -231,25 +232,26 @@ async function parseFeed(req, res) {
               "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!"
             );
         }
-        const verificationCode = Date.now()
-          .toString()
-          .slice(-4);
-        console.log('verificationCode: ', verificationCode);
-        // cache object
+        // setting cached object
         feedUrls[url] = {
-          metadata,
-          feedItems,
           publisherEmail,
+          metadata,
           verificationCode,
+          feedItems,
           originalUrl: feedUrl,
         };
         sendVerificationMail(publisherEmail, metadata.title, verificationCode);
         res.json({imageUrl: metadata.image.url, publisherEmail});
       });
     }
-  } else {
-    // feed already cached in feedUrls object
+
+    if (!feedUrls[url]) {
+      console.log(`Error parseFeed: feed wasn't found in cache object ${url}`);
+      return res.status(400).send(`Error: feed wasn't found in cache object`);
+    }
+
     const {publisherEmail, metadata, verificationCode} = feedUrls[url];
+
     if (submitCode) {
       // check verification code
       if (submitCode === verificationCode) {
@@ -259,31 +261,23 @@ async function parseFeed(req, res) {
         return res.status(400).send(`Error: incorrect verfication code`);
       }
     }
+
     if (resend) {
       sendVerificationMail(publisherEmail, metadata.title, verificationCode);
       return res.send('Success_resend');
     }
+
     if (importFeedUrl) {
-      return runFeedImport(
-        req,
-        res,
-        url,
-        feedUrls[url],
-        true,
-        true,
-        true,
-        () => {
-          delete feedUrls[url];
-          res.send('Success_import');
-        }
-      );
+      runFeedImport(req, res, url, feedUrls[url], true, true, true, () => {
+        delete feedUrls[url];
+        res.send('Success_import');
+      });
     }
-    res.json({imageUrl: metadata.image.url, publisherEmail});
   }
 } // parseFeed
 
 function sendVerificationMail(to, soundcastTitle, verificationCode) {
-  // console.log(verificationCode); return; // uncomment to test
+  // console.log('parseFeed sendVerificationMail', to, verificationCode); return; // uncomment to test
   sgMail.send({
     to,
     from: 'support@mysoundwise.com',
