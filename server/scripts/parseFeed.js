@@ -85,6 +85,19 @@ function getFeed(urlfeed, callback) {
   });
 }
 
+// if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
+const emptyEmailMsg =
+  "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!";
+function getPublisherEmail(metadata) {
+  const itunesEmail =
+    metadata['itunes:owner'] &&
+    metadata['itunes:owner']['itunes:email'] &&
+    metadata['itunes:owner']['itunes:email']['#'];
+  const managingEmail =
+    metadata['rss:managingeditor'] && metadata['rss:managingeditor']['email'];
+  return itunesEmail || managingEmail || null;
+}
+
 const feedUrls = {}; // in-memory cache object for obtained (but not yet imported to db) feeds
 const feedUrlsImported = {}; // not claimed imported feeds
 
@@ -128,12 +141,43 @@ async function parseFeed(req, res) {
       return res.status(400).send(errMsg);
     }
 
-    const soundcastId = podcast.soundcastId;
+    const {soundcastId, originalUrl} = podcast;
     const snapshot = await firebase
       .database()
       .ref(`soundcasts/${soundcastId}`)
       .once(`value`);
-    const {publisherEmail, title} = snapshot.val();
+    let {publisherEmail, title} = snapshot.val();
+    if (!publisherEmail || publisherEmail === 'null') {
+      // checking if feed was updated
+      let errMsg;
+      await new Promise(resolve =>
+        getFeed(originalUrl, async (err, results) => {
+          if (err) {
+            errMsg = `Error: obtaining feed ${originalUrl} ${errMsg}`;
+          } else {
+            publisherEmail = getPublisherEmail(results.metadata);
+            if (publisherEmail) {
+              await database.PodcasterEmail.update(
+                {publisherEmail},
+                {where: {podcastTitle: title}}
+              );
+              await firebase
+                .database()
+                .ref(`soundcasts/${soundcastId}/publisherEmail`)
+                .set(publisherEmail);
+            }
+          }
+          resolve();
+        })
+      );
+      if (errMsg) {
+        return res.status(400).send(errMsg);
+      }
+    }
+
+    if (!publisherEmail || publisherEmail === 'null') {
+      return res.status(400).send(emptyEmailMsg);
+    }
 
     if (!submitCode && !resend && !importFeedUrl) {
       // first step - submitting feedUrl/trying to claim
@@ -216,21 +260,9 @@ async function parseFeed(req, res) {
           return res.status(400).send(`Error: obtaining feed ${err}`);
         }
         const {metadata, feedItems} = results;
-        const itunesEmail =
-          metadata['itunes:owner'] &&
-          metadata['itunes:owner']['itunes:email'] &&
-          metadata['itunes:owner']['itunes:email']['#'];
-        const managingEmail =
-          metadata['rss:managingeditor'] &&
-          metadata['rss:managingeditor']['email'];
-        const publisherEmail = itunesEmail || managingEmail || null;
+        const publisherEmail = getPublisherEmail(metadata);
         if (!publisherEmail) {
-          // if publisherEmail cannot be found, need to end the progress, because we won't be able to verify that the user owns the feed
-          return res
-            .status(400)
-            .send(
-              "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!"
-            );
+          return res.status(400).send(emptyEmailMsg);
         }
         // setting cached object
         feedUrls[url] = {
@@ -277,7 +309,9 @@ async function parseFeed(req, res) {
 } // parseFeed
 
 function sendVerificationMail(to, soundcastTitle, verificationCode) {
-  // console.log('parseFeed sendVerificationMail', to, verificationCode); return; // uncomment to test
+  if (process.env.NODE_ENV === 'dev') {
+    return console.log('parseFeed sendVerificationMail', to, verificationCode);
+  }
   sgMail.send({
     to,
     from: 'support@mysoundwise.com',
