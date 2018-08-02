@@ -163,7 +163,7 @@
   },
   "license": "UNLICENSED",
   "prettier": {
-    "bracketSpacing": false,
+    "bracketSpacing": true,
     "singleQuote": true,
     "trailingComma": "es5"
   }
