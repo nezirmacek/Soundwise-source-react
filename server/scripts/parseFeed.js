@@ -156,6 +156,7 @@ async function parseFeed(req, res) {
             errMsg = `Error: obtaining feed ${originalUrl} ${errMsg}`;
           } else {
             publisherEmail = getPublisherEmail(results.metadata);
+            // publisherEmail = 'TEST@EMAIL.COM';
             if (publisherEmail) {
               await database.PodcasterEmail.update(
                 {publisherEmail},

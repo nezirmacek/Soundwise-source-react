@@ -119,6 +119,7 @@ class _Dashboard extends Component {
     this.state = {
       userInfo: {},
     };
+    this.checkProps = this.checkProps.bind(this);
   }
 
   componentDidMount() {
@@ -130,13 +131,14 @@ class _Dashboard extends Component {
             userInfo: that.props.userInfo,
           });
         }
+        that.checkProps(that.props);
       } else {
         that.props.history.push('/signin');
       }
     });
   }
+
   componentWillReceiveProps(nextProps) {
-    const that = this;
     if (!nextProps.userInfo.admin || !nextProps.isLoggedIn) {
       nextProps.history.push('/signin');
     }
@@ -145,6 +147,11 @@ class _Dashboard extends Component {
         userInfo: nextProps.userInfo,
       });
     }
+    checkProps(nextProps);
+  }
+
+  checkProps(nextProps = {}) {
+    const that = this;
     const publisher =
       nextProps.userInfo.publisher || this.props.userInfo.publisher;
     const publisherID =
@@ -272,7 +279,7 @@ class _Dashboard extends Component {
       <div className="">
         <SoundwiseHeader showIcon={true} />
         {feedVerified && (
-          <div class="importing-feed-overlay">
+          <div className="importing-feed-overlay">
             <div>Importing feed... Please wait</div>
             <div>
               <Dots style={{}} color={Colors.mainOrange} size={22} speed={1} />

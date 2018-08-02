@@ -3,6 +3,7 @@
 // $ IMPORT_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
 // $ FIX_CATEGORIES=true NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
 // $ RUN_IMPORT=true     NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
+// $ SET_TEST_FEEDS=true NODE_ENV=dev       node iTunesUrls-local-sql.js
 
 const request = require('request');
 const cheerio = require('cheerio');
@@ -31,6 +32,26 @@ const db = new Sequelize('soundwise_local_sql', 'root', '111', {
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const {getFeed} = require('./parseFeed.js');
+
+const setTestFeeds = async () => {
+  console.log('Setting test feeds');
+  // const test_feedUrl = 'http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml';
+  // getFeed(feedUrl_without_publisherEmail, async (err, results) => {
+  // });
+  const publisherEmail = 'null'; // set test email
+  await database.PodcasterEmail.update(
+    {publisherEmail},
+    {where: {podcastTitle: 'Het Zondagochtend Concert'}}
+  );
+  await firebase
+    .database()
+    .ref(`soundcasts/${soundcastId}/publisherEmail`)
+    .set(publisherEmail);
+}
+if (process.env.SET_TEST_FEEDS) {
+  setTestFeeds();
+  return;
+}
 
 const createTables = async () => {
   console.log('Creating tables');

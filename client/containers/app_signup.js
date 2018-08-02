@@ -819,7 +819,7 @@ class _AppSignup extends Component {
                     placeholder={'Password'}
                     onChange={this.handleChange.bind(this, 'password')}
                     value={password}
-                    validators={[minLengthValidator.bind(null, 1)]}
+                    validators={[minLengthValidator.bind(null, 6)]}
                   />
                   <div>
                     {/*<input*/}
@@ -998,7 +998,7 @@ class _AppSignup extends Component {
                       placeholder={'Password'}
                       onChange={this.handleChange.bind(this, 'password')}
                       value={password}
-                      validators={[minLengthValidator.bind(null, 1)]}
+                      validators={[minLengthValidator.bind(null, 6)]}
                     />
                     <div>
                       <span style={styles.acceptText}>
