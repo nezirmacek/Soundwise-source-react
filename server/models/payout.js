@@ -45,10 +45,11 @@ module.exports = function(Payout) {
 
                 Payout.create(payout)
                   .then(res => {
-                    return cb(null, res);
+                    cb(null, res);
                   })
                   .catch(err => {
-                    return cb(err);
+                    console.log(`Error: payout.js create ${err}`)
+                    cb(err);
                   });
               }
               break;
