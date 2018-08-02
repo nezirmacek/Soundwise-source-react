@@ -35,6 +35,7 @@ var Comment = db.define('Comment', {
   content: Sequelize.TEXT,
   userId: {type: Sequelize.STRING, allowNull: false},
   announcementId: Sequelize.STRING,
+  parentId: Sequelize.STRING,
   episodeId: Sequelize.STRING,
   soundcastId: Sequelize.STRING,
   timeStamp: Sequelize.BIGINT,
@@ -246,6 +247,18 @@ var Coupon = db.define('Coupon', {
   timeStamp: Sequelize.BIGINT,
 });
 
+// Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
+// Episode.hasMany(Comment, {as: 'Comments'});
+
+// Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
+// Announcement.hasMany(Comment, {as: 'Comments'});
+
+// Like.belongsTo(Comment, {foreignKey: 'commentId'});
+// Comment.hasMany(Like, {as: 'Likes'});
+
+// Comment.belongsTo(User, {foreignKey: 'userId'});
+// User.hasMany(Comment, {as: 'Comments'});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -264,29 +277,17 @@ var Coupon = db.define('Coupon', {
 // ListeningSession.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-// Comment.belongsTo(User, {foreignKey: 'userId'});
-// User.hasMany(Comment, {as: 'Comments'});
-
 // Announcement.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Announcement, {as: 'Announcements'});
 
 // Like.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Like, {as: 'Likes'});
 
-// Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
-// Episode.hasMany(Comment, {as: 'Comments'});
-
 // Like.belongsTo(Episode, {foreignKey: 'episodeId'});
 // Episode.hasMany(Like, {as: 'Likes'});
 
-// Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
-// Announcement.hasMany(Comment, {as: 'Comments'});
-
 // Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
 // Announcement.hasMany(Like, {as: 'Likes'});
-
-// Like.belongsTo(Comment, {foreignKey: 'commentId'});
-// Comment.hasMany(Like, {as: 'Likes'});
 
 // Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Announcement, {as: 'Announcements'});
@@ -342,6 +343,7 @@ module.exports = {
   PlatformCharges,
   Transfers,
   ImportedFeed,
+  Event,
   db,
   Category,
   PodcasterEmail,
