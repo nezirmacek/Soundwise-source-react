@@ -10,7 +10,7 @@ If you create new soundcasts for testing, please set published = false in fireba
 
 ## Running in test mode
 
-Comment out *new webpack.optimize.UglifyJsPlugin(),* line in *webpack.config.js* and run:
+Comment *new webpack.optimize.UglifyJsPlugin(),* line in *webpack.config.js* and run:
 ```
 NODE_ENV=dev node --inspect server/server.js
 NODE_ENV=dev npm run-script start
