@@ -147,7 +147,7 @@ class _Dashboard extends Component {
         userInfo: nextProps.userInfo,
       });
     }
-    checkProps(nextProps);
+    this.checkProps(nextProps);
   }
 
   checkProps(nextProps = {}) {

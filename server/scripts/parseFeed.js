@@ -211,14 +211,6 @@ async function parseFeed(req, res) {
         .database()
         .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
         .set(true);
-      await firebase
-        .database()
-        .ref(`publishers/${publisherId}/administrators/${userId}`)
-        .set(true);
-      await firebase
-        .database()
-        .ref(`users/${userId}/publisherID`)
-        .set(publisherId);
       await database.ImportedFeed.update(
         {claimed: true, userId, publisherId},
         {where: {soundcastId}}
@@ -232,6 +224,10 @@ async function parseFeed(req, res) {
         .database()
         .ref(`soundcasts/${soundcastId}/creatorID`)
         .set(userId);
+      await firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}/verified`)
+        .set(true);
 
       const episodes = await database.Episode.findAll({
         where: {soundcastId},
@@ -393,7 +389,7 @@ async function runFeedImport(
     landingPage: true,
     prices: [{billingCycle: 'free', price: 'free'}],
     published: isPublished, // set this to true from client after ownership is verified
-    verified: true, // ownership verification, set to true from client after ownership is verified
+    verified: isVerified, // ownership verification, set to true from client after ownership is verified
     showSubscriberCount: true,
     showTimeStamps: true,
     hostImageURL:
@@ -533,14 +529,6 @@ async function runFeedImport(
         .database()
         .ref(`publishers/${publisherId}/administrators/${userId}`)
         .set(true);
-      firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}/published`)
-        .set(isPublished);
-      firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}/verified`)
-        .set(isVerified);
       callback && callback();
     })
     .catch(err => logErr(`Soundcast.findOrCreate ${err}`, res));

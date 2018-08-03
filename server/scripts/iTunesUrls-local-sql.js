@@ -3,7 +3,7 @@
 // $ IMPORT_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
 // $ FIX_CATEGORIES=true NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
 // $ RUN_IMPORT=true     NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
-// $ SET_TEST_FEEDS=true NODE_ENV=dev       node iTunesUrls-local-sql.js
+// $ SET_TEST_FEED=true  NODE_ENV=dev       node iTunesUrls-local-sql.js
 
 const request = require('request');
 const cheerio = require('cheerio');
@@ -33,23 +33,77 @@ const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const {getFeed} = require('./parseFeed.js');
 
-const setTestFeeds = async () => {
-  console.log('Setting test feeds');
-  // const test_feedUrl = 'http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml';
-  // getFeed(feedUrl_without_publisherEmail, async (err, results) => {
-  // });
-  const publisherEmail = 'null'; // set test email
-  await database.PodcasterEmail.update(
-    {publisherEmail},
-    {where: {podcastTitle: 'Het Zondagochtend Concert'}}
-  );
-  await firebase
-    .database()
-    .ref(`soundcasts/${soundcastId}/publisherEmail`)
-    .set(publisherEmail);
-}
-if (process.env.SET_TEST_FEEDS) {
-  setTestFeeds();
+const setTestFeed = async () => {
+  // getFeed('http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml', async (err, results) => {});
+  const feedUrl = 'download.omroep.nl/avro/podcast/klassiek/zoc/rsszoc.xml';
+  const podcastTitle = 'Het Zondagochtend Concert';
+  const podcasts = await database.ImportedFeed.findAll({where: {feedUrl}});
+  if (!podcasts.length) {
+    return console.log(`Error: test podcast wasn't obtained`);
+  }
+  const soundcastId = podcasts[0].soundcastId;
+  const episodes = await database.Episode.findAll({
+    where: {soundcastId},
+  });
+  if (!episodes.length) {
+    return console.log(`Error: test podcast episodes weren't obtained`);
+  }
+
+  if (process.env.SET_TEST_FEED === 'delete') {
+    console.log(`Deleting test feed ${soundcastId}`);
+
+    await database.PodcasterEmail.destroy({where: {podcastTitle}});
+    await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}`)
+      .remove();
+    await database.ImportedFeed.destroy({where: {soundcastId}});
+    for (const episode of episodes) {
+      await firebase
+        .database()
+        .ref(`episodes/${episode.episodeId}`)
+        .remove();
+    }
+    await database.Soundcast.destroy({where: {soundcastId}});
+    await database.Episode.destroy({where: {soundcastId}});
+    await database.Category.destroy({where: {soundcastId}});
+  } else {
+    console.log(`Resetting test feed ${soundcastId}`);
+
+    const publisherEmail = 'null'; // set test email
+    const userId = 'Soundcast_userId_iTunesUrls';
+    const publisherId = '1527144800000p'; // unknown test publisherId
+
+    await database.PodcasterEmail.update(
+      {publisherEmail},
+      {where: {podcastTitle}}
+    );
+    await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}/publisherEmail`)
+      .set(publisherEmail);
+    await database.ImportedFeed.update(
+      {claimed: false, userId, publisherId},
+      {where: {soundcastId}}
+    );
+    for (const episode of episodes) {
+      await firebase
+        .database()
+        .ref(`episodes/${episode.episodeId}/publisherID`)
+        .set(publisherId);
+      await firebase
+        .database()
+        .ref(`episodes/${episode.episodeId}/creatorID`)
+        .set(userId);
+    }
+    await database.Soundcast.update({publisherId}, {where: {soundcastId}});
+    await database.Episode.update({publisherId}, {where: {soundcastId}});
+  }
+
+  process.exit();
+};
+if (process.env.SET_TEST_FEED) {
+  setTestFeed();
   return;
 }
 
@@ -529,14 +583,20 @@ const fixCategories = async () => {
         continue; // skip
       }
 
-      await database.Soundcast.update({
-        published: true,
-      }, { where: { soundcastId: feed.soundcastId }});
-      await firebase.database().ref(`soundcasts/${feed.soundcastId}/published`).set(true);
+      await database.Soundcast.update(
+        {
+          published: true,
+        },
+        {where: {soundcastId: feed.soundcastId}}
+      );
+      await firebase
+        .database()
+        .ref(`soundcasts/${feed.soundcastId}/published`)
+        .set(true);
 
-      continue
+      continue;
 
-      console.log('Categories fix')
+      console.log('Categories fix');
       const categories = (await db_original.query(
         `SELECT * FROM "Categories" WHERE "soundcastId"='z${feed.soundcastId}'`
       ))[0];

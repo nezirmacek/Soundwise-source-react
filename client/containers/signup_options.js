@@ -115,7 +115,7 @@ class _SignupOptions extends Component {
     }
     if (/\d/.test(e.key)) {
       // digits only
-      setTimeout(() => refs['codeSign' + id].focus(), 100);
+      setTimeout(() => refs['codeSign' + id].focus(), 50);
     } else {
       e.preventDefault();
     }
