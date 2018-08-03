@@ -152,27 +152,16 @@ class _Dashboard extends Component {
 
   checkProps(nextProps = {}) {
     const that = this;
-    const publisher =
-      nextProps.userInfo.publisher || this.props.userInfo.publisher;
-    const publisherID =
-      nextProps.userInfo.publisherID || this.props.userInfo.publisherID;
-    const userId = nextProps.userInfo.id || this.props.userInfo.id;
-    const feedVerified = nextProps.feedVerified || this.props.feedVerified;
-    const chargeState = nextProps.chargeState || this.props.chargeState;
-    if (
-      !this.runningParseFeedRequest &&
-      feedVerified &&
-      publisher &&
-      publisherID &&
-      userId
-    ) {
+    const {userInfo, feedVerified, chargeState} = this.props;
+    const {publisherID, id} = this.props.userInfo;
+    if (!this.runningParseFeedRequest && feedVerified && publisherID && id) {
+      console.log('runningParseFeedRequest');
       this.runningParseFeedRequest = true;
       const {feedUrl} = feedVerified;
       const reqObj = {
         feedUrl,
-        userId,
+        userId: id,
         publisherId: publisherID,
-        publisherName: publisher.name,
         importFeedUrl: true, // run import or claim
       };
       Axios.post('/api/parse_feed', reqObj)
@@ -194,6 +183,7 @@ class _Dashboard extends Component {
         });
     }
     if (!this.runningChargeStateRequest && publisherID && chargeState) {
+      console.log('runningChargeStateRequest');
       // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
       this.runningChargeStateRequest = true;
       const {
@@ -281,7 +271,7 @@ class _Dashboard extends Component {
         {feedVerified && (
           <div className="importing-feed-overlay">
             <div>Importing feed... Please wait</div>
-            <div>
+            <div style={{marginTop: 20}}>
               <Dots style={{}} color={Colors.mainOrange} size={22} speed={1} />
             </div>
           </div>

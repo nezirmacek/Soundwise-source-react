@@ -198,6 +198,7 @@ const signupCommon = (_user, isAdmin, successCallback) => {
     if (user) {
       const userId = user.uid;
       const userToSave = {
+        id: userId,
         firstName,
         lastName,
         email: {0: email},
@@ -216,11 +217,12 @@ const signupCommon = (_user, isAdmin, successCallback) => {
         .ref(`users/${userId}`)
         .once('value')
         .then(userSnapshot => {
+          // check user isn't exist
           if (!userSnapshot.val()) {
-            // check user isn't exist
+            console.log(`Error: commonAuth user doesn't exist ${userId}`);
             firebase
               .database()
-              .ref('users/' + userId)
+              .ref(`users/${userId}`)
               .set(userToSave);
           }
         });

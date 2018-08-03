@@ -1,9 +1,10 @@
 // Run options:
-// $ CREATE_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local1.log &
-// $ IMPORT_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
-// $ FIX_CATEGORIES=true NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
-// $ RUN_IMPORT=true     NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
-// $ SET_TEST_FEED=true  NODE_ENV=dev       node iTunesUrls-local-sql.js
+// $ CREATE_TABLES=true   NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local1.log &
+// $ IMPORT_TABLES=true   NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
+// $ FIX_CATEGORIES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
+// $ RUN_IMPORT=true      NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
+// $ SET_TEST_FEED=delete NODE_ENV=dev       node iTunesUrls-local-sql.js
+// $ SET_TEST_FEED=reset  NODE_ENV=dev       node iTunesUrls-local-sql.js
 
 const request = require('request');
 const cheerio = require('cheerio');
@@ -34,19 +35,23 @@ const entities = new Entities();
 const {getFeed} = require('./parseFeed.js');
 
 const setTestFeed = async () => {
-  // getFeed('http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml', async (err, results) => {});
+  // return getFeed('http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml', async (err, results) => {
+  //   debugger;
+  // });
   const feedUrl = 'download.omroep.nl/avro/podcast/klassiek/zoc/rsszoc.xml';
   const podcastTitle = 'Het Zondagochtend Concert';
   const podcasts = await database.ImportedFeed.findAll({where: {feedUrl}});
   if (!podcasts.length) {
-    return console.log(`Error: test podcast wasn't obtained`);
+    console.log(`Error: test podcast wasn't obtained`);
+    return process.exit();
   }
   const soundcastId = podcasts[0].soundcastId;
   const episodes = await database.Episode.findAll({
     where: {soundcastId},
   });
   if (!episodes.length) {
-    return console.log(`Error: test podcast episodes weren't obtained`);
+    console.log(`Error: test podcast episodes weren't obtained`);
+    return process.exit();
   }
 
   if (process.env.SET_TEST_FEED === 'delete') {
@@ -64,15 +69,17 @@ const setTestFeed = async () => {
         .ref(`episodes/${episode.episodeId}`)
         .remove();
     }
-    await database.Soundcast.destroy({where: {soundcastId}});
     await database.Episode.destroy({where: {soundcastId}});
     await database.Category.destroy({where: {soundcastId}});
-  } else {
+    await database.Soundcast.destroy({where: {soundcastId}});
+  }
+
+  if (process.env.SET_TEST_FEED === 'reset') {
     console.log(`Resetting test feed ${soundcastId}`);
 
     const publisherEmail = 'null'; // set test email
     const userId = 'Soundcast_userId_iTunesUrls';
-    const publisherId = '1527144800000p'; // unknown test publisherId
+    const publisherId = '1500000000000p'; // unused test publisherId
 
     await database.PodcasterEmail.update(
       {publisherEmail},
@@ -96,8 +103,8 @@ const setTestFeed = async () => {
         .ref(`episodes/${episode.episodeId}/creatorID`)
         .set(userId);
     }
-    await database.Soundcast.update({publisherId}, {where: {soundcastId}});
     await database.Episode.update({publisherId}, {where: {soundcastId}});
+    await database.Soundcast.update({publisherId}, {where: {soundcastId}});
   }
 
   process.exit();
@@ -1079,6 +1086,10 @@ async function runFeedImport(
     }
   }
 
+
+  // TODO old version - sync (if needed) with parseFeed.js
+  return console.log(`Error: old categories import`);
+  /*
   // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
   // This should be similar to the upload setup on the /dashboard/add_episode page
   const categories = metadata['itunes:category'];
@@ -1104,6 +1115,8 @@ async function runFeedImport(
       }
     }
   }
+  */
+
 
   // 2-a. add to publisher node in firebase
   // await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);

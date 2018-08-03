@@ -89,6 +89,10 @@ function getFeed(urlfeed, callback) {
 const emptyEmailMsg =
   "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!";
 function getPublisherEmail(metadata) {
+  if (process.env.NODE_ENV === 'dev') {
+    // return 'TEST@EMAIL.COM'; // set test publisher email
+    // return 'ivan.malyshev.376@gmail.com'; // set test publisher email
+  }
   const itunesEmail =
     metadata['itunes:owner'] &&
     metadata['itunes:owner']['itunes:email'] &&
@@ -156,7 +160,6 @@ async function parseFeed(req, res) {
             errMsg = `Error: obtaining feed ${originalUrl} ${errMsg}`;
           } else {
             publisherEmail = getPublisherEmail(results.metadata);
-            // publisherEmail = 'TEST@EMAIL.COM';
             if (publisherEmail) {
               await database.PodcasterEmail.update(
                 {publisherEmail},
@@ -279,11 +282,11 @@ async function parseFeed(req, res) {
       return res.status(400).send(`Error: feed wasn't found in cache object`);
     }
 
-    const {publisherEmail, metadata, verificationCode} = feedUrls[url];
+    const {publisherEmail, metadata} = feedUrls[url];
 
     if (submitCode) {
       // check verification code
-      if (submitCode === verificationCode) {
+      if (submitCode === feedUrls[url].verificationCode) {
         feedUrls[url].verified = true;
         return res.send('Success_code');
       } else {
@@ -292,7 +295,11 @@ async function parseFeed(req, res) {
     }
 
     if (resend) {
-      sendVerificationMail(publisherEmail, metadata.title, verificationCode);
+      sendVerificationMail(
+        publisherEmail,
+        metadata.title,
+        feedUrls[url].verificationCode
+      );
       return res.send('Success_resend');
     }
 
@@ -330,15 +337,24 @@ async function runFeedImport(
   soundcastId
 ) {
   const {metadata, publisherEmail, verified, originalUrl} = feedObj;
-  const {publisherId, userId, publisherName} = req.body;
-
-  let feedItems = feedObj.feedItems;
+  const {publisherId, userId} = req.body;
 
   if (!verified) {
     // verificationCode checked
     return res.status(400).send('Error: not verified');
   }
 
+  let publisherName = req.body.publisherName;
+  if (!publisherName) {
+    // trying to obtain publisherName from fb
+    const snapshot = await firebase
+      .database()
+      .ref(`publishers/${publisherId}/name`)
+      .once('value');
+    publisherName = snapshot.val();
+  }
+
+  let feedItems = feedObj.feedItems;
   feedItems.sort((a, b) => {
     // sort feedItems by date or pubdate or pubDate
     return (
@@ -429,8 +445,12 @@ async function runFeedImport(
   ); // main 16 categories ('Arts', 'Comedy', ...)
   // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
   // This should be similar to the upload setup on the /dashboard/add_episode page
-  const categories = metadata['itunes:category'];
-  if (categories && categories.length) {
+  let categories = metadata['itunes:category'];
+  if (categories) {
+    if (!categories.length) {
+      // single category
+      categories = [metadata['itunes:category']];
+    }
     for (const category of categories) {
       let name;
       if (category && category['@'] && category['@'].text) {
