@@ -35,7 +35,7 @@ http://localhost:3000/soundcasts/1519180882673s - bundle
 
 ## Testing signup_options
 
-Uncomment/set test *publisherEmail* (if needed) in parseFeed.js:getPublisherEmail function, example:
+Uncomment/set test *publisherEmail* (if needed) in **parseFeed.js:getPublisherEmail** function, example:
 ```
 - // return 'TEST@EMAIL.COM'; // set test publisher email
 + return 'ivan.malyshev.376@gmail.com'; // set test publisher email
@@ -55,7 +55,7 @@ SET_TEST_FEED=delete NODE_ENV=dev       node iTunesUrls-local-sql.js
 \*(another url could be *http://foundersnextdoor.com/feed/podcast/*)
 
 - Submit code
-- After jumping to *dashboards* view - wait till *Importing feed* process complete
+- After jumping to *dashboards* view - wait till **Importing feed** process complete
 
 #### To reset all feed data
 ```
@@ -63,7 +63,7 @@ cd ./server/scripts
 SET_TEST_FEED=reset NODE_ENV=dev       node iTunesUrls-local-sql.js
 ```
 
-- this should bring rows to original (not claimed) state
+\- this should bring rows to original (not claimed) state (for this particular feed)
 
 #### Tables expected to be changed:
 
@@ -74,7 +74,7 @@ Firebase:
 >users (new user), publishers (new publisher), soundcasts, episodes
 
 Original (not claimed) feeds should have:
-- **publisherEmail**: empty or 'null' (string) 
+- **publisherEmail**: empty or 'null' (string) if no email was found in feed metadata
 - **userId**: 'Soundcast_userId_iTunesUrls' (string) 
 
 ## Stripe
