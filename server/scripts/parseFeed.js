@@ -91,7 +91,6 @@ const emptyEmailMsg =
 function getPublisherEmail(metadata) {
   if (process.env.NODE_ENV === 'dev') {
     // return 'TEST@EMAIL.COM'; // set test publisher email
-    // return 'ivan.malyshev.376@gmail.com'; // set test publisher email
   }
   const itunesEmail =
     metadata['itunes:owner'] &&

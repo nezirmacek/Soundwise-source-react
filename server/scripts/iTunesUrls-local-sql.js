@@ -38,7 +38,7 @@ const setTestFeed = async () => {
   // return getFeed('http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml', async (err, results) => {
   //   debugger;
   // });
-  const feedUrl = 'download.omroep.nl/avro/podcast/klassiek/zoc/rsszoc.xml';
+  const feedUrl = 'download.omroep.nl/avro/podcast/klassiek/zoc/rsszoc.xml'; // parsed
   const podcastTitle = 'Het Zondagochtend Concert';
   const podcasts = await database.ImportedFeed.findAll({where: {feedUrl}});
   if (!podcasts.length) {
