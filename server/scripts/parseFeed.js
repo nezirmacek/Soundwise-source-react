@@ -211,6 +211,10 @@ async function parseFeed(req, res) {
     if (importFeedUrl) {
       await firebase
         .database()
+        .ref(`publishers/${publisherId}/soundcasts/${soundcastId}`)
+        .set(true);
+      await firebase
+        .database()
         .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
         .set(true);
       await database.ImportedFeed.update(
