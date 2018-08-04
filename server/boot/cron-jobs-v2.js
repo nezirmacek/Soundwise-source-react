@@ -18,6 +18,9 @@ const db = new Sequelize('soundwise', 'root', '111', {
 });
 
 module.exports = function(app) {
+  if (process.env.NODE_ENV === 'dev') {
+    return; // prevent running in dev mode
+  }
   // rankSoundcasts
   schedule.scheduleJob('* * 1 * * 1', async () => {
     // schedule.scheduleJob('59 * * * * *', async () => {
