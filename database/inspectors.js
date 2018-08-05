@@ -22,6 +22,9 @@ const getEvent = (type, entity) => {
   return event;
 };
 
+const myToken =
+  'fu-WhrpmAuI:APA91bHYhtWMJFqWQJmOXzdbuXUKO-yhvPM3CWv_eaCmv-H35VrNMt8nNzbhBRMcMhPtuvAevzuH-rBoVOHjASEtObKStTN5I5MX4cYjWTSgaCDT5NWtIan0mHTbbxqvSRszEz2LPjdxwqIcHjbixb3fBWlm7wvPIg';
+
 const getContentPush = entity => {
   const soundcastId = entity.soundcastId;
   if (entity.likeId === undefined) {
@@ -46,7 +49,7 @@ const getContentPush = entity => {
       : entity.episodeId
         ? {
             type: 'LIKE_EPISODE',
-            messageId: entity.episodeId,
+            episodeId: entity.episodeId,
             soundcastId,
           }
         : {
@@ -61,7 +64,8 @@ const sendPush = (content, deviceId) => {
   firebase
     .messaging()
     .send({ data: content, token: deviceId })
-    .then(res => console.log(res));
+    .then(res => console.log(res))
+    .catch(e => console.log(e));
 };
 
 // COMMENTS
@@ -107,7 +111,7 @@ const addComment = (req, res) => {
               .then(snapshot => {
                 const user = snapshot.val();
                 if (user.token !== undefined) {
-                  user.token.forEach(t => sendPush(getContentPush(comment), t)); // FIX ME
+                  user.token.forEach(t => sendPush(getContentPush(comment), t)); // TEST ME
                 }
               });
           });
@@ -175,13 +179,6 @@ const editComment = (req, res) => {
             : `episodes/${comment.episodeId}/comments/${commentId}`
         )
         .set(moment().format('X'));
-      if (comment.episodeId !== undefined && commentId.fullName !== undefined) {
-        console.log(commentId.fullName);
-        firebase
-          .database()
-          .ref(`episodes/${comment.episodeId}/lastLike`)
-          .set(commentId.fullName);
-      }
       res.send(data);
     })
     .catch(err => {
@@ -243,14 +240,26 @@ const addLike = (req, res) => {
       if (like.commentId) {
         firebase
           .database()
-          .ref(`users/${like.userId}`)
+          .ref(`comment/${like.commentId}/userID`)
           .once('value')
-          .then(snapshot => {
-            const user = snapshot.val();
-            if (user.token !== undefined) {
-              user.token.forEach(t => sendPush(getContentPush(like), t)); // push
-            }
+          .then(snap => {
+            firebase
+              .database()
+              .ref(`users/${snap.val()}`)
+              .once('value')
+              .then(snapshot => {
+                const user = snapshot.val();
+                if (user.token !== undefined) {
+                  user.token.forEach(t => sendPush(getContentPush(like), t)); // TEST ME
+                }
+              });
           });
+      }
+      if (like.episodeId !== undefined && like.fullName !== undefined) {
+        firebase
+          .database()
+          .ref(`episodes/${like.episodeId}/lastLike`)
+          .set(like.fullName);
       }
       likeCount(like, true);
       res.send(data);

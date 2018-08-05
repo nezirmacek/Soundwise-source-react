@@ -144,27 +144,17 @@ module.exports = app => {
       .catch(err => res.status(500).send(err));
   });
 
-  app.post('/api/comments', (req, res) => {
-    inspectors.addComment(req, res);
-  });
+  app.post('/api/comments', (req, res) => inspectors.addComment(req, res));
 
-  app.delete('/api/comments/:id', (req, res) => {
-    inspectors.deleteComment(req, res);
-  });
+  app.delete('/api/comments/:id', (req, res) =>
+    inspectors.deleteComment(req, res)
+  );
 
-  app.put('/api/comments/:id', (req, res) => {
-    inspectors.editComment(req, res);
-  });
+  app.put('/api/comments/:id', (req, res) => inspectors.editComment(req, res));
 
-  app.post('/api/likes', (req, res) => {
-    inspectors.addLike(req, res);
-  });
+  app.post('/api/likes', (req, res) => inspectors.addLike(req, res));
 
-  app.delete('/api/likes/:id', (req, res) => {
-    inspectors.deleteLike(req, res);
-  });
+  app.delete('/api/likes/:id', (req, res) => inspectors.deleteLike(req, res));
 
-  app.put('/api/likes/:id', (req, res) => {
-    inspectors.editLike(req, res);
-  });
+  app.put('/api/likes/:id', (req, res) => inspectors.editLike(req, res));
 };
