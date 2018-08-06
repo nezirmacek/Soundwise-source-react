@@ -73,6 +73,10 @@ const commonStyles = {
     borderStyle: 'solid',
     borderColor: Colors.lightGrey,
   },
+  categoryButton: {
+    width: '100%',
+    textAlign: 'left',
+  },
 };
 
 export default commonStyles;
