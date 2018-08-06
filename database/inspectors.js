@@ -4,99 +4,10 @@ const database = require('./index');
 const firebase = require('firebase-admin');
 const moment = require('moment');
 const sendMail = require('../server/scripts/sendEmails').sendMail;
+const sendNotification = require('../server/scripts/messaging')
+  .sendNotification;
 const _ = require('lodash');
-
-const getEvent = (type, entity) => {
-  let event = {
-    type,
-    // story: 'string',
-    userId: entity.userId,
-    episodeId: entity.episodeId,
-    likeId: entity.likeId,
-    soundcastId: entity.soundcastId,
-    messageId: entity.messageId,
-    commentId: entity.commentId,
-    parentId: entity.commentId,
-  };
-  event = _.pickBy(event, _.identity);
-  return event;
-};
-
-const getContentPush = entity => {
-  const soundcastId = entity.soundcastId;
-  if (entity.likeId === undefined) {
-    return entity.announcementId
-      ? {
-          data: {
-            type: 'COMMENT_MESSAGE',
-            messageId: entity.announcementId,
-            soundcastId,
-          },
-          notification: {
-            title: 'Comment message',
-            body: 'text',
-          },
-        }
-      : {
-          data: {
-            type: 'COMMENT_EPISODE',
-            episodeId: entity.episodeId,
-            soundcastId,
-          },
-          notification: {
-            title: 'Comment episode',
-            body: entity.content,
-          },
-        };
-  } else {
-    return entity.announcementId
-      ? {
-          data: {
-            type: 'LIKE_MESSAGE',
-            messageId: entity.announcementId,
-            soundcastId,
-          },
-          notification: {
-            title: 'Like message',
-            body: 'text',
-          },
-        }
-      : entity.episodeId
-        ? {
-            data: {
-              type: 'LIKE_EPISODE',
-              episodeId: entity.episodeId,
-              soundcastId,
-            },
-            notification: {
-              title: 'Like episode',
-              body: 'text',
-            },
-          }
-        : {
-            data: {
-              type: 'LIKE_COMMENT',
-              messageId: entity.commentId,
-              soundcastId,
-            },
-            notification: {
-              title: 'Like comment',
-              body: 'text',
-            },
-          };
-  }
-};
-
-const sendPush = (content, deviceId) => {
-  firebase
-    .messaging()
-    .sendToDevice(deviceId, content, {
-      priority: 'high',
-      timeToLive: 60 * 60 * 24,
-    })
-    .then(res => console.log(res))
-    .catch(e => console.log(e));
-};
+const getContentPush = require('../server/scripts/utils').getContentPush;
 
 // COMMENTS
 
@@ -140,7 +51,11 @@ const addComment = (req, res) => {
               .then(snapshot => {
                 const user = snapshot.val();
                 if (user.token !== undefined && user.token !== null) {
-                  user.token.forEach(t => sendPush(getContentPush(comment), t));
+                  user.token.forEach(t =>
+                    sendNotification(t, getContentPush(comment)).catch(e =>
+                      console.log(e)
+                    )
+                  );
                 }
               });
           });
@@ -279,7 +194,9 @@ const addLike = (req, res) => {
               .then(snapshot => {
                 const user = snapshot.val();
                 if (user.token !== undefined && user.token !== null) {
-                  user.token.forEach(t => sendPush(getContentPush(like), t));
+                  user.token.forEach(t =>
+                    sendNotification(t, getContentPush(like))
+                  );
                 }
               });
           });

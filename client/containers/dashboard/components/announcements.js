@@ -192,15 +192,16 @@ export default class Announcements extends Component {
           isPublished: true,
           id: announcementID,
         };
-
         firebase
           .database()
-          .ref(
-            `soundcasts/${currentSoundcastID}/announcements/${announcementID}`
-          )
+          .ref(`messages/${announcementID}`)
+          .set(newAnnouncement);
+        firebase
+          .database()
+          .ref(`soundcasts/${currentSoundcastID}/messages/${announcementID}`)
           .set(newAnnouncement)
           .then(
-            res => {
+            () => {
               that.setState({
                 message: '',
               });
