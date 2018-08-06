@@ -2,7 +2,9 @@
 'use strict';
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
-const awsConfig = require('../../config').awsConfig;
+const awsConfig = process.env.STAGING_ENV
+  ? require('../../stagingConfig').awsConfig
+  : require('../../config').awsConfig;
 const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
@@ -11,7 +13,9 @@ const uploader1 = require('express-fileuploader');
 const request = require('request-promise');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = require('../../config').sendGridApiKey;
+const sendGridApiKey = process.env.STAGING_ENV
+  ? require('../../stagingConfig').sendGridApiKey
+  : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const client = require('@sendgrid/client');
 client.setApiKey(sendGridApiKey);

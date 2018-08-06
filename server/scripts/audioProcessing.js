@@ -1,7 +1,9 @@
 'use strict';
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
-const awsConfig = require('../../config').awsConfig;
+const awsConfig = process.env.STAGING_ENV
+  ? require('../../stagingConfig').awsConfig
+  : require('../../config').awsConfig;
 const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
@@ -12,7 +14,11 @@ const firebase = require('firebase-admin');
 const request = require('request-promise');
 const database = require('../../database/index');
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(require('../../config').sendGridApiKey);
+sgMail.setApiKey(
+  process.env.STAGING_ENV
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey
+);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');

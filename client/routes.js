@@ -15,7 +15,12 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
-import {config, awsConfig} from '../config';
+const config = process.env.STAGING_ENV
+  ? require('../stagingConfig').config
+  : require('../config').config;
+const awsConfig = process.env.STAGING_ENV
+  ? require('../stagingConfig').awsConfig
+  : require('../config').awsConfig;
 import {loadCourses, subscribeToCategories, signinUser} from './actions/index';
 import Page from './components/page';
 import {HomePage} from './components/landingpage_main';

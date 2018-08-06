@@ -11,7 +11,9 @@ const fs = require('fs');
 const moment = require('moment');
 const Sequelize = require('sequelize');
 const firebase = require('firebase-admin');
-const serviceAccount = require('../../serviceAccountKey.json');
+const serviceAccount = process.env.STAGING_ENV
+  ? require('../../stagingServiceAccountKey')
+  : require('../../serviceAccountKey.json');
 const database = require('../../database/index');
 const {podcastCategories} = require('./utils')('iTunes-local-sql.js');
 firebase.initializeApp({
@@ -508,14 +510,20 @@ const fixCategories = async () => {
         continue; // skip
       }
 
-      await database.Soundcast.update({
-        published: true,
-      }, { where: { soundcastId: feed.soundcastId }});
-      await firebase.database().ref(`soundcasts/${feed.soundcastId}/published`).set(true);
+      await database.Soundcast.update(
+        {
+          published: true,
+        },
+        {where: {soundcastId: feed.soundcastId}}
+      );
+      await firebase
+        .database()
+        .ref(`soundcasts/${feed.soundcastId}/published`)
+        .set(true);
 
-      continue
+      continue;
 
-      console.log('Categories fix')
+      console.log('Categories fix');
       const categories = (await db_original.query(
         `SELECT * FROM "Categories" WHERE "soundcastId"='z${feed.soundcastId}'`
       ))[0];

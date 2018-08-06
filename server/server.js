@@ -8,12 +8,16 @@ var multipart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
-var awsConfig = require('../config').awsConfig;
+var awsConfig = process.env.STAGING_ENV
+  ? require('../stagingConfig').awsConfig
+  : require('../config').awsConfig;
 var S3 = require('aws-sdk').S3;
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
-var serviceAccount = require('../serviceAccountKey.json');
+var serviceAccount = process.env.STAGING_ENV
+  ? require('../stagingServiceAccountKey')
+  : require('../serviceAccountKey.json');
 var cors = require('cors');
 var Axios = require('axios');
 const moment = require('moment');
@@ -332,7 +336,9 @@ app.use(function(err, req, res, next) {
 });
 
 // var sgMail = require('@sendgrid/mail');
-var sendGridApiKey = require('../config').sendGridApiKey;
+var sendGridApiKey = process.env.STAGING_ENV
+  ? require('../stagingConfig').sendGridApiKey
+  : require('../config').sendGridApiKey;
 // var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
 // var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
 
