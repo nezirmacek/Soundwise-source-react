@@ -73,9 +73,21 @@ const commonStyles = {
     borderStyle: 'solid',
     borderColor: Colors.lightGrey,
   },
+  dropdownTitle: {
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: 'black',
+    backgroundColor: 'white',
+    padding: 10,
+    borderColor: 'black',
+    fontSize: '16px',
+  },
   categoryButton: {
-    width: '100%',
-    textAlign: 'left',
+    width: 370,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+    backgroundColor: 'white',
+    padding: 10,
   },
 };
 

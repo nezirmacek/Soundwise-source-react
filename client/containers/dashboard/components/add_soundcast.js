@@ -1507,6 +1507,7 @@ const styles = {
   image: {...commonStyles.image},
   loaderWrapper: {...commonStyles.loaderWrapper},
   cancelImg: {...commonStyles.cancelImg},
+  dropdownTitle: {...commonStyles.dropdownTitle},
   categoryButton: {...commonStyles.categoryButton},
   inputDescription: {
     height: 100,

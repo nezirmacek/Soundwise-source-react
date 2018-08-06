@@ -2329,6 +2329,7 @@ const styles = {
   inputFileHidden: {...commonStyles.inputFileHidden},
   image: {...commonStyles.image, float: 'left'},
   cancelImg: {...commonStyles.cancelImg},
+  dropdownTitle: {...commonStyles.dropdownTitle},
   categoryButton: {...commonStyles.categoryButton},
   loaderWrapper: {
     ...commonStyles.loaderWrapper,
