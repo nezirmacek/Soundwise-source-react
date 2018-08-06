@@ -37,7 +37,7 @@ module.exports = function(app) {
       ))[0];
       for (const soundcast of soundcasts) {
         const countListnes = await database.ListeningSession.count({
-          where: {soundcastId: soundcast.soundcastId},
+          where: { soundcastId: soundcast.soundcastId },
         });
         const updateDate =
           soundcast.updateDate || new Date(soundcast.updatedAt).getTime();
@@ -50,6 +50,9 @@ module.exports = function(app) {
           .database()
           .ref(`soundcasts/${soundcast.soundcastId}/rank`)
           .set(rank.toFixed(5));
+        // await database.Soundcast.update(soundcast, {
+        //   where: { soundcastId: soundcast.soundcastId },
+        // }).catch(e => console.log(e));
       }
       i += 10000;
     }
