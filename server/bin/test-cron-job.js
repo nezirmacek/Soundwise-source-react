@@ -6,11 +6,15 @@ var moment = require('moment');
 var paypal = require('paypal-rest-sdk');
 var firebase = require('firebase-admin');
 const sendinblue = require('sendinblue-api');
-const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
+const sendinBlueApiKey = process.env.STAGING_ENV
+  ? require('../../stagingConfig').sendinBlueApiKey
+  : require('../../config').sendinBlueApiKey;
 
 const parameters = {apiKey: sendinBlueApiKey, timeout: 5000};
 const sendinObj = new sendinblue(parameters);
-var paypalConfig = require('../../config').paypalConfig;
+var paypalConfig = process.env.STAGING_ENV
+  ? require('../../stagingConfig').paypalConfig
+  : require('../../config').paypalConfig;
 
 var stripeFeeFixed = 0.3;
 var stripeFeePercent = 0.029;

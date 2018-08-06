@@ -10,9 +10,9 @@ if (process.env.DATABASE_URL) {
     protocol: 'postgres',
     port: match[4],
     host: match[3],
-    logging: true,
+    logging: false,
     dialectOptions: {
-      ssl: true,
+      ssl: false,
     },
   });
 } else {
@@ -20,6 +20,9 @@ if (process.env.DATABASE_URL) {
     dialect: 'postgres',
     port: 5432,
     logging: false,
+    dialectOptions: {
+      ssl: false,
+    },
   });
 }
 

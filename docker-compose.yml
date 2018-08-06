@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  api: 
+    image: registry.gitlab.com/bigbangbutton/soundwise:latest
+    restart: on-failure
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    depends_on:
+      - db
+    command: ./wait-for db:5432 -- pm2-runtime start ecosystem.config.js --env env_staging
+  db:
+    image: postgres:10
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db:/var/lib/postgresql/data
+    
+volumes:
+  db:
+    driver: local

@@ -74,6 +74,29 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        STAGING_ENV: JSON.stringify(process.env.STAGING_ENV),
+        FIREBASE_PROJECT_ID: JSON.stringify(process.env.FIREBASE_PROJECT_ID),
+        FIREBASE_PRIVATE_KEY_ID: JSON.stringify(
+          process.env.FIREBASE_PRIVATE_KEY_ID
+        ),
+        FIREBASE_PRIVATE_KEY: JSON.stringify(process.env.FIREBASE_PRIVATE_KEY),
+        FIREBASE_CLIENT_ID: JSON.stringify(process.env.FIREBASE_CLIENT_ID),
+        FIREBASE_API_KEY: JSON.stringify(process.env.FIREBASE_API_KEY),
+        FIREBASE_MESSAGING_SENDER_ID: JSON.stringify(
+          process.env.FIREBASE_MESSAGING_SENDER_ID
+        ),
+        STRIPE_KEY_LIVE: JSON.stringify(process.env.STRIPE_KEY_LIVE),
+        STRIPE_KEY_TEST: JSON.stringify(process.env.STRIPE_KEY_TEST),
+        AWS_ACCESS_KEY_ID: JSON.stringify(process.env.AWS_ACCESS_KEY_ID),
+        AWS_SECRET_ACCESS_KEY: JSON.stringify(
+          process.env.AWS_SECRET_ACCESS_KEY
+        ),
+        SENDIN_BLUE_API_KEY: JSON.stringify(process.env.SENDIN_BLUE_API_KEY),
+        SEND_GRID_API_KEY: JSON.stringify(process.env.SEND_GRID_API_KEY),
+        PAYPAL_CLIENT_ID: JSON.stringify(process.env.PAYPAL_CLIENT_ID),
+        PAYPAL_CLIENT_SECRET: JSON.stringify(process.env.PAYPAL_CLIENT_SECRET),
+        ALGOLIA_APP_ID: JSON.stringify(process.env.ALGOLIA_APP_ID),
+        ALGOLIA_API_KEY: JSON.stringify(process.env.ALGOLIA_API_KEY),
       },
     }),
   ],

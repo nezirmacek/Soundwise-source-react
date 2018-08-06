@@ -2,11 +2,15 @@
 
 // handle payments, renewal and cancellation for pro and plus plans on Soundwise
 
-var stripe_key = require('../../config').stripe_key;
+var stripe_key = process.env.STAGING_ENV
+  ? require('../../stagingConfig').stripe_key
+  : require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 const firebase = require('firebase-admin');
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = require('../../config').sendGridApiKey;
+const sendGridApiKey = process.env.STAGING_ENV
+  ? require('../../stagingConfig').sendGridApiKey
+  : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const database = require('../../database/index');
 

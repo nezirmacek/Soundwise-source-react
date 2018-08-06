@@ -13,7 +13,10 @@ import {Provider} from 'react-redux';
 import * as firebase from 'firebase';
 import Raven from 'raven-js';
 
-import {config} from '../config';
+const config = process.env.STAGING_ENV
+  ? require('../stagingConfig').config
+  : require('../config').config;
+
 import {Routes} from './routes';
 import rootReducer from './reducers';
 
