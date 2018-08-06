@@ -84,8 +84,7 @@ const addComment = (req, res) => {
         soundcastID: comment.soundcastId,
         announcementID: comment.announcementId,
       };
-      fbComment = _.pick(fbComment, _.identity);
-
+      fbComment = _.pickBy(fbComment, _.identity);
       firebase
         .database()
         .ref(`comments/${commentId}`)
@@ -110,7 +109,7 @@ const addComment = (req, res) => {
               .once('value')
               .then(snapshot => {
                 const user = snapshot.val();
-                if (user.token !== undefined) {
+                if (user.token !== undefined && user.token !== null) {
                   user.token.forEach(t => sendPush(getContentPush(comment), t)); // TEST ME
                 }
               });
@@ -212,6 +211,7 @@ const addLike = (req, res) => {
     .then(data => {
       const like = data.dataValues;
       const likeId = like.likeId;
+      const fullName = req.body.fullName;
       let fbLike = {
         likeID: like.likeId,
         userID: like.userId,
@@ -255,11 +255,11 @@ const addLike = (req, res) => {
               });
           });
       }
-      if (like.episodeId !== undefined && like.fullName !== undefined) {
+      if (like.episodeId !== undefined && fullName !== undefined) {
         firebase
           .database()
           .ref(`episodes/${like.episodeId}/lastLike`)
-          .set(like.fullName);
+          .set(fullName);
       }
       likeCount(like, true);
       res.send(data);
@@ -289,6 +289,33 @@ const deleteLike = (req, res) => {
           .database()
           .ref(`likes/${likeId}`)
           .remove();
+        if (like.episodeId !== undefined) {
+          database.Like.findAll({ where: { episodeId: like.episodeId } }).then(
+            likes => {
+              let maxTimestamp = 0;
+              let lastLikeUserId = null;
+              likes.forEach(val => {
+                const like = val.dataValues;
+                if (maxTimestamp < like.timeStamp) {
+                  maxTimestamp = like.timeStamp;
+                  lastLikeUserId = like.userId;
+                }
+              });
+              firebase
+                .database()
+                .ref(`users/${lastLikeUserId}`)
+                .once('value')
+                .then(snapshot => {
+                  const user = snapshot.val();
+                  console.log(user);
+                  firebase
+                    .database()
+                    .ref(`episodes/${like.episodeId}/lastLike`)
+                    .set(`${user.name} ${user.lastName}`);
+                });
+            }
+          );
+        }
         likeCount(like, false);
         res.send({ count });
       })
