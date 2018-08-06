@@ -703,7 +703,7 @@ export default class EditSoundcast extends Component {
   updateSoundcast(path, ext) {
     const {soundcast, id} = window.history.state.state;
     if (ext) {
-      soundcast[path] = `https://mysoundwise.com/tracks/${id}_intro.${ext}`;
+      soundcast[path] = `https://mysoundwise.com/tracks/${id}_${path}.${ext}`;
       firebase
         .database()
         .ref(`soundcasts/${id}/${path}`)

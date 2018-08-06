@@ -18,15 +18,19 @@ NODE_ENV=dev npm run-script start
 
 ## Account
 
-To obtain user's id:
+To obtain user's id run (in browser console):
 ```
 firebase.auth().currentUser.uid
 ```
 
-To delete already existing account you need to relogin (in browser) and run:
+To delete already existing account you need to relogin, then run:
 ```
 firebase.auth().currentUser.delete().then(function() { console.log(1) }).catch(function(error) { console.log(error) });
 ```
+
+To set up *PLUS* account:
+- find **PUBLISHER_ID** from *users/{USER_ID}/publisherID*
+- set *beta:true* value for publisher (*publishers/{PUBLISHER_ID}/beta*)
 
 ## Testing soundcasts
 
