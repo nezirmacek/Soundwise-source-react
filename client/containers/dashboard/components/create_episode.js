@@ -91,7 +91,6 @@ class _CreateEpisode extends Component {
       addIntroOutro: false,
       silentPeriod: 0.5,
       overlayDuration: 5,
-      immediatePublish: true,
 
       sendEmails: false,
     };
@@ -385,11 +384,6 @@ class _CreateEpisode extends Component {
         doneProcessingEpisode: false,
       });
     }
-    if (!isPublished) {
-      this.setState({
-        immediatePublish: false, // if 'save draft' button is clicked, process the episode, but not publish it
-      });
-    }
     const {
       title,
       description,
@@ -407,7 +401,6 @@ class _CreateEpisode extends Component {
       addIntroOutro,
       silentPeriod,
       overlayDuration,
-      immediatePublish,
     } = this.state;
     const {userInfo, history, content_saved, handleContentSaving} = this.props;
     const audioProcessing =
@@ -453,7 +446,7 @@ class _CreateEpisode extends Component {
                 notes: notesUrl,
                 publicEpisode,
                 soundcastID: that.currentSoundcastId,
-                isPublished: isPublished && immediatePublish ? true : false,
+                isPublished,
                 coverArtUrl: coverArtUrl,
                 audioProcessing,
               };
@@ -560,7 +553,7 @@ class _CreateEpisode extends Component {
                           trim: trimSilence,
                           removeSilence:
                             (reduceSilence && Number(silentPeriod)) || 0,
-                          autoPublish: immediatePublish,
+                          autoPublish: isPublished,
                           emailListeners: that.state.sendEmails,
                         })
                           .then(res => {
@@ -568,7 +561,7 @@ class _CreateEpisode extends Component {
                               startProcessingEpisode: false,
                               doneProcessingEpisode: true,
                             });
-                            if (immediatePublish) {
+                            if (isPublished) {
                               alert(
                                 'Episode is submitted and will be published after audio processing is done.'
                               );
