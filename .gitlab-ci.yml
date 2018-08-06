@@ -1,0 +1,20 @@
+before_script:
+  - docker info
+  - docker login -u $GITLAB_USERNAME - p $GITLAB_PASSWORD registry.gitlab.com
+
+build:
+  stage: build
+  only:
+    - develop
+  script:
+    - docker build -t registry.gitlab.com/bigbangbutton/soundwise:latest .
+    - docker push
+
+deploy:
+  stage: deploy
+  only:
+    - develop
+  script:
+    - docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com
+      && docker-compose pull
+      && docker-compose up -d
