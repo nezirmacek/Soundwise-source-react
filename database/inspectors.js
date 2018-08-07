@@ -132,22 +132,18 @@ const editComment = (req, res) => {
 
 // LIKES
 
-const likeCount = (like, increment) => {
+const likeCount = like => {
   const path = like.announcementId
     ? `messages/${like.announcementId}/likeCount`
     : like.episodeId
       ? `episodes/${like.episodeId}/likeCount`
       : `comments/${like.commentId}/likeCount`;
-  firebase
-    .database()
-    .ref(path)
-    .once('value')
-    .then(snap =>
-      firebase
-        .database()
-        .ref(path)
-        .set(increment ? snap.val() + 1 : snap.val() - 1)
-    );
+  database.Like.findAll({ where: { episodeId: like.episodeId } }).then(likes =>
+    firebase
+      .database()
+      .ref(path)
+      .set(likes.length)
+  );
 };
 
 const addLike = (req, res) => {
@@ -201,13 +197,20 @@ const addLike = (req, res) => {
               });
           });
       }
-      if (like.episodeId !== undefined && fullName !== undefined) {
-        firebase
-          .database()
-          .ref(`episodes/${like.episodeId}/lastLike`)
-          .set(fullName);
+      if (fullName !== undefined) {
+        if (like.episodeId !== undefined) {
+          firebase
+            .database()
+            .ref(`episodes/${like.episodeId}/lastLiked`)
+            .set(fullName);
+        } else if (like.announcementId !== undefined) {
+          firebase
+            .database()
+            .ref(`messages/${like.announcementId}/lastLiked`)
+            .set(fullName);
+        }
       }
-      likeCount(like, true);
+      likeCount(like);
       res.send(data);
     })
     .catch(err => res.status(500).send(err));
@@ -218,9 +221,7 @@ const deleteLike = (req, res) => {
   database.Like.find({ where: { likeId } })
     .then(data => {
       const like = data.dataValues;
-      database.Like.destroy({
-        where: { likeId },
-      }).then(count => {
+      database.Like.destroy({ where: { likeId } }).then(count => {
         firebase
           .database()
           .ref(
@@ -235,9 +236,9 @@ const deleteLike = (req, res) => {
           .database()
           .ref(`likes/${likeId}`)
           .remove();
-        if (like.episodeId !== undefined) {
-          database.Like.findAll({ where: { episodeId: like.episodeId } }).then(
-            likes => {
+        database.Like.findAll({ where: { episodeId: like.episodeId } }).then(
+          likes => {
+            if (likes.length > 0) {
               let maxTimestamp = 0;
               let lastLikeUserId = null;
               likes.forEach(val => {
@@ -253,15 +254,22 @@ const deleteLike = (req, res) => {
                 .once('value')
                 .then(snapshot => {
                   const user = snapshot.val();
-                  firebase
-                    .database()
-                    .ref(`episodes/${like.episodeId}/lastLike`)
-                    .set(`${user.name} ${user.lastName}`);
+                  if (like.episodeId !== undefined) {
+                    firebase
+                      .database()
+                      .ref(`episodes/${like.episodeId}/lastLike`)
+                      .set(`${user.name} ${user.lastName}`);
+                  } else if (like.announcementId !== undefined) {
+                    firebase
+                      .database()
+                      .ref(`messages/${like.announcementId}/lastLike`)
+                      .set(`${user.name} ${user.lastName}`);
+                  }
                 });
             }
-          );
-        }
-        likeCount(like, false);
+          }
+        );
+        likeCount(like);
         res.send({ count });
       });
     })
