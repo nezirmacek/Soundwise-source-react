@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api: 
-    image: registry.gitlab.com/eredinbg/soundwise:latest
+    image: registry.gitlab.com/eredinbg/soundwisecms_web:latest
     restart: on-failure
     ports:
       - 3000:3000

@@ -4,8 +4,8 @@ build:
     - develop
   script:
     - docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com
-    - docker build -t registry.gitlab.com/eredinbg/soundwise:latest .
-    - docker push registry.gitlab.com/eredinbg/soundwise:latest
+    - docker build -t registry.gitlab.com/eredinbg/soundwisecms_web:latest .
+    - docker push registry.gitlab.com/eredinbg/soundwisecms_web:latest
 
 deploy:
   stage: deploy
