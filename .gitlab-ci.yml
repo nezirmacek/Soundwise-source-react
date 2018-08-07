@@ -1,6 +1,6 @@
 before_script:
   - docker info
-  - docker login -u $GITLAB_USERNAME - p $GITLAB_PASSWORD registry.gitlab.com
+  - docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com
 
 build:
   stage: build
@@ -15,6 +15,9 @@ deploy:
   only:
     - develop
   script:
+    - sudo su -p soundwise
+    - cp docker-compose.yml ~/docker-compose.yml
+    - cd
     - docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com
       && docker-compose pull
       && docker-compose up -d
