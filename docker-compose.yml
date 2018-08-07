@@ -29,7 +29,7 @@ services:
       - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     depends_on:
       - db
-    command: ./wait-for db:5432 -- pm2-runtime start ecosystem.config.js --env env_staging
+    command: ./wait-for db:5432 -- pm2-runtime start ecosystem.config.js --env staging
   db:
     image: postgres:10
     restart: on-failure
