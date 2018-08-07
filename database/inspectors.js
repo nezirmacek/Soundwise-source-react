@@ -69,12 +69,12 @@ const addComment = (req, res) => {
 
 const deleteComment = (req, res) => {
   const commentId = req.params.id;
-  database.Comment.find({ where: { commentId } }).then(data => {
-    const comment = data.dataValues;
-    database.Comment.destroy({
-      where: { commentId },
-    })
-      .then(count => {
+  database.Comment.find({ where: { commentId } })
+    .then(data => {
+      const comment = data.dataValues;
+      database.Comment.destroy({
+        where: { commentId },
+      }).then(count => {
         firebase
           .database()
           .ref(
@@ -88,9 +88,9 @@ const deleteComment = (req, res) => {
           .ref(`comments/${commentId}`)
           .remove();
         res.send({ count });
-      })
-      .catch(err => res.status(500).send(err));
-  });
+      });
+    })
+    .catch(err => res.status(500).send(err));
 };
 
 const editComment = (req, res) => {
@@ -215,12 +215,12 @@ const addLike = (req, res) => {
 
 const deleteLike = (req, res) => {
   const likeId = req.params.id;
-  database.Like.find({ where: { likeId } }).then(data => {
-    const like = data.dataValues;
-    database.Like.destroy({
-      where: { likeId },
-    })
-      .then(count => {
+  database.Like.find({ where: { likeId } })
+    .then(data => {
+      const like = data.dataValues;
+      database.Like.destroy({
+        where: { likeId },
+      }).then(count => {
         firebase
           .database()
           .ref(
@@ -263,43 +263,7 @@ const deleteLike = (req, res) => {
         }
         likeCount(like, false);
         res.send({ count });
-      })
-      .catch(err => res.status(500).send(err));
-  });
-};
-
-const editLike = (req, res) => {
-  const like = req.body;
-  const likeId = req.params.id;
-  let fbLike = {
-    likeID: like.likeId,
-    userID: like.userId,
-    timestamp: like.timeStamp,
-    episodeID: like.episodeId,
-    commentID: like.commentId,
-    soundcastID: like.soundcastId,
-    announcementID: like.announcementId,
-  };
-  fbLike = _.pickBy(fbLike, _.identity);
-  database.Like.update(like, {
-    where: { likeId },
-  })
-    .then(data => {
-      firebase
-        .database()
-        .ref(`likes/${likeId}`)
-        .set(fbLike);
-      firebase
-        .database()
-        .ref(
-          like.announcementId
-            ? `messages/${like.announcementId}/likes/${likeId}`
-            : like.episodeId
-              ? `episodes/${like.episodeId}/likes/${likeId}`
-              : `comments/${like.commentId}/likes/${likeId}`
-        )
-        .set(moment().format('X'));
-      res.send(data);
+      });
     })
     .catch(err => res.status(500).send(err));
 };
@@ -309,6 +273,5 @@ module.exports = {
   editComment,
   deleteComment,
   addLike,
-  editLike,
   deleteLike,
 };

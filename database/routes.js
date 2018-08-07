@@ -155,6 +155,4 @@ module.exports = app => {
   app.post('/api/likes', (req, res) => inspectors.addLike(req, res));
 
   app.delete('/api/likes/:id', (req, res) => inspectors.deleteLike(req, res));
-
-  app.put('/api/likes/:id', (req, res) => inspectors.editLike(req, res));
 };
