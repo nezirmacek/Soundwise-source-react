@@ -12,7 +12,7 @@ deploy:
   only:
     - develop
   script:
-    - sudo su -p soundwise
+    - sudo GITLAB_USERNAME=$GITLAB_USERNAME GITLAB_PASSWORD=$GITLAB_PASSWORD su soundwise
     - cp docker-compose.yml ~/docker-compose.yml
     - cd
     - docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com
