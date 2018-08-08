@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Axios from 'axios';
-import firebase from 'firebase';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import draftToHtml from 'draftjs-to-html';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import moment from 'moment';
 import Papa from 'papaparse';
 import { Editor } from 'react-draft-wysiwyg';
 import {
@@ -14,7 +11,6 @@ import {
   convertToRaw,
   EditorState,
   convertFromHTML,
-  createFromBlockArray,
   ContentState,
 } from 'draft-js';
 
@@ -23,10 +19,7 @@ import {
   maxLengthValidator,
 } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
-import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 import { addToEmailList } from '../../../helpers/addToEmailList';
-
-import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
 import {
@@ -118,10 +111,7 @@ export default class InviteSubscribersModal extends Component {
       inviteeArr,
       invitation: invitation.getCurrentContent(),
     })
-      .then(res => {
-        console.log(res);
-        return res;
-      })
+      .then(res => res)
       .catch(err => {
         console.log('ERROR send emails to subscribers: ', err);
       });
