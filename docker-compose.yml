@@ -23,7 +23,7 @@ services:
       - SEND_GRID_API_KEY
       - STRIPE_KEY_LIVE
       - STRIPE_KEY_TEST
-      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}"
     depends_on:
       - db
     command: ./wait-for db:5432 -- pm2-runtime start ecosystem.config.js --env staging
