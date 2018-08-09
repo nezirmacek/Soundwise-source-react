@@ -74,7 +74,6 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-        STAGING_ENV: JSON.stringify(process.env.STAGING_ENV),
         FIREBASE_PROJECT_ID: JSON.stringify(process.env.FIREBASE_PROJECT_ID),
         FIREBASE_PRIVATE_KEY_ID: JSON.stringify(
           process.env.FIREBASE_PRIVATE_KEY_ID
