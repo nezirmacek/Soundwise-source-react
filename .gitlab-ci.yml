@@ -15,6 +15,5 @@ deploy:
     - cp docker-compose.yml /home/soundwise/docker-compose.yml
     - sudo GITLAB_USERNAME=$GITLAB_USERNAME GITLAB_PASSWORD=$GITLAB_PASSWORD su soundwise
     - sudo chmod +x on_behalf.sh
-    - . /home/soundwise/set_env_vars.sh
     - sudo ./on_behalf.sh soundwise "docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com"
-    - sudo ./on_behalf.sh soundwise "docker-compose pull && docker-compose up -d"
+    - sudo ./on_behalf.sh soundwise "docker-compose -f /home/soundwise/docker-compose.yml pull && docker-compose -f /home/soundwise/docker-compose.yml up -d"
