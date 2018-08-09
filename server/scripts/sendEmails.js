@@ -12,9 +12,10 @@ var marketingEmailTemplate = require('./helpers/marketingEmailTemplate')
   .marketingEmailTemplate;
 
 var sgMail = require('@sendgrid/mail');
-var sendGridApiKey = process.env.STAGING_ENV
-  ? require('../../stagingConfig').sendGridApiKey
-  : require('../../config').sendGridApiKey;
+var sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 var client = require('@sendgrid/client');
 client.setApiKey(sendGridApiKey);

@@ -11,9 +11,10 @@ const fs = require('fs');
 const moment = require('moment');
 const Sequelize = require('sequelize');
 const firebase = require('firebase-admin');
-const serviceAccount = process.env.STAGING_ENV
-  ? require('../../stagingServiceAccountKey')
-  : require('../../serviceAccountKey.json');
+const serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingServiceAccountKey')
+    : require('../../serviceAccountKey.json');
 const database = require('../../database/index');
 const {podcastCategories} = require('./utils')('iTunes-local-sql.js');
 firebase.initializeApp({

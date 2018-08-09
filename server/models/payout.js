@@ -5,9 +5,10 @@ const moment = require('moment');
 // const sendinblue = require('sendinblue-api');
 // const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = process.env.STAGING_ENV
-  ? require('../../stagingConfig').sendGridApiKey
-  : require('../../config').sendGridApiKey;
+const sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 
 module.exports = function(Payout) {

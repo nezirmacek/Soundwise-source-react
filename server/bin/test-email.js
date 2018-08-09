@@ -1,9 +1,10 @@
 'use strict';
 
 var sendinblue = require('sendinblue-api');
-var sendinBlueApiKey = process.env.STAGING_ENV
-  ? require('../../stagingConfig').sendinBlueApiKey
-  : require('../../config').sendinBlueApiKey;
+var sendinBlueApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendinBlueApiKey
+    : require('../../config').sendinBlueApiKey;
 
 var template = '';
 template += '<!DOCTYPE html>';

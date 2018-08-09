@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom';
 import firebase from 'firebase';
-if (process.env.NODE_ENV === 'dev') {
+if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
   console.log('Running DEV mode');
   window.firebase = firebase;
 }
@@ -15,12 +15,14 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
-const config = process.env.STAGING_ENV
-  ? require('../stagingConfig').config
-  : require('../config').config;
-const awsConfig = process.env.STAGING_ENV
-  ? require('../stagingConfig').awsConfig
-  : require('../config').awsConfig;
+const config =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').config
+    : require('../config').config;
+const awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').awsConfig
+    : require('../config').awsConfig;
 import {loadCourses, subscribeToCategories, signinUser} from './actions/index';
 import Page from './components/page';
 import {HomePage} from './components/landingpage_main';

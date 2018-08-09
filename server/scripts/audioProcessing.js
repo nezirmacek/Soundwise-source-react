@@ -1,9 +1,10 @@
 'use strict';
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
-const awsConfig = process.env.STAGING_ENV
-  ? require('../../stagingConfig').awsConfig
-  : require('../../config').awsConfig;
+const awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').awsConfig
+    : require('../../config').awsConfig;
 const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
@@ -15,7 +16,7 @@ const request = require('request-promise');
 const database = require('../../database/index');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(
-  process.env.STAGING_ENV
+  process.env.NODE_ENV == 'staging'
     ? require('../../stagingConfig').sendGridApiKey
     : require('../../config').sendGridApiKey
 );

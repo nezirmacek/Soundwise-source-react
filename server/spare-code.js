@@ -1,13 +1,15 @@
-var stripe_key = process.env.STAGING_ENV
-  ? require('../stagingConfig').stripe_key
-  : require('../config').stripe_key;
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').stripe_key
+    : require('../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 var firebase = require('firebase-admin');
 const moment = require('moment');
 const request = require('request-promise');
-var serviceAccount = process.env.STAGING_ENV
-  ? require('../stagingServiceAccountKey')
-  : require('../serviceAccountKey.json');
+var serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),

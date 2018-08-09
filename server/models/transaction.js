@@ -1,16 +1,18 @@
 'use strict';
 const moment = require('moment');
-var stripe_key = process.env.STAGING_ENV
-  ? require('../../stagingConfig').stripe_key
-  : require('../../config').stripe_key;
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').stripe_key
+    : require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 var admin = require('firebase-admin');
 // const sendinblue = require('sendinblue-api');
 // const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = process.env.STAGING_ENV
-  ? require('../../stagingConfig').sendGridApiKey
-  : require('../../config').sendGridApiKey;
+const sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const stripeFeeFixed = 30; // 30 cents fixed fee
 const stripeFeePercent = 2.9 + 0.5; // 2.9% transaction fee, 0.5% fee on payout volume

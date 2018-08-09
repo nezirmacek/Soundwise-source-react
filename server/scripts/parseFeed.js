@@ -607,7 +607,7 @@ async function feedInterval() {
   setTimeout(feedInterval, 3600 * 1000); // hour
 }
 
-if (process.env.NODE_ENV !== 'dev') {
+if (process.env.NODE_ENV !== 'dev' || process.env.NODE_ENV == 'staging') {
   console.log('Starting feedInterval');
   setTimeout(feedInterval, 30 * 1000); // 30 seconds after app starts
 }
