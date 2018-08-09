@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  api: 
+  api:
     image: registry.gitlab.com/eredinbg/soundwisecms_web:latest
     restart: on-failure
     ports:
@@ -23,12 +23,13 @@ services:
       - SEND_GRID_API_KEY
       - STRIPE_KEY_LIVE
       - STRIPE_KEY_TEST
-      - DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}"
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     depends_on:
       - db
-    command: ./wait-for db:5432 -- pm2-runtime start ecosystem.config.js --env staging
+    command:
+      ./wait-for db:5432 -- pm2-runtime start ecosystem.config.js --env staging
   db:
-    image: postgres:10
+    image: postgres:9.2
     restart: on-failure
     environment:
       - POSTGRES_USER=${DB_USER}
@@ -36,7 +37,7 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - db:/var/lib/postgresql/data
-    
+
 volumes:
   db:
     driver: local
