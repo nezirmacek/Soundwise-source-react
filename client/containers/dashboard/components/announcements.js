@@ -126,12 +126,9 @@ export default class Announcements extends Component {
       params: { filter: { soundcastId: id } },
     }).then(res => {
       const announcementsArr = res.data;
-      if (announcementsArr) {
-        announcementsArr.sort((a, b) => b.date_created - a.date_created);
-        this.setState({ announcementsArr });
-      } else {
-        that.setState({ announcementsArr: [] });
-      }
+      this.setState({
+        announcementsArr: announcementsArr ? announcementsArr : [],
+      });
     });
   }
 
@@ -156,7 +153,7 @@ export default class Announcements extends Component {
     const announcementID = `${moment().format('x')}a`;
 
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
-      if (user && that.firebaseListener) {
+      if (user && that.firebaseListener && !!message) {
         const creatorID = user.uid;
         const newAnnouncement = {
           content: message,
