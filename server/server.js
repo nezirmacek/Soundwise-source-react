@@ -40,7 +40,7 @@ const {
 } = require('./scripts/emailSignup.js');
 const Emails = require('./scripts/sendEmails.js');
 
-const { createFeed, requestFeed } = require('./scripts/feed.js');
+const {createFeed, requestFeed} = require('./scripts/feed.js');
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
 const {
@@ -89,14 +89,13 @@ app.start = function() {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
     }
-    syncSoundcasts();
   });
   // server.timeout = 10*60*1000; // 10 minutes
 };
 
 app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 const prerender = require('prerender-node')
   .set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k')
@@ -227,7 +226,7 @@ app.use(
   require('react-s3-uploader/s3router')({
     bucket: 'soundwiseinc',
     // region: 'us-east-1', // optional
-    headers: { 'Access-Control-Allow-Origin': '*' }, // optional
+    headers: {'Access-Control-Allow-Origin': '*'}, // optional
     ACL: 'public-read',
     getFileKeyDir: function(req) {
       return 'soundcasts/';
@@ -243,7 +242,7 @@ app.get('/api/custom_token', (req, res) => {
     .createCustomToken(req.query.uid)
     .then(function(customToken) {
       // console.log('customToken: ', customToken);
-      res.send({ customToken });
+      res.send({customToken});
     })
     .catch(function(error) {
       console.log('Error creating custom token:', error);
