@@ -128,8 +128,9 @@ var Payout = db.define('Payout', {
 });
 
 var Message = db.define('Message', {
-  content: Sequelize.STRING,
-  creatorId: Sequelize.STRING,
+  messageId: { type: Sequelize.STRING, primaryKey: true, allowNull: false },
+  content: { type: Sequelize.STRING, allowNull: false },
+  creatorId: { type: Sequelize.STRING, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   isPublished: Sequelize.BOOLEAN,
