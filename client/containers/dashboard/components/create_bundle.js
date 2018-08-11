@@ -1244,7 +1244,7 @@ CreateBundle.propTypes = {
 };
 
 const styles = {
-  titleText: {...commonStyles.inputTitle, fontSize: 20},
+  titleText: {...commonStyles.titleText, fontSize: 20},
   inputTitleWrapper: {...commonStyles.inputTitleWrapper},
   inputTitle: {...commonStyles.inputTitle},
   inputFileHidden: {...commonStyles.inputFileHidden},
