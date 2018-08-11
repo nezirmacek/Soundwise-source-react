@@ -1,8 +1,10 @@
 // Run options:
-// $ CREATE_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local1.log &
-// $ IMPORT_TABLES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
-// $ FIX_CATEGORIES=true NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
-// $ RUN_IMPORT=true     NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
+// $ CREATE_TABLES=true   NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local1.log &
+// $ IMPORT_TABLES=true   NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local2.log &
+// $ FIX_CATEGORIES=true  NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local3.log &
+// $ RUN_IMPORT=true      NODE_ENV=dev nohup node iTunesUrls-local-sql.js 2>&1 >> output_local4.log &
+// $ SET_TEST_FEED=delete NODE_ENV=dev       node iTunesUrls-local-sql.js
+// $ SET_TEST_FEED=reset  NODE_ENV=dev       node iTunesUrls-local-sql.js
 
 const request = require('request');
 const cheerio = require('cheerio');
@@ -31,6 +33,86 @@ const db = new Sequelize('soundwise_local_sql', 'root', '111', {
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const {getFeed} = require('./parseFeed.js');
+
+const setTestFeed = async () => {
+  // return getFeed('http://download.omroep.nl/avro/podcast/klassiek/zoc/rssZOC.xml', async (err, results) => {
+  //   debugger;
+  // });
+  const feedUrl = 'download.omroep.nl/avro/podcast/klassiek/zoc/rsszoc.xml'; // parsed
+  const podcastTitle = 'Het Zondagochtend Concert';
+  const podcasts = await database.ImportedFeed.findAll({where: {feedUrl}});
+  if (!podcasts.length) {
+    console.log(`Error: test podcast wasn't obtained`);
+    return process.exit();
+  }
+  const soundcastId = podcasts[0].soundcastId;
+  const episodes = await database.Episode.findAll({
+    where: {soundcastId},
+  });
+  if (!episodes.length) {
+    console.log(`Error: test podcast episodes weren't obtained`);
+    return process.exit();
+  }
+
+  if (process.env.SET_TEST_FEED === 'delete') {
+    console.log(`Deleting test feed ${soundcastId}`);
+
+    await database.PodcasterEmail.destroy({where: {podcastTitle}});
+    await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}`)
+      .remove();
+    await database.ImportedFeed.destroy({where: {soundcastId}});
+    for (const episode of episodes) {
+      await firebase
+        .database()
+        .ref(`episodes/${episode.episodeId}`)
+        .remove();
+    }
+    await database.Episode.destroy({where: {soundcastId}});
+    await database.Category.destroy({where: {soundcastId}});
+    await database.Soundcast.destroy({where: {soundcastId}});
+  }
+
+  if (process.env.SET_TEST_FEED === 'reset') {
+    console.log(`Resetting test feed ${soundcastId}`);
+
+    const publisherEmail = 'null'; // set test email
+    const userId = 'Soundcast_userId_iTunesUrls';
+    const publisherId = '1500000000000p'; // unused test publisherId
+
+    await database.PodcasterEmail.update(
+      {publisherEmail},
+      {where: {podcastTitle}}
+    );
+    await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}/publisherEmail`)
+      .set(publisherEmail);
+    await database.ImportedFeed.update(
+      {claimed: false, userId, publisherId},
+      {where: {soundcastId}}
+    );
+    for (const episode of episodes) {
+      await firebase
+        .database()
+        .ref(`episodes/${episode.episodeId}/publisherID`)
+        .set(publisherId);
+      await firebase
+        .database()
+        .ref(`episodes/${episode.episodeId}/creatorID`)
+        .set(userId);
+    }
+    await database.Episode.update({publisherId}, {where: {soundcastId}});
+    await database.Soundcast.update({publisherId}, {where: {soundcastId}});
+  }
+
+  process.exit();
+};
+if (process.env.SET_TEST_FEED) {
+  setTestFeed();
+  return;
+}
 
 const createTables = async () => {
   console.log('Creating tables');
@@ -508,14 +590,20 @@ const fixCategories = async () => {
         continue; // skip
       }
 
-      await database.Soundcast.update({
-        published: true,
-      }, { where: { soundcastId: feed.soundcastId }});
-      await firebase.database().ref(`soundcasts/${feed.soundcastId}/published`).set(true);
+      await database.Soundcast.update(
+        {
+          published: true,
+        },
+        {where: {soundcastId: feed.soundcastId}}
+      );
+      await firebase
+        .database()
+        .ref(`soundcasts/${feed.soundcastId}/published`)
+        .set(true);
 
-      continue
+      continue;
 
-      console.log('Categories fix')
+      console.log('Categories fix');
       const categories = (await db_original.query(
         `SELECT * FROM "Categories" WHERE "soundcastId"='z${feed.soundcastId}'`
       ))[0];
@@ -998,6 +1086,10 @@ async function runFeedImport(
     }
   }
 
+
+  // TODO old version - sync (if needed) with parseFeed.js
+  return console.log(`Error: old categories import`);
+  /*
   // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
   // This should be similar to the upload setup on the /dashboard/add_episode page
   const categories = metadata['itunes:category'];
@@ -1023,6 +1115,8 @@ async function runFeedImport(
       }
     }
   }
+  */
+
 
   // 2-a. add to publisher node in firebase
   // await firebase.database().ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
