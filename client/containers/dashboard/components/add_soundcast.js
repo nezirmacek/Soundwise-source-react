@@ -1177,13 +1177,13 @@ export default class AddSoundcast extends Component {
     }
   }
 
-  uploadViaModal(fileBlob, hostImg) {
+  uploadViaModal(fileBlob) {
     this.setState({
       fileCropped: true,
       modalOpen: false,
     });
 
-    if (hostImg) {
+    if (this.state.hostImg) {
       this.setState({
         hostImgUploaded: true,
       });
@@ -1193,7 +1193,7 @@ export default class AddSoundcast extends Component {
       });
     }
 
-    this._uploadToAws(fileBlob, hostImg);
+    this._uploadToAws(fileBlob, this.state.hostImg);
   }
 
   render() {
