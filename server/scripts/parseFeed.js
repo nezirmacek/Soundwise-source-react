@@ -409,7 +409,7 @@ async function runFeedImport(
     prices: [{billingCycle: 'free', price: 'free'}],
     published: isPublished, // set this to true from client after ownership is verified
     verified: isVerified, // ownership verification, set to true from client after ownership is verified
-    showSubscriberCount: true,
+    showSubscriberCount: false,
     showTimeStamps: true,
     hostImageURL:
       'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
