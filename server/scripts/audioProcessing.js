@@ -204,6 +204,10 @@ module.exports.audioProcessing = async (req, res) => {
                       filterComplexEnd += `[a${chunksCount}]`;
                     }
                   });
+                  if (chunksCount === 0) {
+                    // skip in no silenced chunks were found
+                    return introProcessing(filePath);
+                  }
                   if (output[output.length - 1][0] === 'silence_duration') {
                     // not ending with silence
                     filterComplex += `:end=${file.metadata.duration.seconds +

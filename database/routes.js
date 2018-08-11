@@ -70,6 +70,16 @@ module.exports = app => {
       });
   });
 
+  app.post('/api/category', (req, res) => {
+    database.Category.create(req.body)
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+
   app.post('/api/listening_session', (req, res) => {
     const data = Object.assign({}, req.body, {date: new Date(req.body.date)});
     database.ListeningSession.create(req.body)
@@ -93,6 +103,19 @@ module.exports = app => {
         },
       },
       order: [['date', 'ASC']],
+    })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+
+  app.get('/api/category', (req, res) => {
+    // console.log('req.query: ', req.query);
+    database.Category.findAll({
+      order: [['name', 'ASC']],
     })
       .then(data => {
         res.send(data);

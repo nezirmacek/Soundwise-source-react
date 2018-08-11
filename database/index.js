@@ -70,11 +70,11 @@ var Episode = db.define('Episode', {
 var Soundcast = db.define('Soundcast', {
   soundcastId: {type: Sequelize.STRING, primaryKey: true},
   publisherId: {type: Sequelize.STRING, allowNull: false},
-  title: {type: Sequelize.STRING},
+  title: Sequelize.STRING,
   imageUrl: Sequelize.STRING,
   itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
   category: Sequelize.STRING,
-  rank: Sequelize.INTEGER,
+  rank: Sequelize.FLOAT,
   updateDate: Sequelize.BIGINT,
   published: Sequelize.BOOLEAN,
   landingPage: Sequelize.BOOLEAN,

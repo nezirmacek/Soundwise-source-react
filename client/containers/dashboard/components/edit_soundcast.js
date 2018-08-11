@@ -42,6 +42,7 @@ import {
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 import Coupons from './coupons';
+const {podcastCategories} = require('../../../../server/scripts/utils.js')();
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -71,7 +72,7 @@ export default class EditSoundcast extends Component {
     this.state = {
       title: '',
       imageURL: '',
-      blurredImageURL: '',
+      blurredImageURL: null,
       short_description: '',
       long_description: EditorState.createEmpty(),
       subscribed: {},
@@ -100,6 +101,10 @@ export default class EditSoundcast extends Component {
       createPodcast: false,
       editPodcast: false,
       podcastError: '',
+      categories: Object.keys(podcastCategories).map(i => {
+        return {name: podcastCategories[i].name};
+      }), // main 16 categories ('Arts', 'Comedy', ...)
+      selectedCategory: null,
       doneProcessingPodcast: false,
       startProcessingPodcast: false,
       podcastFeedVersion: null,
@@ -143,10 +148,27 @@ export default class EditSoundcast extends Component {
       return;
     }
     this.setSoundcastState(soundcast);
+    // this.getCategories(soundcast.category);
+  }
+
+  getCategories(category) {
+    Axios.get('/api/category')
+      .then(res => {
+        const categories = res.data;
+        this.setState({
+          categories,
+          selectedCategory: categories.find(c => c.id === category),
+        });
+      })
+      .catch(e => {
+        this.setState({categories: []});
+        console.log(e);
+      });
   }
 
   setSoundcastState(soundcast) {
     const {userInfo} = this.props;
+    const {categories} = this.state;
     const {
       title,
       subscribed,
@@ -164,6 +186,7 @@ export default class EditSoundcast extends Component {
       hostImageURL2,
       forSale,
       prices,
+      category,
       confirmationEmail,
       showSubscriberCount,
       showTimeStamps,
@@ -198,10 +221,11 @@ export default class EditSoundcast extends Component {
     } else {
       confirmEmailEditorState = this.state.confirmationEmail;
     }
+
     this.setState({
       title,
       imageURL: imageURL ? imageURL : null,
-      blurredImageURL: imageURL ? imageURL : null,
+      blurredImageURL: blurredImageURL || null,
       short_description,
       landingPage,
       hostName: hostName ? hostName : null,
@@ -217,6 +241,7 @@ export default class EditSoundcast extends Component {
       showSubscriberCount: showSubscriberCount ? showSubscriberCount : false,
       isPodcast: isPodcast ? isPodcast : false,
       episodes: episodes ? episodes : null,
+      selectedCategory: {name: category},
       itunesTitle: itunesTitle ? itunesTitle : title,
       itunesHost: itunesHost ? itunesHost : this.props.userInfo.publisher.name,
       itunesCategory: itunesCategory ? itunesCategory : null,
@@ -450,6 +475,7 @@ export default class EditSoundcast extends Component {
       hostImageURL,
       hostName2,
       hostBio2,
+      selectedCategory,
       hostImageURL2,
       forSale,
       prices,
@@ -494,6 +520,7 @@ export default class EditSoundcast extends Component {
           hostImageURL2,
           forSale,
           prices,
+          category: selectedCategory.name,
           last_update,
           showTimeStamps,
           showSubscriberCount,
@@ -530,10 +557,14 @@ export default class EditSoundcast extends Component {
               .then(
                 res => {
                   Axios.post('/api/soundcast', {
-                    soundcastId: history.location.state.id,
-                    publisherId: userInfo.publisherID,
-                    updateDate: last_update,
                     title,
+                    soundcastId: history.location.state.id,
+                    imageURL,
+                    landingPage,
+                    published: publish,
+                    updateDate: last_update,
+                    category: selectedCategory.name,
+                    publisherId: userInfo.publisherID,
                   }).then(() => {
                     if (
                       userInfo.publisher &&
@@ -672,7 +703,7 @@ export default class EditSoundcast extends Component {
   updateSoundcast(path, ext) {
     const {soundcast, id} = window.history.state.state;
     if (ext) {
-      soundcast[path] = `https://mysoundwise.com/tracks/${id}_intro.${ext}`;
+      soundcast[path] = `https://mysoundwise.com/tracks/${id}_${path}.${ext}`;
       firebase
         .database()
         .ref(`soundcasts/${id}/${path}`)
@@ -1744,6 +1775,8 @@ export default class EditSoundcast extends Component {
       hostImg,
       isPodcast,
       createPodcast,
+      selectedCategory,
+      categories,
       editPodcast,
       episodes,
       forSale,
@@ -1922,7 +1955,44 @@ export default class EditSoundcast extends Component {
                   value={this.state.short_description}
                 />
               </div>
-              <div style={{height: 150}}>
+
+              {/*Category*/}
+              <span style={styles.titleText}>Category</span>
+              <span style={{...styles.titleText, color: 'red'}}>*</span>
+              <div style={{width: 370}} className="dropdown">
+                <div
+                  style={{width: '100%', padding: 0, marginTop: 20}}
+                  className="btn dropdown-toggle"
+                  data-toggle="dropdown"
+                >
+                  <div style={styles.dropdownTitle}>
+                    <span>
+                      {(selectedCategory && selectedCategory.name) ||
+                        'Choose category'}
+                    </span>
+                    <span
+                      style={{position: 'absolute', right: 10, top: 40}}
+                      className="caret"
+                    />
+                  </div>
+                </div>
+                <ul style={{padding: 0}} className="dropdown-menu">
+                  {categories.map((category, i) => (
+                    <li style={{fontSize: '16px'}} key={`category_option${i}`}>
+                      <button
+                        style={styles.categoryButton}
+                        onClick={() =>
+                          this.setState({selectedCategory: category})
+                        }
+                      >
+                        {category.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div style={{marginTop: 40, height: 150}}>
                 <div style={styles.image}>
                   <img src={imageURL} />
                 </div>
@@ -1953,7 +2023,7 @@ export default class EditSoundcast extends Component {
                             that.setState({
                               fileUploaded: false,
                               imageURL: '',
-                              blurredImageURL: '',
+                              blurredImageURL: null,
                             });
                             document.getElementById(
                               'upload_hidden_cover'
@@ -2258,12 +2328,14 @@ const styles = {
   hostImage: {...commonStyles.hostImage, float: 'left'},
   inputFileHidden: {...commonStyles.inputFileHidden},
   image: {...commonStyles.image, float: 'left'},
+  cancelImg: {...commonStyles.cancelImg},
+  dropdownTitle: {...commonStyles.dropdownTitle},
+  categoryButton: {...commonStyles.categoryButton},
   loaderWrapper: {
     ...commonStyles.loaderWrapper,
     width: 'calc(100% - 133px)',
     float: 'left',
   },
-  cancelImg: {...commonStyles.cancelImg},
   inputDescription: {
     height: 80,
     backgroundColor: Colors.mainWhite,

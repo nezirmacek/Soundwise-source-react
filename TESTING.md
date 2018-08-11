@@ -18,7 +18,7 @@ NODE_ENV=dev npm run-script start
 
 ## Account
 
-To obtain user's id:
+To obtain user's id run (in browser console):
 ```
 firebase.auth().currentUser.uid
 ```
@@ -27,6 +27,10 @@ To delete already existing account you need to relogin (in browser) and run:
 ```
 firebase.auth().currentUser.delete().then(function() { console.log(1) }).catch(function(error) { console.log(error) });
 ```
+
+To set up *PLUS* account:
+- find **PUBLISHER_ID** from *users/{USER_ID}/publisherID*
+- set *beta:true* value for publisher (*publishers/{PUBLISHER_ID}/beta*)
 
 ## Testing soundcasts
 
@@ -75,7 +79,7 @@ Firebase:
 
 Original (not claimed) feeds should have:
 - **publisherEmail**: empty or 'null' (string) if no email was found in feed metadata
-- **userId**: 'Soundcast_userId_iTunesUrls' (string) 
+- **userId**: 'Soundcast_userId_iTunesUrls' (string)
 
 ## Stripe
 
