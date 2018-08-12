@@ -413,6 +413,7 @@ async function runFeedImport(
     showTimeStamps: true,
     hostImageURL:
       'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
+    episodes: {},
   };
 
   // 2. add the new soundcast to firebase and postgreSQL
@@ -420,10 +421,6 @@ async function runFeedImport(
   if (!soundcastId) {
     soundcastId = `${moment().format('x')}s`;
   }
-  await firebase
-    .database()
-    .ref(`soundcasts/${soundcastId}`)
-    .set(soundcast);
 
   // store the publisher's email address in a separate table in the database,
   // for podcasts that are "active", i.e. has been updated in the last year
@@ -533,7 +530,7 @@ async function runFeedImport(
       // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
       let i = 0;
       for (const item of feedItems) {
-        await addFeedEpisode(
+        const episodeId = await addFeedEpisode(
           item,
           userId,
           publisherId,
@@ -542,13 +539,18 @@ async function runFeedImport(
           metadata,
           i
         );
+        soundcast.episodes[episodeId] = true;
         i++;
       }
-      firebase
+      await firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}`)
+        .set(soundcast);
+      await firebase
         .database()
         .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
         .set(true);
-      firebase
+      await firebase
         .database()
         .ref(`publishers/${publisherId}/administrators/${userId}`)
         .set(true);
@@ -651,6 +653,7 @@ async function addFeedEpisode(
       // console.log('parseFeed.js findOrCreate then');
     })
     .catch(err => logErr(`Episode.findOrCreate ${err}`));
+  return episodeId;
 }
 
 // Need to update all the published soundcasts from imported feeds every hour
