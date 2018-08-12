@@ -1,16 +1,14 @@
 'use strict';
 const fs = require('fs');
 
-var moment = require('moment');
 var firebase = require('firebase-admin');
 const database = require('../../database/index');
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const LOG_ERR = 'logErrs.txt';
+const PAGE_SIZE = 10;
 
 const syncSoundcasts = async () => {
-  const pageSize = 10;
+  await fs.unlink(LOG_ERR, err => err);
 
   let next = true;
   let startId = '1502366385413s';
@@ -29,39 +27,43 @@ const syncSoundcasts = async () => {
       .ref('soundcasts')
       .orderByKey()
       .startAt(startId)
-      .limitToFirst(pageSize)
+      .limitToFirst(PAGE_SIZE)
       .once('value')
       .then(snaps => {
+        const soundcasts = snaps.val();
         const keys = Object.keys(snaps.val());
-        keys.forEach((key, i) => {
+        keys.forEach(async (key, i) => {
           next = key !== lastId;
           if (i === 0) {
             return;
           } else if (i === keys.length - 1) {
             startId = key;
           }
-          soundcastObj = {};
-          database.Soundcast.findOne({
-            where: { soundcastId: key },
+          let soundcastObj = soundcasts[key];
+          await database.Soundcast.findOne({
+            where: {soundcastId: key},
           })
             .then(soundcastData => {
               if (soundcastData) {
+                console.log('update id: ', key);
                 return soundcastData.update(soundcastObj);
               } else {
+                console.log('create id: ', key);
                 return database.Soundcast.create(soundcastObj);
               }
             })
-            .catch(err => logInFile(`soundcastId: ${key}\n Err: ${err}`));
+            .then(res => res)
+            .catch(err => logInFile(`soundcastId: ${key}\nErr: ${err}\n\n`));
         });
       });
   }
 };
 
 const logInFile = text => {
-  fs.writeFile('logErr.txt', text, err => {
+  fs.appendFile(LOG_ERR, text, err => {
     if (err) throw err;
-    console.log('Save log');
+    console.log('Update log');
   });
 };
 
-module.exports = { syncSoundcasts };
+module.exports = {syncSoundcasts};
