@@ -4,7 +4,16 @@ build:
     - develop
   script:
     - docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com
-    - docker build -t registry.gitlab.com/eredinbg/soundwisecms_web:latest .
+    - docker build \
+    --build-arg FIREBASE_API_KEY \
+    --build-arg FIREBASE_PROJECT_ID \
+    --build-arg FIREBASE_API_KEY \
+    --build-arg FIREBASE_MESSAGING_SENDER_ID \
+    --build-arg FIREBASE_API_KEY \
+    --build-arg STRIPE_KEY_LIVE \
+    --build-arg AWS_ACCESS_KEY_ID \
+    --build-arg AWS_SECRET_ACCESS_KEY \
+    -t registry.gitlab.com/eredinbg/soundwisecms_web:latest .
     - docker push registry.gitlab.com/eredinbg/soundwisecms_web:latest
 
 deploy:

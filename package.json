@@ -13,7 +13,7 @@
     "start": "webpack --watch",
     "start:server": "nodemon server/server.js",
     "build": "webpack",
-    "build:staging": "NODE_ENV=staging webpack"
+    "build:staging": "FIREBASE_API_KEY=${FIREBASE_API_KEY} FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID} FIREBASE_API_KEY=${FIREBASE_API_KEY} FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID} FIREBASE_API_KEY=${FIREBASE_API_KEY} STRIPE_KEY_LIVE=${STRIPE_KEY_LIVE} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} NODE_ENV=staging webpack"
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.5",
