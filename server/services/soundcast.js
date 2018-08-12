@@ -7,8 +7,10 @@ const createOrUpdate = data =>
     obj =>
       obj
         ? obj.update({
+            landingPage: data.landingPage,
             publisherId: data.publisherId,
-            title: data.title,
+            imageUrl: data.imageUrl,
+            updateDate: data.last_update,
           })
         : soundcastRepository.create(data)
   );
