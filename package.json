@@ -12,7 +12,8 @@
     "test": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "start": "webpack --watch",
     "start:server": "nodemon server/server.js",
-    "build": "webpack"
+    "build": "webpack",
+    "build:staging": "NODE_ENV=staging webpack"
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.5",
