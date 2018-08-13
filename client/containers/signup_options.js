@@ -46,10 +46,13 @@ class _SignupOptions extends Component {
       feedSubmitting: true,
     });
     const that = this;
-    const {podcastTitle, feedUrl} = this.state;
-    Axios.post('/api/parse_feed', {podcastTitle, feedUrl})
+    Axios.post('/api/parse_feed', {
+      feedUrl: this.state.feedUrl,
+      // podcastTitle: this.state.podcastTitle, // not used currently
+    })
       .then(res => {
-        res.data && that.setState({...res.data, feedSubmitting: false}); // setting imageUrl, publisherEmail
+        // setting imageUrl, publisherEmail or notClaimed
+        res.data && that.setState({...res.data, feedSubmitting: false});
       })
       .catch(err => {
         const errMsg =
@@ -76,11 +79,11 @@ class _SignupOptions extends Component {
 
   submitCode() {
     const {codeSign1, codeSign2, codeSign3, codeSign4} = this.refs;
-    const {feedUrl, publisherEmail} = this.state;
+    const {feedUrl, publisherEmail, notClaimed} = this.state;
     const submitCode =
       codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
-    Axios.post('/api/parse_feed', {feedUrl, submitCode})
+    Axios.post('/api/parse_feed', {feedUrl, submitCode, notClaimed})
       .then(res => {
         if (res.data === 'Success_code') {
           this.props.setFeedVerified({feedUrl, publisherEmail});
@@ -112,7 +115,7 @@ class _SignupOptions extends Component {
     }
     if (/\d/.test(e.key)) {
       // digits only
-      setTimeout(() => refs['codeSign' + id].focus(), 100);
+      setTimeout(() => refs['codeSign' + id].focus(), 50);
     } else {
       e.preventDefault();
     }
@@ -508,7 +511,6 @@ const styles = {
     height: 16,
     lineHeight: '16px',
   },
-
   inputLabel: {
     fontSize: 16,
     marginBottom: 3,

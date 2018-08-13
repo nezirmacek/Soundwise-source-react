@@ -34,6 +34,7 @@ import {
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 import Coupons from './coupons';
+const {podcastCategories} = require('../../../../server/scripts/utils.js')();
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -66,7 +67,7 @@ export default class AddSoundcast extends Component {
       short_description: '',
       long_description: EditorState.createEmpty(),
       imageURL: '',
-      blurredImageURL: '',
+      blurredImageURL: null,
       fileUploaded: false,
       landingPage: true,
       features: [''],
@@ -78,7 +79,9 @@ export default class AddSoundcast extends Component {
       forSale: false,
       prices: [],
       modalOpen: false,
-      categories: [],
+      categories: Object.keys(podcastCategories).map(i => {
+        return {name: podcastCategories[i].name};
+      }), // main 16 categories ('Arts', 'Comedy', ...)
       selectedCategory: null,
       paypalEmail: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
@@ -101,7 +104,7 @@ export default class AddSoundcast extends Component {
 
   componentDidMount() {
     this.props.userInfo.publisher && this.checkUserStatus(this.props.userInfo);
-    this.getCategories();
+    // this.getCategories();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -275,6 +278,7 @@ export default class AddSoundcast extends Component {
       confirmationEmail,
       introUrl,
       outroUrl,
+      selectedCategory,
     } = this.state;
     if (title.length == 0) {
       return alert('Please enter a soundcast title before saving.');
@@ -283,6 +287,9 @@ export default class AddSoundcast extends Component {
       return alert(
         'Please enter a short description for the soundcast before saving.'
       );
+    }
+    if (!selectedCategory) {
+      return alert('Please choose a category before saving.');
     }
     if (prices.length === 0) {
       //if pricing isn't specified, then this is a free soundcast
@@ -353,7 +360,7 @@ export default class AddSoundcast extends Component {
           invited,
           landingPage,
           features,
-          category: selectedCategory.id,
+          category: selectedCategory.name,
           hostName,
           hostBio,
           hostImageURL,
@@ -423,11 +430,11 @@ export default class AddSoundcast extends Component {
             soundcastId: that.soundcastId,
             publisherId: userInfo.publisherID,
             imageURL: imageURL
-            ? imageURL
-            : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
-                title
-              )}`,
-            category: selectedCategory.id,
+              ? imageURL
+              : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+                  title
+                )}`,
+            category: selectedCategory.name,
             published: publish,
             landingPage,
             updateDate: last_update,
@@ -1170,13 +1177,13 @@ export default class AddSoundcast extends Component {
     }
   }
 
-  uploadViaModal(fileBlob, hostImg) {
+  uploadViaModal(fileBlob) {
     this.setState({
       fileCropped: true,
       modalOpen: false,
     });
 
-    if (hostImg) {
+    if (this.state.hostImg) {
       this.setState({
         hostImgUploaded: true,
       });
@@ -1186,7 +1193,7 @@ export default class AddSoundcast extends Component {
       });
     }
 
-    this._uploadToAws(fileBlob, hostImg);
+    this._uploadToAws(fileBlob, this.state.hostImg);
   }
 
   render() {
@@ -1335,9 +1342,8 @@ export default class AddSoundcast extends Component {
               >
                 <div style={styles.dropdownTitle}>
                   <span>
-                    {selectedCategory !== null && selectedCategory !== undefined
-                      ? selectedCategory.name
-                      : 'Choose category'}
+                    {(selectedCategory && selectedCategory.name) ||
+                      'Choose category'}
                   </span>
                   <span
                     style={{position: 'absolute', right: 10, top: 40}}
@@ -1346,8 +1352,8 @@ export default class AddSoundcast extends Component {
                 </div>
               </div>
               <ul style={{padding: 0}} className="dropdown-menu">
-                {categories.map(category => (
-                  <li style={{fontSize: '16px'}}>
+                {categories.map((category, i) => (
+                  <li style={{fontSize: '16px'}} key={`category_option${i}`}>
                     <button
                       style={styles.categoryButton}
                       onClick={() =>
@@ -1392,7 +1398,7 @@ export default class AddSoundcast extends Component {
                             that.setState({
                               fileUploaded: false,
                               imageURL: '',
-                              blurredImageURL: '',
+                              blurredImageURL: null,
                             });
                             document.getElementById(
                               'upload_hidden_cover'
@@ -1501,6 +1507,8 @@ const styles = {
   image: {...commonStyles.image},
   loaderWrapper: {...commonStyles.loaderWrapper},
   cancelImg: {...commonStyles.cancelImg},
+  dropdownTitle: {...commonStyles.dropdownTitle},
+  categoryButton: {...commonStyles.categoryButton},
   inputDescription: {
     height: 100,
     fontSize: 18,

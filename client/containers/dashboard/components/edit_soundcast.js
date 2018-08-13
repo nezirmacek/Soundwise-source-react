@@ -42,6 +42,7 @@ import {
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 import Coupons from './coupons';
+const {podcastCategories} = require('../../../../server/scripts/utils.js')();
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -71,7 +72,7 @@ export default class EditSoundcast extends Component {
     this.state = {
       title: '',
       imageURL: '',
-      blurredImageURL: '',
+      blurredImageURL: null,
       short_description: '',
       long_description: EditorState.createEmpty(),
       subscribed: {},
@@ -100,7 +101,9 @@ export default class EditSoundcast extends Component {
       createPodcast: false,
       editPodcast: false,
       podcastError: '',
-      categories: [],
+      categories: Object.keys(podcastCategories).map(i => {
+        return {name: podcastCategories[i].name};
+      }), // main 16 categories ('Arts', 'Comedy', ...)
       selectedCategory: null,
       doneProcessingPodcast: false,
       startProcessingPodcast: false,
@@ -145,7 +148,7 @@ export default class EditSoundcast extends Component {
       return;
     }
     this.setSoundcastState(soundcast);
-    this.getCategories(soundcast.category);
+    // this.getCategories(soundcast.category);
   }
 
   getCategories(category) {
@@ -155,7 +158,7 @@ export default class EditSoundcast extends Component {
         this.setState({
           categories,
           selectedCategory: categories.find(c => c.id === category),
-        })
+        });
       })
       .catch(e => {
         this.setState({categories: []});
@@ -165,7 +168,7 @@ export default class EditSoundcast extends Component {
 
   setSoundcastState(soundcast) {
     const {userInfo} = this.props;
-    const {categories, selectedCategory} = this.state;
+    const {categories} = this.state;
     const {
       title,
       subscribed,
@@ -222,7 +225,7 @@ export default class EditSoundcast extends Component {
     this.setState({
       title,
       imageURL: imageURL ? imageURL : null,
-      blurredImageURL: imageURL ? imageURL : null,
+      blurredImageURL: blurredImageURL || null,
       short_description,
       landingPage,
       hostName: hostName ? hostName : null,
@@ -238,7 +241,7 @@ export default class EditSoundcast extends Component {
       showSubscriberCount: showSubscriberCount ? showSubscriberCount : false,
       isPodcast: isPodcast ? isPodcast : false,
       episodes: episodes ? episodes : null,
-      selectedCategory,
+      selectedCategory: {name: category},
       itunesTitle: itunesTitle ? itunesTitle : title,
       itunesHost: itunesHost ? itunesHost : this.props.userInfo.publisher.name,
       itunesCategory: itunesCategory ? itunesCategory : null,
@@ -517,7 +520,7 @@ export default class EditSoundcast extends Component {
           hostImageURL2,
           forSale,
           prices,
-          category: selectedCategory.id || null,
+          category: selectedCategory.name,
           last_update,
           showTimeStamps,
           showSubscriberCount,
@@ -560,7 +563,7 @@ export default class EditSoundcast extends Component {
                     landingPage,
                     published: publish,
                     updateDate: last_update,
-                    category: selectedCategory.id || null,
+                    category: selectedCategory.name,
                     publisherId: userInfo.publisherID,
                   }).then(() => {
                     if (
@@ -700,7 +703,7 @@ export default class EditSoundcast extends Component {
   updateSoundcast(path, ext) {
     const {soundcast, id} = window.history.state.state;
     if (ext) {
-      soundcast[path] = `https://mysoundwise.com/tracks/${id}_intro.${ext}`;
+      soundcast[path] = `https://mysoundwise.com/tracks/${id}_${path}.${ext}`;
       firebase
         .database()
         .ref(`soundcasts/${id}/${path}`)
@@ -1964,9 +1967,8 @@ export default class EditSoundcast extends Component {
                 >
                   <div style={styles.dropdownTitle}>
                     <span>
-                      {selectedCategory !== null && selectedCategory !== undefined
-                        ? selectedCategory.name
-                        : 'Choose category'}
+                      {(selectedCategory && selectedCategory.name) ||
+                        'Choose category'}
                     </span>
                     <span
                       style={{position: 'absolute', right: 10, top: 40}}
@@ -1975,8 +1977,8 @@ export default class EditSoundcast extends Component {
                   </div>
                 </div>
                 <ul style={{padding: 0}} className="dropdown-menu">
-                  {categories.map(category => (
-                    <li style={{fontSize: '16px'}}>
+                  {categories.map((category, i) => (
+                    <li style={{fontSize: '16px'}} key={`category_option${i}`}>
                       <button
                         style={styles.categoryButton}
                         onClick={() =>
@@ -2021,7 +2023,7 @@ export default class EditSoundcast extends Component {
                             that.setState({
                               fileUploaded: false,
                               imageURL: '',
-                              blurredImageURL: '',
+                              blurredImageURL: null,
                             });
                             document.getElementById(
                               'upload_hidden_cover'
@@ -2326,12 +2328,14 @@ const styles = {
   hostImage: {...commonStyles.hostImage, float: 'left'},
   inputFileHidden: {...commonStyles.inputFileHidden},
   image: {...commonStyles.image, float: 'left'},
+  cancelImg: {...commonStyles.cancelImg},
+  dropdownTitle: {...commonStyles.dropdownTitle},
+  categoryButton: {...commonStyles.categoryButton},
   loaderWrapper: {
     ...commonStyles.loaderWrapper,
     width: 'calc(100% - 133px)',
     float: 'left',
   },
-  cancelImg: {...commonStyles.cancelImg},
   inputDescription: {
     height: 80,
     backgroundColor: Colors.mainWhite,

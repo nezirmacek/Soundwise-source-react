@@ -5,6 +5,24 @@ if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
   console.log('Running DEV mode');
   window.firebase = firebase;
 }
+if (!window.localStorage) {
+  // localStorage polyfill
+  window.localStorage = {
+    _data: {},
+    setItem: function(id, val) {
+      return (this._data[id] = String(val));
+    },
+    getItem: function(id) {
+      return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
+    },
+    removeItem: function(id) {
+      return delete this._data[id];
+    },
+    clear: function() {
+      return (this._data = {});
+    },
+  };
+}
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Helmet} from 'react-helmet';
