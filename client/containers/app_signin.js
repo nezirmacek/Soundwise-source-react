@@ -1,18 +1,18 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import 'url-search-params-polyfill';
-import {orange500, blue500} from 'material-ui/styles/colors';
-import {Route, Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
+import { orange500, blue500 } from 'material-ui/styles/colors';
+import { Route, Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-import {signinUser} from '../actions/index';
+import { signinUser } from '../actions/index';
 import Colors from '../styles/colors';
-import {GreyInput} from '../components/inputs/greyInput';
-import {minLengthValidator, emailValidator} from '../helpers/validators';
-import {OrangeSubmitButton} from '../components/buttons/buttons';
-import {signInPassword, signInFacebook, compileUser} from './commonAuth';
+import { GreyInput } from '../components/inputs/greyInput';
+import { minLengthValidator, emailValidator } from '../helpers/validators';
+import { OrangeSubmitButton } from '../components/buttons/buttons';
+import { signInPassword, signInFacebook, compileUser } from './commonAuth';
 
 class _AppSignin extends Component {
   constructor(props) {
@@ -57,8 +57,8 @@ class _AppSignin extends Component {
   }
 
   signInClick() {
-    const {email, password, soundcastUser} = this.state;
-    const {signinUser, history, match} = this.props;
+    const { email, password, soundcastUser } = this.state;
+    const { signinUser, history, match } = this.props;
     signInPassword(
       email,
       password,
@@ -88,12 +88,12 @@ class _AppSignin extends Component {
           history.push('/mysoundcasts');
         }
       },
-      error => this.setState({message: error.toString()})
+      error => this.setState({ message: error.toString() })
     );
   }
 
   signInInvitedAdmin() {
-    const {signinUser, history, match} = this.props;
+    const { signinUser, history, match } = this.props;
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         const userId = user.uid;
@@ -139,8 +139,8 @@ class _AppSignin extends Component {
   }
 
   handleFBAuth() {
-    const {signinUser, history, match} = this.props;
-    const {soundcastUser} = this.state;
+    const { signinUser, history, match } = this.props;
+    const { soundcastUser } = this.state;
     signInFacebook(
       user => {
         console.log('Success signInFacebook', user);
@@ -189,12 +189,12 @@ class _AppSignin extends Component {
           }
         }
       },
-      error => this.setState({message: error.toString()})
+      error => this.setState({ message: error.toString() })
     );
   }
 
   handleChange(field, e) {
-    this.setState({[field]: e.target.value});
+    this.setState({ [field]: e.target.value });
   }
 
   render() {
@@ -209,8 +209,10 @@ class _AppSignin extends Component {
       soundcast,
       sumTotal,
     } = this.state;
-    const {from} = this.props.location.state || {from: {pathname: '/courses'}};
-    const {history} = this.props;
+    const { from } = this.props.location.state || {
+      from: { pathname: '/courses' },
+    };
+    const { history } = this.props;
 
     if (redirectToReferrer) {
       return <Redirect to={from} />;
@@ -218,7 +220,7 @@ class _AppSignin extends Component {
     return (
       <div
         className="row"
-        style={{...styles.row, height: window.innerHeight, overflow: 'auto'}}
+        style={{ ...styles.row, height: window.innerHeight, overflow: 'auto' }}
       >
         {(soundcast && (
           <div className="col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col">
@@ -227,7 +229,7 @@ class _AppSignin extends Component {
                 className="hidden-xs"
                 alt="Soundwise Logo"
                 src={soundcast.imageURL}
-                style={{...styles.logo, height: 120}}
+                style={{ ...styles.logo, height: 120 }}
               />
               <div style={styles.containerWrapper}>
                 <div
@@ -280,10 +282,12 @@ class _AppSignin extends Component {
                     validators={[minLengthValidator.bind(null, 1)]}
                   />
                   <div>
-                    <span style={{color: 'red', fontSize: 16}}>{message}</span>
+                    <span style={{ color: 'red', fontSize: 16 }}>
+                      {message}
+                    </span>
                   </div>
                   <OrangeSubmitButton
-                    styles={{marginTop: 15, marginBottom: 15}}
+                    styles={{ marginTop: 15, marginBottom: 15 }}
                     label="Get Access"
                     onClick={this.signInClick.bind(this)}
                   />
@@ -302,12 +306,12 @@ class _AppSignin extends Component {
             <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
               <div
                 className="margin-twenty-one-top sm-margin-nineteen-top title-medium text-dark-gray"
-                style={{paddingBottom: 35, textAlign: 'center'}}
+                style={{ paddingBottom: 35, textAlign: 'center' }}
               >
                 <span>{soundcast.title}</span>
               </div>
               <div
-                style={{marginBottom: 20, fontSize: 15}}
+                style={{ marginBottom: 20, fontSize: 15 }}
                 className="text-large text-center text-dark-gray"
               >
                 {soundcast.short_description}
@@ -336,7 +340,7 @@ class _AppSignin extends Component {
                           alignItems: 'center',
                         }}
                       >
-                        <span style={{paddingRight: 10}}>⭐</span>
+                        <span style={{ paddingRight: 10 }}>⭐</span>
                         {feature}
                       </li>
                     );
@@ -354,7 +358,7 @@ class _AppSignin extends Component {
             />
             <div style={styles.containerWrapper}>
               <div style={styles.container} className="center-col text-center">
-                <div style={{...styles.title, lineHeight: 'normal'}}>
+                <div style={{ ...styles.title, lineHeight: 'normal' }}>
                   {(history.location.state && history.location.state.text) ||
                     'Hello!'}
                 </div>
@@ -395,17 +399,17 @@ class _AppSignin extends Component {
                   validators={[minLengthValidator.bind(null, 1)]}
                 />
                 <div>
-                  <span style={{color: 'red', fontSize: 16}}>{message}</span>
+                  <span style={{ color: 'red', fontSize: 16 }}>{message}</span>
                 </div>
                 <OrangeSubmitButton
-                  styles={{marginTop: 15, marginBottom: 15}}
+                  styles={{ marginTop: 15, marginBottom: 15 }}
                   label="SIGN IN"
                   onClick={this.signInClick.bind(this)}
                 />
-                <div style={{fontSize: 14, textDecoration: 'underline'}}>
+                <div style={{ fontSize: 14, textDecoration: 'underline' }}>
                   <Link to="/password_reset">Forgot your password? </Link>
                 </div>
-                <div style={{marginBottom: 10, marginTop: 15}} />
+                <div style={{ marginBottom: 10, marginTop: 15 }} />
               </div>
             </div>
           </div>
@@ -499,11 +503,11 @@ const styles = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signinUser}, dispatch);
+  return bindActionCreators({ signinUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Axios from 'axios';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 import Colors from '../styles/colors';
 
@@ -38,12 +38,12 @@ export default class ConversionCourse extends Component {
   }
 
   handleSubmit() {
-    const {email, firstName, lastName, submitted} = this.state;
+    const { email, firstName, lastName, submitted } = this.state;
     const that = this;
     if (!submitted) {
       Axios.post('/api/add_emails', {
         emailListId: 3921133,
-        emailAddressArr: [{firstName, lastName, email}],
+        emailAddressArr: [{ firstName, lastName, email }],
       })
         .then(listId => {
           that.setState({
@@ -106,7 +106,7 @@ export default class ConversionCourse extends Component {
                 </div>
                 <div className="col-md-8 center-col col-sm-12 text-center">
                   <div
-                    style={{color: Colors.mainGreen}}
+                    style={{ color: Colors.mainGreen }}
                     className="title-extra-large sm-title-extra-large-2 XS-title-extra-large font-weight-600 width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"
                   >
                     Get on the waitlist and be notified when the course

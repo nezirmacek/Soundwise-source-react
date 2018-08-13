@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import Loader from 'react-loader';
@@ -12,14 +12,14 @@ import faCircle from '@fortawesome/fontawesome-free-solid/faCircle';
 import faPlayCircle from '@fortawesome/fontawesome-free-solid/faPlayCircle';
 import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle';
 
-import {withRouter} from 'react-router';
+import { withRouter } from 'react-router';
 import Toggle from 'react-toggle';
 import Dots from 'react-activity/lib/Dots';
 import ReactS3Uploader from 'react-s3-uploader';
 import LinearProgress from 'material-ui/LinearProgress';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Editor} from 'react-draft-wysiwyg';
-import {convertToRaw, EditorState} from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 
 import {
@@ -34,8 +34,8 @@ import ValidatedInput from '../../../components/inputs/validatedInput';
 import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
-import {sendNotifications} from '../../../helpers/send_notifications';
-import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
+import { sendNotifications } from '../../../helpers/send_notifications';
+import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 
 window.URL = window.URL || window.webkitURL;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -91,7 +91,6 @@ class _CreateEpisode extends Component {
       addIntroOutro: false,
       silentPeriod: 0.5,
       overlayDuration: 5,
-      immediatePublish: true,
 
       sendEmails: false,
     };
@@ -127,7 +126,7 @@ class _CreateEpisode extends Component {
   componentDidMount() {
     // console.log('create_episode is mounted');
     const that = this;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     if (userInfo.soundcasts_managed) {
       this.currentSoundcastId = Object.keys(userInfo.soundcasts_managed)[0];
       firebase
@@ -153,7 +152,7 @@ class _CreateEpisode extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {userInfo} = nextProps;
+    const { userInfo } = nextProps;
     if (userInfo.soundcasts_managed) {
       const soundcastArr = Object.keys(userInfo.soundcasts_managed);
       if (
@@ -178,7 +177,7 @@ class _CreateEpisode extends Component {
     if (userInfo.publisher && userInfo.publisher.beta) {
       proUser = true;
     }
-    this.setState({proUser});
+    this.setState({ proUser });
   }
 
   record() {
@@ -187,7 +186,7 @@ class _CreateEpisode extends Component {
     this.recorder.getDevice(); // triggers 'deviceReady'
 
     this.recordingInterval = setInterval(() => {
-      const {recordingStartTime} = that.state;
+      const { recordingStartTime } = that.state;
       if (that.state.isRecording == false) {
         clearInterval(that.recordingInterval);
         return;
@@ -217,7 +216,7 @@ class _CreateEpisode extends Component {
     }
 
     this.playingInterval = setInterval(() => {
-      const {playingStartTime} = that.state;
+      const { playingStartTime } = that.state;
       if (!that.state.isPlaying) {
         clearInterval(that.playingInterval);
       }
@@ -368,7 +367,7 @@ class _CreateEpisode extends Component {
   }
 
   onEditorStateChange(description) {
-    this.setState({description});
+    this.setState({ description });
   }
 
   saveEpisode(isPublished) {
@@ -383,11 +382,6 @@ class _CreateEpisode extends Component {
       this.setState({
         startProcessingEpisode: true,
         doneProcessingEpisode: false,
-      });
-    }
-    if (!isPublished) {
-      this.setState({
-        immediatePublish: false, // if 'save draft' button is clicked, process the episode, but not publish it
       });
     }
     const {
@@ -407,9 +401,13 @@ class _CreateEpisode extends Component {
       addIntroOutro,
       silentPeriod,
       overlayDuration,
-      immediatePublish,
     } = this.state;
-    const {userInfo, history, content_saved, handleContentSaving} = this.props;
+    const {
+      userInfo,
+      history,
+      content_saved,
+      handleContentSaving,
+    } = this.props;
     const audioProcessing =
       audioNormalization || trimSilence || reduceSilence || addIntroOutro
         ? true
@@ -453,7 +451,7 @@ class _CreateEpisode extends Component {
                 notes: notesUrl,
                 publicEpisode,
                 soundcastID: that.currentSoundcastId,
-                isPublished: isPublished && immediatePublish ? true : false,
+                isPublished,
                 coverArtUrl: coverArtUrl,
                 audioProcessing,
               };
@@ -560,7 +558,7 @@ class _CreateEpisode extends Component {
                           trim: trimSilence,
                           removeSilence:
                             (reduceSilence && Number(silentPeriod)) || 0,
-                          autoPublish: immediatePublish,
+                          autoPublish: isPublished,
                           emailListeners: that.state.sendEmails,
                         })
                           .then(res => {
@@ -568,7 +566,7 @@ class _CreateEpisode extends Component {
                               startProcessingEpisode: false,
                               doneProcessingEpisode: true,
                             });
-                            if (immediatePublish) {
+                            if (isPublished) {
                               alert(
                                 'Episode is submitted and will be published after audio processing is done.'
                               );
@@ -659,7 +657,7 @@ class _CreateEpisode extends Component {
   }
 
   componentWillUnmount() {
-    const {content_saved, handleContentSaving} = this.props;
+    const { content_saved, handleContentSaving } = this.props;
     handleContentSaving(this.episodeId, false);
     this.firebaseListener = null;
   }
@@ -710,7 +708,7 @@ class _CreateEpisode extends Component {
   emailListeners(soundcast) {
     let subscribers = [];
     const that = this;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     const subject = `${this.state.title} was just published on ${
       soundcast.title
     }`;
@@ -777,7 +775,7 @@ class _CreateEpisode extends Component {
     mediaObject.on('error', error => console.log('error:', error));
     // user clicked the record button and started recording
     mediaObject.on('startRecord', () => {});
-    mediaObject.on('ended', () => this.setState({isPlaying: false}));
+    mediaObject.on('ended', () => this.setState({ isPlaying: false }));
     // user completed recording and stream is available
     mediaObject.on('finishRecord', () => {
       // the blob object contains the recorded data that
@@ -789,7 +787,7 @@ class _CreateEpisode extends Component {
         src: URL.createObjectURL(this.mediaObject.recordedData),
       });
       this.setState({
-        blob: {blob: mediaObject.recordedData}, // blobObject,
+        blob: { blob: mediaObject.recordedData }, // blobObject,
         isRecorded: true,
         isLoading: false,
         isRecording: false,
@@ -822,14 +820,14 @@ class _CreateEpisode extends Component {
     } = this.state;
     if (isSaved && !audioUploading) {
       return (
-        <div style={{textAlign: 'center'}}>
+        <div style={{ textAlign: 'center' }}>
           <div className="title-small">Audio file saved!</div>
         </div>
       );
     } else if (isSaved && audioUploading) {
       return (
-        <div style={{textAlign: 'center', marginTop: 25}}>
-          <div className="title-small" style={{marginBottom: 5}}>
+        <div style={{ textAlign: 'center', marginTop: 25 }}>
+          <div className="title-small" style={{ marginBottom: 5 }}>
             {`Saving audio file`}
           </div>
           <div
@@ -973,7 +971,7 @@ class _CreateEpisode extends Component {
   }
 
   changeSharingSetting() {
-    const {publicEpisode} = this.state;
+    const { publicEpisode } = this.state;
     this.setState({
       publicEpisode: !publicEpisode,
     });
@@ -1065,7 +1063,7 @@ class _CreateEpisode extends Component {
   }
 
   setProcessingOption(option) {
-    const {proUser} = this.state;
+    const { proUser } = this.state;
     if (proUser) {
       const oldOption = this.state[option];
       console.log('oldOption: ', this.state[option]);
@@ -1105,7 +1103,7 @@ class _CreateEpisode extends Component {
       doneProcessingEpisode,
       podcastError,
     } = this.state;
-    const {userInfo, history} = this.props;
+    const { userInfo, history } = this.props;
     const that = this;
     const _soundcasts_managed = [];
     for (let id in userInfo.soundcasts_managed) {
@@ -1126,7 +1124,7 @@ class _CreateEpisode extends Component {
       <div className="padding-30px-tb">
         <div
           onClick={() => {
-            that.setState({showPricingModal: false});
+            that.setState({ showPricingModal: false });
           }}
           style={{
             display: showPricingModal ? '' : 'none',
@@ -1150,18 +1148,21 @@ class _CreateEpisode extends Component {
               zIndex: 103,
             }}
           >
-            <div className="title-medium" style={{margin: 25, fontWeight: 800}}>
+            <div
+              className="title-medium"
+              style={{ margin: 25, fontWeight: 800 }}
+            >
               Upgrade to access audio processing tools
             </div>
-            <div className="title-small" style={{margin: 25}}>
+            <div className="title-small" style={{ margin: 25 }}>
               Audio processing options are available on PLUS and PRO plans.
               Please upgrade to access this feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() => history.push({pathname: '/pricing'})}
-                styles={{width: '60%'}}
+                onClick={() => history.push({ pathname: '/pricing' })}
+                styles={{ width: '60%' }}
               />
             </div>
           </div>
@@ -1173,7 +1174,7 @@ class _CreateEpisode extends Component {
           className="col-md-10 col-sm-12"
           style={styles.soundcastSelectWrapper}
         >
-          <div style={{...styles.notesLabel, marginLeft: 10}}>Publish in</div>
+          <div style={{ ...styles.notesLabel, marginLeft: 10 }}>Publish in</div>
           <select
             value={this.currentSoundcastId || ''}
             style={styles.soundcastSelect}
@@ -1202,10 +1203,10 @@ class _CreateEpisode extends Component {
           </div>
           <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <div style={styles.audioRecorder}>
-              <div style={{...styles.recordTitleText, paddingBottom: 0}}>
+              <div style={{ ...styles.recordTitleText, paddingBottom: 0 }}>
                 Upload
               </div>
-              <div style={{...styles.inputFileWrapper, width: '100%'}}>
+              <div style={{ ...styles.inputFileWrapper, width: '100%' }}>
                 <input
                   type="file"
                   name="upload"
@@ -1213,7 +1214,7 @@ class _CreateEpisode extends Component {
                   onChange={this.setFileName.bind(this, 'audio')}
                   style={styles.inputFileHidden}
                 />
-                <div style={{display: 'none'}}>
+                <div style={{ display: 'none' }}>
                   <ReactS3Uploader
                     signingUrl="/s3/sign"
                     signingUrlMethod="GET"
@@ -1222,7 +1223,7 @@ class _CreateEpisode extends Component {
                     onProgress={this.onProgress.bind(this)}
                     onError={this.onError.bind(this)}
                     onFinish={this.onFinish.bind(this)}
-                    uploadRequestHeaders={{'x-amz-acl': 'public-read'}}
+                    uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}
                     contentDisposition="auto"
                     scrubFilename={filename => {
                       const original = filename.split('.');
@@ -1246,14 +1247,16 @@ class _CreateEpisode extends Component {
                     >
                       {(audioUploadError && (
                         <div>
-                          <span style={{color: 'red'}}>{audioUploadError}</span>
+                          <span style={{ color: 'red' }}>
+                            {audioUploadError}
+                          </span>
                         </div>
                       )) || (
                         <div>
-                          <div style={{textAlign: 'center', display: 'none'}}>
+                          <div style={{ textAlign: 'center', display: 'none' }}>
                             <div
                               className="title-small"
-                              style={{marginBottom: 5}}
+                              style={{ marginBottom: 5 }}
                             >
                               {`Uploading audio file`}
                             </div>
@@ -1272,7 +1275,7 @@ class _CreateEpisode extends Component {
                               />
                             </div>
                           </div>
-                          <div style={{display: ''}}>
+                          <div style={{ display: '' }}>
                             <MuiThemeProvider>
                               <LinearProgress
                                 mode="determinate"
@@ -1282,7 +1285,7 @@ class _CreateEpisode extends Component {
                             </MuiThemeProvider>
                             <div
                               className="text-medium"
-                              style={{textAlign: 'center'}}
+                              style={{ textAlign: 'center' }}
                             >
                               <span
                               >{`uploading ${audioUploadProgress} %`}</span>
@@ -1294,7 +1297,7 @@ class _CreateEpisode extends Component {
                   )) ||
                   (uploadedAudioUrl &&
                     !isRecorded && (
-                      <div style={{textAlign: 'center'}}>
+                      <div style={{ textAlign: 'center' }}>
                         <div className="text-medium">
                           {`${audioName} saved`}
                         </div>
@@ -1312,7 +1315,7 @@ class _CreateEpisode extends Component {
                       </div>
                     )) ||
                   (!uploadedAudioUrl && (
-                    <div style={{textAlign: 'center'}}>
+                    <div style={{ textAlign: 'center' }}>
                       <div>
                         <button
                           onClick={() => {
@@ -1324,7 +1327,7 @@ class _CreateEpisode extends Component {
                             backgroundColor: Colors.mainOrange,
                           }}
                         >
-                          <span style={{paddingLeft: 5, paddingRight: 5}}>
+                          <span style={{ paddingLeft: 5, paddingRight: 5 }}>
                             Upload Audio File
                           </span>
                         </button>
@@ -1334,7 +1337,9 @@ class _CreateEpisode extends Component {
                           ONLY .mp3 and .m4a files accepted
                         </div>
                         {wrongFileTypeFor == 'audio' && (
-                          <div style={{...styles.fileTypesLabel, color: 'red'}}>
+                          <div
+                            style={{ ...styles.fileTypesLabel, color: 'red' }}
+                          >
                             Wrong file type. Please try again.
                           </div>
                         )}
@@ -1352,7 +1357,7 @@ class _CreateEpisode extends Component {
             wrapperStyles={styles.inputTitleWrapper}
             placeholder={'Title*'}
             onChange={e => {
-              this.setState({title: e.target.value});
+              this.setState({ title: e.target.value });
             }}
             value={this.state.title}
             validators={[
@@ -1382,15 +1387,15 @@ class _CreateEpisode extends Component {
             style={styles.inputDescription}
             placeholder={'Action step'}
             onChange={e => {
-              this.setState({actions: e.target.value});
+              this.setState({ actions: e.target.value });
             }}
             value={this.state.actions}
           />
           <div style={styles.notes}>
-            <div style={{...styles.recordTitleText, fontWeight: 800}}>
+            <div style={{ ...styles.recordTitleText, fontWeight: 800 }}>
               Notes
             </div>
-            <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+            <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
               <input
                 type="file"
                 name="upload"
@@ -1398,7 +1403,7 @@ class _CreateEpisode extends Component {
                 onChange={this.setFileName.bind(this, 'notes')}
                 style={styles.inputFileHidden}
               />
-              <div style={{display: 'none'}}>
+              <div style={{ display: 'none' }}>
                 <ReactS3Uploader
                   signingUrl="/s3/sign"
                   signingUrlMethod="GET"
@@ -1407,7 +1412,7 @@ class _CreateEpisode extends Component {
                   onProgress={this.notesOnProgress.bind(this)}
                   onError={this.notesOnError.bind(this)}
                   onFinish={this.notesOnFinish.bind(this)}
-                  uploadRequestHeaders={{'x-amz-acl': 'public-read'}} // this is the default
+                  uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
                   contentDisposition="auto"
                   scrubFilename={filename => {
                     const original = filename.split('.');
@@ -1422,18 +1427,21 @@ class _CreateEpisode extends Component {
                 />
               </div>
               {(notesUploading && (
-                <div style={{textAlign: 'left'}}>
+                <div style={{ textAlign: 'left' }}>
                   {(notesUploadError && (
                     <div>
-                      <span style={{color: 'red'}}>{notesUploadError}</span>
+                      <span style={{ color: 'red' }}>{notesUploadError}</span>
                     </div>
                   )) || (
-                    <div style={{marginTop: 15}}>
-                      <div style={{textAlign: 'left', display: 'none'}}>
-                        <div className="title-small" style={{marginBottom: 5}}>
+                    <div style={{ marginTop: 15 }}>
+                      <div style={{ textAlign: 'left', display: 'none' }}>
+                        <div
+                          className="title-small"
+                          style={{ marginBottom: 5 }}
+                        >
                           {`Uploading notes`}
                         </div>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
                           <Dots
                             style={{}}
                             color="#727981"
@@ -1442,7 +1450,7 @@ class _CreateEpisode extends Component {
                           />
                         </div>
                       </div>
-                      <div style={{display: ''}}>
+                      <div style={{ display: '' }}>
                         <MuiThemeProvider>
                           <LinearProgress
                             mode="determinate"
@@ -1452,7 +1460,7 @@ class _CreateEpisode extends Component {
                         </MuiThemeProvider>
                         <div
                           className="text-medium"
-                          style={{textAlign: 'center'}}
+                          style={{ textAlign: 'center' }}
                         >
                           <span>{`uploading ${notesUploadProgress} %`}</span>
                         </div>
@@ -1467,7 +1475,7 @@ class _CreateEpisode extends Component {
                     <div
                       style={styles.cancelImg}
                       onClick={() =>
-                        this.setState({notesUploaded: false, notesUrl: ''})
+                        this.setState({ notesUploaded: false, notesUrl: '' })
                       }
                     >
                       Cancel
@@ -1487,7 +1495,7 @@ class _CreateEpisode extends Component {
                           backgroundColor: Colors.mainOrange,
                         }}
                       >
-                        <span style={{paddingLeft: 5, paddingRight: 5}}>
+                        <span style={{ paddingLeft: 5, paddingRight: 5 }}>
                           Upload Notes{' '}
                         </span>
                       </button>
@@ -1497,7 +1505,7 @@ class _CreateEpisode extends Component {
                         pdf, jpeg or png files accepted
                       </div>
                       {wrongFileTypeFor == 'notes' && (
-                        <div style={{...styles.fileTypesLabel, color: 'red'}}>
+                        <div style={{ ...styles.fileTypesLabel, color: 'red' }}>
                           Wrong file type. Please try again.
                         </div>
                       )}
@@ -1506,8 +1514,8 @@ class _CreateEpisode extends Component {
                 ))}
             </div>
           </div>
-          <div style={{marginTop: 40, marginBottom: 25}}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
+          <div style={{ marginTop: 40, marginBottom: 25 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Toggle
                 id="share-status"
                 aria-labelledby="share-label"
@@ -1520,12 +1528,14 @@ class _CreateEpisode extends Component {
               />
               <span
                 id="share-label"
-                style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}
+                style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
               >
                 Make this episode publicly shareable
               </span>
             </div>
-            <div style={{display: 'flex', alignItems: 'center', marginTop: 15}}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
+            >
               <Toggle
                 id="share-status"
                 aria-labelledby="share-label"
@@ -1533,12 +1543,12 @@ class _CreateEpisode extends Component {
                 checked={this.state.sendEmails}
                 onChange={() => {
                   const sendEmails = !that.state.sendEmails;
-                  that.setState({sendEmails});
+                  that.setState({ sendEmails });
                 }}
               />
               <span
                 id="share-label"
-                style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}
+                style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
               >
                 Send email notification to subscribers and invitees after
                 publishing
@@ -1546,27 +1556,29 @@ class _CreateEpisode extends Component {
             </div>
           </div>
           {(this.state.publicEpisode && (
-            <div style={{marginBottom: 25}}>
-              <span style={{fontSize: 16, fontWeight: 800}}>
+            <div style={{ marginBottom: 25 }}>
+              <span style={{ fontSize: 16, fontWeight: 800 }}>
                 Episode link for sharing:{' '}
               </span>
               <span>
                 <a
-                  style={{color: Colors.mainOrange, fontSize: 18}}
+                  style={{ color: Colors.mainOrange, fontSize: 18 }}
                 >{`https://mysoundwise.com/episodes/${this.episodeId}`}</a>
               </span>
             </div>
           )) ||
             null}
           {(this.state.publicEpisode && (
-            <div style={{marginBottom: 10, minHeight: 133}}>
+            <div style={{ marginBottom: 10, minHeight: 133 }}>
               <div>
-                <span style={{...styles.recordTitleText, fontWeight: 800}}>
+                <span style={{ ...styles.recordTitleText, fontWeight: 800 }}>
                   Episode cover art (for social sharing)
                 </span>
               </div>
               {(this.state.coverArtUrl && (
-                <div style={{...styles.image, marginRight: 10, marginTop: 10}}>
+                <div
+                  style={{ ...styles.image, marginRight: 10, marginTop: 10 }}
+                >
                   <img style={styles.image} src={this.state.coverArtUrl} />
                 </div>
               )) ||
@@ -1633,9 +1645,9 @@ class _CreateEpisode extends Component {
             </div>
           )) ||
             null}
-          <div style={{marginTop: 50, display: ''}}>
-            <hr style={{border: '0.5px solid lightgray'}} />
-            <div style={{display: 'flex', alignItems: 'center'}}>
+          <div style={{ marginTop: 50, display: '' }}>
+            <hr style={{ border: '0.5px solid lightgray' }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <span
                 style={{
                   ...styles.recordTitleText,
@@ -1658,8 +1670,8 @@ class _CreateEpisode extends Component {
                 </span>
               )) || <span />}
             </div>
-            <div style={{marginTop: 20, marginBottom: 25}}>
-              <div style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{ marginTop: 20, marginBottom: 25 }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Toggle
                   className="toggle-green"
                   id="audio-edit-1"
@@ -1673,7 +1685,7 @@ class _CreateEpisode extends Component {
                 />
                 <span
                   id="audio-edit-1-label"
-                  style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}
+                  style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
                 >
                   Optimize volume
                 </span>
@@ -1684,7 +1696,7 @@ class _CreateEpisode extends Component {
                 </span>
               </div>
               <div
-                style={{display: 'flex', alignItems: 'center', marginTop: 15}}
+                style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
               >
                 <Toggle
                   className="toggle-green"
@@ -1695,13 +1707,13 @@ class _CreateEpisode extends Component {
                 />
                 <span
                   id="audio-edit-2-label"
-                  style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}
+                  style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
                 >
                   Trim silience at the beginning
                 </span>
               </div>
               <div
-                style={{display: 'flex', alignItems: 'center', marginTop: 15}}
+                style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
               >
                 <Toggle
                   className="toggle-green"
@@ -1715,7 +1727,7 @@ class _CreateEpisode extends Component {
                 />
                 <span
                   id="audio-edit-3-label"
-                  style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}
+                  style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
                 >
                   Remove excessive silence/pauses throughout
                 </span>
@@ -1728,23 +1740,25 @@ class _CreateEpisode extends Component {
               </div>
               {(this.state.reduceSilence && (
                 <div>
-                  <span style={{fontSize: 14, marginRight: 5}}>
+                  <span style={{ fontSize: 14, marginRight: 5 }}>
                     Remove silent periods longer than{' '}
                   </span>
                   <input
-                    style={{width: 70}}
+                    style={{ width: 70 }}
                     type="text"
                     value={this.state.silentPeriod}
                     onChange={e => {
-                      that.setState({silentPeriod: Number(e.target.value)});
+                      that.setState({ silentPeriod: Number(e.target.value) });
                     }}
                   />
-                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                  <span style={{ paddingLeft: 10, fontSize: 14 }}>
+                    second(s)
+                  </span>
                 </div>
               )) ||
                 null}
               <div
-                style={{display: 'flex', alignItems: 'center', marginTop: 15}}
+                style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
               >
                 <Toggle
                   className="toggle-green"
@@ -1767,7 +1781,7 @@ class _CreateEpisode extends Component {
                 />
                 <span
                   id="audio-edit-4-label"
-                  style={{fontSize: 16, fontWeight: 800, marginLeft: '0.5em'}}
+                  style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
                 >
                   Attach intro and outro
                 </span>
@@ -1778,18 +1792,20 @@ class _CreateEpisode extends Component {
               </div>
               {(this.state.addIntroOutro && (
                 <div>
-                  <span style={{fontSize: 14, marginRight: 5}}>
+                  <span style={{ fontSize: 14, marginRight: 5 }}>
                     Overlap with main audio:
                   </span>
                   <input
-                    style={{width: 70, marginBottom: 0}}
+                    style={{ width: 70, marginBottom: 0 }}
                     type="text"
                     value={this.state.overlayDuration}
                     onChange={e => {
-                      that.setState({overlayDuration: e.target.value});
+                      that.setState({ overlayDuration: e.target.value });
                     }}
                   />
-                  <span style={{paddingLeft: 10, fontSize: 14}}>second(s)</span>
+                  <span style={{ paddingLeft: 10, fontSize: 14 }}>
+                    second(s)
+                  </span>
                 </div>
               )) ||
                 null}
@@ -1800,12 +1816,12 @@ class _CreateEpisode extends Component {
           {(startProcessingEpisode && (
             <div
               className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-              style={{textAlign: 'center'}}
+              style={{ textAlign: 'center' }}
             >
-              <div className="" style={{fontSize: 17, width: '100%'}}>
+              <div className="" style={{ fontSize: 17, width: '100%' }}>
                 <span>Please wait...</span>
               </div>
-              <div className="" style={{marginTop: 10, width: '100%'}}>
+              <div className="" style={{ marginTop: 10, width: '100%' }}>
                 <Dots style={{}} color="#727981" size={32} speed={1} />
               </div>
             </div>
@@ -1813,7 +1829,7 @@ class _CreateEpisode extends Component {
             <div>
               <div
                 className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                style={{textAlign: 'center'}}
+                style={{ textAlign: 'center' }}
               >
                 <div
                   className="btn"
@@ -1825,18 +1841,18 @@ class _CreateEpisode extends Component {
               </div>
               <div
                 className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-                style={{textAlign: 'center'}}
+                style={{ textAlign: 'center' }}
               >
                 <div
                   className="btn btn-default"
-                  style={{...styles.draftButton, ...styles.publishButton}}
+                  style={{ ...styles.draftButton, ...styles.publishButton }}
                   onClick={this.saveEpisode.bind(this, true)}
                 >
                   <span>Publish</span>
                 </div>
               </div>
               {(podcastError && (
-                <div style={{fontSize: 16, marginTop: 10, color: 'red'}}>
+                <div style={{ fontSize: 16, marginTop: 10, color: 'red' }}>
                   {podcastError}
                 </div>
               )) ||
@@ -1877,16 +1893,16 @@ const loaderOptions = {
 };
 
 const styles = {
-  inputTitle: {...commonStyles.inputTitle, fontSize: 16},
-  inputFileHidden: {...commonStyles.inputFileHidden},
-  titleText: {...commonStyles.titleText, fontSize: 20},
+  inputTitle: { ...commonStyles.inputTitle, fontSize: 16 },
+  inputFileHidden: { ...commonStyles.inputFileHidden },
+  titleText: { ...commonStyles.titleText, fontSize: 20 },
   loaderWrapper: {
     ...commonStyles.loaderWrapper,
     height: 'auto',
     paddingLeft: 0,
   },
-  image: {...commonStyles.image, width: 'auto', float: 'left'},
-  cancelImg: {...commonStyles.cancelImg, fontSize: 15},
+  image: { ...commonStyles.image, width: 'auto', float: 'left' },
+  cancelImg: { ...commonStyles.cancelImg, fontSize: 15 },
   audioRecorder: {
     boxShadow: '0 0 8px rgba(0, 0, 0, 0.5)',
     borderRadius: 8,

@@ -2,15 +2,22 @@
 const path = require('path');
 const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
-const awsConfig = require('../../config').awsConfig;
-const {uploader, logErr, setAudioTags} = require('./utils')('feed.js');
+const awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').awsConfig
+    : require('../../config').awsConfig;
+const { uploader, logErr, setAudioTags } = require('./utils')('feed.js');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const Podcast = require('podcast');
 const sizeOf = require('image-size');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(require('../../config').sendGridApiKey);
+sgMail.setApiKey(
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey
+);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 
@@ -42,7 +49,7 @@ module.exports.createFeed = async (req, res) => {
     // ['Main Cat - Sub Cat', ..]
     const [main, sub] = i.split(' - ');
     categories.push(sub || main); // sub-categories from itunesCategory
-    return {text: main, subcats: [{text: sub || main}]};
+    return { text: main, subcats: [{ text: sub || main }] };
   });
   let imageBody;
   await new Promise(resolve => {
@@ -52,7 +59,7 @@ module.exports.createFeed = async (req, res) => {
         url: itunesImage,
       })
       .then(async body => {
-        const {height, width} = sizeOf(body); // { height: 1400, width: 1400, type: "jpg" }
+        const { height, width } = sizeOf(body); // { height: 1400, width: 1400, type: "jpg" }
         if (
           !(height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000)
         ) {
@@ -76,8 +83,8 @@ module.exports.createFeed = async (req, res) => {
       ? short_description.slice(0, 3997) + '..'
       : short_description;
   const itunesOwner = autoSubmitPodcast
-    ? {name: 'Soundwise', email: 'support@mysoundwise.com'}
-    : {name: hostName, email};
+    ? { name: 'Soundwise', email: 'support@mysoundwise.com' }
+    : { name: hostName, email };
   const googleplayEmail = autoSubmitPodcast ? 'support@mysoundwise.com' : email;
   const podcastObj = {
     title: itunesTitle ? itunesTitle : title,
@@ -103,12 +110,12 @@ module.exports.createFeed = async (req, res) => {
         'http://www.google.com/schemas/play-podcasts/1.0/play-podcasts.xsd',
     },
     customElements: [
-      {'googleplay:email': googleplayEmail},
-      {'googleplay:description': itunesSummary}, // need to be < 4000 characters
-      {'googleplay:category': [{_attr: {text: itunesCategory[0].text}}]},
-      {'googleplay:author': itunesHost},
-      {'googleplay:explicit': itunesExplicit},
-      {'googleplay:image': [{_attr: {href: itunesImage}}]}, // need to be between 1400x1400 px and 3000x3000 px
+      { 'googleplay:email': googleplayEmail },
+      { 'googleplay:description': itunesSummary }, // need to be < 4000 characters
+      { 'googleplay:category': [{ _attr: { text: itunesCategory[0].text } }] },
+      { 'googleplay:author': itunesHost },
+      { 'googleplay:explicit': itunesExplicit },
+      { 'googleplay:image': [{ _attr: { href: itunesImage } }] }, // need to be between 1400x1400 px and 3000x3000 px
     ],
   };
   const feed = new Podcast(podcastObj);
@@ -126,7 +133,7 @@ module.exports.createFeed = async (req, res) => {
             const val = episode.val();
             val.isPublished &&
               val.publicEpisode &&
-              episodesArr.push(Object.assign({}, val, {id}));
+              episodesArr.push(Object.assign({}, val, { id }));
             resolve();
           })
       )
@@ -209,7 +216,7 @@ module.exports.createFeed = async (req, res) => {
       episode =>
         new Promise((resolve, reject) => {
           request
-            .get({encoding: null, url: episode.url})
+            .get({ encoding: null, url: episode.url })
             .then(body => {
               const id = episode.id;
               const filePath = `/tmp/${id + path.extname(episode.url)}`;
@@ -252,9 +259,9 @@ module.exports.createFeed = async (req, res) => {
                     await new Promise(resolve => {
                       // download coverArtUrl image
                       request
-                        .get({url: episode.coverArtUrl, encoding: null})
+                        .get({ url: episode.coverArtUrl, encoding: null })
                         .then(body => {
-                          const {height, width} = sizeOf(body);
+                          const { height, width } = sizeOf(body);
                           coverPath = `/tmp/${id}_cover${path.extname(
                             episode.coverArtUrl
                           )}`;
@@ -337,7 +344,7 @@ module.exports.createFeed = async (req, res) => {
                           uploader.use(
                             new S3Strategy({
                               uploadPath: 'soundcasts',
-                              headers: {'x-amz-acl': 'public-read'},
+                              headers: { 'x-amz-acl': 'public-read' },
                               options: {
                                 key: awsConfig.accessKeyId,
                                 secret: awsConfig.secretAccessKey,
@@ -348,7 +355,7 @@ module.exports.createFeed = async (req, res) => {
                           console.log('CHECK: ', updatedPath, id);
                           uploader.upload(
                             's3', // saving to S3 db
-                            {path: updatedPath, name: `${id}.mp3`}, // file
+                            { path: updatedPath, name: `${id}.mp3` }, // file
                             (err, files) => {
                               fs.unlink(filePath, err => 0); // remove original file
                               fs.unlink(updatedPath, err => 0); // remove converted file
@@ -418,7 +425,7 @@ module.exports.createFeed = async (req, res) => {
           author: hostName,
           date: moment(episode.date_created * 1000).toDate(),
           pubDate: moment(episode.date_created * 1000).toDate(),
-          enclosure: {url: episode.url}, // link to audio file
+          enclosure: { url: episode.url }, // link to audio file
           itunesAuthor: hostName,
           itunesSubtitle:
             episode.title.length >= 255
@@ -431,7 +438,7 @@ module.exports.createFeed = async (req, res) => {
           itunesDuration:
             Math.round(episode.duration) ||
             results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
-          customElements: [{'content:encoded': {_cdata: itunesSummary}}],
+          customElements: [{ 'content:encoded': { _cdata: itunesSummary } }],
         };
         // check if episode.keywords exists, if so, use that, if not, don't add it
         if (episode.keywords && episode.keywords.length) {

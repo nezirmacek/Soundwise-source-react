@@ -1,6 +1,18 @@
 const path = require('path');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const webpack = require('webpack');
+const dotenv = require('dotenv');
+
+const env =
+  dotenv.config({ path: path.resolve(process.cwd(), 'client.env') }) || {};
+
+const envKeys = Object.keys(env).reduce(
+  (prev, next) => ({
+    ...prev,
+    [next]: JSON.stringify(env[next]),
+  }),
+  {}
+);
 
 module.exports = {
   context: __dirname,
@@ -72,9 +84,12 @@ module.exports = {
     }),
     // new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-      },
+      'process.env':
+        process.env.NODE_ENV === 'staging'
+          ? envKeys
+          : {
+              NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+            },
     }),
   ],
 };

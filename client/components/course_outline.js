@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Card, CardHeader} from 'material-ui/Card';
+import React, { Component } from 'react';
+import { Card, CardHeader } from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
@@ -23,7 +23,7 @@ export default class CourseOutline extends Component {
         description_long: [''],
         features: [''],
         teacher_bio: [''],
-        teachers: [{teacher_bio: ['']}],
+        teachers: [{ teacher_bio: [''] }],
         sections: [],
       },
       userCourses: {},
@@ -51,11 +51,11 @@ export default class CourseOutline extends Component {
   }
 
   showDialog(isDialodShown) {
-    this.setState({isTakeLessonDialogShown: isDialodShown});
+    this.setState({ isTakeLessonDialogShown: isDialodShown });
   }
 
   setPlayingLesson(id) {
-    this.setState({playingLessonId: id});
+    this.setState({ playingLessonId: id });
   }
 
   checkOut() {
@@ -70,7 +70,7 @@ export default class CourseOutline extends Component {
     if (this.props.course.price === 0) {
       this.addCourseToUser();
     } else {
-      this.setState({isBuyCourseDialogShown: true});
+      this.setState({ isBuyCourseDialogShown: true });
     }
     this.showDialog(false);
   }
@@ -78,7 +78,7 @@ export default class CourseOutline extends Component {
   buyCourse() {
     this.props.addCourseToCart(this.props.course);
     this.props.history.push('/cart');
-    this.setState({isBuyCourseDialogShown: false});
+    this.setState({ isBuyCourseDialogShown: false });
   }
 
   /*RENDER*/
@@ -118,7 +118,7 @@ export default class CourseOutline extends Component {
               <strong>
                 <i
                   className="material-icons"
-                  style={{paddingRight: '1em', color: 'green'}}
+                  style={{ paddingRight: '1em', color: 'green' }}
                 >
                   check
                 </i>
@@ -173,7 +173,7 @@ export default class CourseOutline extends Component {
             </div>
             <div
               className="row padding-40px-tb"
-              style={{backgroundColor: '#FFF3E0'}}
+              style={{ backgroundColor: '#FFF3E0' }}
             >
               <div className="col-md-12 col-sm-12 col-xs-12">
                 {this.renderDescription()}
@@ -203,7 +203,7 @@ export default class CourseOutline extends Component {
         <section
           className="padding-80px-tb xs-padding-60px-tb bg-white  border-none"
           id="title-section1"
-          style={{backgroundColor: '#FFF3E0'}}
+          style={{ backgroundColor: '#FFF3E0' }}
         >
           <div className="container">
             <div className=" padding-40px-tb">
@@ -221,7 +221,7 @@ export default class CourseOutline extends Component {
                 </h2>
                 <h5
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text"
-                  style={{lineHeight: '30px'}}
+                  style={{ lineHeight: '30px' }}
                 >
                   As long as the Internet is still a thing.
                 </h5>
@@ -230,7 +230,7 @@ export default class CourseOutline extends Component {
                 </h2>
                 <h5
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left"
-                  style={{lineHeight: '30px'}}
+                  style={{ lineHeight: '30px' }}
                 >
                   Once you sign up for the program, you'll see an "enable
                   offline" button on the right hand side of every audio section.
@@ -246,19 +246,20 @@ export default class CourseOutline extends Component {
                 </h2>
                 <h5
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text"
-                  style={{lineHeight: '30px'}}
+                  style={{ lineHeight: '30px' }}
                 >
                   Shoot us an email at{' '}
                   <a href="mailto:support@mysoundwise.com">
                     support@mysoundwise.com
-                  </a>.
+                  </a>
+                  .
                 </h5>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   What if I'm not happy with the content?
                 </h2>
                 <h5
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text"
-                  style={{lineHeight: '30px'}}
+                  style={{ lineHeight: '30px' }}
                 >
                   We want you to be happy! If you are unsatisfied with the
                   course, let us know at{' '}

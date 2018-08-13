@@ -1,10 +1,10 @@
 import React from 'react';
-import {withRouter} from 'react-router';
+import { withRouter } from 'react-router';
 import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 const _Notice = props => (
@@ -16,14 +16,14 @@ const _Notice = props => (
     >
       <div
         className="container  text-dark-gray border-none"
-        style={{fontSize: '18px'}}
+        style={{ fontSize: '18px' }}
       >
         <div className="row">
           <div className="col-md-9 center-col col-sm-12 ">
             {(props.location.state.soundcastTitle && (
               <div
                 className="section-title-small text-dark-gray font-weight-500 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-                style={{textAlign: 'center', lineHeight: '150%'}}
+                style={{ textAlign: 'center', lineHeight: '150%' }}
               >
                 <div>
                   <strong>Thanks for signing up for</strong>
@@ -33,10 +33,10 @@ const _Notice = props => (
             )) ||
               null}
             {(props.location.state.ios && (
-              <div style={{lineHeight: '150%'}}>
+              <div style={{ lineHeight: '150%' }}>
                 <div
                   className="section-title-small text-dark-gray font-weight-500 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-                  style={{textAlign: 'center', marginTop: 20}}
+                  style={{ textAlign: 'center', marginTop: 20 }}
                 >
                   <span>
                     <strong>How to Access Your Soundcast</strong>
@@ -45,7 +45,7 @@ const _Notice = props => (
                 <div className="col-md-8 col-sm-9 col-xs-12 center-col text-center">
                   <div
                     className="section-title-small"
-                    style={{marginBottom: 15}}
+                    style={{ marginBottom: 15 }}
                   >
                     <span>
                       <strong>Mobile</strong>
@@ -65,7 +65,7 @@ const _Notice = props => (
                     >
                       <img
                         alt=""
-                        style={{width: 175}}
+                        style={{ width: 175 }}
                         src="../images/app-store-badge.png"
                         data-img-size="(W)175px X (H)51px"
                       />
@@ -78,12 +78,12 @@ const _Notice = props => (
                       <img
                         src="../images/google-play-badge.png"
                         data-img-size="(W)200px X (H)61px"
-                        style={{width: 175}}
+                        style={{ width: 175 }}
                         alt=""
                       />
                     </a>
                   </div>
-                  <div className="text-large" style={{marginBottom: 10}}>
+                  <div className="text-large" style={{ marginBottom: 10 }}>
                     <span>
                       <strong>Step 2: </strong>
                     </span>
@@ -100,16 +100,16 @@ const _Notice = props => (
                 </div>
                 <div
                   className="section-title-small"
-                  style={{textAlign: 'center', marginTop: 20}}
+                  style={{ textAlign: 'center', marginTop: 20 }}
                 >
-                  <div style={{marginBottom: 10}}>
+                  <div style={{ marginBottom: 10 }}>
                     <strong>Desktop</strong>
                   </div>
                   <MuiThemeProvider>
                     <Link to="/mysoundcasts">
                       <FlatButton
                         label="Access your soundcast"
-                        style={{color: '#f76b1c'}}
+                        style={{ color: '#f76b1c' }}
                       />
                     </Link>
                   </MuiThemeProvider>

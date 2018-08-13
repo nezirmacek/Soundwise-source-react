@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Route, Link, Switch} from 'react-router-dom';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 
 import Footer from '../components/footer';
-import {SoundwiseHeader} from '../components/soundwise_header';
+import { SoundwiseHeader } from '../components/soundwise_header';
 import Colors from '../styles/colors';
 
 class _MySoundcasts extends Component {
@@ -164,14 +164,14 @@ class _MySoundcasts extends Component {
 
   alignCardsHeights(height) {
     if (this.state.cardHeight < height) {
-      this.setState({cardHeight: height});
+      this.setState({ cardHeight: height });
     }
   }
 
   handleSubscription(soundcast) {
     const that = this;
-    const {userId} = this.state;
-    const {soundcastId, paymentID, subscribed, publisherID} = soundcast;
+    const { userId } = this.state;
+    const { soundcastId, paymentID, subscribed, publisherID } = soundcast;
 
     this.setState({
       currentSoundcast: soundcastId,
@@ -428,9 +428,9 @@ class _MySoundcasts extends Component {
                       style={styles.soundcastInfo}
                     >
                       {(soundcast.subscribed && (
-                        <span style={{...styles.statusText}}>Active</span>
+                        <span style={{ ...styles.statusText }}>Active</span>
                       )) || (
-                        <span style={{...styles.statusText, color: 'red'}}>
+                        <span style={{ ...styles.statusText, color: 'red' }}>
                           Inactive
                         </span>
                       )}
@@ -466,7 +466,7 @@ class _MySoundcasts extends Component {
                           </div>
                         </Link>
                       )}
-                      <div style={{color: 'red'}}>
+                      <div style={{ color: 'red' }}>
                         {this.state.currentSoundcast == soundcast.soundcastId &&
                           this.state.paymentError}
                       </div>
@@ -584,8 +584,8 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  return {userInfo, isLoggedIn};
+  const { userInfo, isLoggedIn } = state.user;
+  return { userInfo, isLoggedIn };
 };
 
 export const MySoundcasts = connect(

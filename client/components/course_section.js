@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import firebase from 'firebase';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
@@ -32,7 +32,7 @@ import Spinner from 'react-activity/lib/Spinner';
 // import CircularProgressbar from 'react-circular-progressbar';
 import ProgressLabel from 'react-progress-label';
 import PDF from 'react-pdf-js';
-import {IoChevronLeft, IoChevronRight} from 'react-icons/lib/io';
+import { IoChevronLeft, IoChevronRight } from 'react-icons/lib/io';
 
 import {
   setCurrentPlaySection,
@@ -125,7 +125,7 @@ class _CourseSection extends Component {
     xhttp.open('HEAD', this.props.section.notes_url);
     xhttp.onreadystatechange = function() {
       if (this.readyState == this.DONE) {
-        _self.setState({mimeType: this.getResponseHeader('Content-Type')});
+        _self.setState({ mimeType: this.getResponseHeader('Content-Type') });
       }
     };
     xhttp.send();
@@ -221,7 +221,7 @@ class _CourseSection extends Component {
           player.play();
 
           that.props.changePlayStatus(true);
-          that.setState({loading: false});
+          that.setState({ loading: false });
 
           if (!that.props.playerLaunched) {
             that.props.launchPlayer(true);
@@ -291,7 +291,7 @@ class _CourseSection extends Component {
           player.play();
 
           that.props.changePlayStatus(true);
-          that.setState({loading: false});
+          that.setState({ loading: false });
 
           if (!that.props.playerLaunched) {
             that.props.launchPlayer(true);
@@ -325,7 +325,7 @@ class _CourseSection extends Component {
       player.playbackRate = this.props.speed;
       player.play();
       this.props.changePlayStatus(true);
-      this.setState({loading: false});
+      this.setState({ loading: false });
     }
   }
 
@@ -341,7 +341,7 @@ class _CourseSection extends Component {
       return (
         <i
           className="fa fa-play-circle"
-          style={{fontSize: '38px', color: '#61E1FB'}}
+          style={{ fontSize: '38px', color: '#61E1FB' }}
           aria-hidden="true"
         />
       );
@@ -350,9 +350,9 @@ class _CourseSection extends Component {
 
   renderCacheButton() {
     if (this.state.cached === true) {
-      return <span style={{color: '#F76B1C'}}>remove download</span>;
+      return <span style={{ color: '#F76B1C' }}>remove download</span>;
     } else if (this.state.cached === false) {
-      return <span style={{color: '#F76B1C'}}>enable offline</span>;
+      return <span style={{ color: '#F76B1C' }}>enable offline</span>;
     } else if (this.state.cached === 'processing') {
       return <Spinner size={12} speed={1} />;
     }
@@ -458,7 +458,7 @@ class _CourseSection extends Component {
     if (this.props.section.notes_url) {
       return (
         <RaisedButton
-          style={{marginTop: '0.5em', marginBottom: '0.5em'}}
+          style={{ marginTop: '0.5em', marginBottom: '0.5em' }}
           label="Notes"
           icon={icon}
           onTouchTap={() => this.handleExpand('notes')}
@@ -478,7 +478,7 @@ class _CourseSection extends Component {
     if (this.props.section.resources) {
       return (
         <RaisedButton
-          style={{marginTop: '0.5em', marginBottom: '0.5em'}}
+          style={{ marginTop: '0.5em', marginBottom: '0.5em' }}
           label="Resources"
           icon={icon}
           onTouchTap={() => this.handleExpand('resources')}
@@ -493,7 +493,7 @@ class _CourseSection extends Component {
         <a href={this.props.section.transcript_url} target="_blank">
           <RaisedButton
             label="Transcript"
-            style={{marginTop: '0.5em', marginBottom: '0.5em'}}
+            style={{ marginTop: '0.5em', marginBottom: '0.5em' }}
           />
         </a>
       );
@@ -511,7 +511,7 @@ class _CourseSection extends Component {
     if (this.props.section.actions) {
       return (
         <RaisedButton
-          style={{marginTop: '0.5em', marginBottom: '0.5em'}}
+          style={{ marginTop: '0.5em', marginBottom: '0.5em' }}
           label="Action Step"
           icon={icon}
           onTouchTap={() => this.handleExpand('actions')}
@@ -581,25 +581,25 @@ class _CourseSection extends Component {
   }
 
   onDocumentComplete(pages) {
-    this.setState({page: 1, pages});
+    this.setState({ page: 1, pages });
   }
 
   onPageComplete(page) {
-    this.setState({page});
+    this.setState({ page });
   }
 
   handlePrevious() {
-    this.setState({page: this.state.page - 1});
+    this.setState({ page: this.state.page - 1 });
   }
 
   handleNext() {
-    this.setState({page: this.state.page + 1});
+    this.setState({ page: this.state.page + 1 });
   }
 
   renderExpandedItem() {
     if (this.state.expandedItem == 'actions') {
       return (
-        <Paper className="" style={{padding: '1em'}}>
+        <Paper className="" style={{ padding: '1em' }}>
           {this.renderActionItems(this.props.section.actions)}
         </Paper>
       );
@@ -623,7 +623,7 @@ class _CourseSection extends Component {
           >
             {((this.state.mimeType === 'application/pdf' ||
               _extension === 'pdf') && (
-              <div style={{position: 'relative'}}>
+              <div style={{ position: 'relative' }}>
                 {(this.state.pages > 1 && (
                   <IoChevronLeft
                     style={styles.navIcon}
@@ -639,7 +639,7 @@ class _CourseSection extends Component {
                 />
                 {(this.state.pages > 1 && (
                   <IoChevronRight
-                    style={{...styles.navIcon, right: 0}}
+                    style={{ ...styles.navIcon, right: 0 }}
                     onClick={this.handleNext.bind(this)}
                   />
                 )) ||
@@ -652,15 +652,15 @@ class _CourseSection extends Component {
     } else if (this.state.expandedItem == 'resources') {
       return (
         <Paper
-          style={{padding: '1em', paddingTop: '2em', paddingBottom: '2em'}}
+          style={{ padding: '1em', paddingTop: '2em', paddingBottom: '2em' }}
         >
           <ul>
             {this.props.section.resources.map(resource => {
               return (
-                <li style={{fontSize: '18px', padding: '1em'}}>
+                <li style={{ fontSize: '18px', padding: '1em' }}>
                   {`${resource.description}: `}
                   <a
-                    style={{color: '#61E1FB'}}
+                    style={{ color: '#61E1FB' }}
                     href={resource.link}
                     target="_blank"
                   >
@@ -704,7 +704,7 @@ class _CourseSection extends Component {
           <CardText>
             <div
               className="row"
-              style={{display: 'flex', alignItems: 'center'}}
+              style={{ display: 'flex', alignItems: 'center' }}
             >
               <div
                 className=""
@@ -749,20 +749,20 @@ class _CourseSection extends Component {
                   <a onClick={this.handleTap}>{this.renderPlayButton()}</a>
                 </div>
                 <div className="col-md-11, col-sm-10 col-xs-9">
-                  <a onClick={this.handleTap} style={{padding: '0em'}}>
-                    <div style={{fontSize: '16px'}}>
+                  <a onClick={this.handleTap} style={{ padding: '0em' }}>
+                    <div style={{ fontSize: '16px' }}>
                       {`Lesson ${this.props.section.section_number} (${
                         run_time[0]
                       }m ${run_time[1]}s)`}
                     </div>
-                    <div style={{fontSize: '20px'}}>
+                    <div style={{ fontSize: '20px' }}>
                       {this.props.section.title}
                     </div>
                   </a>
                 </div>
               </div>
               <div
-                style={{display: displayDownload, alignItems: 'center'}}
+                style={{ display: displayDownload, alignItems: 'center' }}
                 className=""
               >
                 <a onClick={this.handleCacheAudio}>
@@ -803,16 +803,16 @@ class _CourseSection extends Component {
 // />
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {setCurrentPlaySection, changePlayStatus, launchPlayer},
+    { setCurrentPlaySection, changePlayStatus, launchPlayer },
     dispatch
   );
 }
 
 const mapStateToProps = state => {
-  const {isLoggedIn} = state.user;
-  const {playing, currentSection} = state.setCurrentSection;
-  const {playerLaunched, speed} = state.setPlayer;
-  const {currentPlaylist, currentTime, currentDuration} = state.setCourses;
+  const { isLoggedIn } = state.user;
+  const { playing, currentSection } = state.setCurrentSection;
+  const { playerLaunched, speed } = state.setPlayer;
+  const { currentPlaylist, currentTime, currentDuration } = state.setCourses;
   return {
     isLoggedIn,
     currentSection,

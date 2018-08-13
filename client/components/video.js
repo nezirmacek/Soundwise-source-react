@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Video = () => (
   <section
@@ -28,7 +28,7 @@ const Video = () => (
           <Link
             to="/signup/admin"
             className="btn btn-large propClone  btn-circle text-white"
-            style={{backgroundColor: '#61E1FB'}}
+            style={{ backgroundColor: '#61E1FB' }}
           >
             <span className="tz-text">GET START</span>
           </Link>

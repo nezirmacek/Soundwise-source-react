@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Bar} from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {getDateArray} from '../../../helpers/get_date_array';
+import { getDateArray } from '../../../helpers/get_date_array';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -54,7 +54,7 @@ export default class Subscriber extends Component {
   }
 
   componentDidMount() {
-    const {subscriber, soundcast} = this.props.history.location.state;
+    const { subscriber, soundcast } = this.props.history.location.state;
     this.getListeningStats(subscriber.id, soundcast.publisherID);
   }
 
@@ -84,7 +84,7 @@ export default class Subscriber extends Component {
           percentCompleted: session.percentCompleted,
         };
       } else if (episodes[session.episodeId]) {
-        const {date, percentCompleted} = episodes[session.episodeId];
+        const { date, percentCompleted } = episodes[session.episodeId];
         episodes[session.episodeId] = {
           soundcastId: session.soundcastId,
           date: date >= session.date ? date : session.date,
@@ -96,7 +96,7 @@ export default class Subscriber extends Component {
       }
 
       //calculate stats by date
-      const {listens, length} = statsByDate[labels.indexOf(session.date)];
+      const { listens, length } = statsByDate[labels.indexOf(session.date)];
       statsByDate[labels.indexOf(session.date)] = {
         listens: listens + 1,
         length: length + session.sessionDuration,
@@ -145,8 +145,8 @@ export default class Subscriber extends Component {
 
   compileEpisodeList(episodes) {
     const that = this;
-    const {subscriber} = this.props.history.location.state;
-    const {userInfo} = this.props;
+    const { subscriber } = this.props.history.location.state;
+    const { userInfo } = this.props;
     const soundcastIDs = Object.keys(subscriber.soundcasts);
     let soundcastObj = {};
     let episodeArr = [];
@@ -214,8 +214,7 @@ export default class Subscriber extends Component {
       if (soundcastObj[episodes[id].soundcastId]['episodes'][id]) {
         soundcastObj[episodes[id].soundcastId]['episodes'][id][
           'percentCompleted'
-        ] =
-          episodes[id].percentCompleted;
+        ] = episodes[id].percentCompleted;
         soundcastObj[episodes[id].soundcastId]['episodes'][id]['lastListen'] =
           episodes[id].date;
       }
@@ -238,7 +237,7 @@ export default class Subscriber extends Component {
       minutesThisMonth,
       minutesAllTime,
     } = this.state;
-    const {subscriber} = this.props.history.location.state;
+    const { subscriber } = this.props.history.location.state;
 
     return (
       <div className="padding-30px-tb">
@@ -253,7 +252,7 @@ export default class Subscriber extends Component {
                 backgroundImage: `url(${subscriber.pic_url})`,
               }}
             />
-            <div style={{fontSize: 18, fontWeight: 600}}>
+            <div style={{ fontSize: 18, fontWeight: 600 }}>
               {`${subscriber.firstName} ${subscriber.lastName}`}
             </div>
           </div>
@@ -265,19 +264,19 @@ export default class Subscriber extends Component {
               alignItems: 'center',
             }}
           >
-            <div style={{marginBottom: 10, display: 'inline-block'}}>
+            <div style={{ marginBottom: 10, display: 'inline-block' }}>
               <span style={styles.statsTitle}>Today: </span>
               <span style={styles.statsText}>{`${minutesToday} minutes`}</span>
             </div>
             <div style={styles.verticalLine} />
-            <div style={{marginBottom: 10, display: 'inline-block'}}>
+            <div style={{ marginBottom: 10, display: 'inline-block' }}>
               <span style={styles.statsTitle}>This month: </span>
               <span
                 style={styles.statsText}
               >{`${minutesThisMonth} minutes`}</span>
             </div>
             <div style={styles.verticalLine} />
-            <div style={{marginBottom: 10, display: 'inline-block'}}>
+            <div style={{ marginBottom: 10, display: 'inline-block' }}>
               <span style={styles.statsTitle}>All time: </span>
               <span
                 style={styles.statsText}
@@ -304,7 +303,7 @@ export default class Subscriber extends Component {
             />
           </div>
           <div>
-            <div style={{marginTop: 25, marginBottom: 15}}>
+            <div style={{ marginTop: 25, marginBottom: 15 }}>
               <span className="title-small">Subscriptions</span>
             </div>
             {soundcastArr.map((soundcast, i) => {
@@ -317,27 +316,29 @@ export default class Subscriber extends Component {
                       showExpandableButton={true}
                     />
                     <CardText expandable={true}>
-                      <div style={{marginLeft: 30, marginRight: 30}}>
+                      <div style={{ marginLeft: 30, marginRight: 30 }}>
                         <table>
                           <tr style={styles.tr}>
-                            <th style={{...styles.th, width: 500}}>EPISODE</th>
-                            <th style={{...styles.th, width: 350}}>
+                            <th style={{ ...styles.th, width: 500 }}>
+                              EPISODE
+                            </th>
+                            <th style={{ ...styles.th, width: 350 }}>
                               % COMPLETED
                             </th>
-                            <th style={{...styles.th, width: 300}}>
+                            <th style={{ ...styles.th, width: 300 }}>
                               LAST LISTENED ON
                             </th>
                           </tr>
                           {soundcast.episodeArr.map((episode, i) => {
                             return (
                               <tr key={i} style={styles.tr}>
-                                <td style={{...styles.td, width: 500}}>
+                                <td style={{ ...styles.td, width: 500 }}>
                                   {episode.title}
                                 </td>
-                                <td style={{...styles.td, width: 350}}>
+                                <td style={{ ...styles.td, width: 350 }}>
                                   {episode.percentCompleted}
                                 </td>
-                                <td style={{...styles.td, width: 300}}>
+                                <td style={{ ...styles.td, width: 300 }}>
                                   {episode.lastListen}
                                 </td>
                               </tr>

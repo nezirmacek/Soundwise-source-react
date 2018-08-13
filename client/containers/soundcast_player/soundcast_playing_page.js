@@ -1,19 +1,19 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {Helmet} from 'react-helmet';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import firebase from 'firebase';
 import moment from 'moment';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
-import {Redirect} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Axios from 'axios';
 import Footer from '../../components/footer';
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import { SoundwiseHeader } from '../../components/soundwise_header';
 import PageHeader from '../soundcast_landing_page/components/page_header';
 import AudioPlayer from 'react-responsive-audio-player';
-import {getTime_mmss} from '../../helpers/formatTime';
+import { getTime_mmss } from '../../helpers/formatTime';
 import EpisodePreview from './components/episode_preview';
 
 class _SoundcastPlayingPage extends Component {
@@ -63,7 +63,7 @@ class _SoundcastPlayingPage extends Component {
   loadSoundcast(props, userID) {
     const that = this;
     const soundcastID = props.match.params.soundcastId;
-    const {userInfo, history} = props;
+    const { userInfo, history } = props;
     firebase
       .database()
       .ref(`users/${userID}/soundcasts/${soundcastID}`)
@@ -133,7 +133,7 @@ class _SoundcastPlayingPage extends Component {
   }
 
   sendToDatabase(event, currentEpisode) {
-    const {soundcastID, soundcast, startPosition, userID} = this.state;
+    const { soundcastID, soundcast, startPosition, userID } = this.state;
     const _date = moment().format('YYYY-MM-DD');
     let totalListens = currentEpisode.totalListens
       ? currentEpisode.totalListens
@@ -199,7 +199,7 @@ class _SoundcastPlayingPage extends Component {
   }
 
   recordPlaying() {
-    const {startPosition} = this.state;
+    const { startPosition } = this.state;
     if (this.audio) {
       this.setState({
         startPosition: this.audio.currentTime,
@@ -317,7 +317,7 @@ class _SoundcastPlayingPage extends Component {
                 <div className="">
                   <div
                     className=" col-md-12 col-sm-12 col-xs-12 text-center"
-                    style={{paddingBottom: 30, textAlign: 'center'}}
+                    style={{ paddingBottom: 30, textAlign: 'center' }}
                   >
                     <div className="col-md-offset-2 col-md-2 col-sm-3 col-xs-12 margin-three-bottom">
                       <img
@@ -400,8 +400,8 @@ class _SoundcastPlayingPage extends Component {
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  return {userInfo, isLoggedIn};
+  const { userInfo, isLoggedIn } = state.user;
+  return { userInfo, isLoggedIn };
 };
 
 export const SoundcastPlayingPage = connect(

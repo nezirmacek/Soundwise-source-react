@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as _ from 'lodash';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import { SoundwiseHeader } from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
 import SoundcastsManaged from './components/soundcasts_managed';
 import AddSoundcast from './components/add_soundcast';
@@ -119,6 +119,7 @@ class _Dashboard extends Component {
     this.state = {
       userInfo: {},
     };
+    this.checkProps = this.checkProps.bind(this);
   }
 
   componentDidMount() {
@@ -130,13 +131,14 @@ class _Dashboard extends Component {
             userInfo: that.props.userInfo,
           });
         }
+        that.checkProps(that.props);
       } else {
         that.props.history.push('/signin');
       }
     });
   }
+
   componentWillReceiveProps(nextProps) {
-    const that = this;
     if (!nextProps.userInfo.admin || !nextProps.isLoggedIn) {
       nextProps.history.push('/signin');
     }
@@ -145,32 +147,26 @@ class _Dashboard extends Component {
         userInfo: nextProps.userInfo,
       });
     }
-    const publisher =
-      nextProps.userInfo.publisher || this.props.userInfo.publisher;
-    const publisherID =
-      nextProps.userInfo.publisherID || this.props.userInfo.publisherID;
-    const userId = nextProps.userInfo.id || this.props.userInfo.id;
-    const feedVerified = nextProps.feedVerified || this.props.feedVerified;
-    const chargeState = nextProps.chargeState || this.props.chargeState;
-    if (
-      !this.runningParseFeedRequest &&
-      feedVerified &&
-      publisher &&
-      publisherID &&
-      userId
-    ) {
+    this.checkProps(nextProps);
+  }
+
+  checkProps(nextProps = {}) {
+    const that = this;
+    const { userInfo, feedVerified, chargeState } = this.props;
+    const { publisherID, id } = this.props.userInfo;
+    if (!this.runningParseFeedRequest && feedVerified && publisherID && id) {
+      console.log('runningParseFeedRequest');
       this.runningParseFeedRequest = true;
-      const {feedUrl} = feedVerified;
+      const { feedUrl } = feedVerified;
       const reqObj = {
         feedUrl,
-        userId,
+        userId: id,
         publisherId: publisherID,
-        publisherName: publisher.name,
-        importFeedUrl: true,
+        importFeedUrl: true, // run import or claim
       };
       Axios.post('/api/parse_feed', reqObj)
         .then(res => {
-          // if (res.data === 'Success_import') {
+          // if (res.data === 'Success_import' || res.data === 'Success_claim') {
           that.props.setFeedVerified(false);
           // }
         })
@@ -187,6 +183,7 @@ class _Dashboard extends Component {
         });
     }
     if (!this.runningChargeStateRequest && publisherID && chargeState) {
+      console.log('runningChargeStateRequest');
       // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
       this.runningChargeStateRequest = true;
       const {
@@ -266,20 +263,20 @@ class _Dashboard extends Component {
       proUser = true;
     }
 
-    const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
+    const currentTab = _.find(verticalMenuItems, { path: match.params.tab });
 
     return (
       <div className="">
         <SoundwiseHeader showIcon={true} />
         {feedVerified && (
-          <div class="importing-feed-overlay">
+          <div className="importing-feed-overlay">
             <div>Importing feed... Please wait</div>
-            <div>
+            <div style={{ marginTop: 20 }}>
               <Dots style={{}} color={Colors.mainOrange} size={22} speed={1} />
             </div>
           </div>
         )}
-        <div className="" style={{minHeight: '100%', width: '100%'}}>
+        <div className="" style={{ minHeight: '100%', width: '100%' }}>
           <div
             className="col-lg-2 col-md-3 col-sm-3 col-xs-3"
             style={styles.verticalMenu}
@@ -412,7 +409,7 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn, content_saved} = state.user;
+  const { userInfo, isLoggedIn, content_saved } = state.user;
   return {
     userInfo,
     isLoggedIn,
@@ -424,7 +421,7 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {handleContentSaving, setFeedVerified, setChargeState},
+    { handleContentSaving, setFeedVerified, setChargeState },
     dispatch
   );
 }

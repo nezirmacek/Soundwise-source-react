@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
@@ -8,7 +8,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
-import {Editor} from 'react-draft-wysiwyg';
+import { Editor } from 'react-draft-wysiwyg';
 import {
   convertToRaw,
   EditorState,
@@ -24,7 +24,7 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import S3FileUploader from '../../../components/s3_file_uploader';
 import Colors from '../../../styles/colors';
@@ -34,6 +34,7 @@ import {
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 import Coupons from './coupons';
+const { podcastCategories } = require('../../../../server/scripts/utils.js')();
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -66,7 +67,7 @@ export default class AddSoundcast extends Component {
       short_description: '',
       long_description: EditorState.createEmpty(),
       imageURL: '',
-      blurredImageURL: '',
+      blurredImageURL: null,
       fileUploaded: false,
       landingPage: true,
       features: [''],
@@ -78,7 +79,9 @@ export default class AddSoundcast extends Component {
       forSale: false,
       prices: [],
       modalOpen: false,
-      categories: [],
+      categories: Object.keys(podcastCategories).map(i => {
+        return { name: podcastCategories[i].name };
+      }), // main 16 categories ('Arts', 'Comedy', ...)
       selectedCategory: null,
       paypalEmail: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
@@ -101,7 +104,7 @@ export default class AddSoundcast extends Component {
 
   componentDidMount() {
     this.props.userInfo.publisher && this.checkUserStatus(this.props.userInfo);
-    this.getCategories();
+    // this.getCategories();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -116,15 +119,15 @@ export default class AddSoundcast extends Component {
         userInfo.publisher.current_period_end > moment().format('X')) ||
       userInfo.publisher.beta
     ) {
-      this.setState({proUser: true});
+      this.setState({ proUser: true });
     }
   }
 
   getCategories() {
     Axios.get('/api/category')
-      .then(res => this.setState({categories: res.data}))
+      .then(res => this.setState({ categories: res.data }))
       .catch(e => {
-        this.setState({categories: []});
+        this.setState({ categories: [] });
         console.log(e);
       });
   }
@@ -151,9 +154,9 @@ export default class AddSoundcast extends Component {
         }
 
         if (hostImg) {
-          this.setState({hostImageURL: url});
+          this.setState({ hostImageURL: url });
         } else {
-          this.setState({imageURL: url});
+          this.setState({ imageURL: url });
         }
 
         if (!hostImg) {
@@ -186,7 +189,7 @@ export default class AddSoundcast extends Component {
                           url = url.replace(/http/i, 'https');
                         }
 
-                        this.setState({blurredImageURL: url});
+                        this.setState({ blurredImageURL: url });
                       })
                       .catch(function(err) {
                         // POST failed...
@@ -275,6 +278,7 @@ export default class AddSoundcast extends Component {
       confirmationEmail,
       introUrl,
       outroUrl,
+      selectedCategory,
     } = this.state;
     if (title.length == 0) {
       return alert('Please enter a soundcast title before saving.');
@@ -284,11 +288,14 @@ export default class AddSoundcast extends Component {
         'Please enter a short description for the soundcast before saving.'
       );
     }
+    if (!selectedCategory) {
+      return alert('Please choose a category before saving.');
+    }
     if (prices.length === 0) {
       //if pricing isn't specified, then this is a free soundcast
-      prices = [{price: 'free'}];
+      prices = [{ price: 'free' }];
     }
-    const {userInfo, history} = this.props;
+    const { userInfo, history } = this.props;
     // const host = [{hostName, hostBio, hostImageURL}];
     const that = this;
 
@@ -353,7 +360,7 @@ export default class AddSoundcast extends Component {
           invited,
           landingPage,
           features,
-          category: selectedCategory.id,
+          category: selectedCategory.name,
           hostName,
           hostBio,
           hostImageURL,
@@ -423,11 +430,11 @@ export default class AddSoundcast extends Component {
             soundcastId: that.soundcastId,
             publisherId: userInfo.publisherID,
             imageURL: imageURL
-            ? imageURL
-            : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
-                title
-              )}`,
-            category: selectedCategory.id,
+              ? imageURL
+              : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+                  title
+                )}`,
+            category: selectedCategory.name,
             published: publish,
             landingPage,
             updateDate: last_update,
@@ -501,7 +508,7 @@ export default class AddSoundcast extends Component {
   }
 
   handleCheck() {
-    const {landingPage} = this.state;
+    const { landingPage } = this.state;
     this.setState({
       landingPage: !landingPage,
     });
@@ -536,8 +543,8 @@ export default class AddSoundcast extends Component {
   }
 
   handleChargeOption() {
-    const {forSale} = this.state;
-    const {userInfo} = this.props;
+    const { forSale } = this.state;
+    const { userInfo } = this.props;
 
     if (!forSale) {
       if (!userInfo.publisher.stripe_user_id) {
@@ -548,13 +555,13 @@ export default class AddSoundcast extends Component {
       } else {
         this.setState({
           forSale: !forSale,
-          prices: [{paymentPlan: '', billingCycle: '', price: '0'}],
+          prices: [{ paymentPlan: '', billingCycle: '', price: '0' }],
         });
       }
     } else {
       this.setState({
         forSale: !forSale,
-        prices: [{price: 'free'}],
+        prices: [{ price: 'free' }],
       });
     }
   }
@@ -568,8 +575,8 @@ export default class AddSoundcast extends Component {
   }
 
   handlePaypalInput() {
-    const {paypalEmail, forSale} = this.state;
-    const {userInfo} = this.props;
+    const { paypalEmail, forSale } = this.state;
+    const { userInfo } = this.props;
     firebase
       .database()
       .ref(`publishers/${userInfo.publisherID}/paypalEmail`)
@@ -577,7 +584,7 @@ export default class AddSoundcast extends Component {
     this.setState({
       paypalModalOpen: false,
       forSale: !forSale,
-      prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}],
+      prices: [{ paymentPlan: '', billingCycle: 'monthly', price: '' }],
     });
   }
 
@@ -594,9 +601,9 @@ export default class AddSoundcast extends Component {
   }
 
   showIntroOutro() {
-    const {showIntroOutro, proUser, showPricingModal} = this.state;
+    const { showIntroOutro, proUser, showPricingModal } = this.state;
     if (proUser) {
-      this.setState({showIntroOutro: !showIntroOutro});
+      this.setState({ showIntroOutro: !showIntroOutro });
     } else {
       this.setState({
         showPricingModal: [
@@ -620,7 +627,7 @@ export default class AddSoundcast extends Component {
       proUser,
       showIntroOutro,
     } = this.state;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     const that = this;
     const isProOrPlus = ['pro', 'plus'].includes(
       userInfo.publisher && userInfo.publisher.plan
@@ -629,28 +636,28 @@ export default class AddSoundcast extends Component {
     const actions = [
       <FlatButton
         label="OK"
-        labelStyle={{color: Colors.mainOrange, fontSize: 17}}
+        labelStyle={{ color: Colors.mainOrange, fontSize: 17 }}
         onClick={this.handlePaypalModalClose.bind(this)}
       />,
     ];
 
     return (
-      <div style={{marginTop: 25, marginBottom: 25}}>
+      <div style={{ marginTop: 25, marginBottom: 25 }}>
         {/*What Listeners Will Get*/}
-        <span style={{...styles.titleText, marginBottom: 5}}>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>
           What Listeners Will Get
         </span>
         <span>
           <i>{` (list the main benefits and features of this soundcast)`}</i>
         </span>
-        <div style={{width: '100%', marginBottom: 30}}>
+        <div style={{ width: '100%', marginBottom: 30 }}>
           {this.state.features.map((feature, i) => {
             return (
               <div key={i} style={styles.inputTitleWrapper}>
                 <span style={styles.titleText}>{`${i + 1}. `}</span>
                 <input
                   type="text"
-                  style={{...styles.inputTitle, width: '85%'}}
+                  style={{ ...styles.inputTitle, width: '85%' }}
                   placeholder={
                     'e.g. Learn how to analyze financial statement with ease'
                   }
@@ -658,7 +665,7 @@ export default class AddSoundcast extends Component {
                   value={this.state.features[i]}
                 />
                 <span
-                  style={{marginLeft: 5, cursor: 'pointer'}}
+                  style={{ marginLeft: 5, cursor: 'pointer' }}
                   onClick={this.deleteFeature.bind(this, i)}
                 >
                   <i className="fa fa-times " aria-hidden="true" />
@@ -675,7 +682,7 @@ export default class AddSoundcast extends Component {
         </div>
 
         {/*Long Description*/}
-        <span style={{...styles.titleText, marginBottom: 5}}>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>
           Long Description
         </span>
         <div>
@@ -690,13 +697,13 @@ export default class AddSoundcast extends Component {
         {/*Host/Instructor Name*/}
         <div>
           <span style={styles.titleText}>Host/Instructor Name</span>
-          <div style={{...styles.inputTitleWrapper, width: '35%'}}>
+          <div style={{ ...styles.inputTitleWrapper, width: '35%' }}>
             <input
               type="text"
               style={styles.inputTitle}
               placeholder={''}
               onChange={e => {
-                this.setState({hostName: e.target.value});
+                this.setState({ hostName: e.target.value });
               }}
               value={this.state.hostName}
             />
@@ -712,15 +719,15 @@ export default class AddSoundcast extends Component {
             style={styles.inputDescription}
             placeholder={'Who will be teaching?'}
             onChange={e => {
-              this.setState({hostBio: e.target.value});
+              this.setState({ hostBio: e.target.value });
             }}
             value={this.state.hostBio}
           />
         </div>
 
         {/*Host/Instructor Profile Picture*/}
-        <div style={{marginTop: 10}} className="row">
-          <div style={{marginBottom: 10}} className="col-md-12">
+        <div style={{ marginTop: 10 }} className="row">
+          <div style={{ marginBottom: 10 }} className="col-md-12">
             <span style={styles.titleText}>
               Host/Instructor Profile Picture
             </span>
@@ -734,7 +741,7 @@ export default class AddSoundcast extends Component {
             className="col-md-3"
           />
           <div style={styles.loaderWrapper} className="col-md-9">
-            <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+            <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
               <input
                 type="file"
                 name="upload"
@@ -786,8 +793,8 @@ export default class AddSoundcast extends Component {
         </div>
 
         {/*Upload outro/intro*/}
-        <div style={{marginBottom: 40}} className="row">
-          <div className="col-md-12" style={{marginBottom: 10}}>
+        <div style={{ marginBottom: 40 }} className="row">
+          <div className="col-md-12" style={{ marginBottom: 10 }}>
             <div
               onClick={this.showIntroOutro}
               style={{
@@ -797,7 +804,7 @@ export default class AddSoundcast extends Component {
                 alignItems: 'center',
               }}
             >
-              <div style={{display: 'inline-block', width: 15}}>
+              <div style={{ display: 'inline-block', width: 15 }}>
                 <FontAwesomeIcon
                   icon={showIntroOutro ? faCaretDown : faCaretRight}
                 />
@@ -829,7 +836,7 @@ export default class AddSoundcast extends Component {
           </div>
           <div
             className="col-md-6"
-            style={{display: showIntroOutro ? '' : 'none', paddingLeft: 45}}
+            style={{ display: showIntroOutro ? '' : 'none', paddingLeft: 45 }}
           >
             <span
               style={{
@@ -853,7 +860,7 @@ export default class AddSoundcast extends Component {
           </div>
           <div
             className="col-md-6"
-            style={{display: showIntroOutro ? '' : 'none'}}
+            style={{ display: showIntroOutro ? '' : 'none' }}
           >
             <span
               style={{
@@ -901,7 +908,7 @@ export default class AddSoundcast extends Component {
               />
               <span
                 id="charging-label"
-                style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}
+                style={{ fontSize: 20, fontWeight: 800, marginLeft: '0.5em' }}
               >
                 Charge for this soundcast
               </span>
@@ -914,7 +921,7 @@ export default class AddSoundcast extends Component {
                 open={!!this.state.paypalModalOpen}
                 onRequestClose={this.handlePaypalModalClose}
               >
-                <div style={{fontSize: 17}}>
+                <div style={{ fontSize: 17 }}>
                   <span>
                     You need a payout account so that we could send you your
                     sales proceeds. Please save this soundcast, and go to
@@ -925,12 +932,12 @@ export default class AddSoundcast extends Component {
               </Dialog>
             </div>
             {forSale && (
-              <div style={{width: '100%,'}}>
+              <div style={{ width: '100%,' }}>
                 {prices.map((price, i) => {
                   const priceTag = price.price == 'free' ? 0 : price.price;
                   return (
-                    <div key={i} className="" style={{marginBottom: 10}}>
-                      <div style={{width: '100%'}}>
+                    <div key={i} className="" style={{ marginBottom: 10 }}>
+                      <div style={{ width: '100%' }}>
                         <span style={styles.titleText}>{`${i + 1}. `}</span>
                         <div
                           style={{
@@ -959,7 +966,7 @@ export default class AddSoundcast extends Component {
                           <span>Billing</span>
                           <select
                             type="text"
-                            style={{...styles.inputTitle, paddingTop: 6}}
+                            style={{ ...styles.inputTitle, paddingTop: 6 }}
                             name="billingCycle"
                             onChange={this.handlePriceInputs.bind(this, i)}
                             value={prices[i].billingCycle}
@@ -975,13 +982,13 @@ export default class AddSoundcast extends Component {
                             <option value="annual">annual subscription</option>
                           </select>
                         </div>
-                        <div style={{width: '20%', display: 'inline-block'}}>
+                        <div style={{ width: '20%', display: 'inline-block' }}>
                           <span>Price</span>
                           <div>
-                            <span style={{fontSize: 18}}>{`$ `}</span>
+                            <span style={{ fontSize: 18 }}>{`$ `}</span>
                             <input
                               type="text"
-                              style={{...styles.inputTitle, width: '85%'}}
+                              style={{ ...styles.inputTitle, width: '85%' }}
                               name="price"
                               placeholder={''}
                               onChange={this.handlePriceInputs.bind(this, i)}
@@ -1003,23 +1010,23 @@ export default class AddSoundcast extends Component {
                       {(prices[i].billingCycle == 'rental' && (
                         <div
                           className="col-md-12"
-                          style={{marginTop: 10, marginBottom: 15}}
+                          style={{ marginTop: 10, marginBottom: 15 }}
                         >
                           <div
                             className="col-md-4 col-md-offset-6"
-                            style={{marginRight: 10}}
+                            style={{ marginRight: 10 }}
                           >
                             <span>Rental period</span>
                             <div>
                               <input
                                 type="text"
-                                style={{...styles.inputTitle, width: '70%'}}
+                                style={{ ...styles.inputTitle, width: '70%' }}
                                 name="rentalPeriod"
                                 placeholder={'2'}
                                 onChange={this.handlePriceInputs.bind(this, i)}
                                 value={prices[i].rentalPeriod}
                               />
-                              <span style={{fontSize: 18}}>{` days`}</span>
+                              <span style={{ fontSize: 18 }}>{` days`}</span>
                             </div>
                           </div>
                         </div>
@@ -1066,7 +1073,7 @@ export default class AddSoundcast extends Component {
                                   .add(3, 'months')
                                   .unix(),
                               });
-                              that.setState({prices});
+                              that.setState({ prices });
                             }}
                           >
                             Add a coupon{' '}
@@ -1170,13 +1177,13 @@ export default class AddSoundcast extends Component {
     }
   }
 
-  uploadViaModal(fileBlob, hostImg) {
+  uploadViaModal(fileBlob) {
     this.setState({
       fileCropped: true,
       modalOpen: false,
     });
 
-    if (hostImg) {
+    if (this.state.hostImg) {
       this.setState({
         hostImgUploaded: true,
       });
@@ -1186,7 +1193,7 @@ export default class AddSoundcast extends Component {
       });
     }
 
-    this._uploadToAws(fileBlob, hostImg);
+    this._uploadToAws(fileBlob, this.state.hostImg);
   }
 
   render() {
@@ -1199,7 +1206,7 @@ export default class AddSoundcast extends Component {
       selectedCategory,
       categories,
     } = this.state;
-    const {history} = this.props;
+    const { history } = this.props;
     const that = this;
 
     return (
@@ -1207,7 +1214,7 @@ export default class AddSoundcast extends Component {
         <div className="padding-30px-tb">
           {/*Upgrade account block*/}
           <div
-            onClick={() => that.setState({showPricingModal: false})}
+            onClick={() => that.setState({ showPricingModal: false })}
             style={{
               display: showPricingModal ? '' : 'none',
               background: 'rgba(0, 0, 0, 0.7)',
@@ -1232,20 +1239,20 @@ export default class AddSoundcast extends Component {
             >
               <div
                 className="title-medium"
-                style={{margin: 25, fontWeight: 800}}
+                style={{ margin: 25, fontWeight: 800 }}
               >
                 {showPricingModal && showPricingModal[0]}
               </div>
-              <div className="title-small" style={{margin: 25}}>
+              <div className="title-small" style={{ margin: 25 }}>
                 {showPricingModal && showPricingModal[1]}
               </div>
               <div className="center-col">
                 <OrangeSubmitButton
                   label="Upgrade"
                   onClick={() =>
-                    that.props.history.push({pathname: '/pricing'})
+                    that.props.history.push({ pathname: '/pricing' })
                   }
-                  styles={{width: '60%'}}
+                  styles={{ width: '60%' }}
                 />
               </div>
             </div>
@@ -1279,15 +1286,15 @@ export default class AddSoundcast extends Component {
               />
               <span
                 id="landing-label"
-                style={{fontSize: 20, fontWeight: 800, marginLeft: '0.5em'}}
+                style={{ fontSize: 20, fontWeight: 800, marginLeft: '0.5em' }}
               >
                 This is a public soundcast
               </span>
             </div>
             {/*Title*/}
             <span style={styles.titleText}>Title</span>
-            <span style={{...styles.titleText, color: 'red'}}>*</span>
-            <span style={{fontSize: 17}}>
+            <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+            <span style={{ fontSize: 17 }}>
               <i> (60 characters max)</i>
             </span>
             <ValidatedInput
@@ -1296,7 +1303,7 @@ export default class AddSoundcast extends Component {
               wrapperStyles={styles.inputTitleWrapper}
               placeholder={'Soundcast title'}
               onChange={e => {
-                this.setState({title: e.target.value});
+                this.setState({ title: e.target.value });
               }}
               value={this.state.title}
               validators={[
@@ -1307,8 +1314,8 @@ export default class AddSoundcast extends Component {
 
             {/*Short Description*/}
             <span style={styles.titleText}>Short Description</span>
-            <span style={{...styles.titleText, color: 'red'}}>*</span>
-            <span style={{fontSize: 17}}>
+            <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+            <span style={{ fontSize: 17 }}>
               <i> (300 characters max)</i>
             </span>
 
@@ -1318,7 +1325,7 @@ export default class AddSoundcast extends Component {
                 style={styles.inputDescription}
                 placeholder={'A short description of this soundcast'}
                 onChange={e => {
-                  this.setState({short_description: e.target.value});
+                  this.setState({ short_description: e.target.value });
                 }}
                 value={this.state.short_description}
               />
@@ -1326,32 +1333,31 @@ export default class AddSoundcast extends Component {
 
             {/*Category*/}
             <span style={styles.titleText}>Category</span>
-            <span style={{...styles.titleText, color: 'red'}}>*</span>
-            <div style={{width: 370}} className="dropdown">
+            <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+            <div style={{ width: 370 }} className="dropdown">
               <div
-                style={{width: '100%', padding: 0, marginTop: 20}}
+                style={{ width: '100%', padding: 0, marginTop: 20 }}
                 className="btn dropdown-toggle"
                 data-toggle="dropdown"
               >
                 <div style={styles.dropdownTitle}>
                   <span>
-                    {selectedCategory !== null && selectedCategory !== undefined
-                      ? selectedCategory.name
-                      : 'Choose category'}
+                    {(selectedCategory && selectedCategory.name) ||
+                      'Choose category'}
                   </span>
                   <span
-                    style={{position: 'absolute', right: 10, top: 40}}
+                    style={{ position: 'absolute', right: 10, top: 40 }}
                     className="caret"
                   />
                 </div>
               </div>
-              <ul style={{padding: 0}} className="dropdown-menu">
-                {categories.map(category => (
-                  <li style={{fontSize: '16px'}}>
+              <ul style={{ padding: 0 }} className="dropdown-menu">
+                {categories.map((category, i) => (
+                  <li style={{ fontSize: '16px' }} key={`category_option${i}`}>
                     <button
                       style={styles.categoryButton}
                       onClick={() =>
-                        this.setState({selectedCategory: category})
+                        this.setState({ selectedCategory: category })
                       }
                     >
                       {category.name}
@@ -1362,7 +1368,7 @@ export default class AddSoundcast extends Component {
             </div>
 
             {/*Soundcast cover art*/}
-            <div style={{marginBottom: 30, marginTop: 30}} className="row">
+            <div style={{ marginBottom: 30, marginTop: 30 }} className="row">
               <div className="col-md-3">
                 <div style={styles.image}>
                   <img src={imageURL} />
@@ -1370,10 +1376,10 @@ export default class AddSoundcast extends Component {
               </div>
               <div className="col-md-9">
                 <div style={styles.loaderWrapper}>
-                  <div style={{...styles.titleText, marginLeft: 10}}>
+                  <div style={{ ...styles.titleText, marginLeft: 10 }}>
                     Soundcast cover art
                   </div>
-                  <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                  <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
                     <input
                       type="file"
                       name="upload"
@@ -1392,7 +1398,7 @@ export default class AddSoundcast extends Component {
                             that.setState({
                               fileUploaded: false,
                               imageURL: '',
-                              blurredImageURL: '',
+                              blurredImageURL: null,
                             });
                             document.getElementById(
                               'upload_hidden_cover'
@@ -1493,14 +1499,16 @@ AddSoundcast.propTypes = {
 };
 
 const styles = {
-  titleText: {...commonStyles.titleText, fontSize: 20},
-  inputTitle: {...commonStyles.inputTitle, marginTop: 5},
-  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
-  inputFileHidden: {...commonStyles.inputFileHidden},
-  hostImage: {...commonStyles.hostImage, marginLeft: 10},
-  image: {...commonStyles.image},
-  loaderWrapper: {...commonStyles.loaderWrapper},
-  cancelImg: {...commonStyles.cancelImg},
+  titleText: { ...commonStyles.titleText, fontSize: 20 },
+  inputTitle: { ...commonStyles.inputTitle, marginTop: 5 },
+  inputTitleWrapper: { ...commonStyles.inputTitleWrapper },
+  inputFileHidden: { ...commonStyles.inputFileHidden },
+  hostImage: { ...commonStyles.hostImage, marginLeft: 10 },
+  image: { ...commonStyles.image },
+  loaderWrapper: { ...commonStyles.loaderWrapper },
+  cancelImg: { ...commonStyles.cancelImg },
+  dropdownTitle: { ...commonStyles.dropdownTitle },
+  categoryButton: { ...commonStyles.categoryButton },
   inputDescription: {
     height: 100,
     fontSize: 18,

@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import Axios from 'axios';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import firebase from 'firebase';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Checkbox from 'material-ui/Checkbox';
@@ -27,16 +27,16 @@ import {
   PlayToggle,
   BigPlayButton,
 } from 'video-react';
-import {CirclePicker, CompactPicker} from 'react-color';
+import { CirclePicker, CompactPicker } from 'react-color';
 
 import Colors from '../styles/colors';
 import commonStyles from '../styles/commonStyles';
-import {emailValidator} from '../helpers/validators';
+import { emailValidator } from '../helpers/validators';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
 } from '../components/buttons/buttons';
-import {SoundwiseHeader} from '../components/soundwise_header';
+import { SoundwiseHeader } from '../components/soundwise_header';
 import Footer from '../components/footer';
 
 function dataURItoBlob(dataURI) {
@@ -58,7 +58,7 @@ function dataURItoBlob(dataURI) {
     ia[i] = byteString.charCodeAt(i);
   }
 
-  return new Blob([ia], {type: mimeString});
+  return new Blob([ia], { type: mimeString });
 }
 
 class _WaveVideoInputs extends Component {
@@ -176,7 +176,7 @@ class _WaveVideoInputs extends Component {
   }
 
   handleCroppedSaving() {
-    const {cropResult} = this.state;
+    const { cropResult } = this.state;
     if (cropResult) {
       const fileBlob = dataURItoBlob(this.state.cropResult);
       this.setState({
@@ -193,7 +193,7 @@ class _WaveVideoInputs extends Component {
 
   cropImageModal() {
     const that = this;
-    const {cropResult, width, height, imageShape, imageFile} = this.state;
+    const { cropResult, width, height, imageShape, imageFile } = this.state;
     const actions = [
       <FlatButton
         label="Save"
@@ -214,8 +214,8 @@ class _WaveVideoInputs extends Component {
           modal={false}
           open={this.state.modalOpen}
           onRequestClose={this.handleModalClose}
-          contentStyle={{width: '80%'}}
-          bodyStyle={{minHeight: 350, overflowY: 'auto'}}
+          contentStyle={{ width: '80%' }}
+          bodyStyle={{ minHeight: 350, overflowY: 'auto' }}
         >
           {(!this.state.cropped && (
             <div className="" style={{}}>
@@ -231,7 +231,7 @@ class _WaveVideoInputs extends Component {
                   // onImageLoaded={this.onImageLoaded}
                   // onChange={this.onChange.bind(this)}
                   // onComplete={this.setPixels}
-                  style={{height: 300, width: (width / height) * 300}}
+                  style={{ height: 300, width: (width / height) * 300 }}
                   // crop={this.cropImage}
                   // ratio={1 / 1}
                   src={
@@ -243,7 +243,7 @@ class _WaveVideoInputs extends Component {
                   guides={false}
                 />
               </div>
-              <div style={{width: '100%', marginTop: 10}}>
+              <div style={{ width: '100%', marginTop: 10 }}>
                 <RaisedButton
                   onClick={this.cropImage}
                   backgroundColor={Colors.mainOrange}
@@ -253,8 +253,8 @@ class _WaveVideoInputs extends Component {
               </div>
             </div>
           )) || (
-            <div style={{width: '100%'}}>
-              <div style={{display: 'flex', justifyContent: 'center'}}>
+            <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <img
                   style={{
                     height: 297,
@@ -360,7 +360,7 @@ class _WaveVideoInputs extends Component {
       error,
       cropResult,
     } = this.state;
-    const {isLoggedIn} = this.props;
+    const { isLoggedIn } = this.props;
     const that = this;
     return (
       <div>
@@ -420,7 +420,7 @@ class _WaveVideoInputs extends Component {
             height: 600,
           }}
         >
-          <div className="container position-relative" style={{height: 600}}>
+          <div className="container position-relative" style={{ height: 600 }}>
             <div className="row">
               <div className="slider-typography xs-position-static text-center xs-padding-ten">
                 <div className="slider-text-middle-main">
@@ -456,7 +456,7 @@ class _WaveVideoInputs extends Component {
                 <div className="display-table-cell-vertical-middle" style={{}}>
                   <div
                     className="col-xs-12 col-sm-12 col-md-10"
-                    style={{paddingTop: 0}}
+                    style={{ paddingTop: 0 }}
                   >
                     <Player
                       ref="player"
@@ -478,7 +478,7 @@ class _WaveVideoInputs extends Component {
               </div>
               <div
                 className="col-lg-5 col-md-6 col-sm-6 col-xs-12  display-table"
-                style={{height: 318}}
+                style={{ height: 318 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2 className="text-dark-gray title-extra-large alt-font font-weight-600 line-height-40 sm-title-large xs-title-large margin-seven-bottom sm-margin-ten-bottom tz-text">
@@ -508,7 +508,7 @@ class _WaveVideoInputs extends Component {
                           <figure>
                             <div className="">
                               <img
-                                style={{width: 375, height: 375}}
+                                style={{ width: 375, height: 375 }}
                                 src="images/soundwave-vid-demo-1.gif"
                                 id=""
                                 data-img-size="(W)800px X (H)650px"
@@ -521,7 +521,7 @@ class _WaveVideoInputs extends Component {
                           <figure>
                             <div className="">
                               <img
-                                style={{width: 375, height: 375}}
+                                style={{ width: 375, height: 375 }}
                                 src="images/soundwave-vid-demo-2.gif"
                                 id=""
                                 data-img-size="(W)800px X (H)650px"
@@ -534,7 +534,7 @@ class _WaveVideoInputs extends Component {
                           <figure>
                             <div className="">
                               <img
-                                style={{width: 375, height: 375}}
+                                style={{ width: 375, height: 375 }}
                                 src="images/soundwave-vid-demo-3.gif"
                                 id=""
                                 data-img-size="(W)800px X (H)650px"
@@ -564,7 +564,7 @@ class _WaveVideoInputs extends Component {
               <div className="col-md-3 col-sm-6 col-xs-12 padding-six no-padding-tb sm-margin-nine-bottom xs-margin-fifteen-bottom">
                 <div
                   className="margin-seven-bottom xs-margin-five-bottom title-extra-large-4 alt-font tz-text font-weight-600"
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
                   01.
                 </div>
@@ -574,13 +574,13 @@ class _WaveVideoInputs extends Component {
                 </h3>
                 <div
                   className="separator-line2  margin-twenty-top tz-background-color"
-                  style={{background: Colors.mainOrange}}
+                  style={{ background: Colors.mainOrange }}
                 />
               </div>
               <div className="col-md-3 col-sm-6 col-xs-12 padding-six no-padding-tb sm-margin-nine-bottom xs-margin-fifteen-bottom">
                 <div
                   className="margin-seven-bottom xs-margin-five-bottom title-extra-large-4 alt-font tz-text font-weight-600"
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
                   02.
                 </div>
@@ -590,21 +590,22 @@ class _WaveVideoInputs extends Component {
                   pretty one easily using{' '}
                   <a
                     target="_blank"
-                    style={{color: Colors.mainGreen}}
+                    style={{ color: Colors.mainGreen }}
                     href="https://www.canva.com/create/album-covers/"
                   >
                     Canva
-                  </a>.
+                  </a>
+                  .
                 </h3>
                 <div
                   className="separator-line2 margin-twenty-top tz-background-color"
-                  style={{background: Colors.mainOrange}}
+                  style={{ background: Colors.mainOrange }}
                 />
               </div>
               <div className="col-md-3 col-sm-6 col-xs-12 padding-six no-padding-tb sm-margin-nine-bottom xs-margin-fifteen-bottom">
                 <div
                   className="margin-seven-bottom xs-margin-five-bottom title-extra-large-4 alt-font tz-text font-weight-600"
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
                   03.
                 </div>
@@ -614,13 +615,13 @@ class _WaveVideoInputs extends Component {
                 </h3>
                 <div
                   className="separator-line2 margin-twenty-top tz-background-color"
-                  style={{background: Colors.mainOrange}}
+                  style={{ background: Colors.mainOrange }}
                 />
               </div>
               <div className="col-md-3 col-sm-6 col-xs-12 padding-six no-padding-tb sm-margin-nine-bottom xs-margin-fifteen-bottom">
                 <div
                   className="margin-seven-bottom xs-margin-five-bottom title-extra-large-4 alt-font  tz-text font-weight-600"
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
                   04.
                 </div>
@@ -630,7 +631,7 @@ class _WaveVideoInputs extends Component {
                 </h3>
                 <div
                   className="separator-line2 margin-twenty-top tz-background-color"
-                  style={{background: Colors.mainOrange}}
+                  style={{ background: Colors.mainOrange }}
                 />
               </div>
             </div>
@@ -651,11 +652,11 @@ class _WaveVideoInputs extends Component {
               {(audioName && (
                 <div
                   className="text-center margin-three-bottom margin-three-top"
-                  style={{paddingTop: 50}}
+                  style={{ paddingTop: 50 }}
                 >
                   <div
                     className="text-center"
-                    style={{fontSize: 18}}
+                    style={{ fontSize: 18 }}
                   >{`${audioName} uploaded`}</div>
                   <div
                     style={{
@@ -676,10 +677,10 @@ class _WaveVideoInputs extends Component {
               )) || (
                 <div
                   className="center-col col-xs-12 col-md-6 col-sm-10 text-center margin-three-bottom margin-three-top"
-                  style={{padding: '3em', backgroundColor: Colors.mainGreen}}
+                  style={{ padding: '3em', backgroundColor: Colors.mainGreen }}
                 >
                   <Dropzone
-                    style={{width: '100%', height: '100%'}}
+                    style={{ width: '100%', height: '100%' }}
                     accept="audio/mp3, audio/mpeg, audio/m4a, audio/x-m4a"
                     onDrop={this.onDrop.bind(this)}
                   >
@@ -687,10 +688,10 @@ class _WaveVideoInputs extends Component {
                       <div className="text-center">
                         <i
                           className="fas fa-5x fa-volume-up"
-                          style={{cursor: 'pointer'}}
+                          style={{ cursor: 'pointer' }}
                         />
                       </div>
-                      <div style={{fontSize: 18, cursor: 'pointer'}}>
+                      <div style={{ fontSize: 18, cursor: 'pointer' }}>
                         Drag your audio clip here or click to upload. (Audio
                         clip should be under 60 seconds. mp3 and m4a files
                         accepted.)
@@ -718,7 +719,7 @@ class _WaveVideoInputs extends Component {
                     value="square"
                     iconSize={20}
                   >
-                    <span style={{fontSize: 18}}>
+                    <span style={{ fontSize: 18 }}>
                       Square (should be at least 1080px by 1080px)
                     </span>
                   </ReversedRadioButton>
@@ -728,7 +729,7 @@ class _WaveVideoInputs extends Component {
                     value="rectangle"
                     iconSize={20}
                   >
-                    <span style={{fontSize: 18}}>
+                    <span style={{ fontSize: 18 }}>
                       Rectangle (should be at least 1280px by 720px)
                     </span>
                   </ReversedRadioButton>
@@ -741,9 +742,9 @@ class _WaveVideoInputs extends Component {
               {(this.state.cropResult && (
                 <div
                   className="text-center margin-three-bottom margin-three-top"
-                  style={{verticalAlign: 'center'}}
+                  style={{ verticalAlign: 'center' }}
                 >
-                  <div style={{display: 'flex', justifyContent: 'center'}}>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <img
                       style={{
                         height: 297,
@@ -781,7 +782,7 @@ class _WaveVideoInputs extends Component {
                   }}
                 >
                   <Dropzone
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     accept="image/jpeg, image/png, image/jpg"
                     onDrop={this.onImageDrop.bind(this)}
                   >
@@ -789,10 +790,10 @@ class _WaveVideoInputs extends Component {
                       <div className="text-center">
                         <i
                           className="fas fa-5x fa-image"
-                          style={{cursor: 'pointer'}}
+                          style={{ cursor: 'pointer' }}
                         />
                       </div>
-                      <div style={{fontSize: 18, cursor: 'pointer'}}>
+                      <div style={{ fontSize: 18, cursor: 'pointer' }}>
                         Drag your image here or click to upload.
                       </div>
                     </div>
@@ -801,7 +802,7 @@ class _WaveVideoInputs extends Component {
               )}
               <div
                 className="center-col col-xs-12 col-md-6 col-sm-10 text-center margin-three-bottom margin-three-top"
-                style={{fontSize: 18}}
+                style={{ fontSize: 18 }}
               >
                 <div className="title-large font-weight-600 margin-three-bottom margin-three-top">
                   Pick audio wave position
@@ -883,7 +884,7 @@ class _WaveVideoInputs extends Component {
                         style={styles.inputTitle}
                         placeholder={''}
                         onChange={e => {
-                          that.setState({email: e.target.value});
+                          that.setState({ email: e.target.value });
                         }}
                         value={that.state.email}
                       />
@@ -897,7 +898,7 @@ class _WaveVideoInputs extends Component {
                   <div>
                     <div className="title-large">Submitting</div>
                     <Dots
-                      style={{marginLeft: 15}}
+                      style={{ marginLeft: 15 }}
                       color={Colors.mainOrange}
                       size={32}
                       speed={1}
@@ -915,7 +916,10 @@ class _WaveVideoInputs extends Component {
                               working on it immediately!{' '}
                             </strong>
                           </div>
-                          <div className="title-small" style={{marginTop: 15}}>
+                          <div
+                            className="title-small"
+                            style={{ marginTop: 15 }}
+                          >
                             p.s. If you don't see an email from us in half an
                             hour, please check your spam folder.
                           </div>
@@ -938,12 +942,12 @@ class _WaveVideoInputs extends Component {
 }
 
 const styles = {
-  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
-  inputTitle: {...commonStyles.inputTitle},
+  inputTitleWrapper: { ...commonStyles.inputTitleWrapper },
+  inputTitle: { ...commonStyles.inputTitle },
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

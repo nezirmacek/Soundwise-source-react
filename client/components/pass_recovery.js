@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import * as firebase from 'firebase';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 const styles = {
@@ -36,7 +36,7 @@ export default class PassRecovery extends Component {
 
   handleSubmit() {
     const auth = firebase.auth();
-    const {email} = this.state;
+    const { email } = this.state;
     const that = this;
 
     auth.sendPasswordResetEmail(email).then(

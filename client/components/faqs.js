@@ -9,8 +9,8 @@ class FAQs extends React.Component {
   }
 
   render() {
-    const {stepIndex} = this.state;
-    const contentStyle = {margin: '0 16px'};
+    const { stepIndex } = this.state;
+    const contentStyle = { margin: '0 16px' };
 
     return (
       <section
@@ -29,9 +29,9 @@ class FAQs extends React.Component {
               </div>
             </div>
           </div>
-          <div className="row" style={{margin: 'auto'}}>
+          <div className="row" style={{ margin: 'auto' }}>
             <Collapsible
-              triggerStyle={{background: Colors.mainOrange}}
+              triggerStyle={{ background: Colors.mainOrange }}
               transitionTime={200}
               trigger="Do my listeners need to download the Soundwise app?"
               easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}
@@ -57,7 +57,7 @@ class FAQs extends React.Component {
               </p>
             </Collapsible>
             <Collapsible
-              triggerStyle={{background: Colors.mainOrange}}
+              triggerStyle={{ background: Colors.mainOrange }}
               transitionTime={200}
               trigger="But will I discourage people from subscribing to my podcast if I ask them to download a new app?"
               easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}
@@ -81,7 +81,7 @@ class FAQs extends React.Component {
               </p>
             </Collapsible>
             <Collapsible
-              triggerStyle={{background: Colors.mainOrange}}
+              triggerStyle={{ background: Colors.mainOrange }}
               transitionTime={200}
               trigger="Do I have to host my podcast on Soundwise to take advantage of what you offer?"
               easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}
@@ -99,7 +99,7 @@ class FAQs extends React.Component {
               </p>
             </Collapsible>
             <Collapsible
-              triggerStyle={{background: Colors.mainOrange}}
+              triggerStyle={{ background: Colors.mainOrange }}
               transitionTime={200}
               trigger="How do I get more subscribers?"
               easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}
@@ -111,7 +111,7 @@ class FAQs extends React.Component {
                 email signature, from your own website. Share your episodes
                 often (we have{' '}
                 <a
-                  style={{color: Colors.mainOrange, target: '_blank'}}
+                  style={{ color: Colors.mainOrange, target: '_blank' }}
                   href="https://mysoundwise.com/wave_video"
                 >
                   an awesome tool
@@ -130,7 +130,7 @@ class FAQs extends React.Component {
                 will not only get to interact more with you, but also with your
                 cool tribe of like-minded people. For more tips on this,{' '}
                 <a
-                  style={{color: Colors.mainOrange, target: '_blank'}}
+                  style={{ color: Colors.mainOrange, target: '_blank' }}
                   href="https://mysoundwise.com/blog/post/how-to-get-more-subscribers-for-your-podcast-on-soundwise"
                 >
                   read this piece

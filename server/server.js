@@ -8,12 +8,18 @@ var multipart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
-var awsConfig = require('../config').awsConfig;
+var awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').awsConfig
+    : require('../config').awsConfig;
 var S3 = require('aws-sdk').S3;
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
-var serviceAccount = require('../serviceAccountKey.json');
+var serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 var cors = require('cors');
 var Axios = require('axios');
 const moment = require('moment');
@@ -40,6 +46,7 @@ const {
 const Emails = require('./scripts/sendEmails.js');
 
 const { createFeed, requestFeed } = require('./scripts/feed.js');
+const syncMessages = require('./scripts/syncPsql.js').syncMessages;
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
 
@@ -62,7 +69,7 @@ var database = require('../database');
 Raven.config(
   'https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847'
 ).install();
-
+console.log(serviceAccount);
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-testbase.firebaseio.com',
@@ -89,6 +96,7 @@ app.start = function() {
     if (app.get('loopback-component-explorer')) {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+      // syncMessages();
     }
   });
   // server.timeout = 10*60*1000; // 10 minutes
@@ -335,7 +343,10 @@ app.use(function(err, req, res, next) {
 });
 
 // var sgMail = require('@sendgrid/mail');
-var sendGridApiKey = require('../config').sendGridApiKey;
+var sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').sendGridApiKey
+    : require('../config').sendGridApiKey;
 // var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
 // var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
 
