@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Axios from 'axios';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 
 export default class Referral extends Component {
   constructor(props) {
@@ -287,7 +287,7 @@ export default class Referral extends Component {
                   alignItems: 'center',
                 }}
               >
-                <div style={{color: 'red'}}>{this.state.error}</div>
+                <div style={{ color: 'red' }}>{this.state.error}</div>
                 <button
                   onClick={this.handleSubmit}
                   className="contact-submit btn-large btn bg-orange text-white tz-text"

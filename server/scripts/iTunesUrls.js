@@ -3,12 +3,15 @@ const cheerio = require('cheerio');
 const firebase = require('firebase-admin');
 const nodeUrl = require('url');
 const moment = require('moment');
-const serviceAccount = require('../../serviceAccountKey.json');
+const serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingServiceAccountKey')
+    : require('../../serviceAccountKey.json');
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
-const {getFeed, runFeedImport} = require('./parseFeed.js');
+const { getFeed, runFeedImport } = require('./parseFeed.js');
 
 const podcastIds = {};
 
@@ -130,7 +133,7 @@ async function runImport(links) {
               if (err) {
                 return logError(`getFeed obtaining feed ${feedUrl} ${err}`);
               }
-              const {metadata, feedItems} = results;
+              const { metadata, feedItems } = results;
               const itunesEmail =
                 metadata['itunes:owner'] && // same block as in parseFeed.js
                 metadata['itunes:owner']['itunes:email'] &&

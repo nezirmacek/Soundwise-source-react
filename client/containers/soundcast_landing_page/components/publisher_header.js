@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import * as firebase from 'firebase';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -11,7 +11,7 @@ import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Colors from '../../../styles/colors';
-import {signoutUser} from '../../../actions/index';
+import { signoutUser } from '../../../actions/index';
 
 const styles = {
   navItem: {
@@ -92,7 +92,7 @@ class _PublisherHeader extends Component {
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div style={{}}>
                     {`Hello, ${this.capFirstLetter(
@@ -122,7 +122,7 @@ class _PublisherHeader extends Component {
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -173,7 +173,7 @@ class _PublisherHeader extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -196,7 +196,7 @@ class _PublisherHeader extends Component {
 
   render() {
     // console.log('this.props.userInfo: ', this.props.userInfo)
-    const {publisherID, publisherName, publisherImg} = this.props;
+    const { publisherID, publisherName, publisherImg } = this.props;
     return (
       <header className="leadgen-agency-1" id="header-section1">
         <nav className="navbar bg-white tz-header-bg no-margin alt-font shrink-header light-header">
@@ -204,7 +204,7 @@ class _PublisherHeader extends Component {
             <div className="row">
               <div className="col-md-6 col-sm-6 col-xs-9">
                 <Link to={`/publishers/${publisherID}`}>
-                  <div style={{display: 'flex', alignItems: 'center'}}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div
                       style={{
                         ...styles.profileImage,
@@ -215,7 +215,7 @@ class _PublisherHeader extends Component {
                     />
                     <div
                       className="title-small sm-title-small xs-title-small "
-                      style={{paddingLeft: '0.5em'}}
+                      style={{ paddingLeft: '0.5em' }}
                     >
                       {publisherName}
                     </div>
@@ -252,11 +252,11 @@ class _PublisherHeader extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signoutUser}, dispatch);
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

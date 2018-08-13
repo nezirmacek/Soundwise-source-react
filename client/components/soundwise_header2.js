@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import * as firebase from 'firebase';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -11,7 +11,7 @@ import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Colors from '../styles/colors';
-import {signoutUser} from '../actions/index';
+import { signoutUser } from '../actions/index';
 
 const styles = {
   navItem: {
@@ -74,12 +74,12 @@ class _SoundwiseHeader extends Component {
               verticalAlign: 'center',
             }}
           >
-            <li className="propClone sm-no-border" style={{marginTop: 5}}>
+            <li className="propClone sm-no-border" style={{ marginTop: 5 }}>
               <div className="dropdown">
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div
                     className="text-dark-gray"
@@ -102,33 +102,36 @@ class _SoundwiseHeader extends Component {
                 <ul className="dropdown-menu">
                   {this.props.userInfo.soundcasts && (
                     <li>
-                      <Link style={{color: 'black'}} to="/mysoundcasts">
+                      <Link style={{ color: 'black' }} to="/mysoundcasts">
                         My Soundcasts
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link to="/dashboard/soundcasts" style={{color: 'black'}}>
+                      <Link
+                        to="/dashboard/soundcasts"
+                        style={{ color: 'black' }}
+                      >
                         Admin Dashboard
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.courses && (
                     <li>
-                      <Link to="/myprograms" style={{color: 'black'}}>
+                      <Link to="/myprograms" style={{ color: 'black' }}>
                         My Courses
                       </Link>
                     </li>
                   )}
                   <li>
-                    <Link to="/myprofile" style={{color: 'black'}}>
+                    <Link to="/myprofile" style={{ color: 'black' }}>
                       My Profile
                     </Link>
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -179,7 +182,7 @@ class _SoundwiseHeader extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -236,7 +239,7 @@ class _SoundwiseHeader extends Component {
   render() {
     // console.log('this.props.userInfo: ', this.props.userInfo)
     return (
-      <div style={{paddingBottom: 80}}>
+      <div style={{ paddingBottom: 80 }}>
         <header className="header-style8" id="header-section16">
           <nav
             className="navbar tz-header-bg no-margin alt-font navigation-menu dark-header"
@@ -346,11 +349,11 @@ class _SoundwiseHeader extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signoutUser}, dispatch);
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

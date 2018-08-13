@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Route, Link, Switch} from 'react-router-dom';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 
-import {SoundwiseHeader} from '../components/soundwise_header';
+import { SoundwiseHeader } from '../components/soundwise_header';
 import CourseCard from '../components/course_card';
-import {loadCourses} from '../actions/index';
-import {Course} from './course_page';
+import { loadCourses } from '../actions/index';
+import { Course } from './course_page';
 
 class _Courses extends Component {
   constructor(props) {
@@ -65,12 +65,12 @@ class _Courses extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadCourses}, dispatch);
+  return bindActionCreators({ loadCourses }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {courses} = state.setCourses;
+  const { userInfo, isLoggedIn } = state.user;
+  const { courses } = state.setCourses;
   return {
     userInfo,
     isLoggedIn,

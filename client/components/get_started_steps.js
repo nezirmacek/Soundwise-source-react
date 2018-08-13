@@ -19,16 +19,16 @@ class GetStartedSteps extends React.Component {
   }
 
   handleNext() {
-    const {stepIndex} = this.state;
+    const { stepIndex } = this.state;
     if (stepIndex < 2) {
-      this.setState({stepIndex: stepIndex + 1});
+      this.setState({ stepIndex: stepIndex + 1 });
     }
   }
 
   handlePrev() {
-    const {stepIndex} = this.state;
+    const { stepIndex } = this.state;
     if (stepIndex > 0) {
-      this.setState({stepIndex: stepIndex - 1});
+      this.setState({ stepIndex: stepIndex - 1 });
     }
   }
 
@@ -48,14 +48,16 @@ class GetStartedSteps extends React.Component {
   }
 
   render() {
-    const {stepIndex} = this.state;
-    const contentStyle = {margin: '0 16px'};
+    const { stepIndex } = this.state;
+    const contentStyle = { margin: '0 16px' };
 
     return (
       <section
         className="padding-110px-tb feature-style4 bg-white builder-bg xs-padding-50px-tb border-none"
         id="feature-section6"
-        style={{background: `linear-gradient( #f7f7f7, rgba(97,225,251,0.3))`}}
+        style={{
+          background: `linear-gradient( #f7f7f7, rgba(97,225,251,0.3))`,
+        }}
       >
         <MuiThemeProvider>
           <div className="container">
@@ -70,28 +72,28 @@ class GetStartedSteps extends React.Component {
               </div>
             </div>
             <div className="row hidden-xs hidden-sm">
-              <div style={{width: '100%', margin: 'auto'}}>
+              <div style={{ width: '100%', margin: 'auto' }}>
                 <Stepper linear={false} activeStep={stepIndex}>
                   <Step>
-                    <StepButton onClick={() => this.setState({stepIndex: 0})}>
-                      <span style={{fontSize: 18}}>Create Soundcasts</span>
+                    <StepButton onClick={() => this.setState({ stepIndex: 0 })}>
+                      <span style={{ fontSize: 18 }}>Create Soundcasts</span>
                     </StepButton>
                   </Step>
                   <Step>
-                    <StepButton onClick={() => this.setState({stepIndex: 1})}>
-                      <span style={{fontSize: 18}}>Upload or record</span>
+                    <StepButton onClick={() => this.setState({ stepIndex: 1 })}>
+                      <span style={{ fontSize: 18 }}>Upload or record</span>
                     </StepButton>
                   </Step>
                   <Step>
-                    <StepButton onClick={() => this.setState({stepIndex: 2})}>
-                      <span style={{fontSize: 18}}>
+                    <StepButton onClick={() => this.setState({ stepIndex: 2 })}>
+                      <span style={{ fontSize: 18 }}>
                         Share soundcast landing page
                       </span>
                     </StepButton>
                   </Step>
                   <Step>
-                    <StepButton onClick={() => this.setState({stepIndex: 3})}>
-                      <span style={{fontSize: 18}}>Engage audience</span>
+                    <StepButton onClick={() => this.setState({ stepIndex: 3 })}>
+                      <span style={{ fontSize: 18 }}>Engage audience</span>
                     </StepButton>
                   </Step>
                 </Stepper>
@@ -104,7 +106,7 @@ class GetStartedSteps extends React.Component {
             </div>
             <div
               className="row hidden-md hidden-lg"
-              style={{maxWidth: 380, margin: 'auto'}}
+              style={{ maxWidth: 380, margin: 'auto' }}
             >
               <Stepper
                 activeStep={stepIndex}
@@ -112,7 +114,7 @@ class GetStartedSteps extends React.Component {
                 orientation="vertical"
               >
                 <Step>
-                  <StepButton onClick={() => this.setState({stepIndex: 0})}>
+                  <StepButton onClick={() => this.setState({ stepIndex: 0 })}>
                     Create Soundcasts
                   </StepButton>
                   <StepContent>
@@ -129,7 +131,7 @@ class GetStartedSteps extends React.Component {
                   </StepContent>
                 </Step>
                 <Step>
-                  <StepButton onClick={() => this.setState({stepIndex: 1})}>
+                  <StepButton onClick={() => this.setState({ stepIndex: 1 })}>
                     Upload or record
                   </StepButton>
                   <StepContent>
@@ -143,7 +145,7 @@ class GetStartedSteps extends React.Component {
                   </StepContent>
                 </Step>
                 <Step>
-                  <StepButton onClick={() => this.setState({stepIndex: 2})}>
+                  <StepButton onClick={() => this.setState({ stepIndex: 2 })}>
                     Share soundcast landing page
                   </StepButton>
                   <StepContent>
@@ -158,7 +160,7 @@ class GetStartedSteps extends React.Component {
                   </StepContent>
                 </Step>
                 <Step>
-                  <StepButton onClick={() => this.setState({stepIndex: 3})}>
+                  <StepButton onClick={() => this.setState({ stepIndex: 3 })}>
                     Engage audience
                   </StepButton>
                   <StepContent>

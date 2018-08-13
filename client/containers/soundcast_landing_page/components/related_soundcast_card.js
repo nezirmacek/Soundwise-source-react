@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Card, CardMedia} from 'material-ui/Card';
-import {Link} from 'react-router-dom';
+import { Card, CardMedia } from 'material-ui/Card';
+import { Link } from 'react-router-dom';
 import ReactStars from 'react-stars';
 import * as _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -17,7 +17,7 @@ export default class RelatedSoundcastCard extends Component {
   }
 
   componentDidMount() {
-    const {cardHeight, cb} = this.props;
+    const { cardHeight, cb } = this.props;
     // recalculate card height
     setTimeout(() => {
       let _cardHeight =
@@ -32,7 +32,7 @@ export default class RelatedSoundcastCard extends Component {
   }
 
   render() {
-    const {cardHeight, soundcast, index} = this.props;
+    const { cardHeight, soundcast, index } = this.props;
     const _style = JSON.parse(JSON.stringify(style));
     _style.bottomShadowed.height = cardHeight;
     // _style.bottomShadowed.height = 470;
@@ -60,7 +60,7 @@ export default class RelatedSoundcastCard extends Component {
                       alt=""
                       src={soundcast.imageURL}
                       data-img-size="(W)800px X (H)533px"
-                      style={{objectFit: 'cover'}}
+                      style={{ objectFit: 'cover' }}
                     />
                   </CardMedia>
                 </div>

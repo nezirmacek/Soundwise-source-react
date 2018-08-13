@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import Axios from 'axios';
 
 // import { openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
-import {withRouter} from 'react-router';
-import {orange50} from 'material-ui/styles/colors';
+import { withRouter } from 'react-router';
+import { orange50 } from 'material-ui/styles/colors';
 
 export default class Banner extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ export default class Banner extends Component {
   }
 
   render() {
-    const {displayedPrice, post} = this.props.getPrice();
+    const { displayedPrice, post } = this.props.getPrice();
 
     return (
       <section

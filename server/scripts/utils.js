@@ -41,7 +41,7 @@ uploader.upload = function(strategy, files, callback) {
   });
 };
 
-const setAudioTags = (file, imgPath, title, track, artist) => {
+const setAudioTags = (file, imgPath, title, track, artist = 'Unknown') => {
   // from https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg
   // ffmpeg -i in.mp3 -i test.jpeg -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" out.mp3
   file.addCommand('-i', imgPath);

@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import * as firebase from 'firebase';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -11,7 +11,7 @@ import FontIcon from 'material-ui/FontIcon';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Colors from '../styles/colors';
-import {signoutUser} from '../actions/index';
+import { signoutUser } from '../actions/index';
 
 const styles = {
   navItem: {
@@ -79,7 +79,7 @@ class _SoundwiseHeader extends Component {
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div style={{}}>
                     {`Hello, ${this.capFirstLetter(
@@ -109,7 +109,7 @@ class _SoundwiseHeader extends Component {
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -160,7 +160,7 @@ class _SoundwiseHeader extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -255,11 +255,11 @@ class _SoundwiseHeader extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signoutUser}, dispatch);
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,
