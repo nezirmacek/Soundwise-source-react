@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import {
   Card,
@@ -13,8 +13,8 @@ import {
 import ReactStars from 'react-stars';
 import PropTypes from 'prop-types';
 
-import {ReviewModal} from '../containers/review_modal';
-import {openReviewbox} from '../actions/index';
+import { ReviewModal } from '../containers/review_modal';
+import { openReviewbox } from '../actions/index';
 
 function _getReviewArrayFromCourse(course) {
   const reviews = [];
@@ -90,18 +90,18 @@ class _Reviews extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-11 col-xs-11 center-col text-center"
-                style={{padding: '1.5em', margin: '2em'}}
+                style={{ padding: '1.5em', margin: '2em' }}
               >
                 <button
                   onClick={this.handleReviewRequest}
                   className="text-white btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text tz-background-color"
-                  style={{backgroundColor: '#61E1FB'}}
+                  style={{ backgroundColor: '#61E1FB' }}
                 >
                   <span className="tz-text">Write A Review</span>
                 </button>
               </div>
             </div>
-            <div className="row" style={{marginBottom: '3em'}}>
+            <div className="row" style={{ marginBottom: '3em' }}>
               <div className="col-md-6 center-col col-sm-12 text-center">
                 <h3 className="title-extra-large-2 alt-font xs-title-large  margin-four-bottom tz-text">{`Average Rating: ${average_rating}`}</h3>
                 <div
@@ -120,7 +120,7 @@ class _Reviews extends Component {
                     color2={'#ffd700'}
                     edit={false}
                   />{' '}
-                  <span style={{marginLeft: '10px', fontSize: '20px'}}>{`(${
+                  <span style={{ marginLeft: '10px', fontSize: '20px' }}>{`(${
                     ratings.length
                   })`}</span>
                 </div>
@@ -143,11 +143,11 @@ class _Reviews extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openReviewbox}, dispatch);
+  return bindActionCreators({ openReviewbox }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

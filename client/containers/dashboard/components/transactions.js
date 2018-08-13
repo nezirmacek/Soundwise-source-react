@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -69,7 +69,9 @@ export default class Transactions extends Component {
         // console.log('transactions: ', res);
         const transactions = res.data;
         transactions.sort((a, b) => {
-          return moment(b.createdAt).format('X') - moment(a.createdAt).format('X');
+          return (
+            moment(b.createdAt).format('X') - moment(a.createdAt).format('X')
+          );
         });
         that.setState({
           transactions,
@@ -81,7 +83,7 @@ export default class Transactions extends Component {
   }
 
   render() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     const plan = userInfo.publisher.plan;
     return (
       <div className="padding-30px-tb">
@@ -90,7 +92,7 @@ export default class Transactions extends Component {
           <Link to={`/publishers/${userInfo.publisherID}`}>
             <span
               className="text-medium"
-              style={{marginLeft: 15, color: Colors.mainOrange}}
+              style={{ marginLeft: 15, color: Colors.mainOrange }}
             >
               <strong>View Publisher Page</strong>
             </span>
@@ -99,12 +101,12 @@ export default class Transactions extends Component {
         <ul className="nav nav-pills">
           <li role="presentation">
             <Link to="/dashboard/publisher">
-              <span style={{fontSize: 15, fontWeight: 600}}>Profile</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Profile</span>
             </Link>
           </li>
           <li role="presentation" className="active">
             <Link
-              style={{backgroundColor: 'transparent'}}
+              style={{ backgroundColor: 'transparent' }}
               to="/dashboard/publisher/transactions"
             >
               <span
@@ -120,17 +122,17 @@ export default class Transactions extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/payouts">
-              <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Payouts</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/promotions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Promotions</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/settings">
-              <span style={{fontSize: 15, fontWeight: 600}}>Settings</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Settings</span>
             </Link>
           </li>
         </ul>
@@ -143,10 +145,10 @@ export default class Transactions extends Component {
               <table className="table table-hover">
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th}}>DATE</th>
-                    <th style={{...styles.th}}>TYPE</th>
-                    <th style={{...styles.th}}>DESCRIPTION</th>
-                    <th style={{...styles.th}}>AMOUNT</th>
+                    <th style={{ ...styles.th }}>DATE</th>
+                    <th style={{ ...styles.th }}>TYPE</th>
+                    <th style={{ ...styles.th }}>DESCRIPTION</th>
+                    <th style={{ ...styles.th }}>AMOUNT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -157,52 +159,53 @@ export default class Transactions extends Component {
                     const creditCardCharge = (price * 0.029 + 0.3).toFixed(2); // Stripe charge
                     let soundwiseFee;
                     if (plan == 'plus') {
-                      soundwiseFee = (0.05 * price).toFixed(2) ;
+                      soundwiseFee = (0.05 * price).toFixed(2);
                     } else if (plan == 'basic' || !plan) {
                       soundwiseFee = (0.1 * price).toFixed(2);
-                    } else if(plan == 'pro') {
-                      soundwiseFee = 0.00;
+                    } else if (plan == 'pro') {
+                      soundwiseFee = 0.0;
                     }
-                    const amount = transaction.type == 'charge' ? (
-                      price -
-                      creditCardCharge -
-                      soundwiseFee
-                    ).toFixed(2) : (+ price).toFixed(2);
+                    const amount =
+                      transaction.type == 'charge'
+                        ? (price - creditCardCharge - soundwiseFee).toFixed(2)
+                        : (+price).toFixed(2);
                     return (
                       <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td}}>
+                        <td style={{ ...styles.td }}>
                           {transaction.type == 'charge'
                             ? transaction.date.slice(0, 10)
                             : transaction.refund_date.slice(0, 10)}
                         </td>
-                        <td style={{...styles.td}}>{type}</td>
-                        <td style={{...styles.td}}>
+                        <td style={{ ...styles.td }}>{type}</td>
+                        <td style={{ ...styles.td }}>
                           {transaction.description}
                         </td>
-                        <td style={{...styles.td}}>
-                          <div style={{fontWeight: 600}}>
+                        <td style={{ ...styles.td }}>
+                          <div style={{ fontWeight: 600 }}>
                             {`${
                               transaction.type == 'charge' ? '' : '-'
                             }$${amount}`}
                           </div>
-                          <div style={{fontSize: 12, color: Colors.fontGrey}}>
+                          <div style={{ fontSize: 12, color: Colors.fontGrey }}>
                             {`(Price: ${
                               transaction.type == 'charge' ? '' : '-'
-                            }$${price}${transaction.type == 'charge' ? '' : ')'}`}
+                            }$${price}${
+                              transaction.type == 'charge' ? '' : ')'
+                            }`}
                           </div>
-                          <div style={{fontSize: 12, color: Colors.fontGrey}}>
-                            {transaction.type == 'charge' && `Credit card processing fee: ${
-                              transaction.type == 'charge' ? '-' : ''
-                            }$${creditCardCharge}`
-                            || null
-                            }
+                          <div style={{ fontSize: 12, color: Colors.fontGrey }}>
+                            {(transaction.type == 'charge' &&
+                              `Credit card processing fee: ${
+                                transaction.type == 'charge' ? '-' : ''
+                              }$${creditCardCharge}`) ||
+                              null}
                           </div>
-                          <div style={{fontSize: 12, color: Colors.fontGrey}}>
-                            {transaction.type == 'charge' && `Soundwise fee: ${
-                              transaction.type == 'charge' ? '-' : ''
-                            }$${soundwiseFee})`
-                            || null
-                            }
+                          <div style={{ fontSize: 12, color: Colors.fontGrey }}>
+                            {(transaction.type == 'charge' &&
+                              `Soundwise fee: ${
+                                transaction.type == 'charge' ? '-' : ''
+                              }$${soundwiseFee})`) ||
+                              null}
                           </div>
                         </td>
                       </tr>
@@ -214,7 +217,7 @@ export default class Transactions extends Component {
           </row>
         )) || (
           <row>
-            <div className="col-md-12 " style={{marginTop: 40}}>
+            <div className="col-md-12 " style={{ marginTop: 40 }}>
               <div
                 className="title-small padding-40px-tb"
                 style={{
@@ -235,7 +238,7 @@ export default class Transactions extends Component {
 }
 
 const styles = {
-  tableWrapper: {...commonStyles.tableWrapper},
+  tableWrapper: { ...commonStyles.tableWrapper },
   tr: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,

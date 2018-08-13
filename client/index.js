@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import {render} from 'react-dom';
-import {browserHistory} from 'react-router';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
+import { browserHistory } from 'react-router';
 
-import {syncHistoryWithStore} from 'react-router-redux';
+import { syncHistoryWithStore } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk'; //check out https://github.com/gaearon/redux-thunk for how to use this
-import {applyMiddleware, createStore, compose} from 'redux';
-import {persistStore, autoRehydrate} from 'redux-persist';
+import { applyMiddleware, createStore, compose } from 'redux';
+import { persistStore, autoRehydrate } from 'redux-persist';
 import localForage from 'localforage';
 // import { offline } from 'redux-offline';
 // import offlineConfig from 'redux-offline/lib/defaults';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import * as firebase from 'firebase';
 import Raven from 'raven-js';
 
@@ -18,7 +18,7 @@ const config =
     ? require('../stagingConfig').config
     : require('../config').config;
 
-import {Routes} from './routes';
+import { Routes } from './routes';
 import rootReducer from './reducers';
 
 Raven.config(

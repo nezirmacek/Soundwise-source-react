@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import firebase from 'firebase';
@@ -8,7 +8,7 @@ import draftToHtml from 'draftjs-to-html';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import moment from 'moment';
 import Papa from 'papaparse';
-import {Editor} from 'react-draft-wysiwyg';
+import { Editor } from 'react-draft-wysiwyg';
 import {
   convertFromRaw,
   convertToRaw,
@@ -22,9 +22,9 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
-import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
-import {addToEmailList} from '../../../helpers/addToEmailList';
+import { inviteListeners } from '../../../helpers/invite_listeners';
+import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
+import { addToEmailList } from '../../../helpers/addToEmailList';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -48,7 +48,7 @@ export default class InviteSubscribersModal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {soundcast, userInfo} = nextProps;
+    const { soundcast, userInfo } = nextProps;
     let editorState;
     if (userInfo.publisher && soundcast && nextProps != this.props) {
       if (soundcast.invitationEmail) {
@@ -84,8 +84,8 @@ export default class InviteSubscribersModal extends Component {
   async inviteListeners() {
     const inviteeArr = this.state.inviteeList.split(',');
     const that = this;
-    const {soundcast, userInfo} = this.props;
-    const {invitation} = this.state;
+    const { soundcast, userInfo } = this.props;
+    const { invitation } = this.state;
     for (var i = inviteeArr.length - 1; i >= 0; i--) {
       if (inviteeArr[i].indexOf('@') == -1) {
         inviteeArr.splice(i, 1);
@@ -231,11 +231,11 @@ export default class InviteSubscribersModal extends Component {
   }
 
   render() {
-    const {soundcast, userInfo} = this.props;
+    const { soundcast, userInfo } = this.props;
     const actions = [
       <FlatButton
         label="Submit"
-        labelStyle={{color: Colors.link}}
+        labelStyle={{ color: Colors.link }}
         onClick={this.inviteListeners}
       />,
       <FlatButton label="Cancel" onClick={this.closeModal} />,
@@ -243,7 +243,7 @@ export default class InviteSubscribersModal extends Component {
     const actionsSubmitted = [
       <FlatButton
         label="OK"
-        labelStyle={{color: Colors.link}}
+        labelStyle={{ color: Colors.link }}
         onClick={this.closeModal}
       />,
     ];
@@ -257,7 +257,7 @@ export default class InviteSubscribersModal extends Component {
           <MuiThemeProvider>
             <Dialog
               title="Your invitations have been sent"
-              titleStyle={{borderBottom: '0px'}}
+              titleStyle={{ borderBottom: '0px' }}
               actions={actionsSubmitted}
               modal={false}
               open={this.props.isShown}
@@ -272,7 +272,7 @@ export default class InviteSubscribersModal extends Component {
         <MuiThemeProvider>
           <Dialog
             title={`Invite subscribers to ${soundcast.title}`}
-            titleStyle={{borderBottom: '0px'}}
+            titleStyle={{ borderBottom: '0px' }}
             actions={actions}
             modal={false}
             open={this.props.isShown}
@@ -284,14 +284,14 @@ export default class InviteSubscribersModal extends Component {
             }}
             autoScrollBodyContent={true}
           >
-            <div className="col-md-12" style={{height: 100}}>
+            <div className="col-md-12" style={{ height: 100 }}>
               <textarea
                 style={styles.inputDescription}
                 placeholder={
                   'Enter listener email addresses, separated by commas'
                 }
                 onChange={e => {
-                  this.setState({inviteeList: e.target.value});
+                  this.setState({ inviteeList: e.target.value });
                 }}
                 value={this.state.inviteeList}
               />
@@ -299,7 +299,7 @@ export default class InviteSubscribersModal extends Component {
             <div className="col-md-12" style={{}}>
               <div
                 className="text-medium col-md-12"
-                style={{display: 'flex', justifyContent: 'center'}}
+                style={{ display: 'flex', justifyContent: 'center' }}
               >
                 <span>OR</span>
               </div>
@@ -313,7 +313,7 @@ export default class InviteSubscribersModal extends Component {
                 />
                 <div
                   className="btn"
-                  style={{...styles.draftButton}}
+                  style={{ ...styles.draftButton }}
                   onClick={() => {
                     document.getElementById('upload_csv').click();
                   }}
@@ -325,7 +325,7 @@ export default class InviteSubscribersModal extends Component {
             {/*Confirmation email*/}
             <div
               className="col-md-12"
-              style={{paddingTop: 25, paddingBottom: 25}}
+              style={{ paddingTop: 25, paddingBottom: 25 }}
             >
               <div>
                 <span style={styles.titleText}>Invitation Message</span>
@@ -345,7 +345,7 @@ export default class InviteSubscribersModal extends Component {
 }
 
 const styles = {
-  inputFileHidden: {...commonStyles.inputFileHidden},
+  inputFileHidden: { ...commonStyles.inputFileHidden },
   backDrop: {
     position: 'absolute',
     width: '100%',

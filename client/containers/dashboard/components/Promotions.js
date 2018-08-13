@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import Axios from 'axios';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Colors from '../../../styles/colors';
 
 export default class Promotions extends Component {
@@ -20,9 +20,11 @@ export default class Promotions extends Component {
   }
 
   retrieveCoupons(publisherId) {
-    Axios.get('/api/coupon', {params: {filter: {publisherId: publisherId}}})
+    Axios.get('/api/coupon', {
+      params: { filter: { publisherId: publisherId } },
+    })
       .then(res => {
-        this.setState({coupons: res.data});
+        this.setState({ coupons: res.data });
       })
       .catch(err => {
         console.log('error retrieving: ', err);
@@ -30,15 +32,15 @@ export default class Promotions extends Component {
   }
 
   render() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     return (
-      <div className="padding-30px-tb" style={{minHeight: 700}}>
+      <div className="padding-30px-tb" style={{ minHeight: 700 }}>
         <div className="padding-bottom-20px">
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
             <span
               className="text-medium"
-              style={{marginLeft: 15, color: Colors.mainOrange}}
+              style={{ marginLeft: 15, color: Colors.mainOrange }}
             >
               <strong>View Publisher Page</strong>
             </span>
@@ -47,22 +49,24 @@ export default class Promotions extends Component {
         <ul className="nav nav-pills">
           <li role="presentation">
             <Link to="/dashboard/publisher">
-              <span style={{fontSize: 15, fontWeight: 600}}>Profile</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Profile</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/transactions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Transactions</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>
+                Transactions
+              </span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/payouts">
-              <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Payouts</span>
             </Link>
           </li>
           <li role="presentation" className="active">
             <Link
-              style={{backgroundColor: 'transparent'}}
+              style={{ backgroundColor: 'transparent' }}
               to="/dashboard/publisher/promotions"
             >
               <span
@@ -78,7 +82,7 @@ export default class Promotions extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/settings">
-              <span style={{fontSize: 15, fontWeight: 600}}>Settings</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Settings</span>
             </Link>
           </li>
         </ul>
@@ -91,22 +95,22 @@ export default class Promotions extends Component {
               <table className="table table-hover">
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th}}>DATE</th>
-                    <th style={{...styles.th}}>COUPON CODE</th>
-                    <th style={{...styles.th}}>SOUNDCAST TITLE</th>
+                    <th style={{ ...styles.th }}>DATE</th>
+                    <th style={{ ...styles.th }}>COUPON CODE</th>
+                    <th style={{ ...styles.th }}>SOUNDCAST TITLE</th>
                   </tr>
                 </thead>
                 <tbody>
                   {this.state.coupons.map((coupon, i) => {
                     return (
                       <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td}}>
+                        <td style={{ ...styles.td }}>
                           {moment
                             .unix(Number(coupon.timeStamp))
                             .format('YYYY-MM-DD')}
                         </td>
-                        <td style={{...styles.td}}>{coupon.coupon}</td>
-                        <td style={{...styles.td}}>{`${
+                        <td style={{ ...styles.td }}>{coupon.coupon}</td>
+                        <td style={{ ...styles.td }}>{`${
                           coupon.soundcastTitle
                         }`}</td>
                       </tr>
@@ -118,7 +122,7 @@ export default class Promotions extends Component {
           </row>
         )) || (
           <row>
-            <div className="col-md-12 " style={{marginTop: 40}}>
+            <div className="col-md-12 " style={{ marginTop: 40 }}>
               <div
                 className="title-small padding-40px-tb"
                 style={{

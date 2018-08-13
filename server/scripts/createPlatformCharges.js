@@ -18,7 +18,7 @@ const database = require('../../database/index');
 
 module.exports.createSubscription = (req, res) => {
   const options = {
-    items: [{plan: req.body.plan}],
+    items: [{ plan: req.body.plan }],
     metadata: {
       publisherID: req.body.publisherID,
     },
@@ -193,7 +193,7 @@ module.exports.renewSubscription = (req, res) => {
 };
 
 module.exports.cancelSubscription = (req, res) => {
-  const {subscriptionID} = req.body;
+  const { subscriptionID } = req.body;
   stripe.subscriptions
     .del(subscriptionID)
     .then(response => {

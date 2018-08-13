@@ -58,7 +58,7 @@ module.exports = function(Payout) {
               break;
             case 'payout.failed':
               // aleart administrator that payout failed
-              emailAdmin(Object.assign({}, data, {publisherId}), cb);
+              emailAdmin(Object.assign({}, data, { publisherId }), cb);
               break;
             default:
               return cb(null, {});
@@ -79,10 +79,10 @@ module.exports = function(Payout) {
     accepts: {
       arg: 'data',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
-    returns: {type: 'object', root: true},
+    returns: { type: 'object', root: true },
   });
 };
 

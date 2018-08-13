@@ -34,7 +34,7 @@ module.exports = app => {
   app.get('/api/coupon', (req, res) => {
     const publisherId = JSON.parse(req.query.filter).publisherId;
     database.Coupon.findAll({
-      where: {publisherId: publisherId},
+      where: { publisherId: publisherId },
     })
       .then(data => {
         res.send(data);
@@ -46,7 +46,7 @@ module.exports = app => {
 
   app.post('/api/episode', (req, res) => {
     database.Episode.findOrCreate({
-      where: {episodeId: req.body.episodeId},
+      where: { episodeId: req.body.episodeId },
       defaults: req.body,
     })
       .then(data => {
@@ -81,7 +81,7 @@ module.exports = app => {
   });
 
   app.post('/api/listening_session', (req, res) => {
-    const data = Object.assign({}, req.body, {date: new Date(req.body.date)});
+    const data = Object.assign({}, req.body, { date: new Date(req.body.date) });
     database.ListeningSession.create(req.body)
       .then(data => {
         res.send(data);

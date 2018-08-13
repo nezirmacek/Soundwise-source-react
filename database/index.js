@@ -27,16 +27,16 @@ if (process.env.DATABASE_URL) {
 }
 
 var User = db.define('User', {
-  userId: {type: Sequelize.STRING, primaryKey: true},
+  userId: { type: Sequelize.STRING, primaryKey: true },
   firstName: Sequelize.STRING,
   lastName: Sequelize.STRING,
   picURL: Sequelize.STRING,
 });
 
 var Comment = db.define('Comment', {
-  commentId: {type: Sequelize.STRING, primaryKey: true},
+  commentId: { type: Sequelize.STRING, primaryKey: true },
   content: Sequelize.TEXT,
-  userId: {type: Sequelize.STRING, allowNull: false},
+  userId: { type: Sequelize.STRING, allowNull: false },
   announcementId: Sequelize.STRING,
   episodeId: Sequelize.STRING,
   soundcastId: Sequelize.STRING,
@@ -44,17 +44,17 @@ var Comment = db.define('Comment', {
 });
 
 var Announcement = db.define('Announcement', {
-  announcementId: {type: Sequelize.STRING, primaryKey: true},
+  announcementId: { type: Sequelize.STRING, primaryKey: true },
   content: Sequelize.STRING,
-  userId: {type: Sequelize.STRING, allowNull: false},
-  publisherId: {type: Sequelize.STRING, allowNull: false},
-  soundcastId: {type: Sequelize.STRING, allowNull: false},
+  userId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
 });
 
 var Like = db.define('Like', {
-  likeId: {type: Sequelize.STRING, primaryKey: true},
-  userId: {type: Sequelize.STRING, allowNull: false},
-  soundcastId: {type: Sequelize.STRING, allowNull: false},
+  likeId: { type: Sequelize.STRING, primaryKey: true },
+  userId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
   episodeId: Sequelize.STRING,
   announcementId: Sequelize.STRING,
   commentId: Sequelize.STRING,
@@ -62,17 +62,17 @@ var Like = db.define('Like', {
 });
 
 var Episode = db.define('Episode', {
-  episodeId: {type: Sequelize.STRING, primaryKey: true},
-  soundcastId: {type: Sequelize.STRING, allowNull: false},
-  publisherId: {type: Sequelize.STRING, allowNull: false},
+  episodeId: { type: Sequelize.STRING, primaryKey: true },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
   title: Sequelize.STRING,
   soundcastTitle: Sequelize.STRING,
   imageUrl: Sequelize.STRING,
 });
 
 var Soundcast = db.define('Soundcast', {
-  soundcastId: {type: Sequelize.STRING, primaryKey: true},
-  publisherId: {type: Sequelize.STRING, allowNull: false},
+  soundcastId: { type: Sequelize.STRING, primaryKey: true },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
   title: Sequelize.STRING,
   imageUrl: Sequelize.STRING,
   itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
@@ -84,71 +84,71 @@ var Soundcast = db.define('Soundcast', {
 });
 
 var Publisher = db.define('Publisher', {
-  publisherId: {type: Sequelize.STRING, primaryKey: true},
-  name: {type: Sequelize.STRING, allowNull: false},
-  paypalEmail: {type: Sequelize.STRING},
+  publisherId: { type: Sequelize.STRING, primaryKey: true },
+  name: { type: Sequelize.STRING, allowNull: false },
+  paypalEmail: { type: Sequelize.STRING },
   imageUrl: Sequelize.STRING,
 });
 
 var ListeningSession = db.define('ListeningSession', {
   //<------ a session is the period between user starting to play an audio and the audio being paused
-  sessionId: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-  soundcastId: {type: Sequelize.STRING, allowNull: false},
-  episodeId: {type: Sequelize.STRING, allowNull: false},
-  userId: {type: Sequelize.STRING, allowNull: false},
-  publisherId: {type: Sequelize.STRING, allowNull: false},
-  date: {type: Sequelize.DATEONLY, allowNull: false},
-  startPosition: {type: Sequelize.INTEGER, allowNull: false}, //in seconds, where in the audio file the session started
-  endPosition: {type: Sequelize.INTEGER, allowNull: false}, //in seconds, where in the audio file the session ended
-  sessionDuration: {type: Sequelize.INTEGER, allowNull: false}, //in seconds
-  percentCompleted: {type: Sequelize.INTEGER, allowNull: false}, //0 - 100, equal to endPosition / total audio file length * 100
+  sessionId: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  episodeId: { type: Sequelize.STRING, allowNull: false },
+  userId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  date: { type: Sequelize.DATEONLY, allowNull: false },
+  startPosition: { type: Sequelize.INTEGER, allowNull: false }, //in seconds, where in the audio file the session started
+  endPosition: { type: Sequelize.INTEGER, allowNull: false }, //in seconds, where in the audio file the session ended
+  sessionDuration: { type: Sequelize.INTEGER, allowNull: false }, //in seconds
+  percentCompleted: { type: Sequelize.INTEGER, allowNull: false }, //0 - 100, equal to endPosition / total audio file length * 100
 });
 
 var Transaction = db.define('Transaction', {
   // records of listener payments and refunds
-  transactionId: {type: Sequelize.STRING, allowNull: false, primaryKey: true},
-  invoiceId: {type: Sequelize.STRING}, //only present if the charge is associated with a subscription invoice
-  chargeId: {type: Sequelize.STRING, allowNull: false},
-  refundId: {type: Sequelize.STRING},
-  type: {type: Sequelize.STRING, allowNull: false}, //'charge' or 'refund'
-  amount: {type: Sequelize.DECIMAL(7, 2), allowNull: false},
-  date: {type: Sequelize.DATEONLY, allowNull: false},
-  publisherId: {type: Sequelize.STRING, allowNull: false},
-  soundcastId: {type: Sequelize.STRING},
-  customer: {type: Sequelize.STRING, allowNull: false}, // listener's stripe id
-  description: {type: Sequelize.STRING},
-  paymentId: {type: Sequelize.STRING}, // id for the payment plan
-  refund_date: {type: Sequelize.DATEONLY},
+  transactionId: { type: Sequelize.STRING, allowNull: false, primaryKey: true },
+  invoiceId: { type: Sequelize.STRING }, //only present if the charge is associated with a subscription invoice
+  chargeId: { type: Sequelize.STRING, allowNull: false },
+  refundId: { type: Sequelize.STRING },
+  type: { type: Sequelize.STRING, allowNull: false }, //'charge' or 'refund'
+  amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  date: { type: Sequelize.DATEONLY, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING },
+  customer: { type: Sequelize.STRING, allowNull: false }, // listener's stripe id
+  description: { type: Sequelize.STRING },
+  paymentId: { type: Sequelize.STRING }, // id for the payment plan
+  refund_date: { type: Sequelize.DATEONLY },
 });
 
 var Payout = db.define('Payout', {
   // records of payouts
-  payoutId: {type: Sequelize.STRING, primaryKey: true}, // id for the payout item returned by paypal's webhook event
-  amount: {type: Sequelize.DECIMAL(7, 2), allowNull: false},
-  date: {type: Sequelize.DATEONLY, allowNull: false},
-  publisherId: {type: Sequelize.STRING, allowNull: false},
-  email: {type: Sequelize.STRING}, //email address used to send paypal payout
+  payoutId: { type: Sequelize.STRING, primaryKey: true }, // id for the payout item returned by paypal's webhook event
+  amount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+  date: { type: Sequelize.DATEONLY, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  email: { type: Sequelize.STRING }, //email address used to send paypal payout
 });
 
 var PlatformCharges = db.define(
   'PlatformCharges',
   {
-    publisherId: {type: Sequelize.STRING, allowNull: false},
-    stripeCustomerId: {type: Sequelize.STRING, allowNull: false},
-    subscriptionPlanName: {type: Sequelize.STRING, allowNull: false},
-    subscriptionPlanId: {type: Sequelize.STRING, allowNull: false},
-    subscriptionId: {type: Sequelize.STRING, allowNull: false},
-    chargeId: {type: Sequelize.STRING, allowNull: false},
-    chargeAmount: {type: Sequelize.DECIMAL(7, 2), allowNull: false},
-    coupon: {type: Sequelize.STRING},
-    referredBy: {type: Sequelize.STRING},
+    publisherId: { type: Sequelize.STRING, allowNull: false },
+    stripeCustomerId: { type: Sequelize.STRING, allowNull: false },
+    subscriptionPlanName: { type: Sequelize.STRING, allowNull: false },
+    subscriptionPlanId: { type: Sequelize.STRING, allowNull: false },
+    subscriptionId: { type: Sequelize.STRING, allowNull: false },
+    chargeId: { type: Sequelize.STRING, allowNull: false },
+    chargeAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+    coupon: { type: Sequelize.STRING },
+    referredBy: { type: Sequelize.STRING },
   },
   {
     indexes: [
-      {fields: ['publisherId']},
-      {fields: ['chargeId']},
-      {fields: ['subscriptionId']},
-      {fields: ['referredBy']},
+      { fields: ['publisherId'] },
+      { fields: ['chargeId'] },
+      { fields: ['subscriptionId'] },
+      { fields: ['referredBy'] },
     ],
   }
 );
@@ -156,60 +156,60 @@ var PlatformCharges = db.define(
 var Transfers = db.define(
   'Transfers',
   {
-    affiliateId: {type: Sequelize.STRING, allowNull: false},
-    affiliateStripeAccountId: {type: Sequelize.STRING, allowNull: false},
-    subscriptionId: {type: Sequelize.STRING, allowNull: false},
-    chargeId: {type: Sequelize.STRING, allowNull: false},
-    chargeAmount: {type: Sequelize.DECIMAL(7, 2), allowNull: false},
-    transferAmount: {type: Sequelize.DECIMAL(7, 2), allowNull: false},
+    affiliateId: { type: Sequelize.STRING, allowNull: false },
+    affiliateStripeAccountId: { type: Sequelize.STRING, allowNull: false },
+    subscriptionId: { type: Sequelize.STRING, allowNull: false },
+    chargeId: { type: Sequelize.STRING, allowNull: false },
+    chargeAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
+    transferAmount: { type: Sequelize.DECIMAL(7, 2), allowNull: false },
   },
   {
     indexes: [
-      {fields: ['affiliateId']},
-      {fields: ['subscriptionId']},
-      {fields: ['chargeId']},
+      { fields: ['affiliateId'] },
+      { fields: ['subscriptionId'] },
+      { fields: ['chargeId'] },
     ],
   }
 );
 
 var Event = db.define('Event', {
-  type: {type: Sequelize.STRING, allowNull: false},
-  story: {type: Sequelize.STRING, allowNull: false},
-  userId: {type: Sequelize.STRING, allowNull: true},
-  firstName: {type: Sequelize.STRING, allowNull: true},
-  lastName: {type: Sequelize.STRING, allowNull: true},
-  avatarUrl: {type: Sequelize.STRING, allowNull: true},
-  episodeId: {type: Sequelize.STRING, allowNull: true},
-  likeId: {type: Sequelize.STRING, allowNull: true},
-  soundcastId: {type: Sequelize.STRING, allowNull: true},
-  messageId: {type: Sequelize.STRING, allowNull: true},
-  publisherId: {type: Sequelize.STRING, allowNull: true},
-  commentId: {type: Sequelize.STRING, allowNull: true},
-  commentUserId: {type: Sequelize.STRING, allowNull: true},
-  parentId: {type: Sequelize.STRING, allowNull: true},
-  parentUserId: {type: Sequelize.STRING, allowNull: true},
+  type: { type: Sequelize.STRING, allowNull: false },
+  story: { type: Sequelize.STRING, allowNull: false },
+  userId: { type: Sequelize.STRING, allowNull: true },
+  firstName: { type: Sequelize.STRING, allowNull: true },
+  lastName: { type: Sequelize.STRING, allowNull: true },
+  avatarUrl: { type: Sequelize.STRING, allowNull: true },
+  episodeId: { type: Sequelize.STRING, allowNull: true },
+  likeId: { type: Sequelize.STRING, allowNull: true },
+  soundcastId: { type: Sequelize.STRING, allowNull: true },
+  messageId: { type: Sequelize.STRING, allowNull: true },
+  publisherId: { type: Sequelize.STRING, allowNull: true },
+  commentId: { type: Sequelize.STRING, allowNull: true },
+  commentUserId: { type: Sequelize.STRING, allowNull: true },
+  parentId: { type: Sequelize.STRING, allowNull: true },
+  parentUserId: { type: Sequelize.STRING, allowNull: true },
 });
 
 var ImportedFeed = db.define(
   'ImportedFeed',
   {
-    soundcastId: {type: Sequelize.STRING, allowNull: false},
-    published: {type: Sequelize.BOOLEAN, allowNull: false},
-    title: {type: Sequelize.STRING, allowNull: false},
-    feedUrl: {type: Sequelize.STRING, allowNull: false},
-    originalUrl: {type: Sequelize.STRING, allowNull: false},
-    imageURL: {type: Sequelize.STRING, allowNull: false},
-    updated: {type: Sequelize.BIGINT, allowNull: false},
-    publisherId: {type: Sequelize.STRING, allowNull: false},
-    userId: {type: Sequelize.STRING, allowNull: false},
-    claimed: {type: Sequelize.BOOLEAN, allowNull: false},
-    itunesId: {type: Sequelize.STRING, allowNull: true},
+    soundcastId: { type: Sequelize.STRING, allowNull: false },
+    published: { type: Sequelize.BOOLEAN, allowNull: false },
+    title: { type: Sequelize.STRING, allowNull: false },
+    feedUrl: { type: Sequelize.STRING, allowNull: false },
+    originalUrl: { type: Sequelize.STRING, allowNull: false },
+    imageURL: { type: Sequelize.STRING, allowNull: false },
+    updated: { type: Sequelize.BIGINT, allowNull: false },
+    publisherId: { type: Sequelize.STRING, allowNull: false },
+    userId: { type: Sequelize.STRING, allowNull: false },
+    claimed: { type: Sequelize.BOOLEAN, allowNull: false },
+    itunesId: { type: Sequelize.STRING, allowNull: true },
   },
   {
     indexes: [
-      {fields: ['soundcastId']},
-      {fields: ['publisherId']},
-      {fields: ['feedUrl']},
+      { fields: ['soundcastId'] },
+      { fields: ['publisherId'] },
+      { fields: ['feedUrl'] },
     ],
   }
 );
@@ -218,12 +218,12 @@ var Category = db.define(
   'Category',
   {
     // records of payouts
-    name: {type: Sequelize.STRING, allowNull: false},
-    soundcastId: {type: Sequelize.STRING, allowNull: false},
+    name: { type: Sequelize.STRING, allowNull: false },
+    soundcastId: { type: Sequelize.STRING, allowNull: false },
     iconUrl: Sequelize.STRING,
   },
   {
-    indexes: [{fields: ['name']}, {fields: ['soundcastId']}],
+    indexes: [{ fields: ['name'] }, { fields: ['soundcastId'] }],
   }
 );
 
@@ -231,19 +231,19 @@ var PodcasterEmail = db.define(
   'PodcasterEmail',
   {
     // records of payouts
-    podcastTitle: {type: Sequelize.STRING, allowNull: false},
-    publisherEmail: {type: Sequelize.STRING, allowNull: false},
-    last_update: {type: Sequelize.STRING, allowNull: false},
+    podcastTitle: { type: Sequelize.STRING, allowNull: false },
+    publisherEmail: { type: Sequelize.STRING, allowNull: false },
+    last_update: { type: Sequelize.STRING, allowNull: false },
   },
   {
-    indexes: [{fields: ['publisherEmail']}, {fields: ['last_update']}],
+    indexes: [{ fields: ['publisherEmail'] }, { fields: ['last_update'] }],
   }
 );
 
 var Coupon = db.define('Coupon', {
-  coupon: {type: Sequelize.STRING, allowNull: false},
-  soundcastId: {type: Sequelize.STRING, allowNull: false},
-  soundcastTitle: {type: Sequelize.STRING, allowNull: false},
+  coupon: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  soundcastTitle: { type: Sequelize.STRING, allowNull: false },
   publisherId: Sequelize.STRING,
   userId: Sequelize.STRING,
   timeStamp: Sequelize.BIGINT,
@@ -312,23 +312,23 @@ var Coupon = db.define('Coupon', {
 // Category.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Category, {as: 'Categories'});
 
-User.sync({force: false, alter: true});
-Publisher.sync({force: false, alter: true});
-Comment.sync({force: false, alter: true});
-Announcement.sync({force: false});
-Like.sync({force: false, alter: true});
-Soundcast.sync({force: false, alter: true});
-Episode.sync({force: false, alter: true});
-ListeningSession.sync({force: false, alter: true});
-Transaction.sync({force: false, alter: true});
-Payout.sync({force: false, alter: true});
-Coupon.sync({force: false, alter: true});
-PlatformCharges.sync({force: false, alter: true});
-Transfers.sync({force: false, alter: true});
-Event.sync({force: false, alter: true});
-ImportedFeed.sync({force: false, alter: true});
-Category.sync({force: false, alter: true});
-PodcasterEmail.sync({force: false, alter: true});
+User.sync({ force: false, alter: true });
+Publisher.sync({ force: false, alter: true });
+Comment.sync({ force: false, alter: true });
+Announcement.sync({ force: false });
+Like.sync({ force: false, alter: true });
+Soundcast.sync({ force: false, alter: true });
+Episode.sync({ force: false, alter: true });
+ListeningSession.sync({ force: false, alter: true });
+Transaction.sync({ force: false, alter: true });
+Payout.sync({ force: false, alter: true });
+Coupon.sync({ force: false, alter: true });
+PlatformCharges.sync({ force: false, alter: true });
+Transfers.sync({ force: false, alter: true });
+Event.sync({ force: false, alter: true });
+ImportedFeed.sync({ force: false, alter: true });
+Category.sync({ force: false, alter: true });
+PodcasterEmail.sync({ force: false, alter: true });
 
 module.exports = {
   User,

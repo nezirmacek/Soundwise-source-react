@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import Colors from '../styles/colors';
 import Axios from 'axios';
 import moment from 'moment';
 import Dots from 'react-activity/lib/Dots';
 import firebase from 'firebase';
 
-import {SoundwiseHeader} from '../components/soundwise_header';
-import {setChargeState} from '../actions/index';
+import { SoundwiseHeader } from '../components/soundwise_header';
+import { setChargeState } from '../actions/index';
 // import Payment from '../components/payment';
 
 class _SoundwiseCheckout extends Component {
@@ -46,7 +46,7 @@ class _SoundwiseCheckout extends Component {
     } else {
       Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
     }
-    const {plan, frequency, price} = this.props.history.location.state;
+    const { plan, frequency, price } = this.props.history.location.state;
     this.setState({
       total: frequency == 'annual' ? price * 12 : price,
       frequency,
@@ -150,7 +150,12 @@ class _SoundwiseCheckout extends Component {
             marginTop: '1em',
           }}
         >
-          <Dots style={{display: 'flex'}} color="#727981" size={32} speed={1} />
+          <Dots
+            style={{ display: 'flex' }}
+            color="#727981"
+            size={32}
+            speed={1}
+          />
         </div>
       );
     }
@@ -162,8 +167,8 @@ class _SoundwiseCheckout extends Component {
       promoApplied: false,
     });
     // const validPromoCodes = ['OFF50', 'NMS'];
-    const {promoCode, total} = this.state;
-    const {plan, frequency, price} = this.props.history.location.state;
+    const { promoCode, total } = this.state;
+    const { plan, frequency, price } = this.props.history.location.state;
     const couponInfo = await firebase
       .database()
       .ref(`coupons/${promoCode}`)
@@ -221,12 +226,12 @@ class _SoundwiseCheckout extends Component {
       startPaymentSubmission: true,
       submitted: true,
     });
-    const {number, cvc} = this.state;
+    const { number, cvc } = this.state;
     const exp_month = Number(this.state.exp_month) + 1;
     const exp_year = Number(this.state.exp_year);
-    this.setState({submitted: true, paymentError: null});
+    this.setState({ submitted: true, paymentError: null });
     Stripe.card.createToken(
-      {number, cvc, exp_month, exp_year},
+      { number, cvc, exp_month, exp_year },
       this.stripeTokenHandler
     );
   }
@@ -254,7 +259,7 @@ class _SoundwiseCheckout extends Component {
       promoCode && !promoCodeError && percentOff && percentOff > 0
         ? promoCode
         : null; // code for free trials may have percentOff == 0
-    const metaData = promoCode && !promoCodeError ? {promoCode} : null; // need to record the promoCode used, whether it's for discount or for free trial.
+    const metaData = promoCode && !promoCodeError ? { promoCode } : null; // need to record the promoCode used, whether it's for discount or for free trial.
     if (response.error) {
       this.setState({
         paymentError: response.error.message,
@@ -297,13 +302,13 @@ class _SoundwiseCheckout extends Component {
 
   render() {
     const that = this;
-    const {plan, frequency, price} = this.props.history.location.state;
+    const { plan, frequency, price } = this.props.history.location.state;
     const title = plan == 'pro' ? 'Pro Plan' : 'Plus Plan';
     const interval =
       frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
-    const {total, submitted, promoApplied, trialPeriod} = this.state;
+    const { total, submitted, promoApplied, trialPeriod } = this.state;
     const displayedPrice = `$${price}/month`;
-    const {userInfo, isLoggedIn} = this.props;
+    const { userInfo, isLoggedIn } = this.props;
     const monthOptions = [];
     const yearOptions = [];
     for (let i = 0; i < 12; i++) {
@@ -332,7 +337,7 @@ class _SoundwiseCheckout extends Component {
                   <div className="row equalize sm-equalize-auto equalize-display-inherit">
                     <div
                       className="col-md-6 col-sm-12 center-col sm-no-margin"
-                      style={{height: ''}}
+                      style={{ height: '' }}
                     >
                       <div className="row" style={styles.course}>
                         <div className="col-md-12 col-sm-12 col-xs-12">
@@ -358,9 +363,9 @@ class _SoundwiseCheckout extends Component {
                         <div className="col-md-12 col-sm-12 col-xs-12">
                           {(!this.state.enterPromoCode && (
                             <div
-                              style={{cursor: 'pointer'}}
+                              style={{ cursor: 'pointer' }}
                               onClick={() => {
-                                that.setState({enterPromoCode: true});
+                                that.setState({ enterPromoCode: true });
                                 setTimeout(
                                   () => that.refs.promoCodeInput.focus(),
                                   250
@@ -384,7 +389,11 @@ class _SoundwiseCheckout extends Component {
                                 ref="promoCodeInput"
                                 placeholder="Enter promo code"
                                 value={this.state.promoCode}
-                                style={{width: '50%', fontSize: 14, height: 35}}
+                                style={{
+                                  width: '50%',
+                                  fontSize: 14,
+                                  height: 35,
+                                }}
                               />
                               {(promoApplied && (
                                 <button
@@ -403,12 +412,12 @@ class _SoundwiseCheckout extends Component {
                                   onClick={this.applyPromoCode}
                                   type="button"
                                   className="btn"
-                                  style={{margin: '0 8px 5px'}}
+                                  style={{ margin: '0 8px 5px' }}
                                 >
                                   Apply
                                 </button>
                               )}
-                              <div style={{color: 'red'}}>
+                              <div style={{ color: 'red' }}>
                                 {this.state.promoCodeError}
                               </div>
                               <div>{this.state.promoDescription}</div>
@@ -425,7 +434,7 @@ class _SoundwiseCheckout extends Component {
                         >
                           <div
                             className="container"
-                            style={{paddingBottom: '70px'}}
+                            style={{ paddingBottom: '70px' }}
                           >
                             <div className="row equalize ">
                               <div className="col-md-6 center-col col-sm-12 ">
@@ -537,7 +546,7 @@ class _SoundwiseCheckout extends Component {
                                   {/*button*/}
                                   <div style={styles.buttonWrapper}>
                                     {(this.state.paymentError && (
-                                      <span style={{color: 'red'}}>
+                                      <span style={{ color: 'red' }}>
                                         {this.state.paymentError}
                                       </span>
                                     )) ||
@@ -786,12 +795,12 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn, isEmailSent} = state.user;
-  return {userInfo, isLoggedIn, isEmailSent};
+  const { userInfo, isLoggedIn, isEmailSent } = state.user;
+  return { userInfo, isLoggedIn, isEmailSent };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({/* sendEmail, */ setChargeState}, dispatch);
+  return bindActionCreators({ /* sendEmail, */ setChargeState }, dispatch);
 }
 
 const Checkout_worouter = connect(

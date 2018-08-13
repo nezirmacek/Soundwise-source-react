@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
-import {Link, Redirect} from 'react-router-dom';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import ReactStars from 'react-stars';
 
-import {CourseSignup} from '../containers/course_signup';
-import {ReviewModal} from '../containers/review_modal';
+import { CourseSignup } from '../containers/course_signup';
+import { ReviewModal } from '../containers/review_modal';
 import SocialShare from './socialshare';
-import {openReviewbox} from '../actions/index';
+import { openReviewbox } from '../actions/index';
 
 class _CourseHeaderPurchased extends Component {
   constructor(props) {
@@ -43,19 +43,19 @@ class _CourseHeaderPurchased extends Component {
         <section
           className=" bg-white"
           id="content-section23"
-          style={{paddingBottom: '15px'}}
+          style={{ paddingBottom: '15px' }}
         >
           <div className="container">
             <div className="row equalize sm-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-12 col-sm-12 col-xs-12 display-table sm-no-margin"
-                style={{height: '378px'}}
+                style={{ height: '378px' }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="row">
                     <div
                       className="col-md-12 col-sm-12 col-xs-12"
-                      style={{textAlign: 'center'}}
+                      style={{ textAlign: 'center' }}
                     >
                       <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">
                         {this.props.course.name}
@@ -78,7 +78,7 @@ class _CourseHeaderPurchased extends Component {
                           color2={'#ffd700'}
                         />
                         <span
-                          style={{marginLeft: '5px', fontSize: '18px'}}
+                          style={{ marginLeft: '5px', fontSize: '18px' }}
                         >{`(${ratings.length})`}</span>
                       </div>
                       <div
@@ -157,7 +157,7 @@ class _CourseHeaderPurchased extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openReviewbox}, dispatch);
+  return bindActionCreators({ openReviewbox }, dispatch);
 }
 
 export const CourseHeaderPurchased = connect(

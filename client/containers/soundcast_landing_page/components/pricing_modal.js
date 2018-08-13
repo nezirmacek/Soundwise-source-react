@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
-import {Card, CardHeader} from 'material-ui/Card';
+import { Card, CardHeader } from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import PropTypes from 'prop-types';
-import {withRouter} from 'react-router';
+import { withRouter } from 'react-router';
 
 import Colors from '../../../styles/colors';
 
@@ -20,8 +20,8 @@ class _PricingModal extends Component {
 
   componentDidMount() {
     if (this.props.soundcast && this.props.soundcast.prices[0].price) {
-      const {prices} = this.props.soundcast;
-      const {checked} = this.state;
+      const { prices } = this.props.soundcast;
+      const { checked } = this.state;
     }
   }
 
@@ -37,7 +37,7 @@ class _PricingModal extends Component {
   }
 
   handleCheck(checked) {
-    const {prices} = this.props.soundcast;
+    const { prices } = this.props.soundcast;
     let sumTotal = '';
     if (prices[checked].price != 'free') {
       sumTotal = `Total today: $${Number(prices[checked].price).toFixed(2)}`;
@@ -60,12 +60,12 @@ class _PricingModal extends Component {
         });
       }
     }
-    this.setState({checked, sumTotal});
+    this.setState({ checked, sumTotal });
   }
 
   handleCheckout() {
-    const {history, soundcast, soundcastID, coupon} = this.props;
-    const {checked, sumTotal} = this.state;
+    const { history, soundcast, soundcastID, coupon } = this.props;
+    const { checked, sumTotal } = this.state;
 
     firebase.auth().onAuthStateChanged(user => {
       if (user || soundcast.forSale) {
@@ -89,21 +89,21 @@ class _PricingModal extends Component {
   }
 
   handleModalClose() {
-    this.setState({checked: 0, sumTotal: null});
+    this.setState({ checked: 0, sumTotal: null });
     this.checkedPriceSet = false;
     this.props.handleModal();
   }
 
   render() {
-    const {open, soundcast, soundcastID} = this.props;
-    const {checked, sumTotal} = this.state;
-    const {prices} = soundcast;
+    const { open, soundcast, soundcastID } = this.props;
+    const { checked, sumTotal } = this.state;
+    const { prices } = soundcast;
 
     const actions = [
       <FlatButton
         label="Checkout"
         // primary={true}
-        labelStyle={{color: Colors.mainOrange}}
+        labelStyle={{ color: Colors.mainOrange }}
         onClick={this.handleCheckout.bind(this)}
       />,
       <FlatButton
@@ -185,7 +185,7 @@ class _PricingModal extends Component {
               return (
                 <Card key={i} style={styles.card}>
                   <a onClick={this.handleCheck.bind(this, i)}>
-                    <div style={{marginTop: 15, marginBottom: 15}}>
+                    <div style={{ marginTop: 15, marginBottom: 15 }}>
                       <div className="title-small" style={styles.titleDiv}>
                         {paymentPlan}
                       </div>
@@ -198,7 +198,9 @@ class _PricingModal extends Component {
                               USD{' '}
                               {(originalPrice &&
                                 !isNaN(originalPrice) && (
-                                  <s style={{color: 'red'}}>${originalPrice}</s>
+                                  <s style={{ color: 'red' }}>
+                                    ${originalPrice}
+                                  </s>
                                 )) ||
                                 null}
                               {`$${currentPrice}`}
@@ -214,9 +216,9 @@ class _PricingModal extends Component {
                         >
                           <span>{billing}</span>
                         </div>
-                        <div style={{display: 'inline-block', width: '10%'}}>
+                        <div style={{ display: 'inline-block', width: '10%' }}>
                           <input
-                            style={{cursor: 'pointer'}}
+                            style={{ cursor: 'pointer' }}
                             type="checkbox"
                             checked={isChecked}
                             onChange={this.handleCheck.bind(this, i)}
@@ -230,7 +232,7 @@ class _PricingModal extends Component {
             })) ||
             null}
           <div style={styles.sumTotal}>
-            <span style={{fontSize: 18}}>{sumTotal}</span>
+            <span style={{ fontSize: 18 }}>{sumTotal}</span>
           </div>
         </Dialog>
       </div>

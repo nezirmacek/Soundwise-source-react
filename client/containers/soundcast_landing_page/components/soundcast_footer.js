@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import Axios from 'axios';
 
 // import { openSignupbox, openConfirmationbox, addCourseToCart } from '../actions/index';
-import {withRouter} from 'react-router';
-import {orange50} from 'material-ui/styles/colors';
+import { withRouter } from 'react-router';
+import { orange50 } from 'material-ui/styles/colors';
 
 export default class SoundcastFooter extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ export default class SoundcastFooter extends Component {
   }
 
   render() {
-    const {displayedPrice, post} = this.props.getPrice();
+    const { displayedPrice, post } = this.props.getPrice();
 
     return (
       <section
@@ -30,7 +30,7 @@ export default class SoundcastFooter extends Component {
           <div className="row equalize">
             <div
               className="col-md-12 col-sm-12 col-xs-12 text-center"
-              style={{height: '46px'}}
+              style={{ height: '46px' }}
             >
               <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">
                 <span className="tz-text">Get This Soundcast for</span>

@@ -40,7 +40,7 @@ module.exports = function(app) {
       ))[0];
       for (const soundcast of soundcasts) {
         const countListnes = await database.ListeningSession.count({
-          where: {soundcastId: soundcast.soundcastId},
+          where: { soundcastId: soundcast.soundcastId },
         });
         const updateDate =
           soundcast.updateDate || new Date(soundcast.updatedAt).getTime();

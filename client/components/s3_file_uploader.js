@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactS3Uploader from 'react-s3-uploader';
 import LinearProgress from 'material-ui/LinearProgress';
 import Dots from 'react-activity/lib/Dots';
@@ -68,7 +68,7 @@ export default class S3FileUploader extends Component {
 
   onError(message) {
     console.log(`upload error ${this.props.s3NewFileName}: ` + message);
-    this.setState({fileUploadError: message});
+    this.setState({ fileUploadError: message });
   }
 
   render() {
@@ -80,8 +80,8 @@ export default class S3FileUploader extends Component {
       /* uploadedFileUrl, */ fileName,
     } = this.state;
     return (
-      <div style={{display: 'inline-block'}}>
-        <div style={{display: 'none'}}>
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'none' }}>
           <ReactS3Uploader
             signingUrl="/s3/sign"
             signingUrlMethod="GET"
@@ -90,7 +90,7 @@ export default class S3FileUploader extends Component {
             onProgress={this.onProgress.bind(this)}
             onError={this.onError.bind(this)}
             onFinish={this.onFinish.bind(this)}
-            uploadRequestHeaders={{'x-amz-acl': 'public-read'}}
+            uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}
             contentDisposition="auto"
             scrubFilename={filename => {
               const original = filename.split('.');
@@ -108,12 +108,12 @@ export default class S3FileUploader extends Component {
           <div>
             {(fileUploadError && (
               <div>
-                <span style={{color: 'red'}}>{fileUploadError}</span>
+                <span style={{ color: 'red' }}>{fileUploadError}</span>
               </div>
             )) || (
               <div>
-                <div style={{textAlign: 'center', display: 'none'}}>
-                  <div className="title-small" style={{marginBottom: 5}}>
+                <div style={{ textAlign: 'center', display: 'none' }}>
+                  <div className="title-small" style={{ marginBottom: 5 }}>
                     {`Uploading audio file`}
                   </div>
                   <div
@@ -126,7 +126,7 @@ export default class S3FileUploader extends Component {
                     <Dots style={{}} color="#727981" size={22} speed={1} />
                   </div>
                 </div>
-                <div style={{display: ''}}>
+                <div style={{ display: '' }}>
                   <MuiThemeProvider>
                     <LinearProgress
                       mode="determinate"
@@ -134,7 +134,7 @@ export default class S3FileUploader extends Component {
                       color={Colors.mainOrange}
                     />
                   </MuiThemeProvider>
-                  <div className="text-medium" style={{textAlign: 'center'}}>
+                  <div className="text-medium" style={{ textAlign: 'center' }}>
                     <span>{`uploading ${fileUploadProgress} %`}</span>
                   </div>
                 </div>
@@ -143,13 +143,13 @@ export default class S3FileUploader extends Component {
           </div>
         )) ||
           (fileUploaded && (
-            <div style={{textAlign: 'center'}}>
+            <div style={{ textAlign: 'center' }}>
               <div className="text-medium">{`${fileName} saved`}</div>
               <div
                 style={styles.cancelImg}
                 onClick={() => {
                   this.props.onRemoveCallback && this.props.onRemoveCallback();
-                  this.setState({fileUploaded: false, uploadedFileUrl: ''});
+                  this.setState({ fileUploaded: false, uploadedFileUrl: '' });
                 }}
               >
                 Cancel
@@ -175,7 +175,7 @@ export default class S3FileUploader extends Component {
 }
 
 const styles = {
-  cancelImg: {...commonStyles.cancelImg},
+  cancelImg: { ...commonStyles.cancelImg },
   uploadButton: {
     backgroundColor: Colors.link,
     width: 80,
