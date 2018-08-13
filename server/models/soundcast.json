@@ -56,6 +56,13 @@
         "column": "published"
       }
     },
+    "rank": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "rank"
+      }
+    },
     "landingPage": {
       "type": "boolean",
       "required": false,

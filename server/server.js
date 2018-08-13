@@ -46,6 +46,7 @@ const {
 const Emails = require('./scripts/sendEmails.js');
 
 const { createFeed, requestFeed } = require('./scripts/feed.js');
+const syncMessages = require('./scripts/syncPsql.js').syncMessages;
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
 const {
@@ -93,6 +94,7 @@ app.start = function() {
     if (app.get('loopback-component-explorer')) {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+      // syncMessages();
     }
   });
   // server.timeout = 10*60*1000; // 10 minutes

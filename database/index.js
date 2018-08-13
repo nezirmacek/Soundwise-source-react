@@ -130,6 +130,15 @@ var Payout = db.define('Payout', {
   email: { type: Sequelize.STRING }, //email address used to send paypal payout
 });
 
+var Message = db.define('Message', {
+  messageId: { type: Sequelize.STRING, primaryKey: true, allowNull: false },
+  content: { type: Sequelize.STRING, allowNull: false },
+  creatorId: { type: Sequelize.STRING, allowNull: false },
+  publisherId: { type: Sequelize.STRING, allowNull: false },
+  soundcastId: { type: Sequelize.STRING, allowNull: false },
+  isPublished: Sequelize.BOOLEAN,
+});
+
 var PlatformCharges = db.define(
   'PlatformCharges',
   {
@@ -314,6 +323,7 @@ var Coupon = db.define('Coupon', {
 
 User.sync({ force: false, alter: true });
 Publisher.sync({ force: false, alter: true });
+Message.sync({ force: false, alter: true });
 Comment.sync({ force: false, alter: true });
 Announcement.sync({ force: false });
 Like.sync({ force: false, alter: true });
@@ -333,6 +343,7 @@ PodcasterEmail.sync({ force: false, alter: true });
 module.exports = {
   User,
   Publisher,
+  Message,
   Comment,
   Announcement,
   Like,

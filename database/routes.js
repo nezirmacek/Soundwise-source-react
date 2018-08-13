@@ -44,6 +44,20 @@ module.exports = app => {
       });
   });
 
+  app.get('/api/messages', (req, res) => {
+    const soundcastId = JSON.parse(req.query.filter).soundcastId;
+    database.Message.findAll({
+      where: { soundcastId: soundcastId },
+      order: [['updatedAt', 'DESC']],
+    })
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+
   app.post('/api/episode', (req, res) => {
     database.Episode.findOrCreate({
       where: { episodeId: req.body.episodeId },
@@ -62,6 +76,15 @@ module.exports = app => {
   app.post('/api/soundcast', (req, res) => {
     soundcastService
       .createOrUpdate(req.body)
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send(err);
+      });
+  });
+  app.post('/api/messages', (req, res) => {
+    database.Message.create(req.body)
       .then(data => {
         res.send(data);
       })
