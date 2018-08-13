@@ -163,22 +163,44 @@ export default class Announcements extends Component {
           isPublished: true,
           messageId: announcementID,
         };
+        firebase
+          .database()
+          .ref(`messages/${announcementID}`)
+          .set(newAnnouncement);
+        firebase
+          .database()
+          .ref(`soundcasts/${currentSoundcastID}/messages/${announcementID}`)
+          .set(newAnnouncement)
+          .then(
+            () => {
+              that.setState({
+                message: '',
+              });
 
-        Axios.post('/api/messages', newAnnouncement).then(
-          data => {
-            that.setState({
-              message: '',
-            });
-            firebase
-              .database()
-              .ref(`soundcasts/${currentSoundcastID}/subscribed`)
-              .once('value', snapshot => {
-                if (snapshot.val()) {
-                  let registrationTokens = [];
-                  // get an array of device tokens
-                  Object.keys(snapshot.val()).forEach(user => {
-                    if (typeof snapshot.val()[user] == 'object') {
-                      registrationTokens.push(snapshot.val()[user][0]); //basic version: only allow one devise per user
+              firebase
+                .database()
+                .ref(`soundcasts/${currentSoundcastID}/subscribed`)
+                .once('value', snapshot => {
+                  if (snapshot.val()) {
+                    let registrationTokens = [];
+                    // get an array of device tokens
+                    Object.keys(snapshot.val()).forEach(user => {
+                      if (typeof snapshot.val()[user] == 'object') {
+                        registrationTokens.push(snapshot.val()[user][0]); //basic version: only allow one devise per user
+                      }
+                    });
+                    const payload = {
+                      notification: {
+                        // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                        title: `${currentSoundcast.title} sent you a message`,
+                        body: message,
+                        badge: '1',
+                        sound: 'default',
+                      },
+                    };
+                    sendNotifications(registrationTokens, payload); //sent push notificaiton
+                    if (that.state.sendEmails) {
+                      that.emailListeners(currentSoundcast, message);
                     }
                   });
                   const payload = {

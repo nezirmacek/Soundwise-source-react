@@ -58,7 +58,7 @@ const {
 } = require('./scripts/audioProcessing');
 
 const parseFeed = require('./scripts/parseFeed.js').parseFeed;
-const sendNotification = require('./scripts/messaging.js').sendNotification;
+const pushNotification = require('./scripts/messaging.js').pushNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 const createStripeAccount = require('./scripts/createStripeAccounts.js')
@@ -200,7 +200,7 @@ app.post('/api/send_marketing_emails', Emails.sendMarketingEmails);
 app.post('/api/delete_emails', Emails.deleteFromEmailList);
 app.post('/api/add_emails', Emails.addToEmailList);
 
-app.post('/api/send_notification', sendNotification);
+app.post('/api/send_notification', pushNotification);
 app.post('/api/subscription_renewal', renewSubscription);
 app.post('/api/cancel_plan', cancelSubscription);
 app.post('/api/unsubscribe', unsubscribe);

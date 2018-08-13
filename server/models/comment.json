@@ -42,6 +42,13 @@
         "column": "userId"
       }
     },
+    "parentId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "parentId"
+      }
+    },
     "soundcastId": {
       "type": "string",
       "required": true,
@@ -73,6 +80,11 @@
   },
   "validations": [],
   "relations": {
+    "comment": {
+      "type": "hasMany",
+      "model": "comment",
+      "foreignKey": "parentId"
+    },
     "soundcast": {
       "type": "belongsTo",
       "model": "soundcast",

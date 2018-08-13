@@ -232,7 +232,90 @@ const podcastCategories = {
   },
 }; // podcastCategories
 
+const getContentPush = entity => {
+  const soundcastId = entity.soundcastId;
+  if (entity.likeId === undefined) {
+    return entity.announcementId
+      ? {
+          data: {
+            type: 'COMMENT_MESSAGE',
+            messageId: entity.announcementId,
+            soundcastId,
+          },
+          notification: {
+            title: 'Comment message',
+            body: 'text',
+          },
+        }
+      : {
+          data: {
+            type: 'COMMENT_EPISODE',
+            episodeId: entity.episodeId,
+            soundcastId,
+          },
+          notification: {
+            title: 'Comment episode',
+            body: entity.content,
+          },
+        };
+  } else {
+    return entity.announcementId
+      ? {
+          data: {
+            type: 'LIKE_MESSAGE',
+            messageId: entity.announcementId,
+            soundcastId,
+          },
+          notification: {
+            title: 'Like message',
+            body: 'text',
+          },
+        }
+      : entity.episodeId
+        ? {
+            data: {
+              type: 'LIKE_EPISODE',
+              episodeId: entity.episodeId,
+              soundcastId,
+            },
+            notification: {
+              title: 'Like episode',
+              body: 'text',
+            },
+          }
+        : {
+            data: {
+              type: 'LIKE_COMMENT',
+              messageId: entity.commentId,
+              soundcastId,
+            },
+            notification: {
+              title: 'Like comment',
+              body: 'text',
+            },
+          };
+  }
+};
+
+const getEvent = (type, entity) => {
+  let event = {
+    type,
+    // story: 'string',
+    userId: entity.userId,
+    episodeId: entity.episodeId,
+    likeId: entity.likeId,
+    soundcastId: entity.soundcastId,
+    messageId: entity.messageId,
+    commentId: entity.commentId,
+    parentId: entity.commentId,
+  };
+  event = _.pickBy(event, _.identity);
+  return event;
+};
+
 module.exports = prefix => ({
+  getEvent,
+  getContentPush,
   uploader,
   setAudioTags,
   parseSilenceDetect,
