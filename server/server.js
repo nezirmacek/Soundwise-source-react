@@ -49,6 +49,8 @@ const { createFeed, requestFeed } = require('./scripts/feed.js');
 const syncMessages = require('./scripts/syncPsql.js').syncMessages;
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
+
+const sendInvite = require('./scripts/invites').sendInvite;
 const {
   audioProcessing,
   audioProcessingReplace,
@@ -70,7 +72,7 @@ Raven.config(
 console.log(serviceAccount);
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
+  databaseURL: 'https://soundwise-testbase.firebaseio.com',
 });
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
 var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
@@ -227,6 +229,7 @@ app.post('/api/upload', function(req, res, next) {
 app.post('/api/audiowave', multipart(), createAudioWaveVid);
 app.post('/api/audio_processing', audioProcessing);
 app.post('/api/audio_processing_replace', audioProcessingReplace);
+app.post('/api/invite', sendInvite);
 
 app.use(
   '/s3',
