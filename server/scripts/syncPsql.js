@@ -4,11 +4,14 @@ const database = require('../../database/index');
 
 const syncMessages = () => {
   const ids = [
-    '1503002147022s',
-    '1503093293340s',
+    '1509475284817s',
+    '1507828113963s',
+    '1508785327382s',
+    '1510935330009s',
+    '1513445399143s',
+    '1508293913676s',
     '1505855025645s',
-    '15232423442s',
-  ]; //
+  ];
   ids.forEach(id =>
     firebase
       .database()
