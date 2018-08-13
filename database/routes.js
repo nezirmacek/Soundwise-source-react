@@ -1,6 +1,7 @@
 'use strict';
 
 const database = require('./index');
+const inspectors = require('./inspectors.js');
 const soundcastService = require('../server/services').soundcastService;
 
 module.exports = app => {
@@ -198,4 +199,10 @@ module.exports = app => {
         res.status(500).send(err);
       });
   });
+  app.post('/api/comment', inspectors.addComment);
+  app.put('/api/comment', inspectors.editComment);
+  app.delete('/api/comment', inspectors.deleteComment);
+
+  app.post('/api/like', inspectors.addLike);
+  app.delete('/api/like', inspectors.deleteLike);
 };
