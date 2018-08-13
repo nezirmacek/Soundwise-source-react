@@ -13,6 +13,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { withRouter } from 'react-router';
+import { Helmet } from 'react-helmet';
 import moment from 'moment';
 
 import { SoundwiseHeader } from '../components/soundwise_header';
@@ -755,6 +756,9 @@ class _AppSignup extends Component {
           overflow: 'auto',
         }}
       >
+        <Helmet>
+          <meta name="robots" content="noindex" />
+        </Helmet>
         {(soundcast && (
           <div className="col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col">
             <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12  text-center">
