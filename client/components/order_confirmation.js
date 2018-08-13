@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 class _OrderConfirmation extends Component {
@@ -42,7 +42,7 @@ class _OrderConfirmation extends Component {
                       type="submit"
                       className="tz-text bg-golden-yellow tz-text btn btn-large text-dark-gray propClone contact-submit btn-circle xs-width-100"
                       data-selector=".tz-text"
-                      style={{marginTop: '5em'}}
+                      style={{ marginTop: '5em' }}
                     >
                       GO TO MY PROGRAMS
                     </button>

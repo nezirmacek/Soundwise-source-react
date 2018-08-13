@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Route, Link, Switch} from 'react-router-dom';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
@@ -12,10 +12,10 @@ import FlatButton from 'material-ui/FlatButton';
 
 import ImageCropModal from './dashboard/components/image_crop_modal';
 import Footer from '../components/footer';
-import {SoundwiseHeader} from '../components/soundwise_header';
+import { SoundwiseHeader } from '../components/soundwise_header';
 import Colors from '../styles/colors';
 import commonStyles from '../styles/commonStyles';
-import {OrangeSubmitButton} from '../components/buttons/buttons';
+import { OrangeSubmitButton } from '../components/buttons/buttons';
 
 class _UserProfile extends Component {
   constructor(props) {
@@ -52,7 +52,7 @@ class _UserProfile extends Component {
 
   componentDidMount() {
     const that = this;
-    if (process.env.NODE_ENV === 'dev') {
+    if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
       console.log('Stripe: setting test key');
       Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     } else {
@@ -100,7 +100,7 @@ class _UserProfile extends Component {
   retrieveCustomer(stripe_id) {
     const that = this;
     if (stripe_id) {
-      Axios.get('/api/retrieveCustomer', {params: {stripe_id}}).then(
+      Axios.get('/api/retrieveCustomer', { params: { stripe_id } }).then(
         response => {
           const customer = response.data.customer;
           that.setState({
@@ -116,7 +116,7 @@ class _UserProfile extends Component {
 
   _uploadToAws(file) {
     const _self = this;
-    const {firstName, lastName} = this.state;
+    const { firstName, lastName } = this.state;
     let data = new FormData();
     const splittedFileName = file.type.split('/');
     const ext = splittedFileName[splittedFileName.length - 1];
@@ -136,7 +136,7 @@ class _UserProfile extends Component {
           url = url.replace(/http/i, 'https');
         }
 
-        _self.setState({pic_url: url});
+        _self.setState({ pic_url: url });
       })
       .catch(function(err) {
         // POST failed...
@@ -158,10 +158,10 @@ class _UserProfile extends Component {
         alert(
           'Only .png or .jpeg files are accepted. Please upload a new file.'
         );
-        this.setState({profileImgUploaded: false});
+        this.setState({ profileImgUploaded: false });
         return;
       }
-      this.setState({profileImgUploaded: true});
+      this.setState({ profileImgUploaded: true });
       this.currentImageRef = this.profileImgInputRef.files[0];
       this.handleModalOpen();
     }
@@ -172,7 +172,7 @@ class _UserProfile extends Component {
     this.setState({
       passwordError: '',
     });
-    const {email, password, newPassword, newPassword2} = this.state;
+    const { email, password, newPassword, newPassword2 } = this.state;
     if (newPassword != newPassword2) {
       this.setState({
         passwordError:
@@ -239,7 +239,7 @@ class _UserProfile extends Component {
   }
 
   passwordPopUp() {
-    const {password, newPassword, newPassword2, passwordError} = this.state;
+    const { password, newPassword, newPassword2, passwordError } = this.state;
     const that = this;
 
     const actions = [
@@ -278,12 +278,12 @@ class _UserProfile extends Component {
           >
             <div>
               <span style={styles.titleText}>Current password</span>
-              <div style={{...styles.inputTitleWrapper}}>
+              <div style={{ ...styles.inputTitleWrapper }}>
                 <input
                   type="password"
                   style={styles.inputTitle}
                   onChange={e => {
-                    this.setState({password: e.target.value});
+                    this.setState({ password: e.target.value });
                   }}
                   value={password}
                 />
@@ -291,12 +291,12 @@ class _UserProfile extends Component {
             </div>
             <div>
               <span style={styles.titleText}>New password</span>
-              <div style={{...styles.inputTitleWrapper}}>
+              <div style={{ ...styles.inputTitleWrapper }}>
                 <input
                   type="password"
                   style={styles.inputTitle}
                   onChange={e => {
-                    this.setState({newPassword: e.target.value});
+                    this.setState({ newPassword: e.target.value });
                   }}
                   value={newPassword}
                 />
@@ -304,18 +304,18 @@ class _UserProfile extends Component {
             </div>
             <div>
               <span style={styles.titleText}>Re-enter new password</span>
-              <div style={{...styles.inputTitleWrapper}}>
+              <div style={{ ...styles.inputTitleWrapper }}>
                 <input
                   type="password"
                   style={styles.inputTitle}
                   onChange={e => {
-                    this.setState({newPassword2: e.target.value});
+                    this.setState({ newPassword2: e.target.value });
                   }}
                   value={newPassword2}
                 />
               </div>
               <div>
-                <span style={{...styles.inputTitle, color: 'red'}}>
+                <span style={{ ...styles.inputTitle, color: 'red' }}>
                   {passwordError}
                 </span>
               </div>
@@ -385,11 +385,11 @@ class _UserProfile extends Component {
           >
             <div
               className="col-md-12"
-              style={{...styles.relativeBlock, paddingLeft: 0}}
+              style={{ ...styles.relativeBlock, paddingLeft: 0 }}
             >
               <input
                 onChange={e => {
-                  that.setState({newCard: e.target.value});
+                  that.setState({ newCard: e.target.value });
                 }}
                 required
                 className="border-radius-4"
@@ -410,14 +410,14 @@ class _UserProfile extends Component {
             {/*Expiration*/}
             <div
               className="col-md-9 col-xs-12"
-              style={{paddingLeft: 0, paddingRight: 0}}
+              style={{ paddingLeft: 0, paddingRight: 0 }}
             >
               {/*month*/}
               <div style={styles.selectBlock} className="border-radius-4">
                 <label style={styles.selectLabel}>Exp Month</label>
                 <select
                   onChange={e => {
-                    that.setState({exp_month_new: e.target.value});
+                    that.setState({ exp_month_new: e.target.value });
                   }}
                   name="exp_month"
                   id="expiry-month"
@@ -433,7 +433,7 @@ class _UserProfile extends Component {
                 <label style={styles.selectLabel}>Exp Year</label>
                 <select
                   onChange={e => {
-                    that.setState({exp_year_new: e.target.value});
+                    that.setState({ exp_year_new: e.target.value });
                   }}
                   name="exp_year"
                   value={that.state.exp_year_new}
@@ -443,11 +443,11 @@ class _UserProfile extends Component {
                 </select>
               </div>
             </div>
-            <div className="col-md-3 col-xs-12" style={{paddingLeft: 0}}>
+            <div className="col-md-3 col-xs-12" style={{ paddingLeft: 0 }}>
               {/*cvv/cvc*/}
               <input
                 onChange={e => {
-                  that.setState({cvc: e.target.value});
+                  that.setState({ cvc: e.target.value });
                 }}
                 required
                 className="border-radius-4"
@@ -460,7 +460,7 @@ class _UserProfile extends Component {
               />
             </div>
             {(this.state.creditCardError && (
-              <div className="col-md-12" style={{color: 'red'}}>
+              <div className="col-md-12" style={{ color: 'red' }}>
                 {this.state.creditCardError}
               </div>
             )) ||
@@ -495,7 +495,7 @@ class _UserProfile extends Component {
   // }
 
   changeCreditCard() {
-    const {stripe_id, cvc, newCard, exp_month_new, exp_year_new} = this.state;
+    const { stripe_id, cvc, newCard, exp_month_new, exp_year_new } = this.state;
     const that = this;
     if (newCard.length == 0) {
       this.setState({
@@ -554,8 +554,8 @@ class _UserProfile extends Component {
   }
 
   submit() {
-    const {firstName, lastName, pic_url, providerId} = this.state;
-    const {userInfo, history} = this.props;
+    const { firstName, lastName, pic_url, providerId } = this.state;
+    const { userInfo, history } = this.props;
     const that = this;
     // const userID = firebase.auth().currentUser.uid;
     firebase.auth().onAuthStateChanged(function(user) {
@@ -639,17 +639,17 @@ class _UserProfile extends Component {
                 </h2>
               </div>
             </div>
-            <div className="row" style={{paddingTop: 30}}>
+            <div className="row" style={{ paddingTop: 30 }}>
               <div className="col-md-6 col-sm-8 col-xs-12 center-col">
                 <div className="col-md-6 col-sm-6 col-xs-12">
                   <span style={styles.titleText}>First Name</span>
-                  <div style={{...styles.inputTitleWrapper}}>
+                  <div style={{ ...styles.inputTitleWrapper }}>
                     <input
                       type="text"
                       style={styles.inputTitle}
                       placeholder={''}
                       onChange={e => {
-                        this.setState({firstName: e.target.value});
+                        this.setState({ firstName: e.target.value });
                       }}
                       value={firstName}
                     />
@@ -657,13 +657,13 @@ class _UserProfile extends Component {
                 </div>
                 <div className="col-md-6 col-sm-6 col-xs-12">
                   <span style={styles.titleText}>Last Name</span>
-                  <div style={{...styles.inputTitleWrapper}}>
+                  <div style={{ ...styles.inputTitleWrapper }}>
                     <input
                       type="text"
                       style={styles.inputTitle}
                       placeholder={''}
                       onChange={e => {
-                        this.setState({lastName: e.target.value});
+                        this.setState({ lastName: e.target.value });
                       }}
                       value={lastName}
                     />
@@ -671,9 +671,9 @@ class _UserProfile extends Component {
                 </div>
                 <div
                   className="col-md-12 col-sm-12 col-xs-12"
-                  style={{paddingTop: 30}}
+                  style={{ paddingTop: 30 }}
                 >
-                  <div style={{marginBottom: 10}}>
+                  <div style={{ marginBottom: 10 }}>
                     <span style={styles.titleText}>Profile Picture</span>
                   </div>
                   <div
@@ -683,7 +683,7 @@ class _UserProfile extends Component {
                     }}
                   />
                   <div style={styles.loaderWrapper}>
-                    <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                    <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
                       <input
                         type="file"
                         name="upload"
@@ -736,11 +736,11 @@ class _UserProfile extends Component {
                 </div>
                 <div
                   className="col-md-12 col-sm-12 col-xs-12"
-                  style={{paddingTop: 30}}
+                  style={{ paddingTop: 30 }}
                 >
                   <div
                     className="col-md-6 col-sm-12 col-xs-12"
-                    style={{marginBottom: 10, paddingLeft: 0}}
+                    style={{ marginBottom: 10, paddingLeft: 0 }}
                   >
                     <div style={styles.titleText}>Email</div>
                     <div style={styles.inputTitleWrapper}>
@@ -750,7 +750,7 @@ class _UserProfile extends Component {
                   {(providerId == 'facebook.com' && (
                     <div
                       className="col-md-6 col-sm-12 col-xs-12"
-                      style={{marginBottom: 10, paddingLeft: 0}}
+                      style={{ marginBottom: 10, paddingLeft: 0 }}
                     >
                       <div style={styles.titleText}>Login Provider</div>
                       <div style={styles.inputTitleWrapper}>
@@ -762,7 +762,7 @@ class _UserProfile extends Component {
                   )) || (
                     <div
                       className="col-md-6 col-sm-12 col-xs-12"
-                      style={{marginBottom: 10, paddingLeft: 0}}
+                      style={{ marginBottom: 10, paddingLeft: 0 }}
                     >
                       <div style={styles.titleText}>Password</div>
                       <div style={styles.inputTitleWrapper}>
@@ -788,7 +788,7 @@ class _UserProfile extends Component {
                   )}
                   <div
                     className="col-md-12 col-sm-12 col-xs-12"
-                    style={{marginBottom: 10, paddingLeft: 0}}
+                    style={{ marginBottom: 10, paddingLeft: 0 }}
                   >
                     <div style={styles.titleText}>Billing Information</div>
                     {(stripe_id && (
@@ -806,7 +806,7 @@ class _UserProfile extends Component {
                         </div>
                         <div
                           onClick={() => {
-                            that.setState({creditCardPopUpOpen: true});
+                            that.setState({ creditCardPopUpOpen: true });
                           }}
                           style={{
                             ...styles.inputTitle,
@@ -821,7 +821,7 @@ class _UserProfile extends Component {
                       <div style={styles.inputTitleWrapper}>
                         <div
                           onClick={() => {
-                            that.setState({creditCardPopUpOpen: true});
+                            that.setState({ creditCardPopUpOpen: true });
                           }}
                           style={{
                             ...styles.inputTitle,
@@ -841,10 +841,10 @@ class _UserProfile extends Component {
             </div>
             <div
               className="col-lg-8 col-md-8 col-sm-12 col-xs-12 center-col text-center"
-              style={{paddingTop: 35}}
+              style={{ paddingTop: 35 }}
             >
               {(profileSaved && (
-                <div style={{fontSize: 16, color: Colors.mainOrange}}>
+                <div style={{ fontSize: 16, color: Colors.mainOrange }}>
                   Profile Saved
                 </div>
               )) || <OrangeSubmitButton label="Save" onClick={this.submit} />}
@@ -858,16 +858,16 @@ class _UserProfile extends Component {
 }
 
 const styles = {
-  titleText: {...commonStyles.titleText},
-  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
-  inputTitle: {...commonStyles.inputTitle, fontSize: 16},
-  inputFileHidden: {...commonStyles.inputFileHidden},
+  titleText: { ...commonStyles.titleText },
+  inputTitleWrapper: { ...commonStyles.inputTitleWrapper },
+  inputTitle: { ...commonStyles.inputTitle, fontSize: 16 },
+  inputFileHidden: { ...commonStyles.inputFileHidden },
   loaderWrapper: {
     ...commonStyles.loaderWrapper,
     width: 'calc(100% - 133px)',
     float: 'left',
   },
-  cancelImg: {...commonStyles.cancelImg, fontSize: 14},
+  cancelImg: { ...commonStyles.cancelImg, fontSize: 14 },
   profileImage: {
     width: 100,
     height: 100,
@@ -992,8 +992,8 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  return {userInfo, isLoggedIn};
+  const { userInfo, isLoggedIn } = state.user;
+  return { userInfo, isLoggedIn };
 };
 
 export const UserProfile = connect(

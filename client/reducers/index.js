@@ -1,5 +1,5 @@
-import {combineReducers} from 'redux';
-import {routerReducer as routing} from 'react-router-redux';
+import { combineReducers } from 'redux';
+import { routerReducer as routing } from 'react-router-redux';
 import * as types from '../actions/types';
 import * as _ from 'lodash';
 
@@ -294,7 +294,7 @@ function checkoutProcess(
   switch (action.type) {
     case types.ADDTOCART:
       let _cart = JSON.parse(JSON.stringify(state.shoppingCart));
-      const courseInCart = _.find(_cart, {id: action.payload.id});
+      const courseInCart = _.find(_cart, { id: action.payload.id });
       if (!courseInCart) {
         _cart.push(action.payload);
         let _newState = {

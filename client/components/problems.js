@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Colors from '../styles/colors';
 
 export default class Problems extends Component {
@@ -23,21 +23,21 @@ export default class Problems extends Component {
           <div className="row equalize xs-equalize-auto">
             <div
               className="col-md-4 col-sm-4 col-xs-12  xs-margin-nine-bottom "
-              style={{height: 401}}
+              style={{ height: 401 }}
             >
               <div className="border-radius-6 box-shadow bg-white builder-bg padding-nineteen sm-padding-eleven xs-padding-seventeen xs-width-100 display-table-cell-vertical-middle">
                 <div className=" margin-three-bottom display-block tz-text text-center">
                   <i
                     className="fas fa-3x fa-quote-right"
-                    style={{color: Colors.mainOrange}}
+                    style={{ color: Colors.mainOrange }}
                   />
                 </div>
                 <div
                   className="title-medium text-center font-weight-500  margin-eighteen-bottom tz-text "
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
                   I want to start a{' '}
-                  <strong style={{fontSize: 28}}>podcast</strong>, but…
+                  <strong style={{ fontSize: 28 }}>podcast</strong>, but…
                 </div>
                 <ul className="text-large  text-dark-gray margin-twenty-three-bottom tz-text">
                   <li>I have no audience. </li>
@@ -51,21 +51,21 @@ export default class Problems extends Component {
             </div>
             <div
               className="col-md-4 col-sm-4 col-xs-12  xs-margin-nine-bottom "
-              style={{height: 401}}
+              style={{ height: 401 }}
             >
               <div className="border-radius-6 box-shadow bg-white builder-bg padding-nineteen sm-padding-eleven xs-padding-seventeen xs-width-100 display-table-cell-vertical-middle">
                 <div className=" margin-three-bottom display-block tz-text text-center">
                   <i
                     className="fas fa-3x fa-quote-right"
-                    style={{color: Colors.mainOrange}}
+                    style={{ color: Colors.mainOrange }}
                   />
                 </div>
                 <div
                   className="text-center title-medium font-weight-500 margin-eighteen-bottom tz-text "
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
                   I created{' '}
-                  <strong style={{fontSize: 28}}>audio courses</strong> for
+                  <strong style={{ fontSize: 28 }}>audio courses</strong> for
                   sale, but…
                 </div>
                 <ul className="text-large text-dark-gray margin-twenty-three-bottom tz-text">
@@ -82,20 +82,20 @@ export default class Problems extends Component {
             </div>
             <div
               className="col-md-4 col-sm-4 col-xs-12 xs-margin-nine-bottom "
-              style={{height: 401}}
+              style={{ height: 401 }}
             >
               <div className="border-radius-6 box-shadow bg-white builder-bg padding-nineteen sm-padding-eleven xs-padding-seventeen xs-width-100 display-table-cell-vertical-middle">
                 <div className=" margin-three-bottom display-block tz-text text-center">
                   <i
                     className="fas fa-3x fa-quote-right"
-                    style={{color: Colors.mainOrange}}
+                    style={{ color: Colors.mainOrange }}
                   />
                 </div>
                 <div
                   className="text-center title-medium font-weight-500 margin-eighteen-bottom tz-text "
-                  style={{color: Colors.mainOrange}}
+                  style={{ color: Colors.mainOrange }}
                 >
-                  I teach <strong style={{fontSize: 28}}>training</strong>{' '}
+                  I teach <strong style={{ fontSize: 28 }}>training</strong>{' '}
                   workshops in person, but…
                 </div>
                 <ul className="text-large text-dark-gray margin-twenty-three-bottom tz-text">

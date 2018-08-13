@@ -1,13 +1,31 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
-if (process.env.NODE_ENV === 'dev') {
+if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
   console.log('Running DEV mode');
   window.firebase = firebase;
 }
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Helmet} from 'react-helmet';
+if (!window.localStorage) {
+  // localStorage polyfill
+  window.localStorage = {
+    _data: {},
+    setItem: function(id, val) {
+      return (this._data[id] = String(val));
+    },
+    getItem: function(id) {
+      return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
+    },
+    removeItem: function(id) {
+      return delete this._data[id];
+    },
+    clear: function() {
+      return (this._data = {});
+    },
+  };
+}
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 // import Butter from 'buttercms';
 // const butter = Butter('4ac51854da790bffc513d38911d2b677c19481f8');
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -15,18 +33,29 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
-import {config, awsConfig} from '../config';
-import {loadCourses, subscribeToCategories, signinUser} from './actions/index';
+const config =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').config
+    : require('../config').config;
+const awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').awsConfig
+    : require('../config').awsConfig;
+import {
+  loadCourses,
+  subscribeToCategories,
+  signinUser,
+} from './actions/index';
 import Page from './components/page';
-import {HomePage} from './components/landingpage_main';
-import {LandingPagePodcast} from './components/landingpage_podcast';
-import {LandingPageSelling} from './components/landingpage_selling_audio';
+import { HomePage } from './components/landingpage_main';
+import { LandingPagePodcast } from './components/landingpage_podcast';
+import { LandingPageSelling } from './components/landingpage_selling_audio';
 import PageRealEstate from './components/page_realestate';
 import ConversionCourse from './components/conversion_course';
 import PodcastingCourse from './components/podcasting_course_landing_page';
 import PageExperts from './components/page_experts';
-import {PricingPage} from './containers/pricing_page';
-import {SoundwiseCheckout} from './containers/soundwise_checkout';
+import { PricingPage } from './containers/pricing_page';
+import { SoundwiseCheckout } from './containers/soundwise_checkout';
 import About from './components/about';
 import Referral from './components/referral';
 import TrialRequest from './components/trialrequest';
@@ -36,34 +65,34 @@ import Publisher from './components/publisher';
 import Terms from './components/terms_of_use';
 import ContentDownload from './components/content_download';
 import TermsFreeContent from './components/terms_free_content_May2017';
-import {OrderConfirmation} from './components/order_confirmation';
-import {Notice} from './components/notice';
-import {AppSignup} from './containers/app_signup';
-import {AppSignin} from './containers/app_signin';
+import { OrderConfirmation } from './components/order_confirmation';
+import { Notice } from './components/notice';
+import { AppSignup } from './containers/app_signup';
+import { AppSignin } from './containers/app_signin';
 import SignupOptions from './containers/signup_options';
 // import {Courses} from './containers/courses';
 // import {MyCourses} from './containers/mycourses';
-import {MySoundcasts} from './containers/mysoundcasts';
-import {SoundcastPlayingPage} from './containers/soundcast_player/soundcast_playing_page';
-import {UserProfile} from './containers/user_profile';
+import { MySoundcasts } from './containers/mysoundcasts';
+import { SoundcastPlayingPage } from './containers/soundcast_player/soundcast_playing_page';
+import { UserProfile } from './containers/user_profile';
 // import {Course} from './containers/course_page';
 // import {Staged_Course} from './containers/staged_course_page';
 // import {Course_Purchased} from './containers/course_page_purchased';
-import {Cart} from './containers/cart/cart';
-import {Checkout} from './containers/checkout';
-import {Dashboard} from './containers/dashboard/dashboard';
-import {SoundcastPage} from './containers/soundcast_landing_page/soundcast_page';
+import { Cart } from './containers/cart/cart';
+import { Checkout } from './containers/checkout';
+import { Dashboard } from './containers/dashboard/dashboard';
+import { SoundcastPage } from './containers/soundcast_landing_page/soundcast_page';
 import BlogList from './containers/blog/blog-list';
 import HelpDocs from './containers/blog/help-docs';
 import BlogPost from './containers/blog/blog-post';
 import IGPList from './containers/blog/igp-list';
 import IGPPost from './containers/blog/igp-post';
-import {EpisodePage} from './containers/soundcast_landing_page/components/episode_page';
-import {SoundcastCheckout} from './containers/soundcast_landing_page/soundcast_checkout';
+import { EpisodePage } from './containers/soundcast_landing_page/components/episode_page';
+import { SoundcastCheckout } from './containers/soundcast_landing_page/soundcast_checkout';
 import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
-import {WaveVideoInputs} from './containers/wave_video_inputs';
+import { WaveVideoInputs } from './containers/wave_video_inputs';
 
 class _Routes extends Component {
   constructor(props) {
@@ -106,7 +135,7 @@ class _Routes extends Component {
 
           let _user = JSON.parse(JSON.stringify(snapshot.val()));
           // console.log('_user: ', _user);
-          that.updateUserState({..._user, id: userId});
+          that.updateUserState({ ..._user, id: userId });
 
           let editSoundcastKey; // indicate empty history.state and requiring soundcast download
           if (
@@ -398,12 +427,12 @@ class _Routes extends Component {
 }
 
 const mapStateToProps = state => {
-  return {isLoggedIn: state.user.isLoggedIn};
+  return { isLoggedIn: state.user.isLoggedIn };
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {loadCourses, signinUser, subscribeToCategories},
+    { loadCourses, signinUser, subscribeToCategories },
     dispatch
   );
 }

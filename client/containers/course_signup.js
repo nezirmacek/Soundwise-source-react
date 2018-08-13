@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import Axios from 'axios';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {orange500, blue500} from 'material-ui/styles/colors';
+import { orange500, blue500 } from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
+import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import {
   signupUser,
@@ -20,7 +20,7 @@ import {
   addCourseToCart,
 } from '../actions/index';
 import AddCourseToUser from '../helpers/add_course_to_user';
-import {facebookErrorCallback} from './commonAuth';
+import { facebookErrorCallback } from './commonAuth';
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -98,7 +98,7 @@ class _CourseSignup extends Component {
   }
 
   async signUp() {
-    const {firstName, lastName, email, password, pic_url} = this.state;
+    const { firstName, lastName, email, password, pic_url } = this.state;
     const that = this;
 
     if (firstName.length < 1 || lastName.length < 1) {
@@ -129,7 +129,7 @@ class _CourseSignup extends Component {
           pic_url,
         });
 
-      this.props.signupUser({firstName, lastName, email, pic_url, password});
+      this.props.signupUser({ firstName, lastName, email, pic_url, password });
       this.props.openSignupbox(false);
 
       if (that.props.course.price == 0) {
@@ -147,7 +147,7 @@ class _CourseSignup extends Component {
   }
 
   signIn() {
-    let {firstName, lastName, email, password, pic_url} = this.state;
+    let { firstName, lastName, email, password, pic_url } = this.state;
     const that = this;
 
     firebase
@@ -168,7 +168,7 @@ class _CourseSignup extends Component {
               if (snapshot.val().pic_url) {
                 pic_url = snapshot.val().pic_url;
               }
-              that.props.signinUser({firstName, lastName, email, pic_url});
+              that.props.signinUser({ firstName, lastName, email, pic_url });
 
               that.props.openSignupbox(false);
               that.setState({
@@ -196,7 +196,7 @@ class _CourseSignup extends Component {
   }
 
   signupForm() {
-    const {firstName, lastName, email, password} = this.state;
+    const { firstName, lastName, email, password } = this.state;
     return (
       <div style={styles.table}>
         <section className=" bg-white builder-bg" id="subscribe-section6">
@@ -221,7 +221,7 @@ class _CourseSignup extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-11 col-xs-11 center-col text-center"
-                style={{padding: '1em', margin: '1em'}}
+                style={{ padding: '1em', margin: '1em' }}
               >
                 <button
                   onClick={() => this.handleFBSignup()}
@@ -297,7 +297,7 @@ class _CourseSignup extends Component {
   }
 
   loginForm() {
-    const {email, password} = this.state;
+    const { email, password } = this.state;
     return (
       <section className=" bg-white builder-bg" id="subscribe-section6">
         <div className="">
@@ -321,7 +321,7 @@ class _CourseSignup extends Component {
             </div>
             <div
               className="col-md-6 col-sm-11 col-xs-11 center-col text-center"
-              style={{padding: '1.5em', margin: '2em'}}
+              style={{ padding: '1.5em', margin: '2em' }}
             >
               <button
                 onClick={() => this.handleFBSignin()}
@@ -472,7 +472,7 @@ class _CourseSignup extends Component {
             .ref('users/' + userId)
             .once('value')
             .then(snapshot => {
-              const {firstName, lastName, email, pic_url, courses} =
+              const { firstName, lastName, email, pic_url, courses } =
                 snapshot.val() || {};
               // if(!courses) {
               //   firebase.database().ref('users/' + userId).set({
@@ -525,7 +525,7 @@ class _CourseSignup extends Component {
             pic_url,
           });
 
-        that.props.signupUser({firstName, lastName, email, pic_url});
+        that.props.signupUser({ firstName, lastName, email, pic_url });
 
         if (that.props.course.price == 0) {
           that.addCourseToUser();
@@ -545,9 +545,9 @@ class _CourseSignup extends Component {
             .ref('users/' + userId)
             .once('value')
             .then(snapshot => {
-              const {firstName, lastName, email, pic_url} =
+              const { firstName, lastName, email, pic_url } =
                 snapshot.val() || {};
-              that.props.signupUser({firstName, lastName, email, pic_url});
+              that.props.signupUser({ firstName, lastName, email, pic_url });
               if (that.props.course.price == 0) {
                 that.addCourseToUser();
               } else {
@@ -631,8 +631,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {signupFormOpen, confirmationBoxOpen} = state.signupBox;
+  const { userInfo, isLoggedIn } = state.user;
+  const { signupFormOpen, confirmationBoxOpen } = state.signupBox;
   return {
     userInfo,
     isLoggedIn,

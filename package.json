@@ -4,7 +4,7 @@
   "description": "Soundwise web app",
   "main": "server/server.js",
   "engines": {
-    "node": "7.6.0"
+    "node": "8"
   },
   "scripts": {
     "lint": "eslint .",
@@ -12,7 +12,8 @@
     "test": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "start": "webpack --watch",
     "start:server": "nodemon server/server.js",
-    "build": "webpack"
+    "build": "webpack",
+    "build:staging": "NODE_ENV=staging webpack"
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.5",
@@ -163,7 +164,7 @@
   },
   "license": "UNLICENSED",
   "prettier": {
-    "bracketSpacing": false,
+    "bracketSpacing": true,
     "singleQuote": true,
     "trailingComma": "es5"
   }

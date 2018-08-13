@@ -1,25 +1,30 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import Axios from 'axios';
 import PropTypes from 'prop-types';
 import 'url-search-params-polyfill';
-import {orange500, blue500} from 'material-ui/styles/colors';
-import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
+import { orange500, blue500 } from 'material-ui/styles/colors';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Redirect,
+} from 'react-router-dom';
+import { withRouter } from 'react-router';
 import moment from 'moment';
 
-import {SoundwiseHeader} from '../components/soundwise_header';
-import {signupUser, signinUser, addDefaultSoundcast} from '../actions/index';
+import { SoundwiseHeader } from '../components/soundwise_header';
+import { signupUser, signinUser, addDefaultSoundcast } from '../actions/index';
 import Colors from '../styles/colors';
-import {GreyInput} from '../components/inputs/greyInput';
-import {minLengthValidator, emailValidator} from '../helpers/validators';
-import {inviteListeners} from '../helpers/invite_listeners';
-import {addToEmailList} from '../helpers/addToEmailList';
-import {OrangeSubmitButton} from '../components/buttons/buttons';
+import { GreyInput } from '../components/inputs/greyInput';
+import { minLengthValidator, emailValidator } from '../helpers/validators';
+import { inviteListeners } from '../helpers/invite_listeners';
+import { addToEmailList } from '../helpers/addToEmailList';
+import { OrangeSubmitButton } from '../components/buttons/buttons';
 import ImageS3Uploader from '../components/inputs/imageS3Uploader';
-import {signupCommon, facebookErrorCallback, compileUser} from './commonAuth';
+import { signupCommon, facebookErrorCallback, compileUser } from './commonAuth';
 
 const provider = new firebase.auth.FacebookAuthProvider();
 
@@ -128,10 +133,10 @@ class _AppSignup extends Component {
       sumTotal,
       soundcastID,
     } = this.state;
-    const {history, match} = this.props;
+    const { history, match } = this.props;
     const that = this;
 
-    this.setState({isFBauth: false});
+    this.setState({ isFBauth: false });
     if (!this._validateForm(firstName, lastName, email, password)) return;
 
     firebase
@@ -142,7 +147,7 @@ class _AppSignup extends Component {
         if (authArr.length > 0) {
           const text = 'This account already exists. Please sign in instead';
           if (match.params.mode == 'admin' && match.params.id) {
-            history.push(`/signin/admin/${match.params.id}`, {text});
+            history.push(`/signin/admin/${match.params.id}`, { text });
             return;
           } else if (
             match.params.mode == 'soundcast_user' &&
@@ -156,7 +161,7 @@ class _AppSignup extends Component {
               sumTotal,
             });
           } else {
-            history.push('/signin', {text});
+            history.push('/signin', { text });
           }
         } else {
           if (match.params.mode !== 'admin') {
@@ -167,7 +172,7 @@ class _AppSignup extends Component {
             that.signUpInvitedAdmin();
           } else {
             // admin case
-            that.setState({isPublisherFormShown: true});
+            that.setState({ isPublisherFormShown: true });
           }
         }
       })
@@ -176,7 +181,7 @@ class _AppSignup extends Component {
 
   signUpInvitedAdmin(user) {
     const that = this;
-    const {match, history} = this.props;
+    const { match, history } = this.props;
 
     if (!this.state.isFBauth) {
       this._signUp().then(res => {
@@ -251,7 +256,7 @@ class _AppSignup extends Component {
 
   signUpAdmin() {
     const that = this;
-    const {match, history} = this.props;
+    const { match, history } = this.props;
     const {
       firstName,
       lastName,
@@ -262,7 +267,7 @@ class _AppSignup extends Component {
       isFBauth,
     } = this.state;
 
-    this.setState({isFBauth: true});
+    this.setState({ isFBauth: true });
     if (publisher_name.length < 1) {
       alert('Please enter a publisher name!');
       return;
@@ -328,7 +333,7 @@ class _AppSignup extends Component {
   }
 
   async compileUser() {
-    const {signinUser} = this.props;
+    const { signinUser } = this.props;
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         firebase
@@ -347,7 +352,7 @@ class _AppSignup extends Component {
 
   // not getting used see https://github.com/natashache/SoundwiseCMS_web/issues/13
   addDefaultSoundcast() {
-    const {history, addDefaultSoundcast, defaultSoundcastAdded} = this.props;
+    const { history, addDefaultSoundcast, defaultSoundcastAdded } = this.props;
     const that = this;
     const params = new URLSearchParams(this.props.location.search);
     if (!defaultSoundcastAdded) {
@@ -381,7 +386,7 @@ class _AppSignup extends Component {
               short_description: 'First soundcast',
               creatorID,
               publisherID: that.publisherID,
-              prices: [{price: 'free', billingCycle: 'free'}],
+              prices: [{ price: 'free', billingCycle: 'free' }],
               forSale: false,
               published: false,
               landingPage: false,
@@ -475,8 +480,8 @@ class _AppSignup extends Component {
   }
 
   sendWelcomeEmail() {
-    const {firstName, lastName, email} = this.state;
-    const {history} = this.props;
+    const { firstName, lastName, email } = this.state;
+    const { history } = this.props;
     const params = new URLSearchParams(this.props.location.search);
     const content = `<p>Hello ${firstName.slice(0, 1).toUpperCase() +
       firstName.slice(
@@ -484,7 +489,7 @@ class _AppSignup extends Component {
       )},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you join our expanding community of knowledge creators!</p><p>If you're creating a podcast, make sure to check out our <a href="http://bit.ly/2IILSGm">quick start guide</a> and <a href="http://bit.ly/2qlyVKK">"how to get subscribers" guide</a>.</p><p>I'm curious...would you mind sharing what kind of content you're creating? </p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you need help with anything related to creating your audio program, please don't hesitate to shoot me an email. We'll try our best to help.</p>`;
 
     inviteListeners(
-      [{firstName, lastName, email}],
+      [{ firstName, lastName, email }],
       `What are you creating, ${firstName.slice(0, 1).toUpperCase() +
         firstName.slice(1)}?`,
       content,
@@ -525,8 +530,8 @@ class _AppSignup extends Component {
   }
 
   async _signUp() {
-    const {match, history, signupUser} = this.props;
-    const {firstName, lastName, email, password, isFBauth} = this.state;
+    const { match, history, signupUser } = this.props;
+    const { firstName, lastName, email, password, isFBauth } = this.state;
     let authArr = [];
     try {
       authArr = await firebase.auth().fetchProvidersForEmail(email);
@@ -538,10 +543,10 @@ class _AppSignup extends Component {
     if (authArr.length > 0) {
       const text = 'This account already exists. Please sign in instead';
       if (match.params.mode == 'admin' && match.params.id) {
-        history.push(`/signin/admin/${match.params.id}`, {text});
+        history.push(`/signin/admin/${match.params.id}`, { text });
         return;
       } else {
-        history.push('/signin', {text});
+        history.push('/signin', { text });
       }
     }
 
@@ -554,20 +559,20 @@ class _AppSignup extends Component {
       signupCommon(this.state, isAdmin, this.signupCallback);
       return true;
     } catch (error) {
-      this.setState({message: error.toString()});
+      this.setState({ message: error.toString() });
       console.log(error.toString());
       Promise.reject(error);
     }
   }
 
   handleChange(prop, e) {
-    this.setState({[prop]: e.target.value});
+    this.setState({ [prop]: e.target.value });
   }
 
   handleFBAuth() {
-    const {match, history, signupUser, signinUser} = this.props;
+    const { match, history, signupUser, signinUser } = this.props;
     const that = this;
-    this.setState({isFBauth: true});
+    this.setState({ isFBauth: true });
 
     firebase
       .auth()
@@ -621,7 +626,7 @@ class _AppSignup extends Component {
                   }
                 } else {
                   //if it's a new user
-                  const {email, photoURL, displayName} = JSON.parse(
+                  const { email, photoURL, displayName } = JSON.parse(
                     JSON.stringify(result.user)
                   );
                   const name = displayName
@@ -669,11 +674,16 @@ class _AppSignup extends Component {
                 .ref('users/' + userId)
                 .once('value')
                 .then(snapshot => {
-                  const {firstName, lastName, email, pic_url} = snapshot.val();
-                  const user = {firstName, lastName, email, pic_url};
-                  that.setState({firstName, lastName, email, pic_url});
+                  const {
+                    firstName,
+                    lastName,
+                    email,
+                    pic_url,
+                  } = snapshot.val();
+                  const user = { firstName, lastName, email, pic_url };
+                  that.setState({ firstName, lastName, email, pic_url });
                   if (match.params.mode === 'admin' && !match.params.id) {
-                    that.setState({isPublisherFormShown: true});
+                    that.setState({ isPublisherFormShown: true });
                   } else if (match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
@@ -692,7 +702,7 @@ class _AppSignup extends Component {
   } // handleFBAuth
 
   signupCallback(user) {
-    const {signupUser, match, history} = this.props;
+    const { signupUser, match, history } = this.props;
     signupUser(user);
     // for user -> goTo myPrograms, for admin need to register publisher first
     if (
@@ -701,7 +711,7 @@ class _AppSignup extends Component {
     ) {
       history.push('/myprograms');
     } else if (match.params.mode == 'soundcast_user') {
-      const {soundcast, soundcastID, checked, sumTotal} =
+      const { soundcast, soundcastID, checked, sumTotal } =
         history.location.state || this.state;
       history.push('/soundcast_checkout', {
         soundcastID,
@@ -714,7 +724,7 @@ class _AppSignup extends Component {
   }
 
   render() {
-    const {match, history} = this.props;
+    const { match, history } = this.props;
     const {
       firstName,
       lastName,
@@ -728,7 +738,9 @@ class _AppSignup extends Component {
       checked,
       soundcastID,
     } = this.state;
-    const {from} = this.props.location.state || {from: {pathname: '/courses'}};
+    const { from } = this.props.location.state || {
+      from: { pathname: '/courses' },
+    };
 
     if (redirectToReferrer) {
       return <Redirect to={from} />;
@@ -750,7 +762,7 @@ class _AppSignup extends Component {
                 className="hidden-xs"
                 alt="Soundcast cover art"
                 src={soundcast.imageURL}
-                style={{...styles.logo, height: 120}}
+                style={{ ...styles.logo, height: 120 }}
               />
               <div style={styles.containerWrapper}>
                 <div
@@ -760,7 +772,7 @@ class _AppSignup extends Component {
                   <button
                     onClick={() => this.handleFBAuth()}
                     className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
-                    style={{...styles.fb, marginTop: 30}}
+                    style={{ ...styles.fb, marginTop: 30 }}
                   >
                     <i
                       className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
@@ -819,7 +831,7 @@ class _AppSignup extends Component {
                     placeholder={'Password'}
                     onChange={this.handleChange.bind(this, 'password')}
                     value={password}
-                    validators={[minLengthValidator.bind(null, 1)]}
+                    validators={[minLengthValidator.bind(null, 6)]}
                   />
                   <div>
                     {/*<input*/}
@@ -837,11 +849,11 @@ class _AppSignup extends Component {
                     <OrangeSubmitButton
                       label="Get Access"
                       onClick={this.signUp.bind(this)}
-                      styles={{marginTop: 15, marginBottom: 15}}
+                      styles={{ marginTop: 15, marginBottom: 15 }}
                     />
                   }
 
-                  <div style={{marginBottom: 15}}>
+                  <div style={{ marginBottom: 15 }}>
                     <span style={styles.italicText}>
                       Already have an account?{' '}
                     </span>
@@ -875,12 +887,12 @@ class _AppSignup extends Component {
             <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
               <div
                 className="margin-twenty-one-top sm-margin-nineteen-top title-medium text-dark-gray"
-                style={{paddingBottom: 35, textAlign: 'center'}}
+                style={{ paddingBottom: 35, textAlign: 'center' }}
               >
                 <span>{soundcast.title}</span>
               </div>
               <div
-                style={{marginBottom: 20, fontSize: 15}}
+                style={{ marginBottom: 20, fontSize: 15 }}
                 className="text-large text-center text-dark-gray"
               >
                 {soundcast.short_description}
@@ -909,7 +921,7 @@ class _AppSignup extends Component {
                           alignItems: 'center',
                         }}
                       >
-                        <span style={{paddingRight: 10}}>⭐</span>
+                        <span style={{ paddingRight: 10 }}>⭐</span>
                         {feature}
                       </li>
                     );
@@ -998,7 +1010,7 @@ class _AppSignup extends Component {
                       placeholder={'Password'}
                       onChange={this.handleChange.bind(this, 'password')}
                       value={password}
-                      validators={[minLengthValidator.bind(null, 1)]}
+                      validators={[minLengthValidator.bind(null, 6)]}
                     />
                     <div>
                       <span style={styles.acceptText}>
@@ -1009,7 +1021,7 @@ class _AppSignup extends Component {
                     {(match.params.mode === 'admin' &&
                       !match.params.id && (
                         <OrangeSubmitButton
-                          styles={{marginTop: 15, marginBottom: 15}}
+                          styles={{ marginTop: 15, marginBottom: 15 }}
                           label="NEXT"
                           onClick={this.signUp.bind(this)}
                         />
@@ -1017,11 +1029,11 @@ class _AppSignup extends Component {
                       <OrangeSubmitButton
                         label="CREATE ACCOUNT"
                         onClick={this.signUp.bind(this)}
-                        styles={{marginTop: 15, marginBottom: 15}}
+                        styles={{ marginTop: 15, marginBottom: 15 }}
                       />
                     )}
 
-                    <div style={{marginBottom: 15}}>
+                    <div style={{ marginBottom: 15 }}>
                       <span style={styles.italicText}>
                         Already have an account?{' '}
                       </span>
@@ -1072,17 +1084,17 @@ class _AppSignup extends Component {
                   style={styles.logo}
                 />
               </div>
-              <div style={{...styles.containerWrapper, padding: 15}}>
+              <div style={{ ...styles.containerWrapper, padding: 15 }}>
                 <div
                   style={styles.container}
                   className="center-col text-center"
                 >
-                  <div style={{...styles.title, marginBottom: 10}}>
+                  <div style={{ ...styles.title, marginBottom: 10 }}>
                     Create Your Publisher Account
                   </div>
                 </div>
                 <div
-                  style={{...styles.container, paddding: 15}}
+                  style={{ ...styles.container, paddding: 15 }}
                   className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                 >
                   <div
@@ -1095,7 +1107,11 @@ class _AppSignup extends Component {
                     Publisher name
                   </div>
                   <div
-                    style={{...styles.italicText, marginBottom: 20, height: 36}}
+                    style={{
+                      ...styles.italicText,
+                      marginBottom: 20,
+                      height: 36,
+                    }}
                   >
                     (this can be the name of your business, brand, team. You can
                     always change it later.)
@@ -1112,7 +1128,7 @@ class _AppSignup extends Component {
                   <OrangeSubmitButton
                     label="CREATE ACCOUNT"
                     onClick={this.signUpAdmin.bind(this)}
-                    styles={{marginTop: 15, marginBottom: 15}}
+                    styles={{ marginTop: 15, marginBottom: 15 }}
                   />
                 </div>
               </div>
@@ -1213,13 +1229,13 @@ const styles = {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {signupUser, signinUser, addDefaultSoundcast},
+    { signupUser, signinUser, addDefaultSoundcast },
     dispatch
   );
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn, defaultSoundcastAdded} = state.user;
+  const { userInfo, isLoggedIn, defaultSoundcastAdded } = state.user;
   return {
     userInfo,
     isLoggedIn,

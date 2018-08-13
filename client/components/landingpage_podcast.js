@@ -1,17 +1,17 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {Helmet} from 'react-helmet';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 
 import * as firebase from 'firebase';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Colors from '../styles/colors';
 
 import Footer from './footer';
-import {signoutUser} from '../actions/index';
+import { signoutUser } from '../actions/index';
 import FAQs from './faqs';
 
 class _LandingPagePodcast extends Component {
@@ -60,12 +60,12 @@ class _LandingPagePodcast extends Component {
               verticalAlign: 'center',
             }}
           >
-            <li className="propClone sm-no-border" style={{marginTop: 5}}>
+            <li className="propClone sm-no-border" style={{ marginTop: 5 }}>
               <div className="dropdown">
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div
                     style={{
@@ -88,33 +88,36 @@ class _LandingPagePodcast extends Component {
                 <ul className="dropdown-menu">
                   {this.props.userInfo.soundcasts && (
                     <li>
-                      <Link style={{color: 'black'}} to="/mysoundcasts">
+                      <Link style={{ color: 'black' }} to="/mysoundcasts">
                         My Soundcasts
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link to="/dashboard/soundcasts" style={{color: 'black'}}>
+                      <Link
+                        to="/dashboard/soundcasts"
+                        style={{ color: 'black' }}
+                      >
                         Admin Dashboard
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.courses && (
                     <li>
-                      <Link to="/myprograms" style={{color: 'black'}}>
+                      <Link to="/myprograms" style={{ color: 'black' }}>
                         My Courses
                       </Link>
                     </li>
                   )}
                   <li>
-                    <Link to="/myprofile" style={{color: 'black'}}>
+                    <Link to="/myprofile" style={{ color: 'black' }}>
                       My Profile
                     </Link>
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -165,7 +168,7 @@ class _LandingPagePodcast extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -375,7 +378,7 @@ class _LandingPagePodcast extends Component {
               <div className=" row equalize xs-equalize-auto equalize-display-inherit">
                 <div
                   className="col-md-6 col-sm-7 col-xs-12 text-left xs-margin-nineteen-bottom xs-text-center display-table pull-right"
-                  style={{height: 713}}
+                  style={{ height: 713 }}
                 >
                   <div className="display-table-cell-vertical-middle xs-padding-nineteen-top">
                     <h1
@@ -396,7 +399,7 @@ class _LandingPagePodcast extends Component {
                     <div
                       className=" text-extra-large xs-text-extra-large margin-twelve-bottom sm-margin-nine-bottom width-80 sm-width-100 tz-text"
                       data-selector=".tz-text"
-                      style={{color: 'rgb(40, 40, 40)'}}
+                      style={{ color: 'rgb(40, 40, 40)' }}
                     >
                       <p>
                         For coaches, consultants, and entrepreneurial experts.
@@ -432,7 +435,7 @@ class _LandingPagePodcast extends Component {
                 </div>
                 <div
                   className="col-md-6 col-sm-5 col-xs-12 display-table"
-                  style={{height: 713}}
+                  style={{ height: 713 }}
                 >
                   <div className="text-left xs-text-center display-table-cell-vertical-bottom padding-twenty-nine-top xs-no-padding-top">
                     <img
@@ -465,7 +468,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-lg-5 col-md-6 col-sm-6 xs-12 xs-text-center xs-margin-nineteen-bottom display-table"
-                style={{height: 651}}
+                style={{ height: 651 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2
@@ -519,7 +522,7 @@ class _LandingPagePodcast extends Component {
                     <p>
                       <i
                         className="far fa-check-square"
-                        style={{marginRight: 5, color: Colors.mainOrange}}
+                        style={{ marginRight: 5, color: Colors.mainOrange }}
                       />{' '}
                       Get name and email of every subscriber to your Soundwise
                       channel
@@ -527,14 +530,14 @@ class _LandingPagePodcast extends Component {
                     <p>
                       <i
                         className="far fa-check-square"
-                        style={{marginRight: 5, color: Colors.mainOrange}}
+                        style={{ marginRight: 5, color: Colors.mainOrange }}
                       />{' '}
                       Automated emails to subscribers when publishing new
                       episodes
                     </p>
                     <p>
                       <i
-                        style={{marginRight: 5, color: Colors.mainOrange}}
+                        style={{ marginRight: 5, color: Colors.mainOrange }}
                         className="far fa-check-square"
                       />{' '}
                       Text-message and email your subscribers about new updates
@@ -576,7 +579,7 @@ class _LandingPagePodcast extends Component {
               </div>
               <div
                 className="col-lg-7 col-md-6 col-sm-6 xs-12 xs-text-center display-table"
-                style={{height: 651}}
+                style={{ height: 651 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -599,7 +602,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-5 display-table col-md-pull-1 col-sm-pull-0 col-sm-12 col-xs-12 xs-margin-nineteen-bottom sm-height-auto"
-                style={{height: 650}}
+                style={{ height: 650 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -613,7 +616,7 @@ class _LandingPagePodcast extends Component {
               </div>
               <div
                 className="col-md-7 col-sm-12 col-xs-12 display-table sm-height-auto"
-                style={{height: 650}}
+                style={{ height: 650 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="col-md-12 col-sm-12 col-xs-12">
@@ -655,7 +658,7 @@ class _LandingPagePodcast extends Component {
                     <div className="col-md-6 col-sm-6 col-xs-12 margin-eight-bottom xs-margin-fifteen-bottom xs-text-center">
                       <div
                         className="float-left xs-margin-lr-auto xs-float-none xs-margin-seven-bottom"
-                        style={{color: Colors.link}}
+                        style={{ color: Colors.link }}
                       >
                         <i
                           className="fas fa-columns  title-extra-large tz-icon-color"
@@ -676,7 +679,7 @@ class _LandingPagePodcast extends Component {
                         <i
                           className="fas fa-share-alt ti-flag-alt-2  title-extra-large tz-icon-color"
                           data-selector=".tz-icon-color"
-                          style={{color: Colors.link}}
+                          style={{ color: Colors.link }}
                         />
                       </div>
                       <div className="info xs-no-margin xs-width-100 xs-clear-both">
@@ -692,7 +695,7 @@ class _LandingPagePodcast extends Component {
                       <div className="float-left xs-margin-lr-auto xs-float-none xs-margin-seven-bottom">
                         <i
                           className="fas fa-eye title-extra-large tz-icon-color"
-                          style={{color: Colors.link}}
+                          style={{ color: Colors.link }}
                           data-selector=".tz-icon-color"
                         />
                       </div>
@@ -711,7 +714,7 @@ class _LandingPagePodcast extends Component {
                         <i
                           className="fab fa-wpforms ti-announcement  title-extra-large tz-icon-color"
                           data-selector=".tz-icon-color"
-                          style={{color: Colors.link}}
+                          style={{ color: Colors.link }}
                         />
                       </div>
                       <div className="info xs-no-margin xs-width-100 xs-clear-both">
@@ -738,7 +741,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize">
               <div
                 className="col-md-6 col-sm-12 col-xs-12 display-table no-padding xs-padding-ten"
-                style={{height: 773}}
+                style={{ height: 773 }}
               >
                 <div className="display-table-cell-vertical-middle padding-twenty-two md-padding-seven xs-no-padding-lr">
                   <div className="col-md-12 col-sm-12 col-xs-12 margin-nine-top xs-no-padding-lr">
@@ -786,7 +789,7 @@ class _LandingPagePodcast extends Component {
                           <i
                             className="far fa-comments ti-desktop text-fast-blue title-large tz-icon-color"
                             data-selector=".tz-icon-color"
-                            style={{color: Colors.mainOrange}}
+                            style={{ color: Colors.mainOrange }}
                           />
                         </div>
                         <h3
@@ -813,7 +816,7 @@ class _LandingPagePodcast extends Component {
                           <i
                             className="fas fa-paperclip text-fast-blue title-large tz-icon-color"
                             data-selector=".tz-icon-color"
-                            style={{color: Colors.mainOrange}}
+                            style={{ color: Colors.mainOrange }}
                           />
                         </div>
                         <h3
@@ -840,7 +843,7 @@ class _LandingPagePodcast extends Component {
                           <i
                             className="fas fa-microphone text-fast-blue title-extra-large tz-icon-color"
                             data-selector=".tz-icon-color"
-                            style={{color: Colors.mainOrange}}
+                            style={{ color: Colors.mainOrange }}
                           />
                         </div>
                         <h3
@@ -866,7 +869,7 @@ class _LandingPagePodcast extends Component {
                           <i
                             className="fas fa-child text-fast-blue title-extra-large tz-icon-color"
                             data-selector=".tz-icon-color"
-                            style={{color: Colors.mainOrange}}
+                            style={{ color: Colors.mainOrange }}
                           />
                         </div>
                         <h3
@@ -912,7 +915,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-6 col-sm-6 xs-12 xs-text-center display-table"
-                style={{height: 481}}
+                style={{ height: 481 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -925,7 +928,7 @@ class _LandingPagePodcast extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-6 xs-12 xs-text-center xs-margin-nineteen-bottom display-table"
-                style={{height: 481}}
+                style={{ height: 481 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2
@@ -976,21 +979,21 @@ class _LandingPagePodcast extends Component {
                     <p>
                       <i
                         className="far fa-play-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       See every subscriber’s listening record
                     </p>
                     <p>
                       <i
                         className="far fa-play-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       Know who your most avid listeners are
                     </p>
                     <p>
                       <i
                         className="far fa-play-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       See which episodes perform the best
                     </p>
@@ -1029,7 +1032,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-6 col-sm-6 xs-12 xs-text-center xs-margin-nineteen-bottom display-table"
-                style={{height: 481}}
+                style={{ height: 481 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2
@@ -1107,7 +1110,7 @@ class _LandingPagePodcast extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-6 xs-12 xs-text-center display-table"
-                style={{height: 481}}
+                style={{ height: 481 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -1131,7 +1134,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-6 col-sm-6 col-xs-12 display-table slider-text-middle text-left xs-margin-nineteen-bottom xs-text-center"
-                style={{height: 585}}
+                style={{ height: 585 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="offer-box-left">
@@ -1178,7 +1181,7 @@ class _LandingPagePodcast extends Component {
                     >
                       <img
                         src="images/app-store-badge.png"
-                        style={{width: 200}}
+                        style={{ width: 200 }}
                         data-img-size="(W)200px X (H)61px"
                         alt=""
                         data-selector="img"
@@ -1194,7 +1197,7 @@ class _LandingPagePodcast extends Component {
                         data-img-size="(W)200px X (H)61px"
                         alt=""
                         data-selector="img"
-                        style={{width: 200}}
+                        style={{ width: 200 }}
                       />
                     </a>
                   </div>
@@ -1202,7 +1205,7 @@ class _LandingPagePodcast extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-6 col-xs-12 display-table text-right xs-margin-lr-auto xs-fl-none xs-no-padding-bottom"
-                style={{height: 585}}
+                style={{ height: 585 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -1230,7 +1233,7 @@ class _LandingPagePodcast extends Component {
             <div className="row equalize sm-equalize-auto">
               <div
                 className="col-md-6 col-sm-12 col-xs-12 sm-text-center display-table sm-margin-ten-bottom xs-margin-fifteen-bottom"
-                style={{height: 80}}
+                style={{ height: 80 }}
               >
                 <div className="offer-box-left display-table-cell-vertical-middle">
                   <div className="display-table-cell-vertical-middle sm-display-inline-block">
@@ -1245,7 +1248,7 @@ class _LandingPagePodcast extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-12 col-xs-12 sm-text-center text-right display-table"
-                style={{height: 80}}
+                style={{ height: 80 }}
               >
                 <div className="btn-dual display-table-cell-vertical-middle">
                   <Link
@@ -1282,11 +1285,11 @@ class _LandingPagePodcast extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signoutUser}, dispatch);
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,
