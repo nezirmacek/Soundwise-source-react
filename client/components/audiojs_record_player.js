@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import '!style!css!video.js/dist/video-js.min.css';
 import '!style!css!videojs-record/dist/css/videojs.record.css';
 import 'videojs-record';

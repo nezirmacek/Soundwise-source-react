@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Butter from 'buttercms';
 import moment from 'moment';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import { SoundwiseHeader } from '../../components/soundwise_header';
 import Footer from '../../components/footer';
 
 const butter = Butter('f8b408f99e5169af2c3ccf1f95b4ff7e679b2cbd');
@@ -19,7 +19,7 @@ export default class HelpDocs extends Component {
   }
 
   fetchPosts(page) {
-    butter.post.list({category_slug: 'help-docs'}).then(resp => {
+    butter.post.list({ category_slug: 'help-docs' }).then(resp => {
       const posts = resp.data.data;
       this.setState({
         loaded: true,
@@ -39,7 +39,7 @@ export default class HelpDocs extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({loaded: false});
+    this.setState({ loaded: false });
     let page =
       nextProps.match.params && nextProps.match.params.page
         ? nextProps.match.params.page
@@ -50,7 +50,7 @@ export default class HelpDocs extends Component {
 
   render() {
     if (this.state.loaded) {
-      const {next_page, previous_page} = this.state.resp.meta;
+      const { next_page, previous_page } = this.state.resp.meta;
       return (
         <div>
           <SoundwiseHeader showIcon={true} />
@@ -97,7 +97,7 @@ export default class HelpDocs extends Component {
               </div>
             </div>
           </section>
-          <div style={{bottom: 0, width: '100%', position: 'static'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'static' }}>
             <Footer showPricing={true} />
           </div>
         </div>
@@ -107,7 +107,7 @@ export default class HelpDocs extends Component {
         <div>
           <SoundwiseHeader showIcon={true} blog={true} />
           <div />
-          <div style={{bottom: 0, width: '100%', position: 'absolute'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'absolute' }}>
             <Footer />
           </div>
         </div>

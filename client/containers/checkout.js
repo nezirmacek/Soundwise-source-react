@@ -2,18 +2,18 @@
 // Old checkout page
 // TODO (compare with soundwise_checkout, soundcast_checkout) / remove
 //
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Axios from 'axios';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Link, Redirect} from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
-import {withRouter} from 'react-router';
+import { withRouter } from 'react-router';
 import * as firebase from 'firebase';
 import moment from 'moment';
 
-import {SoundwiseHeader} from '../components/soundwise_header';
-import {deleteCart} from '../actions/index';
+import { SoundwiseHeader } from '../components/soundwise_header';
+import { deleteCart } from '../actions/index';
 import Colors from '../styles/colors';
 
 let stripe, elements;
@@ -82,12 +82,12 @@ class _Checkout extends Component {
     this.setState({
       startPaymentSubmission: true,
     });
-    const {number, cvc} = this.state;
+    const { number, cvc } = this.state;
     const exp_month = Number(this.state.exp_month) + 1;
     const exp_year = Number(this.state.exp_year);
-    this.setState({submitDisabled: true, paymentError: null});
+    this.setState({ submitDisabled: true, paymentError: null });
     Stripe.card.createToken(
-      {number, cvc, exp_month, exp_year},
+      { number, cvc, exp_month, exp_year },
       this.stripeTokenHandler
     );
   }
@@ -197,7 +197,12 @@ class _Checkout extends Component {
             marginTop: '1em',
           }}
         >
-          <Dots style={{display: 'flex'}} color="#727981" size={32} speed={1} />
+          <Dots
+            style={{ display: 'flex' }}
+            color="#727981"
+            size={32}
+            speed={1}
+          />
         </div>
       );
     }
@@ -230,7 +235,7 @@ class _Checkout extends Component {
     return (
       <div>
         <section className="bg-white builder-bg" id="subscribe-section6">
-          <div className="container" style={{paddingBottom: '70px'}}>
+          <div className="container" style={{ paddingBottom: '70px' }}>
             <div className="row equalize ">
               <div className="col-md-6 center-col col-sm-12 ">
                 <div style={styles.totalRow}>
@@ -301,7 +306,7 @@ class _Checkout extends Component {
                   {/*button*/}
                   <div style={styles.buttonWrapper}>
                     {this.state.paymentError && (
-                      <span style={{color: 'red'}}>
+                      <span style={{ color: 'red' }}>
                         {this.state.paymentError}
                       </span>
                     )}
@@ -438,8 +443,8 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {shoppingCart} = state.checkoutProcess;
+  const { userInfo, isLoggedIn } = state.user;
+  const { shoppingCart } = state.checkoutProcess;
   return {
     userInfo,
     isLoggedIn,
@@ -448,7 +453,7 @@ const mapStateToProps = state => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({deleteCart}, dispatch);
+  return bindActionCreators({ deleteCart }, dispatch);
 }
 
 const Checkout_worouter = connect(

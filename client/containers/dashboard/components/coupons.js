@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Datetime from 'react-datetime';
 import moment from 'moment';
@@ -12,7 +12,7 @@ export default class Coupons extends Component {
 
   render() {
     const i = this.props.priceIndex;
-    const {price, prices, setState, soundcastId} = this.props;
+    const { price, prices, setState, soundcastId } = this.props;
 
     const isSubscription = !['one time', 'rental'].includes(price.billingCycle);
     return (
@@ -41,11 +41,11 @@ export default class Coupons extends Component {
               <div>
                 <input
                   type="text"
-                  style={{...styles.inputTitle}}
+                  style={{ ...styles.inputTitle }}
                   name="couponCode"
                   onChange={e => {
                     prices[i].coupons[j].code = e.target.value;
-                    setState({prices});
+                    setState({ prices });
                   }}
                   value={price.coupons[j].code}
                 />
@@ -62,11 +62,11 @@ export default class Coupons extends Component {
               <div>
                 <select
                   type="text"
-                  style={{...styles.inputTitle, paddingTop: 6}}
+                  style={{ ...styles.inputTitle, paddingTop: 6 }}
                   name="couponType"
                   onChange={e => {
                     prices[i].coupons[j].couponType = e.target.value;
-                    setState({prices});
+                    setState({ prices });
                   }}
                   value={price.coupons[j].couponType}
                 >
@@ -77,7 +77,7 @@ export default class Coupons extends Component {
                 </select>
               </div>
             </div>
-            <div style={{marginTop: 30}}>
+            <div style={{ marginTop: 30 }}>
               <span
                 style={{
                   marginLeft: 5,
@@ -86,13 +86,13 @@ export default class Coupons extends Component {
                 }}
                 onClick={() => {
                   prices[i].coupons.splice(j, 1);
-                  setState({prices});
+                  setState({ prices });
                 }}
               >
                 <i className="fa fa-times " aria-hidden="true" />
               </span>
             </div>
-            <div style={{width: '100%', height: 10 /* break line */}} />
+            <div style={{ width: '100%', height: 10 /* break line */ }} />
             {(!coupon.couponType || coupon.couponType === 'discount') && (
               <div
                 style={{
@@ -106,15 +106,15 @@ export default class Coupons extends Component {
                 <div>
                   <input
                     type="text"
-                    style={{...styles.inputTitle, width: '50%'}}
+                    style={{ ...styles.inputTitle, width: '50%' }}
                     name="discountPercent"
                     onChange={e => {
                       prices[i].coupons[j].percentOff = e.target.value;
-                      setState({prices});
+                      setState({ prices });
                     }}
                     value={price.coupons[j].percentOff}
                   />
-                  <span style={{fontSize: 18}}>{` % off`}</span>
+                  <span style={{ fontSize: 18 }}>{` % off`}</span>
                 </div>
               </div>
             )}
@@ -135,7 +135,7 @@ export default class Coupons extends Component {
                     marginTop: 14,
                   }}
                 >
-                  <span style={{fontSize: 20}}>{`$${Math.round(
+                  <span style={{ fontSize: 20 }}>{`$${Math.round(
                     (price.price * (100 - price.coupons[j].percentOff)) / 100
                   ).toFixed(2)}`}</span>
                 </div>
@@ -154,15 +154,15 @@ export default class Coupons extends Component {
                 <div>
                   <input
                     type="text"
-                    style={{...styles.inputTitle, width: '56%'}}
+                    style={{ ...styles.inputTitle, width: '56%' }}
                     name="trialLength"
                     onChange={e => {
                       prices[i].coupons[j].trialLength = e.target.value;
-                      setState({prices});
+                      setState({ prices });
                     }}
                     value={price.coupons[j].trialLength || 0}
                   />
-                  <span style={{fontSize: 18}}>{` Days`}</span>
+                  <span style={{ fontSize: 18 }}>{` Days`}</span>
                 </div>
               </div>
             )}
@@ -177,21 +177,21 @@ export default class Coupons extends Component {
               <span>Expires on</span>
               <div
                 className="dateTimeInput"
-                style={{minWidth: 145, marginTop: 5}}
+                style={{ minWidth: 145, marginTop: 5 }}
               >
                 <Datetime
                   value={moment.unix(coupon.expiration)}
                   onChange={date => {
                     if (date.unix) {
                       prices[i].coupons[j].expiration = date.unix();
-                      setState({prices});
+                      setState({ prices });
                     }
                   }}
                 />
               </div>
             </div>
             {soundcastId && (
-              <div style={{marginRight: 10}}>
+              <div style={{ marginRight: 10 }}>
                 <a
                   style={{
                     color: Colors.link,
@@ -225,5 +225,5 @@ Coupons.propTypes = {
 };
 
 const styles = {
-  inputTitle: {...commonStyles.inputTitle, marginTop: 5},
+  inputTitle: { ...commonStyles.inputTitle, marginTop: 5 },
 };

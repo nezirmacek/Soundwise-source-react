@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 // const renderBio = (bio) => {
 //   return (
@@ -27,11 +27,11 @@ const Instructor = props => (
         <div className="">
           <div
             className="col-md-12 col-sm-12 col-xs-12 bg-cream text-left tz-background-color"
-            style={{padding: '5% 8%'}}
+            style={{ padding: '5% 8%' }}
           >
             <div
               className="col-md-4 col-sm-6 col-xs-12 xs-padding-bottom-5px"
-              style={{display: 'flex', justifyContent: 'center'}}
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <div
                 alt={`${props.soundcast.hostName}`}
@@ -43,7 +43,7 @@ const Instructor = props => (
             </div>
             <div
               className="should-have-a-children scroll-me col-md-8 col-sm-6 col-xs-12"
-              style={{paddingTop: 20}}
+              style={{ paddingTop: 20 }}
             >
               <span
                 className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500"
@@ -60,7 +60,7 @@ const Instructor = props => (
               <div
                 className="text-dark-gray text-large tz-text"
                 id="tz-slider-text129"
-                style={{whiteSpace: 'pre-wrap'}}
+                style={{ whiteSpace: 'pre-wrap' }}
               >
                 {props.soundcast.hostBio}
               </div>
@@ -69,11 +69,11 @@ const Instructor = props => (
           {(props.soundcast.hostName2 && (
             <div
               className="col-md-12 col-sm-12 col-xs-12 bg-cream text-left tz-background-color"
-              style={{padding: '0% 8% 5% 8%'}}
+              style={{ padding: '0% 8% 5% 8%' }}
             >
               <div
                 className="col-md-4 col-sm-6 col-xs-12 xs-padding-bottom-5px"
-                style={{display: 'flex', justifyContent: 'center'}}
+                style={{ display: 'flex', justifyContent: 'center' }}
               >
                 <div
                   alt={`${props.soundcast.hostName2}`}
@@ -85,7 +85,7 @@ const Instructor = props => (
               </div>
               <div
                 className="should-have-a-children scroll-me col-md-8 col-sm-6 col-xs-12"
-                style={{paddingTop: 20}}
+                style={{ paddingTop: 20 }}
               >
                 <span
                   className="title-medium text-dark-gray alt-font display-block tz-text font-weight-500"
@@ -102,7 +102,7 @@ const Instructor = props => (
                 <div
                   className="text-dark-gray text-large tz-text"
                   id="tz-slider-text129"
-                  style={{whiteSpace: 'pre-wrap'}}
+                  style={{ whiteSpace: 'pre-wrap' }}
                 >
                   {props.soundcast.hostBio2}
                 </div>

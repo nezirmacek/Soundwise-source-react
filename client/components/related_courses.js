@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import RelatedCourseCard from './related_course_card';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
 
 function SliderNextArrow(props) {
-  const {onClick} = props;
+  const { onClick } = props;
   return (
     <div className="slick-override-arrow -next-arrow" onClick={onClick}>
       <i className="ti-angle-right" />
@@ -13,7 +13,7 @@ function SliderNextArrow(props) {
 }
 
 function SliderPrevArrow(props) {
-  const {onClick} = props;
+  const { onClick } = props;
   return (
     <div className="slick-override-arrow -prev-arrow" onClick={onClick}>
       <i className="ti-angle-left" />
@@ -70,7 +70,7 @@ export default class RelatedCourses extends Component {
 
   setMaxCardHeight(height) {
     if (!this.state.cardHeight || height > this.state.cardHeight) {
-      this.setState({cardHeight: height});
+      this.setState({ cardHeight: height });
     }
   }
 

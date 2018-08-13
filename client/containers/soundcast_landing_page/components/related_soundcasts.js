@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import RelatedSoundcastCard from './related_soundcast_card';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function SliderNextArrow(props) {
-  const {onClick} = props;
+  const { onClick } = props;
   return (
     <div className="slick-override-arrow -next-arrow" onClick={onClick}>
       <i className="ti-angle-right" />
@@ -14,7 +14,7 @@ function SliderNextArrow(props) {
 }
 
 function SliderPrevArrow(props) {
-  const {onClick} = props;
+  const { onClick } = props;
   return (
     <div className="slick-override-arrow -prev-arrow" onClick={onClick}>
       <i className="ti-angle-left" />
@@ -71,7 +71,7 @@ export default class RelatedSoundcasts extends Component {
 
   setMaxCardHeight(height) {
     if (!this.state.cardHeight || height > this.state.cardHeight) {
-      this.setState({cardHeight: height});
+      this.setState({ cardHeight: height });
     }
   }
 
@@ -81,7 +81,7 @@ export default class RelatedSoundcasts extends Component {
         <div className="container">
           <div
             className="padding-30px-tb xs-padding-30px-tb"
-            style={{borderBottom: '0.5px solid lightgrey'}}
+            style={{ borderBottom: '0.5px solid lightgrey' }}
           >
             <div className="row ">
               <div className="col-md-12 col-sm-12 col-xs-12 text-center">
@@ -104,7 +104,7 @@ export default class RelatedSoundcasts extends Component {
                   to={`/publishers/${this.props.publisherID}`}
                   className="btn-medium btn btn-circle text-white no-letter-spacing"
                   onClick={this.props.openModal}
-                  style={{backgroundColor: '#61e1fb'}}
+                  style={{ backgroundColor: '#61e1fb' }}
                 >
                   <span className="text-extra-large sm-text-extra-large tz-text">
                     VIEW PUBLISHER
@@ -116,7 +116,7 @@ export default class RelatedSoundcasts extends Component {
               {(this.props.soundcasts.length <= 2 && (
                 <div
                   className="col-md-12 center-col slick-slide"
-                  style={{display: 'flex', justifyContent: 'space-evenly'}}
+                  style={{ display: 'flex', justifyContent: 'space-evenly' }}
                 >
                   {this.props.soundcasts.map((soundcast, i) => {
                     return (

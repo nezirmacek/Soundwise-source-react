@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import ReactStars from 'react-stars';
-import {orange50} from 'material-ui/styles/colors';
+import { orange50 } from 'material-ui/styles/colors';
 import Spinner from 'react-activity/lib/Spinner';
 import Axios from 'axios';
 import * as firebase from 'firebase';
@@ -70,7 +70,7 @@ class _SoundcastHeader extends Component {
     if (this.state.startPaymentSubmission) {
       return (
         <Spinner
-          style={{display: 'flex', paddingLeft: '0.5em'}}
+          style={{ display: 'flex', paddingLeft: '0.5em' }}
           color="#727981"
           size={16}
           speed={1}
@@ -80,9 +80,9 @@ class _SoundcastHeader extends Component {
   }
 
   render() {
-    const {soundcast} = this.props;
+    const { soundcast } = this.props;
     const soundcastName = soundcast.title.split(' ').join('%20');
-    const {originalPrice, displayedPrice, pre, post} = this.props.getPrice(
+    const { originalPrice, displayedPrice, pre, post } = this.props.getPrice(
       soundcast,
       'per'
     );
@@ -101,11 +101,11 @@ class _SoundcastHeader extends Component {
             >
               <div
                 className="col-md-7 col-sm-12 col-xs-12 display-table margin-six-left sm-no-margin"
-                style={{height: '378px'}}
+                style={{ height: '378px' }}
               >
                 <div className="display-table-cell-vertical-middle">
-                  <div className="row" style={{height: '80%'}}>
-                    <div style={{paddingRight: 25, paddingLeft: 25}}>
+                  <div className="row" style={{ height: '80%' }}>
+                    <div style={{ paddingRight: 25, paddingLeft: 25 }}>
                       <div
                         style={{
                           display: 'flex',
@@ -113,20 +113,20 @@ class _SoundcastHeader extends Component {
                         }}
                       >
                         <h2
-                          style={{margin: 0}}
+                          style={{ margin: 0 }}
                           className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text"
                         >
                           {this.props.soundcast.title}
                         </h2>
                       </div>
-                      <div style={{paddingTop: 25}}>
+                      <div style={{ paddingTop: 25 }}>
                         <span className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text">{`${
                           this.props.soundcast.short_description
                         }`}</span>
                       </div>
                       <div
                         className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
-                        style={{display: 'flex', alignItems: 'center'}}
+                        style={{ display: 'flex', alignItems: 'center' }}
                       >
                         <span className="margin-eight-right title-small sm-title-small">
                           Share this soundcast:
@@ -170,17 +170,19 @@ class _SoundcastHeader extends Component {
                       </div>
                     </div>
                   </div>
-                  <div className="row" style={{paddingBottom: '30px'}}>
+                  <div className="row" style={{ paddingBottom: '30px' }}>
                     <div className="col-md-7 col-sm-6 col-xs-12 feature-box-details-second text-center xs-margin-bottom-10px">
                       {soundcast.prices &&
                         soundcast.prices[0] && (
                           <span
                             className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
-                            style={{fontWeight: 550}}
+                            style={{ fontWeight: 550 }}
                           >
                             <strong>
                               {originalPrice && (
-                                <span style={{color: 'red', paddingRight: 10}}>
+                                <span
+                                  style={{ color: 'red', paddingRight: 10 }}
+                                >
                                   <s>{`\u00A0$${Number(originalPrice).toFixed(
                                     2
                                   )}\u00A0`}</s>
@@ -196,14 +198,14 @@ class _SoundcastHeader extends Component {
                       <a
                         className="btn-medium btn btn-circle text-white no-letter-spacing"
                         onClick={this.props.openModal}
-                        style={{backgroundColor: '#F76B1C'}}
+                        style={{ backgroundColor: '#F76B1C' }}
                       >
                         <span className="text-extra-large sm-text-extra-large tz-text">
                           GET ACCESS
                         </span>
                         {this.renderProgressBar()}
                       </a>
-                      <div style={{color: 'red'}}>
+                      <div style={{ color: 'red' }}>
                         {this.state.paymentError}
                       </div>
                     </div>
@@ -249,8 +251,8 @@ class _SoundcastHeader extends Component {
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {signupFormOpen} = state.signupBox;
+  const { userInfo, isLoggedIn } = state.user;
+  const { signupFormOpen } = state.signupBox;
   return {
     isLoggedIn,
     userInfo,

@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as _ from 'lodash';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import { SoundwiseHeader } from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
 import SoundcastsManaged from './components/soundcasts_managed';
 import AddSoundcast from './components/add_soundcast';
@@ -152,12 +152,12 @@ class _Dashboard extends Component {
 
   checkProps(nextProps = {}) {
     const that = this;
-    const {userInfo, feedVerified, chargeState} = this.props;
-    const {publisherID, id} = this.props.userInfo;
+    const { userInfo, feedVerified, chargeState } = this.props;
+    const { publisherID, id } = this.props.userInfo;
     if (!this.runningParseFeedRequest && feedVerified && publisherID && id) {
       console.log('runningParseFeedRequest');
       this.runningParseFeedRequest = true;
-      const {feedUrl} = feedVerified;
+      const { feedUrl } = feedVerified;
       const reqObj = {
         feedUrl,
         userId: id,
@@ -263,7 +263,7 @@ class _Dashboard extends Component {
       proUser = true;
     }
 
-    const currentTab = _.find(verticalMenuItems, {path: match.params.tab});
+    const currentTab = _.find(verticalMenuItems, { path: match.params.tab });
 
     return (
       <div className="">
@@ -271,12 +271,12 @@ class _Dashboard extends Component {
         {feedVerified && (
           <div className="importing-feed-overlay">
             <div>Importing feed... Please wait</div>
-            <div style={{marginTop: 20}}>
+            <div style={{ marginTop: 20 }}>
               <Dots style={{}} color={Colors.mainOrange} size={22} speed={1} />
             </div>
           </div>
         )}
-        <div className="" style={{minHeight: '100%', width: '100%'}}>
+        <div className="" style={{ minHeight: '100%', width: '100%' }}>
           <div
             className="col-lg-2 col-md-3 col-sm-3 col-xs-3"
             style={styles.verticalMenu}
@@ -409,7 +409,7 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn, content_saved} = state.user;
+  const { userInfo, isLoggedIn, content_saved } = state.user;
   return {
     userInfo,
     isLoggedIn,
@@ -421,7 +421,7 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {handleContentSaving, setFeedVerified, setChargeState},
+    { handleContentSaving, setFeedVerified, setChargeState },
     dispatch
   );
 }

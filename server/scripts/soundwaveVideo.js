@@ -20,7 +20,7 @@ const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendError = (res, err) => {
   console.log(`Error: soundwaveVideo ${err}`);
-  res.status(500).send({error: err});
+  res.status(500).send({ error: err });
 };
 
 // **** The task: generate video combing audio wave and picture with audio file and picture uploaded from front end
@@ -31,9 +31,9 @@ module.exports.createAudioWaveVid = async (req, res) => {
   }
   const audioPath = req.files.audio.path;
   const imagePath = req.files.image.path;
-  const {color, position, email} = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
+  const { color, position, email } = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
   fs.readFile(imagePath, (err, imageBuffer) => {
-    const {height, width} = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
+    const { height, width } = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
     console.log(`height: ${height}, width: ${width}`);
     try {
       new ffmpeg(audioPath).then(
@@ -73,7 +73,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                 );
               }
               fs.unlink(audioPath, err => 0); // remove original
-              new ffmpeg(audioTrimmedPath, {timeout: 10 * 60 * 1000}).then(
+              new ffmpeg(audioTrimmedPath, { timeout: 10 * 60 * 1000 }).then(
                 audioTrimmedFile => {
                   if (doResize.length) {
                     // resizing
@@ -214,7 +214,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                       .request({
                         method: 'POST',
                         url: '/v3/contactdb/recipients',
-                        body: [{email}],
+                        body: [{ email }],
                       })
                       .then(([response, body]) =>
                         client.request({
@@ -258,7 +258,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
 setInterval(
   f =>
     s3.listObjectsV2(
-      {Bucket: 'soundwiseinc', Prefix: 'wavevideo'},
+      { Bucket: 'soundwiseinc', Prefix: 'wavevideo' },
       (err, data) => {
         if (err) {
           return console.log(
@@ -269,7 +269,7 @@ setInterval(
           if (moment().diff(el.LastModified, 'minutes') > 1440) {
             // 24 hours
             s3.deleteObject(
-              {Bucket: 'soundwiseinc', Key: el.Key},
+              { Bucket: 'soundwiseinc', Key: el.Key },
               (err, data) => {
                 if (err) {
                   return console.log(

@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Colors from '../styles/colors';
 
 export default class PodcasterBlock extends Component {
@@ -14,7 +14,7 @@ export default class PodcasterBlock extends Component {
         id="content-section25"
       >
         <div className="container">
-          <div className="row equalize" style={{height: 495}}>
+          <div className="row equalize" style={{ height: 495 }}>
             <div
               className="col-lg-6 col-md-6 col-sm-6 col-xs-12 tz-builder-bg-image cover-background"
               data-img-size="(W)800px X (H)640px"
@@ -25,7 +25,7 @@ export default class PodcasterBlock extends Component {
             />
             <div
               className="col-lg-6 col-md-6 col-sm-6 col-xs-12 tz-background-color display-table"
-              style={{height: '495px', backgroundColor: Colors.mainPurple}}
+              style={{ height: '495px', backgroundColor: Colors.mainPurple }}
             >
               <div className="display-table-cell-vertical-middle padding-nineteen sm-padding-fifteen xs-padding-nineteen xs-no-padding-lr">
                 <div className="title-extra-large alt-font sm-section-title-medium font-weight-500 xs-title-extra-large text-white margin-twelve-bottom xs-margin-ten-bottom tz-text">

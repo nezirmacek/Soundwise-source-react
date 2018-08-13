@@ -1,18 +1,18 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import {orange500, blue500} from 'material-ui/styles/colors';
+import { orange500, blue500 } from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
+import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import ReactStars from 'react-stars';
 
-import {openReviewbox} from '../actions/index';
+import { openReviewbox } from '../actions/index';
 
 const styles = {
   modal: {
@@ -50,8 +50,8 @@ class _ReviewModal extends Component {
   }
 
   handleSubmit() {
-    const {rating, review} = this.state;
-    const {course, userInfo} = this.props;
+    const { rating, review } = this.state;
+    const { course, userInfo } = this.props;
     const time = new Date();
     const date = time.toDateString();
     const pic =
@@ -64,7 +64,7 @@ class _ReviewModal extends Component {
       .database()
       .ref('courses/' + course.id)
       .child('reviews')
-      .push({date, reviewer, rating, review, pic});
+      .push({ date, reviewer, rating, review, pic });
     const userId = firebase.auth().currentUser.uid;
     firebase
       .database()
@@ -107,7 +107,7 @@ class _ReviewModal extends Component {
                   size={28}
                   onChange={this.ratingChanged}
                   color2={'#ffd700'}
-                  style={{float: 'left', display: 'inline'}}
+                  style={{ float: 'left', display: 'inline' }}
                 />
               </div>
               <div className="text-medium width-90 sm-width-100 center-col tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">
@@ -159,8 +159,8 @@ class _ReviewModal extends Component {
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {reviewFormOpen} = state.reviewBox;
+  const { userInfo, isLoggedIn } = state.user;
+  const { reviewFormOpen } = state.reviewBox;
   return {
     userInfo,
     isLoggedIn,
@@ -169,7 +169,7 @@ const mapStateToProps = state => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openReviewbox}, dispatch);
+  return bindActionCreators({ openReviewbox }, dispatch);
 }
 
 export const ReviewModal = connect(

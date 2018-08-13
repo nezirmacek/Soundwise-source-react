@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 import Profile from './settings';
 import Transactions from './transactions';
 import Payouts from './payouts';
@@ -55,7 +55,7 @@ export default class Publisher extends Component {
       inviteSent,
     } = this.state;
     const that = this;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
 
     if (this.props.match.params.id == 'transactions') {
       return (

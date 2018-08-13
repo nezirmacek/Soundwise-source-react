@@ -18,7 +18,7 @@ export const GreyInput = props => {
   return (
     <ValidatedInput
       type={type}
-      styles={{..._styles.input, ...styles}}
+      styles={{ ..._styles.input, ...styles }}
       wrapperStyles={wrapperStyles}
       placeholder={placeholder}
       onChange={onChange}

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -6,7 +6,7 @@ import DIALOG_CONFIG from '../config/dialog_config';
 
 export default class DialogPopup extends Component {
   render() {
-    const {dialogType, buttonActions, isShown, onRequestClose} = this.props;
+    const { dialogType, buttonActions, isShown, onRequestClose } = this.props;
     const settings = DIALOG_CONFIG[dialogType];
 
     return (

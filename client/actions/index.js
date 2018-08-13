@@ -4,7 +4,7 @@ import * as firebase from 'firebase';
 export function handleContentSaving(id, saved) {
   return {
     type: types.CONTENT_SAVED,
-    payload: {[id]: true},
+    payload: { [id]: true },
   };
 }
 
@@ -113,7 +113,7 @@ export function setCurrentCourse(course) {
 }
 
 export function openReviewbox(open) {
-  return {type: (open && types.OPEN_REVIEWBOX) || types.CLOSE_REVIEWBOX};
+  return { type: (open && types.OPEN_REVIEWBOX) || types.CLOSE_REVIEWBOX };
 }
 
 export function addCourseToCart(course) {
