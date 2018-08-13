@@ -1,8 +1,9 @@
 'use strict';
 const fs = require('fs');
 
-var firebase = require('firebase-admin');
+const firebase = require('firebase-admin');
 const database = require('../../database/index');
+const Entities = require('html-entities').XmlEntities;
 
 const LOG_ERR = 'logErrs.txt';
 const PAGE_SIZE = 10;
@@ -11,7 +12,13 @@ const syncSoundcasts = async () => {
   await fs.unlink(LOG_ERR, err => err);
 
   let next = true;
-  let startId = '1502366385413s';
+  let startId = await firebase
+    .database()
+    .ref('soundcasts')
+    .orderByKey()
+    .limitToFirst(1)
+    .once('value')
+    .then(snap => Object.keys(snap.val())[0]);
 
   const lastId = await firebase
     .database()
@@ -39,30 +46,108 @@ const syncSoundcasts = async () => {
           } else if (i === keys.length - 1) {
             startId = key;
           }
-          let soundcastObj = soundcasts[key];
-          await database.Soundcast.findOne({
-            where: {soundcastId: key},
-          })
+          let soundcast = getSoundcastForPsql(key, soundcasts[key]);
+          await removeSpecialChars(key, soundcasts[key]);
+
+          await database.Soundcast.findOne(getFilter(key))
             .then(soundcastData => {
               if (soundcastData) {
-                console.log('update id: ', key);
-                return soundcastData.update(soundcastObj);
+                return soundcastData.update(soundcast);
               } else {
-                console.log('create id: ', key);
-                return database.Soundcast.create(soundcastObj);
+                return database.Soundcast.create(soundcast);
               }
             })
-            .then(res => res)
-            .catch(err => logInFile(`soundcastId: ${key}\nErr: ${err}\n\n`));
+            .catch(err => {
+              logInFile(
+                `soundcastId: ${key}\nerr: ${err}\nsoundcast: ${
+                  soundcasts[key].publisherID
+                }\n\n`
+              );
+            });
+          const importedSoundcast = await database.ImportedFeed.findOne(
+            getFilter(key)
+          );
+          if (importedSoundcast) {
+            await firebase
+              .database()
+              .ref(`soundcasts/${key}/verified`)
+              .set(false);
+            const episodesData = await database.Episode.findAll(
+              getFilter(importedSoundcast.dataValues.soundcastId)
+            );
+            episodesData.forEach(episode => {
+              firebase
+                .database()
+                .ref(
+                  `soundcasts/${
+                    importedSoundcast.dataValues.soundcastId
+                  }/episodes/${episode.dataValues.episodeId}`
+                )
+                .set(true);
+            });
+          }
         });
       });
   }
 };
 
+const getSoundcastForPsql = (key, fbSoundcast) => {
+  const {
+    publisherID,
+    title,
+    imageUrl,
+    category,
+    published,
+    landingPage,
+    last_update,
+  } = fbSoundcast;
+
+  return {
+    soundcastId: key,
+    publisherId: publisherID ? publisherID : null,
+    title: title ? fixSpecialChars(title) : null,
+    imageUrl: imageUrl ? imageUrl : null,
+    itunesId: null,
+    category: category ? category : null,
+    published: published ? published : null,
+    landingPage: landingPage ? landingPage : null,
+    updateDate: last_update ? last_update : null,
+  };
+};
+
+const getFilter = id => {
+  return {where: {soundcastId: id}};
+};
+
+const removeSpecialChars = (key, soundcast) => {
+  const {title, short_description, long_description} = soundcast;
+  if (title) {
+    firebase
+      .database()
+      .ref(`soundcasts/${key}/title`)
+      .set(fixSpecialChars(title));
+  }
+  if (typeof short_description === 'string') {
+    firebase
+      .database()
+      .ref(`soundcasts/${key}/short_description`)
+      .set(fixSpecialChars(short_description));
+  }
+  if (typeof long_description === 'string') {
+    firebase
+      .database()
+      .ref(`soundcasts/${key}/long_description`)
+      .set(fixSpecialChars(long_description));
+  }
+};
+
+const fixSpecialChars = text => {
+  return new Entities().decode(text);
+};
+
 const logInFile = text => {
   fs.appendFile(LOG_ERR, text, err => {
     if (err) throw err;
-    console.log('Update log');
   });
 };
 
