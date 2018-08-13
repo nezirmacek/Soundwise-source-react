@@ -2,17 +2,23 @@
 
 // handle payments, renewal and cancellation for pro and plus plans on Soundwise
 
-var stripe_key = require('../../config').stripe_key;
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').stripe_key
+    : require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 const firebase = require('firebase-admin');
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = require('../../config').sendGridApiKey;
+const sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const database = require('../../database/index');
 
 module.exports.createSubscription = (req, res) => {
   const options = {
-    items: [{plan: req.body.plan}],
+    items: [{ plan: req.body.plan }],
     metadata: {
       publisherID: req.body.publisherID,
     },
@@ -187,7 +193,7 @@ module.exports.renewSubscription = (req, res) => {
 };
 
 module.exports.cancelSubscription = (req, res) => {
-  const {subscriptionID} = req.body;
+  const { subscriptionID } = req.body;
   stripe.subscriptions
     .del(subscriptionID)
     .then(response => {

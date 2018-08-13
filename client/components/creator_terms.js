@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 
 const CreatorTerms = () => (
   <div>
@@ -9,11 +9,11 @@ const CreatorTerms = () => (
       className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb"
       id="contact-section2"
     >
-      <div className="container text-dark-gray" style={{fontSize: '18px'}}>
+      <div className="container text-dark-gray" style={{ fontSize: '18px' }}>
         <div className="text-center">
           <h3
             className="section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-            style={{textAlign: 'center'}}
+            style={{ textAlign: 'center' }}
           >
             Soundwise: Content Creator Terms and Conditions
           </h3>
@@ -28,7 +28,7 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           You (“Content Creator”) hereby grant Soundwise Inc. (“Company”), a
           Delaware corporation in the United States of America, the
           non-exclusive right, license and privilege to exhibit, market,
@@ -38,26 +38,26 @@ const CreatorTerms = () => (
           for the License Period (“License Period”) set forth below.
         </p>
         &nbsp; &nbsp;
-        <table style={{width: '831px', border: '1px solid black'}}>
+        <table style={{ width: '831px', border: '1px solid black' }}>
           <tbody>
             <tr>
-              <td style={{width: '314px', border: '1px solid black'}}>
-                <span style={{fontWeight: '400'}}>MEDIA</span>
+              <td style={{ width: '314px', border: '1px solid black' }}>
+                <span style={{ fontWeight: '400' }}>MEDIA</span>
               </td>
-              <td style={{width: '163px', border: '1px solid black'}}>
-                <span style={{fontWeight: '400'}}>TERRITORY</span>
+              <td style={{ width: '163px', border: '1px solid black' }}>
+                <span style={{ fontWeight: '400' }}>TERRITORY</span>
               </td>
-              <td style={{width: '323px', border: '1px solid black'}}>
-                <span style={{fontWeight: '400'}}>LICENSE PERIOD</span>
+              <td style={{ width: '323px', border: '1px solid black' }}>
+                <span style={{ fontWeight: '400' }}>LICENSE PERIOD</span>
               </td>
             </tr>
             <tr>
-              <td style={{width: '314px', border: '1px solid black'}}>
+              <td style={{ width: '314px', border: '1px solid black' }}>
                 <table>
                   <tbody>
                     <tr>
                       <td style={{}}>
-                        <span style={{fontWeight: '400'}}>
+                        <span style={{ fontWeight: '400' }}>
                           Streaming and progressive download
                         </span>
                       </td>
@@ -65,15 +65,15 @@ const CreatorTerms = () => (
                   </tbody>
                 </table>
               </td>
-              <td style={{width: '163px', border: '1px solid black'}}>
-                <span style={{fontWeight: '400'}}>Worldwide</span>
+              <td style={{ width: '163px', border: '1px solid black' }}>
+                <span style={{ fontWeight: '400' }}>Worldwide</span>
               </td>
-              <td style={{width: '323px'}}>
+              <td style={{ width: '323px' }}>
                 <table>
                   <tbody>
                     <tr>
                       <td style={{}}>
-                        <span style={{fontWeight: '400'}}>
+                        <span style={{ fontWeight: '400' }}>
                           5 years commencing on the date of this agreement above
                         </span>
                       </td>
@@ -85,7 +85,7 @@ const CreatorTerms = () => (
           </tbody>
         </table>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           For purposes of this Agreement, Streaming and Progressive Download
           services shall refer to any subscription internet- and/or
           intranet-based, media-on-demand service (collectively, “Services”)
@@ -94,7 +94,7 @@ const CreatorTerms = () => (
           Services currently known as “Soundwise”.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           As a Content Creator, You do not have a direct contractual
           relationship with the Company’s Audience. For the purpose of the
           agreement an Audience member is a subscriber or user of the Soundwise
@@ -111,20 +111,20 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           As a Content Creator, You hereby agree to the following:
         </p>
         &nbsp;
         <ol type="a">
-          <li style={{fontWeight: '400'}}>
-            <p style={{fontWeight: '400'}}>
+          <li style={{ fontWeight: '400' }}>
+            <p style={{ fontWeight: '400' }}>
               Company determines pricing for all Materials included in Company
               Services. In the cases where Your content is sold as a stand-alone
               offering, the pricing will be mutually agreed upon in writing.
             </p>
           </li>
-          <li style={{fontWeight: '400'}}>
-            <p style={{fontWeight: '400'}}>
+          <li style={{ fontWeight: '400' }}>
+            <p style={{ fontWeight: '400' }}>
               You shall receive a royalty based on Company Net Receipts
               associated only with use of Your content (the “Royalty”) in the
               amount set forth below, provided that Net Receipts shall not
@@ -134,67 +134,67 @@ const CreatorTerms = () => (
             </p>
           </li>
           &nbsp;
-          <table style={{width: '831px', border: '1px solid black'}}>
+          <table style={{ width: '831px', border: '1px solid black' }}>
             <tbody>
               <tr>
-                <td style={{width: '531px', border: '1px solid black'}}>
-                  <p style={{fontWeight: '400'}}>
+                <td style={{ width: '531px', border: '1px solid black' }}>
+                  <p style={{ fontWeight: '400' }}>
                     Initial term commencing on date of this agreement
                   </p>
                 </td>
-                <td style={{width: '171px', border: '1px solid black'}}>
-                  <p style={{fontWeight: '400'}}>0 - 12 months</p>
+                <td style={{ width: '171px', border: '1px solid black' }}>
+                  <p style={{ fontWeight: '400' }}>0 - 12 months</p>
                 </td>
-                <td style={{width: '120px', border: '1px solid black'}}>
-                  <p style={{fontWeight: '400'}}>after 12 months</p>
+                <td style={{ width: '120px', border: '1px solid black' }}>
+                  <p style={{ fontWeight: '400' }}>after 12 months</p>
                 </td>
               </tr>
               <tr>
-                <td style={{width: '531px', border: '1px solid black'}}>
-                  <p style={{fontWeight: '400'}}>
+                <td style={{ width: '531px', border: '1px solid black' }}>
+                  <p style={{ fontWeight: '400' }}>
                     Royalty as percent of Company Net Receipts associated with
                     use of Your content
                   </p>
                 </td>
-                <td style={{width: '171px', border: '1px solid black'}}>
-                  <p style={{fontWeight: '400'}}>50%</p>
+                <td style={{ width: '171px', border: '1px solid black' }}>
+                  <p style={{ fontWeight: '400' }}>50%</p>
                 </td>
-                <td style={{width: '120px', border: '1px solid black'}}>
-                  <p style={{fontWeight: '400'}}>25%</p>
+                <td style={{ width: '120px', border: '1px solid black' }}>
+                  <p style={{ fontWeight: '400' }}>25%</p>
                 </td>
               </tr>
             </tbody>
           </table>
           &nbsp;
           <li>
-            <p style={{fontWeight: '400'}}>
+            <p style={{ fontWeight: '400' }}>
               In the case where Company includes Your content in creating a
               repackaged program (“Package”), Your royalty per quarter will be
               calculated as:
             </p>
           </li>
           &nbsp;
-          <p style={{fontWeight: '400'}}>
+          <p style={{ fontWeight: '400' }}>
             Royalty = Your royalty percentage x (minutes from Your content in
             Package / total minutes in Package) x Net Receipts of Package sales
           </p>
           &nbsp;
           <li>
-            <p style={{fontWeight: '400'}}>
+            <p style={{ fontWeight: '400' }}>
               In the case where Company includes Your content in creating a
               subscription service (“Subscription”), Your royalty per quarter
               will be calculated as:
             </p>
           </li>
           &nbsp;
-          <p style={{fontWeight: '400'}}>
+          <p style={{ fontWeight: '400' }}>
             Royalty = Your royalty percentage x (minutes consumed from Your
             content in Subscription library / total minutes consumed in
             Subscription library) x Net Receipts of Subscription payments
           </p>
           &nbsp;
           <li>
-            <p style={{fontWeight: '400'}}>
+            <p style={{ fontWeight: '400' }}>
               Company shall pay the Royalty accrued during each quarter of the
               term within sixty (60) days of the close of such quarter, and
               shall accompany each such payment with a statement showing the
@@ -209,7 +209,7 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           Company shall examine the content (“Materials”) submitted by Content
           Creator within sixty (60) days after receipt to determine if the
           Materials comply with all applicable Company standards, including but
@@ -228,7 +228,7 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           4.1      Company shall have no obligation to Content Creator to
           exercise any or all of its rights hereunder, For the avoidance of
           doubt, Company has no obligation to exploit the Program on the
@@ -236,7 +236,7 @@ const CreatorTerms = () => (
           throughout the License Period.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           4.2      In making payment of the License Fee provided for the
           Program, Company shall have the right at its option to withhold all
           taxes that may be required to be withheld.  If Company fails to
@@ -252,14 +252,14 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           5.1      Company, its subsidiaries, affiliates, subscribers, End Users
           (with respect to (b), (c) and (d) below and subject to Company’s User
           Agreement), representatives and agents (“Company Parties”) shall have
           the right:
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           (a)      To advertise, promote, and publicize the Program and to use
           the Licensed Property in connection with such advertising, promotion
           and publicity for Company and/or Company’s affiliated services and
@@ -274,13 +274,13 @@ const CreatorTerms = () => (
           an endorsement of any other product or service.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           (b)      To offer a portion of the Program free of charge and royalty
           obligation to selected segments of its customers for marketing,
           promotion, testing, and research purposes.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           (c)      To edit, digitize, modify, cut, segment or otherwise alter
           any and all elements of the Program in any manner, including but not
           limited to, merging or bundling/packaging all or a portion of any
@@ -293,7 +293,7 @@ const CreatorTerms = () => (
           Creator before releasing them to Company Audience.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           (d)      To create materials based upon the Program such as lesson
           plans, homework assignments and learning assessments (the “Company
           Works”).  For clarity, You acknowledge that the creation of such
@@ -304,7 +304,7 @@ const CreatorTerms = () => (
           Marks.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           (e)      To stream and download all or any portion of the Program from
           the Services.
         </p>
@@ -315,16 +315,16 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           As a Content Creator, You hereby represent and warrant as follows:
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.1      You have the right to enter into this Agreement, grant the
           rights granted herein and perform all obligations hereunder.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.2      The Program shall be delivered to Company free of
           encumbrances including, without limitation, liens, security interests,
           collective bargaining agreements, residual or reuse obligations and
@@ -346,20 +346,20 @@ const CreatorTerms = () => (
           liability.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.3      You have the required qualifications, credentials and
           expertise, including without limitation, education, training,
           knowledge, and skill sets, to teach and offer the services You offer
           on the Program and through the Services.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.4      You will not post or provide any inappropriate, offensive,
           racist, hateful, sexist, pornographic, false, misleading, incorrect,
           infringing, defamatory or libelous content or information.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.5      You will not submit, post or otherwise transmit any
           unsolicited or unauthorized advertising, promotional materials, junk
           mail, spam, chain letters, pyramid schemes or any other form of
@@ -367,7 +367,7 @@ const CreatorTerms = () => (
           User.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.6      You will not engage in any activity that will require Company
           to obtain any licenses from or pay any royalties to any third party,
           including, by way of example and not limitation, the payment of
@@ -375,13 +375,13 @@ const CreatorTerms = () => (
           recordings.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.7      You will not copy, modify, distribute, reverse engineer,
           deface, tarnish, mutilate, hack, or interfere with Company Content
           and/or the Services or operations thereof.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.8      You will not introduce any virus, worm, spyware or any other
           computer code, file or program that may or is intended to damage or
           hijack the operation of any hardware, software or telecommunications
@@ -390,7 +390,7 @@ const CreatorTerms = () => (
           access the Services.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           6.9      You will not interfere with or otherwise prevent other
           content creators from providing their services or programs.
         </p>
@@ -401,7 +401,7 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           Content Creator shall at all times indemnify and hold harmless
           Company, its affiliates, assignees and parent, subsidiary and
           affiliated companies, and the officers, directors, shareholders,
@@ -431,7 +431,7 @@ const CreatorTerms = () => (
             <b> Miscellaneous</b>
           </li>
         </ol>
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.1      No Partnership:  Nothing contained in these Terms shall
           create any partnership or joint venture between the parties.  Neither
           party may make binding commitments on the part of the other, except as
@@ -441,7 +441,7 @@ const CreatorTerms = () => (
           to herein or not. Parties remain independent contractors to one
           another at all times.{' '}
         </p>
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.2      The Parties’ Control Over Employees:  As independent
           contractors, each party shall have the entire responsibility to
           discharge all the obligations of employer with respect to its
@@ -454,7 +454,7 @@ const CreatorTerms = () => (
           party.{' '}
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.3      Company reserves the right to modify and/or make changes to
           these Terms at any time. If Company makes any changes involving the
           Royalty arrangement, Company will notify You using prominent means
@@ -467,7 +467,7 @@ const CreatorTerms = () => (
           Content Creator Terms supersedes all previous Content Creator Terms.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.4      This Agreement shall be construed and enforced under the laws
           of the District of Columbia.  Grantor hereby consents to and submits
           to the jurisdiction of the federal and state courts located in the
@@ -475,17 +475,17 @@ const CreatorTerms = () => (
           personal jurisdiction or venue, or inconvenient forum.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.5      If any provision herein is unenforceable then such provision
           shall be of no effect on any other provision hereof.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.6      No waiver of any breach hereof shall be deemed a waiver of
           any other breach hereof.
         </p>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           8.7      Rights and remedies granted to Company hereunder are
           cumulative.  The exercise of one shall not diminish or affect any
           other rights or remedies at law or in equity.  Grantor’s sole remedy
@@ -501,7 +501,7 @@ const CreatorTerms = () => (
           </li>
         </ol>
         &nbsp;
-        <p style={{fontWeight: '400'}}>
+        <p style={{ fontWeight: '400' }}>
           The Terms and Conditions agreed to on Company’s website are fully
           incorporated into this Agreement as if fully set forth herein and are
           fully enforceable under this Agreement.

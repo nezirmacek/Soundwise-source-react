@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Cropper from 'react-cropper';
 // import 'cropperjs/dist/cropper.css';
 // import {Cropper} from 'react-image-cropper'
@@ -28,7 +28,7 @@ function dataURItoBlob(dataURI) {
     ia[i] = byteString.charCodeAt(i);
   }
 
-  return new Blob([ia], {type: mimeString});
+  return new Blob([ia], { type: mimeString });
 }
 
 export default class ImageCropModal extends Component {
@@ -87,8 +87,8 @@ export default class ImageCropModal extends Component {
   }
 
   upload() {
-    const {imageType} = this.props;
-    const {cropResult} = this.state;
+    const { imageType } = this.props;
+    const { cropResult } = this.state;
     if (cropResult) {
       const fileBlob = dataURItoBlob(this.state.cropResult);
       this.props.upload(fileBlob, imageType);
@@ -104,7 +104,7 @@ export default class ImageCropModal extends Component {
 
   render() {
     const that = this;
-    const {cropResult, width, height} = this.state;
+    const { cropResult, width, height } = this.state;
     const actions = [
       <FlatButton label="Save" primary={true} onClick={() => that.upload()} />,
       <FlatButton
@@ -121,8 +121,8 @@ export default class ImageCropModal extends Component {
           modal={false}
           open={this.props.open}
           onRequestClose={this.props.handleClose}
-          contentStyle={{width: '80%'}}
-          bodyStyle={{minHeight: 350, overflowY: 'auto'}}
+          contentStyle={{ width: '80%' }}
+          bodyStyle={{ minHeight: 350, overflowY: 'auto' }}
         >
           {(!this.state.cropped && (
             <div className="" style={{}}>
@@ -138,7 +138,7 @@ export default class ImageCropModal extends Component {
                   // onImageLoaded={this.onImageLoaded}
                   // onChange={this.onChange.bind(this)}
                   // onComplete={this.setPixels}
-                  style={{height: 300, width: (width / height) * 300}}
+                  style={{ height: 300, width: (width / height) * 300 }}
                   // crop={this.cropImage}
                   // ratio={1 / 1}
                   src={this.state.src}
@@ -148,7 +148,7 @@ export default class ImageCropModal extends Component {
                   guides={false}
                 />
               </div>
-              <div style={{width: '100%', marginTop: 10}}>
+              <div style={{ width: '100%', marginTop: 10 }}>
                 <RaisedButton
                   onClick={this.cropImage}
                   backgroundColor={Colors.mainOrange}
@@ -158,10 +158,10 @@ export default class ImageCropModal extends Component {
               </div>
             </div>
           )) || (
-            <div style={{width: '100%'}}>
-              <div style={{display: 'flex', justifyContent: 'center'}}>
+            <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <img
-                  style={{height: 300, width: 300, padding: 10}}
+                  style={{ height: 300, width: 300, padding: 10 }}
                   src={this.state.cropResult}
                   alt="cropped image"
                 />

@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Butter from 'buttercms';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import Colors from '../../styles/colors';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import { SoundwiseHeader } from '../../components/soundwise_header';
 import Footer from '../../components/footer';
 
 const butter = Butter('f8b408f99e5169af2c3ccf1f95b4ff7e679b2cbd');
@@ -64,7 +64,7 @@ export default class BlogPost extends Component {
           >
             <div
               className="row"
-              style={{paddingLeft: '10%', paddingRight: '10%'}}
+              style={{ paddingLeft: '10%', paddingRight: '10%' }}
             >
               <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
                 <img
@@ -99,10 +99,10 @@ export default class BlogPost extends Component {
                           backgroundImage: `url(${author.profile_image || ''})`,
                         }}
                       />
-                      <div style={{marginLeft: 15, textAlign: 'left'}}>
+                      <div style={{ marginLeft: 15, textAlign: 'left' }}>
                         <div
                           className="text-large text-dark-gray font-weight-800"
-                          style={{fontWeight: 800}}
+                          style={{ fontWeight: 800 }}
                         >{`${author.first_name} ${author.last_name}`}</div>
                         <div className="text-large text-dark-gray ">
                           {moment(post.published).format('MMMM Do YYYY')}
@@ -157,7 +157,7 @@ export default class BlogPost extends Component {
                   </a>
                 </div>
               </div>
-              <div dangerouslySetInnerHTML={{__html: post.body}} />
+              <div dangerouslySetInnerHTML={{ __html: post.body }} />
               <div className="row">
                 <div
                   className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center "
@@ -206,7 +206,7 @@ export default class BlogPost extends Component {
               </div>
             </div>
           </section>
-          <div style={{bottom: 0, width: '100%', position: 'static'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'static' }}>
             <Footer showPricing={true} />
           </div>
         </div>
@@ -216,7 +216,7 @@ export default class BlogPost extends Component {
         <div>
           <SoundwiseHeader showIcon={true} blog={true} />
           <div />
-          <div style={{bottom: 0, width: '100%', position: 'absolute'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'absolute' }}>
             <Footer />
           </div>
         </div>

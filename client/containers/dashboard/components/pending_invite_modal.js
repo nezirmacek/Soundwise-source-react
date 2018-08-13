@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import firebase from 'firebase';
 
@@ -6,7 +6,7 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
+import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -29,7 +29,7 @@ export default class PendingInviteModal extends Component {
 
   sendInviteReminder() {
     const invitees = [];
-    const {invited} = this.props.soundcast;
+    const { invited } = this.props.soundcast;
     let email;
     for (var key in invited) {
       if (invited[key]) {
@@ -38,7 +38,7 @@ export default class PendingInviteModal extends Component {
       }
     }
     const that = this;
-    const {soundcast, userInfo} = this.props;
+    const { soundcast, userInfo } = this.props;
 
     // send email invitations to invited listeners
     const subject = `[Reminder] ${
@@ -91,7 +91,7 @@ export default class PendingInviteModal extends Component {
 
   render() {
     const invitees = [];
-    const {invited} = this.props.soundcast;
+    const { invited } = this.props.soundcast;
     let email;
     for (var key in invited) {
       if (invited[key]) {
@@ -110,24 +110,24 @@ export default class PendingInviteModal extends Component {
         <div>
           <div style={styles.backDrop} onClick={this.closeModal} />
           <div style={styles.modal}>
-            <div style={{padding: 25, height: '100%'}}>
+            <div style={{ padding: 25, height: '100%' }}>
               <div className="row">
                 <div className="title-small" style={styles.headingText}>
                   {`Pending Invite List for ${this.props.soundcast.title}`}
                 </div>
                 <div style={styles.closeButtonWrap}>
                   <div
-                    style={{cursor: 'pointer'}}
+                    style={{ cursor: 'pointer' }}
                     onClick={this.closeModal.bind(this)}
                   >
-                    <i className="fa fa-times fa-2x" style={{color: 'red'}} />
+                    <i className="fa fa-times fa-2x" style={{ color: 'red' }} />
                   </div>
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-12" style={styles.button}>
                   <span
-                    style={{color: Colors.link}}
+                    style={{ color: Colors.link }}
                     onClick={this.sendInviteReminder}
                   >
                     Send Invite Reminder
@@ -147,20 +147,20 @@ export default class PendingInviteModal extends Component {
                 <table className="table table-condensed">
                   <thead>
                     <tr style={styles.tr}>
-                      <th style={{...styles.th, width: 37}} />
-                      <th style={{...styles.th, width: 350}}>EMAIL</th>
-                      <th style={{...styles.th, width: 150}}>INVITED ON</th>
+                      <th style={{ ...styles.th, width: 37 }} />
+                      <th style={{ ...styles.th, width: 350 }}>EMAIL</th>
+                      <th style={{ ...styles.th, width: 150 }}>INVITED ON</th>
                     </tr>
                   </thead>
                   <tbody>
                     {invitees.map((invitee, i) => {
                       return (
                         <tr key={i} style={styles.tr}>
-                          <td style={{...styles.td, width: 37}} />
-                          <td style={{...styles.td, width: 350}}>
+                          <td style={{ ...styles.td, width: 37 }} />
+                          <td style={{ ...styles.td, width: 350 }}>
                             {invitee.email}
                           </td>
-                          <td style={{...styles.td, width: 150}}>
+                          <td style={{ ...styles.td, width: 150 }}>
                             {typeof invitee.date == 'boolean'
                               ? '__'
                               : moment.unix(invitee.date).format('MMM DD YYYY')}

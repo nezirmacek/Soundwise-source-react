@@ -182,7 +182,7 @@ function clearRelatedEntities(path, id, field, relatedPath) {
 function addOrUpdateUserRecord(user) {
   // Get Firebase object
   if (user.val()) {
-    const {firstName, lastName, pic_url, email, token} = user.val();
+    const { firstName, lastName, pic_url, email, token } = user.val();
     const userId = user.key;
     const userObj = {
       userId,
@@ -195,7 +195,7 @@ function addOrUpdateUserRecord(user) {
 
     // Add or update object
     database.User.findOne({
-      where: {userId},
+      where: { userId },
     })
       .then(userData => {
         if (userData) {
@@ -227,7 +227,7 @@ function subsctibeOnSoundcast(user) {
           firebase
             .database()
             .ref(`soundcasts/${soundcastId}/subscribed`)
-            .set({[user.userId]: {0: user.token}});
+            .set({ [user.userId]: { 0: user.token } });
           firebase
             .database()
             .ref(`soundcasts/${soundcastId}`)
@@ -264,7 +264,7 @@ function subsctibeOnSoundcast(user) {
 function deleteUserRecord(user) {
   const userId = user.key;
   database.User.findOne({
-    where: {userId},
+    where: { userId },
   })
     .then(userData => {
       if (userData) {
@@ -306,7 +306,7 @@ function addOrUpdateCommentRecord(comment) {
 
     // Add or update object
     database.Comment.findOne({
-      where: {commentId},
+      where: { commentId },
     })
       .then(commentData => {
         if (commentData) {
@@ -326,7 +326,7 @@ function addOrUpdateCommentRecord(comment) {
 function deleteCommentRecord(comment) {
   const commentId = comment.key;
   database.Comment.findOne({
-    where: {commentId},
+    where: { commentId },
   })
     .then(data => {
       if (data) {
@@ -363,7 +363,7 @@ function addOrUpdateLikeRecord(like) {
 
     // Add or update object
     database.Like.findOne({
-      where: {likeId},
+      where: { likeId },
     })
       .then(likeData => {
         if (likeData) {
@@ -383,7 +383,7 @@ function addOrUpdateLikeRecord(like) {
 function deleteLikeRecord(like) {
   const likeId = like.key;
   database.Like.findOne({
-    where: {likeId},
+    where: { likeId },
   })
     .then(data => {
       if (data) {
@@ -424,7 +424,7 @@ function addOrUpdateSoundcastRecord(soundcast) {
 
     // Add or update object
     database.Soundcast.findOne({
-      where: {soundcastId},
+      where: { soundcastId },
     })
       .then(soundcastData => {
         if (soundcastData) {
@@ -444,7 +444,7 @@ function addOrUpdateSoundcastRecord(soundcast) {
 function deleteSoundcastRecord(soundcast) {
   const soundcastId = soundcast.key;
   database.Soundcast.findOne({
-    where: {soundcastId},
+    where: { soundcastId },
   })
     .then(soundcastData => {
       if (soundcastData) {
@@ -523,7 +523,7 @@ function getParentComment(parentId) {
 
 async function addEpisodeEvent(episode) {
   if (episode.val()) {
-    const {creatorID, soundcastID, publisherID, title} = episode.val();
+    const { creatorID, soundcastID, publisherID, title } = episode.val();
     const episodeId = episode.key;
     const user = await getFirebaseUserById(creatorID);
     const soundcast = await getSoundcastById(soundcastID);
@@ -549,7 +549,7 @@ async function addEpisodeEvent(episode) {
 function removeEpisodeEvent(episode) {
   const episodeId = episode.key;
   database.Event.findOne({
-    where: {type: 'episode', episodeId},
+    where: { type: 'episode', episodeId },
   })
     .then(eventData => {
       if (eventData) {
@@ -600,7 +600,7 @@ async function addLikeEvent(like) {
 function removeLikeEvent(like) {
   const likeId = like.key;
   database.Event.findOne({
-    where: {type: 'like', likeId},
+    where: { type: 'like', likeId },
   })
     .then(eventData => {
       if (eventData) {
@@ -624,7 +624,7 @@ async function addCommentOrReplyEvent(comment) {
     if (type === 'reply') {
       parentId = `${commentId.split('-', 2)[1]}-${commentId.split('-', 3)[2]}`;
     }
-    const {userID, episodeID, soundcastId, announcementID} = comment.val();
+    const { userID, episodeID, soundcastId, announcementID } = comment.val();
     const user = await getFirebaseUserById(userID);
     let episode, soundcast;
     if (episodeID) {
@@ -668,7 +668,7 @@ function removeCommentOrReplyEvent(comment) {
   if (nHyphens === 2) type = 'reply';
   if (!type) return;
   database.Event.findOne({
-    where: {type, commentId},
+    where: { type, commentId },
   })
     .then(eventData => {
       if (eventData) {
@@ -682,7 +682,7 @@ function removeCommentOrReplyEvent(comment) {
 
 async function addMessageEvent(message) {
   if (message.val()) {
-    const {creatorID, soundcastID, publisherID} = message.val();
+    const { creatorID, soundcastID, publisherID } = message.val();
     const messageId = message.key;
     const user = await getFirebaseUserById(creatorID);
     const eventObj = {
@@ -707,7 +707,7 @@ async function addMessageEvent(message) {
 function removeMessageEvents(message) {
   const messageId = message.key;
   database.Event.findOne({
-    where: {type: 'message', messageId},
+    where: { type: 'message', messageId },
   })
     .then(eventData => {
       if (eventData) {

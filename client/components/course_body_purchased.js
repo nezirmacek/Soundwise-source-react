@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import {
   cyanA200,
@@ -10,8 +10,8 @@ import {
 } from 'material-ui/styles/colors';
 
 import Instructor from './instructor';
-import {Curriculum} from './curriculum';
-import {Reviews} from '../containers/reviews';
+import { Curriculum } from './curriculum';
+import { Reviews } from '../containers/reviews';
 import Resources from './resources';
 
 const styles = {

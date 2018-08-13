@@ -1,7 +1,10 @@
 'use strict';
 
 var sendinblue = require('sendinblue-api');
-var sendinBlueApiKey = require('../../config').sendinBlueApiKey;
+var sendinBlueApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendinBlueApiKey
+    : require('../../config').sendinBlueApiKey;
 
 var template = '';
 template += '<!DOCTYPE html>';
@@ -441,11 +444,11 @@ template += '    </center>';
 template += '</body>';
 template += '</html>';
 
-var parameters = {apiKey: sendinBlueApiKey, timeout: 5000};
+var parameters = { apiKey: sendinBlueApiKey, timeout: 5000 };
 var sendinObj = new sendinblue(parameters);
 
 var input = {
-  to: {['natasha@mysoundwise.com']: ''},
+  to: { ['natasha@mysoundwise.com']: '' },
   from: ['support@mysoundwise.com', 'Soundwise'],
   subject: 'test email',
   html: template,

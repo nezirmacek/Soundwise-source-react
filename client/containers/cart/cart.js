@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Link, Redirect} from 'react-router-dom';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import * as _ from 'lodash';
 import * as firebase from 'firebase';
 import Axios from 'axios';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
-import {deleteCourseFromCart, openSignupbox} from '../../actions/index';
-import {CourseSignup} from '../course_signup';
-import {Checkout} from '../checkout';
+import { SoundwiseHeader } from '../../components/soundwise_header';
+import { deleteCourseFromCart, openSignupbox } from '../../actions/index';
+import { CourseSignup } from '../course_signup';
+import { Checkout } from '../checkout';
 import Footer from '../../components/footer';
 import CourseInCart from './components/CourseInCart';
 
@@ -32,13 +32,13 @@ class _Cart extends Component {
     // add discountedPrice field to courses
     let _shoppingCart = JSON.parse(JSON.stringify(nextProps.shoppingCart)); // to not mutate props
     _shoppingCart.map(course => {
-      let _oldCourse = _.find(this.state.shoppingCart, {id: course.id});
+      let _oldCourse = _.find(this.state.shoppingCart, { id: course.id });
       course.discountedPrice =
         (_oldCourse && _oldCourse.discountedPrice) ||
         (_oldCourse && _oldCourse.price) ||
         0;
     });
-    this.setState({shoppingCart: _shoppingCart});
+    this.setState({ shoppingCart: _shoppingCart });
   }
 
   addCourseToUser() {
@@ -85,7 +85,7 @@ class _Cart extends Component {
 
   setCourseDiscountedPrice(courseId, discountedPrice) {
     let _newState = JSON.parse(JSON.stringify(this.state)); // to not mutate state
-    let _course = _.find(_newState.shoppingCart, {id: courseId});
+    let _course = _.find(_newState.shoppingCart, { id: courseId });
     if (_course) {
       _course.discountedPrice = discountedPrice;
       this.setState(_newState);
@@ -130,7 +130,7 @@ class _Cart extends Component {
                     <div className="row equalize sm-equalize-auto equalize-display-inherit">
                       <div
                         className="col-md-6 col-sm-12 center-col sm-no-margin"
-                        style={{height: ''}}
+                        style={{ height: '' }}
                       >
                         {this.state.shoppingCart.map((course, i) => {
                           return (
@@ -167,13 +167,13 @@ class _Cart extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({deleteCourseFromCart, openSignupbox}, dispatch);
+  return bindActionCreators({ deleteCourseFromCart, openSignupbox }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {signupFormOpen} = state.signupBox;
-  const {shoppingCart} = state.checkoutProcess;
+  const { userInfo, isLoggedIn } = state.user;
+  const { signupFormOpen } = state.signupBox;
+  const { shoppingCart } = state.checkoutProcess;
   return {
     isLoggedIn,
     shoppingCart,

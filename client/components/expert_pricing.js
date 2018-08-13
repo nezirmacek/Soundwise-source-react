@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const ExpertPricing = () => (
   <section
@@ -25,7 +25,7 @@ const ExpertPricing = () => (
           <div className="pricing-price  builder-bg margin-five-bottom xs-margin-five-bottom">
             <span
               className="title-extra-large sm-title-extra-large alt-font  tz-text"
-              style={{color: '#61e1fb'}}
+              style={{ color: '#61e1fb' }}
             >
               $29
             </span>
@@ -35,7 +35,7 @@ const ExpertPricing = () => (
             </span>
             <span
               className="title-extra-large sm-title-extra-large alt-font  tz-text"
-              style={{color: '#61e1fb'}}
+              style={{ color: '#61e1fb' }}
             >
               5%{' '}
             </span>
@@ -91,7 +91,7 @@ const ExpertPricing = () => (
           <Link
             to="/signup/admin"
             className="btn-large btn text-dark-blue btn-3d"
-            style={{backgroundColor: '#F76B1C'}}
+            style={{ backgroundColor: '#F76B1C' }}
           >
             <span className="tz-text">GET START</span>
           </Link>

@@ -1,9 +1,15 @@
-var stripe_key = require('../config').stripe_key;
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').stripe_key
+    : require('../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
-var firebase = require("firebase-admin");
-const moment = require("moment");
+var firebase = require('firebase-admin');
+const moment = require('moment');
 const request = require('request-promise');
-var serviceAccount = require("../serviceAccountKey.json");
+var serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -14,16 +20,19 @@ var options, publisherId, name, paypalEmail;
 var date = moment().format();
 const ids = ['1503002103690p'];
 var processPublishers = async () => {
-  for(const id of ids) {
-    const process = await firebase.database().ref(`publishers/${id}`)
-    .once('value')
-    .then(snapshot => {
-      const publisher = snapshot.val();
+  for (const id of ids) {
+    const process = await firebase
+      .database()
+      .ref(`publishers/${id}`)
+      .once('value')
+      .then(snapshot => {
+        const publisher = snapshot.val();
         publisherId = id;
         name = snapshot.val().name;
         paypalEmail = snapshot.val().email;
-        request(`https://mysoundwise.com/api/publishers/${publisherId}/exists`)
-        .then(res => {
+        request(
+          `https://mysoundwise.com/api/publishers/${publisherId}/exists`
+        ).then(res => {
           options = {
             uri: 'https://mysoundwise.com/api/publishers/replaceOrCreate',
             body: {
@@ -31,38 +40,35 @@ var processPublishers = async () => {
               name,
               paypalEmail,
               updatedAt: date,
-              createdAt: date
+              createdAt: date,
             },
-            json: true
+            json: true,
           };
           console.log(JSON.parse(res));
-          if(JSON.parse(res).exists) {
+          if (JSON.parse(res).exists) {
             options.method = 'PUT';
             request(options)
-            .then(res => {})
-            .catch(err => {
-              console.log(`error posting ${publisherId}`);
-              // console.log(err);
-            });
+              .then(res => {})
+              .catch(err => {
+                console.log(`error posting ${publisherId}`);
+                // console.log(err);
+              });
           } else {
             options.method = 'POST';
             request(options)
-            .then(res => {})
-            .catch(err => {
-              console.log(`error posting ${publisherId}`);
-              // console.log(err);
-            });
+              .then(res => {})
+              .catch(err => {
+                console.log(`error posting ${publisherId}`);
+                // console.log(err);
+              });
           }
         });
-    })
-    .catch(err => console.log(err));
+      })
+      .catch(err => console.log(err));
   }
 };
 
 processPublishers();
-
-
-
 
 // retrieve stripe product
 // stripe.products.retrieve(
@@ -95,7 +101,6 @@ processPublishers();
 // });
 // firebase.database().ref(`soundcasts/1531504770898s/subscribed/${userId}`)
 // .set('1531755224');
-
 
 // Compile iTunes category ID list
 // const util = require('util')

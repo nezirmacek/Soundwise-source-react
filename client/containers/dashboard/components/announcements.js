@@ -134,7 +134,6 @@ export default class Announcements extends Component {
 
   changeSoundcastId(e) {
     this.setState({ currentSoundcastID: e.target.value });
-
     const { soundcasts_managed } = this.state;
     let currentSoundcast;
 

@@ -1,12 +1,18 @@
 'use strict';
 const moment = require('moment');
-var stripe_key = require('../../config').stripe_key;
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').stripe_key
+    : require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 var admin = require('firebase-admin');
 // const sendinblue = require('sendinblue-api');
 // const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = require('../../config').sendGridApiKey;
+const sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const stripeFeeFixed = 30; // 30 cents fixed fee
 const stripeFeePercent = 2.9 + 0.5; // 2.9% transaction fee, 0.5% fee on payout volume
@@ -99,7 +105,7 @@ module.exports = function(Transaction) {
         break;
       case 'charge.refunded':
         data.data.object.refunds.data.forEach((refund, i) => {
-          Transaction.find({where: {chargeId: refund.charge}})
+          Transaction.find({ where: { chargeId: refund.charge } })
             .then(res => {
               const publisherId = (res.length && res[0].publisherId) || null;
               const soundcastId = (res.length && res[0].soundcastId) || null;
@@ -175,10 +181,10 @@ module.exports = function(Transaction) {
     accepts: {
       arg: 'data',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
-    returns: {type: 'array', root: true},
+    returns: { type: 'array', root: true },
   });
 
   Transaction.handleOnetimeCharge = function(req, cb) {
@@ -190,13 +196,15 @@ module.exports = function(Transaction) {
           source: req.source,
         })
         .then(customer => {
-          const data = Object.assign({}, req, {platformCustomer: customer.id});
+          const data = Object.assign({}, req, {
+            platformCustomer: customer.id,
+          });
           return createCharge(Transaction, data, cb);
         });
     } else {
       // if customer id is in the reqest body, create a charge using the existing customer id
       console.log('customer: ', req.customer);
-      const data = Object.assign({}, req, {platformCustomer: req.customer});
+      const data = Object.assign({}, req, { platformCustomer: req.customer });
       createCharge(Transaction, data, cb);
     }
   };
@@ -213,13 +221,13 @@ module.exports = function(Transaction) {
     accepts: {
       arg: 'req',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
     returns: {
       arg: 'res',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
   });
@@ -348,7 +356,7 @@ async function createCharge(Transaction, data, cb) {
 
           Transaction.create(_transaction)
             .then(() => {
-              return cb(null, Object.assign({}, charge, {platformCustomer}));
+              return cb(null, Object.assign({}, charge, { platformCustomer }));
             })
             .catch(err => {
               return cb(err);

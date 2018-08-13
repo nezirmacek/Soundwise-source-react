@@ -1,26 +1,26 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import 'url-search-params-polyfill';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import firebase from 'firebase';
-import {withRouter} from 'react-router';
-import {Redirect} from 'react-router-dom';
+import { withRouter } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {EditorState, convertToRaw} from 'draft-js';
+import { EditorState, convertToRaw } from 'draft-js';
 
-import {SoundcastHeader} from './components/soundcast_header';
+import { SoundcastHeader } from './components/soundcast_header';
 import SoundwiseFooter from './components/footer';
 
 import SoundcastBody from './components/soundcast_body';
 import SoundcastFooter from './components/soundcast_footer';
 import Banner from './components/banner';
-import {PricingModal} from './components/pricing_modal';
+import { PricingModal } from './components/pricing_modal';
 
 import PageHeader from './components/page_header';
-import {PublisherHeader} from './components/publisher_header';
+import { PublisherHeader } from './components/publisher_header';
 import RelatedSoundcasts from './components/related_soundcasts';
 // import {CourseSignup} from './course_signup'
 
@@ -58,13 +58,13 @@ class _SoundcastPage extends Component {
   }
 
   async componentDidMount() {
-    const {history} = this.props;
+    const { history } = this.props;
     const soundcastID = this.props.match.params.id;
     const params = new URLSearchParams(this.props.location.search);
 
     // check coupon parameter
     if (params.get('c')) {
-      this.setState({coupon: params.get('c')});
+      this.setState({ coupon: params.get('c') });
       this.startTimer();
     }
     this.retrieveSoundcast(soundcastID);
@@ -77,7 +77,7 @@ class _SoundcastPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {history} = this.props;
+    const { history } = this.props;
     if (nextProps.match.params.id !== this.props.match.params.id) {
       const soundcastID = nextProps.match.params.id;
       // console.log('soundcastID: ', soundcastID);
@@ -86,13 +86,13 @@ class _SoundcastPage extends Component {
   }
 
   async retrieveSoundcast(soundcastID) {
-    const {history} = this.props;
+    const { history } = this.props;
     const soundcast = await firebase
       .database()
       .ref('soundcasts/' + soundcastID)
       .once('value');
     if (soundcast.val()) {
-      const {expiration, checkedPrice} = this.getPrice(soundcast.val());
+      const { expiration, checkedPrice } = this.getPrice(soundcast.val());
       this.setState({
         soundcast: soundcast.val(),
         soundcastID,
@@ -183,7 +183,14 @@ class _SoundcastPage extends Component {
       displayedPrice = `${trialLength} days free trial`;
       post = ``;
     }
-    return {checkedPrice, expiration, originalPrice, displayedPrice, pre, post};
+    return {
+      checkedPrice,
+      expiration,
+      originalPrice,
+      displayedPrice,
+      pre,
+      post,
+    };
   }
 
   componentWillUnmount() {
@@ -197,17 +204,17 @@ class _SoundcastPage extends Component {
     const bodyHeigher = this.body.clientHeight;
     const showBanner =
       window.pageYOffset > headerHeight && window.pageYOffset < bodyHeigher;
-    this.setState({showBanner});
+    this.setState({ showBanner });
   }
 
   setMaxCardHeight(cardHeight) {
     if (cardHeight > this.state.cardHeight) {
-      this.setState({cardHeight});
+      this.setState({ cardHeight });
     }
   }
 
   handleModal() {
-    this.setState({modalOpen: !this.state.modalOpen});
+    this.setState({ modalOpen: !this.state.modalOpen });
   }
 
   startTimer() {
@@ -347,7 +354,7 @@ class _SoundcastPage extends Component {
                   <div style={styles.timerLabel}>Minutes</div>
                 </span>
                 <span style={styles.timerColon}>:</span>
-                <span style={{...styles.timerBlock, paddingRight: 36}}>
+                <span style={{ ...styles.timerBlock, paddingRight: 36 }}>
                   <span style={styles.timerDigit}>{timerDigits[6]}</span>
                   <span style={styles.timerDigit}>{timerDigits[7]}</span>
                   <div style={styles.timerLabel}>Seconds</div>
@@ -357,7 +364,7 @@ class _SoundcastPage extends Component {
               null}
             <div
               ref={elem => (this.header = elem)}
-              style={{paddingTop: timerDigits.length ? 118 : 0}}
+              style={{ paddingTop: timerDigits.length ? 118 : 0 }}
             >
               <PublisherHeader
                 soundcastID={soundcastID}
@@ -417,7 +424,7 @@ class _SoundcastPage extends Component {
 // }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

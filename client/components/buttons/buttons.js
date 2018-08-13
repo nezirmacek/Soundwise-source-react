@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Colors from '../../styles/colors';
 import PropTypes from 'prop-types';
 
@@ -9,10 +9,10 @@ const props = {
 };
 
 export const OrangeSubmitButton = props => {
-  const {label, onClick, styles} = props;
+  const { label, onClick, styles } = props;
   return (
     <div
-      style={{..._styles.orangeSubmitButton, ...(styles || {})}}
+      style={{ ..._styles.orangeSubmitButton, ...(styles || {}) }}
       onClick={onClick}
       className="text-center"
     >
@@ -23,7 +23,7 @@ export const OrangeSubmitButton = props => {
 OrangeSubmitButton.propTypes = props;
 
 export const TransparentShortSubmitButton = props => {
-  const {label, onClick, styles} = props;
+  const { label, onClick, styles } = props;
   return (
     <div
       style={{

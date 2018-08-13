@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 class Resources extends Component {
   constructor(props) {
@@ -24,22 +24,24 @@ class Resources extends Component {
         <div className=" " key={i}>
           <h2
             className="text-left width-70 margin-lr-auto font-weight-500  text-large text-dark-gray padding-30px-tb tz-text"
-            style={{display: 'inline-block', paddingLeft: '1em'}}
+            style={{ display: 'inline-block', paddingLeft: '1em' }}
           >
             {resource.description}
           </h2>
           <span
             className="margin-lr-auto font-weight-500 text-large text-dark-gray padding-30px-tb tz-text"
-            style={{color: '#F76B1C'}}
+            style={{ color: '#F76B1C' }}
           >
             {' '}
-            (<a
-              style={{textDecoration: 'underline', color: '#F76B1C'}}
+            (
+            <a
+              style={{ textDecoration: 'underline', color: '#F76B1C' }}
               href={resource.link}
             >
               {' '}
               Link{' '}
-            </a>)
+            </a>
+            )
           </span>
         </div>
       );

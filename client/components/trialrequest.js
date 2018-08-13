@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Axios from 'axios';
 
 export default class TrialRequest extends Component {
@@ -29,7 +29,7 @@ export default class TrialRequest extends Component {
   handleSubmit() {
     const that = this;
 
-    const {firstName, lastName, email, phone, company, title} = this.state;
+    const { firstName, lastName, email, phone, company, title } = this.state;
 
     if (firstName.length === 0) {
       this.setState({
@@ -222,7 +222,10 @@ export default class TrialRequest extends Component {
             </div>
 
             <div className="col-md-12 col-sm-12 center-col contact-form-style2 ">
-              <div className="row col-md-12 text-center" style={{color: 'red'}}>
+              <div
+                className="row col-md-12 text-center"
+                style={{ color: 'red' }}
+              >
                 {this.state.error}
               </div>
               <div className="col-md-12 center-col text-center">
