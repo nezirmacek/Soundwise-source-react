@@ -25,6 +25,7 @@ var Axios = require('axios');
 const moment = require('moment');
 // var request = require('request');
 const request = require('request-promise');
+const syncSoundcasts = require('./scripts/syncPsql.js').syncSoundcasts;
 
 const {
   handlePayment,

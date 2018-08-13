@@ -70,6 +70,13 @@
         "column": "landingPage"
       }
     },
+    "rank": {
+      "type": "number",
+      "required": false,
+      "postgresql": {
+        "column": "rank"
+      }
+    },
     "updateDate": {
       "type": "number",
       "required": false,
