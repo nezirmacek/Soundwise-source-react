@@ -39,7 +39,7 @@ module.exports = app => {
     const soundcastId = JSON.parse(req.query.filter).soundcastId;
     database.Message.findAll({
       where: { soundcastId: soundcastId },
-      order: [['updatedAt', 'DESC']],
+      order: [['createdAt', 'DESC']],
     })
       .then(data => res.send(data))
       .catch(err => res.status(500).send(err));
@@ -168,15 +168,13 @@ module.exports = app => {
       .catch(err => res.status(500).send(err));
   });
 
-  app.post('/api/comments', (req, res) => inspectors.addComment(req, res));
+  app.post('/api/comments', inspectors.addComment);
 
-  app.delete('/api/comments/:id', (req, res) =>
-    inspectors.deleteComment(req, res)
-  );
+  app.delete('/api/comments/:id', inspectors.deleteComment);
 
-  app.put('/api/comments/:id', (req, res) => inspectors.editComment(req, res));
+  app.put('/api/comments/:id', inspectors.editComment);
 
-  app.post('/api/likes', (req, res) => inspectors.addLike(req, res));
+  app.post('/api/likes', inspectors.addLike);
 
-  app.delete('/api/likes/:id', (req, res) => inspectors.deleteLike(req, res));
+  app.delete('/api/likes/:id', inspectors.deleteLike);
 };
