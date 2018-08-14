@@ -132,17 +132,17 @@ const editComment = (req, res) => {
 
 // LIKES
 
-const likeCount = like => {
+const likesCount = like => {
   const path = like.announcementId
-    ? `messages/${like.announcementId}/likeCount`
+    ? `messages/${like.announcementId}/likesCount`
     : like.episodeId
-      ? `episodes/${like.episodeId}/likeCount`
-      : `comments/${like.commentId}/likeCount`;
-  database.Like.findAll({ where: { episodeId: like.episodeId } }).then(likes =>
+      ? `episodes/${like.episodeId}/likesCount`
+      : `comments/${like.commentId}/likesCount`;
+  database.Like.count({ where: { episodeId: like.episodeId } }).then(count =>
     firebase
       .database()
       .ref(path)
-      .set(likes.length)
+      .set(count)
   );
 };
 
@@ -210,7 +210,7 @@ const addLike = (req, res) => {
             .set(fullName);
         }
       }
-      likeCount(like);
+      likesCount(like);
       res.send(data);
     })
     .catch(err => res.status(500).send(err));
@@ -269,7 +269,7 @@ const deleteLike = (req, res) => {
             }
           }
         );
-        likeCount(like);
+        likesCount(like);
         res.send({ count });
       });
     })
