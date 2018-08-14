@@ -174,9 +174,10 @@ module.exports = app => {
     inspectors.deleteComment(req, res)
   );
 
+  app.post('/api/comment', inspectors.addComment);
   app.put('/api/comments/:id', (req, res) => inspectors.editComment(req, res));
-
-  app.post('/api/likes', (req, res) => inspectors.addLike(req, res));
-
-  app.delete('/api/likes/:id', (req, res) => inspectors.deleteLike(req, res));
+  // app.put('/api/comment', inspectors.editComment);
+  app.delete('/api/comment', inspectors.deleteComment);
+  app.post('/api/like', inspectors.addLike);
+  app.delete('/api/like', inspectors.deleteLike);
 };
