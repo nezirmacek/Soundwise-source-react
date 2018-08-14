@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
+import React, { Component } from 'react';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Levels from 'react-activity/lib/Levels';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import {getTime_mmss} from '../../../helpers/formatTime';
+import { getTime_mmss } from '../../../helpers/formatTime';
 
 export default class EpisodePlayer extends Component {
   constructor(props) {
@@ -57,8 +57,8 @@ export default class EpisodePlayer extends Component {
   handlePlayOrPause(episodeChanged) {
     console.log('changed: ', episodeChanged);
     const that = this;
-    const {playingEpisode, episode} = this.props;
-    const {audio, audioSource} = this.props.references;
+    const { playingEpisode, episode } = this.props;
+    const { audio, audioSource } = this.props.references;
     if (this.state.isPlaying && !episodeChanged) {
       audio.pause();
       audio.currentTime = 0;
@@ -115,8 +115,8 @@ export default class EpisodePlayer extends Component {
   }
 
   render() {
-    const {episode, showDialogCb} = this.props;
-    const {duration, currentTime, isPlaying} = this.state;
+    const { episode, showDialogCb } = this.props;
+    const { duration, currentTime, isPlaying } = this.state;
     const remainingTime = duration - currentTime;
     let remainingMin =
       remainingTime > 0 ? Math.floor(remainingTime / 60) : '00';
@@ -159,20 +159,20 @@ export default class EpisodePlayer extends Component {
             {iconClass}
           </i>
         </td>
-        <td style={{verticalAlign: 'middle'}}>
+        <td style={{ verticalAlign: 'middle' }}>
           <span style={styles.sectionTitle}>{episode.title}</span>
         </td>
-        <td style={{verticalAlign: 'middle'}}>
+        <td style={{ verticalAlign: 'middle' }}>
           {(isPlaying &&
             this.props.isPlaying && (
               <span>
                 <Levels color="#F76B1C" size={12} speed={1} />
-                <span style={{paddingLeft: '0.5em', fontSize: 16}}>
+                <span style={{ paddingLeft: '0.5em', fontSize: 16 }}>
                   {`${remainingMin}:${remaingingSec}`}
                 </span>
               </span>
             )) || (
-            <span style={{paddingLeft: '0.5em', fontSize: 16}}>
+            <span style={{ paddingLeft: '0.5em', fontSize: 16 }}>
               {getTime_mmss(episode.duration.toFixed())}
             </span>
           )}

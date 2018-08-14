@@ -5,7 +5,10 @@ const moment = require('moment');
 // const sendinblue = require('sendinblue-api');
 // const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 const sgMail = require('@sendgrid/mail');
-const sendGridApiKey = require('../../config').sendGridApiKey;
+const sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 
 module.exports = function(Payout) {
@@ -28,6 +31,7 @@ module.exports = function(Payout) {
                 const date = moment()
                   .utc()
                   .format();
+                console.log('payout object received: ', data.data.object);
                 const payout = {
                   batchId: data.data.object.id,
                   amount: Math.trunc(data.data.object.amount),
@@ -40,20 +44,21 @@ module.exports = function(Payout) {
                   createdAt: date,
                   updatedAt: date,
                 };
-                console.log('new payout data: ', payout);
+                console.log('new payout recorded: ', payout);
 
                 Payout.create(payout)
                   .then(res => {
-                    return cb(null, res);
+                    cb(null, res);
                   })
                   .catch(err => {
-                    return cb(err);
+                    console.log(`Error: payout.js create ${err}`);
+                    cb(err);
                   });
               }
               break;
             case 'payout.failed':
               // aleart administrator that payout failed
-              emailAdmin(Object.assign({}, data, {publisherId}), cb);
+              emailAdmin(Object.assign({}, data, { publisherId }), cb);
               break;
             default:
               return cb(null, {});
@@ -74,10 +79,10 @@ module.exports = function(Payout) {
     accepts: {
       arg: 'data',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
-    returns: {type: 'object', root: true},
+    returns: { type: 'object', root: true },
   });
 };
 

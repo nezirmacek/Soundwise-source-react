@@ -1,6 +1,3 @@
-/**
- * Created by developer on 09.11.17.
- */
 var app = require('../server');
 var moment = require('moment');
 

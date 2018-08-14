@@ -10,88 +10,94 @@ const schedule = require('node-schedule');
 const firebase = require('firebase-admin');
 const moment = require('moment');
 const database = require('../../database/index');
+const Sequelize = require('sequelize');
+const db = new Sequelize('soundwise', 'root', '111', {
+  dialect: 'postgres',
+  port: 5433,
+  logging: false,
+});
 
 module.exports = function(app) {
-  var rankSoundcasts = schedule.scheduleJob('* * 1 * * 1', function() {
-    const currentDate = moment().format('X');
-    let soundcastsListens = [];
-    let maxListnes = 0;
-    database.Soundcast.findAll().then(soundcasts => {
-      const promises = soundcasts.map(soundcast => {
-        return database.ListeningSession.count({
-          where: {soundcastId: soundcast.soundcastId},
-        }).then(countListnes => {
-          maxListnes = maxListnes < countListnes ? countListnes : maxListnes;
-          soundcastsListens.push({
-            id: soundcast.soundcastId,
-            countListnes: countListnes,
-            updateDate:
-              soundcast.updateDate || new Date(soundcast.updatedAt).getTime(),
-          });
+  if (process.env.NODE_ENV === 'dev') {
+    return; // prevent running in dev mode
+  }
+  // rankSoundcasts
+  schedule.scheduleJob('* * 1 * * 1', async () => {
+    // schedule.scheduleJob('59 * * * * *', async () => {
+    const currentDate = moment().format('x');
+    const soundcastsListens = [];
+    const soundcastsCount = (await db.query(
+      'SELECT COUNT(*) FROM "Soundcasts"'
+    ))[0][0].count;
+    const maxListnes = (await db.query(
+      'SELECT "soundcastId", COUNT("sessionId") FROM "ListeningSessions" GROUP BY "soundcastId" ORDER BY "count" DESC;'
+    ))[0][0].count;
+    let i = 0;
+    while (i <= soundcastsCount) {
+      const soundcasts = (await db.query(
+        `SELECT * FROM "Soundcasts" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
+      ))[0];
+      for (const soundcast of soundcasts) {
+        const countListnes = await database.ListeningSession.count({
+          where: { soundcastId: soundcast.soundcastId },
         });
-      });
-      Promise.all(promises).then(() => {
-        soundcastsListens.forEach(soundcast => {
-          const rank =
-            (soundcast.countListnes / maxListnes > 0.1
-              ? soundcast.countListnes / maxListnes - 0.1
-              : 0) +
-            (soundcast.updateDate / currentDate) * 0.1;
-          firebase
-            .database()
-            .ref(`soundcasts/${soundcast.id}/rank`)
-            .set(rank.toFixed(4));
-        });
-      });
-    });
+        const updateDate =
+          soundcast.updateDate || new Date(soundcast.updatedAt).getTime();
+        const rank =
+          (countListnes / maxListnes > 0.1
+            ? countListnes / maxListnes - 0.1
+            : 0) +
+          (updateDate / currentDate) * 0.1;
+        await firebase
+          .database()
+          .ref(`soundcasts/${soundcast.soundcastId}/rank`)
+          .set(rank.toFixed(5));
+        await db.query(
+          `UPDATE "Soundcasts" SET "rank"=${rank} WHERE "soundcastId"='${
+            soundcast.soundcastId
+          }'`
+        );
+      }
+      i += 10000;
+    }
   });
 
-  var detectSubscriptionsExpiration = schedule.scheduleJob(
-    '* * 23 * * *',
-    function() {
-      const usersRef = firebase.database().ref('/users');
-      let currentDate = moment().format('X');
-      firebase
+  // detectSubscriptionsExpiration
+  schedule.scheduleJob('* * 23 * * *', async () => {
+    // schedule.scheduleJob('59 * * * * *', async () => {
+    const currentDate = moment().format('X');
+    const listeningSessions = (await db.query(
+      // `SELECT "userId", "soundcastId" FROM "ListeningSessions" GROUP BY "soundcastId", "userId";`
+      `SELECT "userId", "soundcastId" FROM "ListeningSessions" WHERE "createdAt" >= (select TIMESTAMP 'yesterday') GROUP BY "soundcastId", "userId";`
+    ))[0];
+    for (const session of listeningSessions) {
+      const snapshot = await firebase
         .database()
-        .ref('/users')
-        .once('value', snapshotArray => {
-          snapshotArray.forEach(snapshot => {
-            const userId = snapshot.key;
-            const tokenId = snapshot.val().token
-              ? snapshot.val().token[0]
-              : null;
-            const soundcasts = snapshot.val().soundcasts;
-            if (userId != 'undefined' && soundcasts) {
-              Object.keys(soundcasts).forEach(key => {
-                if (key != 'undefined') {
-                  const soundcast = soundcasts[key];
-                  if (
-                    Number(soundcast.current_period_end) < currentDate &&
-                    soundcast.subscribed
-                  ) {
-                    if (soundcast.billingCicle != 'free') {
-                      firebase
-                        .database()
-                        .ref(`users/${userId}/soundcasts/${key}/subscribed`)
-                        .set(true);
-                      if (tokenId) {
-                        firebase
-                          .database()
-                          .ref(`soundcasts/${key}/subscribed/${userId}`)
-                          .set({'0': tokenId});
-                      } else {
-                        firebase
-                          .database()
-                          .ref(`soundcasts/${key}/subscribed/${userId}`)
-                          .set(soundcast.date_subscribed);
-                      }
-                    }
-                  }
-                }
-              });
-            }
-          });
-        });
+        .ref(`users/${session.userId}/soundcasts/${session.soundcastId}`)
+        .once('value');
+      const soundcast = snapshot.val();
+      if (
+        soundcast.current_period_end &&
+        (soundcast.billingCycle !== 'free' ||
+          soundcast.billingCycle !== 'one time')
+      ) {
+        if (soundcast.current_period_end < currentDate) {
+          await firebase
+            .database()
+            .ref(
+              `users/${session.userId}/soundcasts/${
+                session.soundcastId
+              }/subscribed`
+            )
+            .set(false);
+          await firebase
+            .database()
+            .ref(
+              `soundcasts/${session.soundcastId}/subscribed/${session.userId}`
+            )
+            .remove();
+        }
+      }
     }
-  );
+  });
 };

@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {Helmet} from 'react-helmet';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import firebase from 'firebase';
 import moment from 'moment';
-import {withRouter} from 'react-router';
-import {Redirect} from 'react-router-dom';
+import { withRouter } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Modal from 'react-responsive-modal';
@@ -12,7 +12,7 @@ import Axios from 'axios';
 import Footer from '../../../components/footer';
 import PageHeader from './page_header';
 import AudioPlayer from 'react-responsive-audio-player';
-import {PublisherHeader} from './publisher_header';
+import { PublisherHeader } from './publisher_header';
 
 import Colors from '../../../styles/colors';
 
@@ -143,7 +143,7 @@ class _EpisodePage extends Component {
   recordPlaying() {
     // console.log('recordPlaying fired');
     const that = this;
-    const {episodeID, listens, startPosition} = this.state;
+    const { episodeID, listens, startPosition } = this.state;
     if (this.audio) {
       this.setState({
         startPosition: this.audio.currentTime,
@@ -234,7 +234,7 @@ class _EpisodePage extends Component {
 
   changeLike() {
     console.log('changeLike called');
-    const {episodeID, likes, webID, liked} = this.state;
+    const { episodeID, likes, webID, liked } = this.state;
 
     if (!liked) {
       firebase
@@ -293,6 +293,7 @@ class _EpisodePage extends Component {
     const playlist = [
       {
         url,
+        // url: url.replace('https://mysoundwise.com', 'http://localhost:3000'),
         displayText: title,
       },
     ];
@@ -320,7 +321,7 @@ class _EpisodePage extends Component {
               </div>
             </div>
           </section>
-          <div style={{position: 'absolute', bottom: 0, width: '100%'}}>
+          <div style={{ position: 'absolute', bottom: 0, width: '100%' }}>
             <Footer />
           </div>
         </div>
@@ -366,25 +367,25 @@ class _EpisodePage extends Component {
               <Modal
                 open={open}
                 onClose={this.onCloseModal}
-                styles={{modal: {maxWidth: '100%'}}}
+                styles={{ modal: { maxWidth: '100%' } }}
               >
                 <div
                   className="padding-five xs-padding-six"
-                  style={{padding: '3em'}}
+                  style={{ padding: '3em' }}
                 >
                   <div className="col-md-6 col-xs-12">
-                    <img src={soundcastImageURL} style={{width: '100%'}} />
+                    <img src={soundcastImageURL} style={{ width: '100%' }} />
                   </div>
                   <div className="col-md-6 col-xs-12">
-                    <div style={{marginBottom: '2em', marginTop: '2em'}}>
+                    <div style={{ marginBottom: '2em', marginTop: '2em' }}>
                       <span
                         className="title-large xs-title-large"
-                        style={{fontWeight: 800}}
+                        style={{ fontWeight: 800 }}
                       >
                         {soundcastTitle}
                       </span>
                     </div>
-                    <div style={{marginBottom: '2em'}}>
+                    <div style={{ marginBottom: '2em' }}>
                       <span className="text-large xc-text-large">
                         {soundcastDescription}
                       </span>
@@ -413,7 +414,7 @@ class _EpisodePage extends Component {
                                 alignItems: 'center',
                               }}
                             >
-                              <span style={{paddingRight: 10}}>⭐</span>
+                              <span style={{ paddingRight: 10 }}>⭐</span>
                               {feature}
                             </div>
                           );
@@ -421,12 +422,12 @@ class _EpisodePage extends Component {
                       </div>
                     )) ||
                       null}
-                    <div style={{textAlign: 'center', marginBottom: 25}}>
+                    <div style={{ textAlign: 'center', marginBottom: 25 }}>
                       <a
                         href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`}
                         target="_blank"
                         className="btn-extra-large2 btn btn-circle text-white no-letter-spacing"
-                        style={{backgroundColor: Colors.mainGreen}}
+                        style={{ backgroundColor: Colors.mainGreen }}
                       >
                         <span className="text-extra-large xs-text-extra-large tz-text">
                           ACCESS ENTIRE SERIES
@@ -458,7 +459,7 @@ class _EpisodePage extends Component {
                           >
                             <span
                               className="section-title-small sm-section-title-small xs-section-title-medium  font-weight-400 alt-font  tz-text"
-                              style={{color: '#F76B1C'}}
+                              style={{ color: '#F76B1C' }}
                             >
                               {`${soundcastTitle} `}
                             </span>
@@ -470,7 +471,7 @@ class _EpisodePage extends Component {
                           >
                             <span
                               className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text"
-                              style={{color: Colors.mainGreen}}
+                              style={{ color: Colors.mainGreen }}
                             >{`${publisherName}`}</span>
                           </a>
                         </div>
@@ -481,7 +482,7 @@ class _EpisodePage extends Component {
                           </span>
                           <span
                             className="section-title-small sm-section-title-small xs-section-title-medium font-weight-400 alt-font  tz-text"
-                            style={{color: Colors.mainGreen}}
+                            style={{ color: Colors.mainGreen }}
                           >
                             {`${publisherName}`}
                           </span>
@@ -519,7 +520,7 @@ class _EpisodePage extends Component {
                         href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`}
                         target="_blank"
                         className="btn-extra-large2 btn btn-circle text-white no-letter-spacing"
-                        style={{backgroundColor: Colors.mainGreen}}
+                        style={{ backgroundColor: Colors.mainGreen }}
                       >
                         <span className="text-extra-large sm-text-extra-large tz-text">
                           ACCESS ENTIRE SERIES
@@ -547,7 +548,7 @@ class _EpisodePage extends Component {
                           pause: this.sendToDatabase.bind(this, 'pause'),
                           ended: this.sendToDatabase.bind(this, 'ended'),
                         }}
-                        style={{width: '70%'}}
+                        style={{ width: '70%' }}
                       />
                     </div>
                   </div>
@@ -584,12 +585,12 @@ class _EpisodePage extends Component {
                         <span
                           onClick={this.changeLike.bind(this)}
                           className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text"
-                          style={{marginRight: 35, cursor: 'pointer'}}
+                          style={{ marginRight: 35, cursor: 'pointer' }}
                         >
                           <i
                             className="fas fa-heart"
                             aria-hidden="true"
-                            style={{color: liked ? 'red' : 'black'}}
+                            style={{ color: liked ? 'red' : 'black' }}
                           />
                           {` ${likes || 0} ${
                             likes && likes > 1 ? 'likes' : 'like'
@@ -616,7 +617,7 @@ class _EpisodePage extends Component {
                         textAligh: 'left',
                       }}
                     >
-                      <div dangerouslySetInnerHTML={{__html: description}} />
+                      <div dangerouslySetInnerHTML={{ __html: description }} />
                     </div>
                   </div>
                 </div>

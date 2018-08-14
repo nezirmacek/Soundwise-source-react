@@ -1,18 +1,28 @@
 'use strict';
 const path = require('path');
 const S3Strategy = require('express-fileuploader-s3');
-const awsConfig = require('../../config').awsConfig;
+const awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').awsConfig
+    : require('../../config').awsConfig;
 const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
-const {uploader, logErr, setAudioTags, parseSilenceDetect} = require('./utils')(
-  'audioProcessing'
-);
+const {
+  uploader,
+  logErr,
+  setAudioTags,
+  parseSilenceDetect,
+} = require('./utils')('audioProcessing');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
 const database = require('../../database/index');
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(require('../../config').sendGridApiKey);
+sgMail.setApiKey(
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').sendGridApiKey
+    : require('../../config').sendGridApiKey
+);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
@@ -204,6 +214,10 @@ module.exports.audioProcessing = async (req, res) => {
                       filterComplexEnd += `[a${chunksCount}]`;
                     }
                   });
+                  if (chunksCount === 0) {
+                    // skip in no silenced chunks were found
+                    return introProcessing(filePath);
+                  }
                   if (output[output.length - 1][0] === 'silence_duration') {
                     // not ending with silence
                     filterComplex += `:end=${file.metadata.duration.seconds +
@@ -243,7 +257,7 @@ module.exports.audioProcessing = async (req, res) => {
     function introProcessing(filePath) {
       if (intro) {
         request
-          .get({url: intro, encoding: null})
+          .get({ url: intro, encoding: null })
           .then(body => {
             const introPath = `${filePath.slice(0, -4)}_intro${path.extname(
               intro
@@ -318,7 +332,7 @@ module.exports.audioProcessing = async (req, res) => {
       if (outro) {
         if (!originalIntroPath) {
           request
-            .get({url: outro, encoding: null})
+            .get({ url: outro, encoding: null })
             .then(body => {
               const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(
                 outro
@@ -528,9 +542,9 @@ module.exports.audioProcessing = async (req, res) => {
             //    and use soundcast.imageURL as the cover art
             const url = episode.coverArtUrl || soundcast.imageURL;
             request
-              .get({url, encoding: null})
+              .get({ url, encoding: null })
               .then(body => {
-                const {height, width} = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
+                const { height, width } = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
                 const coverPath = `/tmp/audio_processing_${episodeId}_cover${path.extname(
                   url
                 )}`;
@@ -609,7 +623,7 @@ module.exports.audioProcessing = async (req, res) => {
         uploader.use(
           new S3Strategy({
             uploadPath: 'soundcasts',
-            headers: {'x-amz-acl': 'public-read'},
+            headers: { 'x-amz-acl': 'public-read' },
             options: {
               key: awsConfig.accessKeyId,
               secret: awsConfig.secretAccessKey,
@@ -644,7 +658,7 @@ module.exports.audioProcessing = async (req, res) => {
               //     step 1: save episode metadata in our sql database
               //             and then save data. The equivalent from front end:
               database.Episode.findOrCreate({
-                where: {episodeId},
+                where: { episodeId },
                 defaults: {
                   episodeId,
                   soundcastId,
@@ -672,7 +686,7 @@ module.exports.audioProcessing = async (req, res) => {
                     badge: '1',
                   },
                 };
-                const options = {priority: 'high'};
+                const options = { priority: 'high' };
                 // send push notificaiton
                 firebase
                   .messaging()
@@ -789,7 +803,7 @@ module.exports.audioProcessing = async (req, res) => {
                   {
                     // res mocking object
                     error: logErr,
-                    status: status => ({send: () => 0}),
+                    status: status => ({ send: () => 0 }),
                   }
                 );
               }
@@ -819,7 +833,7 @@ module.exports.audioProcessing = async (req, res) => {
 }; // audioProcessing
 
 module.exports.audioProcessingReplace = async (req, res) => {
-  const {episodeId, soundcastId} = req.body;
+  const { episodeId, soundcastId } = req.body;
   const episodeObj = await firebase
     .database()
     .ref(`episodes/${episodeId}`)
@@ -830,7 +844,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
   }
   res.send('OK');
   request
-    .get({url: episode.editedUrl, encoding: null})
+    .get({ url: episode.editedUrl, encoding: null })
     .then(body => {
       const outputPath = `/tmp/audio_processing_replace_${episodeId +
         path.extname(episode.editedUrl)}`;
@@ -841,7 +855,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
         uploader.use(
           new S3Strategy({
             uploadPath: 'soundcasts',
-            headers: {'x-amz-acl': 'public-read'},
+            headers: { 'x-amz-acl': 'public-read' },
             options: {
               key: awsConfig.accessKeyId,
               secret: awsConfig.secretAccessKey,
@@ -852,7 +866,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
         console.log('CHECK: audio processing replace ', outputPath, episodeId);
         uploader.upload(
           's3', // saving to S3 db
-          {path: outputPath, name: `${episodeId}.mp3`}, // replace original file
+          { path: outputPath, name: `${episodeId}.mp3` }, // replace original file
           async (err, files) => {
             fs.unlink(outputPath, err => 0); // remove downloaded
             if (err) {
@@ -882,7 +896,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
               .once('value');
             const soundcast = soundcastObj.val();
             database.Episode.findOrCreate({
-              where: {episodeId},
+              where: { episodeId },
               defaults: {
                 episodeId,
                 soundcastId,
@@ -910,7 +924,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
                   badge: '1',
                 },
               };
-              const options = {priority: 'high'};
+              const options = { priority: 'high' };
               // send push notificaiton
               firebase
                 .messaging()

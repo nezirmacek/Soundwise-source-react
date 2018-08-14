@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Dots from 'react-activity/lib/Dots';
 import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -12,11 +12,12 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import ImageCropModal from './image_crop_modal';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -74,7 +75,7 @@ export default class Profile extends Component {
   componentDidMount() {
     const that = this;
     if (this.props.userInfo.publisher) {
-      const {userInfo} = this.props;
+      const { userInfo } = this.props;
       this.loadFromProp(userInfo);
       const that = this;
       const publisherId = userInfo.publisherID;
@@ -121,7 +122,7 @@ export default class Profile extends Component {
       nextProps.userInfo.publisher &&
       nextProps != this.props
     ) {
-      const {userInfo} = nextProps;
+      const { userInfo } = nextProps;
       this.loadFromProp(userInfo);
       const that = this;
       const publisherId = userInfo.publisherID;
@@ -210,7 +211,7 @@ export default class Profile extends Component {
         linkedin,
         instagram,
       } = userInfo.publisher;
-      const {publisherName, publisherImg, publisherEmail} = this.state;
+      const { publisherName, publisherImg, publisherEmail } = this.state;
       this.setState({
         publisherName: name ? name : publisherName,
         publisherImg: imageUrl ? imageUrl : publisherImg,
@@ -244,7 +245,7 @@ export default class Profile extends Component {
           url = url.replace(/http/i, 'https');
         }
 
-        _self.setState({publisherImg: url});
+        _self.setState({ publisherImg: url });
       })
       .catch(function(err) {
         // POST failed...
@@ -265,17 +266,17 @@ export default class Profile extends Component {
         alert(
           'Only .png or .jpeg files are accepted. Please upload a new file.'
         );
-        this.setState({fileUploaded: false});
+        this.setState({ fileUploaded: false });
         return;
       }
-      this.setState({fileUploaded: true});
+      this.setState({ fileUploaded: true });
       this.currentImageRef = this.fileInputRef.files[0];
       this.handleModalOpen();
     }
   }
 
   submit() {
-    const {publisher} = this.props.userInfo;
+    const { publisher } = this.props.userInfo;
     const {
       publisherImg,
       publisherName,
@@ -378,8 +379,8 @@ export default class Profile extends Component {
     let newWindow = window.open('', '_blank');
     newWindow.document.write('Loading...');
     const that = this;
-    const {stripe_user_id} = this.state;
-    Axios.post('/api/requestStripeDashboard', {stripe_user_id})
+    const { stripe_user_id } = this.state;
+    Axios.post('/api/requestStripeDashboard', { stripe_user_id })
       .then(res => {
         // window.open(res.url, '_blank');
         newWindow.location.href = res.data.url;
@@ -416,19 +417,19 @@ export default class Profile extends Component {
       modalOpen,
     } = this.state;
     const that = this;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
 
     return (
       <div className="padding-30px-tb">
         <div
           className="padding-bottom-20px"
-          style={{display: 'flex', alignItems: 'center'}}
+          style={{ display: 'flex', alignItems: 'center' }}
         >
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
             <span
               className="text-medium"
-              style={{marginLeft: 15, color: Colors.mainOrange}}
+              style={{ marginLeft: 15, color: Colors.mainOrange }}
             >
               <strong>View Publisher Page</strong>
             </span>
@@ -437,7 +438,7 @@ export default class Profile extends Component {
         <ul className="nav nav-pills">
           <li role="presentation" className="active">
             <Link
-              style={{backgroundColor: 'transparent'}}
+              style={{ backgroundColor: 'transparent' }}
               to="/dashboard/publisher"
             >
               <span
@@ -453,22 +454,24 @@ export default class Profile extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/transactions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Transactions</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>
+                Transactions
+              </span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/payouts">
-              <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Payouts</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/promotions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Promotions</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/settings">
-              <span style={{fontSize: 15, fontWeight: 600}}>Settings</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Settings</span>
             </Link>
           </li>
         </ul>
@@ -483,10 +486,10 @@ export default class Profile extends Component {
           <div className="row">
             <div
               className="col-lg-6 col-md-6 col-sm-12 col-xs-12"
-              style={{minHeight: 700}}
+              style={{ minHeight: 700 }}
             >
-              <div style={{marginTop: 20}}>
-                <span style={{...styles.titleText, marginTop: 20}}>
+              <div style={{ marginTop: 20 }}>
+                <span style={{ ...styles.titleText, marginTop: 20 }}>
                   Publisher Name
                 </span>
               </div>
@@ -495,20 +498,20 @@ export default class Profile extends Component {
                   type="text"
                   style={styles.inputTitle}
                   onChange={e => {
-                    this.setState({publisherName: e.target.value});
+                    this.setState({ publisherName: e.target.value });
                   }}
                   value={publisherName}
                 />
               </div>
-              <div style={{height: 150}}>
+              <div style={{ height: 150 }}>
                 <div style={styles.image}>
                   <img src={publisherImg} />
                 </div>
                 <div style={styles.loaderWrapper}>
-                  <span style={{...styles.titleText, marginLeft: 10}}>
+                  <span style={{ ...styles.titleText, marginLeft: 10 }}>
                     Publisher Profile Image (square image)
                   </span>
-                  <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                  <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
                     <input
                       type="file"
                       name="upload"
@@ -524,7 +527,7 @@ export default class Profile extends Component {
                         <span
                           style={styles.cancelImg}
                           onClick={() => {
-                            that.setState({fileUploaded: false});
+                            that.setState({ fileUploaded: false });
                             document.getElementById(
                               'upload_hidden_cover'
                             ).value = null;
@@ -559,8 +562,8 @@ export default class Profile extends Component {
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     Publisher Info
                   </span>
                   <span>
@@ -572,15 +575,15 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({publisherInfo: e.target.value});
+                      this.setState({ publisherInfo: e.target.value });
                     }}
                     value={publisherInfo}
                   />
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     Publisher Email
                   </span>
                 </div>
@@ -589,15 +592,15 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({publisherEmail: e.target.value});
+                      this.setState({ publisherEmail: e.target.value });
                     }}
                     value={publisherEmail}
                   />
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     Website
                   </span>
                 </div>
@@ -606,15 +609,15 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({website: e.target.value});
+                      this.setState({ website: e.target.value });
                     }}
                     value={website}
                   />
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     Facebook
                   </span>
                 </div>
@@ -623,15 +626,15 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({facebook: e.target.value});
+                      this.setState({ facebook: e.target.value });
                     }}
                     value={facebook}
                   />
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     Twitter
                   </span>
                 </div>
@@ -640,15 +643,15 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({twitter: e.target.value});
+                      this.setState({ twitter: e.target.value });
                     }}
                     value={twitter}
                   />
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     LinkedIn
                   </span>
                 </div>
@@ -657,15 +660,15 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({linkedin: e.target.value});
+                      this.setState({ linkedin: e.target.value });
                     }}
                     value={linkedin}
                   />
                 </div>
               </div>
               <div>
-                <div style={{marginTop: 20}}>
-                  <span style={{...styles.titleText, marginTop: 20}}>
+                <div style={{ marginTop: 20 }}>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>
                     Instagram
                   </span>
                 </div>
@@ -674,13 +677,13 @@ export default class Profile extends Component {
                     type="text"
                     style={styles.inputTitle}
                     onChange={e => {
-                      this.setState({instagram: e.target.value});
+                      this.setState({ instagram: e.target.value });
                     }}
                     value={instagram}
                   />
                 </div>
               </div>
-              <div className="row" style={{paddingBottom: 30}}>
+              <div className="row" style={{ paddingBottom: 30 }}>
                 <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
                   {(publisherSaved && (
                     <div
@@ -690,7 +693,7 @@ export default class Profile extends Component {
                         justifyContent: 'center',
                       }}
                     >
-                      <span style={{fontSize: 16, color: Colors.mainOrange}}>
+                      <span style={{ fontSize: 16, color: Colors.mainOrange }}>
                         Saved
                       </span>
                     </div>
@@ -698,14 +701,14 @@ export default class Profile extends Component {
                     <OrangeSubmitButton
                       label="Save"
                       onClick={this.submit}
-                      styles={{margin: '20px auto'}}
+                      styles={{ margin: '20px auto' }}
                     />
                   )}
                 </div>
                 <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                   <TransparentShortSubmitButton
                     label="Cancel"
-                    styles={{margin: '20px auto'}}
+                    styles={{ margin: '20px auto' }}
                     onClick={() => this.loadFromProp(userInfo)}
                   />
                 </div>
@@ -720,7 +723,7 @@ export default class Profile extends Component {
               >
                 <div
                   className="col-md-7"
-                  style={{display: 'flex', alignItems: 'center', height: 37}}
+                  style={{ display: 'flex', alignItems: 'center', height: 37 }}
                 >
                   {(stripe_user_id && (
                     <div>
@@ -751,7 +754,7 @@ export default class Profile extends Component {
                 <div className="col-md-4">
                   {(creatingAccount && (
                     <Dots
-                      style={{display: 'flex'}}
+                      style={{ display: 'flex' }}
                       color="#727981"
                       size={24}
                       speed={1}
@@ -779,7 +782,7 @@ export default class Profile extends Component {
                 </div>
                 {(stripe_user_id && (
                   <div className="col-md-12">
-                    <div style={{marginTop: 30}}>
+                    <div style={{ marginTop: 30 }}>
                       <div
                         style={{
                           ...styles.titleText,
@@ -791,7 +794,7 @@ export default class Profile extends Component {
                       >
                         <span>View Payout Account</span>
                       </div>
-                      <div style={{color: 'red'}}>
+                      <div style={{ color: 'red' }}>
                         {this.state.errorMessage}
                       </div>
                     </div>
@@ -799,11 +802,13 @@ export default class Profile extends Component {
                 )) ||
                   null}
               </div>
-              <div style={{marginTop: 20}}>
-                <span style={{...styles.titleText, marginTop: 20}}>Admins</span>
+              <div style={{ marginTop: 20 }}>
+                <span style={{ ...styles.titleText, marginTop: 20 }}>
+                  Admins
+                </span>
               </div>
-              <div style={{marginTop: 10, marginBottom: 20}}>
-                <ul style={{listStyle: 'none', paddingLeft: 0}}>
+              <div style={{ marginTop: 10, marginBottom: 20 }}>
+                <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
                   {admins.map((admin, i) => (
                     <li key={i}>
                       <span className="text-large">{`${admin.firstName} ${
@@ -833,7 +838,7 @@ export default class Profile extends Component {
                 !inviteSent && (
                   <div
                     className="row"
-                    style={{marginBottom: 10, marginLeft: 5}}
+                    style={{ marginBottom: 10, marginLeft: 5 }}
                   >
                     <div
                       style={{
@@ -898,7 +903,7 @@ export default class Profile extends Component {
                 )}
               {adminFormShow &&
                 inviteSent && (
-                  <div style={{marginTop: 10}}>
+                  <div style={{ marginTop: 10 }}>
                     <span className="text-large">
                       <i
                       >{`An email invitation has been sent to ${inviteeEmail}.`}</i>
@@ -914,32 +919,17 @@ export default class Profile extends Component {
 }
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
+  titleText: { ...commonStyles.titleText },
+  inputTitleWrapper: { ...commonStyles.inputTitleWrapper },
+  inputTitle: { ...commonStyles.inputTitle, fontSize: 16 },
+  inputFileHidden: { ...commonStyles.inputFileHidden },
+  image: { ...commonStyles.image, float: 'left' },
+  loaderWrapper: {
+    ...commonStyles.loaderWrapper,
+    width: 'calc(100% - 133px)',
+    float: 'left',
   },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
-  inputDescription: {
-    height: 80,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginTop: 10,
-    marginBottom: 20,
-  },
+  cancelImg: { ...commonStyles.cancelImg, fontSize: 14 },
   editorStyle: {
     padding: '5px',
     borderRadius: 4,
@@ -952,24 +942,6 @@ const styles = {
     marginBottom: 25,
     marginTop: 15,
   },
-  image: {
-    width: 133,
-    height: 133,
-    float: 'left',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-  },
-  loaderWrapper: {
-    height: 133,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 20,
-    width: 'calc(100% - 133px)',
-    float: 'left',
-  },
   inputFileWrapper: {
     margin: 10,
     width: 'calc(100% - 20px)',
@@ -978,15 +950,6 @@ const styles = {
     overflow: 'hidden',
     marginBottom: 0,
     float: 'left',
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
   },
   uploadButton: {
     backgroundColor: Colors.link,
@@ -997,12 +960,6 @@ const styles = {
     fontSize: 14,
     border: 0,
     marginTop: 5,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 14,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 11,

@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import firebase from 'firebase';
 import moment from 'moment';
 import Dots from 'react-activity/lib/Dots';
@@ -11,10 +11,10 @@ import PageHeader from './components/page_header';
 import Payment from './components/payment';
 import SoundcastInCart from './components/soundcast_in_cart';
 import Notice from '../../components/notice';
-import {signinUser, signupUser} from '../../actions/index';
-import {GreyInput} from '../../components/inputs/greyInput';
-import {minLengthValidator} from '../../helpers/validators';
-import {OrangeSubmitButton} from '../../components/buttons/buttons';
+import { signinUser, signupUser } from '../../actions/index';
+import { GreyInput } from '../../components/inputs/greyInput';
+import { minLengthValidator } from '../../helpers/validators';
+import { OrangeSubmitButton } from '../../components/buttons/buttons';
 import {
   signInPassword,
   signInFacebook,
@@ -51,7 +51,7 @@ class _SoundcastCheckout extends Component {
   }
 
   async componentDidMount() {
-    const {location} = this.props.history;
+    const { location } = this.props.history;
     if (location.state && location.state.soundcast) {
       const {
         soundcast,
@@ -126,14 +126,14 @@ class _SoundcastCheckout extends Component {
   }
 
   setTotalPrice(totalPrice, coupon, isTrial) {
-    this.setState({totalPrice, coupon, isTrial});
+    this.setState({ totalPrice, coupon, isTrial });
     if (Number(totalPrice) === 0 && !isTrial) {
-      const {userInfo} = this.props;
+      const { userInfo } = this.props;
       if (userInfo && userInfo.email) {
         // logged in
         this.addSoundcastToUser(null, userInfo, this.state.soundcastID);
       } else {
-        this.setState({hideCardInputs: true}); // skip card input
+        this.setState({ hideCardInputs: true }); // skip card input
       }
     }
   }
@@ -146,7 +146,7 @@ class _SoundcastCheckout extends Component {
     // success payment callback
     // The app should check whether the email address of the user already has an account.
     // The stripe id associated with the user's credit card should be saved in user's data
-    const {email, firstName, lastName} = state;
+    const { email, firstName, lastName } = state;
     firebase
       .auth()
       .fetchSignInMethodsForEmail(email)
@@ -177,15 +177,15 @@ class _SoundcastCheckout extends Component {
   }
 
   handleChange(field, e) {
-    this.setState({[field]: e.target.value});
+    this.setState({ [field]: e.target.value });
   }
 
   handleFBAuth() {
-    const {runSignIn} = this.state;
-    const {signinUser, history} = this.props;
+    const { runSignIn } = this.state;
+    const { signinUser, history } = this.props;
     if (runSignIn) {
       signInFacebook(this.signinCallback, error =>
-        this.setState({message: error.toString()})
+        this.setState({ message: error.toString() })
       );
     } else {
       // sign up
@@ -224,7 +224,7 @@ class _SoundcastCheckout extends Component {
                     }
                   } else {
                     //if it's a new user
-                    const {email, photoURL, displayName} = JSON.parse(
+                    const { email, photoURL, displayName } = JSON.parse(
                       JSON.stringify(result.user)
                     );
                     const name = displayName
@@ -276,10 +276,10 @@ class _SoundcastCheckout extends Component {
   }
 
   async submitPassword() {
-    const {runSignIn, firstName, lastName, email, password} = this.state;
+    const { runSignIn, firstName, lastName, email, password } = this.state;
     if (runSignIn) {
       signInPassword(email, password, this.signinCallback, error =>
-        this.setState({message: error.toString()})
+        this.setState({ message: error.toString() })
       );
     } else {
       // sign up
@@ -287,7 +287,7 @@ class _SoundcastCheckout extends Component {
         await firebase.auth().createUserWithEmailAndPassword(email, password);
         signupCommon(this.state, null, this.signupCallback);
       } catch (error) {
-        this.setState({message: error.toString()});
+        this.setState({ message: error.toString() });
         console.log('Error submitPassword', error.toString());
       }
     }
@@ -305,7 +305,7 @@ class _SoundcastCheckout extends Component {
       coupon,
       hideCardInputs,
     } = this.state;
-    const {userInfo, history} = this.props;
+    const { userInfo, history } = this.props;
 
     if (!soundcast) {
       return (
@@ -327,7 +327,7 @@ class _SoundcastCheckout extends Component {
                   }}
                 >
                   <Dots
-                    style={{display: 'flex'}}
+                    style={{ display: 'flex' }}
                     color="#727981"
                     size={32}
                     speed={1}
@@ -351,7 +351,7 @@ class _SoundcastCheckout extends Component {
                     <div className="row equalize sm-equalize-auto equalize-display-inherit">
                       <div
                         className="col-md-6 col-sm-12 center-col sm-no-margin"
-                        style={{textAlign: 'center'}}
+                        style={{ textAlign: 'center' }}
                       >
                         <SoundcastInCart
                           lastStep={true}
@@ -384,7 +384,10 @@ class _SoundcastCheckout extends Component {
                           </button>
                         )}
                         <div
-                          style={{fontStyle: 'italic', padding: '18px 0 22px'}}
+                          style={{
+                            fontStyle: 'italic',
+                            padding: '18px 0 22px',
+                          }}
                         >
                           {!this.state.runSignIn
                             ? 'or set a password'
@@ -395,8 +398,8 @@ class _SoundcastCheckout extends Component {
                               : ''}
                         </div>
                         {message && (
-                          <div style={{paddingBottom: 25}}>
-                            <span style={{color: 'red', fontSize: 16}}>
+                          <div style={{ paddingBottom: 25 }}>
+                            <span style={{ color: 'red', fontSize: 16 }}>
                               {message}
                             </span>
                           </div>
@@ -405,7 +408,7 @@ class _SoundcastCheckout extends Component {
                           <div>
                             <GreyInput
                               type="password"
-                              styles={{width: 270}}
+                              styles={{ width: 270 }}
                               placeholder={'Password'}
                               onChange={this.handleChange.bind(
                                 this,
@@ -415,7 +418,7 @@ class _SoundcastCheckout extends Component {
                               validators={[minLengthValidator.bind(null, 1)]}
                             />
                             <OrangeSubmitButton
-                              styles={{marginTop: 15, marginBottom: 15}}
+                              styles={{ marginTop: 15, marginBottom: 15 }}
                               label="SIGN IN"
                               onClick={this.submitPassword.bind(this)}
                             />
@@ -443,7 +446,7 @@ class _SoundcastCheckout extends Component {
                     <div className="row equalize sm-equalize-auto equalize-display-inherit">
                       <div
                         className="col-md-6 col-sm-12 center-col sm-no-margin"
-                        style={{height: ''}}
+                        style={{ height: '' }}
                       >
                         <SoundcastInCart
                           history={history}
@@ -498,12 +501,12 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo} = state.user;
-  return {userInfo};
+  const { userInfo } = state.user;
+  return { userInfo };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signinUser, signupUser}, dispatch);
+  return bindActionCreators({ signinUser, signupUser }, dispatch);
 }
 
 const Checkout_worouter = connect(

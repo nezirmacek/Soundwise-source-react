@@ -8,17 +8,24 @@ var multipart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
-var awsConfig = require('../config').awsConfig;
+var awsConfig =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').awsConfig
+    : require('../config').awsConfig;
 var S3 = require('aws-sdk').S3;
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
-var serviceAccount = require('../serviceAccountKey.json');
+var serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 var cors = require('cors');
 var Axios = require('axios');
 const moment = require('moment');
 // var request = require('request');
 const request = require('request-promise');
+const syncSoundcasts = require('./scripts/syncPsql.js').syncSoundcasts;
 
 const {
   handlePayment,
@@ -39,16 +46,19 @@ const {
 } = require('./scripts/emailSignup.js');
 const Emails = require('./scripts/sendEmails.js');
 
-const {createFeed, requestFeed} = require('./scripts/feed.js');
+const { createFeed, requestFeed } = require('./scripts/feed.js');
+const syncMessages = require('./scripts/syncPsql.js').syncMessages;
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
+
+const sendInvite = require('./scripts/invites').sendInvite;
 const {
   audioProcessing,
   audioProcessingReplace,
 } = require('./scripts/audioProcessing');
 
 const parseFeed = require('./scripts/parseFeed.js').parseFeed;
-const sendNotification = require('./scripts/messaging.js').sendNotification;
+const pushNotification = require('./scripts/messaging.js').pushNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 const createStripeAccount = require('./scripts/createStripeAccounts.js')
@@ -60,7 +70,7 @@ var database = require('../database');
 Raven.config(
   'https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847'
 ).install();
-
+console.log(serviceAccount);
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-testbase.firebaseio.com',
@@ -87,14 +97,15 @@ app.start = function() {
     if (app.get('loopback-component-explorer')) {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+      // syncMessages();
     }
   });
   // server.timeout = 10*60*1000; // 10 minutes
 };
 
 app.use(cors());
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 const prerender = require('prerender-node')
   .set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k')
@@ -189,7 +200,7 @@ app.post('/api/send_marketing_emails', Emails.sendMarketingEmails);
 app.post('/api/delete_emails', Emails.deleteFromEmailList);
 app.post('/api/add_emails', Emails.addToEmailList);
 
-app.post('/api/send_notification', sendNotification);
+app.post('/api/send_notification', pushNotification);
 app.post('/api/subscription_renewal', renewSubscription);
 app.post('/api/cancel_plan', cancelSubscription);
 app.post('/api/unsubscribe', unsubscribe);
@@ -219,13 +230,14 @@ app.post('/api/upload', function(req, res, next) {
 app.post('/api/audiowave', multipart(), createAudioWaveVid);
 app.post('/api/audio_processing', audioProcessing);
 app.post('/api/audio_processing_replace', audioProcessingReplace);
+app.post('/api/invite', sendInvite);
 
 app.use(
   '/s3',
   require('react-s3-uploader/s3router')({
     bucket: 'soundwiseinc',
     // region: 'us-east-1', // optional
-    headers: {'Access-Control-Allow-Origin': '*'}, // optional
+    headers: { 'Access-Control-Allow-Origin': '*' }, // optional
     ACL: 'public-read',
     getFileKeyDir: function(req) {
       return 'soundcasts/';
@@ -241,7 +253,7 @@ app.get('/api/custom_token', (req, res) => {
     .createCustomToken(req.query.uid)
     .then(function(customToken) {
       // console.log('customToken: ', customToken);
-      res.send({customToken});
+      res.send({ customToken });
     })
     .catch(function(error) {
       console.log('Error creating custom token:', error);
@@ -332,7 +344,10 @@ app.use(function(err, req, res, next) {
 });
 
 // var sgMail = require('@sendgrid/mail');
-var sendGridApiKey = require('../config').sendGridApiKey;
+var sendGridApiKey =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').sendGridApiKey
+    : require('../config').sendGridApiKey;
 // var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
 // var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
 

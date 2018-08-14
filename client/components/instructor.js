@@ -4,7 +4,13 @@ import React from 'react';
 // import ReactScrollbar from 'react-scrollbar-js'
 
 const renderBio = bio => {
-  return <div>{bio.map((para, i) => <p key={i}>{para}</p>)}</div>;
+  return (
+    <div>
+      {bio.map((para, i) => (
+        <p key={i}>{para}</p>
+      ))}
+    </div>
+  );
 };
 
 const renderWebsite = website => {
@@ -16,7 +22,8 @@ const renderWebsite = website => {
             className="fa fa-link icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color"
             aria-hidden="true"
           />
-          <br />Website
+          <br />
+          Website
         </a>
       </div>
     );
@@ -29,7 +36,8 @@ const renderFacebook = facebook => {
       <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
         <a target="_blank" href={facebook} className=" text-medium tz-text">
           <i className="fa fa-facebook icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" />
-          <br />Facebook
+          <br />
+          Facebook
         </a>
       </div>
     );
@@ -42,7 +50,8 @@ const renderTwitter = twitter => {
       <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
         <a target="_blank" href={twitter} className=" text-medium tz-text">
           <i className="fa fa-twitter icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" />
-          <br />Twitter
+          <br />
+          Twitter
         </a>
       </div>
     );
@@ -55,7 +64,8 @@ const renderLinkedin = linkedin => {
       <div className="col-md-3 col-sm-4 xs-margin-nineteen-bottom">
         <a target="_blank" href={linkedin} className=" text-medium tz-text">
           <i className="fa fa-linkedin icon-large margin-six-bottom xs-margin-three-bottom tz-icon-color" />
-          <br />LinkedIn
+          <br />
+          LinkedIn
         </a>
       </div>
     );
@@ -91,7 +101,7 @@ const Instructor = props => (
           <div
             className="col-md-6 col-sm-6 about-text bg-cream text-left tz-background-color"
             id="tz-bg-color-7"
-            style={{overflowY: 'auto', height: '600px'}}
+            style={{ overflowY: 'auto', height: '600px' }}
           >
             <div className="should-have-a-children scroll-me">
               <span

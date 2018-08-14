@@ -2,7 +2,10 @@
 
 var admin = require('firebase-admin');
 
-var stripe_key = require('../../config').stripe_key;
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingConfig').stripe_key
+    : require('../../config').stripe_key;
 
 var stripe = require('stripe')(stripe_key);
 

@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import Axios from 'axios';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import firebase from 'firebase';
 import 'url-search-params-polyfill';
 import Dots from 'react-activity/lib/Dots';
@@ -16,15 +16,16 @@ import {
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 
-import {inviteListeners} from '../helpers/invite_listeners';
+import { inviteListeners } from '../helpers/invite_listeners';
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
 } from '../components/buttons/buttons';
-import {SoundwiseHeader} from '../components/soundwise_header';
+import { SoundwiseHeader } from '../components/soundwise_header';
 import Footer from '../components/footer';
-import {TextInputs} from '../helpers/texts';
+import { TextInputs } from '../helpers/texts';
 
 export default class ContentDownload extends Component {
   constructor(props) {
@@ -55,11 +56,11 @@ export default class ContentDownload extends Component {
     this.setState({
       submitting: true,
     });
-    const {firstName, lastName, email, content} = this.state;
+    const { firstName, lastName, email, content } = this.state;
     const that = this;
     Axios.post('/api/add_emails', {
       emailListId: 2910467,
-      emailAddressArr: [{firstName, lastName, email}],
+      emailAddressArr: [{ firstName, lastName, email }],
     })
       .then(res => {
         that.setState({
@@ -91,7 +92,7 @@ export default class ContentDownload extends Component {
 
   render() {
     const that = this;
-    const {image, content, submitted} = this.state;
+    const { image, content, submitted } = this.state;
     return (
       <div>
         <SoundwiseHeader showIcon={true} />
@@ -99,18 +100,18 @@ export default class ContentDownload extends Component {
           className="padding-40px-tb xs-padding-50px-tb position-relative cover-background tz-builder-bg-image border-none hero-style9"
           id="hero-section11"
           data-img-size="(W)1920px X (H)800px"
-          style={{backgroundColor: '#f8f6f2', height: 800}}
+          style={{ backgroundColor: '#f8f6f2', height: 800 }}
         >
           <div className="container position-relative" style={{}}>
             <div className="row">
               <div className="col-md-6 col-sm-6 col-xs-12 " style={{}}>
                 <div
                   className="col-md-12 center-col"
-                  style={{display: 'flex', justifyContent: 'center'}}
+                  style={{ display: 'flex', justifyContent: 'center' }}
                 >
                   <img
                     src={`images/${image}`}
-                    style={{height: '60%', width: '60%'}}
+                    style={{ height: '60%', width: '60%' }}
                   />
                 </div>
               </div>
@@ -143,7 +144,7 @@ export default class ContentDownload extends Component {
                     style={styles.inputTitle}
                     placeholder={''}
                     onChange={e => {
-                      that.setState({firstName: e.target.value});
+                      that.setState({ firstName: e.target.value });
                     }}
                     value={that.state.firstName}
                   />
@@ -155,7 +156,7 @@ export default class ContentDownload extends Component {
                     style={styles.inputTitle}
                     placeholder={''}
                     onChange={e => {
-                      that.setState({lastName: e.target.value});
+                      that.setState({ lastName: e.target.value });
                     }}
                     value={that.state.lastName}
                   />
@@ -167,7 +168,7 @@ export default class ContentDownload extends Component {
                     style={styles.inputTitle}
                     placeholder={''}
                     onChange={e => {
-                      that.setState({email: e.target.value});
+                      that.setState({ email: e.target.value });
                     }}
                     value={that.state.email}
                   />
@@ -179,7 +180,7 @@ export default class ContentDownload extends Component {
                 !this.state.submitting && (
                   <div
                     className="col-md-6 col-sm-6 col-xs-12 center-col"
-                    style={{marginTop: 25}}
+                    style={{ marginTop: 25 }}
                   >
                     <OrangeSubmitButton
                       label="Submit"
@@ -191,7 +192,7 @@ export default class ContentDownload extends Component {
                   !this.state.submitting && (
                     <div
                       className="col-md-6 col-sm-6 col-xs-12 center-col"
-                      style={{marginTop: 25}}
+                      style={{ marginTop: 25 }}
                     >
                       <div className="text-dark-gray tz-text title-large text-center">
                         <span>
@@ -205,11 +206,11 @@ export default class ContentDownload extends Component {
                   this.state.submitting && (
                     <div
                       className="col-md-6 col-sm-6 col-xs-12 center-col text-center"
-                      style={{marginTop: 25}}
+                      style={{ marginTop: 25 }}
                     >
                       <div className="title-large">Submitting</div>
                       <Dots
-                        style={{marginLeft: 15}}
+                        style={{ marginLeft: 15 }}
                         color={Colors.mainOrange}
                         size={32}
                         speed={1}
@@ -226,24 +227,7 @@ export default class ContentDownload extends Component {
 }
 
 const styles = {
-  radioButton: {
-    marginBottom: 16,
-  },
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 18,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
+  titleText: { ...commonStyles.titleText },
+  inputTitle: { ...commonStyles.inputTitle },
+  inputTitleWrapper: { ...commonStyles.inputTitleWrapper },
 };

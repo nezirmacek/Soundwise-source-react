@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as firebase from 'firebase';
 import moment from 'moment';
@@ -23,7 +23,7 @@ export default class SoundcastInCart extends Component {
   }
 
   handleChange(e) {
-    this.setState({[e.target.name]: e.target.value});
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   componentDidMount() {
@@ -36,8 +36,8 @@ export default class SoundcastInCart extends Component {
       promoCodeError: '',
       promoApplied: false,
     });
-    const {soundcast, checked, setTotalPrice} = this.props;
-    const {promoCode, price} = this.state;
+    const { soundcast, checked, setTotalPrice } = this.props;
+    const { promoCode, price } = this.state;
     const validPromoCodes = soundcast.prices[checked].coupons.map(
       coupon => coupon.code
     );
@@ -45,14 +45,13 @@ export default class SoundcastInCart extends Component {
       const index = validPromoCodes.indexOf(promoCode);
       const coupon = soundcast.prices[checked].coupons[index];
       if (moment().format('X') < coupon.expiration) {
-        const isTrial = coupon.couponType === 'trial_period' ? coupon.trialLength.toString() : false;
+        const isTrial =
+          coupon.couponType === 'trial_period'
+            ? coupon.trialLength.toString()
+            : false;
         const total = isTrial
           ? 0
-          : Math.round(
-              (price *
-                (100 - coupon.percentOff)) /
-                100
-            ).toFixed(2);
+          : Math.round((price * (100 - coupon.percentOff)) / 100).toFixed(2);
         this.setState({
           price: total,
           promoApplied: true,
@@ -62,17 +61,17 @@ export default class SoundcastInCart extends Component {
         });
         setTotalPrice(total, promoCode, isTrial);
       } else {
-        this.setState({promoCodeError: 'This promo code has expired.'});
+        this.setState({ promoCodeError: 'This promo code has expired.' });
       }
     } else {
-      this.setState({promoCodeError: "Hmm...this promo code doesn't exist"});
+      this.setState({ promoCodeError: "Hmm...this promo code doesn't exist" });
     }
   }
 
   render() {
-    const {soundcast, sumTotal, checked, lastStep} = this.props;
+    const { soundcast, sumTotal, checked, lastStep } = this.props;
     const that = this;
-    const {price, promoCode, promoApplied} = this.state;
+    const { price, promoCode, promoApplied } = this.state;
     let fee = price == 'free' ? 0 : Math.floor(price * 0.03 * 100) / 100;
     fee = 0.0;
 
@@ -83,7 +82,7 @@ export default class SoundcastInCart extends Component {
           <div className="col-md-12 col-sm-12 col-xs-12">
             <img src={soundcast.imageURL} alt="" style={styles.courseImage} />
             <div style={styles.courseText}>
-              <p style={{...styles.courseName, marginTop: 14}}>
+              <p style={{ ...styles.courseName, marginTop: 14 }}>
                 {soundcast.title}
               </p>
             </div>
@@ -126,9 +125,9 @@ export default class SoundcastInCart extends Component {
           <div className="col-md-12 col-sm-12 col-xs-12">
             {(!this.state.enterPromoCode && (
               <span
-                style={{cursor: 'pointer'}}
+                style={{ cursor: 'pointer' }}
                 onClick={() => {
-                  that.setState({enterPromoCode: true});
+                  that.setState({ enterPromoCode: true });
                   setTimeout(() => that.refs.promoCodeInput.focus(), 250);
                 }}
               >
@@ -137,22 +136,22 @@ export default class SoundcastInCart extends Component {
             )) || (
               <div>
                 <input
-                  onChange={e => that.setState({promoCode: e.target.value})}
+                  onChange={e => that.setState({ promoCode: e.target.value })}
                   className="border-radius-4"
                   size="20"
                   type="text"
                   name="promo"
                   ref="promoCodeInput"
                   placeholder="Enter promo code"
-                  value={this.state.promoCode}
-                  style={{width: '50%', fontSize: 14, height: 35}}
+                  value={this.state.promoCode || ''}
+                  style={{ width: '50%', fontSize: 14, height: 35 }}
                 />
                 {(promoApplied && (
                   <button
                     onClick={this.applyPromoCode}
                     type="button"
                     className="btn"
-                    style={{color: Colors.mainOrange, margin: '0 8px 5px'}}
+                    style={{ color: Colors.mainOrange, margin: '0 8px 5px' }}
                   >
                     Applied!
                   </button>
@@ -161,13 +160,15 @@ export default class SoundcastInCart extends Component {
                     onClick={this.applyPromoCode}
                     type="button"
                     className="btn"
-                    style={{margin: '0 8px 5px'}}
+                    style={{ margin: '0 8px 5px' }}
                   >
                     Apply
                   </button>
                 )}
-                <div style={{fontStyle: 'italic'}}>{this.state.promoCodeInfo}</div>
-                <div style={{color: 'red'}}>{this.state.promoCodeError}</div>
+                <div style={{ fontStyle: 'italic' }}>
+                  {this.state.promoCodeInfo}
+                </div>
+                <div style={{ color: 'red' }}>{this.state.promoCodeError}</div>
               </div>
             )}
           </div>

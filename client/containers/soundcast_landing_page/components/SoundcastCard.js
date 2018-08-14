@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {CardMedia} from 'material-ui/Card';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { CardMedia } from 'material-ui/Card';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export default class SoundcastCard extends Component {
@@ -18,7 +18,7 @@ export default class SoundcastCard extends Component {
   };
 
   componentDidMount() {
-    const {cardHeight, cb} = this.props;
+    const { cardHeight, cb } = this.props;
 
     // recalculate card height
     setTimeout(() => {
@@ -32,7 +32,7 @@ export default class SoundcastCard extends Component {
   }
 
   render() {
-    const {cardHeight, soundcast} = this.props;
+    const { cardHeight, soundcast } = this.props;
 
     return (
       <div className="col-md-12 col-sm-12 col-xs-12">
@@ -50,7 +50,7 @@ export default class SoundcastCard extends Component {
         )}
         <div
           className="float-left width-100 bottom-shadowed"
-          style={{height: cardHeight}}
+          style={{ height: cardHeight }}
         >
           <div
             ref={image => (this.references.image = image)}
@@ -65,7 +65,7 @@ export default class SoundcastCard extends Component {
                 alt=""
                 src={soundcast.imageURL}
                 data-img-size="(W)800px X (H)533px"
-                style={{objectFit: 'cover'}}
+                style={{ objectFit: 'cover' }}
               />
             </CardMedia>
           </div>

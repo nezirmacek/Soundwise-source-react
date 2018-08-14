@@ -1,12 +1,10 @@
-/**
- * Created by developer on 11.08.17.
- */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import moment from 'moment';
 
 import Colors from '../../styles/colors';
+import commonStyles from '../../styles/commonStyles';
 import ImageCropModal from '../../containers/dashboard/components/image_crop_modal';
 
 export default class ImageS3Uploader extends Component {
@@ -33,7 +31,7 @@ export default class ImageS3Uploader extends Component {
   }
 
   _uploadToAws(file) {
-    const {cb, fileName} = this.props;
+    const { cb, fileName } = this.props;
     const _self = this;
     let data = new FormData();
     const splittedFileName = file.type.split('/');
@@ -49,7 +47,7 @@ export default class ImageS3Uploader extends Component {
         if (url.slice(0, 5) !== 'https') {
           url = url.replace(/http/i, 'https');
         }
-        _self.setState({imageURL: url});
+        _self.setState({ imageURL: url });
         cb(url);
       })
       .catch(function(err) {
@@ -71,10 +69,10 @@ export default class ImageS3Uploader extends Component {
         alert(
           'Only .png or .jpeg files are accepted. Please upload a new file.'
         );
-        this.setState({fileUploaded: false});
+        this.setState({ fileUploaded: false });
         return;
       }
-      this.setState({fileUploaded: true});
+      this.setState({ fileUploaded: true });
       this.currentImageRef = this.fileInputRef.files[0];
       this.handleModalOpen();
     }
@@ -105,7 +103,7 @@ export default class ImageS3Uploader extends Component {
   }
 
   render() {
-    const {imageURL, fileUploaded, modalOpen} = this.state;
+    const { imageURL, fileUploaded, modalOpen } = this.state;
     const that = this;
 
     return (
@@ -124,10 +122,10 @@ export default class ImageS3Uploader extends Component {
             null}
         </div>
         <div style={_styles.loaderWrapper}>
-          <span style={{..._styles.titleText, marginLeft: 10}}>
+          <span style={{ ..._styles.titleText, marginLeft: 10 }}>
             {this.props.title}
           </span>
-          <div style={{..._styles.inputFileWrapper, marginTop: 0}}>
+          <div style={{ ..._styles.inputFileWrapper, marginTop: 0 }}>
             <input
               type="file"
               name="upload"
@@ -143,7 +141,7 @@ export default class ImageS3Uploader extends Component {
                 <span
                   style={_styles.cancelImg}
                   onClick={() =>
-                    that.setState({fileUploaded: false, imageURL: ''})
+                    that.setState({ fileUploaded: false, imageURL: '' })
                   }
                 >
                   Cancel
@@ -181,30 +179,17 @@ ImageS3Uploader.propTypes = {
 };
 
 const _styles = {
-  fileUploader: {
-    height: 133,
-  },
-  image: {
-    width: 133,
-    height: 133,
-    float: 'left',
-    backgroundColor: Colors.mainWhite,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: Colors.lightGrey,
-  },
+  inputFileHidden: { ...commonStyles.inputFileHidden },
   loaderWrapper: {
+    ...commonStyles.loaderWrapper,
     height: 143,
-    paddingTop: 20,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 20,
     width: 'calc(100% - 133px)',
     float: 'left',
   },
-  titleText: {
-    fontSize: 14,
-  },
+  image: { ...commonStyles.image, float: 'left' },
+  cancelImg: { ...commonStyles.cancelImg, fontSize: 14 },
+  fileUploader: { height: 133 },
+  titleText: { fontSize: 14 },
   inputFileWrapper: {
     margin: 10,
     width: 'calc(100% - 20px)',
@@ -214,21 +199,6 @@ const _styles = {
     marginBottom: 0,
     float: 'left',
   },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
-  },
-  inputFileVisible: {
-    backgroundColor: 'transparent',
-    width: 'calc(100% - 70px)',
-    height: 32,
-    float: 'left',
-  },
   uploadButton: {
     backgroundColor: Colors.mainOrange,
     width: 70,
@@ -236,12 +206,6 @@ const _styles = {
     color: Colors.mainWhite,
     fontSize: 12,
     border: 0,
-  },
-  cancelImg: {
-    color: Colors.link,
-    marginLeft: 20,
-    fontSize: 14,
-    cursor: 'pointer',
   },
   fileTypesLabel: {
     fontSize: 11,

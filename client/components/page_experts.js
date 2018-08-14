@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Dialog from 'material-ui/Dialog';
-import {Header} from './header';
+import { Header } from './header';
 import Banner from './banner';
 import Feature_section from './feature_section';
 import Testimonial from './testimonial';

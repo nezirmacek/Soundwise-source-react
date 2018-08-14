@@ -1,20 +1,16 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import firebase from 'firebase';
+import React, { Component } from 'react';
+import Axios from 'axios';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import draftToHtml from 'draftjs-to-html';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import moment from 'moment';
 import Papa from 'papaparse';
-import {Editor} from 'react-draft-wysiwyg';
+import { Editor } from 'react-draft-wysiwyg';
 import {
   convertFromRaw,
   convertToRaw,
   EditorState,
   convertFromHTML,
-  createFromBlockArray,
   ContentState,
 } from 'draft-js';
 
@@ -22,12 +18,10 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
-import {sendMarketingEmails} from '../../../helpers/sendMarketingEmails';
-import {addToEmailList} from '../../../helpers/addToEmailList';
-
-import ValidatedInput from '../../../components/inputs/validatedInput';
+import { inviteListeners } from '../../../helpers/invite_listeners';
+import { addToEmailList } from '../../../helpers/addToEmailList';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -47,7 +41,7 @@ export default class InviteSubscribersModal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {soundcast, userInfo} = nextProps;
+    const { soundcast, userInfo } = nextProps;
     let editorState;
     if (userInfo.publisher && soundcast && nextProps != this.props) {
       if (soundcast.invitationEmail) {
@@ -81,10 +75,10 @@ export default class InviteSubscribersModal extends Component {
   }
 
   async inviteListeners() {
-    const inviteeArr = this.state.inviteeList.split(',');
-    const that = this;
-    const {soundcast, userInfo} = this.props;
-    const {invitation} = this.state;
+    const { soundcast, userInfo } = this.props;
+    const { invitation, inviteeList } = this.state;
+
+    const inviteeArr = inviteeList.split(',');
     for (var i = inviteeArr.length - 1; i >= 0; i--) {
       if (inviteeArr[i].indexOf('@') == -1) {
         inviteeArr.splice(i, 1);
@@ -101,7 +95,7 @@ export default class InviteSubscribersModal extends Component {
       inviteeArr,
       'inviteeEmailList',
       soundcast.inviteeEmailList
-    ).then(listId => {
+    ).then(() => {
       inviteListeners(
         inviteeArr,
         subject,
@@ -112,64 +106,15 @@ export default class InviteSubscribersModal extends Component {
       ); // use transactional email for this
     });
 
-    var invitationPromise = inviteeArr.map(email => {
-      let _email = email.replace(/\./g, '(dot)');
-      _email = _email.trim().toLowerCase();
-      if (_email) {
-        return firebase
-          .database()
-          .ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`)
-          .set(moment().format('X')) //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
-          .then(() => {
-            firebase
-              .database()
-              .ref(`invitations/${_email}`)
-              .once('value')
-              .then(snapshot => {
-                if (snapshot.val()) {
-                  const update = {
-                    ...snapshot.val(),
-                    [that.props.soundcast.id]: true,
-                  };
-                  firebase
-                    .database()
-                    .ref(`invitations/${_email}`)
-                    .update(update);
-                } else {
-                  firebase
-                    .database()
-                    .ref(`invitations/${_email}/${that.props.soundcast.id}`)
-                    .set(true);
-                }
-              })
-              .then(
-                res => {
-                  return res;
-                },
-                err => {
-                  console.log('ERROR adding invitee: ', err);
-                  Promise.reject(err);
-                }
-              );
-          });
-      } else {
-        return null;
-      }
-    });
-
-    Promise.all(invitationPromise).then(
-      res => {
-        firebase
-          .database()
-          .ref(`soundcasts/${that.props.soundcast.id}/invitationEmail`)
-          .set(JSON.stringify(convertToRaw(invitation.getCurrentContent())))
-          .catch(err => console.log('error'));
-        return res;
-      },
-      err => {
-        console.log('failed to complete adding invitees: ', err);
-      }
-    );
+    Axios.post('/api/invite', {
+      soundcastId: soundcast.id,
+      inviteeArr,
+      invitation: invitation.getCurrentContent(),
+    })
+      .then(res => res)
+      .catch(err => {
+        console.log('ERROR send emails to subscribers: ', err);
+      });
 
     this.setState({
       submitted: true,
@@ -230,11 +175,11 @@ export default class InviteSubscribersModal extends Component {
   }
 
   render() {
-    const {soundcast, userInfo} = this.props;
+    const { soundcast, userInfo } = this.props;
     const actions = [
       <FlatButton
         label="Submit"
-        labelStyle={{color: Colors.link}}
+        labelStyle={{ color: Colors.link }}
         onClick={this.inviteListeners}
       />,
       <FlatButton label="Cancel" onClick={this.closeModal} />,
@@ -242,7 +187,7 @@ export default class InviteSubscribersModal extends Component {
     const actionsSubmitted = [
       <FlatButton
         label="OK"
-        labelStyle={{color: Colors.link}}
+        labelStyle={{ color: Colors.link }}
         onClick={this.closeModal}
       />,
     ];
@@ -256,7 +201,7 @@ export default class InviteSubscribersModal extends Component {
           <MuiThemeProvider>
             <Dialog
               title="Your invitations have been sent"
-              titleStyle={{borderBottom: '0px'}}
+              titleStyle={{ borderBottom: '0px' }}
               actions={actionsSubmitted}
               modal={false}
               open={this.props.isShown}
@@ -271,7 +216,7 @@ export default class InviteSubscribersModal extends Component {
         <MuiThemeProvider>
           <Dialog
             title={`Invite subscribers to ${soundcast.title}`}
-            titleStyle={{borderBottom: '0px'}}
+            titleStyle={{ borderBottom: '0px' }}
             actions={actions}
             modal={false}
             open={this.props.isShown}
@@ -283,14 +228,14 @@ export default class InviteSubscribersModal extends Component {
             }}
             autoScrollBodyContent={true}
           >
-            <div className="col-md-12" style={{height: 100}}>
+            <div className="col-md-12" style={{ height: 100 }}>
               <textarea
                 style={styles.inputDescription}
                 placeholder={
                   'Enter listener email addresses, separated by commas'
                 }
                 onChange={e => {
-                  this.setState({inviteeList: e.target.value});
+                  this.setState({ inviteeList: e.target.value });
                 }}
                 value={this.state.inviteeList}
               />
@@ -298,7 +243,7 @@ export default class InviteSubscribersModal extends Component {
             <div className="col-md-12" style={{}}>
               <div
                 className="text-medium col-md-12"
-                style={{display: 'flex', justifyContent: 'center'}}
+                style={{ display: 'flex', justifyContent: 'center' }}
               >
                 <span>OR</span>
               </div>
@@ -312,7 +257,7 @@ export default class InviteSubscribersModal extends Component {
                 />
                 <div
                   className="btn"
-                  style={{...styles.draftButton}}
+                  style={{ ...styles.draftButton }}
                   onClick={() => {
                     document.getElementById('upload_csv').click();
                   }}
@@ -324,7 +269,7 @@ export default class InviteSubscribersModal extends Component {
             {/*Confirmation email*/}
             <div
               className="col-md-12"
-              style={{paddingTop: 25, paddingBottom: 25}}
+              style={{ paddingTop: 25, paddingBottom: 25 }}
             >
               <div>
                 <span style={styles.titleText}>Invitation Message</span>
@@ -344,6 +289,7 @@ export default class InviteSubscribersModal extends Component {
 }
 
 const styles = {
+  inputFileHidden: { ...commonStyles.inputFileHidden },
   backDrop: {
     position: 'absolute',
     width: '100%',
@@ -404,15 +350,6 @@ const styles = {
     // padding: '10px 10px',
     fontSize: 16,
     borderRadius: 4,
-  },
-  inputFileHidden: {
-    position: 'absolute',
-    display: 'block',
-    overflow: 'hidden',
-    width: 0,
-    height: 0,
-    border: 0,
-    padding: 0,
   },
   buttonsWrap: {},
   button: {

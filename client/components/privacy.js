@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 const Privacy = () => (
@@ -9,21 +9,21 @@ const Privacy = () => (
     <section
       className=" bg-white builder-bg xs-padding-60px-tb"
       id="contact-section2 border-none"
-      style={{paddingBottom: '30px', paddingTop: '110px', boderBottom: '0px'}}
+      style={{ paddingBottom: '30px', paddingTop: '110px', boderBottom: '0px' }}
     >
       <div
         className="container text-dark-gray border-none"
-        style={{fontSize: '18px'}}
+        style={{ fontSize: '18px' }}
       >
         <h3
           className="section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           PRIVACY POLICY
         </h3>
         <h3
           className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text text-dark-gray"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           (last updated: September 27, 2017)
         </h3>
@@ -41,14 +41,14 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           What information does the Application obtain and how is it used?
         </h3>
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           User Provided Information{' '}
         </h3>
@@ -77,7 +77,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Automatically Collected Information{' '}
         </h3>
@@ -116,7 +116,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Do third parties see and/or have access to information obtained by the
           Application?
@@ -184,7 +184,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           What are my opt-out rights?
         </h3>
@@ -200,7 +200,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Data Retention Policy, Managing Your Information
         </h3>
@@ -217,7 +217,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Children
         </h3>
@@ -232,7 +232,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Security
         </h3>
@@ -251,7 +251,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Changes
         </h3>
@@ -264,7 +264,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Your Consent
         </h3>
@@ -283,7 +283,7 @@ const Privacy = () => (
         &nbsp;
         <h3
           className="section-title-small text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Contact Us
         </h3>

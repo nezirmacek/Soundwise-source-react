@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Butter from 'buttercms';
 import moment from 'moment';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 
-import {SoundwiseHeader2} from '../../components/soundwise_header2';
+import { SoundwiseHeader2 } from '../../components/soundwise_header2';
 import Footer from '../../components/footer';
 
 const butter = Butter('f8b408f99e5169af2c3ccf1f95b4ff7e679b2cbd');
@@ -21,14 +21,16 @@ export default class IGPList extends Component {
   }
 
   fetchPosts(page) {
-    butter.post.list({category_slug: 'igp'}).then(resp => {
-      const posts = resp.data.data;
-      this.setState({
-        loaded: true,
-        posts: posts,
-        resp: resp.data,
+    butter.post
+      .list({ category_slug: 'igp', page: 1, page_size: 60 })
+      .then(resp => {
+        const posts = resp.data.data;
+        this.setState({
+          loaded: true,
+          posts: posts,
+          resp: resp.data,
+        });
       });
-    });
   }
 
   componentWillMount() {
@@ -41,7 +43,7 @@ export default class IGPList extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({loaded: false});
+    this.setState({ loaded: false });
     let page =
       nextProps.match.params && nextProps.match.params.page
         ? nextProps.match.params.page
@@ -52,7 +54,7 @@ export default class IGPList extends Component {
 
   render() {
     if (this.state.loaded) {
-      const {next_page, previous_page} = this.state.resp.meta;
+      const { next_page, previous_page } = this.state.resp.meta;
       return (
         <div>
           <Helmet>
@@ -112,7 +114,7 @@ export default class IGPList extends Component {
                     THE INNER GAME OF PODCASTING
                   </h1>
                   <h2
-                    style={{fontStyle: 'italic'}}
+                    style={{ fontStyle: 'italic' }}
                     className="title-medium sm-title-small xs-title-small text-dark-gray alt-font margin-thirteen-bottom  xs-margin-nineteen-bottom tz-text"
                   >
                     Celebrating extraordinary audio creators and their stories
@@ -137,7 +139,7 @@ export default class IGPList extends Component {
                             />
                           </div>
                           <div
-                            style={{padding: 20}}
+                            style={{ padding: 20 }}
                             className=" bg-gray tz-background-color"
                           >
                             <div className="text-extra-large sm-text-large xs-text-large text-dark-gray tz-text">
@@ -154,7 +156,7 @@ export default class IGPList extends Component {
               </div>
             </div>
           </section>
-          <div style={{bottom: 0, width: '100%', position: 'static'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'static' }}>
             <Footer showPricing={true} />
           </div>
         </div>
@@ -164,7 +166,7 @@ export default class IGPList extends Component {
         <div>
           <SoundwiseHeader2 showIcon={true} blog={true} />
           <div />
-          <div style={{bottom: 0, width: '100%', position: 'absolute'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'absolute' }}>
             <Footer />
           </div>
         </div>

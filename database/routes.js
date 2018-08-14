@@ -1,8 +1,8 @@
 'use strict';
 
 const database = require('./index');
-const inspectors = require('./inspectors.js');
 const soundcastService = require('../server/services').soundcastService;
+const inspectors = require('./inspectors');
 
 module.exports = app => {
   app.post('/api/user', (req, res) => {
@@ -12,30 +12,20 @@ module.exports = app => {
       },
       defaults: req.body,
     })
-      .then(data => {
-        console.log('data: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/coupon', (req, res) => {
     database.Coupon.create(req.body)
-      .then(data => {
-        console.log('data: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/coupon', (req, res) => {
     const publisherId = JSON.parse(req.query.filter).publisherId;
     database.Coupon.findAll({
-      where: {publisherId: publisherId},
+      where: { publisherId: publisherId },
     })
       .then(data => {
         res.send(data);
@@ -45,24 +35,33 @@ module.exports = app => {
       });
   });
 
+  app.get('/api/messages', (req, res) => {
+    const soundcastId = JSON.parse(req.query.filter).soundcastId;
+    database.Message.findAll({
+      where: { soundcastId: soundcastId },
+      order: [['updatedAt', 'DESC']],
+    })
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
+
   app.post('/api/episode', (req, res) => {
     database.Episode.findOrCreate({
-      where: {episodeId: req.body.episodeId},
+      where: { episodeId: req.body.episodeId },
       defaults: req.body,
     })
-      .then(data => {
-        console.log('response: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        console.log('error: ', err);
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/soundcast', (req, res) => {
     soundcastService
       .createOrUpdate(req.body)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
+  app.post('/api/messages', (req, res) => {
+    database.Message.create(req.body)
       .then(data => {
         res.send(data);
       })
@@ -73,28 +72,18 @@ module.exports = app => {
 
   app.post('/api/category', (req, res) => {
     database.Category.create(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/listening_session', (req, res) => {
-    const data = Object.assign({}, req.body, {date: new Date(req.body.date)});
+    const data = Object.assign({}, req.body, { date: new Date(req.body.date) });
     database.ListeningSession.create(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user', (req, res) => {
-    // console.log('req.query: ', req.query);
     database.ListeningSession.findAll({
       where: {
         userId: req.query.userId,
@@ -105,25 +94,16 @@ module.exports = app => {
       },
       order: [['date', 'ASC']],
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/category', (req, res) => {
-    // console.log('req.query: ', req.query);
     database.Category.findAll({
       order: [['name', 'ASC']],
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user_publisher', (req, res) => {
@@ -138,13 +118,8 @@ module.exports = app => {
       },
       order: [['date', 'ASC']],
     })
-      .then(data => {
-        console.log('data sent: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_episode', (req, res) => {
@@ -159,9 +134,7 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_soundcast', (req, res) => {
@@ -176,10 +149,7 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user_episode', (req, res) => {
@@ -195,14 +165,18 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
-  app.post('/api/comment', inspectors.addComment);
-  app.put('/api/comment', inspectors.editComment);
-  app.delete('/api/comment', inspectors.deleteComment);
 
-  app.post('/api/like', inspectors.addLike);
-  app.delete('/api/like', inspectors.deleteLike);
+  app.post('/api/comments', (req, res) => inspectors.addComment(req, res));
+
+  app.delete('/api/comments/:id', (req, res) =>
+    inspectors.deleteComment(req, res)
+  );
+
+  app.put('/api/comments/:id', (req, res) => inspectors.editComment(req, res));
+
+  app.post('/api/likes', (req, res) => inspectors.addLike(req, res));
+
+  app.delete('/api/likes/:id', (req, res) => inspectors.deleteLike(req, res));
 };

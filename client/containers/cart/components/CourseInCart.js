@@ -1,7 +1,4 @@
-/**
- * Created by developer on 06.07.17.
- */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as firebase from 'firebase';
 import Colors from '../../../styles/colors';
@@ -84,7 +81,7 @@ export default class CourseInCart extends Component {
   }
 
   render() {
-    const {course} = this.props;
+    const { course } = this.props;
 
     return (
       <div className="row" style={styles.course}>
@@ -108,7 +105,7 @@ export default class CourseInCart extends Component {
                 >
                   Apply
                 </div>
-                <div style={{color: 'red'}}>{this.state.couponError}</div>
+                <div style={{ color: 'red' }}>{this.state.couponError}</div>
               </div>
               <div
                 className="feature-box-details-second pull-right"

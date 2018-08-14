@@ -1,23 +1,23 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Helmet} from 'react-helmet';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import firebase from 'firebase';
-import {withRouter} from 'react-router';
-import {Redirect} from 'react-router-dom';
+import { withRouter } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import {CourseHeader} from '../components/course_header';
-import {CourseHeaderPurchased} from '../components/course_header_purchased';
+import { CourseHeader } from '../components/course_header';
+import { CourseHeaderPurchased } from '../components/course_header_purchased';
 import Footer from '../components/footer';
 
-import {CourseBody} from '../containers/course_body';
-import {CourseFooter} from '../components/course_footer';
+import { CourseBody } from '../containers/course_body';
+import { CourseFooter } from '../components/course_footer';
 import SocialShare from '../components/socialshare';
-import {SoundwiseHeader} from '../components/soundwise_header';
-import {CourseSignup} from './course_signup';
+import { SoundwiseHeader } from '../components/soundwise_header';
+import { CourseSignup } from './course_signup';
 import {
   setCurrentPlaylist,
   setCurrentCourse,
@@ -94,7 +94,7 @@ class _Staged_Course extends Component {
 
   setMaxCardHeight(height) {
     if (height > this.state.cardHeight) {
-      this.setState({cardHeight: height});
+      this.setState({ cardHeight: height });
     }
   }
 
@@ -144,14 +144,14 @@ class _Staged_Course extends Component {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {setCurrentPlaylist, setCurrentCourse, loadCourses},
+    { setCurrentPlaylist, setCurrentCourse, loadCourses },
     dispatch
   );
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  const {courses, currentPlaylist, currentCourse} = state.setCourses;
+  const { userInfo, isLoggedIn } = state.user;
+  const { courses, currentPlaylist, currentCourse } = state.setCourses;
   return {
     userInfo,
     isLoggedIn,

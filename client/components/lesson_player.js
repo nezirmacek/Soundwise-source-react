@@ -1,8 +1,5 @@
-/**
- * Created by developer on 07.06.17.
- */
-import React, {Component} from 'react';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
+import React, { Component } from 'react';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Levels from 'react-activity/lib/Levels';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -41,7 +38,7 @@ export default class LessonPlayer extends Component {
 
   handlePlayOrPause() {
     const that = this;
-    const {audio, audioSource} = this.references;
+    const { audio, audioSource } = this.references;
     if (this.state.isPlaying) {
       audio.pause();
 
@@ -77,8 +74,8 @@ export default class LessonPlayer extends Component {
   }
 
   render() {
-    const {section, showDialogCb} = this.props;
-    const {duration, currentTime, isPlaying} = this.state;
+    const { section, showDialogCb } = this.props;
+    const { duration, currentTime, isPlaying } = this.state;
     const remainingTime = duration - currentTime;
     let remainingMin =
       remainingTime > 0 ? Math.floor(remainingTime / 60) : '00';
@@ -115,7 +112,7 @@ export default class LessonPlayer extends Component {
           />
         </audio>
         <Card key={this.props.index}>
-          <div style={{paddingLeft: '20px'}} className="table-row">
+          <div style={{ paddingLeft: '20px' }} className="table-row">
             <i
               className={`fa ${iconClass} table-cell`}
               style={{
@@ -132,13 +129,13 @@ export default class LessonPlayer extends Component {
             {(isPlaying && (
               <div style={styles.timer}>
                 <Levels color="#F76B1C" size={12} speed={1} />
-                <span style={{paddingLeft: '0.5em'}}>
+                <span style={{ paddingLeft: '0.5em' }}>
                   {`${remainingMin}:${remaingingSec}`}
                 </span>
               </div>
             )) || (
               <div style={styles.timer}>
-                <span style={{paddingLeft: '0.5em'}}>{section.run_time}</span>
+                <span style={{ paddingLeft: '0.5em' }}>{section.run_time}</span>
               </div>
             )}
           </div>

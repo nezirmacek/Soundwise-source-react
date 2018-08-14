@@ -1,6 +1,6 @@
 # Soundwise
 
-A marketplace for short-form audio courses in business and personal development.
+Mobile-focused audio publishing platform for coaches, consultants, and entrepreneurial experts to sell and deliver on-demand audio programs, and leverage their podcast to build their email list and an engaged audience.
 
 ## Development
 
@@ -89,8 +89,9 @@ npm run-script start:server
 npm run-script start
 ```
 
-### Start the server.js and webpack bundle compiler in dev mode (stripe testing)
+### Start the server.js and webpack bundle compiler in development mode (stripe testing)
 
+Comment out *new webpack.optimize.UglifyJsPlugin(),* line in *webpack.config.js*, run:
 ```
 NODE_ENV=dev node --inspect server/server.js
 NODE_ENV=dev npm run-script start
@@ -112,7 +113,8 @@ node .
 
 ### Coding style
 
-Install https://github.com/prettier/prettier  
+Install https://github.com/prettier/prettier
+
 Check _package.json > "prettier"_ configuration
 
 
@@ -137,21 +139,34 @@ node .
 
 # Server update:
 
-Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*  
-Run webpack bundle compiler:  
->npm run-script build  
->git push live --force
+Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*
 
-*you can check git configuration with *"git remote -v"* command,  
-to add live remote run:  
+Run webpack bundle compiler:
+
+> webpack
+
+or
+
+>npm run-script build
+
+*you can check git configuration with *"git remote -v"* command,
+
+to add live remote run:
+
 >git remote add live ssh://USER@IP/PATH/TO/GIT/REPO.git
 
 additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
 
+Push to deployed server
+>git push live master
+
 copy uglified *bundle.js/bundle.js.map* files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
 
-under root(!) on server run:
+for example, if under root folder:
+> scp ./client/bundle.js* root@162.243.196.88:/var/www/mysoundwise.com/client/
+
+under root(!) on remote server run:
 >pm2 restart soundwise
 
 

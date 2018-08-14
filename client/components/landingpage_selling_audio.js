@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {Helmet} from 'react-helmet';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Colors from '../styles/colors';
 
 import Footer from './footer';
-import {signoutUser} from '../actions/index';
+import { signoutUser } from '../actions/index';
 
 class _LandingPageSelling extends Component {
   constructor(props) {
@@ -58,12 +58,12 @@ class _LandingPageSelling extends Component {
               verticalAlign: 'center',
             }}
           >
-            <li className="propClone sm-no-border" style={{marginTop: 5}}>
+            <li className="propClone sm-no-border" style={{ marginTop: 5 }}>
               <div className="dropdown">
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div
                     style={{
@@ -86,33 +86,36 @@ class _LandingPageSelling extends Component {
                 <ul className="dropdown-menu">
                   {this.props.userInfo.soundcasts && (
                     <li>
-                      <Link style={{color: 'black'}} to="/mysoundcasts">
+                      <Link style={{ color: 'black' }} to="/mysoundcasts">
                         My Soundcasts
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link to="/dashboard/soundcasts" style={{color: 'black'}}>
+                      <Link
+                        to="/dashboard/soundcasts"
+                        style={{ color: 'black' }}
+                      >
                         Admin Dashboard
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.courses && (
                     <li>
-                      <Link to="/myprograms" style={{color: 'black'}}>
+                      <Link to="/myprograms" style={{ color: 'black' }}>
                         My Courses
                       </Link>
                     </li>
                   )}
                   <li>
-                    <Link to="/myprofile" style={{color: 'black'}}>
+                    <Link to="/myprofile" style={{ color: 'black' }}>
                       My Profile
                     </Link>
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -163,7 +166,7 @@ class _LandingPageSelling extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -415,7 +418,7 @@ class _LandingPageSelling extends Component {
                             to="/pricing"
                             className="btn btn-large  text-dark-gray propClone xs-no-margin xs-margin-five-bottom xs-display-block"
                             data-selector="a.btn, button.btn"
-                            style={{backgroundColor: Colors.link}}
+                            style={{ backgroundColor: Colors.link }}
                           >
                             <span
                               className="tz-text"
@@ -451,7 +454,7 @@ class _LandingPageSelling extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-7 col-sm-7 col-xs-12 xs-text-center xs-margin-nineteen-bottom display-table"
-                style={{height: 510}}
+                style={{ height: 510 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -464,7 +467,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-md-5 col-sm-5 col-xs-12 xs-text-center display-table"
-                style={{height: 510}}
+                style={{ height: 510 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2
@@ -542,7 +545,7 @@ class _LandingPageSelling extends Component {
             >
               <div
                 className="col-md-4 col-sm-4 col-xs-12 xs-text-center xs-margin-nine-bottom"
-                style={{height: 54}}
+                style={{ height: 54 }}
               >
                 <div className="col-md-2 col-sm-2 col-xs-12 xs-margin-seven-bottom">
                   <i
@@ -572,7 +575,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-md-4 col-sm-4 col-xs-12 xs-text-center xs-margin-nine-bottom"
-                style={{height: 54}}
+                style={{ height: 54 }}
               >
                 <div className="col-md-2 col-sm-2 col-xs-12 xs-margin-seven-bottom">
                   <i
@@ -601,7 +604,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-md-4 col-sm-4 col-xs-12 xs-text-center xs-margin-nine-bottom"
-                style={{height: 54}}
+                style={{ height: 54 }}
               >
                 <div className="col-md-2 col-sm-2 col-xs-12 xs-margin-seven-bottom">
                   <i
@@ -640,7 +643,7 @@ class _LandingPageSelling extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-lg-5 col-md-6 col-sm-6 xs-12 xs-text-center xs-margin-nineteen-bottom display-table"
-                style={{height: 652}}
+                style={{ height: 652 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2
@@ -693,21 +696,21 @@ class _LandingPageSelling extends Component {
                     <p>
                       <i
                         className="far fa-play-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       Charge recurring subscription, one-time fee, or rental fee
                     </p>
                     <p>
                       <i
                         className="far fa-play-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       Supercharge sales with coupons and limited time promotion
                     </p>
                     <p>
                       <i
                         className="far fa-play-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       Deliver companion materials in text, image or pdf
                     </p>
@@ -748,7 +751,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-lg-7 col-md-6 col-sm-6 xs-12 xs-text-center display-table"
-                style={{height: 652}}
+                style={{ height: 652 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -771,7 +774,7 @@ class _LandingPageSelling extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-5 col-sm-5 col-xs-12 text-center xs-margin-fifteen-bottom display-table"
-                style={{height: 603}}
+                style={{ height: 603 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -784,7 +787,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-md-7 col-sm-7 col-xs-12 display-table"
-                style={{height: 603}}
+                style={{ height: 603 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="row">
@@ -880,7 +883,7 @@ class _LandingPageSelling extends Component {
                           className="fas fa-hdd icon-medium tz-icon-color"
                           aria-hidden="true"
                           data-selector=".tz-icon-color"
-                          style={{color: Colors.mainOrange}}
+                          style={{ color: Colors.mainOrange }}
                         />
                       </div>
                       <h3
@@ -1010,7 +1013,7 @@ class _LandingPageSelling extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-6 col-sm-6 xs-12 xs-text-center xs-margin-nineteen-bottom display-table"
-                style={{height: 481}}
+                style={{ height: 481 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2
@@ -1055,14 +1058,14 @@ class _LandingPageSelling extends Component {
                     <p>
                       <i
                         className="far fa-check-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       Send group messages and emails to your listeners
                     </p>
                     <p>
                       <i
                         className="far fa-check-circle"
-                        style={{color: Colors.link, marginRight: 5}}
+                        style={{ color: Colors.link, marginRight: 5 }}
                       />{' '}
                       Encourage your listeners to post comments
                     </p>
@@ -1100,7 +1103,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-6 xs-12 xs-text-center display-table"
-                style={{height: 481}}
+                style={{ height: 481 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -1279,7 +1282,7 @@ class _LandingPageSelling extends Component {
             <div className="row equalize xs-equalize-auto equalize-display-inherit">
               <div
                 className="col-md-6 col-sm-6 col-xs-12 display-table slider-text-middle text-left xs-margin-nineteen-bottom xs-text-center"
-                style={{height: 585}}
+                style={{ height: 585 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="offer-box-left">
@@ -1327,7 +1330,7 @@ class _LandingPageSelling extends Component {
                       <img
                         src="images/app-store-badge.png"
                         data-img-size="(W)200px X (H)61px"
-                        style={{width: 200}}
+                        style={{ width: 200 }}
                         alt=""
                         data-selector="img"
                       />
@@ -1340,7 +1343,7 @@ class _LandingPageSelling extends Component {
                       <img
                         src="images/google-play-badge.png"
                         data-img-size="(W)200px X (H)61px"
-                        style={{width: 200}}
+                        style={{ width: 200 }}
                         alt=""
                         data-selector="img"
                       />
@@ -1350,7 +1353,7 @@ class _LandingPageSelling extends Component {
               </div>
               <div
                 className="col-md-6 col-sm-6 col-xs-12 display-table text-right xs-margin-lr-auto xs-fl-none xs-no-padding-bottom"
-                style={{height: 585}}
+                style={{ height: 585 }}
               >
                 <div className="display-table-cell-vertical-middle">
                   <img
@@ -1378,7 +1381,7 @@ class _LandingPageSelling extends Component {
             <div className="row equalize">
               <div
                 className="col-md-12 col-sm-12 col-xs-12 text-center sm-margin-twenty-one-bottom"
-                style={{height: 47}}
+                style={{ height: 47 }}
               >
                 <div
                   className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-medium sm-title-medium"
@@ -1417,11 +1420,11 @@ class _LandingPageSelling extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signoutUser}, dispatch);
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

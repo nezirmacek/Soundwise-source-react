@@ -1,15 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 // import { bindActionCreators } from 'redux';
 // import { connect } from 'react-redux';
-import {Route, Link, Switch} from 'react-router-dom';
+import { Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 
 import Footer from './footer';
-import {SoundwiseHeader} from './soundwise_header';
-import Colors from '../styles/colors';
+import { SoundwiseHeader } from './soundwise_header';
 
 export default class Publisher extends Component {
   constructor(props) {
@@ -24,7 +23,7 @@ export default class Publisher extends Component {
 
   async componentDidMount() {
     const publisherID = this.props.match.params.id;
-    const {history} = this.props;
+    const { history } = this.props;
     const that = this;
     const soundcasts = [];
 
@@ -58,7 +57,7 @@ export default class Publisher extends Component {
           soundcast.val().landingPage &&
           soundcast.val().published
         ) {
-          soundcasts.push({...soundcast.val(), id: soundcastsArr[i]});
+          soundcasts.push({ ...soundcast.val(), id: soundcastsArr[i] });
         }
       }
       this.setState({
@@ -69,7 +68,7 @@ export default class Publisher extends Component {
   }
 
   render() {
-    const {publisher} = this.state;
+    const { publisher } = this.state;
 
     return (
       <div>
@@ -83,24 +82,24 @@ export default class Publisher extends Component {
               <div className="col-md-9 col-sm-10 col-xs-12 center-col  ">
                 <div
                   className="col-md-4 col-sm-6 col-xs-12 xs-padding-bottom-15px"
-                  style={{display: 'flex', justifyContent: 'center'}}
+                  style={{ display: 'flex', justifyContent: 'center' }}
                 >
                   <div
                     alt={`${publisher.name}`}
                     className="img-round-160"
-                    style={{backgroundImage: `url(${publisher.imageUrl})`}}
+                    style={{ backgroundImage: `url(${publisher.imageUrl})` }}
                   />
                 </div>
                 <div
                   className="col-md-8 col-sm-6 col-xs-12"
-                  style={{textAlign: 'center'}}
+                  style={{ textAlign: 'center' }}
                 >
                   <div className="col-md-12 section-title-medium sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
                     {this.state.publisher.name}
                   </div>
                   <div
                     className="col-md-12 social social-icon-color"
-                    style={{marginTop: '1em', marginBottom: '1em'}}
+                    style={{ marginTop: '1em', marginBottom: '1em' }}
                   >
                     {(publisher.website && (
                       <a
@@ -188,7 +187,7 @@ export default class Publisher extends Component {
                 }}
               >
                 <Dots
-                  style={{display: 'flex'}}
+                  style={{ display: 'flex' }}
                   color="#727981"
                   size={32}
                   speed={1}
@@ -198,7 +197,7 @@ export default class Publisher extends Component {
               null}
             <div
               className="col-md-12"
-              style={{borderTop: 'solid 0.05em #f4f2f2', paddingTop: 45}}
+              style={{ borderTop: 'solid 0.05em #f4f2f2', paddingTop: 45 }}
             >
               {this.state.soundcasts.map((soundcast, i) => {
                 let price = '',
@@ -240,7 +239,7 @@ export default class Publisher extends Component {
                           </div>
                           <div
                             className="tz-text text-dark-gray title-medium sm-title-medium  display-block margin-ten-bottom xs-margin-five-bottom"
-                            style={{fontWeight: 800}}
+                            style={{ fontWeight: 800 }}
                           >
                             {`${pre}${
                               price == 'Free' ? '' : '$'
@@ -271,11 +270,3 @@ export default class Publisher extends Component {
     );
   }
 }
-
-const styles = {
-  footer: {
-    // position: 'fixed',
-    bottom: 0,
-    width: '100%',
-  },
-};

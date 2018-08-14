@@ -1,18 +1,19 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -46,7 +47,7 @@ export default class Billing extends Component {
   }
 
   checkAffiliateId() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     if (
       !this.state.couponText &&
       userInfo.publisher &&
@@ -71,7 +72,7 @@ export default class Billing extends Component {
   }
 
   handlePlanCancel() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     if (userInfo.publisher) {
       const {
         plan,
@@ -85,7 +86,7 @@ export default class Billing extends Component {
         `Are you sure you want to cancel your ${plan.toUpperCase()} subscription?`
       );
       if (cancelling) {
-        Axios.post('/api/cancel_plan', {subscriptionID})
+        Axios.post('/api/cancel_plan', { subscriptionID })
           .then(response => {
             firebase
               .database()
@@ -129,16 +130,16 @@ export default class Billing extends Component {
           trialPeriod: 30,
           affiliate: stripe_user_id,
         });
-      this.setState({couponText});
+      this.setState({ couponText });
     }
   }
 
   async handleAffiliate() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     if (!userInfo || !userInfo.publisher) {
       return alert('Empty user/publisher value');
     }
-    const {stripe_user_id} = userInfo.publisher;
+    const { stripe_user_id } = userInfo.publisher;
     if (!stripe_user_id) {
       // If the publisher does not have a connected stripe payout account yet (stripe_user_id under the publisher node in firebase == null), the screen should alert user
       alert('Please connect your payout account first.');
@@ -154,7 +155,7 @@ export default class Billing extends Component {
         .database()
         .ref(`publishers/${userInfo.publisherID}/affiliate`)
         .set(true);
-      this.setState({affiliate: true});
+      this.setState({ affiliate: true });
     }
   }
 
@@ -163,7 +164,7 @@ export default class Billing extends Component {
   }
 
   render() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     const that = this;
     if (userInfo.publisher) {
       const {
@@ -181,7 +182,7 @@ export default class Billing extends Component {
             <Link to={`/publishers/${userInfo.publisherID}`}>
               <span
                 className="text-medium"
-                style={{marginLeft: 15, color: Colors.mainOrange}}
+                style={{ marginLeft: 15, color: Colors.mainOrange }}
               >
                 <strong>View Publisher Page</strong>
               </span>
@@ -190,29 +191,31 @@ export default class Billing extends Component {
           <ul className="nav nav-pills">
             <li role="presentation">
               <Link to="/dashboard/publisher">
-                <span style={{fontSize: 15, fontWeight: 600}}>Profile</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>Profile</span>
               </Link>
             </li>
             <li role="presentation">
               <Link to="/dashboard/publisher/transactions">
-                <span style={{fontSize: 15, fontWeight: 600}}>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>
                   Transactions
                 </span>
               </Link>
             </li>
             <li role="presentation">
               <Link to="/dashboard/publisher/payouts">
-                <span style={{fontSize: 15, fontWeight: 600}}>Payouts</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>Payouts</span>
               </Link>
             </li>
             <li role="presentation">
               <Link to="/dashboard/publisher/promotions">
-                <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>
+                  Promotions
+                </span>
               </Link>
             </li>
             <li role="presentation" className="active">
               <Link
-                style={{backgroundColor: 'transparent'}}
+                style={{ backgroundColor: 'transparent' }}
                 to="/dashboard/publisher/settings"
               >
                 <span
@@ -227,11 +230,11 @@ export default class Billing extends Component {
               </Link>
             </li>
           </ul>
-          <div className="container" style={{minHeight: 700}}>
+          <div className="container" style={{ minHeight: 700 }}>
             <div className="row">
               <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div style={{marginTop: 20}}>
-                  <div style={{...styles.titleText, marginBottom: 25}}>
+                <div style={{ marginTop: 20 }}>
+                  <div style={{ ...styles.titleText, marginBottom: 25 }}>
                     Subscription Plan
                   </div>
                   <div>
@@ -279,27 +282,27 @@ export default class Billing extends Component {
                   </div>
                   {(current_period_end &&
                     auto_renewal && (
-                      <div style={{marginTop: 25}}>
+                      <div style={{ marginTop: 25 }}>
                         <span
                           onClick={this.handlePlanCancel}
-                          style={{cursor: 'pointer', fontSize: 16}}
+                          style={{ cursor: 'pointer', fontSize: 16 }}
                         >
                           Cancel plan
                         </span>
                       </div>
                     )) ||
                     null}
-                  <div style={{...styles.titleText, marginTop: 20}}>
+                  <div style={{ ...styles.titleText, marginTop: 20 }}>
                     Affiliate Program
                   </div>
                   <div>{`(50% lifetime commisions on your referrals)`}</div>
                   {(affiliate && (
                     <div>
-                      <div style={{...styles.titleTextSmall, marginTop: 17}}>
+                      <div style={{ ...styles.titleTextSmall, marginTop: 17 }}>
                         <span>Your affiliate link: </span>
                         <a
                           target="_blank"
-                          style={{color: Colors.mainOrange}}
+                          style={{ color: Colors.mainOrange }}
                           href={`https://mysoundwise.com/?a_id=${
                             userInfo.publisherID
                           }-${userInfo.publisher.stripe_user_id}`}
@@ -307,7 +310,7 @@ export default class Billing extends Component {
                           userInfo.publisherID
                         }-${userInfo.publisher.stripe_user_id}`}</a>
                       </div>
-                      <div style={{marginTop: 12}}>
+                      <div style={{ marginTop: 12 }}>
                         <span style={styles.titleTextSmall}>
                           Your affiliate promo code
                         </span>
@@ -350,42 +353,10 @@ export default class Billing extends Component {
 }
 
 const styles = {
-  titleText: {
-    fontSize: 16,
-    fontWeight: 600,
-  },
+  titleText: { ...commonStyles.titleText },
   titleTextSmall: {
     fontSize: 15,
     fontWeight: 600,
-  },
-  inputTitleWrapper: {
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  inputTitle: {
-    height: 40,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginBottom: 0,
-  },
-  inputDescription: {
-    height: 80,
-    backgroundColor: Colors.mainWhite,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 4,
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  tableWrapper: {
-    marginTop: 25,
-    backgroundColor: Colors.mainWhite,
-    padding: 25,
-    overflow: 'auto',
-    maxHeight: 650,
   },
   tr: {
     borderBottomWidth: 1,

@@ -1,20 +1,20 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Axios from 'axios';
 import firebase from 'firebase';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
-import {Bar} from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
-import {getDateArray} from '../../../helpers/get_date_array';
+import { inviteListeners } from '../../../helpers/invite_listeners';
+import { getDateArray } from '../../../helpers/get_date_array';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -51,14 +51,14 @@ export default class EpisodeStatsModal extends Component {
 
   componentDidMount() {
     if (this.props.episode) {
-      const {id} = this.props.episode;
+      const { id } = this.props.episode;
       this.getListeningStats(id);
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.episode) {
-      const {id} = nextProps.episode;
+      const { id } = nextProps.episode;
       this.getListeningStats(id);
     }
   }
@@ -93,7 +93,7 @@ export default class EpisodeStatsModal extends Component {
       }
 
       //calculate stats by date
-      const {listens, length} = statsByDate[labels.indexOf(session.date)];
+      const { listens, length } = statsByDate[labels.indexOf(session.date)];
       statsByDate[labels.indexOf(session.date)] = {
         listens: listens + 1,
         length: length + session.sessionDuration,
@@ -159,7 +159,7 @@ export default class EpisodeStatsModal extends Component {
   }
 
   render() {
-    const {data, listenersArr} = this.state;
+    const { data, listenersArr } = this.state;
     if (!this.props.isShown) {
       return null;
     }
@@ -174,10 +174,10 @@ export default class EpisodeStatsModal extends Component {
             </div>
             <div style={styles.closeButtonWrap}>
               <div
-                style={{cursor: 'pointer'}}
+                style={{ cursor: 'pointer' }}
                 onClick={this.closeModal.bind(this)}
               >
-                <i className="fa fa-times fa-2x" style={{color: 'red'}} />
+                <i className="fa fa-times fa-2x" style={{ color: 'red' }} />
               </div>
             </div>
           </div>
@@ -200,8 +200,8 @@ export default class EpisodeStatsModal extends Component {
               }}
             />
           </div>
-          <div style={{margin: 20}}>
-            <div className="title-small" style={{marginBottom: 5}}>
+          <div style={{ margin: 20 }}>
+            <div className="title-small" style={{ marginBottom: 5 }}>
               Listeners
             </div>
             {listenersArr.map((listener, i) => {
@@ -212,7 +212,7 @@ export default class EpisodeStatsModal extends Component {
                 pic_url = '../../../images/profile_pic.png';
               }
               return (
-                <div style={{display: 'inline-block', margin: 4}} key={i}>
+                <div style={{ display: 'inline-block', margin: 4 }} key={i}>
                   <MuiThemeProvider key={i}>
                     <Chip key={i} style={styles.chip}>
                       <Avatar src={pic_url} style={styles.userImage} />
@@ -265,15 +265,6 @@ const styles = {
     marginTop: 30,
     marginBottom: 20,
     marginLeft: 20,
-  },
-  inputDescription: {
-    height: '50%',
-    width: '90%',
-    paddingLeft: 20,
-    marginLeft: 20,
-    // padding: '10px 10px',
-    fontSize: 16,
-    borderRadius: 4,
   },
   closeButtonWrap: {
     marginTop: 20,

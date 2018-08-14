@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Butter from 'buttercms';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import Colors from '../../styles/colors';
 
-import {SoundwiseHeader} from '../../components/soundwise_header';
+import { SoundwiseHeader } from '../../components/soundwise_header';
 import Footer from '../../components/footer';
 
 const butter = Butter('f8b408f99e5169af2c3ccf1f95b4ff7e679b2cbd');
@@ -48,20 +48,22 @@ export default class IGPPost extends Component {
   }
 
   fetchPosts(page) {
-    butter.post.list({category_slug: 'igp'}).then(resp => {
-      const posts = resp.data.data;
-      const currentPost = this.state.post;
-      const filteredPosts = [];
-      posts.forEach(post => {
-        if (post.slug !== currentPost.slug) {
-          filteredPosts.push(post);
-        }
+    butter.post
+      .list({ category_slug: 'igp', page: 1, page_size: 60 })
+      .then(resp => {
+        const posts = resp.data.data;
+        const currentPost = this.state.post;
+        const filteredPosts = [];
+        posts.forEach(post => {
+          if (post.slug !== currentPost.slug) {
+            filteredPosts.push(post);
+          }
+        });
+        this.setState({
+          loadedPosts: true,
+          posts: filteredPosts,
+        });
       });
-      this.setState({
-        loadedPosts: true,
-        posts: filteredPosts,
-      });
-    });
   }
 
   render() {
@@ -97,7 +99,7 @@ export default class IGPPost extends Component {
           >
             <div className="container post-container md-padding-twenty-five-left md-padding-twenty-five-right xs-padding-nine-left xs-padding-nine-right">
               <div className="row" />
-              <div dangerouslySetInnerHTML={{__html: post.body}} />
+              <div dangerouslySetInnerHTML={{ __html: post.body }} />
               <div className="row">
                 <div
                   className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center "
@@ -155,13 +157,13 @@ export default class IGPPost extends Component {
                 <div className="row">
                   <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
                     <h3
-                      style={{marginBottom: 0}}
+                      style={{ marginBottom: 0 }}
                       className="title-small sm-title-small xs-title-small text-dark-gray font-weight-700 alt-font tz-text"
                     >
                       THE INNER GAME OF PODCASTING
                     </h3>
                     <h2
-                      style={{marginTop: 0}}
+                      style={{ marginTop: 0 }}
                       className="title-extra-large-2 sm-title-large xs-title-large text-dark-gray font-weight-700 alt-font margin-five-bottom  xs-margin-nine-bottom tz-text"
                     >
                       MORE STORIES
@@ -186,7 +188,7 @@ export default class IGPPost extends Component {
                               />
                             </div>
                             <div
-                              style={{padding: 20}}
+                              style={{ padding: 20 }}
                               className=" bg-gray tz-background-color"
                             >
                               <div className="text-extra-large sm-text-large xs-text-large text-dark-gray tz-text">
@@ -205,7 +207,7 @@ export default class IGPPost extends Component {
             </section>
           )) ||
             null}
-          <div style={{bottom: 0, width: '100%', position: 'static'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'static' }}>
             <Footer showPricing={true} />
           </div>
         </div>
@@ -215,7 +217,7 @@ export default class IGPPost extends Component {
         <div>
           <SoundwiseHeader showIcon={true} blog={true} />
           <div>Loading...</div>
-          <div style={{bottom: 0, width: '100%', position: 'absolute'}}>
+          <div style={{ bottom: 0, width: '100%', position: 'absolute' }}>
             <Footer />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 const NotFound = () => (
@@ -15,7 +15,7 @@ const NotFound = () => (
         <div className="row equalize xs-equalize-auto equalize-display-inherit">
           <div
             className="col-md-6 col-sm-5 col-xs-12 display-table"
-            style={{height: '447px'}}
+            style={{ height: '447px' }}
           >
             <div className="text-center xs-text-center display-table-cell-vertical-middle">
               <img
@@ -28,7 +28,7 @@ const NotFound = () => (
           </div>
           <div
             className="col-md-6 col-sm-7 col-xs-12 xs-text-center display-table"
-            style={{height: '447px'}}
+            style={{ height: '447px' }}
           >
             <div className="display-table-cell-vertical-middle xs-padding-nineteen-top">
               <h2 className="title-extra-big sm-title-extra-large-4 text-orange-peel xs-title-extra-big font-weight-600 tz-text sm-margin-five-bottom">

@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import firebase from 'firebase';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
-import {Helmet} from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Colors from '../styles/colors';
 
-import {SoundwiseHeader} from '../components/soundwise_header';
+import { SoundwiseHeader } from '../components/soundwise_header';
 import Footer from '../components/footer';
 import Pricing from '../components/pricing';
 
@@ -25,12 +25,12 @@ class _PricingPage extends Component {
       priceChosen: null,
       prices: {
         annual: {
-          pro: 68,
-          plus: 28,
+          pro: 79,
+          plus: 39,
         },
         monthly: {
-          pro: 113,
-          plus: 47,
+          pro: 99,
+          plus: 49,
         },
       },
     };
@@ -91,12 +91,12 @@ class _PricingPage extends Component {
               verticalAlign: 'center',
             }}
           >
-            <li className="propClone sm-no-border" style={{marginTop: 5}}>
+            <li className="propClone sm-no-border" style={{ marginTop: 5 }}>
               <div className="dropdown">
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div
                     className="text-dark-gray"
@@ -119,33 +119,36 @@ class _PricingPage extends Component {
                 <ul className="dropdown-menu">
                   {this.props.userInfo.soundcasts && (
                     <li>
-                      <Link style={{color: 'black'}} to="/mysoundcasts">
+                      <Link style={{ color: 'black' }} to="/mysoundcasts">
                         My Soundcasts
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link to="/dashboard/soundcasts" style={{color: 'black'}}>
+                      <Link
+                        to="/dashboard/soundcasts"
+                        style={{ color: 'black' }}
+                      >
                         Admin Dashboard
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.courses && (
                     <li>
-                      <Link to="/myprograms" style={{color: 'black'}}>
+                      <Link to="/myprograms" style={{ color: 'black' }}>
                         My Courses
                       </Link>
                     </li>
                   )}
                   <li>
-                    <Link to="/myprofile" style={{color: 'black'}}>
+                    <Link to="/myprofile" style={{ color: 'black' }}>
                       My Profile
                     </Link>
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -196,7 +199,7 @@ class _PricingPage extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -251,7 +254,7 @@ class _PricingPage extends Component {
   }
 
   render() {
-    const {userInfo, isLoggedIn} = this.props;
+    const { userInfo, isLoggedIn } = this.props;
     return (
       <div>
         <Helmet>
@@ -293,7 +296,7 @@ class _PricingPage extends Component {
             content="https://mysoundwise.com/images/soundwise_homepage.png"
           />
         </Helmet>
-        <div style={{paddingBottom: 80}} className="">
+        <div style={{ paddingBottom: 80 }} className="">
           <header className="header-style8" id="header-section16">
             <nav
               className="navbar tz-header-bg no-margin alt-font navigation-menu dark-header"
@@ -522,8 +525,8 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
-  return {userInfo, isLoggedIn};
+  const { userInfo, isLoggedIn } = state.user;
+  return { userInfo, isLoggedIn };
 };
 
 export const PricingPage = connect(

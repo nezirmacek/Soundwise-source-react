@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import axios from 'axios';
 import firebase from 'firebase';
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
@@ -46,7 +46,7 @@ export default class Soundcast extends Component {
     this.state = {
       showStatsModal: false,
       currentEpisode: null,
-      userInfo: {soundcasts_managed: {}},
+      userInfo: { soundcasts_managed: {} },
       episodes: [],
       soundcast: {},
     };
@@ -57,7 +57,7 @@ export default class Soundcast extends Component {
 
   componentDidMount() {
     if (this.props.userInfo) {
-      const {userInfo} = this.props;
+      const { userInfo } = this.props;
       this.setState({
         userInfo,
       });
@@ -67,7 +67,7 @@ export default class Soundcast extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.userInfo && nextProps.userInfo != this.props.userInfo) {
-      const {userInfo} = nextProps;
+      const { userInfo } = nextProps;
       this.setState({
         userInfo,
       });
@@ -76,7 +76,7 @@ export default class Soundcast extends Component {
   }
 
   loadEpisodes(userInfo) {
-    const {history, id} = this.props;
+    const { history, id } = this.props;
     let _soundcast = {};
     if (userInfo.soundcasts_managed && userInfo.soundcasts_managed[id]) {
       _soundcast = userInfo.soundcasts_managed[id];
@@ -149,7 +149,7 @@ export default class Soundcast extends Component {
   }
 
   editEpisode(episode) {
-    const {userInfo, history, id} = this.props;
+    const { userInfo, history, id } = this.props;
     history.push({
       pathname: `/dashboard/edit_episode/${episode.id}`,
       state: {
@@ -208,8 +208,8 @@ export default class Soundcast extends Component {
   }
 
   render() {
-    const {userInfo, episodes, soundcast} = this.state;
-    const {history, id} = this.props;
+    const { userInfo, episodes, soundcast } = this.state;
+    const { history, id } = this.props;
     const that = this;
     return (
       <div className="" style={styles.itemContainer}>
@@ -228,38 +228,38 @@ export default class Soundcast extends Component {
           </div>
           <div
             className="col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center"
-            style={{...styles.button}}
+            style={{ ...styles.button }}
             onClick={() =>
               history.push({
                 pathname: '/dashboard/add_episode',
-                state: {soundcastID: id},
+                state: { soundcastID: id },
               })
             }
           >
             Add episode
           </div>
         </div>
-        <div className="row" style={{...styles.tr, margin: 0}}>
-          <div className="col-md-12" style={{padding: 20}}>
-            <div style={{padding: grid * 2, margin: `0 0 ${grid}px 0`}}>
-              <div className="col-md-6" style={{...styles.th}}>
+        <div className="row" style={{ ...styles.tr, margin: 0 }}>
+          <div className="col-md-12" style={{ padding: 20 }}>
+            <div style={{ padding: grid * 2, margin: `0 0 ${grid}px 0` }}>
+              <div className="col-md-6" style={{ ...styles.th }}>
                 TITLE
               </div>
               <div
                 className="col-md-2"
-                style={{...styles.th, textAlign: 'center'}}
+                style={{ ...styles.th, textAlign: 'center' }}
               >
                 PUBLISHED ON
               </div>
               <div
                 className="col-md-2"
-                style={{...styles.th, textAlign: 'center'}}
+                style={{ ...styles.th, textAlign: 'center' }}
               >
                 LENGTH
               </div>
               <div
                 className="col-md-2"
-                style={{...styles.th, textAlign: 'center'}}
+                style={{ ...styles.th, textAlign: 'center' }}
               >
                 ANALYTICS
               </div>
@@ -285,7 +285,7 @@ export default class Soundcast extends Component {
                         {(provided, snapshot) => (
                           <div
                             className=""
-                            style={{cursor: 'move'}}
+                            style={{ cursor: 'move' }}
                             datatoggle="tooltip"
                             dataplacement="top"
                             title="drag to reorder"
@@ -299,12 +299,15 @@ export default class Soundcast extends Component {
                               )}
                               {...provided.dragHandleProps}
                             >
-                              <div className="col-md-6" style={{...styles.td}}>
-                                <div style={{marginRight: 20}}>
-                                  <div style={{marginTop: 0, cursor: 'move'}}>
+                              <div
+                                className="col-md-6"
+                                style={{ ...styles.td }}
+                              >
+                                <div style={{ marginRight: 20 }}>
+                                  <div style={{ marginTop: 0, cursor: 'move' }}>
                                     {episode.title}
                                   </div>
-                                  <div style={{marginBottom: 5}}>
+                                  <div style={{ marginBottom: 5 }}>
                                     <span
                                       style={{
                                         marginRight: 10,
@@ -404,7 +407,7 @@ export default class Soundcast extends Component {
                               <div
                                 onClick={() => that.setCurrentEpisode(episode)}
                                 className="col-md-2"
-                                style={{...styles.td, textAlign: 'center'}}
+                                style={{ ...styles.td, textAlign: 'center' }}
                                 datatoggle="tooltip"
                                 dataplacement="top"
                                 title="episode analytics"
@@ -556,9 +559,6 @@ const styles = {
     // height: 22,
     // lineHeight: '22px',
     cursor: 'pointer',
-  },
-  tableWrapper: {
-    padding: 20,
   },
   tr: {
     borderBottomWidth: 1,

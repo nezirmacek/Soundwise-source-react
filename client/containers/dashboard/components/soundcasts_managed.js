@@ -1,18 +1,15 @@
-/**
- * Created by developer on 09.08.17.
- */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import moment from 'moment';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import EditSoundcast from './edit_soundcast';
 import InviteSubscribersModal from './invite_subscribers_modal';
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
-import {OrangeSubmitButton} from '../../../components/buttons/buttons';
+import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 import SoundcastsBundles from './soundcasts_bundles';
 
 export default class SoundcastsManaged extends Component {
@@ -25,7 +22,7 @@ export default class SoundcastsManaged extends Component {
       currentSoundcast: null,
       showStatsModal: false,
       currentEpisode: null,
-      userInfo: {soundcasts_managed: {}},
+      userInfo: { soundcasts_managed: {} },
     };
 
     this.editSoundcast = this.editSoundcast.bind(this);
@@ -37,7 +34,7 @@ export default class SoundcastsManaged extends Component {
 
   componentDidMount() {
     if (this.props.userInfo) {
-      const {userInfo} = this.props;
+      const { userInfo } = this.props;
       this.setState({
         userInfo,
       });
@@ -46,7 +43,7 @@ export default class SoundcastsManaged extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.userInfo) {
-      const {userInfo} = nextProps;
+      const { userInfo } = nextProps;
       this.setState({
         userInfo,
       });
@@ -54,7 +51,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   editSoundcast(soundcastId, soundcast) {
-    const {userInfo, history, id} = this.props;
+    const { userInfo, history, id } = this.props;
     history.push({
       pathname: `/dashboard/edit/${soundcastId}`,
       state: {
@@ -65,7 +62,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   editEpisode(episode) {
-    const {userInfo, history, id} = this.props;
+    const { userInfo, history, id } = this.props;
     history.push({
       pathname: `/dashboard/edit_episode/${episode.id}`,
       state: {
@@ -155,8 +152,8 @@ export default class SoundcastsManaged extends Component {
   }
 
   render() {
-    const {userInfo} = this.state;
-    const {history, id} = this.props;
+    const { userInfo } = this.state;
+    const { history, id } = this.props;
     const that = this;
     const _soundcasts_managed = [];
     for (let id in userInfo.soundcasts_managed) {
@@ -188,7 +185,7 @@ export default class SoundcastsManaged extends Component {
       return <SoundcastsBundles {...this.props} />;
     } else {
       return (
-        <div className="padding-30px-tb " style={{minHeight: 700}}>
+        <div className="padding-30px-tb " style={{ minHeight: 700 }}>
           <InviteSubscribersModal
             isShown={this.state.showModal}
             soundcast={this.state.currentSoundcast}
@@ -197,7 +194,7 @@ export default class SoundcastsManaged extends Component {
           />
           <div
             className="padding-bottom-20px"
-            style={{display: 'flex', alignItems: 'center'}}
+            style={{ display: 'flex', alignItems: 'center' }}
           >
             <span className="title-medium ">Soundcasts</span>
           </div>
@@ -205,7 +202,7 @@ export default class SoundcastsManaged extends Component {
             <li role="presentation" className="active">
               <Link
                 to="/dashboard/soundcasts"
-                style={{backgroundColor: 'transparent'}}
+                style={{ backgroundColor: 'transparent' }}
               >
                 <span
                   style={{
@@ -220,13 +217,13 @@ export default class SoundcastsManaged extends Component {
             </li>
             <li role="presentation">
               <Link to="/dashboard/soundcasts/bundles">
-                <span style={{fontSize: 15, fontWeight: 600}}>Bundles</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
               </Link>
             </li>
           </ul>
           {_soundcasts_managed.map((soundcast, i) => {
             return (
-              <div className="row" key={i} style={{...styles.row}}>
+              <div className="row" key={i} style={{ ...styles.row }}>
                 <div
                   className=" col-md-7 col-sm-12 col-xs-12"
                   style={styles.soundcastInfo}
@@ -257,7 +254,7 @@ export default class SoundcastsManaged extends Component {
                     </div>
                     <div
                       className="col-md-3 col-sm-4 col-xs-12"
-                      style={{...styles.subscribers, textAlign: 'center'}}
+                      style={{ ...styles.subscribers, textAlign: 'center' }}
                     >
                       <span style={styles.soundcastUpdated}>
                         {`${(soundcast.subscribed &&
@@ -275,22 +272,22 @@ export default class SoundcastsManaged extends Component {
                       </span>
                     </div>
                   </div>
-                  <div className="row" style={{marginTop: 10}}>
+                  <div className="row" style={{ marginTop: 10 }}>
                     <div className="col-md-12">
                       {(soundcast.landingPage && (
-                        <div style={{...styles.soundcastUpdated}}>
+                        <div style={{ ...styles.soundcastUpdated }}>
                           <a
                             target="_blank"
                             href={`https://mysoundwise.com/soundcasts/${
                               soundcast.id
                             }`}
-                            style={{cursor: 'pointer'}}
+                            style={{ cursor: 'pointer' }}
                           >
                             <span
                               datatoggle="tooltip"
                               dataplacement="top"
                               title="view soundcast landing page"
-                              style={{color: Colors.mainOrange}}
+                              style={{ color: Colors.mainOrange }}
                             >
                               <strong>Landing page</strong>
                             </span>
@@ -300,13 +297,13 @@ export default class SoundcastsManaged extends Component {
                             href={`https://mysoundwise.com/signup/soundcast_user/${
                               soundcast.id
                             }`}
-                            style={{paddingLeft: 15}}
+                            style={{ paddingLeft: 15 }}
                           >
                             <span
                               datatoggle="tooltip"
                               dataplacement="top"
                               title="view soundcast signup form"
-                              style={{color: Colors.link}}
+                              style={{ color: Colors.link }}
                             >
                               <strong>Signup form</strong>
                             </span>
@@ -318,13 +315,13 @@ export default class SoundcastsManaged extends Component {
                                 href={`https://mysoundwise.com/soundcast_checkout?soundcast_id=${
                                   soundcast.id
                                 }`}
-                                style={{paddingLeft: 15}}
+                                style={{ paddingLeft: 15 }}
                               >
                                 <span
                                   datatoggle="tooltip"
                                   dataplacement="top"
                                   title="view soundcast signup form"
-                                  style={{color: Colors.mainGreen}}
+                                  style={{ color: Colors.mainGreen }}
                                 >
                                   <strong>Checkout form</strong>
                                 </span>
@@ -334,17 +331,17 @@ export default class SoundcastsManaged extends Component {
                           <span
                             className="text-dark-gray"
                             onClick={() => that.deleteSoundcast(soundcast.id)}
-                            style={{paddingLeft: 15, cursor: 'pointer'}}
+                            style={{ paddingLeft: 15, cursor: 'pointer' }}
                           >
                             Delete
                           </span>
                         </div>
                       )) || (
-                        <div style={{...styles.soundcastUpdated}}>
+                        <div style={{ ...styles.soundcastUpdated }}>
                           <span
                             className="text-dark-gray"
                             onClick={() => that.deleteSoundcast(soundcast.id)}
-                            style={{cursor: 'pointer'}}
+                            style={{ cursor: 'pointer' }}
                           >
                             Delete
                           </span>
@@ -419,7 +416,7 @@ export default class SoundcastsManaged extends Component {
           })}
           <div
             className="row"
-            style={{...styles.row, backgroundColor: 'transparent'}}
+            style={{ ...styles.row, backgroundColor: 'transparent' }}
           >
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
@@ -577,9 +574,6 @@ const styles = {
     // height: 22,
     // lineHeight: '22px',
     cursor: 'pointer',
-  },
-  tableWrapper: {
-    padding: 20,
   },
   tr: {
     borderBottomWidth: 1,

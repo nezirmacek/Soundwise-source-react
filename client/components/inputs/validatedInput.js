@@ -1,7 +1,4 @@
-/**
- * Created by developer on 08.08.17.
- */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Colors from '../../styles/colors';
@@ -18,7 +15,7 @@ export default class ValidatedInput extends Component {
   onChange(e) {
     this.props.onChange(e);
     if (!this.state.isTouched) {
-      this.setState({isTouched: true});
+      this.setState({ isTouched: true });
     }
   }
 
@@ -33,7 +30,7 @@ export default class ValidatedInput extends Component {
       wrapperStyles,
       errorStyles,
     } = this.props;
-    const {isTouched} = this.state;
+    const { isTouched } = this.state;
     const _validateResults = [];
     validators.map(validator => {
       const _validateRes = validator(value);
@@ -49,7 +46,7 @@ export default class ValidatedInput extends Component {
           style={{
             ...styles,
             ...((_validateResults.length &&
-              isTouched && {borderColor: Colors.mainRed}) ||
+              isTouched && { borderColor: Colors.mainRed }) ||
               {}),
           }}
           placeholder={placeholder}
@@ -61,7 +58,7 @@ export default class ValidatedInput extends Component {
             return (
               <div
                 key={i}
-                style={{..._styles.errorText, ...(errorStyles || {})}}
+                style={{ ..._styles.errorText, ...(errorStyles || {}) }}
               >
                 {error}
               </div>

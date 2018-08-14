@@ -1,43 +1,85 @@
-var firebase = require("firebase-admin");
-const moment = require("moment");
-var serviceAccount = require("../serviceAccountKey.json");
+var stripe_key =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingConfig').stripe_key
+    : require('../config').stripe_key;
+var stripe = require('stripe')(stripe_key);
+var firebase = require('firebase-admin');
+const moment = require('moment');
+const request = require('request-promise');
+var serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 
-const usersRef = firebase.database().ref("/users");
-let users = [];
-let currentDate = moment().format('X');
-firebase.database().ref('/users')
-.once('value', snapshotArray => {
-  snapshotArray.forEach(snapshot => {
-    const userId = snapshot.key;
-    const tokenId = snapshot.val().token ? snapshot.val().token[0] : null;
-    const soundcasts = snapshot.val().soundcasts;
-    if(userId && userId !='undefined' && soundcasts) {
-      Object.keys(soundcasts).forEach(key => {
-        if(key && key != 'undefined') {
-          const soundcast = soundcasts[key];
-          if(Number(soundcast.current_period_end) > moment().format('X') && !soundcast.subscribed) {
-            firebase.database().ref(`users/${userId}/soundcasts/${key}/subscribed`).set(true);
-            if(tokenId) {
-              firebase.database().ref(`soundcasts/${key}/subscribed/${userId}`).set({
-                '0': tokenId
+var options, publisherId, name, paypalEmail;
+var date = moment().format();
+const ids = ['1503002103690p'];
+var processPublishers = async () => {
+  for (const id of ids) {
+    const process = await firebase
+      .database()
+      .ref(`publishers/${id}`)
+      .once('value')
+      .then(snapshot => {
+        const publisher = snapshot.val();
+        publisherId = id;
+        name = snapshot.val().name;
+        paypalEmail = snapshot.val().email;
+        request(
+          `https://mysoundwise.com/api/publishers/${publisherId}/exists`
+        ).then(res => {
+          options = {
+            uri: 'https://mysoundwise.com/api/publishers/replaceOrCreate',
+            body: {
+              publisherId,
+              name,
+              paypalEmail,
+              updatedAt: date,
+              createdAt: date,
+            },
+            json: true,
+          };
+          console.log(JSON.parse(res));
+          if (JSON.parse(res).exists) {
+            options.method = 'PUT';
+            request(options)
+              .then(res => {})
+              .catch(err => {
+                console.log(`error posting ${publisherId}`);
+                // console.log(err);
               });
-            } else {
-              firebase.database().ref(`soundcasts/${key}/subscribed/${userId}`).set(soundcast.date_subscribed);
-            }
+          } else {
+            options.method = 'POST';
+            request(options)
+              .then(res => {})
+              .catch(err => {
+                console.log(`error posting ${publisherId}`);
+                // console.log(err);
+              });
           }
-        }
+        });
       })
-    }
-  })
-});
+      .catch(err => console.log(err));
+  }
+};
+
+processPublishers();
+
+// retrieve stripe product
+// stripe.products.retrieve(
+//   "prod_D3nYV0LbBizW8s",{stripe_account: 'acct_1Bdla1BEkT8zqJaI'}, function(err, product) {
+//     if(err) console.log(err);
+//     console.log(product);
+//   }
+// );
 
 // Add subscribed soundcasts to user
-// var userId = 'y5MtgSCJPshAomDuFyfReQfajVW2';
+// var userId = 'KAyqJEcOfwhculAwxIHPoQLtbIi2';
 // var soundcastsIncluded = [
 //   '1531419211997s',
 //   '1531441638240s',
@@ -59,7 +101,6 @@ firebase.database().ref('/users')
 // });
 // firebase.database().ref(`soundcasts/1531504770898s/subscribed/${userId}`)
 // .set('1531755224');
-
 
 // Compile iTunes category ID list
 // const util = require('util')

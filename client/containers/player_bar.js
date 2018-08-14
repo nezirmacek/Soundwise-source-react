@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import firebase from 'firebase';
-import {grey50, orange500} from 'material-ui/styles/colors';
+import { grey50, orange500 } from 'material-ui/styles/colors';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Slider from 'material-ui/Slider';
@@ -18,7 +18,7 @@ import {
 let player, source;
 
 const styles = {
-  flex: {display: 'flex', alignItems: 'center', justifyContent: 'center'},
+  flex: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
 };
 
 const muiTheme = getMuiTheme({
@@ -53,7 +53,7 @@ class _PlayerBar extends Component {
       return (
         <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>
           <a className="" onClick={() => this.handlePlayerClick()}>
-            <i className="material-icons" style={{fontSize: '50px'}}>
+            <i className="material-icons" style={{ fontSize: '50px' }}>
               play_arrow
             </i>
           </a>
@@ -63,7 +63,7 @@ class _PlayerBar extends Component {
       return (
         <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>
           <a className="" onClick={() => this.handlePlayerClick()}>
-            <i className="material-icons" style={{fontSize: '50px'}}>
+            <i className="material-icons" style={{ fontSize: '50px' }}>
               pause
             </i>
           </a>
@@ -187,17 +187,17 @@ class _PlayerBar extends Component {
     return (
       <footer
         className="footer bg-info player-bar dker"
-        style={{display: displayed, height: '90px'}}
+        style={{ display: displayed, height: '90px' }}
       >
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
           <MuiThemeProvider muiTheme={muiTheme}>
             <Slider
               value={currentPercent}
               min={0}
               max={100}
               onChange={this.handleSeek}
-              sliderStyle={{margin: '0px', padding: '0px', width: '100%'}}
-              style={{width: '100%'}}
+              sliderStyle={{ margin: '0px', padding: '0px', width: '100%' }}
+              style={{ width: '100%' }}
             />
           </MuiThemeProvider>
         </div>
@@ -217,7 +217,7 @@ class _PlayerBar extends Component {
             </div>
             <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>
               <a className="" onClick={() => this.handleSkipBackward()}>
-                <i className="material-icons" style={{fontSize: '42px'}}>
+                <i className="material-icons" style={{ fontSize: '42px' }}>
                   replay_30
                 </i>
               </a>
@@ -225,7 +225,7 @@ class _PlayerBar extends Component {
             {this.togglePlayOrPause()}
             <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>
               <a className="" onClick={() => this.handleSkipForward()}>
-                <i className="material-icons" style={{fontSize: '42px'}}>
+                <i className="material-icons" style={{ fontSize: '42px' }}>
                   forward_30
                 </i>
               </a>
@@ -242,15 +242,15 @@ class _PlayerBar extends Component {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    {setCurrentPlaySection, changePlayStatus, changeSpeed},
+    { setCurrentPlaySection, changePlayStatus, changeSpeed },
     dispatch
   );
 }
 
 const mapStateToProps = state => {
-  const {isLoggedIn} = state.user;
-  const {playerLaunched, speed} = state.setPlayer;
-  const {playing, currentSection} = state.setCurrentSection;
+  const { isLoggedIn } = state.user;
+  const { playerLaunched, speed } = state.setPlayer;
+  const { playing, currentSection } = state.setCurrentSection;
   const {
     currentTime,
     currentDuration,

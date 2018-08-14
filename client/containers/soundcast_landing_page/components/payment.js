@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 import draftToHtml from 'draftjs-to-html';
 import * as firebase from 'firebase';
 import moment from 'moment';
 
-import {sendEmail, signinUser} from '../../../actions/index';
+import { sendEmail, signinUser } from '../../../actions/index';
 import Colors from '../../../styles/colors';
-import {inviteListeners} from '../../../helpers/invite_listeners';
-import {addToEmailList} from '../../../helpers/addToEmailList';
+import { inviteListeners } from '../../../helpers/invite_listeners';
+import { addToEmailList } from '../../../helpers/addToEmailList';
 
 class _Payment extends Component {
   constructor(props) {
@@ -43,7 +43,8 @@ class _Payment extends Component {
   }
 
   componentDidMount() {
-    if (process.env.NODE_ENV === 'dev') {
+    if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
+      console.log('Stripe: setting test key');
       Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     } else {
       Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
@@ -125,14 +126,17 @@ class _Payment extends Component {
     if (userInfo && userInfo.email) {
       // if logged in
       const that = this;
-      const {soundcast, checked, sumTotal, history} = this.props;
-      const {confirmationEmail} = soundcast;
-      const {totalPay} = this.state;
+      const { soundcast, checked, sumTotal, history, coupon } = this.props;
+      const { confirmationEmail } = soundcast;
+      const { totalPay } = this.state;
       const _email = userInfo.email[0].replace(/\./g, '(dot)');
 
-      const {billingCycle, paymentPlan, price, rentalPeriod} = soundcast.prices[
-        checked
-      ];
+      const {
+        billingCycle,
+        paymentPlan,
+        price,
+        rentalPeriod,
+      } = soundcast.prices[checked];
       let current_period_end = rentalPeriod
         ? moment()
             .add(Number(rentalPeriod), 'days')
@@ -212,15 +216,19 @@ class _Payment extends Component {
               .ref(`soundcasts/${soundcastID}/invited/${_email}`)
               .remove();
 
-            await Axios.post('/api/coupon', {
-              coupon: this.props.coupon,
-              soundcastId: soundcastID,
-              soundcastTitle: soundcast.title,
-              publisherId: soundcast.publisherID,
-              userId: userId,
-              timeStamp: moment().format('X'),
-            }).catch(err => console.log('err: ', err));
+            if (coupon) {
+              await Axios.post('/api/coupon', {
+                // TODO review
+                coupon: coupon,
+                soundcastId: soundcastID,
+                soundcastTitle: soundcast.title,
+                publisherId: soundcast.publisherID,
+                userId: userId,
+                timeStamp: moment().format('X'),
+              }).catch(err => console.log('err: ', err));
+            }
 
+            // if it's a free soundcast, add subscriber to publisher
             if (totalPay == 0 || totalPay == 'free') {
               // TODO review block
               await firebase
@@ -261,14 +269,14 @@ class _Payment extends Component {
               .database()
               .ref(`users/${userId}/stripe_id`)
               .set(platformCustomer);
-            that.props.signinUser({stripe_id: platformCustomer}); // set userInfo.stripe_id
+            that.props.signinUser({ stripe_id: platformCustomer }); // set userInfo.stripe_id
           }
         } else {
           console.log('Error payment addSoundcastToUser empty user variable');
         }
 
         if (!that.props.isEmailSent && !that.state.confirmationEmailSent) {
-          that.setState({confirmationEmailSent: true});
+          that.setState({ confirmationEmailSent: true });
           that.props.sendEmail();
           firebase
             .database()
@@ -303,7 +311,7 @@ class _Payment extends Component {
               ); // use transactional email for this
 
               // Redirect to /notice page
-              that.setState({success: true});
+              that.setState({ success: true });
               const text = `Thanks for signing up to ${
                 soundcast.title
               }. We'll send you an email with instructions to download the Soundwise app. If you already have the app on your phone, your new soundcast will be automatically loaded once you sign in to your account.`;
@@ -354,11 +362,11 @@ class _Payment extends Component {
       submitDisabled: true,
       paymentError: null,
     });
-    const {number, cvc} = this.state;
+    const { number, cvc } = this.state;
     const exp_month = Number(this.state.exp_month) + 1;
     const exp_year = Number(this.state.exp_year);
 
-    const data = {number, cvc, exp_month, exp_year};
+    const data = { number, cvc, exp_month, exp_year };
     Stripe.card.createToken(data, this.stripeTokenHandler);
   }
 
@@ -366,7 +374,7 @@ class _Payment extends Component {
     const amount =
       Number(this.state.totalPay || this.props.totalPrice).toFixed(2) * 100; // in cents
     const userInfo = this.props.userInfo;
-    const {email, stripe_id} = userInfo;
+    const { email, stripe_id } = userInfo;
     const receipt_email = (email && email[0]) || this.state.email;
     const {
       soundcast,
@@ -376,7 +384,7 @@ class _Payment extends Component {
       coupon,
       isTrial,
     } = this.props;
-    const {billingCycle, paymentPlan, price} = soundcast.prices[checked];
+    const { billingCycle, paymentPlan, price } = soundcast.prices[checked];
     const that = this;
 
     if (response.error) {
@@ -454,6 +462,7 @@ class _Payment extends Component {
                 stripe_account: stripe_user_id,
                 planID,
                 publisherID: soundcast.publisherID,
+                soundcastID,
                 coupon,
                 isTrial,
               })
@@ -507,14 +516,19 @@ class _Payment extends Component {
             marginTop: '1em',
           }}
         >
-          <Dots style={{display: 'flex'}} color="#727981" size={32} speed={1} />
+          <Dots
+            style={{ display: 'flex' }}
+            color="#727981"
+            size={32}
+            speed={1}
+          />
         </div>
       );
     }
   }
 
   render() {
-    const {totalPrice, hideCardInputs} = this.props;
+    const { totalPrice, hideCardInputs } = this.props;
     const showInputs = !(this.props.userInfo && this.props.userInfo.firstName);
 
     const monthOptions = [];
@@ -537,7 +551,7 @@ class _Payment extends Component {
     return (
       <div>
         <section className="bg-white builder-bg" id="subscribe-section6">
-          <div className="container" style={{paddingBottom: '70px'}}>
+          <div className="container" style={{ paddingBottom: '70px' }}>
             <div className="row equalize ">
               <div className="col-md-6 center-col col-sm-12 ">
                 <div style={styles.totalRow}>
@@ -560,7 +574,7 @@ class _Payment extends Component {
                           type="text"
                           name="firstName"
                           placeholder="First Name"
-                          style={{...styles.input, margin: '20px 0 0 0'}}
+                          style={{ ...styles.input, margin: '20px 0 0 0' }}
                         />
                       </div>
                     )}
@@ -573,7 +587,7 @@ class _Payment extends Component {
                           type="text"
                           name="lastName"
                           placeholder="Last Name"
-                          style={{...styles.input, margin: '20px 0 0 0'}}
+                          style={{ ...styles.input, margin: '20px 0 0 0' }}
                         />
                       </div>
                     )}
@@ -585,7 +599,7 @@ class _Payment extends Component {
                         type="email"
                         name="email"
                         placeholder="Email"
-                        style={{...styles.input, margin: '20px 0 0 0'}}
+                        style={{ ...styles.input, margin: '20px 0 0 0' }}
                       />
                     )}
                     {!hideCardInputs && (
@@ -664,7 +678,7 @@ class _Payment extends Component {
                       <button
                         type="submit"
                         className="contact-submit btn propClone btn-3d text-white width-100 builder-bg tz-text"
-                        style={{...styles.button, marginTop: 20}}
+                        style={{ ...styles.button, marginTop: 20 }}
                       >
                         SUBMIT
                       </button>
@@ -672,7 +686,7 @@ class _Payment extends Component {
                   )) || (
                     <div style={styles.buttonWrapper}>
                       {this.state.paymentError && (
-                        <span style={{color: 'red'}}>
+                        <span style={{ color: 'red' }}>
                           {this.state.paymentError}
                         </span>
                       )}
@@ -707,12 +721,12 @@ class _Payment extends Component {
 }
 
 const mapStateToProps = state => {
-  const {isEmailSent} = state.user;
-  return {isEmailSent};
+  const { isEmailSent } = state.user;
+  return { isEmailSent };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({sendEmail, signinUser}, dispatch);
+  return bindActionCreators({ sendEmail, signinUser }, dispatch);
 }
 
 const Payment = connect(
