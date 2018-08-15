@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Colors from '../styles/colors';
 
 export default class AudioCourseCreator extends Component {
@@ -14,11 +14,11 @@ export default class AudioCourseCreator extends Component {
         id="content-section26"
       >
         <div className="container">
-          <div className="row" style={{height: 495}}>
+          <div className="row" style={{ height: 495 }}>
             <div className="col-md-12 col-sm-12 col-xs-12 equalize no-padding">
               <div
                 className="col-md-6 col-sm-6 col-xs-12  tz-background-color display-table"
-                style={{height: 495, backgroundColor: Colors.mainGreen}}
+                style={{ height: 495, backgroundColor: Colors.mainGreen }}
               >
                 <div className="display-table-cell-vertical-middle padding-fifteen sm-padding-fifteen xs-padding-nineteen xs-no-padding-lr">
                   <div className="alt-font title-extra-large sm-section-title-medium text-dark-gray xs-title-extra-large margin-ten-bottom xs-margin-ten-bottom tz-text">

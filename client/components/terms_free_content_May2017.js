@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Checkbox from 'material-ui/Checkbox';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import * as firebase from 'firebase';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 const styles = {
@@ -58,12 +58,12 @@ export default class TermsFreeContent extends Component {
         error: 'Please agree to the terms and conditions before submitting',
       });
     } else {
-      const {name, email} = this.state;
+      const { name, email } = this.state;
 
       firebase
         .database()
         .ref('contentcreators')
-        .push({name, email});
+        .push({ name, email });
       this.setState({
         submitted: true,
       });
@@ -127,7 +127,7 @@ export default class TermsFreeContent extends Component {
               </button>
             </div>
           </div>
-          <div style={{color: 'red'}}>{this.state.error}</div>
+          <div style={{ color: 'red' }}>{this.state.error}</div>
         </div>
       );
     }
@@ -148,17 +148,17 @@ export default class TermsFreeContent extends Component {
         >
           <div
             className="container text-dark-gray border-none"
-            style={{fontSize: '18px'}}
+            style={{ fontSize: '18px' }}
           >
             <h3
               className="section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-              style={{textAlign: 'center'}}
+              style={{ textAlign: 'center' }}
             >
               Terms and Conditions for Non-Exclusive Use of Free Content
             </h3>
             <h3
               className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text text-dark-gray"
-              style={{textAlign: 'center'}}
+              style={{ textAlign: 'center' }}
             >
               (last updated: May 01, 2017)
             </h3>
@@ -240,7 +240,7 @@ export default class TermsFreeContent extends Component {
         <section
           className=" bg-white builder-bg xs-padding-40px-tb"
           id="contact-section2 border-none"
-          style={{paddingBottom: '110px'}}
+          style={{ paddingBottom: '110px' }}
         >
           <div className="container border-none">
             <div className="row border-none">{this.renderTable()}</div>

@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import {Checkbox, CheckboxGroup} from 'react-checkbox-group';
+import { Checkbox, CheckboxGroup } from 'react-checkbox-group';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import firebase from 'firebase';
 import Datetime from 'react-datetime';
-import {Editor} from 'react-draft-wysiwyg';
+import { Editor } from 'react-draft-wysiwyg';
 import {
   convertFromRaw,
   convertToRaw,
@@ -25,7 +25,7 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
@@ -89,7 +89,7 @@ export default class CreateBundle extends Component {
 
   componentDidMount() {
     if (this.props.history.location.state) {
-      const {id, bundle} = this.props.history.location.state;
+      const { id, bundle } = this.props.history.location.state;
       if (bundle) {
         this.soundcastId = id;
         let editorState, confirmEmailEditorState;
@@ -137,7 +137,7 @@ export default class CreateBundle extends Component {
       }
     }
     if (this.props.userInfo) {
-      const {userInfo} = this.props;
+      const { userInfo } = this.props;
       this.setState({
         userInfo,
       });
@@ -149,7 +149,7 @@ export default class CreateBundle extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.userInfo) {
-      const {userInfo} = nextProps;
+      const { userInfo } = nextProps;
       this.setState({
         userInfo,
       });
@@ -178,7 +178,7 @@ export default class CreateBundle extends Component {
         !soundcast.val().bundle
       ) {
         // only add the soundcasts that are not bundles
-        soundcasts.push({title: soundcast.val().title, id: soundcastsArr[i]});
+        soundcasts.push({ title: soundcast.val().title, id: soundcastsArr[i] });
       }
     }
     let selectedSoundcasts = [];
@@ -227,9 +227,9 @@ export default class CreateBundle extends Component {
         }
 
         if (hostImg) {
-          _self.setState({hostImageURL: url});
+          _self.setState({ hostImageURL: url });
         } else {
-          _self.setState({imageURL: url});
+          _self.setState({ imageURL: url });
         }
       })
       .catch(function(err) {
@@ -319,10 +319,10 @@ export default class CreateBundle extends Component {
     }
     if (prices.length === 0) {
       //if pricing isn't specified, then this is a free soundcast
-      prices = [{price: 'free'}];
+      prices = [{ price: 'free' }];
     }
     const soundcastsArr = selectedSoundcasts.map(soundcast => soundcast.id);
-    const {userInfo, history} = this.props;
+    const { userInfo, history } = this.props;
     // const host = [{hostName, hostBio, hostImageURL}];
     const that = this;
     this.setState({
@@ -483,7 +483,7 @@ export default class CreateBundle extends Component {
   }
 
   handleCheck() {
-    const {landingPage} = this.state;
+    const { landingPage } = this.state;
     this.setState({
       landingPage: !landingPage,
     });
@@ -518,8 +518,8 @@ export default class CreateBundle extends Component {
   }
 
   handleChargeOption() {
-    const {forSale} = this.state;
-    const {userInfo} = this.props;
+    const { forSale } = this.state;
+    const { userInfo } = this.props;
 
     if (!forSale) {
       if (!userInfo.publisher.stripe_user_id) {
@@ -542,7 +542,7 @@ export default class CreateBundle extends Component {
     } else {
       this.setState({
         forSale: !forSale,
-        prices: [{price: 'free'}],
+        prices: [{ price: 'free' }],
       });
     }
   }
@@ -556,8 +556,8 @@ export default class CreateBundle extends Component {
   }
 
   handlePaypalInput() {
-    const {paypalEmail, forSale} = this.state;
-    const {userInfo} = this.props;
+    const { paypalEmail, forSale } = this.state;
+    const { userInfo } = this.props;
     firebase
       .database()
       .ref(`publishers/${userInfo.publisherID}/paypalEmail`)
@@ -565,7 +565,7 @@ export default class CreateBundle extends Component {
     this.setState({
       paypalModalOpen: false,
       forSale: !forSale,
-      prices: [{paymentPlan: '', billingCycle: 'monthly', price: ''}],
+      prices: [{ paymentPlan: '', billingCycle: 'monthly', price: '' }],
     });
   }
 
@@ -592,7 +592,7 @@ export default class CreateBundle extends Component {
       prices,
       confirmationEmail,
     } = this.state;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     const isProOrPlus = ['pro', 'plus'].includes(
       userInfo.publisher && userInfo.publisher.plan
     );
@@ -600,28 +600,28 @@ export default class CreateBundle extends Component {
     const actions = [
       <FlatButton
         label="OK"
-        labelStyle={{color: Colors.mainOrange, fontSize: 17}}
+        labelStyle={{ color: Colors.mainOrange, fontSize: 17 }}
         onClick={this.handlePaypalModalClose.bind(this)}
       />,
     ];
 
     return (
-      <div style={{marginTop: 25, marginBottom: 25}}>
+      <div style={{ marginTop: 25, marginBottom: 25 }}>
         {/*What Listeners Will Get*/}
-        <span style={{...styles.titleText, marginBottom: 5}}>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>
           What Listeners Will Get
         </span>
         <span>
           <i>{` (list the main benefits and features of this bundle)`}</i>
         </span>
-        <div style={{width: '100%', marginBottom: 30}}>
+        <div style={{ width: '100%', marginBottom: 30 }}>
           {this.state.features.map((feature, i) => {
             return (
               <div key={i} style={styles.inputTitleWrapper}>
                 <span style={styles.titleText}>{`${i + 1}. `}</span>
                 <input
                   type="text"
-                  style={{...styles.inputTitle, width: '85%'}}
+                  style={{ ...styles.inputTitle, width: '85%' }}
                   placeholder={
                     'e.g. Learn how to analyze financial statement with ease'
                   }
@@ -629,7 +629,7 @@ export default class CreateBundle extends Component {
                   value={this.state.features[i]}
                 />
                 <span
-                  style={{marginLeft: 5, cursor: 'pointer'}}
+                  style={{ marginLeft: 5, cursor: 'pointer' }}
                   onClick={this.deleteFeature.bind(this, i)}
                 >
                   <i className="fa fa-times " aria-hidden="true" />
@@ -646,7 +646,7 @@ export default class CreateBundle extends Component {
         </div>
 
         {/*Long Description*/}
-        <span style={{...styles.titleText, marginBottom: 5}}>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>
           Long Description
         </span>
         <div>
@@ -662,14 +662,14 @@ export default class CreateBundle extends Component {
         {landingPage && (
           <div>
             <span style={styles.titleText}>Pricing</span>
-            <div style={{marginTop: 15, marginBottom: 15}}>
+            <div style={{ marginTop: 15, marginBottom: 15 }}>
               <Toggle
                 label="Charge for this bundle?"
                 toggled={this.state.forSale}
                 onClick={this.handleChargeOption.bind(this)}
                 thumbSwitchedStyle={styles.thumbSwitched}
                 trackSwitchedStyle={styles.trackSwitched}
-                style={{fontSize: 20, width: '50%'}}
+                style={{ fontSize: 20, width: '50%' }}
               />
               <Dialog
                 title={`Hold on, ${
@@ -680,7 +680,7 @@ export default class CreateBundle extends Component {
                 open={!!this.state.paypalModalOpen}
                 onRequestClose={this.handlePaypalModalClose}
               >
-                <div style={{fontSize: 17}}>
+                <div style={{ fontSize: 17 }}>
                   <span>
                     You need a payout account so that we could send you your
                     sales proceeds. Please save this soundcast, and go to
@@ -691,12 +691,12 @@ export default class CreateBundle extends Component {
               </Dialog>
             </div>
             {forSale && (
-              <div style={{width: '100%,'}}>
+              <div style={{ width: '100%,' }}>
                 {prices.map((price, i) => {
                   const priceTag = price.price == 'free' ? 0 : price.price;
                   return (
-                    <div key={i} className="" style={{marginBottom: 10}}>
-                      <div style={{width: '100%'}}>
+                    <div key={i} className="" style={{ marginBottom: 10 }}>
+                      <div style={{ width: '100%' }}>
                         <span style={styles.titleText}>{`${i + 1}. `}</span>
                         <div
                           style={{
@@ -725,7 +725,7 @@ export default class CreateBundle extends Component {
                           <span>Billing</span>
                           <select
                             type="text"
-                            style={{...styles.inputTitle, paddingTop: 6}}
+                            style={{ ...styles.inputTitle, paddingTop: 6 }}
                             name="billingCycle"
                             onChange={this.handlePriceInputs.bind(this, i)}
                             value={prices[i].billingCycle}
@@ -741,13 +741,13 @@ export default class CreateBundle extends Component {
                             <option value="annual">annual subscription</option>
                           </select>
                         </div>
-                        <div style={{width: '20%', display: 'inline-block'}}>
+                        <div style={{ width: '20%', display: 'inline-block' }}>
                           <span>Price</span>
                           <div>
-                            <span style={{fontSize: 18}}>{`$ `}</span>
+                            <span style={{ fontSize: 18 }}>{`$ `}</span>
                             <input
                               type="text"
-                              style={{...styles.inputTitle, width: '85%'}}
+                              style={{ ...styles.inputTitle, width: '85%' }}
                               name="price"
                               placeholder={''}
                               onChange={this.handlePriceInputs.bind(this, i)}
@@ -769,23 +769,23 @@ export default class CreateBundle extends Component {
                       {(prices[i].billingCycle == 'rental' && (
                         <div
                           className="col-md-12"
-                          style={{marginTop: 10, marginBottom: 15}}
+                          style={{ marginTop: 10, marginBottom: 15 }}
                         >
                           <div
                             className="col-md-4 col-md-offset-6"
-                            style={{marginRight: 10}}
+                            style={{ marginRight: 10 }}
                           >
                             <span>Rental period</span>
                             <div>
                               <input
                                 type="text"
-                                style={{...styles.inputTitle, width: '70%'}}
+                                style={{ ...styles.inputTitle, width: '70%' }}
                                 name="rentalPeriod"
                                 placeholder={'2'}
                                 onChange={this.handlePriceInputs.bind(this, i)}
                                 value={prices[i].rentalPeriod}
                               />
-                              <span style={{fontSize: 18}}>{` days`}</span>
+                              <span style={{ fontSize: 18 }}>{` days`}</span>
                             </div>
                           </div>
                         </div>
@@ -832,7 +832,7 @@ export default class CreateBundle extends Component {
                                   .add(3, 'months')
                                   .unix(),
                               });
-                              that.setState({prices});
+                              that.setState({ prices });
                             }}
                           >
                             Add a coupon{' '}
@@ -961,7 +961,7 @@ export default class CreateBundle extends Component {
       selectedSoundcasts,
       submitted,
     } = this.state;
-    const {userInfo, history} = this.props;
+    const { userInfo, history } = this.props;
     const that = this;
 
     return (
@@ -981,23 +981,23 @@ export default class CreateBundle extends Component {
           </div>
           <div className="col-lg-10 col-md-11 col-sm-12 col-xs-12">
             {/*The landing page*/}
-            <div style={{marginTop: 15, marginBottom: 15}}>
+            <div style={{ marginTop: 15, marginBottom: 15 }}>
               <Toggle
                 label="Add a public landing page for this bundle"
                 toggled={this.state.landingPage}
                 onClick={this.handleCheck.bind(this)}
                 thumbSwitchedStyle={styles.thumbSwitched}
                 trackSwitchedStyle={styles.trackSwitched}
-                style={{fontSize: 20, width: '60%'}}
+                style={{ fontSize: 20, width: '60%' }}
               />
             </div>
             {landingPage && (
-              <div style={{marginBottom: 20, fontSize: 20}}>
+              <div style={{ marginBottom: 20, fontSize: 20 }}>
                 <span>The landing page will be published at </span>
                 <span>
                   <a
                     target="_blank"
-                    style={{color: Colors.mainOrange}}
+                    style={{ color: Colors.mainOrange }}
                     href={`https://mysoundwise.com/soundcasts/${
                       this.soundcastId
                     }`}
@@ -1010,8 +1010,8 @@ export default class CreateBundle extends Component {
 
             {/*Title*/}
             <span style={styles.titleText}>Bundle Title</span>
-            <span style={{...styles.titleText, color: 'red'}}>*</span>
-            <span style={{fontSize: 17}}>
+            <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+            <span style={{ fontSize: 17 }}>
               <i> (60 characters max)</i>
             </span>
             <ValidatedInput
@@ -1020,7 +1020,7 @@ export default class CreateBundle extends Component {
               wrapperStyles={styles.inputTitleWrapper}
               placeholder={'e.g. The Insight Meditation Masterclass'}
               onChange={e => {
-                this.setState({title: e.target.value});
+                this.setState({ title: e.target.value });
               }}
               value={this.state.title}
               validators={[
@@ -1031,18 +1031,18 @@ export default class CreateBundle extends Component {
 
             {/*Short Description*/}
             <span style={styles.titleText}>Short Description</span>
-            <span style={{...styles.titleText, color: 'red'}}>*</span>
-            <span style={{fontSize: 17}}>
+            <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+            <span style={{ fontSize: 17 }}>
               <i> (300 characters max)</i>
             </span>
 
-            <div style={{...styles.inputTitleWrapper, marginBottom: 0}}>
+            <div style={{ ...styles.inputTitleWrapper, marginBottom: 0 }}>
               <textarea
                 type="text"
                 style={styles.inputDescription}
                 placeholder={'A short description of this bundle'}
                 onChange={e => {
-                  this.setState({short_description: e.target.value});
+                  this.setState({ short_description: e.target.value });
                 }}
                 value={this.state.short_description}
               />
@@ -1051,8 +1051,8 @@ export default class CreateBundle extends Component {
               <span style={styles.titleText}>
                 Soundcasts included in the bundle
               </span>
-              <span style={{...styles.titleText, color: 'red'}}>*</span>
-              <div style={{marginTop: 10, marginBottom: 10, paddingLeft: 10}}>
+              <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+              <div style={{ marginTop: 10, marginBottom: 10, paddingLeft: 10 }}>
                 <label
                   style={{
                     fontSize: 17,
@@ -1063,15 +1063,15 @@ export default class CreateBundle extends Component {
                   <input
                     onChange={() => {
                       if (selectedSoundcasts.length == soundcasts.length) {
-                        that.setState({selectedSoundcasts: []});
+                        that.setState({ selectedSoundcasts: [] });
                       } else {
-                        that.setState({selectedSoundcasts: soundcasts});
+                        that.setState({ selectedSoundcasts: soundcasts });
                       }
                     }}
                     type="checkbox"
                     value={soundcasts}
                     checked={selectedSoundcasts.length == soundcasts.length}
-                    style={{width: 50, height: 30}}
+                    style={{ width: 50, height: 30 }}
                   />
                   Select all
                 </label>
@@ -1101,7 +1101,7 @@ export default class CreateBundle extends Component {
                           }}
                         >
                           <Checkbox
-                            style={{width: 50, height: 30}}
+                            style={{ width: 50, height: 30 }}
                             value={soundcast}
                           />
                           {soundcast.title}
@@ -1114,7 +1114,7 @@ export default class CreateBundle extends Component {
             </div>
 
             {/*Soundcast cover art*/}
-            <div style={{marginBottom: 30, marginTop: 30}} className="row">
+            <div style={{ marginBottom: 30, marginTop: 30 }} className="row">
               <div className="col-md-3">
                 <div style={styles.image}>
                   <img src={imageURL} />
@@ -1122,10 +1122,10 @@ export default class CreateBundle extends Component {
               </div>
               <div className="col-md-9">
                 <div style={styles.loaderWrapper}>
-                  <div style={{...styles.titleText, marginLeft: 10}}>
+                  <div style={{ ...styles.titleText, marginLeft: 10 }}>
                     Bundle cover art
                   </div>
-                  <div style={{...styles.inputFileWrapper, marginTop: 0}}>
+                  <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
                     <input
                       type="file"
                       name="upload"
@@ -1244,14 +1244,14 @@ CreateBundle.propTypes = {
 };
 
 const styles = {
-  titleText: {...commonStyles.titleText, fontSize: 20},
-  inputTitleWrapper: {...commonStyles.inputTitleWrapper},
-  inputTitle: {...commonStyles.inputTitle},
-  inputFileHidden: {...commonStyles.inputFileHidden},
-  hostImage: {...commonStyles.hostImage, marginLeft: 10},
-  image: {...commonStyles.image},
-  loaderWrapper: {...commonStyles.loaderWrapper},
-  cancelImg: {...commonStyles.cancelImg},
+  titleText: { ...commonStyles.titleText, fontSize: 20 },
+  inputTitleWrapper: { ...commonStyles.inputTitleWrapper },
+  inputTitle: { ...commonStyles.inputTitle },
+  inputFileHidden: { ...commonStyles.inputFileHidden },
+  hostImage: { ...commonStyles.hostImage, marginLeft: 10 },
+  image: { ...commonStyles.image },
+  loaderWrapper: { ...commonStyles.loaderWrapper },
+  cancelImg: { ...commonStyles.cancelImg },
   inputDescription: {
     height: 100,
     fontSize: 18,

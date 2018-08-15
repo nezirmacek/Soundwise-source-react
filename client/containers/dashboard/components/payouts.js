@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {inviteListeners} from '../../../helpers/invite_listeners';
+import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -66,7 +66,9 @@ export default class Payouts extends Component {
       .then(res => {
         const payouts = res.data;
         payouts.sort((a, b) => {
-          return moment(b.createdAt).format('X') - moment(a.createdAt).format('X');
+          return (
+            moment(b.createdAt).format('X') - moment(a.createdAt).format('X')
+          );
         });
         that.setState({
           payouts,
@@ -78,15 +80,15 @@ export default class Payouts extends Component {
   }
 
   render() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     return (
-      <div className="padding-30px-tb" style={{minHeight: 700}}>
+      <div className="padding-30px-tb" style={{ minHeight: 700 }}>
         <div className="padding-bottom-20px">
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
             <span
               className="text-medium"
-              style={{marginLeft: 15, color: Colors.mainOrange}}
+              style={{ marginLeft: 15, color: Colors.mainOrange }}
             >
               <strong>View Publisher Page</strong>
             </span>
@@ -95,17 +97,19 @@ export default class Payouts extends Component {
         <ul className="nav nav-pills">
           <li role="presentation">
             <Link to="/dashboard/publisher">
-              <span style={{fontSize: 15, fontWeight: 600}}>Profile</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Profile</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/transactions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Transactions</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>
+                Transactions
+              </span>
             </Link>
           </li>
           <li role="presentation" className="active">
             <Link
-              style={{backgroundColor: 'transparent'}}
+              style={{ backgroundColor: 'transparent' }}
               to="/dashboard/publisher/payouts"
             >
               <span
@@ -121,12 +125,12 @@ export default class Payouts extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/promotions">
-              <span style={{fontSize: 15, fontWeight: 600}}>Promotions</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Promotions</span>
             </Link>
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/settings">
-              <span style={{fontSize: 15, fontWeight: 600}}>Settings</span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Settings</span>
             </Link>
           </li>
         </ul>
@@ -139,18 +143,18 @@ export default class Payouts extends Component {
               <table className="table table-hover">
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th}}>DATE</th>
-                    <th style={{...styles.th}}>AMOUNT</th>
+                    <th style={{ ...styles.th }}>DATE</th>
+                    <th style={{ ...styles.th }}>AMOUNT</th>
                   </tr>
                 </thead>
                 <tbody>
                   {this.state.payouts.map((payout, i) => {
                     return (
                       <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td}}>
+                        <td style={{ ...styles.td }}>
                           {payout.createdAt.slice(0, 10)}
                         </td>
-                        <td style={{...styles.td}}>{`$${payout.amount /
+                        <td style={{ ...styles.td }}>{`$${payout.amount /
                           100}`}</td>
                       </tr>
                     );
@@ -161,7 +165,7 @@ export default class Payouts extends Component {
           </row>
         )) || (
           <row>
-            <div className="col-md-12 " style={{marginTop: 40}}>
+            <div className="col-md-12 " style={{ marginTop: 40 }}>
               <div
                 className="title-small padding-40px-tb"
                 style={{
@@ -182,7 +186,7 @@ export default class Payouts extends Component {
 }
 
 const styles = {
-  tableWrapper: {...commonStyles.tableWrapper},
+  tableWrapper: { ...commonStyles.tableWrapper },
   tr: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,

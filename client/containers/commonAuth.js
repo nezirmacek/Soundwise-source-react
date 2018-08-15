@@ -201,7 +201,7 @@ const signupCommon = (_user, isAdmin, successCallback) => {
         id: userId,
         firstName,
         lastName,
-        email: {0: email},
+        email: { 0: email },
         pic_url: picture,
       };
       // add admin fields

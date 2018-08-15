@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import * as firebase from 'firebase';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Colors from '../styles/colors';
 
 import Footer from './footer';
-import {signoutUser} from '../actions/index';
+import { signoutUser } from '../actions/index';
 
 class _HomePage extends Component {
   constructor(props) {
@@ -57,12 +57,12 @@ class _HomePage extends Component {
               verticalAlign: 'center',
             }}
           >
-            <li className="propClone sm-no-border" style={{marginTop: 5}}>
+            <li className="propClone sm-no-border" style={{ marginTop: 5 }}>
               <div className="dropdown">
                 <div
                   className="btn dropdown-toggle"
                   data-toggle="dropdown"
-                  style={{height: 37, justifyContent: 'center'}}
+                  style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div
                     style={{
@@ -85,33 +85,36 @@ class _HomePage extends Component {
                 <ul className="dropdown-menu">
                   {this.props.userInfo.soundcasts && (
                     <li>
-                      <Link style={{color: 'black'}} to="/mysoundcasts">
+                      <Link style={{ color: 'black' }} to="/mysoundcasts">
                         My Soundcasts
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link to="/dashboard/soundcasts" style={{color: 'black'}}>
+                      <Link
+                        to="/dashboard/soundcasts"
+                        style={{ color: 'black' }}
+                      >
                         Admin Dashboard
                       </Link>
                     </li>
                   )}
                   {this.props.userInfo.courses && (
                     <li>
-                      <Link to="/myprograms" style={{color: 'black'}}>
+                      <Link to="/myprograms" style={{ color: 'black' }}>
                         My Courses
                       </Link>
                     </li>
                   )}
                   <li>
-                    <Link to="/myprofile" style={{color: 'black'}}>
+                    <Link to="/myprofile" style={{ color: 'black' }}>
                       My Profile
                     </Link>
                   </li>
                   <li>
                     <a onClick={() => this.signoutUser()}>
-                      <font style={{color: 'black'}}>Log Out</font>
+                      <font style={{ color: 'black' }}>Log Out</font>
                     </a>
                   </li>
                 </ul>
@@ -162,7 +165,7 @@ class _HomePage extends Component {
                 </li>
                 <li>
                   <a onClick={() => this.signoutUser()}>
-                    <font style={{color: 'black'}}>LOG OUT</font>
+                    <font style={{ color: 'black' }}>LOG OUT</font>
                   </a>
                 </li>
               </ul>
@@ -357,8 +360,8 @@ class _HomePage extends Component {
                           fontSize: 65,
                         }}
                       >
-                        <p style={{lineHeight: '55px'}}>GROW YOUR BUSINESS</p>
-                        <p style={{lineHeight: '55px'}}>WITH AUDIO</p>
+                        <p style={{ lineHeight: '55px' }}>GROW YOUR BUSINESS</p>
+                        <p style={{ lineHeight: '55px' }}>WITH AUDIO</p>
                       </div>
                       <div className="text-white title-medium sm-title-medium margin-six-bottom banner-text width-60 md-width-90 center-col">
                         <span
@@ -518,11 +521,11 @@ class _HomePage extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({signoutUser}, dispatch);
+  return bindActionCreators({ signoutUser }, dispatch);
 }
 
 const mapStateToProps = state => {
-  const {userInfo, isLoggedIn} = state.user;
+  const { userInfo, isLoggedIn } = state.user;
   return {
     userInfo,
     isLoggedIn,

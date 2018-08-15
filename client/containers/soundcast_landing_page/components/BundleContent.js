@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import firebase from 'firebase';
 import Slider from 'react-slick';
 import SoundcastCard from './SoundcastCard';
 
 function SliderNextArrow(props) {
-  const {onClick} = props;
+  const { onClick } = props;
 
   return (
     <div className="slick-override-arrow -next-arrow" onClick={onClick}>
@@ -14,7 +14,7 @@ function SliderNextArrow(props) {
 }
 
 function SliderPrevArrow(props) {
-  const {onClick} = props;
+  const { onClick } = props;
   return (
     <div className="slick-override-arrow -prev-arrow" onClick={onClick}>
       <i className="ti-angle-left" />
@@ -70,21 +70,21 @@ export default class BundleContent extends Component {
 
   componentDidMount() {
     let tempSoundcasts = [];
-    const {soundcastsIds} = this.props;
+    const { soundcastsIds } = this.props;
 
     const promises = soundcastsIds.map(id => {
       const ref = firebase.database().ref(`soundcasts/${id}`);
       const promise = this.sleep(1000).then(() => ref.once('value'));
 
       return promise.then(snapshot => {
-        const soundcast = {id: snapshot.key, ...snapshot.val()};
+        const soundcast = { id: snapshot.key, ...snapshot.val() };
         tempSoundcasts.push(soundcast);
       });
     });
 
     Promise.all(promises).then(() => {
       console.log(tempSoundcasts);
-      this.setState({soundcasts: tempSoundcasts});
+      this.setState({ soundcasts: tempSoundcasts });
     });
   }
 
@@ -94,7 +94,7 @@ export default class BundleContent extends Component {
 
   setMaxCardHeight(height) {
     if (!this.state.cardHeight || height > this.state.cardHeight) {
-      this.setState({cardHeight: height});
+      this.setState({ cardHeight: height });
     }
   }
 
@@ -117,7 +117,7 @@ export default class BundleContent extends Component {
               {this.state.soundcasts.length < 4 ? (
                 <div
                   className="col-md-12 center-col slick-slide"
-                  style={{display: 'flex', justifyContent: 'space-evenly'}}
+                  style={{ display: 'flex', justifyContent: 'space-evenly' }}
                 >
                   {this.state.soundcasts.map((soundcast, i) => {
                     return (

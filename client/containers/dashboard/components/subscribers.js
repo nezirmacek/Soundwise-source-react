@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {CSVLink, CSVDownload} from 'react-csv';
+import { CSVLink, CSVDownload } from 'react-csv';
 
 import {
   minLengthValidator,
@@ -26,7 +26,7 @@ export default class Subscribers extends Component {
 
     this.state = {
       currentSoundcastID: null,
-      currentSoundcast: {invited: {}, title: ''},
+      currentSoundcast: { invited: {}, title: '' },
       soundcasts_managed: [],
       subscribers: [{}],
       checked: false,
@@ -47,7 +47,7 @@ export default class Subscribers extends Component {
 
   componentDidMount() {
     const that = this;
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
@@ -68,7 +68,7 @@ export default class Subscribers extends Component {
         'object'
       ) {
         const that = this;
-        const {userInfo} = this.props;
+        const { userInfo } = this.props;
         const _subscribers = [];
         const _soundcasts_managed = [];
 
@@ -129,7 +129,7 @@ export default class Subscribers extends Component {
 
   componentWillReceiveProps(nextProps) {
     const that = this;
-    const {userInfo} = nextProps;
+    const { userInfo } = nextProps;
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
@@ -147,7 +147,7 @@ export default class Subscribers extends Component {
         'object'
       ) {
         const that = this;
-        const {userInfo} = nextProps;
+        const { userInfo } = nextProps;
         const _subscribers = [];
         const _soundcasts_managed = [];
 
@@ -231,14 +231,14 @@ export default class Subscribers extends Component {
 
   retrieveSubscriberInfo(userId) {
     const that = this;
-    const {currentSoundcastID} = this.state;
+    const { currentSoundcastID } = this.state;
     return firebase
       .database()
       .ref('users/' + userId)
       .once('value')
       .then(snapshot => {
         // that.subscribers.push({...JSON.parse(JSON.stringify(snapshot.val())), id: userId});
-        return {...JSON.parse(JSON.stringify(snapshot.val())), id: userId};
+        return { ...JSON.parse(JSON.stringify(snapshot.val())), id: userId };
       })
       .then(res => res, err => console.log(err));
   }
@@ -251,7 +251,7 @@ export default class Subscribers extends Component {
       toBeUnsubscribed: [],
     });
 
-    const {soundcasts_managed} = this.state;
+    const { soundcasts_managed } = this.state;
     let currentSoundcast;
 
     soundcasts_managed.forEach(soundcast => {
@@ -314,8 +314,8 @@ export default class Subscribers extends Component {
   }
 
   deleteSubscriber() {
-    const {currentSoundcastID, currentSoundcast, subscribers} = this.state;
-    const {userInfo} = this.props;
+    const { currentSoundcastID, currentSoundcast, subscribers } = this.state;
+    const { userInfo } = this.props;
     const publisherID = userInfo.publisherID;
 
     this.subscribers = subscribers.slice(0);
@@ -448,7 +448,7 @@ export default class Subscribers extends Component {
       modalOpen,
     } = this.state;
     const that = this;
-    const {history} = this.props;
+    const { history } = this.props;
 
     let csvData = [['First Name', 'Last Name', 'Email']];
 
@@ -499,18 +499,23 @@ export default class Subscribers extends Component {
               zIndex: 103,
             }}
           >
-            <div className="title-medium" style={{margin: 25, fontWeight: 800}}>
+            <div
+              className="title-medium"
+              style={{ margin: 25, fontWeight: 800 }}
+            >
               Upgrade to view subscribers
             </div>
-            <div className="title-small" style={{margin: 25}}>
+            <div className="title-small" style={{ margin: 25 }}>
               Subscriber data is available on PLUS and PRO plans. Please upgrade
               to access the feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() => that.props.history.push({pathname: '/pricing'})}
-                styles={{width: '60%'}}
+                onClick={() =>
+                  that.props.history.push({ pathname: '/pricing' })
+                }
+                styles={{ width: '60%' }}
               />
             </div>
           </div>
@@ -554,10 +559,10 @@ export default class Subscribers extends Component {
               </button>
             </div>
           </row>
-          <row style={{marginBottom: 25}}>
+          <row style={{ marginBottom: 25 }}>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
               <span
-                style={{color: Colors.mainOrange}}
+                style={{ color: Colors.mainOrange }}
                 onClick={this.handleModal}
               >
                 Invite Subscribers
@@ -565,7 +570,7 @@ export default class Subscribers extends Component {
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
               <span
-                style={{color: Colors.link}}
+                style={{ color: Colors.link }}
                 onClick={this.handlePendingInvite}
               >
                 See Pending Invites
@@ -582,7 +587,7 @@ export default class Subscribers extends Component {
             <div className="col-md-3 col-sm-6 col-xs-12">
               {(this.state.toBeUnsubscribed.length > 0 && (
                 <div
-                  style={{...styles.button, color: 'red'}}
+                  style={{ ...styles.button, color: 'red' }}
                   onClick={this.deleteSubscriber}
                 >
                   Unsubscribe
@@ -599,12 +604,12 @@ export default class Subscribers extends Component {
               <table className="table table-condensed">
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th}} />
-                    <th style={{...styles.th}}>NAME</th>
-                    <th style={{...styles.th}}>EMAIL</th>
-                    <th style={{...styles.th}}>SUBSCRIBED ON</th>
-                    <th style={{...styles.th}}>STATS</th>
-                    <th style={{...styles.th}} />
+                    <th style={{ ...styles.th }} />
+                    <th style={{ ...styles.th }}>NAME</th>
+                    <th style={{ ...styles.th }}>EMAIL</th>
+                    <th style={{ ...styles.th }}>SUBSCRIBED ON</th>
+                    <th style={{ ...styles.th }}>STATS</th>
+                    <th style={{ ...styles.th }} />
                   </tr>
                 </thead>
                 <tbody>
@@ -612,11 +617,11 @@ export default class Subscribers extends Component {
                     if (subscriber.email) {
                       return (
                         <tr key={i} style={styles.tr}>
-                          <td style={{...styles.td}} />
-                          <td style={{...styles.td}}>{`${
+                          <td style={{ ...styles.td }} />
+                          <td style={{ ...styles.td }}>{`${
                             subscriber.firstName
                           } ${subscriber.lastName}`}</td>
-                          <td style={{...styles.td}}>
+                          <td style={{ ...styles.td }}>
                             <a
                               style={{
                                 color: 'blue',
@@ -627,7 +632,7 @@ export default class Subscribers extends Component {
                               {subscriber.email[0]}
                             </a>
                           </td>
-                          <td style={{...styles.td}}>
+                          <td style={{ ...styles.td }}>
                             {(subscriber.soundcasts &&
                               subscriber.soundcasts[currentSoundcastID] &&
                               subscriber.soundcasts[currentSoundcastID]
@@ -638,7 +643,7 @@ export default class Subscribers extends Component {
                               ).format('YYYY-MM-DD')) ||
                               '__'}
                           </td>
-                          <td style={{...styles.td}}>
+                          <td style={{ ...styles.td }}>
                             <span
                               onClick={() => {
                                 history.push({
@@ -658,7 +663,7 @@ export default class Subscribers extends Component {
                               />
                             </span>
                           </td>
-                          <td style={{...styles.td}}>
+                          <td style={{ ...styles.td }}>
                             <input
                               type="checkbox"
                               id={`${subscriber.id}-${currentSoundcastID}`}
@@ -792,7 +797,7 @@ const styles = {
     borderColor: Colors.darkGrey,
     textAlign: 'center',
   },
-  tableWrapper: {...commonStyles.tableWrapper, height: 550},
+  tableWrapper: { ...commonStyles.tableWrapper, height: 550 },
   tr: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightBorder,

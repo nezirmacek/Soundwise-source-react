@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import {Bar} from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
 
@@ -11,7 +11,7 @@ import {
   minLengthValidator,
   maxLengthValidator,
 } from '../../../helpers/validators';
-import {getDateArray} from '../../../helpers/get_date_array';
+import { getDateArray } from '../../../helpers/get_date_array';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import {
@@ -57,7 +57,7 @@ export default class Analytics extends Component {
   }
 
   componentDidMount() {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
@@ -77,7 +77,7 @@ export default class Analytics extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {userInfo} = nextProps;
+    const { userInfo } = nextProps;
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
@@ -147,7 +147,7 @@ export default class Analytics extends Component {
   }
 
   countListenings(rawDataArr) {
-    const {userInfo} = this.props;
+    const { userInfo } = this.props;
     const labels = getDateArray(this.state.startDate, this.state.endDate, 1);
     // console.log('labels: ', labels);
     const statsByDate = Array(labels.length).fill({
@@ -160,7 +160,7 @@ export default class Analytics extends Component {
       //calculate stats by date
       // console.log('statsByDate: ', statsByDate[labels.indexOf(session.date)], 'session.date: ', session.date);
       if (labels.indexOf(session.date) > -1) {
-        const {listens, length} = statsByDate[labels.indexOf(session.date)];
+        const { listens, length } = statsByDate[labels.indexOf(session.date)];
         statsByDate[labels.indexOf(session.date)] = {
           listens: listens + 1,
           length: length + session.sessionDuration,
@@ -307,7 +307,7 @@ export default class Analytics extends Component {
       currentSoundcastID: e.target.value,
     });
 
-    const {soundcasts_managed, currentSoundcastID} = this.state;
+    const { soundcasts_managed, currentSoundcastID } = this.state;
     let currentSoundcast;
 
     soundcasts_managed.forEach(soundcast => {
@@ -355,24 +355,29 @@ export default class Analytics extends Component {
               zIndex: 103,
             }}
           >
-            <div className="title-medium" style={{margin: 25, fontWeight: 800}}>
+            <div
+              className="title-medium"
+              style={{ margin: 25, fontWeight: 800 }}
+            >
               Upgrade to view analytics
             </div>
-            <div className="title-small" style={{margin: 25}}>
+            <div className="title-small" style={{ margin: 25 }}>
               Listening analytics is available on PLUS and PRO plans. Please
               upgrade to access the feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() => that.props.history.push({pathname: '/pricing'})}
-                styles={{width: '60%'}}
+                onClick={() =>
+                  that.props.history.push({ pathname: '/pricing' })
+                }
+                styles={{ width: '60%' }}
               />
             </div>
           </div>
         </div>
         <div className="padding-bottom-20px">
-          <div className="row" style={{marginLeft: 10}}>
+          <div className="row" style={{ marginLeft: 10 }}>
             <span className="title-medium ">Analytics</span>
             <div className="" style={styles.soundcastSelectWrapper}>
               <select
@@ -392,7 +397,7 @@ export default class Analytics extends Component {
               </select>
             </div>
           </div>
-          <div className="row" style={{marginRight: 25, marginLeft: 5}}>
+          <div className="row" style={{ marginRight: 25, marginLeft: 5 }}>
             <div className="col-md-12" style={styles.chartWrapper}>
               <Bar
                 data={data}
@@ -413,19 +418,19 @@ export default class Analytics extends Component {
               />
             </div>
           </div>
-          <div className="row" style={{marginLeft: 5, marginRight: 5}}>
+          <div className="row" style={{ marginLeft: 5, marginRight: 5 }}>
             <div
               className="col-md-6 col-sm-12 col-xs-12"
-              style={{...styles.tableWrapper}}
+              style={{ ...styles.tableWrapper }}
             >
               <div style={styles.sectionTitleWrapper}>TOP EPISODES</div>
               <table className="table">
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th}}>TITLE</th>
-                    <th style={{...styles.th}}>PUBLISHED ON</th>
-                    <th style={{...styles.th}}>TOTAL LISTENS</th>
-                    <th style={{...styles.th}}>AVE. DURATION (min)</th>
+                    <th style={{ ...styles.th }}>TITLE</th>
+                    <th style={{ ...styles.th }}>PUBLISHED ON</th>
+                    <th style={{ ...styles.th }}>TOTAL LISTENS</th>
+                    <th style={{ ...styles.th }}>AVE. DURATION (min)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -435,10 +440,10 @@ export default class Analytics extends Component {
                     );
                     return (
                       <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td}}>{`${episode.title}`}</td>
-                        <td style={{...styles.td}}>{episode.date_created}</td>
-                        <td style={{...styles.td}}>{episode.listens}</td>
-                        <td style={{...styles.td}}>{ave_duration}</td>
+                        <td style={{ ...styles.td }}>{`${episode.title}`}</td>
+                        <td style={{ ...styles.td }}>{episode.date_created}</td>
+                        <td style={{ ...styles.td }}>{episode.listens}</td>
+                        <td style={{ ...styles.td }}>{ave_duration}</td>
                       </tr>
                     );
                   })}
@@ -447,23 +452,25 @@ export default class Analytics extends Component {
             </div>
             <div
               className="col-md-5 col-sm-12 col-xs-12"
-              style={{...styles.tableWrapper, marginLeft: 20}}
+              style={{ ...styles.tableWrapper, marginLeft: 20 }}
             >
               <div style={styles.sectionTitleWrapper}>TOP SUBSCRIBERS</div>
               <table className="table">
                 <thead>
                   <tr style={styles.tr}>
-                    <th style={{...styles.th, width: '10%'}} />
-                    <th style={{...styles.th, width: '40%'}}>NAME</th>
-                    <th style={{...styles.th, width: '25%'}}># OF LISTENS</th>
-                    <th style={{...styles.th, width: '25%'}}>TOTAL MINUTES</th>
+                    <th style={{ ...styles.th, width: '10%' }} />
+                    <th style={{ ...styles.th, width: '40%' }}>NAME</th>
+                    <th style={{ ...styles.th, width: '25%' }}># OF LISTENS</th>
+                    <th style={{ ...styles.th, width: '25%' }}>
+                      TOTAL MINUTES
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {this.state.userArr.map((user, i) => {
                     return (
                       <tr key={i} style={styles.tr}>
-                        <td style={{...styles.td, width: '10%'}}>
+                        <td style={{ ...styles.td, width: '10%' }}>
                           <div
                             style={{
                               ...styles.userImage,
@@ -471,13 +478,13 @@ export default class Analytics extends Component {
                             }}
                           />
                         </td>
-                        <td style={{...styles.td, width: '40%'}}>{`${
+                        <td style={{ ...styles.td, width: '40%' }}>{`${
                           user.firstName
                         } ${user.lastName}`}</td>
-                        <td style={{...styles.td, width: '25%'}}>
+                        <td style={{ ...styles.td, width: '25%' }}>
                           {user.listens}
                         </td>
-                        <td style={{...styles.td, width: '25%'}}>
+                        <td style={{ ...styles.td, width: '25%' }}>
                           {Math.floor(user.length / 60)}
                         </td>
                       </tr>

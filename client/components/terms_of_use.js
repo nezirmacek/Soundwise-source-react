@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {SoundwiseHeader} from './soundwise_header';
+import { SoundwiseHeader } from './soundwise_header';
 import Footer from './footer';
 
 const Terms = () => (
@@ -9,21 +9,21 @@ const Terms = () => (
     <section
       className=" bg-white builder-bg xs-padding-60px-tb"
       id="contact-section2 border-none"
-      style={{paddingBottom: '30px', paddingTop: '110px', boderBottom: '0px'}}
+      style={{ paddingBottom: '30px', paddingTop: '110px', boderBottom: '0px' }}
     >
       <div
         className="container text-dark-gray border-none"
-        style={{fontSize: '18px'}}
+        style={{ fontSize: '18px' }}
       >
         <h3
           className="section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           Soundwise Terms of Use
         </h3>
         <h3
           className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text text-dark-gray"
-          style={{textAlign: 'center'}}
+          style={{ textAlign: 'center' }}
         >
           (Last revised on: October 2, 2017)
         </h3>
@@ -39,11 +39,11 @@ const Terms = () => (
           <p />
         </p>
         <p>
-          These Terms of Use (these “<strong>Terms</strong>”) set forth the
-          legally binding terms and conditions that govern your use of the
-          Sitess. By accessing or using the Sitess, you are accepting these
-          Terms (on behalf of yourself or the entity that you represent), and
-          you represent and warrant that you have the right, authority, and
+          These Terms of Use (these “<strong>Terms</strong>
+          ”) set forth the legally binding terms and conditions that govern your
+          use of the Sitess. By accessing or using the Sitess, you are accepting
+          these Terms (on behalf of yourself or the entity that you represent),
+          and you represent and warrant that you have the right, authority, and
           capacity to enter into these Terms (on behalf of yourself or the
           entity that you represent). you may not access or use the Sitess or
           accept the Terms if you are not at least 18 years old. If you do not
@@ -67,14 +67,15 @@ const Terms = () => (
           <strong>1.1 </strong>
           <strong>Account Creation. </strong>
           In order to use certain features of the Sites, you must register for
-          an account (“<strong>Account</strong>”) and provide certain
-          information about yourself as prompted by the account registration
-          form. You represent and warrant that: (a) all required registration
-          information you submit is truthful and accurate; (b) you will maintain
-          the accuracy of such information. You may delete your Account at any
-          time, for any reason, by following the instructions on the Sites.
-          Company may suspend or terminate your Account in accordance with
-          Section 8.
+          an account (“
+          <strong>Account</strong>
+          ”) and provide certain information about yourself as prompted by the
+          account registration form. You represent and warrant that: (a) all
+          required registration information you submit is truthful and accurate;
+          (b) you will maintain the accuracy of such information. You may delete
+          your Account at any time, for any reason, by following the
+          instructions on the Sites. Company may suspend or terminate your
+          Account in accordance with Section 8.
           <p />
         </p>
         <p>
@@ -167,24 +168,23 @@ const Terms = () => (
           <p />
         </p>
         <p>
-          <strong>(a) </strong>
-          “<strong>User Content</strong>” means any and all information and
-          content that a user submits to, or uses with, the Sites (e.g., content
-          in the user’s profile or postings). You are solely responsible for
-          your User Content. You assume all risks associated with use of your
-          User Content, including any reliance on its accuracy, completeness or
-          usefulness by others, or any disclosure of your User Content that
-          personally identifies you or any third party. You hereby represent and
-          warrant that your User Content does not violate our Acceptable Use
-          Policy (defined in Section 3.5). You may not represent or imply to
-          others that your User Content is in any way provided, sponsored or
-          endorsed by Company. Because you alone are responsible for your User
-          Content, you may expose yourself to liability if, for example, your
-          User Content violates the Acceptable Use Policy. Company is not
-          obligated to backup any User Content, and your User Content may be
-          deleted at any time without prior notice. You are solely responsible
-          for creating and maintaining your own backup copies of your User
-          Content if you desire.
+          <strong>(a) </strong>“<strong>User Content</strong>” means any and all
+          information and content that a user submits to, or uses with, the
+          Sites (e.g., content in the user’s profile or postings). You are
+          solely responsible for your User Content. You assume all risks
+          associated with use of your User Content, including any reliance on
+          its accuracy, completeness or usefulness by others, or any disclosure
+          of your User Content that personally identifies you or any third
+          party. You hereby represent and warrant that your User Content does
+          not violate our Acceptable Use Policy (defined in Section 3.5). You
+          may not represent or imply to others that your User Content is in any
+          way provided, sponsored or endorsed by Company. Because you alone are
+          responsible for your User Content, you may expose yourself to
+          liability if, for example, your User Content violates the Acceptable
+          Use Policy. Company is not obligated to backup any User Content, and
+          your User Content may be deleted at any time without prior notice. You
+          are solely responsible for creating and maintaining your own backup
+          copies of your User Content if you desire.
           <p />
         </p>
         <p>
@@ -340,9 +340,8 @@ const Terms = () => (
           <strong>3.5 </strong>
           <strong>Acceptable Use Policy.</strong>
           <strong> </strong>
-          The following terms constitute our “<strong>
-            Acceptable Use Policy
-          </strong>
+          The following terms constitute our “
+          <strong>Acceptable Use Policy</strong>
           ”:
           <p />
         </p>
@@ -408,13 +407,15 @@ const Terms = () => (
           <strong>3.7 </strong>
           <strong>Feedback. </strong>
           If you provide Company with any feedback or suggestions regarding the
-          Sites (“<strong>Feedback</strong>”), you hereby assign to Company all
-          rights in such Feedback and agree that Company shall have the right to
-          use and fully exploit such Feedback and related information in any
-          manner it deems appropriate. Company will treat any Feedback you
-          provide to Company as non-confidential and non-proprietary. You agree
-          that you will not submit to Company any information or ideas that you
-          consider to be confidential or proprietary.
+          Sites (“
+          <strong>Feedback</strong>
+          ”), you hereby assign to Company all rights in such Feedback and agree
+          that Company shall have the right to use and fully exploit such
+          Feedback and related information in any manner it deems appropriate.
+          Company will treat any Feedback you provide to Company as
+          non-confidential and non-proprietary. You agree that you will not
+          submit to Company any information or ideas that you consider to be
+          confidential or proprietary.
           <p />
         </p>
         <p>
@@ -445,19 +446,20 @@ const Terms = () => (
           <strong>Third-Party Links &amp; Ads. </strong>
           The Sites may contain links to third-party websites and services,
           and/or display advertisements for third parties (collectively, “{' '}
-          <strong>Third-Party Links &amp; Ads</strong>”). Such Third-Party Links
-          &amp; Ads are not under the control of Company, and Company is not
-          responsible for any Third-Party Links &amp; Ads. Company provides
-          access to these Third-Party Links &amp; Ads only as a convenience to
-          you, and does not review, approve, monitor, endorse, warrant, or make
-          any representations with respect to Third-Party Links &amp; Ads. You
-          use all Third-Party Links &amp; Ads at your own risk, and should apply
-          a suitable level of caution and discretion in doing so. When you click
-          on any of the Third-Party Links &amp; Ads, the applicable third
-          party’s terms and policies apply, including the third party’s privacy
-          and data gathering practices. You should make whatever investigation
-          you feel necessary or appropriate before proceeding with any
-          transaction in connection with such Third-Party Links &amp; Ads.
+          <strong>Third-Party Links &amp; Ads</strong>
+          ”). Such Third-Party Links &amp; Ads are not under the control of
+          Company, and Company is not responsible for any Third-Party Links
+          &amp; Ads. Company provides access to these Third-Party Links &amp;
+          Ads only as a convenience to you, and does not review, approve,
+          monitor, endorse, warrant, or make any representations with respect to
+          Third-Party Links &amp; Ads. You use all Third-Party Links &amp; Ads
+          at your own risk, and should apply a suitable level of caution and
+          discretion in doing so. When you click on any of the Third-Party Links
+          &amp; Ads, the applicable third party’s terms and policies apply,
+          including the third party’s privacy and data gathering practices. You
+          should make whatever investigation you feel necessary or appropriate
+          before proceeding with any transaction in connection with such
+          Third-Party Links &amp; Ads.
           <p />
         </p>
         <p>
@@ -724,64 +726,62 @@ const Terms = () => (
         </p>
         <p>
           <strong>(b) </strong>
-          <em>Notice Requirement and Informal Dispute Resolution</em>
-          . Before either party may seek arbitration, the party must first send
-          to the other party a written Notice of Dispute (<strong>
-            “Notice”
-          </strong>) describing the nature and basis of the claim or dispute,
-          and the requested relief. A Notice to the Company should be sent to:
-          Unit 302, 2818 Connecticut Ave NW, Washington, District Of Columbia
-          20008. After the Notice is received, you and the Company may attempt
-          to resolve the claim or dispute informally. If you and the Company do
-          not resolve the claim or dispute within thirty (30) days after the
-          Notice is received, either party may begin an arbitration proceeding.
-          The amount of any settlement offer made by any party may not be
-          disclosed to the arbitrator until after the arbitrator has determined
-          the amount of the award, if any, to which either party is entitled.
+          <em>Notice Requirement and Informal Dispute Resolution</em>. Before
+          either party may seek arbitration, the party must first send to the
+          other party a written Notice of Dispute (<strong>“Notice”</strong>)
+          describing the nature and basis of the claim or dispute, and the
+          requested relief. A Notice to the Company should be sent to: Unit 302,
+          2818 Connecticut Ave NW, Washington, District Of Columbia 20008. After
+          the Notice is received, you and the Company may attempt to resolve the
+          claim or dispute informally. If you and the Company do not resolve the
+          claim or dispute within thirty (30) days after the Notice is received,
+          either party may begin an arbitration proceeding. The amount of any
+          settlement offer made by any party may not be disclosed to the
+          arbitrator until after the arbitrator has determined the amount of the
+          award, if any, to which either party is entitled.
           <p />
         </p>
         <p>
           <strong>(c) </strong>
           Arbitration Rules. Arbitration shall be initiated through the American
-          Arbitration Association (<strong>“AAA”</strong>), an established
-          alternative dispute resolution provider (<strong>
-            “ADR Provider”
-          </strong>) that offers arbitration as set forth in this section. If
-          AAA is not available to arbitrate, the parties shall agree to select
-          an alternative ADR Provider. The rules of the ADR Provider shall
-          govern all aspects of the arbitration, including but not limited to
-          the method of initiating and/or demanding arbitration, except to the
-          extent such rules are in conflict with the Terms. The AAA Consumer
-          Arbitration Rules ( <strong>“Arbitration Rules”</strong>) governing
-          the arbitration are available online at{' '}
-          <a href="http://www.adr.org">www.adr.org </a> or by calling the AAA at
-          1-800-778-7879. The arbitration shall be conducted by a single,
-          neutral arbitrator. Any claims or disputes where the total amount of
-          the award sought is less than Ten Thousand U.S. Dollars (US
-          $10,000.00) may be resolved through binding non-appearance-based
-          arbitration, at the option of the party seeking relief. For claims or
-          disputes where the total amount of the award sought is Ten Thousand
-          U.S. Dollars (US $10,000.00) or more, the right to a hearing will be
-          determined by the Arbitration Rules. Any hearing will be held in a
-          location within 100 miles of your residence, unless you reside outside
-          of the United States, and unless the parties agree otherwise. If you
-          reside outside of the U.S., the arbitrator shall give the parties
-          reasonable notice of the date, time and place of any oral hearings.
-          Any judgment on the award rendered by the arbitrator may be entered in
-          any court of competent jurisdiction. If the arbitrator grants you an
-          award that is greater than the last settlement offer that the Company
-          made to you prior to the initiation of arbitration, the Company will
-          pay you the greater of the award or $2,500.00. Each party shall bear
-          its own costs (including attorney’s fees) and disbursements arising
-          out of the arbitration and shall pay an equal share of the fees and
-          costs of the ADR Provider.
+          Arbitration Association (<strong>“AAA”</strong>
+          ), an established alternative dispute resolution provider (
+          <strong>“ADR Provider”</strong>) that offers arbitration as set forth
+          in this section. If AAA is not available to arbitrate, the parties
+          shall agree to select an alternative ADR Provider. The rules of the
+          ADR Provider shall govern all aspects of the arbitration, including
+          but not limited to the method of initiating and/or demanding
+          arbitration, except to the extent such rules are in conflict with the
+          Terms. The AAA Consumer Arbitration Rules ({' '}
+          <strong>“Arbitration Rules”</strong>) governing the arbitration are
+          available online at <a href="http://www.adr.org">www.adr.org </a> or
+          by calling the AAA at 1-800-778-7879. The arbitration shall be
+          conducted by a single, neutral arbitrator. Any claims or disputes
+          where the total amount of the award sought is less than Ten Thousand
+          U.S. Dollars (US $10,000.00) may be resolved through binding
+          non-appearance-based arbitration, at the option of the party seeking
+          relief. For claims or disputes where the total amount of the award
+          sought is Ten Thousand U.S. Dollars (US $10,000.00) or more, the right
+          to a hearing will be determined by the Arbitration Rules. Any hearing
+          will be held in a location within 100 miles of your residence, unless
+          you reside outside of the United States, and unless the parties agree
+          otherwise. If you reside outside of the U.S., the arbitrator shall
+          give the parties reasonable notice of the date, time and place of any
+          oral hearings. Any judgment on the award rendered by the arbitrator
+          may be entered in any court of competent jurisdiction. If the
+          arbitrator grants you an award that is greater than the last
+          settlement offer that the Company made to you prior to the initiation
+          of arbitration, the Company will pay you the greater of the award or
+          $2,500.00. Each party shall bear its own costs (including attorney’s
+          fees) and disbursements arising out of the arbitration and shall pay
+          an equal share of the fees and costs of the ADR Provider.
           <p />
         </p>
         <p>
           <strong>(d) </strong>
-          <em>Additional Rules for Non-Appearance Based Arbitration</em>
-          . If non-appearance based arbitration is elected, the arbitration
-          shall be conducted by telephone, online and/or based solely on written
+          <em>Additional Rules for Non-Appearance Based Arbitration</em>. If
+          non-appearance based arbitration is elected, the arbitration shall be
+          conducted by telephone, online and/or based solely on written
           submissions; the specific manner shall be chosen by the party
           initiating the arbitration. The arbitration shall not involve any
           personal appearance by the parties or witnesses unless otherwise
@@ -799,21 +799,20 @@ const Terms = () => (
         </p>
         <p>
           <strong>(f) </strong>
-          <em>Authority of Arbitrator</em>
-          . If arbitration is initiated, the arbitrator will decide the rights
-          and liabilities, if any, of you and the Company, and the dispute will
-          not be consolidated with any other matters or joined with any other
-          cases or parties. The arbitrator shall have the authority to grant
-          motions dispositive of all or part of any claim. The arbitrator shall
-          have the authority to award monetary damages, and to grant any
-          non-monetary remedy or relief available to an individual under
-          applicable law, the AAA Rules, and the Terms. The arbitrator shall
-          issue a written award and statement of decision describing the
-          essential findings and conclusions on which the award is based,
-          including the calculation of any damages awarded. The arbitrator has
-          the same authority to award relief on an individual basis that a judge
-          in a court of law would have. The award of the arbitrator is final and
-          binding upon you and the Company.
+          <em>Authority of Arbitrator</em>. If arbitration is initiated, the
+          arbitrator will decide the rights and liabilities, if any, of you and
+          the Company, and the dispute will not be consolidated with any other
+          matters or joined with any other cases or parties. The arbitrator
+          shall have the authority to grant motions dispositive of all or part
+          of any claim. The arbitrator shall have the authority to award
+          monetary damages, and to grant any non-monetary remedy or relief
+          available to an individual under applicable law, the AAA Rules, and
+          the Terms. The arbitrator shall issue a written award and statement of
+          decision describing the essential findings and conclusions on which
+          the award is based, including the calculation of any damages awarded.
+          The arbitrator has the same authority to award relief on an individual
+          basis that a judge in a court of law would have. The award of the
+          arbitrator is final and binding upon you and the Company.
           <p />
         </p>
         <p>
@@ -833,34 +832,32 @@ const Terms = () => (
         </p>
         <p>
           <strong>(h) </strong>
-          <em>Waiver of Class or Consolidated Actions</em>
-          . ALL CLAIMS AND DISPUTES WITHIN THE SCOPE OF THIS ARBITRATION
-          AGREEMENT MUST BE ARBITRATED OR LITIGATED ON AN INDIVIDUAL BASIS AND
-          NOT ON A CLASS BASIS, AND CLAIMS OF MORE THAN ONE CUSTOMER OR USER
-          CANNOT BE ARBITRATED OR LITIGATED JOINTLY OR CONSOLIDATED WITH THOSE
-          OF ANY OTHER CUSTOMER OR USER.
+          <em>Waiver of Class or Consolidated Actions</em>. ALL CLAIMS AND
+          DISPUTES WITHIN THE SCOPE OF THIS ARBITRATION AGREEMENT MUST BE
+          ARBITRATED OR LITIGATED ON AN INDIVIDUAL BASIS AND NOT ON A CLASS
+          BASIS, AND CLAIMS OF MORE THAN ONE CUSTOMER OR USER CANNOT BE
+          ARBITRATED OR LITIGATED JOINTLY OR CONSOLIDATED WITH THOSE OF ANY
+          OTHER CUSTOMER OR USER.
           <p />
         </p>
         <p>
           <strong>(i) </strong>
-          <em>Confidentiality</em>
-          . All aspects of the arbitration proceeding, including but not limited
-          to the award of the arbitrator and compliance therewith, shall be
-          strictly confidential. The parties agree to maintain confidentiality
-          unless otherwise required by law. This paragraph shall not prevent a
-          party from submitting to a court of law any information necessary to
-          enforce this Agreement, to enforce an arbitration award, or to seek
-          injunctive or equitable relief.
+          <em>Confidentiality</em>. All aspects of the arbitration proceeding,
+          including but not limited to the award of the arbitrator and
+          compliance therewith, shall be strictly confidential. The parties
+          agree to maintain confidentiality unless otherwise required by law.
+          This paragraph shall not prevent a party from submitting to a court of
+          law any information necessary to enforce this Agreement, to enforce an
+          arbitration award, or to seek injunctive or equitable relief.
           <p />
         </p>
         <p>
           <strong>(j) </strong>
-          <em>Severability</em>
-          . If any part or parts of this Arbitration Agreement are found under
-          the law to be invalid or unenforceable by a court of competent
-          jurisdiction, then such specific part or parts shall be of no force
-          and effect and shall be severed and the remainder of the Agreement
-          shall continue in full force and effect.
+          <em>Severability</em>. If any part or parts of this Arbitration
+          Agreement are found under the law to be invalid or unenforceable by a
+          court of competent jurisdiction, then such specific part or parts
+          shall be of no force and effect and shall be severed and the remainder
+          of the Agreement shall continue in full force and effect.
           <p />
         </p>
         <p>
@@ -874,9 +871,8 @@ const Terms = () => (
         </p>
         <p>
           <strong>(l) </strong>
-          <em>Survival of Agreement</em>
-          . This Arbitration Agreement will survive the termination of your
-          relationship with Company.
+          <em>Survival of Agreement</em>. This Arbitration Agreement will
+          survive the termination of your relationship with Company.
           <p />
         </p>
         <p>
@@ -888,12 +884,11 @@ const Terms = () => (
         </p>
         <p>
           <strong>(n) </strong>
-          <em>Emergency Equitable Relief</em>
-          . Notwithstanding the foregoing, either party may seek emergency
-          equitable relief before a state or federal court in order to maintain
-          the status quo pending arbitration. A request for interim measures
-          shall not be deemed a waiver of any other rights or obligations under
-          this Arbitration Agreement.
+          <em>Emergency Equitable Relief</em>. Notwithstanding the foregoing,
+          either party may seek emergency equitable relief before a state or
+          federal court in order to maintain the status quo pending arbitration.
+          A request for interim measures shall not be deemed a waiver of any
+          other rights or obligations under this Arbitration Agreement.
           <p />
         </p>
         <p>
@@ -981,12 +976,14 @@ const Terms = () => (
         </p>
         <p>
           <strong>10.8 </strong>
-          <strong>Copyright/Trademark Information</strong>
-          . Copyright © 2017 Soundwise Inc. All rights reserved. All trademarks,
-          logos and service marks (“<strong>Marks</strong>”) displayed on the
-          Sites are our property or the property of other third parties. You are
-          not permitted to use these Marks without our prior written consent or
-          the consent of such third party which may own the Marks.
+          <strong>Copyright/Trademark Information</strong>. Copyright © 2017
+          Soundwise Inc. All rights reserved. All trademarks, logos and service
+          marks (“
+          <strong>Marks</strong>
+          ”) displayed on the Sites are our property or the property of other
+          third parties. You are not permitted to use these Marks without our
+          prior written consent or the consent of such third party which may own
+          the Marks.
           <p />
         </p>
         <p>

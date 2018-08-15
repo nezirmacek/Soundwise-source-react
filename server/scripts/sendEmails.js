@@ -37,12 +37,12 @@ const sendTransactionalEmails = (req, res) => {
   var _promises = req.body.invitees.map(invitee => {
     let msg = {
       to: invitee,
-      from: {email, name},
+      from: { email, name },
       subject: req.body.subject,
       html: content,
     };
     if (req.body.bcc) {
-      msg = Object.assign({}, msg, {bcc: req.body.bcc});
+      msg = Object.assign({}, msg, { bcc: req.body.bcc });
     }
     return sgMail
       .send(msg)
@@ -69,16 +69,14 @@ const sendTransactionalEmails = (req, res) => {
 };
 
 const sendCommentNotification = async (req, res) => {
-  const {
-    userID,
-    content,
-    soundcastId,
-    announcementID,
-    episodeID,
-  } = req.body.comment;
+  sendMail(req.body.comment).then(() => res.status(200).send({}));
+};
+
+const sendMail = async comment => {
+  const {userID, content, soundcastID, announcementID, episodeID} = comment;
   const publisherID = await firebase
     .database()
-    .ref(`soundcasts/${soundcastId}/publisherID`)
+    .ref(`soundcasts/${soundcastID}/publisherID`)
     .once('value');
   const admins = await firebase
     .database()
@@ -94,31 +92,30 @@ const sendCommentNotification = async (req, res) => {
     const commentorName = `${commentor.val().firstName} ${
       commentor.val().lastName
     }`;
-    let adminsEmails = [],
-      email;
+    let adminsEmails = [];
     for (var i = 0; i < adminsArr.length; i++) {
-      email = await firebase
+      const email = await firebase
         .database()
         .ref(`users/${adminsArr[i]}/email`)
         .once('value');
       adminsEmails.push(email.val()[0]);
     }
-    let episodeTitle, announcement, announcementDate;
+
+    let episodeTitle = '';
+
     if (episodeID) {
-      episodeTitle = await firebase
+      episodeTitle = (await firebase
         .database()
         .ref(`episodes/${episodeID}/title`)
-        .once('value');
-      episodeTitle = episodeTitle.val();
+        .once('value')).val();
     }
     if (announcementID) {
-      announcement = await firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}/announcements/${announcementID}`)
-        .once('value');
-      announcementDate = moment(announcement.val().date_created * 1000).format(
-        'MMM DD YYYY'
-      );
+      announcement = moment(
+        (await firebase
+          .database()
+          .ref(`soundcasts/${soundcastID}/announcements/${announcementID}`)
+          .once('value')).val().date_created * 1000
+      ).format('MMM DD YYYY');
     }
     const subject = episodeTitle
       ? episodeTitle
@@ -129,17 +126,13 @@ const sendCommentNotification = async (req, res) => {
       subject: `There's a new comment posted for ${subject}`,
       html: `<p>Hi!</p><p></p><p>${commentorName} just made a new comment on ${subject}.</p><p></p><p>Check it out and reply on the Soundwise app.</p><p></p><p>Folks at Soundwise</p>`,
     };
-    sgMail.send(msg).then(response => {
-      res.status(200).send({});
-    });
-  } else {
-    res.status(200).send({});
+    return sgMail.send(msg);
   }
 };
 
 const addToEmailList = (req, res) => {
   // req.body: {soundcastId: [string], emailListId: [number], emailAddressArr: [array]}
-  const {soundcastId, emailAddressArr, listName, emailListId} = req.body;
+  const { soundcastId, emailAddressArr, listName, emailListId } = req.body;
   const emails = emailAddressArr.map(email => {
     if (typeof email == 'string') {
       return {
@@ -172,7 +165,7 @@ const addToEmailList = (req, res) => {
         client
           .request(data)
           .then(([response, body]) => {
-            res.status(200).send({emailListId});
+            res.status(200).send({ emailListId });
           })
           .catch(err => {
             console.log('error: ', err.message);
@@ -183,7 +176,7 @@ const addToEmailList = (req, res) => {
         const data1 = {
           method: 'POST',
           url: '/v3/contactdb/lists',
-          body: {name: `${soundcastId}-${listName}`},
+          body: { name: `${soundcastId}-${listName}` },
         };
         // console.log('data1: ', data1);
         client
@@ -200,7 +193,7 @@ const addToEmailList = (req, res) => {
               'This list name is already in use. Please choose a new, unique name.'
             ) {
               client
-                .request({method: 'GET', url: '/v3/contactdb/lists'})
+                .request({ method: 'GET', url: '/v3/contactdb/lists' })
                 .then(([response, body]) => {
                   const list = body.lists.find(
                     i => i.name === `${soundcastId}-${listName}`
@@ -239,7 +232,7 @@ const addToEmailList = (req, res) => {
               .set(listId);
           })
           .then(() => {
-            res.status(200).send({emailListId: listId});
+            res.status(200).send({ emailListId: listId });
           })
           .catch(err => {
             console.log('error adding recipients: ', err.message);
@@ -314,7 +307,7 @@ const sendMarketingEmails = (req, res) => {
     suppression_group_id: unsubscribeGroup,
     status: 'Draft',
     sender_id: 204129,
-    reply_to: {email: publisherEmail, name: publisherName},
+    reply_to: { email: publisherEmail, name: publisherName },
   };
   const options = {
     method: 'POST',
@@ -332,7 +325,7 @@ const sendMarketingEmails = (req, res) => {
           url: `/v3/campaigns/${campaignId}/schedules/now`,
         })
         .then(([response, body]) => {
-          res.status(200).send({campaignId});
+          res.status(200).send({ campaignId });
         })
         .catch(err => {
           console.log('error sending campaign: ', err.message);
@@ -346,6 +339,7 @@ const sendMarketingEmails = (req, res) => {
 };
 
 module.exports = {
+  sendMail,
   sendTransactionalEmails,
   addToEmailList,
   deleteFromEmailList,

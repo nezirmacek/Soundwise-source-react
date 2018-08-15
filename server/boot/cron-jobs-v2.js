@@ -32,7 +32,6 @@ module.exports = function(app) {
     const maxListnes = (await db.query(
       'SELECT "soundcastId", COUNT("sessionId") FROM "ListeningSessions" GROUP BY "soundcastId" ORDER BY "count" DESC;'
     ))[0][0].count;
-    // console.log(maxListnes);
     let i = 0;
     while (i <= soundcastsCount) {
       const soundcasts = (await db.query(
@@ -40,7 +39,7 @@ module.exports = function(app) {
       ))[0];
       for (const soundcast of soundcasts) {
         const countListnes = await database.ListeningSession.count({
-          where: {soundcastId: soundcast.soundcastId},
+          where: { soundcastId: soundcast.soundcastId },
         });
         const updateDate =
           soundcast.updateDate || new Date(soundcast.updatedAt).getTime();
@@ -53,6 +52,11 @@ module.exports = function(app) {
           .database()
           .ref(`soundcasts/${soundcast.soundcastId}/rank`)
           .set(rank.toFixed(5));
+        await db.query(
+          `UPDATE "Soundcasts" SET "rank"=${rank} WHERE "soundcastId"='${
+            soundcast.soundcastId
+          }'`
+        );
       }
       i += 10000;
     }

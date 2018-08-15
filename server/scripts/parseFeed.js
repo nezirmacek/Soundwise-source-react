@@ -24,7 +24,7 @@ const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
-const {logErr, podcastCategories} = require('./utils')('parseFeed.js');
+const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 
 // // Test the getFeed function:
 // setTimeout(() =>
@@ -40,7 +40,7 @@ const {logErr, podcastCategories} = require('./utils')('parseFeed.js');
 // function to parse a given feed url:
 function getFeed(urlfeed, callback) {
   try {
-    var req = request(urlfeed, {timeout: 20000}); // timeout 20 sec
+    var req = request(urlfeed, { timeout: 20000 }); // timeout 20 sec
   } catch (err) {
     return callback(err);
   }
@@ -77,7 +77,7 @@ function getFeed(urlfeed, callback) {
     }
   });
   feedparser.on('end', function() {
-    callback(undefined, {metadata, feedItems});
+    callback(undefined, { metadata, feedItems });
   });
   feedparser.on('error', function(err) {
     console.log('getFeed: err.message == ' + err.message);
@@ -131,7 +131,7 @@ async function parseFeed(req, res) {
 
   // 1. Search for the podcast
   const podcasts = await database.ImportedFeed.findAll({
-    where: {feedUrl: url},
+    where: { feedUrl: url },
   });
 
   if (podcasts.length) {
@@ -144,12 +144,12 @@ async function parseFeed(req, res) {
       return res.status(400).send(errMsg);
     }
 
-    const {soundcastId, originalUrl} = podcast;
+    const { soundcastId, originalUrl } = podcast;
     const snapshot = await firebase
       .database()
       .ref(`soundcasts/${soundcastId}`)
       .once(`value`);
-    let {publisherEmail, title} = snapshot.val();
+    let { publisherEmail, title } = snapshot.val();
     if (!publisherEmail || publisherEmail === 'null') {
       // checking if feed was updated
       let errMsg;
@@ -161,8 +161,8 @@ async function parseFeed(req, res) {
             publisherEmail = getPublisherEmail(results.metadata);
             if (publisherEmail) {
               await database.PodcasterEmail.update(
-                {publisherEmail},
-                {where: {podcastTitle: title}}
+                { publisherEmail },
+                { where: { podcastTitle: title } }
               );
               await firebase
                 .database()
@@ -218,10 +218,13 @@ async function parseFeed(req, res) {
         .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
         .set(true);
       await database.ImportedFeed.update(
-        {claimed: true, userId, publisherId},
-        {where: {soundcastId}}
+        { claimed: true, userId, publisherId },
+        { where: { soundcastId } }
       );
-      await database.Soundcast.update({publisherId}, {where: {soundcastId}});
+      await database.Soundcast.update(
+        { publisherId },
+        { where: { soundcastId } }
+      );
       await firebase
         .database()
         .ref(`soundcasts/${soundcastId}/publisherID`)
@@ -236,10 +239,13 @@ async function parseFeed(req, res) {
         .set(true);
 
       const episodes = await database.Episode.findAll({
-        where: {soundcastId},
+        where: { soundcastId },
       });
       if (episodes.length) {
-        await database.Episode.update({publisherId}, {where: {soundcastId}});
+        await database.Episode.update(
+          { publisherId },
+          { where: { soundcastId } }
+        );
         for (const episode of episodes) {
           await firebase
             .database()
@@ -262,7 +268,7 @@ async function parseFeed(req, res) {
         if (err) {
           return res.status(400).send(`Error: obtaining feed ${err}`);
         }
-        const {metadata, feedItems} = results;
+        const { metadata, feedItems } = results;
         const publisherEmail = getPublisherEmail(metadata);
         if (!publisherEmail) {
           return res.status(400).send(emptyEmailMsg);
@@ -276,7 +282,7 @@ async function parseFeed(req, res) {
           originalUrl: feedUrl,
         };
         sendVerificationMail(publisherEmail, metadata.title, verificationCode);
-        res.json({imageUrl: metadata.image.url, publisherEmail});
+        res.json({ imageUrl: metadata.image.url, publisherEmail });
       });
     }
 
@@ -285,7 +291,7 @@ async function parseFeed(req, res) {
       return res.status(400).send(`Error: feed wasn't found in cache object`);
     }
 
-    const {publisherEmail, metadata} = feedUrls[url];
+    const { publisherEmail, metadata } = feedUrls[url];
 
     if (submitCode) {
       // check verification code
@@ -339,8 +345,8 @@ async function runFeedImport(
   itunesId,
   soundcastId
 ) {
-  const {metadata, publisherEmail, verified, originalUrl} = feedObj;
-  const {publisherId, userId} = req.body;
+  const { metadata, publisherEmail, verified, originalUrl } = feedObj;
+  const { publisherId, userId } = req.body;
 
   if (!verified) {
     // verificationCode checked
@@ -391,7 +397,7 @@ async function runFeedImport(
   }
 
   // 1. create a new soundcast from the feed
-  const {title, description, author, image} = metadata;
+  const { title, description, author, image } = metadata;
   const soundcast = {
     title,
     publisherEmail,
@@ -406,7 +412,7 @@ async function runFeedImport(
     fromParsedFeed: true, // this soundcast is imported from a RSS feed
     forSale: false,
     landingPage: true,
-    prices: [{billingCycle: 'free', price: 'free'}],
+    prices: [{ billingCycle: 'free', price: 'free' }],
     published: isPublished, // set this to true from client after ownership is verified
     verified: isVerified, // ownership verification, set to true from client after ownership is verified
     showSubscriberCount: false,
@@ -467,7 +473,7 @@ async function runFeedImport(
       }
       if (name) {
         try {
-          await database.Category.create({name, soundcastId});
+          await database.Category.create({ name, soundcastId });
         } catch (err) {
           logErr(`Category create ${err}`);
         }
@@ -522,7 +528,7 @@ async function runFeedImport(
 
   // 2-c. add to postgres
   database.Soundcast.findOrCreate({
-    where: {soundcastId},
+    where: { soundcastId },
     defaults: postgresSoundcast,
   })
     .then(async data => {
@@ -568,7 +574,7 @@ async function addFeedEpisode(
   metadata,
   i
 ) {
-  const {title, description, summary, date, image, enclosures} = item;
+  const { title, description, summary, date, image, enclosures } = item;
   let duration = null;
   if (item['itunes:duration'] && item['itunes:duration']['#']) {
     // duration not empty
@@ -640,7 +646,7 @@ async function addFeedEpisode(
     .set(true);
   // add to postgres
   database.Episode.findOrCreate({
-    where: {episodeId},
+    where: { episodeId },
     defaults: {
       episodeId,
       soundcastId,
@@ -669,7 +675,7 @@ async function feedInterval() {
     });
     for (const item of podcasts) {
       await new Promise(resolve => {
-        const {soundcastId} = item;
+        const { soundcastId } = item;
         // 2. for each item, if it's published, parse the feedUrl again,
         //    and find feed items that are created after the last time feed was parsed
         if (item.published) {
@@ -684,8 +690,8 @@ async function feedInterval() {
               .once('value');
             const soundcastVal = soundcastObj.val();
             let i = Object.keys(soundcastVal.episodes).length; // episodes count
-            const {metadata} = results;
-            const {userId, publisherId} = item;
+            const { metadata } = results;
+            const { userId, publisherId } = item;
 
             results.feedItems.sort((a, b) => {
               // sort feedItems by date or pubdate or pubDate
@@ -740,4 +746,4 @@ if (process.env.NODE_ENV !== 'dev' || process.env.NODE_ENV == 'staging') {
   setTimeout(feedInterval, 30 * 1000); // 30 seconds after app starts
 }
 
-module.exports = {getFeed, parseFeed, runFeedImport};
+module.exports = { getFeed, parseFeed, runFeedImport };
