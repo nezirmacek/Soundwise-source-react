@@ -1,3 +1,12 @@
+// Run options:
+// $ CREATE_PODCASTIDS=true  NODE_ENV=dev node iTunesUrls.js
+// $ RUN_IMPORT=true         NODE_ENV=dev node iTunesUrls.js
+
+if (!process.env.CREATE_PODCASTIDS && !process.env.RUN_IMPORT) {
+  return console.log('No correct prefix was found, exiting');
+}
+
+const fs = require('fs');
 const request = require('request');
 const cheerio = require('cheerio');
 const firebase = require('firebase-admin');
@@ -39,177 +48,215 @@ function logError(err) {
   process.exit();
 }
 
-async function runImport(links) {
-  // links = [links[0]]; // Test first
-  for (const link of links) {
-    console.log(`Loading link ${link}`);
-    await new Promise(resolve =>
-      request.get(link, async (err, res, body) => {
-        if (err) {
-          return logError(`request.get link ${link} ${err}`);
-        }
-        const $ = cheerio.load(body);
-        loadPodcasts($); // load links from main page
+const createPodcastIds = async links => {
+  try {
+    // links = [links[0]]; // Test first
 
-        // LETTERS
-        const letters = Array.from($('#selectedgenre > .list.alpha > li > a')); // 26 letters + '#'
-        if (letters.length !== 27) {
-          console.log(
-            `Error: iTunesUrls.js wrong letters length ${letters.length}`
-          );
-          return process.exit();
-        }
-        for (const letter of letters) {
-          // for (const letter of letters.slice(0, 1)) { // Test letter A
-          const href = letter.attribs.href;
-          process.stdout.write(`Loading letter ${letter.children[0].data}: 1`);
-          await new Promise(resolve =>
-            request.get(href, async (err, res, body) => {
-              if (err) {
-                return logError(`request.get letter ${href} ${err}`);
-              }
+    for (const link of links) {
+      console.log(`Loading link ${link}`);
+      await new Promise(resolve =>
+        request.get(link, async (err, res, body) => {
+          if (err) {
+            return logError(`request.get link ${link} ${err}`);
+          }
+          const $ = cheerio.load(body);
+          loadPodcasts($); // load links from main page
 
-              // NUMBERS
-              const $ = cheerio.load(body);
-              loadPodcasts($); // first page loading
-              const pages = Array.from(
-                $('#selectedgenre > .list.paginate')
-                  .first()
-                  .find('li > a')
-              );
-              if (pages.length) {
-                // have pagination
-                for (const page of pages) {
-                  // page numbers
-                  if (
-                    page.children[0].data !== '1' &&
-                    page.children[0].data !== 'Next'
-                  ) {
-                    process.stdout.write(',' + page.children[0].data);
-                    const href = page.attribs.href;
-                    await new Promise(resolve =>
-                      request.get(href, async (err, res, body) => {
-                        if (err) {
-                          return logError(`request.get page ${href} ${err}`);
-                        }
-                        loadPodcasts(cheerio.load(body));
-                        resolve();
-                      })
-                    );
+          // LETTERS
+          const letters = Array.from(
+            $('#selectedgenre > .list.alpha > li > a')
+          ); // 26 letters + '#'
+          if (letters.length !== 27) {
+            console.log(
+              `Error: iTunesUrls.js wrong letters length ${letters.length}`
+            );
+            return process.exit();
+          }
+          for (const letter of letters) {
+            // for (const letter of letters.slice(0, 1)) { // Test letter A
+            const href = letter.attribs.href;
+            const sign = letter.children[0].data;
+            process.stdout.write(`Loading letter ${sign}: 1`);
+            // if (sign !== 'Z') {
+            //   continue;
+            // }
+            await new Promise(resolve =>
+              request.get(href, async (err, res, body) => {
+                if (err) {
+                  return logError(`request.get letter ${sign} ${href} ${err}`);
+                }
+
+                // NUMBERS
+                const $ = cheerio.load(body);
+                loadPodcasts($); // first page loading
+                const pages = Array.from(
+                  $('#selectedgenre > .list.paginate')
+                    .first()
+                    .find('li > a')
+                );
+                if (pages.length) {
+                  // have pagination
+                  for (const page of pages) {
+                    // page numbers
+                    if (
+                      page.children[0].data !== '1' &&
+                      page.children[0].data !== 'Next'
+                    ) {
+                      process.stdout.write(',' + page.children[0].data);
+                      const href = page.attribs.href;
+                      await new Promise(resolve =>
+                        request.get(href, async (err, res, body) => {
+                          if (err) {
+                            return logError(`request.get page ${href} ${err}`);
+                          }
+                          loadPodcasts(cheerio.load(body));
+                          resolve();
+                        })
+                      );
+                    }
                   }
                 }
-              }
-              process.stdout.write(`\n`); // new line
-              resolve();
-            })
-          );
-        }
-        resolve();
-      })
-    );
-  }
-  console.log(`Obtained ${Object.keys(podcastIds).length} podcast ids`);
-
-  // const ids = Object.keys(podcastIds);
-  const ids = [Object.keys(podcastIds)[0]]; // Test first
-  for (const itunesId of ids) {
-    await new Promise(resolve => {
-      request.get(
-        `https://itunes.apple.com/lookup?id=${itunesId}&entity=podcast`,
-        (err, res, body) => {
-          if (err) {
-            return logError(`request.get lookup ${itunesId} ${err}`);
+                process.stdout.write(`\n`); // new line
+                resolve();
+              })
+            );
           }
-          try {
-            const feedUrl = JSON.parse(body).results[0].feedUrl;
-            const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
-            const url = urlParsed.host + urlParsed.pathname; // use url as a key
-            // Send request to feedUrl, and parse the feed data
-            console.log(`getFeed request ${itunesId} ${feedUrl}`);
-            getFeed(feedUrl, async (err, results) => {
-              if (err) {
-                return logError(`getFeed obtaining feed ${feedUrl} ${err}`);
-              }
-              const { metadata, feedItems } = results;
-              const itunesEmail =
-                metadata['itunes:owner'] && // same block as in parseFeed.js
-                metadata['itunes:owner']['itunes:email'] &&
-                metadata['itunes:owner']['itunes:email']['#'];
-              const managingEmail =
-                metadata['rss:managingeditor'] &&
-                metadata['rss:managingeditor']['email'];
-              const publisherEmail = itunesEmail || managingEmail || null;
-
-              const feedObj = {
-                metadata,
-                feedItems,
-                publisherEmail,
-                verified: true,
-                originalUrl: feedUrl,
-              };
-
-              // Since these new soundcasts don’t have publishers/users they are associated with, we need to create a new publisher for each of them:
-              const soundcastId = `${moment().format('x')}s`;
-              const publisherId = `${moment().format('x')}p`;
-              const soundcastObj = {};
-              soundcastObj[soundcastId] = true;
-              const publisherName = metadata.title; // name(?) TODO check
-              let newPublisher = {
-                name: publisherName,
-                unAssigned: true, // this publisher hasn't been claimed by any user
-                imageUrl: metadata.image.url,
-                email: publisherEmail,
-                soundcasts: [soundcastObj], // [{id of the new soundcast: true}]
-              };
-
-              await firebase
-                .database()
-                .ref(`publishers/${publisherId}`)
-                .set(newPublisher);
-
-              // mock req and res objects
-              const req = {
-                body: {
-                  publisherId,
-                  publisherName,
-                  userId: 'Soundcast_userId_iTunesUrls',
-                },
-              };
-              const res = {
-                send: msg => console.log(`iTunesUrls resObject ${msg}`),
-                status: status => ({
-                  send: msg =>
-                    console.log(`iTunesUrls resObject ${status} ${msg}`),
-                }),
-              };
-
-              // since the imported podcasts don't have an active Soundwise user associated with it, we'll need to set verified = false under the soundcast node. also please set published = false.
-              const isPublished = false,
-                isVerified = false,
-                isClaimed = false;
-              // Save theses podcasts and their episodes as new soundcasts and episodes in our firebase and postgres databases
-              // Save the podcasts and feedUrl under the importedFeeds node in firebase
-              await runFeedImport(
-                req,
-                res,
-                url,
-                feedObj,
-                isPublished,
-                isVerified,
-                isClaimed,
-                null,
-                itunesId,
-                soundcastId
-              );
-              resolve();
-            });
-          } catch (err) {
-            return logError(`catch ${body} ${err}`);
-          }
-        }
+          resolve();
+        })
       );
-    });
-  } // for itunesId of ids
+    }
+    const ids = Object.keys(podcastIds);
+    console.log(`Saving podcastIds file (${ids.length})`);
+    fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
+  } catch (err) {
+    console.log(`Error createPodcastIds ${err}`);
+  }
+  process.exit();
+};
+if (process.env.CREATE_PODCASTIDS) {
+  setTimeout(() => createPodcastIds(links), 500);
+}
+
+const runImport = async () => {
+  try {
+    let ids = [];
+    try {
+      ids = JSON.parse(fs.readFileSync('podcastIds').toString()); // ids cache file
+    } catch (err) {}
+    if (!ids.length) {
+      return console.log(
+        `Can't load podcastIds file, run CREATE_PODCASTIDS block first`
+      );
+    }
+    console.log(`Loaded podcastIds file ${ids.length}`); // ids cache file
+
+    // ids = [ids[0]]; // Test first
+
+    for (const itunesId of ids) {
+      await new Promise(resolve => {
+        request.get(
+          `https://itunes.apple.com/lookup?id=${itunesId}&entity=podcast`,
+          (err, res, body) => {
+            if (err) {
+              return logError(`request.get lookup ${itunesId} ${err}`);
+            }
+            try {
+              const feedUrl = JSON.parse(body).results[0].feedUrl;
+              const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
+              const url = urlParsed.host + urlParsed.pathname; // use url as a key
+              // Send request to feedUrl, and parse the feed data
+              console.log(`getFeed request ${itunesId} ${feedUrl}`);
+              getFeed(feedUrl, async (err, results) => {
+                if (err) {
+                  return logError(`getFeed obtaining feed ${feedUrl} ${err}`);
+                }
+                const { metadata, feedItems } = results;
+                const itunesEmail =
+                  metadata['itunes:owner'] && // same block as in parseFeed.js
+                  metadata['itunes:owner']['itunes:email'] &&
+                  metadata['itunes:owner']['itunes:email']['#'];
+                const managingEmail =
+                  metadata['rss:managingeditor'] &&
+                  metadata['rss:managingeditor']['email'];
+                const publisherEmail = itunesEmail || managingEmail || null;
+
+                const feedObj = {
+                  metadata,
+                  feedItems,
+                  publisherEmail,
+                  verified: true,
+                  originalUrl: feedUrl,
+                };
+
+                // Since these new soundcasts don’t have publishers/users they are associated with, we need to create a new publisher for each of them:
+                const soundcastId = `${moment().format('x')}s`;
+                const publisherId = `${moment().format('x')}p`;
+                const soundcastObj = {};
+                soundcastObj[soundcastId] = true;
+                const publisherName = metadata.title; // name(?) TODO check
+                let newPublisher = {
+                  name: publisherName,
+                  unAssigned: true, // this publisher hasn't been claimed by any user
+                  imageUrl: metadata.image.url,
+                  email: publisherEmail,
+                  soundcasts: [soundcastObj], // [{id of the new soundcast: true}]
+                };
+
+                await firebase
+                  .database()
+                  .ref(`publishers/${publisherId}`)
+                  .set(newPublisher);
+
+                // mock req and res objects
+                const req = {
+                  body: {
+                    publisherId,
+                    publisherName,
+                    userId: 'Soundcast_userId_iTunesUrls',
+                  },
+                };
+                const res = {
+                  send: msg => console.log(`iTunesUrls resObject ${msg}`),
+                  status: status => ({
+                    send: msg =>
+                      console.log(`iTunesUrls resObject ${status} ${msg}`),
+                  }),
+                };
+
+                // since the imported podcasts don't have an active Soundwise user associated with it, we'll need to set verified = false under the soundcast node. also please set published = false.
+                const isPublished = false,
+                  isVerified = false,
+                  isClaimed = false;
+                // Save theses podcasts and their episodes as new soundcasts and episodes in our firebase and postgres databases
+                // Save the podcasts and feedUrl under the importedFeeds node in firebase
+                await runFeedImport(
+                  req,
+                  res,
+                  url,
+                  feedObj,
+                  isPublished,
+                  isVerified,
+                  isClaimed,
+                  null,
+                  itunesId,
+                  soundcastId
+                );
+                resolve();
+              });
+            } catch (err) {
+              return logError(`catch ${body} ${err}`);
+            }
+          }
+        );
+      });
+    } // for itunesId of ids
+  } catch (err) {
+    console.log(`Error runImport ${err}`);
+  }
+  process.exit();
+};
+if (process.env.RUN_IMPORT) {
+  runImport();
 }
 
 const links = [
@@ -281,5 +328,3 @@ const links = [
   'https://itunes.apple.com/us/genre/podcasts-technology-software-how-to/id1480?mt=2',
   'https://itunes.apple.com/us/genre/podcasts-technology-tech-news/id1448?mt=2',
 ];
-
-runImport(links);
