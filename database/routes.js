@@ -172,18 +172,9 @@ module.exports = app => {
 
   app.delete('/api/comments/:id', inspectors.deleteComment);
 
-<<<<<<< HEAD
   app.put('/api/comments/:id', inspectors.editComment);
 
   app.post('/api/likes', inspectors.addLike);
 
   app.delete('/api/likes/:id', inspectors.deleteLike);
-=======
-  app.post('/api/comment', inspectors.addComment);
-  app.put('/api/comments/:id', (req, res) => inspectors.editComment(req, res));
-  // app.put('/api/comment', inspectors.editComment);
-  app.delete('/api/comment', inspectors.deleteComment);
-  app.post('/api/like', inspectors.addLike);
-  app.delete('/api/like', inspectors.deleteLike);
->>>>>>> e4d2bf9f08cccff996a9d2b804025265687c8e0f
 };
