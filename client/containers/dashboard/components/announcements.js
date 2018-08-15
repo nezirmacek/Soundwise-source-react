@@ -204,6 +204,8 @@ export default class Announcements extends Component {
             console.log('ERROR adding announcement: ', err);
           }
         );
+      } else {
+        alert('Announcement not sent!');
       }
     });
 
