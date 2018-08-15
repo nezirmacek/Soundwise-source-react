@@ -207,7 +207,9 @@ async function parseFeed(req, res) {
       return res.send('Success_resend');
     }
 
-    // if the feed has already been imported but it hasn't been "claimed", then we don't need to call the runFeedImport function after user signs up. We just need to assign the feed's soundcast id and its publisher id to the user.
+    // if the feed has already been imported but it hasn't been "claimed",
+    // then we don't need to call the runFeedImport function after user signs up.
+    // We just need to assign the feed's soundcast id and its publisher id to the user.
     if (importFeedUrl) {
       await firebase
         .database()
@@ -675,75 +677,68 @@ async function feedInterval() {
     });
     for (const item of podcasts) {
       await new Promise(resolve => {
-        const { soundcastId } = item;
         // 2. for each item, if it's published, parse the feedUrl again,
         //    and find feed items that are created after the last time feed was parsed
-        if (item.published) {
-          getFeed(item.originalUrl, async (err, results) => {
-            if (err) {
-              logErr(`feedInterval getFeed ${err}`);
-              return resolve();
-            }
-            const soundcastObj = await firebase
-              .database()
-              .ref(`soundcasts/${soundcastId}`)
-              .once('value');
-            const soundcastVal = soundcastObj.val();
-            let i = Object.keys(soundcastVal.episodes).length; // episodes count
-            const { metadata } = results;
-            const { userId, publisherId } = item;
-
-            results.feedItems.sort((a, b) => {
-              // sort feedItems by date or pubdate or pubDate
-              return (
-                (a.date || a.pubdate || a.pubDate) -
-                (b.date || b.pubdate || b.pubDate)
-              );
-            });
-
-            for (const feed of results.feedItems) {
-              const pub_date = Number(
-                moment(feed.pubdate || feed.pubDate).format('X')
-              );
-              if (pub_date && pub_date > item.updated) {
-                // 3. create new episodes from the new feed items, and add them to their respective soundcast
-                //    *episode.index for the new episodes should be the number of existing episodes
-                //     in the  soundcast + 1
-                const soundcast = {};
-                soundcast.imageURL =
-                  metadata && metadata.image && metadata.image.url;
-                soundcast.title = metadata && metadata.title;
-                await addFeedEpisode(
-                  feed,
-                  userId,
-                  publisherId,
-                  soundcastId,
-                  soundcast,
-                  metadata,
-                  i
-                );
-                i++;
-                item.updated = pub_date;
-                await item.save();
-              }
-            }
-            resolve();
-          });
-        } else {
-          resolve();
+        if (!item.published) {
+          return resolve();
         }
+        getFeed(item.originalUrl, async (err, results) => {
+          if (err) {
+            logErr(`feedInterval getFeed ${err}`);
+            return resolve();
+          }
+          const soundcastObj = await firebase
+            .database()
+            .ref(`soundcasts/${item.soundcastId}`)
+            .once('value');
+          const soundcastVal = soundcastObj.val();
+          let i = Object.keys(soundcastVal.episodes).length; // episodes count
+          const { metadata } = results;
+
+          results.feedItems.sort((a, b) => {
+            // sort feedItems by date or pubdate or pubDate
+            return (
+              (a.date || a.pubdate || a.pubDate) -
+              (b.date || b.pubdate || b.pubDate)
+            );
+          });
+
+          for (const feed of results.feedItems) {
+            const pub_date = Number(
+              moment(feed.pubdate || feed.pubDate).format('X')
+            );
+            if (pub_date && pub_date > item.updated) {
+              // 3. create new episodes from the new feed items, and add them to their respective soundcast
+              //    *episode.index for the new episodes should be the number of existing episodes
+              //     in the  soundcast + 1
+              const soundcast = {};
+              soundcast.imageURL =
+                metadata && metadata.image && metadata.image.url;
+              soundcast.title = metadata && metadata.title;
+              await addFeedEpisode(
+                feed,
+                item.userId,
+                item.publisherId,
+                item.soundcastId,
+                soundcast,
+                metadata,
+                i
+              );
+              i++;
+              item.updated = pub_date;
+              await item.save();
+            }
+          }
+          resolve();
+        });
       });
     }
     offset += 3000; // step
   }
-
-  // 4. repeat the update checking every hour (what's the best way to do this? Assuming the number of feeds that need to be updated will eventually get to around 500,000. Will it be a problem for the server?)
-  setTimeout(feedInterval, 3600 * 1000); // hour
+  // 4. repeat the update checking every day (what's the best way to do this?
+  // Assuming the number of feeds that need to be updated will eventually get
+  // to around 500,000. Will it be a problem for the server?)
+  // - see /server/boot/cron-jobs-v2.js
 }
 
-if (process.env.NODE_ENV !== 'dev') {
-  console.log('Starting feedInterval');
-  setTimeout(feedInterval, 30 * 1000); // 30 seconds after app starts
-}
-
-module.exports = { getFeed, parseFeed, runFeedImport };
+module.exports = { getFeed, parseFeed, runFeedImport, feedInterval };

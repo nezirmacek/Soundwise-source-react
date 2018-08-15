@@ -1,25 +1,14 @@
-// Run options:
-// $ CREATE_PODCASTIDS=true  NODE_ENV=dev node iTunesUrls.js
-// $ RUN_IMPORT=true         NODE_ENV=dev node iTunesUrls.js
-
-if (!process.env.CREATE_PODCASTIDS && !process.env.RUN_IMPORT) {
-  return console.log('No correct prefix was found, exiting');
-}
-
 const fs = require('fs');
 const request = require('request');
 const cheerio = require('cheerio');
 const firebase = require('firebase-admin');
 const nodeUrl = require('url');
 const moment = require('moment');
-const serviceAccount = require('../../serviceAccountKey.json');
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
-});
+const database = require('../../database/index');
 const { getFeed, runFeedImport } = require('./parseFeed.js');
+const { logErr } = require('./utils')('iTunesUrls.js');
 
-const podcastIds = {};
+let podcastIds = {};
 
 function loadPodcasts($) {
   // Get each podcast’s iTunes url link (href of the <a> tags) from the podcast lists
@@ -36,28 +25,24 @@ function loadPodcasts($) {
         .replace('id', '')
     );
     if (Number.isNaN(id)) {
-      console.log(`Error: iTunesUrls.js NaN ${id} ${podcast.attribs.href}`);
+      logErr(`NaN ${id} ${podcast.attribs.href}`);
     } else {
       podcastIds[id] = true; // save unique id
     }
   }
 }
 
-function logError(err) {
-  console.log(`Error: iTunesUrls.js ${err}`);
-  process.exit();
-}
-
-const createPodcastIds = async links => {
+const runUpdate = async () => {
   try {
-    // links = [links[0]]; // Test first
+    podcastIds = {}; // clear podcastIds
 
+    // Loading podcasts ids
     for (const link of links) {
       console.log(`Loading link ${link}`);
       await new Promise(resolve =>
         request.get(link, async (err, res, body) => {
           if (err) {
-            return logError(`request.get link ${link} ${err}`);
+            return logErr(`request.get link ${link} ${err}`, null, resolve);
           }
           const $ = cheerio.load(body);
           loadPodcasts($); // load links from main page
@@ -67,23 +52,22 @@ const createPodcastIds = async links => {
             $('#selectedgenre > .list.alpha > li > a')
           ); // 26 letters + '#'
           if (letters.length !== 27) {
-            console.log(
-              `Error: iTunesUrls.js wrong letters length ${letters.length}`
-            );
-            return process.exit();
+            logErr(`wrong letters length ${letters.length}`);
+            return resolve();
           }
           for (const letter of letters) {
             // for (const letter of letters.slice(0, 1)) { // Test letter A
             const href = letter.attribs.href;
             const sign = letter.children[0].data;
-            process.stdout.write(`Loading letter ${sign}: 1`);
-            // if (sign !== 'Z') {
-            //   continue;
+            // if (sign !== 'A') {
+            //   continue; // test single letter
             // }
+            process.stdout.write(`Loading letter ${sign}: 1`);
             await new Promise(resolve =>
               request.get(href, async (err, res, body) => {
                 if (err) {
-                  return logError(`request.get letter ${sign} ${href} ${err}`);
+                  logErr(`request.get letter ${sign} ${href} ${err}`);
+                  return resolve();
                 }
 
                 // NUMBERS
@@ -107,7 +91,8 @@ const createPodcastIds = async links => {
                       await new Promise(resolve =>
                         request.get(href, async (err, res, body) => {
                           if (err) {
-                            return logError(`request.get page ${href} ${err}`);
+                            logErr(`request.get page ${href} ${err}`);
+                            return resolve();
                           }
                           loadPodcasts(cheerio.load(body));
                           resolve();
@@ -125,40 +110,36 @@ const createPodcastIds = async links => {
         })
       );
     }
+
     const ids = Object.keys(podcastIds);
-    console.log(`Saving podcastIds file (${ids.length})`);
-    fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
-  } catch (err) {
-    console.log(`Error createPodcastIds ${err}`);
-  }
-  process.exit();
-};
-if (process.env.CREATE_PODCASTIDS) {
-  setTimeout(() => createPodcastIds(links), 500);
-}
 
-const runImport = async () => {
-  try {
-    let ids = [];
-    try {
-      ids = JSON.parse(fs.readFileSync('podcastIds').toString()); // ids cache file
-    } catch (err) {}
+    // console.log(`Saving podcastIds file (${ids.length})`);
+    // fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
+    // try {
+    //   ids = JSON.parse(fs.readFileSync('podcastIds').toString()); // ids cache file
+    // } catch (err) {}
+
     if (!ids.length) {
-      return console.log(
-        `Can't load podcastIds file, run CREATE_PODCASTIDS block first`
-      );
+      return logErr(`ids.length is empty`);
     }
-    console.log(`Loaded podcastIds file ${ids.length}`); // ids cache file
-
-    // ids = [ids[0]]; // Test first
-
+    console.log(`Loaded podcasts ids (${ids.length})`); // ids cache file
     for (const itunesId of ids) {
+      const podcast = await database.ImportedFeed.findOne({
+        where: { itunesId },
+      });
+
+      if (podcast) {
+        // feed was already imported, skip
+        continue;
+      }
+
       await new Promise(resolve => {
         request.get(
           `https://itunes.apple.com/lookup?id=${itunesId}&entity=podcast`,
           (err, res, body) => {
             if (err) {
-              return logError(`request.get lookup ${itunesId} ${err}`);
+              logErr(`request.get lookup ${itunesId} ${err}`);
+              return resolve();
             }
             try {
               const feedUrl = JSON.parse(body).results[0].feedUrl;
@@ -168,7 +149,8 @@ const runImport = async () => {
               console.log(`getFeed request ${itunesId} ${feedUrl}`);
               getFeed(feedUrl, async (err, results) => {
                 if (err) {
-                  return logError(`getFeed obtaining feed ${feedUrl} ${err}`);
+                  logErr(`getFeed obtaining feed ${feedUrl} ${err}`);
+                  return resolve();
                 }
                 const { metadata, feedItems } = results;
                 const itunesEmail =
@@ -188,7 +170,8 @@ const runImport = async () => {
                   originalUrl: feedUrl,
                 };
 
-                // Since these new soundcasts don’t have publishers/users they are associated with, we need to create a new publisher for each of them:
+                // Since these new soundcasts don’t have publishers/users they are associated with,
+                // we need to create a new publisher for each of them:
                 const soundcastId = `${moment().format('x')}s`;
                 const publisherId = `${moment().format('x')}p`;
                 const soundcastObj = {};
@@ -223,11 +206,14 @@ const runImport = async () => {
                   }),
                 };
 
-                // since the imported podcasts don't have an active Soundwise user associated with it, we'll need to set verified = false under the soundcast node. also please set published = false.
+                // since the imported podcasts don't have an active Soundwise user associated
+                // with it, we'll need to set verified = false under the soundcast node.
+                // also please set published = false.
                 const isPublished = false,
                   isVerified = false,
                   isClaimed = false;
-                // Save theses podcasts and their episodes as new soundcasts and episodes in our firebase and postgres databases
+                // Save theses podcasts and their episodes as new soundcasts and episodes
+                // in our firebase and postgres databases
                 // Save the podcasts and feedUrl under the importedFeeds node in firebase
                 await runFeedImport(
                   req,
@@ -244,20 +230,16 @@ const runImport = async () => {
                 resolve();
               });
             } catch (err) {
-              return logError(`catch ${body} ${err}`);
+              return logErr(`catch ${body} ${err}`, null, resolve);
             }
           }
         );
       });
     } // for itunesId of ids
   } catch (err) {
-    console.log(`Error runImport ${err}`);
+    logErr(`runImport ${err}`);
   }
-  process.exit();
 };
-if (process.env.RUN_IMPORT) {
-  runImport();
-}
 
 const links = [
   'https://itunes.apple.com/us/genre/podcasts-arts/id1301?mt=2',
@@ -328,3 +310,5 @@ const links = [
   'https://itunes.apple.com/us/genre/podcasts-technology-software-how-to/id1480?mt=2',
   'https://itunes.apple.com/us/genre/podcasts-technology-tech-news/id1448?mt=2',
 ];
+
+module.exports = { runUpdate };

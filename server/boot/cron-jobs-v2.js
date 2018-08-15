@@ -13,17 +13,28 @@ const database = require('../../database/index');
 const Sequelize = require('sequelize');
 const db = new Sequelize('soundwise', 'root', '111', {
   dialect: 'postgres',
-  port: 5433,
+  port: 5432,
   logging: false,
 });
+
+const { feedInterval } = require('../scripts/parseFeed');
+const { runUpdate } = require('../scripts/iTunesUrls');
 
 module.exports = function(app) {
   if (process.env.NODE_ENV === 'dev') {
     return; // prevent running in dev mode
   }
-  // rankSoundcasts
+  // schedule.scheduleJob('59 * * * * *', async () => { // Test each minute
+
+  // feed updating - 02 hour each day
+  schedule.scheduleJob('* * 2 * * *', async () => {
+    console.log(`Running feed updating`);
+    await feedInterval();
+    await runUpdate();
+  });
+
+  // rankSoundcasts - 01 hour each Monday
   schedule.scheduleJob('* * 1 * * 1', async () => {
-    // schedule.scheduleJob('59 * * * * *', async () => {
     const currentDate = moment().format('x');
     const soundcastsListens = [];
     const soundcastsCount = (await db.query(
@@ -58,9 +69,8 @@ module.exports = function(app) {
     }
   });
 
-  // detectSubscriptionsExpiration
+  // detectSubscriptionsExpiration - 23 hour each day
   schedule.scheduleJob('* * 23 * * *', async () => {
-    // schedule.scheduleJob('59 * * * * *', async () => {
     const currentDate = moment().format('X');
     const listeningSessions = (await db.query(
       // `SELECT "userId", "soundcastId" FROM "ListeningSessions" GROUP BY "soundcastId", "userId";`
