@@ -61,6 +61,7 @@ const parseFeed = require('./scripts/parseFeed.js').parseFeed;
 const pushNotification = require('./scripts/messaging.js').pushNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
+const subscribe = require('./scripts/handleSubscriptions.js').subscribe;
 const createStripeAccount = require('./scripts/createStripeAccounts.js')
   .createStripeAccount;
 const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
