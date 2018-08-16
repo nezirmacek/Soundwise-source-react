@@ -1,4 +1,5 @@
 'use strict';
+const moment = require('moment');
 const firebase = require('firebase-admin');
 
 const getById = id =>
@@ -14,7 +15,21 @@ const setMailingListName = (soundcastId, mailingListName, mailingListId) =>
     .ref(`soundcasts/${soundcastId}/${mailingListName}`)
     .set(mailingListId);
 
+const addSubscribedUser = (soundcastId, userId) =>
+  firebase
+    .database()
+    .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+    .set(moment().format('X'));
+
+const removeSubscribedUser = (soundcastId, userId) =>
+  firebase
+    .database()
+    .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+    .remove();
+
 module.exports = {
   getById,
   setMailingListName,
+  addSubscribedUser,
+  removeSubscribedUser,
 };
