@@ -38,6 +38,7 @@ const runUpdate = async () => {
 
     // Loading all podcasts ids
     for (const link of links) {
+      // break;
       console.log(`Loading link ${link}`);
       await new Promise(resolve =>
         request.get(link, async (err, res, body) => {
@@ -113,10 +114,9 @@ const runUpdate = async () => {
 
     let ids = Object.keys(podcastIds);
 
-    // console.log(`Saving podcastIds file (${ids.length})`);
-    // fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
     // try {
-    //   ids = JSON.parse(fs.readFileSync('/root/podcastIds').toString()); // ids cache file
+    //   // ids = JSON.parse(fs.readFileSync('/root/podcastIds').toString()); // ids cache file
+    //   ids = JSON.parse(fs.readFileSync('/root/newPodcastIds').toString()); // ids cache file
     // } catch (err) {}
 
     if (!ids.length) {
@@ -127,6 +127,7 @@ const runUpdate = async () => {
     const imported_f_count = await database.ImportedFeed.count();
     let offset = 0;
     while (offset <= imported_f_count) {
+      // break;
       const podcasts = await database.ImportedFeed.findAll({
         order: [['soundcastId', 'ASC']],
         offset,
@@ -137,11 +138,13 @@ const runUpdate = async () => {
         if (indexOf !== -1) {
           ids.splice(indexOf, 1);
         }
+        await new Promise(resolve => setTimeout(resolve, 100)); // delay
       }
       offset += 5000; // step
     }
 
     console.log(`Loaded ${ids.length} new ids`); // not imported ids
+    // fs.writeFileSync('/root/newPodcastIds', JSON.stringify(ids)); // ids cache file
 
     let count = 0;
     for (const itunesId of ids) {
@@ -188,7 +191,7 @@ const runUpdate = async () => {
                 const publisherId = `${moment().format('x')}p`;
                 const soundcastObj = {};
                 soundcastObj[soundcastId] = true;
-                const publisherName = metadata.title; // name(?) TODO check
+                const publisherName = (metadata && metadata.title) || 'Unknown';
                 let newPublisher = {
                   name: publisherName,
                   unAssigned: true, // this publisher hasn't been claimed by any user

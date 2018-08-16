@@ -57,7 +57,7 @@ function getFeed(urlfeed, cb) {
   var feedparser = new FeedParser();
   var feedItems = [];
   var metadata = '';
-  req.on('response', response => {
+  req.on('response', function(response) {
     var stream = this;
     if (response.statusCode == 200) {
       stream.pipe(feedparser);
@@ -73,12 +73,10 @@ function getFeed(urlfeed, cb) {
     metadata = meta;
     // console.log('metadata: ', meta);
   });
-  feedparser.on('readable', () => {
+  feedparser.on('readable', function() {
     try {
-      var item = this.read(),
-        flnew;
+      var item = this.read();
       if (item !== null) {
-        //2/9/17 by DW
         feedItems.push(item);
       }
     } catch (err) {

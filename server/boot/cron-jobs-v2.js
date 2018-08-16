@@ -26,8 +26,8 @@ module.exports = function(app) {
   }
   // schedule.scheduleJob('59 * * * * *', async () => { // Test each minute
 
-  // feed updating - 02 hour each day
-  schedule.scheduleJob('0 0 2 * * *', async () => {
+  // feed updating - 02 hour each month
+  schedule.scheduleJob('0 0 2 1 * *', async () => {
     console.log(`CRON_RUN runUpdate`);
     runUpdate();
   });
