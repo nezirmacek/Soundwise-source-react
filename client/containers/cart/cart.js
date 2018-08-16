@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
-import { withRouter } from 'react-router';
+
+// not in use
+import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {Link, Redirect} from 'react-router-dom';
+import {withRouter} from 'react-router';
 import * as _ from 'lodash';
 import * as firebase from 'firebase';
 import Axios from 'axios';

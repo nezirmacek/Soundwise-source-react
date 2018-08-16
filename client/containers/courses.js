@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Route, Link, Switch } from 'react-router-dom';
+
+// * not in use
+import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {Route, Link, Switch} from 'react-router-dom';
 import firebase from 'firebase';
 
 import { SoundwiseHeader } from '../components/soundwise_header';
