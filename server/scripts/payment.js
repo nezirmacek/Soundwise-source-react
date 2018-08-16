@@ -193,6 +193,12 @@ module.exports.createUpdatePlans = async (req, res) => {
 };
 
 module.exports.handleRecurringPayment = async (req, res) => {
+  handlePayment(req.body).then(
+    response => (response ? res.send(response) : res.status(500).send({}))
+  );
+};
+
+module.exports.recurringPayment = async body => {
   const {
     source,
     receipt_email,
@@ -203,7 +209,7 @@ module.exports.handleRecurringPayment = async (req, res) => {
     soundcastID,
     coupon,
     isTrial,
-  } = req.body;
+  } = body;
   if (coupon) {
     // Checking coupon
     const snapshot = await firebase
@@ -213,7 +219,7 @@ module.exports.handleRecurringPayment = async (req, res) => {
     const prices = snapshot.val();
     let errMsg = `Error cannot obtain soundcast prices ${soundcastID}`;
     if (!prices || !prices.length) {
-      return res.status(500).send(errMsg);
+      return false;
     }
     const allCoupons = [];
     prices.forEach(i => {
@@ -224,11 +230,11 @@ module.exports.handleRecurringPayment = async (req, res) => {
     const usedCoupon = allCoupons.find(i => i.code === coupon);
     if (!usedCoupon) {
       errMsg = `Error cannot obtain soundcast used coupon ${soundcastID} ${coupon}`;
-      return res.status(500).send(errMsg);
+      return false;
     }
     if (isTrial && usedCoupon.couponType !== 'trial_period') {
       errMsg = `Error coupon incorrect trial property ${soundcastID} ${coupon} ${isTrial}`;
-      return res.status(500).send(errMsg);
+      return false;
     }
   }
 
@@ -303,15 +309,15 @@ module.exports.handleRecurringPayment = async (req, res) => {
         (err, subscription) => {
           if (err) {
             console.log(err);
-            return res.status(err.raw.statusCode).send(err.raw.message);
+            return false;
           }
-          res.send(Object.assign({}, subscription, customers));
+          return Object.assign({}, subscription, customers);
         }
       );
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).send(err);
+      return false;
     });
 };
 
