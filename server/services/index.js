@@ -2,11 +2,13 @@
 
 const invititaionService = require('./invitation');
 const mailingService = require('./mailing');
+const subscriptionService = require('./subscription');
 const soundcastService = require('./soundcast');
 const userService = require('./user');
 
 module.exports = {
   invititaionService,
+  subscriptionService,
   mailingService,
   soundcastService,
   userService,
