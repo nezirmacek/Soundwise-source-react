@@ -161,7 +161,7 @@ const runUpdate = async () => {
               // Send request to feedUrl, and parse the feed data
               getFeed(feedUrl, async (err, results) => {
                 if (err) {
-                  logErr(`getFeed obtaining feed ${feedUrl} ${err}`);
+                  logErr(`getFeed ${itunesId} ${feedUrl} ${err}`);
                   return resolve();
                 }
                 const { metadata, feedItems } = results;
@@ -192,10 +192,13 @@ const runUpdate = async () => {
                 let newPublisher = {
                   name: publisherName,
                   unAssigned: true, // this publisher hasn't been claimed by any user
-                  imageUrl: metadata.image && metadata.image.url,
                   email: publisherEmail,
                   soundcasts: [soundcastObj], // [{id of the new soundcast: true}]
                 };
+
+                if (metadata && metadata.image && metadata.image.url) {
+                  newPublisher.imageUrl = metadata.image.url;
+                }
 
                 await firebase
                   .database()

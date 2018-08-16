@@ -38,21 +38,26 @@ const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 // , 1000);
 
 const timeout = 20000; // timeout 20 sec
+const wrapCallback = cb => (err, data) => {
+  if (!cb.called) {
+    // ensure callback only getting called once
+    cb.called = true;
+    cb(err, data);
+  }
+};
 // function to parse a given feed url:
-function getFeed(urlfeed, callback) {
+function getFeed(urlfeed, cb) {
+  const callback = wrapCallback(cb);
   try {
     var req = request(urlfeed, { timeout });
   } catch (err) {
     return callback(err);
   }
-  setTimeout(() => {
-    callback.timeout = true;
-    callback(`Error: parseFeed timeout ${urlfeed}`);
-  }, timeout);
+  setTimeout(() => callback(`Error: parseFeed timeout`), timeout);
   var feedparser = new FeedParser();
   var feedItems = [];
   var metadata = '';
-  req.on('response', function(response) {
+  req.on('response', response => {
     var stream = this;
     if (response.statusCode == 200) {
       stream.pipe(feedparser);
@@ -60,15 +65,15 @@ function getFeed(urlfeed, callback) {
       callback('getFeed: wrong response status: ' + response.statusCode);
     }
   });
-  req.on('error', function(err) {
+  req.on('error', err => {
     console.log('getFeed: err.message == ' + err.message);
     callback(err);
   });
-  feedparser.on('meta', function(meta) {
+  feedparser.on('meta', meta => {
     metadata = meta;
     // console.log('metadata: ', meta);
   });
-  feedparser.on('readable', function() {
+  feedparser.on('readable', () => {
     try {
       var item = this.read(),
         flnew;
@@ -81,12 +86,8 @@ function getFeed(urlfeed, callback) {
       callback(err);
     }
   });
-  feedparser.on('end', function() {
-    if (!callback.timeout) {
-      callback(undefined, { metadata, feedItems });
-    }
-  });
-  feedparser.on('error', function(err) {
+  feedparser.on('end', () => callback(undefined, { metadata, feedItems }));
+  feedparser.on('error', err => {
     console.log('getFeed: err.message == ' + err.message);
     callback(err);
   });
