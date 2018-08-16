@@ -175,7 +175,12 @@ const runUpdate = async () => {
                 const managingEmail =
                   metadata['rss:managingeditor'] &&
                   metadata['rss:managingeditor']['email'];
-                const publisherEmail = itunesEmail || managingEmail || null;
+                const publisherEmail = itunesEmail || managingEmail;
+
+                if (!publisherEmail) {
+                  logErr(`empty publisherEmail ${itunesId} ${feedUrl}`);
+                  return resolve();
+                }
 
                 const feedObj = {
                   metadata,
