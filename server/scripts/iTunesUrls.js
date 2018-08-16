@@ -36,7 +36,7 @@ const runUpdate = async () => {
   try {
     podcastIds = {}; // clear podcastIds
 
-    // Loading podcasts ids
+    // Loading all podcasts ids
     for (const link of links) {
       console.log(`Loading link ${link}`);
       await new Promise(resolve =>
@@ -111,7 +111,7 @@ const runUpdate = async () => {
       );
     }
 
-    const ids = Object.keys(podcastIds);
+    const all_ids = Object.keys(podcastIds);
 
     // console.log(`Saving podcastIds file (${ids.length})`);
     // fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
@@ -122,18 +122,21 @@ const runUpdate = async () => {
     if (!ids.length) {
       return logErr(`ids.length is empty`);
     }
-    console.log(`Loaded podcasts ids (${ids.length})`); // ids cache file
-    for (const itunesId of ids) {
+
+    const ids = [];
+    for (const itunesId of all_ids) {
       const podcast = await database.ImportedFeed.findOne({
         where: { itunesId },
       });
-
-      if (podcast) {
-        // feed was already imported, skip
-        continue;
+      if (!podcast) {
+        ids.push(itunesId);
       }
-
+    }
+    console.log(`Loaded podcasts ids (${ids.length})`); // not imported ids
+    let count = 0;
+    for (const itunesId of ids) {
       await new Promise(resolve => {
+        console.log(`Request ${itunesId} [${count++}/${ids.length}]`);
         request.get(
           `https://itunes.apple.com/lookup?id=${itunesId}&entity=podcast`,
           (err, res, body) => {
@@ -146,7 +149,6 @@ const runUpdate = async () => {
               const urlParsed = nodeUrl.parse(feedUrl.trim().toLowerCase());
               const url = urlParsed.host + urlParsed.pathname; // use url as a key
               // Send request to feedUrl, and parse the feed data
-              console.log(`getFeed request ${itunesId} ${feedUrl}`);
               getFeed(feedUrl, async (err, results) => {
                 if (err) {
                   logErr(`getFeed obtaining feed ${feedUrl} ${err}`);
@@ -180,7 +182,7 @@ const runUpdate = async () => {
                 let newPublisher = {
                   name: publisherName,
                   unAssigned: true, // this publisher hasn't been claimed by any user
-                  imageUrl: metadata.image.url,
+                  imageUrl: metadata.image && metadata.image.url,
                   email: publisherEmail,
                   soundcasts: [soundcastObj], // [{id of the new soundcast: true}]
                 };

@@ -28,9 +28,14 @@ module.exports = function(app) {
 
   // feed updating - 02 hour each day
   schedule.scheduleJob('0 0 2 * * *', async () => {
-    console.log(`CRON_RUN feed updating`);
-    await feedInterval();
-    await runUpdate();
+    console.log(`CRON_RUN runUpdate`);
+    runUpdate();
+  });
+
+  // feed interval - 03 hour each day
+  schedule.scheduleJob('0 0 3 * * *', async () => {
+    console.log(`CRON_RUN feedInterval`);
+    feedInterval();
   });
 
   // rankSoundcasts - 01 hour each Monday
