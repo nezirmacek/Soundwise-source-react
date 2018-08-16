@@ -39,9 +39,9 @@ module.exports = app => {
   });
 
   app.get('/api/messages', (req, res) => {
-    const soundcastId = JSON.parse(req.query.filter).soundcastId;
+    const query = JSON.parse(req.query.filter);
     database.Message.findAll({
-      where: { soundcastId: soundcastId },
+      where: query.where,
       order: [['createdAt', 'DESC']],
     })
       .then(data => res.send(data))

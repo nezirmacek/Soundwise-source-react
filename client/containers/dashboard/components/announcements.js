@@ -122,9 +122,7 @@ export default class Announcements extends Component {
   }
 
   sortAnnouncements(id) {
-    Axios.get('/api/messages', {
-      params: { filter: { soundcastId: id } },
-    }).then(res => {
+    Axios.get('/api/messages', { params: {filter: {where: {soundcastId: id}}}}).then(res => {
       const announcementsArr = res.data;
       this.setState({
         announcementsArr: announcementsArr ? announcementsArr : [],
