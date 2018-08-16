@@ -1,5 +1,5 @@
 'use strict';
-
+const _ = require('lodash');
 const util = require('util');
 const path = require('path');
 const fs = require('fs');
@@ -232,68 +232,55 @@ const podcastCategories = {
   },
 }; // podcastCategories
 
+const createContentPush = (type, messageId, soundcastId, title, body) => {
+  return {
+    data: { type, messageId, soundcastId },
+    notification: { title, body },
+  };
+};
+
 const getContentPush = entity => {
   const soundcastId = entity.soundcastId;
   if (entity.likeId === undefined) {
     return entity.announcementId
-      ? {
-          data: {
-            type: 'COMMENT_MESSAGE',
-            messageId: entity.announcementId,
-            soundcastId,
-          },
-          notification: {
-            title: 'Comment message',
-            body: 'text',
-          },
-        }
-      : {
-          data: {
-            type: 'COMMENT_EPISODE',
-            episodeId: entity.episodeId,
-            soundcastId,
-          },
-          notification: {
-            title: 'Comment episode',
-            body: entity.content,
-          },
-        };
+      ? createContentPush(
+          'COMMENT_MESSAGE',
+          entity.announcementId,
+          soundcastId,
+          'Comment message',
+          'text'
+        )
+      : createContentPush(
+          'COMMENT_EPISODE',
+          entity.episodeId,
+          soundcastId,
+          'Comment episode',
+          entity.content
+        );
   } else {
     return entity.announcementId
-      ? {
-          data: {
-            type: 'LIKE_MESSAGE',
-            messageId: entity.announcementId,
-            soundcastId,
-          },
-          notification: {
-            title: 'Like message',
-            body: 'text',
-          },
-        }
+      ? createContentPush(
+          'LIKE_MESSAGE',
+          entity.announcementId,
+          soundcastId,
+          'Like message',
+          'text'
+        )
       : entity.episodeId
-        ? {
-            data: {
-              type: 'LIKE_EPISODE',
-              episodeId: entity.episodeId,
-              soundcastId,
-            },
-            notification: {
-              title: 'Like episode',
-              body: 'text',
-            },
-          }
-        : {
-            data: {
-              type: 'LIKE_COMMENT',
-              messageId: entity.commentId,
-              soundcastId,
-            },
-            notification: {
-              title: 'Like comment',
-              body: 'text',
-            },
-          };
+        ? createContentPush(
+            'LIKE_EPISODE',
+            entity.episodeId,
+            soundcastId,
+            'Like episode',
+            'text'
+          )
+        : createContentPush(
+            'LIKE_COMMENT',
+            entity.commentId,
+            soundcastId,
+            'Like comment',
+            'text'
+          );
   }
 };
 
