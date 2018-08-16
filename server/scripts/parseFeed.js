@@ -37,13 +37,18 @@ const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 //   });
 // , 1000);
 
+const timeout = 20000; // timeout 20 sec
 // function to parse a given feed url:
 function getFeed(urlfeed, callback) {
   try {
-    var req = request(urlfeed, { timeout: 20000 }); // timeout 20 sec
+    var req = request(urlfeed, { timeout });
   } catch (err) {
     return callback(err);
   }
+  setTimeout(() => {
+    callback.timeout = true;
+    callback(`Error: parseFeed timeout ${urlfeed}`);
+  }, timeout);
   var feedparser = new FeedParser();
   var feedItems = [];
   var metadata = '';
@@ -77,7 +82,9 @@ function getFeed(urlfeed, callback) {
     }
   });
   feedparser.on('end', function() {
-    callback(undefined, { metadata, feedItems });
+    if (!callback.timeout) {
+      callback(undefined, { metadata, feedItems });
+    }
   });
   feedparser.on('error', function(err) {
     console.log('getFeed: err.message == ' + err.message);

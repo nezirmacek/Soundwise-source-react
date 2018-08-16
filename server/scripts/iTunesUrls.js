@@ -111,28 +111,38 @@ const runUpdate = async () => {
       );
     }
 
-    const all_ids = Object.keys(podcastIds);
+    let ids = Object.keys(podcastIds);
 
     // console.log(`Saving podcastIds file (${ids.length})`);
     // fs.writeFileSync('podcastIds', JSON.stringify(ids)); // ids cache file
     // try {
-    //   ids = JSON.parse(fs.readFileSync('podcastIds').toString()); // ids cache file
+    //   ids = JSON.parse(fs.readFileSync('/root/podcastIds').toString()); // ids cache file
     // } catch (err) {}
 
     if (!ids.length) {
       return logErr(`ids.length is empty`);
     }
 
-    const ids = [];
-    for (const itunesId of all_ids) {
-      const podcast = await database.ImportedFeed.findOne({
-        where: { itunesId },
+    // filtering already imported ids
+    const imported_f_count = await database.ImportedFeed.count();
+    let offset = 0;
+    while (offset <= imported_f_count) {
+      const podcasts = await database.ImportedFeed.findAll({
+        order: [['soundcastId', 'ASC']],
+        offset,
+        limit: 5000, // step
       });
-      if (!podcast) {
-        ids.push(itunesId);
+      for (const item of podcasts) {
+        const indexOf = ids.indexOf(item.itunesId);
+        if (indexOf !== -1) {
+          ids.splice(indexOf, 1);
+        }
       }
+      offset += 5000; // step
     }
-    console.log(`Loaded podcasts ids (${ids.length})`); // not imported ids
+
+    console.log(`Loaded ${ids.length} new ids`); // not imported ids
+
     let count = 0;
     for (const itunesId of ids) {
       await new Promise(resolve => {
