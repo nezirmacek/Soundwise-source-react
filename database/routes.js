@@ -1,8 +1,11 @@
 'use strict';
 
 const database = require('./index');
-const soundcastService = require('../server/services').soundcastService;
-const inspectors = require('./inspectors');
+const {
+  commentService,
+  likeService,
+  soundcastService,
+} = require('../server/services');
 
 module.exports = app => {
   app.post('/api/user', (req, res) => {
@@ -168,13 +171,13 @@ module.exports = app => {
       .catch(err => res.status(500).send(err));
   });
 
-  app.post('/api/comments', inspectors.addComment);
+  app.post('/api/comments', commentService.addComment);
 
-  app.delete('/api/comments/:id', inspectors.deleteComment);
+  app.delete('/api/comments/:id', commentService.deleteComment);
 
-  app.put('/api/comments/:id', inspectors.editComment);
+  app.put('/api/comments/:id', commentService.editComment);
 
-  app.post('/api/likes', inspectors.addLike);
+  app.post('/api/likes', likeService.addLike);
 
-  app.delete('/api/likes/:id', inspectors.deleteLike);
+  app.delete('/api/likes/:id', likeService.deleteLike);
 };
