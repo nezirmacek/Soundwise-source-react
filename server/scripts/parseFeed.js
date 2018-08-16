@@ -387,15 +387,13 @@ async function runFeedImport(
   }
   if (!last_update || moment(last_update).format('X') === 'Invalid date') {
     // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
-    logErr(`can't obtain last_update ${originalUrl}`);
-    return;
+    return logErr(`can't obtain last_update ${originalUrl}`);
   }
   if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) {
     // have empty enclosures
     // If enclosures is empty, we shouldn't import the item.
     // We should only import items that have an audio file in enclosures.
-    logErr(`empty enclosures array ${originalUrl}`);
-    return;
+    return logErr(`empty enclosures array ${originalUrl}`);
   }
 
   // 1. create a new soundcast from the feed
@@ -633,11 +631,8 @@ async function addFeedEpisode(
     publicEpisode: true,
     publisherID: publisherId,
     soundcastID: soundcastId,
+    url: enclosures[0].url,
   };
-
-  if (enclosures && enclosures.length && enclosures[0].url) {
-    episode.url = enclosures[0].url;
-  }
 
   const episodeId = `${moment().format('x')}e`;
   // add to episodes node in firebase
@@ -711,7 +706,11 @@ async function feedInterval() {
             const pub_date = Number(
               moment(feed.pubdate || feed.pubDate).format('X')
             );
-            if (pub_date && pub_date > item.updated) {
+            const hasEnclosures =
+              feed.enclosures &&
+              feed.enclosures.length &&
+              feed.enclosures[0].url;
+            if (hasEnclosures && pub_date && pub_date > item.updated) {
               // 3. create new episodes from the new feed items, and add them to their respective soundcast
               //    *episode.index for the new episodes should be the number of existing episodes
               //     in the  soundcast + 1
