@@ -1,6 +1,8 @@
 'use strict';
 
 const commonManager = require('./common');
+const commentManager = require('./comment');
+const likeManager = require('./like');
 const invitationManager = require('./invitation');
 const mailingManager = require('./mailing');
 const publisherManager = require('./publisher');
@@ -9,6 +11,8 @@ const userManager = require('./user');
 
 module.exports = {
   commonManager,
+  commentManager,
+  likeManager,
   invitationManager,
   mailingManager,
   publisherManager,
