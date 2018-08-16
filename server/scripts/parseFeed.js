@@ -633,8 +633,12 @@ async function addFeedEpisode(
     publicEpisode: true,
     publisherID: publisherId,
     soundcastID: soundcastId,
-    url: enclosures[0].url,
   };
+
+  if (enclosures && enclosures.length && enclosures[0].url) {
+    episode.url = enclosures[0].url;
+  }
+
   const episodeId = `${moment().format('x')}e`;
   // add to episodes node in firebase
   await firebase
