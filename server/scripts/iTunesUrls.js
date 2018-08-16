@@ -62,7 +62,7 @@ const runUpdate = async () => {
             // if (sign !== 'A') {
             //   continue; // test single letter
             // }
-            process.stdout.write(`Loading letter ${sign}: 1`);
+            // process.stdout.write(`Loading letter ${sign}: 1`);
             await new Promise(resolve =>
               request.get(href, async (err, res, body) => {
                 if (err) {
@@ -86,7 +86,7 @@ const runUpdate = async () => {
                       page.children[0].data !== '1' &&
                       page.children[0].data !== 'Next'
                     ) {
-                      process.stdout.write(',' + page.children[0].data);
+                      // process.stdout.write(',' + page.children[0].data);
                       const href = page.attribs.href;
                       await new Promise(resolve =>
                         request.get(href, async (err, res, body) => {
@@ -101,7 +101,7 @@ const runUpdate = async () => {
                     }
                   }
                 }
-                process.stdout.write(`\n`); // new line
+                // process.stdout.write(`\n`); // new line
                 resolve();
               })
             );
