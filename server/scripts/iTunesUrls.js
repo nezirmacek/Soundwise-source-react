@@ -167,6 +167,11 @@ const runUpdate = async () => {
                   logErr(`getFeed ${itunesId} ${feedUrl} ${err}`);
                   return resolve();
                 }
+                if (!results || !results.metadata || !results.metadata.title) {
+                  logErr(`empty metadata.title ${itunesId} ${feedUrl}`);
+                  return resolve();
+                }
+
                 const { metadata, feedItems } = results;
                 const itunesEmail =
                   metadata['itunes:owner'] && // same block as in parseFeed.js
@@ -176,7 +181,6 @@ const runUpdate = async () => {
                   metadata['rss:managingeditor'] &&
                   metadata['rss:managingeditor']['email'];
                 const publisherEmail = itunesEmail || managingEmail;
-
                 if (!publisherEmail) {
                   logErr(`empty publisherEmail ${itunesId} ${feedUrl}`);
                   return resolve();
@@ -196,9 +200,8 @@ const runUpdate = async () => {
                 const publisherId = `${moment().format('x')}p`;
                 const soundcastObj = {};
                 soundcastObj[soundcastId] = true;
-                const publisherName = (metadata && metadata.title) || 'Unknown';
-                let newPublisher = {
-                  name: publisherName,
+                const newPublisher = {
+                  name: metadata.title,
                   unAssigned: true, // this publisher hasn't been claimed by any user
                   email: publisherEmail,
                   soundcasts: [soundcastObj], // [{id of the new soundcast: true}]
@@ -217,7 +220,7 @@ const runUpdate = async () => {
                 const req = {
                   body: {
                     publisherId,
-                    publisherName,
+                    publisherName: metadata.title,
                     userId: 'Soundcast_userId_iTunesUrls',
                   },
                 };
