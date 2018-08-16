@@ -28,13 +28,14 @@ module.exports = function(app) {
 
   // feed updating - 02 hour each day
   schedule.scheduleJob('0 0 2 * * *', async () => {
-    console.log(`Running feed updating`);
+    console.log(`CRON_RUN feed updating`);
     await feedInterval();
     await runUpdate();
   });
 
   // rankSoundcasts - 01 hour each Monday
   schedule.scheduleJob('0 0 1 * * 1', async () => {
+    console.log('CRON_RUN rankSoundcasts');
     const currentDate = moment().format('x');
     const soundcastsListens = [];
     const soundcastsCount = (await db.query(
@@ -71,6 +72,7 @@ module.exports = function(app) {
 
   // detectSubscriptionsExpiration - 23 hour each day
   schedule.scheduleJob('0 0 23 * * *', async () => {
+    console.log('CRON_RUN detectSubscriptionsExpiration');
     const currentDate = moment().format('X');
     const listeningSessions = (await db.query(
       // `SELECT "userId", "soundcastId" FROM "ListeningSessions" GROUP BY "soundcastId", "userId";`
