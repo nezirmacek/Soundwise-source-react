@@ -75,7 +75,7 @@ const subscibeUser = (userId, soundcastId) => {
         .set({
           billingCycle: 'one time',
           current_period_end: '4687857936',
-          date_subscribed: moment.format('X'),
+          date_subscribed: moment().format('X'),
           subscribed: true,
         });
     });

@@ -51,7 +51,7 @@ const syncMessages = require('./scripts/syncPsql.js').syncMessages;
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
 
-const sendInvite = require('./scripts/invites').sendInvite;
+const { sendInvite } = require('./scripts/invites');
 const {
   audioProcessing,
   audioProcessingReplace,
