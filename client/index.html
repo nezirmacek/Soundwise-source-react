@@ -156,18 +156,9 @@
             a.appendChild(r);
         })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
-
-<!--     <script>
-        // Check for browser support of service worker
-        if ('serviceWorker' in navigator) {
-         navigator.serviceWorker.register('/service-worker.js')
-         .then(function(registration) {
-           // Successful registration
-           // console.log('Hooray. Registration successful, scope is:', registration.scope);
-         }).catch(function(err) {
-           // Failed registration, service worker won’t be installed
-           console.log('Whoops. Service worker registration failed, error:', error);
-         });
-        }
-    </script> -->
+    <!-- begin olark code -->
+    <script type="text/javascript" async> ;(function(o,l,a,r,k,y){if(o.olark)return; r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0]; y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r); y=o.olark=function(){k.s.push(arguments);k.t.push(+new Date)}; y.extend=function(i,j){y("extend",i,j)}; y.identify=function(i){y("identify",k.i=i)}; y.configure=function(i,j){y("configure",i,j);k.c[i]=j}; k=y._={s:[],t:[+new Date],c:{},l:a}; })(window,document,"static.olark.com/jsclient/loader.js");
+    /* custom configuration goes here (www.olark.com/documentation) */
+    olark.identify('3059-475-10-2707');</script>
+    <!-- end olark code -->
 </body>
