@@ -59,7 +59,12 @@ const getUserParentComment = id =>
         .database()
         .ref(`users/${snap.val()}`)
         .once('value')
-        .then(snapshot => (snapshot.val() ? snapshot.val() : null))
+        .then(
+          snapshot =>
+            snapshot.val()
+              ? Object.assign({}, { id: snapshot.key }, snapshot.val())
+              : null
+        )
     );
 
 module.exports = {
