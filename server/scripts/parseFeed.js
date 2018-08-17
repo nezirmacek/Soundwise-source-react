@@ -382,7 +382,22 @@ async function runFeedImport(
       publisherName = snapshot.val();
     }
 
-    let feedItems = feedObj.feedItems;
+    let feedItems = (feedObj.feedItems || []).filter(i => {
+      // If enclosures is empty, we shouldn't import the item.
+      // We should only import items that have an audio file in enclosures.
+      return (
+        i.enclosures &&
+        i.enclosures.length &&
+        i.enclosures[0] &&
+        i.enclosures[0].type &&
+        i.enclosures[0].type.includes('audio')
+      );
+    });
+
+    if (!feedItems.length) {
+      return logErr(`empty feedItems array ${originalUrl}`);
+    }
+
     feedItems.sort((a, b) => {
       // sort feedItems by date or pubdate or pubDate
       return (
@@ -406,15 +421,10 @@ async function runFeedImport(
       // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
       return logErr(`can't obtain last_update ${originalUrl}`);
     }
-    if (feedItems.some(i => !i.enclosures || !i.enclosures.length)) {
-      // have empty enclosures
-      // If enclosures is empty, we shouldn't import the item.
-      // We should only import items that have an audio file in enclosures.
-      return logErr(`empty enclosures array ${originalUrl}`);
-    }
 
     // 1. create a new soundcast from the feed
-    const { title, description, author, image } = metadata;
+    const { description, author, image } = metadata;
+    const title = entities.decode(metadata.title);
     const soundcast = {
       title,
       publisherEmail,
@@ -423,8 +433,9 @@ async function runFeedImport(
       publisherName,
       short_description: entities.decode(description),
       imageURL: image.url,
-      hostName:
-        (metadata['itunes:author'] && metadata['itunes:author']['#']) || author,
+      hostName: entities.decode(
+        (metadata['itunes:author'] && metadata['itunes:author']['#']) || author
+      ),
       last_update: moment(last_update).format('X'),
       fromParsedFeed: true, // this soundcast is imported from a RSS feed
       forSale: false,
@@ -635,7 +646,7 @@ async function addFeedEpisode(
 
     const date_created = moment(date || metadata.date).format('X');
     const episode = {
-      title,
+      title: entities.decode(title),
       coverArtUrl: image.url || soundcast.imageURL,
       creatorID: userId,
       date_created:

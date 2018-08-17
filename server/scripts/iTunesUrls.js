@@ -138,13 +138,13 @@ const runUpdate = async () => {
         if (indexOf !== -1) {
           ids.splice(indexOf, 1);
         }
-        await new Promise(resolve => setTimeout(resolve, 100)); // delay
+        await new Promise(resolve => setTimeout(resolve, 20)); // delay
       }
       offset += 5000; // step
     }
 
     console.log(`Loaded ${ids.length} new ids`); // not imported ids
-    // fs.writeFileSync('/root/newPodcastIds', JSON.stringify(ids)); // ids cache file
+    // return fs.writeFileSync('/root/newPodcastIds', JSON.stringify(ids)); // ids cache file
 
     let count = 0;
     for (const itunesId of ids) {
