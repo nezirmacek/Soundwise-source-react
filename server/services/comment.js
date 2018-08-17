@@ -39,9 +39,11 @@ const addComment = (req, res) => {
                   })
                 );
               }
-              sendMail(fbComment);
               res.send(data);
+              sendMail(fbComment);
             });
+          } else {
+            res.send(data);
           }
         })
         .catch(err => res.status(500).send(err));
