@@ -38,7 +38,7 @@ var Comment = db.define('Comment', {
   content: Sequelize.TEXT,
   userId: { type: Sequelize.STRING, allowNull: false },
   announcementId: Sequelize.STRING,
-  parentId: Sequelize.STRING,
+  parentId: { type: Sequelize.STRING, allowNull: true },
   episodeId: Sequelize.STRING,
   soundcastId: Sequelize.STRING,
   timeStamp: Sequelize.BIGINT,

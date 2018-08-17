@@ -177,6 +177,8 @@ module.exports = app => {
 
   app.put('/api/comments/:id', commentService.editComment);
 
+  app.patch('/api/comments/:id', commentService.editComment);
+
   app.post('/api/likes', likeService.addLike);
 
   app.delete('/api/likes/:id', likeService.deleteLike);

@@ -20,7 +20,6 @@ const likesCount = like => {
 };
 
 const addLike = (req, res) => {
-  console.log('add\n');
   database.Like.create(req.body)
     .then(data => {
       const like = data.dataValues;
@@ -57,7 +56,6 @@ const addLike = (req, res) => {
 
 const deleteLike = (req, res) => {
   const likeId = req.params.id;
-  console.log('delete\n');
   database.Like.find({ where: { likeId } })
     .then(data => {
       const like = data.dataValues;
@@ -69,13 +67,13 @@ const deleteLike = (req, res) => {
               where: { episodeId: like.episodeId },
             }).then(likes => {
               if (likes.length > 0) {
-                let lastLike = _.maxBy(likes, 'timeStamp');
-                likeManager
-                  .setFullNameAfterRemove(lastLike.dataValues.userId, like)
-                  .then(fullName => {
-                    likesCount(like);
-                    res.send({ fullName });
-                  });
+                const lastLike = _.maxBy(likes, 'timeStamp');
+                const userId = lastLike.dataValues.userId;
+
+                likeManager.setFullNameByUid(userId, like).then(fullName => {
+                  likesCount(like);
+                  res.send({ fullName });
+                });
               }
             });
           } else if (!!like.announcementId) {
@@ -83,13 +81,12 @@ const deleteLike = (req, res) => {
               where: { announcementId: like.announcementId },
             }).then(likes => {
               if (likes.length > 0) {
-                let lastLike = _.maxBy(likes, 'timeStamp');
-                likeManager
-                  .setFullNameAfterRemove(lastLike.dataValues.userId, like)
-                  .then(fullName => {
-                    likesCount(like);
-                    res.send({ fullName });
-                  });
+                const lastLike = _.maxBy(likes, 'timeStamp');
+                const userId = lastLike.dataValues.userId;
+                likeManager.setFullNameByUid(userId, like).then(fullName => {
+                  likesCount(like);
+                  res.send({ fullName });
+                });
               }
             });
           }
