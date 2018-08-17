@@ -26,7 +26,7 @@ const unsubscribe = (req, res) => {
   soundcastManager
     .removeSubscribedUser(() =>
       userManager
-        .setSubscribe(userId, soundcastId, false)
+        .unsubscribe(userId, soundcastId)
         .then(
           () =>
             paymentId
@@ -53,7 +53,6 @@ const unsubscribe = (req, res) => {
 };
 
 const subscribe = (req, res) => {
-  const { userId, soundcastId } = req.body;
   subscriptionService
     .addStripe(req.body)
     .then(subscribtion => addSoundcastToUser(subscribtion));
@@ -69,7 +68,7 @@ const addSoundcastToUser = (charge, soundcast, userId) => {
         .add(100, 'years')
         .format('X');
   userManager
-    .setSubscribe(userId, soundcast.soundcastId, paymentID, true, {
+    .subscribe(userId, soundcast.soundcastId, paymentID, {
       currentPeriodEnd,
       billingCycle,
       planID,
