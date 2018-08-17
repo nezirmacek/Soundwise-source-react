@@ -89,7 +89,7 @@ const signUp = ({ email, firstName, lastName, facebookId, picUrl }) => {
 
   userManager.update(
     id,
-    _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x)))
+    _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x))) // _.pickBy(userInfo, _.identity)
   );
 };
 

@@ -36,37 +36,29 @@ const updateSubscribe = (id, soundcastId, data) =>
     .ref(`users/${id}/soundcasts/${soundcastId}`)
     .update(data);
 
-const setSubscribe = (
-  userId,
-  soundcastId,
-  paymentId,
-  subscribtion,
-  { currentPeriodEnd, billingCycle, planID }
-) => {
-  const now = moment().format('X');
-  return updateSubscribe(
-    userId,
-    soundcastId,
-    subscribtion
-      ? {
-          [`/current_period_end`]: now,
-          [`/subscribed`]: subscribtion,
-          [`/paymentID`]: paymentId,
-          [`/date_subscribed`]: now,
-          [`/current_period_end`]: currentPeriodEnd,
-          [`/billingCycle`]: billingCycle,
-          [`/planID`]: planID,
-        }
-      : {
-          [`/current_period_end`]: now,
-          [`/subscribed`]: subscribtion,
-        }
-  );
+const subscribe = (userId, soundcastId) => {
+  return updateSubscribe(userId, soundcastId, {
+    subscribed: true,
+    billingCycle: 'free',
+    date_subscribed: moment().format('X'),
+    current_period_end: moment()
+      .add(100, 'years')
+      .format('X'),
+  });
 };
+
+const unsubscribe = (userId, soundcastId) => {
+  return updateSubscribe(userId, soundcastId, {
+    subscribed: false,
+    current_period_end: moment().format('X'),
+  });
+};
+
 module.exports = {
   getById,
   create,
   exists,
   update,
-  setSubscribe,
+  subscribe,
+  unsubscribe,
 };
