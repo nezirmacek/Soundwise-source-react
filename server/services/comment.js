@@ -68,7 +68,7 @@ const editComment = (req, res) => {
   })
     .then(data => {
       commentManager
-        .addComment(commentId, fbComment)
+        .updateComment(commentId, fbComment)
         .then(() => res.send(data));
     })
     .catch(err => {
