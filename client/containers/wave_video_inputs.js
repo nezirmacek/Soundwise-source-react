@@ -298,6 +298,7 @@ class _WaveVideoInputs extends Component {
       return;
     }
     const confirmIsEmail = emailValidator(email);
+    // console.log('confirmIsEmail: ', confirmIsEmail);
     if (!confirmIsEmail) {
       alert('Please enter a valid email!');
       return;
