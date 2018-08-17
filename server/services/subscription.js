@@ -12,7 +12,6 @@ const {
 } = require('../managers');
 const recurringPayment = require('../scripts/payment').recurringPayment;
 var stripe = require('stripe')(stripeKey);
-var Axios = require('Axios');
 
 const delStripeSubscriptions = paymentID => {
   return publisherManager.getById(publisher => {
