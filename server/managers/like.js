@@ -58,17 +58,19 @@ const setFullName = (like, fullName) => {
       return firebase
         .database()
         .ref(`episodes/${like.episodeId}/lastLiked`)
-        .set(fullName);
+        .set(fullName)
+        .then(() => fullName);
     } else if (like.announcementId !== undefined) {
       return firebase
         .database()
         .ref(`messages/${like.announcementId}/lastLiked`)
-        .set(fullName);
+        .set(fullName)
+        .then(() => fullName);
     }
   }
 };
 
-const setFullNameAfterRemove = (userId, like) =>
+const setFullNameByUid = (userId, like) =>
   firebase
     .database()
     .ref(`users/${userId}`)
@@ -77,21 +79,7 @@ const setFullNameAfterRemove = (userId, like) =>
       if (snapshot.val()) {
         const user = snapshot.val();
         const fullName = `${user.firstName} ${user.lastName}`;
-        if (like.episodeId !== undefined) {
-          console.log(fullName);
-          return firebase
-            .database()
-            .ref(`episodes/${like.episodeId}/lastLiked`)
-            .set(fullName)
-            .then(() => fullName);
-        } else if (like.announcementId !== undefined) {
-          console.log(fullName);
-          return firebase
-            .database()
-            .ref(`messages/${like.announcementId}/lastLiked`)
-            .set(fullName)
-            .then(() => fullName);
-        }
+        setFullName(like, fullName);
       } else {
         return false;
       }
@@ -103,5 +91,5 @@ module.exports = {
   removeLike,
   setFullName,
   setLikesCount,
-  setFullNameAfterRemove,
+  setFullNameByUid,
 };
