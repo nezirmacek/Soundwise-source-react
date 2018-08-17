@@ -204,6 +204,7 @@ app.post('/api/send_notification', pushNotification);
 app.post('/api/subscription_renewal', renewSubscription);
 app.post('/api/cancel_plan', cancelSubscription);
 app.post('/api/unsubscribe', unsubscribe);
+app.post('/api/subscribe', subscribe);
 app.use('/api/upload', multipart());
 app.post('/api/upload', function(req, res, next) {
   // console.log(req.files);

@@ -24,7 +24,8 @@ const unsubscribe = (req, res) => {
     );
 
   soundcastManager
-    .removeSubscribedUser(() =>
+    .removeSubscribedUser(soundcastId, userId)
+    .then(() =>
       userManager
         .unsubscribe(userId, soundcastId)
         .then(
