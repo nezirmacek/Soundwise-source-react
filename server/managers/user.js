@@ -36,19 +36,14 @@ const updateSubscribe = (id, soundcastId, data) =>
     .ref(`users/${id}/soundcasts/${soundcastId}`)
     .update(data);
 
-const subscribe = (
-  userId,
-  soundcastId,
-  paymentId,
-  { currentPeriodEnd, billingCycle, planID }
-) => {
+const subscribe = (userId, soundcastId) => {
   return updateSubscribe(userId, soundcastId, {
-    planID: planID,
     subscribed: true,
-    paymentID: paymentId,
-    billingCycle: billingCycle,
+    billingCycle: 'free',
     date_subscribed: moment().format('X'),
-    current_period_end: currentPeriodEnd,
+    current_period_end: moment()
+      .add(100, 'years')
+      .format('X'),
   });
 };
 

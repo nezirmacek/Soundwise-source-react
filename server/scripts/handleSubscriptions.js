@@ -53,9 +53,18 @@ const unsubscribe = (req, res) => {
 };
 
 const subscribe = (req, res) => {
-  subscriptionService
-    .addStripe(req.body)
-    .then(subscribtion => addSoundcastToUser(subscribtion));
+  const { soundcastId, userId, publisherId } = req.body;
+  soundcastManager
+    .addSubscribedUser(soundcastId, userId)
+    .then(() =>
+      userManager
+        .subscribe(userId, soundcastId)
+        .then(() =>
+          publisherManager
+            .incrementFreeSubscriberCount(publisherId)
+            .then(() => res.status(200).send({}))
+        )
+    );
 };
 
 const addSoundcastToUser = (charge, soundcast, userId) => {
