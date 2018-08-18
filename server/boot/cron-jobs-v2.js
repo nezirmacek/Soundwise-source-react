@@ -94,7 +94,7 @@ module.exports = function(app) {
         (soundcast.billingCycle !== 'free' ||
           soundcast.billingCycle !== 'one time')
       ) {
-        if (!!soundcast.current_period_end && soundcast.current_period_end < currentDate) {
+        if (!!soundcast && soundcast.current_period_end < currentDate) {
           await firebase
             .database()
             .ref(
