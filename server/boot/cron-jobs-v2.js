@@ -94,7 +94,7 @@ module.exports = function(app) {
         (soundcast.billingCycle !== 'free' ||
           soundcast.billingCycle !== 'one time')
       ) {
-        if (soundcast.current_period_end < currentDate) {
+        if (!!soundcast.current_period_end && soundcast.current_period_end < currentDate) {
           await firebase
             .database()
             .ref(
@@ -109,6 +109,9 @@ module.exports = function(app) {
               `soundcasts/${session.soundcastId}/subscribed/${session.userId}`
             )
             .remove();
+        } else {
+          console.log('soundcastId: ', snapshot.key);
+          console.log('soundcast: ', soundcast);
         }
       }
     }
