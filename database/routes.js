@@ -38,9 +38,9 @@ module.exports = app => {
       });
   });
 
-  app.get('/api/messages', (req, res) => {
+  app.get('/api/announcements', (req, res) => {
     const query = JSON.parse(req.query.filter);
-    database.Message.findAll({
+    database.Announcement.findAll({
       where: query.where,
       order: [['createdAt', 'DESC']],
     })
@@ -63,8 +63,8 @@ module.exports = app => {
       .then(data => res.send(data))
       .catch(err => res.status(500).send(err));
   });
-  app.post('/api/messages', (req, res) => {
-    database.Message.create(req.body)
+  app.post('/api/announcements', (req, res) => {
+    database.Announcement.create(req.body)
       .then(data => {
         res.send(data);
       })

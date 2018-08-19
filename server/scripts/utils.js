@@ -232,9 +232,9 @@ const podcastCategories = {
   },
 }; // podcastCategories
 
-const createContentPush = (type, messageId, soundcastId, title, body) => {
+const createContentPush = (type, announcementId, soundcastId, title, body) => {
   return {
-    data: { type, messageId, soundcastId },
+    data: { type, announcementId, soundcastId },
     notification: { title, body },
   };
 };
@@ -292,7 +292,7 @@ const getEvent = (type, entity) => {
     episodeId: entity.episodeId,
     likeId: entity.likeId,
     soundcastId: entity.soundcastId,
-    messageId: entity.messageId,
+    announcementId: entity.announcementId,
     commentId: entity.commentId,
     parentId: entity.commentId,
   };

@@ -91,6 +91,11 @@
       "model": "comment",
       "foreignKey": "commentId"
     },
+    "announcementId": {
+      "type": "belongsTo",
+      "model": "announcement",
+      "foreignKey": "announcementId"
+    },
     "users": {
       "type": "belongsTo",
       "model": "listener",

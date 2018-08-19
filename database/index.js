@@ -47,9 +47,13 @@ var Comment = db.define('Comment', {
 var Announcement = db.define('Announcement', {
   announcementId: { type: Sequelize.STRING, primaryKey: true },
   content: Sequelize.STRING,
-  userId: { type: Sequelize.STRING, allowNull: false },
   publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
+  creatorId: { type: Sequelize.STRING, allowNull: false },
+  lastLiked: { type: Sequelize.STRING, allowNull: true, defaultValue: '' },
+  likesCount: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
+  commentsCount: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
+  isPublished: Sequelize.BOOLEAN,
 });
 
 var Like = db.define('Like', {
@@ -131,15 +135,6 @@ var Payout = db.define('Payout', {
   email: { type: Sequelize.STRING }, //email address used to send paypal payout
 });
 
-var Message = db.define('Message', {
-  messageId: { type: Sequelize.STRING, primaryKey: true, allowNull: false },
-  content: { type: Sequelize.STRING, allowNull: false },
-  creatorId: { type: Sequelize.STRING, allowNull: false },
-  publisherId: { type: Sequelize.STRING, allowNull: false },
-  soundcastId: { type: Sequelize.STRING, allowNull: false },
-  isPublished: Sequelize.BOOLEAN,
-});
-
 var PlatformCharges = db.define(
   'PlatformCharges',
   {
@@ -192,7 +187,7 @@ var Event = db.define('Event', {
   episodeId: { type: Sequelize.STRING, allowNull: true },
   likeId: { type: Sequelize.STRING, allowNull: true },
   soundcastId: { type: Sequelize.STRING, allowNull: true },
-  messageId: { type: Sequelize.STRING, allowNull: true },
+  announcementId: { type: Sequelize.STRING, allowNull: true },
   publisherId: { type: Sequelize.STRING, allowNull: true },
   commentId: { type: Sequelize.STRING, allowNull: true },
   commentUserId: { type: Sequelize.STRING, allowNull: true },
@@ -324,9 +319,8 @@ var Coupon = db.define('Coupon', {
 
 User.sync({ force: false, alter: true });
 Publisher.sync({ force: false, alter: true });
-Message.sync({ force: false, alter: true });
 Comment.sync({ force: false, alter: true });
-Announcement.sync({ force: false });
+Announcement.sync({ force: false, alter: true });
 Like.sync({ force: false, alter: true });
 Soundcast.sync({ force: false, alter: true });
 Episode.sync({ force: false, alter: true });
@@ -344,7 +338,6 @@ PodcasterEmail.sync({ force: false, alter: true });
 module.exports = {
   User,
   Publisher,
-  Message,
   Comment,
   Announcement,
   Like,
