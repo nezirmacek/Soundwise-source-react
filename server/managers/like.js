@@ -79,7 +79,7 @@ const setFullNameByUid = (userId, like) =>
       if (snapshot.val()) {
         const user = snapshot.val();
         const fullName = `${user.firstName} ${user.lastName}`;
-        setFullName(like, fullName);
+        return setFullName(like, fullName);
       } else {
         return false;
       }

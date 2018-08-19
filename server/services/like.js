@@ -36,18 +36,37 @@ const addLike = (req, res) => {
       };
       fbLike = _.pickBy(fbLike, _.identity);
 
+      if (like.announcementId) {
+        database.Like.count({
+          where: { announcementId: like.announcementId },
+        }).then(count =>
+          database.Message.update(
+            { likesCount: count },
+            { where: { messageId: like.announcementId } }
+          )
+        );
+      }
+
       likeManager.addLike(likeId, fbLike).then(() => {
         if (like.commentId) {
           commentManager.getUserParentComment(like.commentId).then(user => {
             if (user && !!user.token) {
               user.token.forEach(t =>
-                sendNotification(t, getContentPush(like))
+                sendNotification(t, {
+                  data: { type: '', messageId: '', soundcastId: '' },
+                  notification: { title: '', body: '' },
+                })
               );
             }
           });
         }
         likeManager.setFullName(like, fullName).then(() => {
-          likesCount(like).then(() => res.send(data));
+          likesCount(like).then(() =>
+            database.Message.update(
+              { lastLiked: fullName },
+              { where: { messageId: like.announcementId } }
+            ).then(() => res.send(data))
+          );
         });
       });
     })
@@ -71,8 +90,10 @@ const deleteLike = (req, res) => {
                 const userId = lastLike.dataValues.userId;
 
                 likeManager.setFullNameByUid(userId, like).then(fullName => {
-                  likesCount(like);
-                  res.send({ fullName });
+                  database.Message.update(
+                    { lastLiked: fullName },
+                    { where: { messageId: like.announcementId } }
+                  ).then(() => likesCount(like).then(() => res.send(fullName)));
                 });
               }
             });
@@ -83,9 +104,12 @@ const deleteLike = (req, res) => {
               if (likes.length > 0) {
                 const lastLike = _.maxBy(likes, 'timeStamp');
                 const userId = lastLike.dataValues.userId;
+
                 likeManager.setFullNameByUid(userId, like).then(fullName => {
-                  likesCount(like);
-                  res.send({ fullName });
+                  database.Message.update(
+                    { lastLiked: fullName },
+                    { where: { messageId: like.announcementId } }
+                  ).then(() => likesCount(like).then(() => res.send(fullName)));
                 });
               }
             });

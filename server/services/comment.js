@@ -26,16 +26,27 @@ const addComment = (req, res) => {
       };
       fbComment = _.pickBy(fbComment, _.identity);
 
+      if (comment.announcementId) {
+        database.Comment.count({
+          where: { announcementId: comment.announcementId },
+        }).then(count => {
+          database.Message.update(
+            { commentsCount: count },
+            { where: { messageId: comment.announcementId } }
+          );
+        });
+      }
+
       commentManager
         .addComment(commentId, fbComment)
         .then(() => {
           if (comment.parentId) {
             commentManager.getUserParentComment(commentId).then(user => {
-              if (user && !!user.token) {
+              if ((user && !!user.token) || user.id === comment.userId) {
                 user.token.forEach(t =>
                   sendNotification(t, {
                     data: { type: '', messageId: '', soundcastId: '' },
-                    notification: { title: 'title', body: '' },
+                    notification: { title: '', body: '' },
                   })
                 );
               }
