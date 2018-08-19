@@ -364,12 +364,8 @@ export default class Announcements extends Component {
           </div>
           <div>
             {announcementsArr.map((announcement, i) => {
-              const likes = announcement.likes
-                ? Object.keys(announcement.likes).length
-                : 0;
-              const comments = announcement.comments
-                ? Object.keys(announcement.comments).length
-                : 0;
+              const likes = announcement.likesCount;
+              const comments = announcement.commentsCount;
               return (
                 <div style={styles.existingAnnouncement} key={i}>
                   <div style={styles.announcementContainer}>

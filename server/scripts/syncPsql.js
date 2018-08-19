@@ -3,7 +3,7 @@
 const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../../database/index');
-const Entities = require('html-entities').XmlEntities;
+const htmlEntities = require('html-entities').XmlEntities;
 
 const LOG_ERR = 'logErrs.txt';
 const PAGE_SIZE = 100;
@@ -141,7 +141,7 @@ const removeSpecialChars = (key, soundcast) => {
 };
 
 const fixSpecialChars = text => {
-  return new Entities().decode(text);
+  return new htmlEntities().decode(text);
 };
 
 const logInFile = text => {
