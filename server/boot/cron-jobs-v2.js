@@ -18,19 +18,11 @@ const db = new Sequelize('soundwise', 'root', '111', {
 });
 
 const { feedInterval } = require('../scripts/parseFeed');
-const { runUpdate } = require('../scripts/iTunesUrls');
 
 module.exports = function(app) {
   if (process.env.NODE_ENV === 'dev') {
     return; // prevent running in dev mode
   }
-  // schedule.scheduleJob('59 * * * * *', async () => { // Test each minute
-
-  // feed updating - 02 hour each month
-  schedule.scheduleJob('0 0 2 1 * *', async () => {
-    console.log(`CRON_RUN runUpdate`);
-    runUpdate();
-  });
 
   // feed interval - 03 hour each day
   schedule.scheduleJob('0 0 3 * * *', async () => {
