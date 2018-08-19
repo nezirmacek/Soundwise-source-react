@@ -45,8 +45,17 @@ const addComment = (req, res) => {
               if ((user && !!user.token) || user.id === comment.userId) {
                 user.token.forEach(t =>
                   sendNotification(t, {
-                    data: { type: '', messageId: '', soundcastId: '' },
-                    notification: { title: '', body: '' },
+                    data: {
+                      type: 'COMMENT_COMMENT',
+                      commentId: comment.parentId,
+                      soundcastId: comment.soundcastId,
+                    },
+                    notification: {
+                      title: 'New comment',
+                      body: `${user.firstName} ${
+                        user.lastName
+                      } answered your comment`,
+                    },
                   })
                 );
               }

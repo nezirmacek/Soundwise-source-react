@@ -53,8 +53,17 @@ const addLike = (req, res) => {
             if (user && !!user.token) {
               user.token.forEach(t =>
                 sendNotification(t, {
-                  data: { type: '', messageId: '', soundcastId: '' },
-                  notification: { title: '', body: '' },
+                  data: {
+                    type: 'LIKE_COMMENT',
+                    commentId: like.commentId,
+                    soundcastId: like.soundcastId,
+                  },
+                  notification: {
+                    title: 'New like',
+                    body: `${user.firstName} ${
+                      user.lastName
+                    } liked your comment`,
+                  },
                 })
               );
             }
