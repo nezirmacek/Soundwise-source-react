@@ -50,7 +50,7 @@ const addLike = (req, res) => {
       likeManager.addLike(likeId, fbLike).then(() => {
         if (like.commentId) {
           commentManager.getUserParentComment(like.commentId).then(user => {
-            if (user && !!user.token) {
+            if ((user && !!user.token) || user.id === like.userId) {
               user.token.forEach(t =>
                 sendNotification(t, {
                   data: {
