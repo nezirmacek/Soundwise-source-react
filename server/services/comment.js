@@ -30,9 +30,9 @@ const addComment = (req, res) => {
         database.Comment.count({
           where: { announcementId: comment.announcementId },
         }).then(count => {
-          database.Message.update(
+          database.Announcement.update(
             { commentsCount: count },
-            { where: { messageId: comment.announcementId } }
+            { where: { announcementId: comment.announcementId } }
           );
         });
       }
@@ -45,8 +45,17 @@ const addComment = (req, res) => {
               if ((user && !!user.token) || user.id === comment.userId) {
                 user.token.forEach(t =>
                   sendNotification(t, {
-                    data: { type: '', messageId: '', soundcastId: '' },
-                    notification: { title: '', body: '' },
+                    data: {
+                      type: 'COMMENT_COMMENT',
+                      commentId: comment.parentId,
+                      soundcastId: comment.soundcastId,
+                    },
+                    notification: {
+                      title: 'New comment',
+                      body: `${user.firstName} ${
+                        user.lastName
+                      } answered your comment`,
+                    },
                   })
                 );
               }
@@ -96,6 +105,16 @@ const deleteComment = (req, res) => {
       database.Comment.destroy({
         where: { commentId },
       }).then(count => {
+        if (comment.announcementId) {
+          database.Comment.count({
+            where: { announcementId: comment.announcementId },
+          }).then(count => {
+            database.Announcement.update(
+              { commentsCount: count },
+              { where: { announcementId: comment.announcementId } }
+            );
+          });
+        }
         commentManager
           .removeComment(commentId, comment)
           .then(() => res.send({ count }));

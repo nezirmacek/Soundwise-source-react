@@ -90,6 +90,11 @@
       "model": "soundcast",
       "foreignKey": "soundcastId"
     },
+    "announcementId": {
+      "type": "belongsTo",
+      "model": "announcement",
+      "foreignKey": "announcementId"
+    },
     "episode": {
       "type": "belongsTo",
       "model": "episode",

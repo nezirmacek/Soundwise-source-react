@@ -40,9 +40,9 @@ const addLike = (req, res) => {
         database.Like.count({
           where: { announcementId: like.announcementId },
         }).then(count =>
-          database.Message.update(
+          database.Announcement.update(
             { likesCount: count },
-            { where: { messageId: like.announcementId } }
+            { where: { announcementId: like.announcementId } }
           )
         );
       }
@@ -50,11 +50,20 @@ const addLike = (req, res) => {
       likeManager.addLike(likeId, fbLike).then(() => {
         if (like.commentId) {
           commentManager.getUserParentComment(like.commentId).then(user => {
-            if (user && !!user.token) {
+            if ((user && !!user.token) || user.id === like.userId) {
               user.token.forEach(t =>
                 sendNotification(t, {
-                  data: { type: '', messageId: '', soundcastId: '' },
-                  notification: { title: '', body: '' },
+                  data: {
+                    type: 'LIKE_COMMENT',
+                    commentId: like.commentId,
+                    soundcastId: like.soundcastId,
+                  },
+                  notification: {
+                    title: 'New like',
+                    body: `${user.firstName} ${
+                      user.lastName
+                    } liked your comment`,
+                  },
                 })
               );
             }
@@ -62,9 +71,9 @@ const addLike = (req, res) => {
         }
         likeManager.setFullName(like, fullName).then(() => {
           likesCount(like).then(() =>
-            database.Message.update(
+            database.Announcement.update(
               { lastLiked: fullName },
-              { where: { messageId: like.announcementId } }
+              { where: { announcementId: like.announcementId } }
             ).then(() => res.send(data))
           );
         });
@@ -78,7 +87,18 @@ const deleteLike = (req, res) => {
   database.Like.find({ where: { likeId } })
     .then(data => {
       const like = data.dataValues;
+
       database.Like.destroy({ where: { likeId } }).then(() => {
+        if (like.announcementId) {
+          database.Like.count({
+            where: { announcementId: like.announcementId },
+          }).then(count =>
+            database.Announcement.update(
+              { likesCount: count },
+              { where: { announcementId: like.announcementId } }
+            )
+          );
+        }
         likeManager.removeLike(likeId, like).then(() => {
           if (!!like.episodeId) {
             // set name for lastLiked
@@ -90,10 +110,12 @@ const deleteLike = (req, res) => {
                 const userId = lastLike.dataValues.userId;
 
                 likeManager.setFullNameByUid(userId, like).then(fullName => {
-                  database.Message.update(
+                  database.Announcement.update(
                     { lastLiked: fullName },
-                    { where: { messageId: like.announcementId } }
-                  ).then(() => likesCount(like).then(() => res.send(fullName)));
+                    { where: { announcementId: like.announcementId } }
+                  ).then(() =>
+                    likesCount(like).then(() => res.send({ fullName }))
+                  );
                 });
               }
             });
@@ -106,10 +128,12 @@ const deleteLike = (req, res) => {
                 const userId = lastLike.dataValues.userId;
 
                 likeManager.setFullNameByUid(userId, like).then(fullName => {
-                  database.Message.update(
+                  database.Announcement.update(
                     { lastLiked: fullName },
-                    { where: { messageId: like.announcementId } }
-                  ).then(() => likesCount(like).then(() => res.send(fullName)));
+                    { where: { announcementId: like.announcementId } }
+                  ).then(() =>
+                    likesCount(like).then(() => res.send({ fullName }))
+                  );
                 });
               }
             });

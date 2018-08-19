@@ -122,7 +122,9 @@ export default class Announcements extends Component {
   }
 
   sortAnnouncements(id) {
-    Axios.get('/api/messages', { params: {filter: {where: {soundcastId: id}}}}).then(res => {
+    Axios.get('/api/announcements', {
+      params: { filter: { where: { soundcastId: id } } },
+    }).then(res => {
       const announcementsArr = res.data;
       this.setState({
         announcementsArr: announcementsArr ? announcementsArr : [],
@@ -159,10 +161,10 @@ export default class Announcements extends Component {
           publisherId: that.props.userInfo.publisherID,
           soundcastId: currentSoundcastID,
           isPublished: true,
-          messageId: announcementID,
+          announcementId: announcementID,
         };
 
-        Axios.post('/api/messages', newAnnouncement).then(
+        Axios.post('/api/announcements', newAnnouncement).then(
           data => {
             that.setState({
               message: '',

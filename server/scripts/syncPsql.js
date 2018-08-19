@@ -6,7 +6,7 @@ const database = require('../../database/index');
 const Entities = require('html-entities').XmlEntities;
 
 const LOG_ERR = 'logErrs.txt';
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 100;
 
 const syncSoundcasts = async () => {
   await fs.unlink(LOG_ERR, err => err);
@@ -47,8 +47,6 @@ const syncSoundcasts = async () => {
             startId = key;
           }
           let soundcast = getSoundcastForPsql(key, soundcasts[key]);
-          await removeSpecialChars(key, soundcasts[key]);
-
           await database.Soundcast.findOne(getFilter(key))
             .then(soundcastData => {
               if (soundcastData) {
@@ -68,6 +66,7 @@ const syncSoundcasts = async () => {
             getFilter(key)
           );
           if (importedSoundcast) {
+            await removeSpecialChars(key, soundcasts[key]);
             await firebase
               .database()
               .ref(`soundcasts/${key}/verified`)
@@ -116,11 +115,11 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
 };
 
 const getFilter = id => {
-  return {where: {soundcastId: id}};
+  return { where: { soundcastId: id } };
 };
 
 const removeSpecialChars = (key, soundcast) => {
-  const {title, short_description, long_description} = soundcast;
+  const { title, short_description, long_description } = soundcast;
   if (title) {
     firebase
       .database()
@@ -170,14 +169,14 @@ const syncMessages = () => {
         snapshots.forEach(snapshot => {
           const fbMessage = snapshot.val();
           const message = {
-            messageId: fbMessage.id,
+            announcementId: fbMessage.id,
             content: fbMessage.content,
             creatorId: fbMessage.creatorID,
             publisherId: fbMessage.publisherID,
             soundcastId: fbMessage.soundcastID,
             isPublished: fbMessage.isPublished,
           };
-          database.Message.create(message).catch(e => console.log(e));
+          database.Announcement.create(message).catch(e => console.log(e));
         });
       })
   );
