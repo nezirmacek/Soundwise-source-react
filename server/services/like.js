@@ -136,14 +136,16 @@ const deleteLike = (req, res) => {
 };
 
 const getFullNameAfterDelete = likes => {
+  let userId = '';
   if (likes.length > 0) {
     const lastLike = _.maxBy(likes, 'timeStamp');
-    const userId = lastLike.dataValues.userId;
-
-    return likeManager.getFullNameByUid(userId);
-  } else {
-    return Promise.resolve('');
+    if (lastLike) {
+      userId = lastLike.dataValues.userId;
+    }
   }
+  return userId
+    ? likeManager.getFullNameByUid(userId)
+    : Promise.resolve(userId);
 };
 
 const sendError = (err, res) => {
