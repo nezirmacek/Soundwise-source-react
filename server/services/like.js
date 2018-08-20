@@ -24,9 +24,9 @@ const addLike = (req, res) => {
             database.Like.count({ where: { episodeId: like.episodeId } })
               .then(count => likeManager.setLikesCount(like.episodeId, count))
               .then(() => res.send(data))
-              .catch(error => res.status(500).send(error))
+              .catch(error => sendError(error, res))
           )
-          .catch(error => res.status(500).send(error));
+          .catch(error => sendError(error, res));
       } else if (like.announcementId) {
         // LIKE MESSAGE
         database.Like.count({
@@ -38,9 +38,9 @@ const addLike = (req, res) => {
               { where: { announcementId: like.announcementId } }
             )
               .then(() => res.send(data))
-              .catch(error => res.status(500).send(error))
+              .catch(error => sendError(error, res))
           )
-          .catch(error => res.status(500).send(error));
+          .catch(error => sendError(error, res));
       } else if (like.commentId) {
         // LIKE COMMENT
         commentManager
@@ -62,14 +62,14 @@ const addLike = (req, res) => {
                   },
                 })
                   .then(() => res.send(data))
-                  .catch(error => res.status(500).send(error))
+                  .catch(error => sendError(error, res))
               );
             }
           })
-          .catch(error => res.status(500).send(error));
+          .catch(error => sendError(error, res));
       }
     })
-    .catch(error => res.status(500).send(error));
+    .catch(error => sendError(error, res));
 };
 
 const deleteLike = (req, res) => {
@@ -95,11 +95,11 @@ const deleteLike = (req, res) => {
                       { where: { announcementId: like.announcementId } }
                     )
                       .then(() => res.send({ fullName }))
-                      .catch(error => res.status(500).send(error))
+                      .catch(error => sendError(error, res))
                   )
                 )
               )
-              .catch(error => res.status(500).send(error));
+              .catch(error => sendError(error, res));
           } else if (like.commentId) {
             // UNLIKE COMMENT
             database.Like.findAll({
@@ -108,9 +108,9 @@ const deleteLike = (req, res) => {
               .then(likes =>
                 getFullNameAfterDelete(likes)
                   .then(fullName => res.send({ fullName }))
-                  .catch(error => res.status(500).send(error))
+                  .catch(error => sendError(error, res))
               )
-              .catch(error => res.status(500).send(error));
+              .catch(error => sendError(error, res));
           } else if (like.episodeId) {
             // UNLIKE EPISODE
             database.Like.findAll({
@@ -127,12 +127,12 @@ const deleteLike = (req, res) => {
                   )
                 )
               )
-              .catch(error => res.status(500).send(error));
+              .catch(error => sendError(error, res));
           }
         })
-        .catch(error => res.status(500).send(error));
+        .catch(error => sendError(error, res));
     })
-    .catch(error => res.status(500).send(error));
+    .catch(error => sendError(error, res));
 };
 
 const getFullNameAfterDelete = likes => {
@@ -140,10 +140,15 @@ const getFullNameAfterDelete = likes => {
     const lastLike = _.maxBy(likes, 'timeStamp');
     const userId = lastLike.dataValues.userId;
 
-    return likeManager.getFullNameByUid(userId).then(fullName => fullName);
+    return likeManager.getFullNameByUid(userId);
   } else {
-    return '';
+    return Promise.resolve('');
   }
+};
+
+const sendError = (err, res) => {
+  console.log(err);
+  res.status(500).send(err);
 };
 
 module.exports = { addLike, deleteLike };
