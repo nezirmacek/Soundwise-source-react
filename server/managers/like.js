@@ -35,7 +35,7 @@ const getFullNameByUid = userId =>
     .then(snapshot => {
       if (snapshot.val()) {
         const user = snapshot.val();
-        return `${user.firstName} ${user.lastName}`;
+        return user.firstName ? `${user.firstName} ${user.lastName}` : '';
       } else {
         return '';
       }
