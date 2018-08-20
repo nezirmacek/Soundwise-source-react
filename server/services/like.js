@@ -1,10 +1,7 @@
 'use strict';
 
-const _ = require('lodash');
 const database = require('../../database/index');
-
 const sendNotification = require('../scripts/messaging').sendNotification;
-
 const { commentManager, likeManager } = require('../managers');
 
 const addLike = (req, res) => {
@@ -19,7 +16,7 @@ const addLike = (req, res) => {
       if (like.episodeId) {
         // LIKE EPISODE
         likeManager
-          .setFullName(like, fullName)
+          .setFullName(like.episodeId, fullName)
           .then(() =>
             database.Like.count({ where: { episodeId: like.episodeId } })
               .then(count => likeManager.setLikesCount(like.episodeId, count))
@@ -85,28 +82,32 @@ const deleteLike = (req, res) => {
             database.Like.findAll({
               where: { announcementId: like.announcementId },
             })
-              .then(likes =>
-                getFullNameAfterDelete(likes).then(fullName =>
-                  database.Like.count({
-                    where: { announcementId: like.announcementId },
-                  }).then(count =>
-                    database.Announcement.update(
-                      { likesCount: count, lastLiked: fullName },
-                      { where: { announcementId: like.announcementId } }
+              .then(like => {
+                console.log(like[0]);
+                likeManager
+                  .getFullNameByUid(like[0] ? like[0].dataValues.userId : '')
+                  .then(fullName =>
+                    database.Like.count({
+                      where: { announcementId: like.announcementId },
+                    }).then(count =>
+                      database.Announcement.update(
+                        { likesCount: count, lastLiked: fullName },
+                        { where: { announcementId: like.announcementId } }
+                      )
+                        .then(() => res.send({ fullName }))
+                        .catch(error => sendError(error, res))
                     )
-                      .then(() => res.send({ fullName }))
-                      .catch(error => sendError(error, res))
-                  )
-                )
-              )
+                  );
+              })
               .catch(error => sendError(error, res));
           } else if (like.commentId) {
             // UNLIKE COMMENT
             database.Like.findAll({
               where: { commentId: like.commentId },
             })
-              .then(likes =>
-                getFullNameAfterDelete(likes)
+              .then(like =>
+                likeManager
+                  .getFullNameByUid(like[0] ? like[0].dataValues.userId : '')
                   .then(fullName => res.send({ fullName }))
                   .catch(error => sendError(error, res))
               )
@@ -115,37 +116,28 @@ const deleteLike = (req, res) => {
             // UNLIKE EPISODE
             database.Like.findAll({
               where: { episodeId: like.episodeId },
+              order: [['timeStamp', 'DESC']],
+              limit: 1,
             })
-              .then(likes =>
-                getFullNameAfterDelete(likes).then(fullName =>
-                  database.Like.count({
-                    where: { episodeId: like.episodeId },
-                  }).then(count =>
-                    likeManager
-                      .updateLikeInEpisode(like.episodeId, count, fullName)
-                      .then(() => res.send({ fullName }))
-                  )
-                )
-              )
+              .then(like => {
+                likeManager
+                  .getFullNameByUid(like[0] ? like[0].dataValues.userId : '')
+                  .then(fullName =>
+                    database.Like.count({
+                      where: { episodeId: like.episodeId },
+                    }).then(count =>
+                      likeManager
+                        .updateLikeInEpisode(like.episodeId, count, fullName)
+                        .then(() => res.send({ fullName }))
+                    )
+                  );
+              })
               .catch(error => sendError(error, res));
           }
         })
         .catch(error => sendError(error, res));
     })
     .catch(error => sendError(error, res));
-};
-
-const getFullNameAfterDelete = likes => {
-  let userId = '';
-  if (likes.length > 0) {
-    const lastLike = _.maxBy(likes, 'timeStamp');
-    if (lastLike) {
-      userId = lastLike.dataValues.userId;
-    }
-  }
-  return userId
-    ? likeManager.getFullNameByUid(userId)
-    : Promise.resolve(userId);
 };
 
 const sendError = (err, res) => {

@@ -2,6 +2,7 @@
 var Raven = require('raven');
 // var sendinblue = require('sendinblue-api');
 // var sendinBlueApiKey = require('../../config').sendinBlueApiKey;
+const _ = require('lodash');
 var firebase = require('firebase-admin');
 var moment = require('moment');
 
@@ -73,7 +74,14 @@ const sendCommentNotification = async (req, res) => {
 };
 
 const sendMail = async comment => {
-  const {userID, content, soundcastID, announcementID, episodeID} = comment;
+  let fbComment = {
+    userID: comment.userId,
+    episodeID: comment.episodeId,
+    soundcastID: comment.soundcastId,
+    announcementID: comment.announcementId,
+  };
+  fbComment = _.pickBy(fbComment, _.identity);
+  const { userID, soundcastID, announcementID, episodeID } = fbComment;
   const publisherID = await firebase
     .database()
     .ref(`soundcasts/${soundcastID}/publisherID`)

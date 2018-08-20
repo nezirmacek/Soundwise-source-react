@@ -9,45 +9,17 @@ const getById = id =>
     .once('value')
     .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
 
-const childComment = (id, comment) =>
+const addCommentToEpisode = (id, comment) =>
   firebase
     .database()
-    .ref(
-      comment.announcementID
-        ? `messages/${comment.announcementID}/comments/${id}`
-        : `episodes/${comment.episodeID}/comments/${id}`
-    )
+    .ref(`episodes/${comment.episodeID}/comments/${id}`)
     .set(moment().format('X'));
 
-const addComment = (id, comment) =>
+const removeCommentToEpisode = (id, comment) =>
   firebase
     .database()
-    .ref(`comments/${id}`)
-    .set(comment)
-    .then(() => childComment(id, comment));
-
-const updateComment = (id, comment) =>
-  firebase
-    .database()
-    .ref(`comments/${id}`)
-    .update(comment)
-    .then(() => childComment(id, comment));
-
-const removeComment = (id, comment) =>
-  firebase
-    .database()
-    .ref(
-      comment.announcementId
-        ? `messages/${comment.announcementId}/comments/${id}`
-        : `episodes/${comment.episodeId}/comments/${id}`
-    )
-    .remove()
-    .then(() =>
-      firebase
-        .database()
-        .ref(`comments/${id}`)
-        .remove()
-    );
+    .ref(`episodes/${comment.episodeId}/comments/${id}`)
+    .remove();
 
 const getUserParentComment = id =>
   firebase
@@ -69,8 +41,7 @@ const getUserParentComment = id =>
 
 module.exports = {
   getById,
-  addComment,
-  updateComment,
-  removeComment,
+  addCommentToEpisode,
+  removeCommentToEpisode,
   getUserParentComment,
 };
