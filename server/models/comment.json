@@ -66,6 +66,7 @@
     "createdAt": {
       "type": "date",
       "required": true,
+      "defaultFn": "now",
       "postgresql": {
         "column": "createdAt"
       }
@@ -73,6 +74,7 @@
     "updatedAt": {
       "type": "date",
       "required": true,
+      "defaultFn": "now",
       "postgresql": {
         "column": "updatedAt"
       }
