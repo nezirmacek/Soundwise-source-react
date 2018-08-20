@@ -142,6 +142,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.2.1",
+    "babel-eslint": "^8.2.6",
     "babel-loader": "^6.2.0",
     "babel-plugin-transform-async-to-generator": "^6.22.0",
     "babel-polyfill": "^6.23.0",
@@ -164,7 +165,6 @@
   },
   "license": "UNLICENSED",
   "prettier": {
-    "bracketSpacing": false,
     "singleQuote": true,
     "trailingComma": "es5"
   }
