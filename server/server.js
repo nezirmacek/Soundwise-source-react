@@ -45,7 +45,7 @@ const {
 } = require('./scripts/emailSignup.js');
 const Emails = require('./scripts/sendEmails.js');
 
-const {createFeed, requestFeed} = require('./scripts/feed.js');
+const { createFeed, requestFeed } = require('./scripts/feed.js');
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
 const {
@@ -76,7 +76,7 @@ var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
 var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
 var firebaseListeners = require('./bin/firebase-listeners.js')
   .firebaseListeners;
-
+const { userService } = require('./services');
 // sync firebase with Algolia and postgres
 // algoliaIndex();
 // transferLikes();
@@ -99,8 +99,8 @@ app.start = function() {
 };
 
 app.use(cors());
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 const prerender = require('prerender-node')
   .set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k')
@@ -231,7 +231,7 @@ app.use(
   require('react-s3-uploader/s3router')({
     bucket: 'soundwiseinc',
     // region: 'us-east-1', // optional
-    headers: {'Access-Control-Allow-Origin': '*'}, // optional
+    headers: { 'Access-Control-Allow-Origin': '*' }, // optional
     ACL: 'public-read',
     getFileKeyDir: function(req) {
       return 'soundcasts/';
@@ -247,7 +247,7 @@ app.get('/api/custom_token', (req, res) => {
     .createCustomToken(req.query.uid)
     .then(function(customToken) {
       // console.log('customToken: ', customToken);
-      res.send({customToken});
+      res.send({ customToken });
     })
     .catch(function(error) {
       console.log('Error creating custom token:', error);
@@ -411,3 +411,10 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
+
+app.post('/api/complete_sign_up', (req, res) => {
+  userService
+    .completeSignUp(req.body)
+    .then(() => res.sendStatus(200))
+    .catch(error => res.send(error));
+});
