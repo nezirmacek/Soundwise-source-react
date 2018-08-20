@@ -86,7 +86,8 @@ const syncSoundcasts = async () => {
             });
           }
         });
-      });
+      })
+      .catch(err => logInFile(`err: ${err}`));
   }
 };
 
@@ -131,12 +132,6 @@ const removeSpecialChars = (key, soundcast) => {
       .database()
       .ref(`soundcasts/${key}/short_description`)
       .set(fixSpecialChars(short_description));
-  }
-  if (typeof long_description === 'string') {
-    firebase
-      .database()
-      .ref(`soundcasts/${key}/long_description`)
-      .set(fixSpecialChars(long_description));
   }
 };
 
