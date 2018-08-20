@@ -22,8 +22,16 @@ const update = (id, data) =>
     .ref(`users/${id}`)
     .update(data);
 
+const getId = email =>
+  firebase
+    .auth()
+    .getUserByEmail(email)
+    .then(userRecord => userRecord.toJSON().uid)
+    .catch(() => null);
+
 module.exports = {
   create,
   exists,
+  getId,
   update,
 };
