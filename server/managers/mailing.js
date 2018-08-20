@@ -40,20 +40,12 @@ const addRecipients = recipients =>
       ([, { persisted_recipients: persistedRecipients }]) => persistedRecipients
     );
 
-const addReipientsToMailingList = (mailingListId, recipients) =>
-  client
-    .request({
-      method: 'POST',
-      url: `/v3/contactdb/lists/${mailingListId}/recipients`,
-      body: recipients,
-    })
-    .then(([response, body]) => {
-      res.status(200).send({ mailingListId });
-    })
-    .catch(err => {
-      console.log('error: ', err.message);
-      res.status(400).send(err.message);
-    });
+const addRecipientsToMailingList = (mailingListId, recipients) =>
+  client.request({
+    method: 'POST',
+    url: `/v3/contactdb/lists/${mailingListId}/recipients`,
+    body: recipients,
+  });
 
 const getRecipient = email =>
   client
@@ -75,11 +67,14 @@ const deleteRecipient = (recipientId, mailingListId) =>
 const getMailingLists = () =>
   client.request({ method: 'GET', url: '/v3/contactdb/lists' });
 
+const sendEmail = message => sgMail.send(message);
+
 module.exports = {
   addRecipients,
-  addReipientsToMailingList,
+  addRecipientsToMailingList,
   createMailingList,
   deleteRecipient,
   getMailingLists,
   getRecipient,
+  sendEmail,
 };
