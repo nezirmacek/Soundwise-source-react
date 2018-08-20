@@ -9,90 +9,91 @@ const {
   soundcastManager,
   userManager,
 } = require('../managers');
+const mailingService = require('./mailing');
+const {userRepository} = require('../repositories');
 
 const replaceDots = x => x.replace('.', '(dot)');
 
-const registerSoundcastOnPostgres = (
-  email,
-  soundcastID,
-  subscriberEmailList,
-  inviteeEmailList
-) => {
-  if (inviteeEmailList) {
-    fetch(API.DELETE_EMAIL, {
-      method: 'post',
-      body: JSON.stringify({ emails: [email], emailListId: inviteeEmailList }),
-    });
+const completeSignUp = async ({email, firstName, lastName, picUrl}) => {
+  const emailWithDotsReplaced = replaceDots(email);
+
+  const userId = await userManager.getId(email);
+
+  if (userId) {
+    const userInfo = {
+      firstName: _.capitalize(firstName.trim()),
+      lastName: _.capitalize(lastName.trim()),
+      email: [email.trim().toLowerCase()],
+      pic_url: picUrl,
+    };
+
+    await userManager.update(
+      userId,
+      _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x)))
+    );
   }
 
-  fetch(API.ADD_EMAIL, {
-    method: 'post',
-    body: JSON.stringify({
-      emailAddressArr: [email],
-      emailListId: subscriberEmailList,
-      soundcastID,
-      listName: 'subscriberEmailList',
-    }),
+  await userRepository.create({
+    userId,
+    email,
+    firstName,
+    lastName,
+    picUrl,
   });
-};
 
-const signUp = ({ email, firstName, lastName, facebookId, picUrl }) => {
-  const emailWithDotsReplaced = replaceDots(email);
-  const id = 0;
+  const invitations = await invitationManager.getUserInvitations(
+    emailWithDotsReplaced
+  );
 
-  invitationManager
-    .getUserInvitations(emailWithDotsReplaced)
-    .then(invitations =>
-      Promise.all(
-        invitations.map(soundcastID =>
-          soundcastManager.getById(soundcastID).then(soundcast => {
-            const {
-              inviteeEmailList,
-              subscriberEmailList,
-              publisherID,
-            } = soundcast;
+  await Promise.all(
+    invitations.map(async soundcastId => {
+      const soundcast = await soundcastManager.getById(soundcastId);
 
-            registerSoundcastOnPostgres(
-              email,
-              soundcastID,
-              subscriberEmailList,
-              inviteeEmailList
-            );
+      const {inviteeEmailList, subscriberEmailList, publisherID} = soundcast;
 
-            return commonManager
-              .update({
-                [`users/${id}/soundcasts/${soundcastID}`]: {
-                  subscribed: true,
-                  date_subscribed: moment().format('X'),
-                  current_period_end: moment()
-                    .add(100, 'years')
-                    .unix(),
-                },
-                [`invitations/${emailWithDotsReplaced}/${soundcastID}`]: false,
-                [`soundcasts/${soundcastID}/invited/${emailWithDotsReplaced}`]: false,
-                [`publishers/${publisherID}/freeSubscribers/${id}/${soundcastID}`]: true,
-                [`soundcasts/${soundcastID}/subscribed/${id}`]: true,
-              })
-              .then(() =>
-                publisherManager.incrementFreeSubscriberCount(publisherID)
-              );
-          })
-        )
-      )
-    );
+      if (inviteeEmailList) {
+        await mailingService.deleteFromMailingList([email], inviteeEmailList);
+      }
 
-  const userInfo = {
-    firstName: _.capitalize(firstName.trim()),
-    lastName: _.capitalize(lastName.trim()),
-    email: email.trim().toLowerCase(),
-  };
+      await mailingService.addToMailingList(
+        soundcastId,
+        [email],
+        'subscriberEmailList',
+        subscriberEmailList
+      );
 
-  userManager.update(
-    id,
-    _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x))) // _.pickBy(userInfo, _.identity)
+      await commonManager.update({
+        [`users/${userId}/soundcasts/${soundcastId}`]: {
+          subscribed: true,
+          date_subscribed: moment().format('X'),
+          current_period_end: moment()
+            .add(100, 'years')
+            .unix(),
+        },
+        [`invitations/${emailWithDotsReplaced}/${soundcastId}`]: false,
+        [`soundcasts/${soundcastId}/invited/${emailWithDotsReplaced}`]: false,
+        [`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`]: true,
+        [`soundcasts/${soundcastId}/subscribed/${userId}`]: true,
+      });
+
+      await publisherManager.incrementFreeSubscriberCount(publisherID);
+    })
+  );
+
+  await mailingService.sendTransactionalEmails(
+    [{firstName, lastName, email}],
+    `What are you creating, ${_.capitalize(firstName)}?`,
+    `<p>Hello ${_.capitalize(
+      firstName
+    )},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you join our expanding community of knowledge creators!</p><p>If you're creating a podcast, make sure to check out our <a href="http://bit.ly/2IILSGm">quick start guide</a> and <a href="http://bit.ly/2qlyVKK">"how to get subscribers" guide</a>.</p><p>I'm curious...would you mind sharing what kind of content you're creating? </p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you need help with anything related to creating your audio program, please don't hesitate to shoot me an email. We'll try our best to help.</p>`,
+    'Natasha Che',
+    'natasha@mysoundwise.com',
+    null,
+    true,
+    'natasha@mysoundwise.com'
   );
 };
 
 module.exports = {
-  signUp,
+  completeSignUp,
 };

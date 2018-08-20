@@ -53,11 +53,18 @@ const unsubscribe = (userId, soundcastId) => {
     current_period_end: moment().format('X'),
   });
 };
+const getId = email =>
+  firebase
+    .auth()
+    .getUserByEmail(email)
+    .then(userRecord => userRecord.toJSON().uid)
+    .catch(() => null);
 
 module.exports = {
   getById,
   create,
   exists,
+  getId,
   update,
   subscribe,
   unsubscribe,

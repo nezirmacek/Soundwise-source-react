@@ -1,5 +1,17 @@
 'use strict';
+const database = require('../../database/index');
 
-const create = () => {};
+const create = ({ userId, firstName, lastName, picUrl }) =>
+  database.User.findOrCreate({
+    where: {
+      userId,
+    },
+    defaults: {
+      userId,
+      firstName,
+      lastName,
+      picURL: picUrl,
+    },
+  });
 
-module.exports = {};
+module.exports = { create };
