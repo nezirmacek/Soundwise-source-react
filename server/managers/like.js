@@ -46,31 +46,25 @@ const removeLike = (id, like) =>
         .remove()
     );
 
-const setLikesCount = (path, count) =>
+const setLikesCount = (episodeId, count) =>
   firebase
     .database()
-    .ref(path)
+    .ref(`episodes/${episodeId}/likesCount`)
     .set(count);
 
-const setFullName = (like, fullName) => {
-  if (fullName !== undefined) {
-    if (like.episodeId !== undefined) {
-      return firebase
-        .database()
-        .ref(`episodes/${like.episodeId}/lastLiked`)
-        .set(fullName)
-        .then(() => fullName);
-    } else if (like.announcementId !== undefined) {
-      return firebase
-        .database()
-        .ref(`messages/${like.announcementId}/lastLiked`)
-        .set(fullName)
-        .then(() => fullName);
-    }
-  }
-};
+const setFullName = (episodeId, fullName) =>
+  firebase
+    .database()
+    .ref(`episodes/${episodeId}/lastLiked`)
+    .set(fullName);
 
-const setFullNameByUid = (userId, like) =>
+const updateLikeInEpisode = (episodeId, likesCount, lastLiked) =>
+  firebase
+    .database()
+    .ref(`episodes/${episodeId}`)
+    .update({ lastLiked, likesCount });
+
+const getFullNameByUid = userId =>
   firebase
     .database()
     .ref(`users/${userId}`)
@@ -79,17 +73,14 @@ const setFullNameByUid = (userId, like) =>
       if (snapshot.val()) {
         const user = snapshot.val();
         const fullName = `${user.firstName} ${user.lastName}`;
-        return setFullName(like, fullName);
-      } else {
-        return false;
+        return fullName || '';
       }
     });
 
 module.exports = {
   getById,
-  addLike,
-  removeLike,
   setFullName,
   setLikesCount,
-  setFullNameByUid,
+  getFullNameByUid,
+  updateLikeInEpisode,
 };
