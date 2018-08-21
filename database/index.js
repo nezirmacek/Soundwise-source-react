@@ -39,6 +39,7 @@ var Comment = db.define('Comment', {
   userId: { type: Sequelize.STRING, allowNull: false },
   announcementId: Sequelize.STRING,
   parentId: { type: Sequelize.STRING, allowNull: true },
+  likesCount: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
   episodeId: Sequelize.STRING,
   soundcastId: Sequelize.STRING,
   timeStamp: Sequelize.BIGINT,
