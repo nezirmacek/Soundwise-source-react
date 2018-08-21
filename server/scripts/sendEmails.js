@@ -107,7 +107,7 @@ const sendMail = async comment => {
         .database()
         .ref(`users/${adminsArr[i]}/email`)
         .once('value');
-      adminsEmails.push(email.val()[0]);
+      email.val() && adminsEmails.push(email.val()[0]);
     }
 
     let episodeTitle = '';
@@ -120,7 +120,7 @@ const sendMail = async comment => {
         .once('value')).val();
     }
     if (announcementID) {
-      announcementDate = moment(timestamp).format('MMM DD YYYY');
+      announcementDate = moment.unix(timestamp).format('MMM DD YYYY');
     }
     const subject = episodeTitle
       ? episodeTitle
