@@ -14,10 +14,77 @@ const {userRepository} = require('../repositories');
 
 const replaceDots = x => x.replace('.', '(dot)');
 
+const subscribeToSoundcast = async (soundcastId, userId, email) => {
+  const soundcast = await soundcastManager.getById(soundcastId);
+
+  if (soundcast) {
+    if (soundcast.bundle) {
+      await Promise.all(
+        soundcast.soundcastsIncluded.map(id =>
+          subscribeToSoundcast(id, userId, email)
+        )
+      );
+    } else {
+      const {inviteeEmailList, subscriberEmailList, publisherID} = soundcast;
+
+      const emailWithDotsReplaced = replaceDots(email);
+
+      if (inviteeEmailList) {
+        try {
+          await mailingService.deleteFromMailingList([email], inviteeEmailList);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      try {
+        await mailingService.addToMailingList(
+          soundcastId,
+          [email],
+          'subscriberEmailList',
+          subscriberEmailList
+        );
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        await commonManager.update({
+          [`users/${userId}/soundcasts/${soundcastId}`]: {
+            subscribed: true,
+            date_subscribed: moment().format('X'),
+            current_period_end: moment()
+              .add(100, 'years')
+              .unix(),
+          },
+          [`invitations/${emailWithDotsReplaced}/${soundcastId}`]: false,
+          [`soundcasts/${soundcastId}/invited/${emailWithDotsReplaced}`]: false,
+          [`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`]: true,
+          [`soundcasts/${soundcastId}/subscribed/${userId}`]: true,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        await publisherManager.incrementFreeSubscriberCount(publisherID);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+};
+
 const completeSignUp = async ({email, firstName, lastName, picUrl}) => {
   const emailWithDotsReplaced = replaceDots(email);
 
-  const userId = await userManager.getId(email);
+  let userId;
+
+  try {
+    userId = await userManager.getId(email);
+  } catch (error) {
+    console.log(error);
+  }
 
   if (userId) {
     const userInfo = {
@@ -27,58 +94,45 @@ const completeSignUp = async ({email, firstName, lastName, picUrl}) => {
       pic_url: picUrl,
     };
 
-    await userManager.update(
-      userId,
-      _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x)))
-    );
-  }
-
-  await userRepository.create({
-    userId,
-    email,
-    firstName,
-    lastName,
-    picUrl,
-  });
-
-  const invitations = await invitationManager.getUserInvitations(
-    emailWithDotsReplaced
-  );
-
-  await Promise.all(
-    invitations.map(async soundcastId => {
-      const soundcast = await soundcastManager.getById(soundcastId);
-
-      const {inviteeEmailList, subscriberEmailList, publisherID} = soundcast;
-
-      if (inviteeEmailList) {
-        await mailingService.deleteFromMailingList([email], inviteeEmailList);
-      }
-
-      await mailingService.addToMailingList(
-        soundcastId,
-        [email],
-        'subscriberEmailList',
-        subscriberEmailList
+    try {
+      await userManager.update(
+        userId,
+        _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x)))
       );
+    } catch (error) {
+      console.log(error);
+    }
 
-      await commonManager.update({
-        [`users/${userId}/soundcasts/${soundcastId}`]: {
-          subscribed: true,
-          date_subscribed: moment().format('X'),
-          current_period_end: moment()
-            .add(100, 'years')
-            .unix(),
-        },
-        [`invitations/${emailWithDotsReplaced}/${soundcastId}`]: false,
-        [`soundcasts/${soundcastId}/invited/${emailWithDotsReplaced}`]: false,
-        [`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`]: true,
-        [`soundcasts/${soundcastId}/subscribed/${userId}`]: true,
+    try {
+      await userRepository.create({
+        userId,
+        email,
+        firstName,
+        lastName,
+        picUrl,
       });
+    } catch (error) {
+      console.log(error);
+    }
 
-      await publisherManager.incrementFreeSubscriberCount(publisherID);
-    })
-  );
+    let invitations;
+
+    try {
+      invitations = await invitationManager.getUserInvitations(
+        emailWithDotsReplaced
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (invitations) {
+      await Promise.all(
+        invitations.map(soundcastId =>
+          subscribeToSoundcast(soundcastId, userId, email)
+        )
+      );
+    }
+  }
 
   await mailingService.sendTransactionalEmails(
     [{firstName, lastName, email}],
