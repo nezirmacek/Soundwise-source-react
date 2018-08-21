@@ -55,33 +55,35 @@ const unsubscribe = (req, res) => {
 
 const subscribe = (req, res) => {
   const {soundcastId, userId} = req.body;
+
   addSoundcastToUser(userId, soundcastId)
     .then(() => res.send({response: 'OK'}))
     .catch(error => res.status(500).send(error));
 };
 
-const addSoundcastToUser = (userId, soundcastId) => {
-  const actSubscribe = (id, publisherId) =>
-    soundcastManager
-      .addSubscribedUser(id, userId)
-      .then(() =>
-        userManager
-          .subscribe(userId, id)
-          .then(() =>
-            publisherManager.incrementFreeSubscriberCount(publisherId)
-          )
-      );
+const subscribeUserToSoundcast = (id, userId, publisherId) =>
+  soundcastManager
+    .addSubscribedUser(id, userId)
+    .then(() => userManager.subscribe(userId, id))
+    .then(() => publisherManager.incrementFreeSubscriberCount(publisherId));
 
-  return soundcastManager
-    .getById(soundcastId)
-    .then(
-      soundcast =>
-        soundcast && soundcast.bundle
-          ? soundcast.soundcastsIncluded.forEach(id =>
-              actSubscribe(id, soundcast.publisherId)
-            )
-          : actSubscribe(soundcastId, soundcast.publisherId)
-    );
-};
+const addSoundcastToUser = (userId, soundcastId) =>
+  soundcastManager.getById(soundcastId).then(soundcast => {
+    if (soundcast) {
+      if (soundcast.bundle) {
+        return Promise.all(
+          soundcast.soundcastsIncluded.map(id =>
+            subscribeUserToSoundcast(id, userId, soundcast.publisherId)
+          )
+        );
+      }
+
+      return subscribeUserToSoundcast(
+        soundcastId,
+        userId,
+        soundcast.publisherId
+      );
+    }
+  });
 
 module.exports = {subscribe, unsubscribe};
