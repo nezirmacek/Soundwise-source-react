@@ -34,7 +34,7 @@ const syncMessages = () => {
         snapshots.forEach(snapshot => {
           const fbMessage = snapshot.val();
           const message = {
-            announcementId: fbMessage.id,
+            announcementId: snapshot.key,
             content: fbMessage.content,
             creatorId: fbMessage.creatorID,
             publisherId: fbMessage.publisherID,
