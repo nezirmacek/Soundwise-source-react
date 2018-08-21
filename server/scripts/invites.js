@@ -1,12 +1,11 @@
 'use strict';
 
-var moment = require('moment');
-var firebase = require('firebase-admin');
-const convertToRaw = require('draft-js').convertToRaw;
+const moment = require('moment');
+const firebase = require('firebase-admin');
 const {userManager} = require('../managers');
 
 const sendInvite = async (req, res) => {
-  const {inviteeArr, soundcastId, invitation} = req.body;
+  const {inviteeArr, soundcastId} = req.body;
   inviteeArr.map(async email => {
     let _email = email
       .replace(/\./g, '(dot)')
@@ -24,11 +23,6 @@ const sendInvite = async (req, res) => {
             .then(u => subscibeUser(u.uid, soundcastId, res))
             .catch(e => addInvitations(soundcastId, _email, res));
         });
-      // await firebase
-      //   .database()
-      //   .ref(`soundcasts/${soundcastId}/invitationEmail`)
-      //   .set(JSON.stringify(convertToRaw(invitation)))
-      //   .catch(err => console.log('Error: ===>', err));
     }
   });
 };

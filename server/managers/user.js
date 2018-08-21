@@ -7,7 +7,7 @@ const getById = id =>
     .database()
     .ref(`users/${id}`)
     .once('value')
-    .then(snapshot => (snapshot.val() ? snapshot.val() : null));
+    .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
 
 const create = (email, password) =>
   firebase()
