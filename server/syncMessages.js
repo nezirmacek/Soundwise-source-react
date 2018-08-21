@@ -2,13 +2,13 @@
 
 const fs = require('fs');
 const firebase = require('firebase-admin');
-const database = require('../../database/index');
+const database = require('../database');
 var serviceAccount =
   process.env.NODE_ENV == 'staging'
-    ? require('../../stagingServiceAccountKey')
-    : require('../../serviceAccountKey.json');
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 
-const LOG_ERR = 'logErrs.txt';
+const LOG_ERR = 'logErrsMessages.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -41,10 +41,18 @@ const syncMessages = () => {
             soundcastId: fbMessage.soundcastID,
             isPublished: fbMessage.isPublished,
           };
-          database.Announcement.create(message).catch(e => console.log(e));
+          database.Announcement.create(message)
+            .then(data => console.log(data.dataValues))
+            .catch(e => logInFile(`ID: ${snapshot.key}\nERROR: ${e}\n\n`));
         });
       })
   );
 };
 
-syncMessages().then(() => console.log('finish'));
+const logInFile = text => {
+  fs.appendFile(LOG_ERR, text, err => {
+    if (err) throw err;
+  });
+};
+
+syncMessages();

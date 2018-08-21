@@ -2,14 +2,14 @@
 
 const fs = require('fs');
 const firebase = require('firebase-admin');
-const database = require('../../database/index');
+const database = require('../database');
 const htmlEntities = require('html-entities').XmlEntities;
 var serviceAccount =
   process.env.NODE_ENV == 'staging'
-    ? require('../../stagingServiceAccountKey')
-    : require('../../serviceAccountKey.json');
+    ? require('../stagingServiceAccountKey')
+    : require('../serviceAccountKey.json');
 
-const LOG_ERR = 'logErrs.txt';
+const LOG_ERR = 'logErrsSoundcasts.txt';
 const PAGE_SIZE = 100;
 
 firebase.initializeApp({
@@ -21,13 +21,15 @@ const syncSoundcasts = async () => {
   await fs.unlink(LOG_ERR, err => err);
   console.log('start');
   let next = true;
-  let startId = await firebase
+
+  let firstSoundcast = await firebase
     .database()
     .ref('soundcasts')
     .orderByKey()
     .limitToFirst(1)
-    .once('value')
-    .then(snap => Object.keys(snap.val())[0]);
+    .once('value');
+
+  let startId = Object.keys(firstSoundcast.val())[0];
 
   const lastId = await firebase
     .database()
@@ -36,6 +38,7 @@ const syncSoundcasts = async () => {
     .limitToLast(1)
     .once('value')
     .then(snap => Object.keys(snap.val())[0]);
+
   while (next) {
     await firebase
       .database()
@@ -58,11 +61,13 @@ const syncSoundcasts = async () => {
           await database.Soundcast.findOne(getFilter(key))
             .then(soundcastData => {
               if (soundcastData) {
-                console.log('updated soundcast with id: ', key);
-                return soundcastData.update(soundcast);
+                database.Soundcast.update(soundcast, getFilter(key))
+                  .then(data => console.log('updated soundcast with id: ', key))
+                  .catch(error => console.log(error));
               } else {
-                console.log('created soundcast with id: ', key);
-                return database.Soundcast.create(soundcast);
+                return database.Soundcast.create(soundcast)
+                  .then(data => console.log('created soundcast with id: ', key))
+                  .catch(error => console.log(error));
               }
             })
             .catch(err => {
@@ -157,4 +162,4 @@ const logInFile = text => {
   });
 };
 
-syncSoundcasts().then(() => console.log('finish'));
+syncSoundcasts();

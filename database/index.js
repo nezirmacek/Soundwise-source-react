@@ -47,7 +47,7 @@ var Comment = db.define('Comment', {
 
 var Announcement = db.define('Announcement', {
   announcementId: { type: Sequelize.STRING, primaryKey: true },
-  content: Sequelize.STRING,
+  content: Sequelize.TEXT,
   publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
   creatorId: { type: Sequelize.STRING, allowNull: false },
