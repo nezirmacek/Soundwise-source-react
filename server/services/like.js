@@ -2,7 +2,7 @@
 
 const database = require('../../database/index');
 const sendNotification = require('../scripts/messaging').sendNotification;
-const {commentManager, likeManager} = require('../managers');
+const {userManager, likeManager} = require('../managers');
 
 const addLike = (req, res) => {
   if (!req.body.fullName) {
@@ -49,28 +49,26 @@ const addLike = (req, res) => {
               {where: {commentId: like.commentId}}
             )
               .then(() =>
-                commentManager
-                  .getUserParentComment(like.commentId)
-                  .then(user => {
-                    if (user && !!user.token) {
-                      user.token.forEach(t =>
-                        sendNotification(t, {
-                          data: {
-                            type: 'LIKE_COMMENT',
-                            commentId: like.commentId,
-                            soundcastId: like.soundcastId,
-                          },
-                          notification: {
-                            title: 'New like',
-                            body: `${user.firstName} ${
-                              user.lastName
-                            } liked your comment`,
-                          },
-                        })
-                          .then(() => res.send(data))
-                          .catch(error => sendError(error, res))
-                      );
-                    }
+                database.Comment.findById(like.commentId)
+                  .then(data => {
+                    res.send({response: 'OK'});
+                    userManager.getById(data.dataValues.userId).then(user => {
+                      if (user && user.token) {
+                        user.token.forEach(t =>
+                          sendNotification(t, {
+                            data: {
+                              type: 'LIKE_COMMENT',
+                              commentId: like.commentId,
+                              soundcastId: like.soundcastId,
+                            },
+                            notification: {
+                              title: 'New like',
+                              body: 'To your comment liked',
+                            },
+                          })
+                        );
+                      }
+                    });
                   })
                   .catch(error => sendError(error, res))
               )
@@ -123,27 +121,31 @@ const deleteLike = (req, res) => {
             // UNLIKE COMMENT
             database.Like.count({
               where: {commentId: like.commentId},
-            }).then(count =>
-              database.Comment.update(
-                {likesCount: count},
-                {where: {commentId: like.commentId}}
-              ).then(() =>
-                database.Like.findAll({
-                  where: {commentId: like.commentId},
-                  order: [['timeStamp', 'DESC']],
-                  limit: 1,
-                })
-                  .then(like =>
-                    likeManager
-                      .getFullNameByUid(
-                        like[0] ? like[0].dataValues.userId : ''
+            })
+              .then(count =>
+                database.Comment.update(
+                  {likesCount: count},
+                  {where: {commentId: like.commentId}}
+                )
+                  .then(() =>
+                    database.Like.findAll({
+                      where: {commentId: like.commentId},
+                      order: [['timeStamp', 'DESC']],
+                      limit: 1,
+                    })
+                      .then(like =>
+                        likeManager
+                          .getFullNameByUid(
+                            like[0] ? like[0].dataValues.userId : ''
+                          )
+                          .then(fullName => res.send({fullName}))
+                          .catch(error => sendError(error, res))
                       )
-                      .then(fullName => res.send({fullName}))
                       .catch(error => sendError(error, res))
                   )
                   .catch(error => sendError(error, res))
               )
-            );
+              .catch(error => sendError(error, res));
           } else if (like.episodeId) {
             // UNLIKE EPISODE
             database.Like.findAll({
