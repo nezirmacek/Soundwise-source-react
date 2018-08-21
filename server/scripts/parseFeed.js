@@ -336,6 +336,7 @@ async function parseFeed(req, res) {
     }
   } catch (err) {
     logErr(`parseFeed catch ${err}`, res);
+    console.log(err.stack);
   }
 } // parseFeed
 
@@ -424,6 +425,9 @@ async function runFeedImport(
 
     // 1. create a new soundcast from the feed
     const { description, author, image } = metadata;
+    if (!image.url) {
+      image.url = '';
+    }
     const title = entities.decode(metadata.title);
     const soundcast = {
       title,
@@ -593,6 +597,7 @@ async function runFeedImport(
       .catch(err => logErr(`Soundcast.findOrCreate ${err}`, res));
   } catch (err) {
     logErr(`runFeedImport catch ${err}`, res);
+    console.log(err.stack);
   }
 } // runFeedImport
 
@@ -647,7 +652,7 @@ async function addFeedEpisode(
     const date_created = moment(date || metadata.date).format('X');
     const episode = {
       title: entities.decode(title),
-      coverArtUrl: image.url || soundcast.imageURL,
+      coverArtUrl: image.url || soundcast.imageURL || '',
       creatorID: userId,
       date_created:
         date_created === 'Invalid date'
@@ -694,7 +699,7 @@ async function addFeedEpisode(
       .catch(err => logErr(`Episode.findOrCreate ${err}`));
     return episodeId;
   } catch (err) {
-    logErr(`addFeedEpisode catch ${err}`);
+    logErr(`addFeedEpisode catch ${err} ${err.stack}`);
   }
 }
 
@@ -779,7 +784,7 @@ async function feedInterval() {
     // to around 500,000. Will it be a problem for the server?)
     // - see /server/boot/cron-jobs-v2.js
   } catch (err) {
-    logErr(`feedInterval catch ${err}`);
+    logErr(`feedInterval catch ${err} ${err.stack}`);
   }
 }
 
