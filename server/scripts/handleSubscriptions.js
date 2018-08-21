@@ -44,7 +44,7 @@ const unsubscribe = (req, res) => {
                   .then(() =>
                     publisherManager
                       .decrementFreeSubscriberCount(publisherId)
-                      .then(() => res.status(200).send({}))
+                      .then(() => res.send({response: 'OK'}))
                   )
         )
     )
@@ -54,50 +54,34 @@ const unsubscribe = (req, res) => {
 };
 
 const subscribe = (req, res) => {
-  const {soundcastId, userId, publisherId} = req.body;
-  soundcastManager
-    .getById(soundcastId)
-    .then(
-      soundcast =>
-        soundcast.bundle
-          ? soundcast.soundcastsIncluded.forEach(id => actSubscribe(id))
-          : actSubscribe(soundcastId)
-    );
+  const {soundcastId, userId} = req.body;
+  addSoundcastToUser(userId, soundcastId)
+    .then(() => res.send({response: 'OK'}))
+    .catch(error => res.status(500).send(error));
+};
 
-  const actSubscribe = id => {
+const addSoundcastToUser = (userId, soundcastId) => {
+  const actSubscribe = (id, publisherId) =>
     soundcastManager
       .addSubscribedUser(id, userId)
       .then(() =>
         userManager
           .subscribe(userId, id)
           .then(() =>
-            publisherManager
-              .incrementFreeSubscriberCount(publisherId)
-              .then(() => res.status(200).send({}))
+            publisherManager.incrementFreeSubscriberCount(publisherId)
           )
       );
-  };
-};
 
-const addSoundcastToUser = (charge, soundcast, userId) => {
-  const paymentID = charge.id ? charge.id : null;
-  const planID = charge.plan ? charge.plan.id : null;
-  const billingCycle = soundcast.billingCycle ? soundcast.billingCycle : null;
-  const currentPeriodEnd = charge.current_period_end
-    ? charge.current_period_end
-    : moment()
-        .add(100, 'years')
-        .format('X');
-  userManager
-    .subscribe(userId, soundcast.soundcastId, paymentID, {
-      currentPeriodEnd,
-      billingCycle,
-      planID,
-    })
-    .then(() =>
-      soundcastManager.addSubscribedUser(soundcast.soundcastId, userId)
-    )
-    .catch(err => err);
+  return soundcastManager
+    .getById(soundcastId)
+    .then(
+      soundcast =>
+        soundcast && soundcast.bundle
+          ? soundcast.soundcastsIncluded.forEach(id =>
+              actSubscribe(id, soundcast.publisherId)
+            )
+          : actSubscribe(soundcastId, soundcast.publisherId)
+    );
 };
 
 module.exports = {subscribe, unsubscribe};
