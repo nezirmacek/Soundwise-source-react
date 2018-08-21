@@ -63,6 +63,12 @@
         "dataType": "bigint"
       }
     },
+    "likesCount": {
+      "type": "number",
+      "postgresql": {
+        "column": "likesCount"
+      }
+    },
     "createdAt": {
       "type": "date",
       "required": true,

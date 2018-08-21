@@ -5,10 +5,10 @@ const {
   soundcastManager,
   userManager,
 } = require('../managers');
-const { mailingService, subscriptionService } = require('../services');
+const {mailingService, subscriptionService} = require('../services');
 
 const unsubscribe = (req, res) => {
-  const { paymentId, userId, soundcastId, publisherId } = req.body;
+  const {paymentId, userId, soundcastId, publisherId} = req.body;
 
   userManager
     .getById(userId)
@@ -37,56 +37,51 @@ const unsubscribe = (req, res) => {
                     response =>
                       response
                         ? res.status(200).send(response)
-                        : res.status(500).send({ error: response })
+                        : res.status(500).send({error: response})
                   )
               : publisherManager
                   .removeFreeSubscriberCount(publisherId, userId, soundcastId)
                   .then(() =>
                     publisherManager
                       .decrementFreeSubscriberCount(publisherId)
-                      .then(() => res.status(200).send({}))
+                      .then(() => res.send({response: 'OK'}))
                   )
         )
     )
     .catch(error =>
-      res.status(500).send({ message: 'Failed free unsubscription', error })
+      res.status(500).send({message: 'Failed free unsubscription', error})
     );
 };
 
 const subscribe = (req, res) => {
-  const { soundcastId, userId, publisherId } = req.body;
-  soundcastManager
-    .addSubscribedUser(soundcastId, userId)
-    .then(() =>
-      userManager
-        .subscribe(userId, soundcastId)
-        .then(() =>
-          publisherManager
-            .incrementFreeSubscriberCount(publisherId)
-            .then(() => res.status(200).send({}))
-        )
+  const {soundcastId, userId} = req.body;
+  addSoundcastToUser(userId, soundcastId)
+    .then(() => res.send({response: 'OK'}))
+    .catch(error => res.status(500).send(error));
+};
+
+const addSoundcastToUser = (userId, soundcastId) => {
+  const actSubscribe = (id, publisherId) =>
+    soundcastManager
+      .addSubscribedUser(id, userId)
+      .then(() =>
+        userManager
+          .subscribe(userId, id)
+          .then(() =>
+            publisherManager.incrementFreeSubscriberCount(publisherId)
+          )
+      );
+
+  return soundcastManager
+    .getById(soundcastId)
+    .then(
+      soundcast =>
+        soundcast && soundcast.bundle
+          ? soundcast.soundcastsIncluded.forEach(id =>
+              actSubscribe(id, soundcast.publisherId)
+            )
+          : actSubscribe(soundcastId, soundcast.publisherId)
     );
 };
 
-const addSoundcastToUser = (charge, soundcast, userId) => {
-  const paymentID = charge.id ? charge.id : null;
-  const planID = charge.plan ? charge.plan.id : null;
-  const billingCycle = soundcast.billingCycle ? soundcast.billingCycle : null;
-  const currentPeriodEnd = charge.current_period_end
-    ? charge.current_period_end
-    : moment()
-        .add(100, 'years')
-        .format('X');
-  userManager
-    .subscribe(userId, soundcast.soundcastId, paymentID, {
-      currentPeriodEnd,
-      billingCycle,
-      planID,
-    })
-    .then(() =>
-      soundcastManager.addSubscribedUser(soundcast.soundcastId, userId)
-    )
-    .catch(err => err);
-};
-
-module.exports = { subscribe, unsubscribe };
+module.exports = {subscribe, unsubscribe};

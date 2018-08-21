@@ -48,6 +48,13 @@ module.exports = app => {
       .catch(err => res.status(500).send(err));
   });
 
+  app.get('/api/announcements/:id', (req, res) => {
+    const id = req.params.id;
+    database.Announcement.findById(id)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
+
   app.post('/api/episode', (req, res) => {
     database.Episode.findOrCreate({
       where: { episodeId: req.body.episodeId },
@@ -63,6 +70,7 @@ module.exports = app => {
       .then(data => res.send(data))
       .catch(err => res.status(500).send(err));
   });
+
   app.post('/api/announcements', (req, res) => {
     database.Announcement.create(req.body)
       .then(data => {

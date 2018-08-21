@@ -40,29 +40,42 @@ const addLike = (req, res) => {
           .catch(error => sendError(error, res));
       } else if (like.commentId) {
         // LIKE COMMENT
-        commentManager
-          .getUserParentComment(like.commentId)
-          .then(user => {
-            if ((user && !!user.token) || user.id === like.userId) {
-              user.token.forEach(t =>
-                sendNotification(t, {
-                  data: {
-                    type: 'LIKE_COMMENT',
-                    commentId: like.commentId,
-                    soundcastId: like.soundcastId,
-                  },
-                  notification: {
-                    title: 'New like',
-                    body: `${user.firstName} ${
-                      user.lastName
-                    } liked your comment`,
-                  },
-                })
-                  .then(() => res.send(data))
+        database.Like.count({
+          where: {commentId: like.commentId},
+        })
+          .then(count =>
+            database.Comment.update(
+              {likesCount: count},
+              {where: {commentId: like.commentId}}
+            )
+              .then(() =>
+                commentManager
+                  .getUserParentComment(like.commentId)
+                  .then(user => {
+                    if (user && !!user.token) {
+                      user.token.forEach(t =>
+                        sendNotification(t, {
+                          data: {
+                            type: 'LIKE_COMMENT',
+                            commentId: like.commentId,
+                            soundcastId: like.soundcastId,
+                          },
+                          notification: {
+                            title: 'New like',
+                            body: `${user.firstName} ${
+                              user.lastName
+                            } liked your comment`,
+                          },
+                        })
+                          .then(() => res.send(data))
+                          .catch(error => sendError(error, res))
+                      );
+                    }
+                  })
                   .catch(error => sendError(error, res))
-              );
-            }
-          })
+              )
+              .catch(error => sendError(error, res))
+          )
           .catch(error => sendError(error, res));
       }
     })
@@ -108,18 +121,29 @@ const deleteLike = (req, res) => {
               .catch(error => sendError(error, res));
           } else if (like.commentId) {
             // UNLIKE COMMENT
-            database.Like.findAll({
+            database.Like.count({
               where: {commentId: like.commentId},
-              order: [['timeStamp', 'DESC']],
-              limit: 1,
-            })
-              .then(like =>
-                likeManager
-                  .getFullNameByUid(like[0] ? like[0].dataValues.userId : '')
-                  .then(fullName => res.send({fullName}))
+            }).then(count =>
+              database.Comment.update(
+                {likesCount: count},
+                {where: {commentId: like.commentId}}
+              ).then(() =>
+                database.Like.findAll({
+                  where: {commentId: like.commentId},
+                  order: [['timeStamp', 'DESC']],
+                  limit: 1,
+                })
+                  .then(like =>
+                    likeManager
+                      .getFullNameByUid(
+                        like[0] ? like[0].dataValues.userId : ''
+                      )
+                      .then(fullName => res.send({fullName}))
+                      .catch(error => sendError(error, res))
+                  )
                   .catch(error => sendError(error, res))
               )
-              .catch(error => sendError(error, res));
+            );
           } else if (like.episodeId) {
             // UNLIKE EPISODE
             database.Like.findAll({
