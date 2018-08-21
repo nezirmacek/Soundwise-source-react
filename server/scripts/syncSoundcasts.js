@@ -4,13 +4,22 @@ const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../../database/index');
 const htmlEntities = require('html-entities').XmlEntities;
+var serviceAccount =
+  process.env.NODE_ENV == 'staging'
+    ? require('../../stagingServiceAccountKey')
+    : require('../../serviceAccountKey.json');
 
 const LOG_ERR = 'logErrs.txt';
 const PAGE_SIZE = 100;
 
+firebase.initializeApp({
+  credential: firebase.credential.cert(serviceAccount),
+  databaseURL: 'https://soundwise-testbase.firebaseio.com',
+});
+
 const syncSoundcasts = async () => {
   await fs.unlink(LOG_ERR, err => err);
-
+  console.log('start');
   let next = true;
   let startId = await firebase
     .database()
@@ -27,7 +36,6 @@ const syncSoundcasts = async () => {
     .limitToLast(1)
     .once('value')
     .then(snap => Object.keys(snap.val())[0]);
-
   while (next) {
     await firebase
       .database()
@@ -50,8 +58,10 @@ const syncSoundcasts = async () => {
           await database.Soundcast.findOne(getFilter(key))
             .then(soundcastData => {
               if (soundcastData) {
+                console.log('updated soundcast with id: ', key);
                 return soundcastData.update(soundcast);
               } else {
+                console.log('created soundcast with id: ', key);
                 return database.Soundcast.create(soundcast);
               }
             })
@@ -100,6 +110,7 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
     published,
     landingPage,
     last_update,
+    rank,
   } = fbSoundcast;
 
   return {
@@ -112,15 +123,16 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
     published: published ? published : null,
     landingPage: landingPage ? landingPage : null,
     updateDate: last_update ? last_update : null,
+    rank: rank ? rank : null,
   };
 };
 
 const getFilter = id => {
-  return { where: { soundcastId: id } };
+  return {where: {soundcastId: id}};
 };
 
 const removeSpecialChars = (key, soundcast) => {
-  const { title, short_description, long_description } = soundcast;
+  const {title, short_description, long_description} = soundcast;
   if (title) {
     firebase
       .database()
@@ -145,36 +157,4 @@ const logInFile = text => {
   });
 };
 
-const syncMessages = () => {
-  const ids = [
-    '1509475284817s',
-    '1507828113963s',
-    '1508785327382s',
-    '1510935330009s',
-    '1513445399143s',
-    '1508293913676s',
-    '1505855025645s',
-  ];
-  ids.forEach(id =>
-    firebase
-      .database()
-      .ref(`soundcasts/${id}/announcements`)
-      .once('value')
-      .then(snapshots => {
-        snapshots.forEach(snapshot => {
-          const fbMessage = snapshot.val();
-          const message = {
-            announcementId: fbMessage.id,
-            content: fbMessage.content,
-            creatorId: fbMessage.creatorID,
-            publisherId: fbMessage.publisherID,
-            soundcastId: fbMessage.soundcastID,
-            isPublished: fbMessage.isPublished,
-          };
-          database.Announcement.create(message).catch(e => console.log(e));
-        });
-      })
-  );
-};
-
-module.exports = { syncSoundcasts, syncMessages };
+syncSoundcasts().then(() => console.log('finish'));
