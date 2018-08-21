@@ -3,9 +3,10 @@
 var moment = require('moment');
 var firebase = require('firebase-admin');
 const convertToRaw = require('draft-js').convertToRaw;
+const {userManager} = require('../managers');
 
 const sendInvite = async (req, res) => {
-  const { inviteeArr, soundcastId, invitation } = req.body;
+  const {inviteeArr, soundcastId, invitation} = req.body;
   inviteeArr.map(async email => {
     let _email = email
       .replace(/\./g, '(dot)')
@@ -19,66 +20,59 @@ const sendInvite = async (req, res) => {
         .then(() => {
           firebase
             .auth()
-            .getUserByEmail(_email)
-            .then(u => subscibeUser(u.uid, soundcastId))
-            .catch(e => addInvitations(soundcastId, _email));
+            .getUserByEmail(email)
+            .then(u => subscibeUser(u.uid, soundcastId, res))
+            .catch(e => addInvitations(soundcastId, _email, res));
         });
-      await firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}/invitationEmail`)
-        .set(JSON.stringify(convertToRaw(invitation)))
-        .catch(err => console.log('Error: ===>', err));
+      // await firebase
+      //   .database()
+      //   .ref(`soundcasts/${soundcastId}/invitationEmail`)
+      //   .set(JSON.stringify(convertToRaw(invitation)))
+      //   .catch(err => console.log('Error: ===>', err));
     }
   });
-  res.send({ status: 'OK' });
 };
 
-const addInvitations = (soundcastId, email) => {
+const addInvitations = (soundcastId, email, res) => {
   firebase
     .database()
     .ref(`invitations/${email}`)
     .once('value')
     .then(snapshot => {
       if (snapshot.val()) {
-        const update = Object.assign(
-          {},
-          { [soundcastId]: true },
-          snapshot.val()
-        );
+        const update = Object.assign({}, {[soundcastId]: true}, snapshot.val());
         firebase
           .database()
           .ref(`invitations/${email}`)
-          .update(update);
+          .update(update)
+          .then(() => res.send({response: 'update invintation'}));
       } else {
         firebase
           .database()
           .ref(`invitations/${email}/${soundcastId}`)
-          .set(true);
+          .set(true)
+          .then(() => res.send({response: 'create invintation'}));
       }
     });
 };
 
-const subscibeUser = (userId, soundcastId) => {
-  firebase
-    .database()
-    .ref(`users/${userId}`)
-    .once('value')
-    .then(snap => {
-      const user = snap.val();
-      firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-        .set([{ 0: user.token[0] }]);
-      firebase
-        .database()
-        .ref(`users/${userId}/soundcasts/${soundcastId}`)
-        .set({
-          billingCycle: 'one time',
-          current_period_end: '4687857936',
-          date_subscribed: moment().format('X'),
-          subscribed: true,
-        });
-    });
+const subscibeUser = (userId, soundcastId, res) => {
+  userManager.getById(userId).then(async user => {
+    await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+      .set([{0: user.token[0]}]);
+    await firebase
+      .database()
+      .ref(`users/${userId}/soundcasts/${soundcastId}`)
+      .set({
+        billingCycle: 'one time',
+        current_period_end: '4687857936',
+        date_subscribed: moment().format('X'),
+        subscribed: true,
+      })
+      .then(() => res.send({response: 'subscibe user'}));
+  });
 };
 
-module.exports = { sendInvite };
+module.exports = {sendInvite};

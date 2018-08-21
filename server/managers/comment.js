@@ -1,6 +1,7 @@
 'use strict';
 const moment = require('moment');
 const firebase = require('firebase-admin');
+const {userManager} = require('../managers');
 
 const getById = id =>
   firebase
@@ -26,18 +27,7 @@ const getUserParentComment = id =>
     .database()
     .ref(`comments/${id}/userID`)
     .once('value')
-    .then(snap =>
-      firebase
-        .database()
-        .ref(`users/${snap.val()}`)
-        .once('value')
-        .then(
-          snapshot =>
-            snapshot.val()
-              ? Object.assign({}, { id: snapshot.key }, snapshot.val())
-              : null
-        )
-    );
+    .then(snap => userManager.getById(snap.val()));
 
 module.exports = {
   getById,

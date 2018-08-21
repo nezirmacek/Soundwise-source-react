@@ -43,7 +43,7 @@ const addLike = (req, res) => {
         commentManager
           .getUserParentComment(like.commentId)
           .then(user => {
-            if ((user && !!user.token) || user.id === like.userId) {
+            if (user && !!user.token) {
               user.token.forEach(t =>
                 sendNotification(t, {
                   data: {
