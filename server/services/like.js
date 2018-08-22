@@ -1,74 +1,60 @@
 'use strict';
 
-const database = require('../../database/index');
 const sendNotification = require('../scripts/messaging').sendNotification;
 const {userManager, likeManager} = require('../managers');
+const {
+  likeRepository,
+  commentRepository,
+  announcementRepository,
+} = require('../repositories');
 
+// ADD_LIKE
 const addLike = (req, res) => {
-  if (!req.body.fullName) {
+  const like = req.body;
+  if (!like.fullName) {
     res.status(400).send({error: 'fullName can not be null'});
     return;
   }
-  database.Like.create(req.body)
-    .then(data => {
-      const like = data.dataValues;
-      const fullName = req.body.fullName;
-      if (like.episodeId) {
+  likeRepository
+    .create(like)
+    .then(like => {
+      const {episodeId, announcementId, commentId} = like;
+      if (episodeId) {
         // LIKE EPISODE
         likeManager
-          .setFullName(like.episodeId, fullName)
+          .setFullName(episodeId, fullName)
           .then(() =>
-            database.Like.count({where: {episodeId: like.episodeId}})
-              .then(count => likeManager.setLikesCount(like.episodeId, count))
-              .then(() => res.send(data))
+            likeRepository
+              .count({episodeId})
+              .then(count => likeManager.setLikesCount(episodeId, count))
+              .then(() => res.send(like))
               .catch(error => sendError(error, res))
           )
           .catch(error => sendError(error, res));
-      } else if (like.announcementId) {
+      } else if (announcementId) {
         // LIKE MESSAGE
-        database.Like.count({
-          where: {announcementId: like.announcementId},
-        })
+        likeRepository
+          .count({announcementId})
           .then(count =>
-            database.Announcement.update(
-              {lastLiked: fullName, likesCount: count},
-              {where: {announcementId: like.announcementId}}
-            )
-              .then(() => res.send(data))
+            announcementRepository
+              .update({lastLiked: fullName, likesCount: count}, announcementId)
+              .then(() => res.send(like))
               .catch(error => sendError(error, res))
           )
           .catch(error => sendError(error, res));
-      } else if (like.commentId) {
+      } else if (commentId) {
         // LIKE COMMENT
-        database.Like.count({
-          where: {commentId: like.commentId},
-        })
+        likeRepository
+          .count({commentId})
           .then(count =>
-            database.Comment.update(
-              {likesCount: count},
-              {where: {commentId: like.commentId}}
-            )
+            commentRepository
+              .update({likesCount: count}, commentId)
               .then(() =>
-                database.Comment.findById(like.commentId)
-                  .then(data => {
-                    res.send({response: 'OK'});
-                    userManager.getById(data.dataValues.userId).then(user => {
-                      if (user && user.token) {
-                        user.token.forEach(t =>
-                          sendNotification(t, {
-                            data: {
-                              type: 'LIKE_COMMENT',
-                              commentId: like.commentId,
-                              soundcastId: like.soundcastId,
-                            },
-                            notification: {
-                              title: 'New like',
-                              body: 'To your comment liked',
-                            },
-                          })
-                        );
-                      }
-                    });
+                commentRepository
+                  .get(commentId)
+                  .then(comment => {
+                    sendPush(comment);
+                    res.send(like);
                   })
                   .catch(error => sendError(error, res))
               )
@@ -82,96 +68,86 @@ const addLike = (req, res) => {
 
 const deleteLike = (req, res) => {
   const likeId = req.params.id;
-  database.Like.find({where: {likeId}})
-    .then(data => {
-      const like = data.dataValues;
-
-      database.Like.destroy({where: {likeId}})
+  likeRepository
+    .get(likeId)
+    .then(like => {
+      likeRepository
+        .destroy(likeId)
         .then(() => {
-          if (like.announcementId) {
+          const {episodeId, announcementId, commentId} = like;
+          if (announcementId) {
             // UNLIKE MESSAGE
-            database.Like.findAll({
-              where: {announcementId: like.announcementId},
-              order: [['timeStamp', 'DESC']],
-              limit: 1,
-            })
-              .then(likes => {
-                likeManager
-                  .getFullNameByUid(
-                    likes[0] ? likes[0].dataValues.userId : null
-                  )
-                  .then(fullName =>
-                    database.Like.count({
-                      where: {announcementId: like.announcementId},
-                    })
-                      .then(count => {
-                        database.Announcement.update(
-                          {likesCount: count, lastLiked: fullName},
-                          {where: {announcementId: like.announcementId}}
-                        )
-                          .then(() => res.send({fullName}))
-                          .catch(error => sendError(error, res));
-                      })
-                      .catch(error => sendError(error, res))
-                  )
-                  .catch(error => sendError(error, res));
-              })
-              .catch(error => sendError(error, res));
-          } else if (like.commentId) {
-            // UNLIKE COMMENT
-            database.Like.count({
-              where: {commentId: like.commentId},
-            })
-              .then(count =>
-                database.Comment.update(
-                  {likesCount: count},
-                  {where: {commentId: like.commentId}}
-                )
-                  .then(() =>
-                    database.Like.findAll({
-                      where: {commentId: like.commentId},
-                      order: [['timeStamp', 'DESC']],
-                      limit: 1,
-                    })
-                      .then(like =>
-                        likeManager
-                          .getFullNameByUid(
-                            like[0] ? like[0].dataValues.userId : ''
-                          )
-                          .then(fullName => res.send({fullName}))
-                          .catch(error => sendError(error, res))
-                      )
+            getNamePreviousLiker({announcementId})
+              .then(lastLiked =>
+                likeRepository
+                  .count({commentId})
+                  .then(likesCount =>
+                    announcementRepository
+                      .update({likesCount, lastLiked}, announcementId)
+                      .then(() => res.send({lastLiked}))
                       .catch(error => sendError(error, res))
                   )
                   .catch(error => sendError(error, res))
               )
               .catch(error => sendError(error, res));
-          } else if (like.episodeId) {
+          } else if (commentId) {
+            // UNLIKE COMMENT
+            getNamePreviousLiker({commentId})
+              .then(lastLiked =>
+                likeRepository
+                  .count({commentId})
+                  .then(likesCount =>
+                    commentRepository
+                      .update({likesCount}, commentId)
+                      .then(() => res.send({lastLiked}))
+                      .catch(error => sendError(error, res))
+                  )
+                  .catch(error => sendError(error, res))
+              )
+              .catch(error => sendError(error, res));
+          } else if (episodeId) {
             // UNLIKE EPISODE
-            database.Like.findAll({
-              where: {episodeId: like.episodeId},
-              order: [['timeStamp', 'DESC']],
-              limit: 1,
-            })
-              .then(like => {
-                likeManager
-                  .getFullNameByUid(like[0] ? like[0].dataValues.userId : '')
-                  .then(fullName =>
-                    database.Like.count({
-                      where: {episodeId: like.episodeId},
-                    }).then(count =>
-                      likeManager
-                        .updateLikeInEpisode(like.episodeId, count, fullName)
-                        .then(() => res.send({fullName}))
-                    )
-                  );
-              })
+            getNamePreviousLiker(episodeId)
+              .then(lastLiked =>
+                likeRepository
+                  .count({episodeId})
+                  .then(likesCount =>
+                    likeManager
+                      .updateLikeInEpisode(episodeId, likesCount, fullName)
+                      .then(() => res.send({lastLiked}))
+                      .catch(error => sendError(error, res))
+                  )
+                  .catch(error => sendError(error, res))
+              )
               .catch(error => sendError(error, res));
           }
         })
         .catch(error => sendError(error, res));
     })
     .catch(error => sendError(error, res));
+};
+
+const getNamePreviousLiker = where =>
+  likeRepository
+    .getPrevious(where)
+    .then(like => likeManager.getFullNameByUid(like.userId));
+
+const sendPush = comment => {
+  userManager.getById(comment.userId).then(user => {
+    if (user && user.token) {
+      sendNotification(user.token, {
+        data: {
+          type: 'LIKE_COMMENT',
+          commentId: like.commentId,
+          soundcastId: like.soundcastId,
+        },
+        notification: {
+          title: 'New like',
+          body: 'To your comment liked',
+        },
+      });
+    }
+  });
 };
 
 const sendError = (err, res) => {
