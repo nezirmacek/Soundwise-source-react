@@ -3,11 +3,13 @@
 const announcementRepository = require('./announcement');
 const soundcastRepository = require('./soundcast');
 const commentRepository = require('./comment');
+const likeRepository = require('./like');
 const userRepository = require('./user');
 
 module.exports = {
   announcementRepository,
   soundcastRepository,
   commentRepository,
+  likeRepository,
   userRepository,
 };
