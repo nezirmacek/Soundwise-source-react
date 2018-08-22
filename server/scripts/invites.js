@@ -55,7 +55,7 @@ const subscibeUser = (userId, soundcastId, res) => {
     await firebase
       .database()
       .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-      .set([{0: user.token[0]}]);
+      .set([user.token[0]]);
     await firebase
       .database()
       .ref(`users/${userId}/soundcasts/${soundcastId}`)

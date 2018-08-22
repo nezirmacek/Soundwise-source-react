@@ -1,8 +1,5 @@
 'use strict';
 
-const _ = require('lodash');
-const database = require('../../database/index');
-
 const sendMail = require('../scripts/sendEmails').sendMail;
 const sendNotification = require('../scripts/messaging').sendNotification;
 
