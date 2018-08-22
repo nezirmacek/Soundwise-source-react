@@ -70,11 +70,11 @@
         "column": "landingPage"
       }
     },
-    "rank": {
-      "type": "number",
+    "forSale": {
+      "type": "boolean",
       "required": false,
       "postgresql": {
-        "column": "rank"
+        "column": "forSale"
       }
     },
     "updateDate": {

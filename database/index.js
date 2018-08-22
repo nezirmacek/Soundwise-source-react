@@ -82,6 +82,7 @@ var Soundcast = db.define('Soundcast', {
   title: Sequelize.STRING,
   imageUrl: Sequelize.STRING,
   itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
+  forSale: { type: Sequelize.BOOLEAN, defaultValue: false },
   category: Sequelize.STRING,
   rank: Sequelize.FLOAT,
   updateDate: Sequelize.BIGINT,
