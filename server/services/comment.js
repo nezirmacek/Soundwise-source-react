@@ -8,13 +8,14 @@ const {commentRepository, announcementRepository} = require('../repositories');
 
 // ADD_COMMENT
 const addComment = (req, res) => {
-  if (req.body.soundcastId || req.body.userId) {
+  const comment = req.body;
+  if (!comment.soundcastId || !comment.userId) {
     sendError({error: 'soundcastId and userId can not be null'}, res, 400);
     return;
   }
 
   commentRepository
-    .create(req.body)
+    .create(comment)
     .then(comment => {
       const {announcementId, episodeId, commentId} = comment;
 
@@ -22,13 +23,13 @@ const addComment = (req, res) => {
         updateCommentsCount(announcementId)
           .then(() => {
             notifyUsers(comment);
-            res.send(data);
+            res.send(comment);
           })
           .catch(error => sendError(error, res));
       } else if (episodeId) {
         commentManager.addCommentToEpisode(commentId, episodeId).then(() => {
           notifyUsers(comment);
-          res.send(data);
+          res.send(comment);
         });
       }
     })
@@ -72,15 +73,14 @@ const deleteComment = (req, res) => {
 const updateCommentsCount = announcementId =>
   commentRepository
     .count({announcementId})
-    .then(count =>
-      announcementRepository.update({commentsCount: count}, announcementId)
+    .then(commentsCount =>
+      announcementRepository.update({commentsCount}, announcementId)
     );
 
-const notifyUsers = comment => {
+const notifyUsers = comment =>
   sendMail(comment)
     .then(() => sendPush(comment))
     .catch(error => sendError(error, res));
-};
 
 const sendPush = comment => {
   const {parentId, soundcastId, episodeId, announcementId} = comment;

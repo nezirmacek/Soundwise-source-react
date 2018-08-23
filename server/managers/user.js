@@ -9,6 +9,8 @@ const getById = id =>
     .once('value')
     .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
 
+const getByEmail = email => firebase.auth().getUserByEmail(email);
+
 const create = (email, password) =>
   firebase()
     .auth()
@@ -54,9 +56,7 @@ const unsubscribe = (userId, soundcastId) => {
   });
 };
 const getId = email =>
-  firebase
-    .auth()
-    .getUserByEmail(email)
+  getByEmail(email)
     .then(userRecord => userRecord.toJSON().uid)
     .catch(() => null);
 
