@@ -6,10 +6,7 @@ var stripe = require('stripe')(stripe_key);
 var firebase = require('firebase-admin');
 const moment = require('moment');
 const request = require('request-promise');
-var serviceAccount =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingServiceAccountKey')
-    : require('../serviceAccountKey.json');
+var serviceAccount = require('../serviceAccountKey.json');
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -69,6 +66,74 @@ var processPublishers = async () => {
 };
 
 processPublishers();
+// reset user password
+firebase
+  .auth()
+  .updateUser('kmGFGvpJqgaYYPMfNdrfywMIgxi2', {
+    email: 'ameenaramjohn@hotmail.com',
+    password: '111111',
+  })
+  .then(userRecord => {
+    console.log(userRecord.toJSON());
+  })
+  .catch(err => {
+    console.log(err);
+  });
+
+// edit publisher
+// var options, publisherId, name, paypalEmail;
+// var date = moment().format();
+// const ids = ['1503002103690p'];
+// var processPublishers = async () => {
+//   for (const id of ids) {
+//     const process = await firebase
+//       .database()
+//       .ref(`publishers/${id}`)
+//       .once('value')
+//       .then(snapshot => {
+//         const publisher = snapshot.val();
+//         publisherId = id;
+//         name = snapshot.val().name;
+//         paypalEmail = snapshot.val().email;
+//         request(
+//           `https://mysoundwise.com/api/publishers/${publisherId}/exists`
+//         ).then(res => {
+//           options = {
+//             uri: 'https://mysoundwise.com/api/publishers/replaceOrCreate',
+//             body: {
+//               publisherId,
+//               name,
+//               paypalEmail,
+//               updatedAt: date,
+//               createdAt: date,
+//             },
+//             json: true,
+//           };
+//           console.log(JSON.parse(res));
+//           if (JSON.parse(res).exists) {
+//             options.method = 'PUT';
+//             request(options)
+//               .then(res => {})
+//               .catch(err => {
+//                 console.log(`error posting ${publisherId}`);
+//                 // console.log(err);
+//               });
+//           } else {
+//             options.method = 'POST';
+//             request(options)
+//               .then(res => {})
+//               .catch(err => {
+//                 console.log(`error posting ${publisherId}`);
+//                 // console.log(err);
+//               });
+//           }
+//         });
+//       })
+//       .catch(err => console.log(err));
+//   }
+// };
+
+// processPublishers();
 
 // retrieve stripe product
 // stripe.products.retrieve(

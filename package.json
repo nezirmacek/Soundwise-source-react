@@ -29,7 +29,6 @@
     "body-parser": "^1.15.2",
     "buttercms": "^1.1.0",
     "chart.js": "^2.6.0",
-    "cheerio": "^1.0.0-rc.2",
     "compression": "^1.0.3",
     "connect-multiparty": "^2.0.0",
     "cors": "^2.8.4",
@@ -165,7 +164,7 @@
   },
   "license": "UNLICENSED",
   "prettier": {
-    "bracketSpacing": false,
+    "bracketSpacing": true,
     "singleQuote": true,
     "trailingComma": "es5"
   }

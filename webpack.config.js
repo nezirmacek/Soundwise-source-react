@@ -82,7 +82,7 @@ module.exports = {
       RecordRTC: 'recordrtc',
       'window.RecordRTC': 'recordrtc',
     }),
-    // new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
       'process.env':
         process.env.NODE_ENV === 'staging'

@@ -158,7 +158,7 @@ to add live remote run:
 additional info: https://digitalocean.com/community/tutorials/how-to-set-up-automatic-deployment-with-git-with-a-vps
 
 Push to deployed server
->git push live master
+>git push live --force
 
 copy uglified *bundle.js/bundle.js.map* files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO

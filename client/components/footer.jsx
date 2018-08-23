@@ -41,7 +41,7 @@ const Footer = (props) => (
             </li>
             <li className="tz-text text-medium-gray">
               <a target='_blank' href='https://goo.gl/forms/lJovqK4KRHzinTna2'>
-                <span className='text-light-gray tz-text'>Get Featured on IGP</span>
+                <span className='text-light-gray tz-text'>Apply to Get on IGP</span>
               </a>
             </li>
             <li className="tz-text text-medium-gray">
@@ -79,6 +79,11 @@ const Footer = (props) => (
               <Link to='/privacy'>
                 <span className="text-light-gray tz-text">Privacy Policy</span>
               </Link>
+            </li>
+            <li className="tz-text text-medium-gray">
+              <a href="mailto:support@mysoundwise.com" target="_blank">
+                <span className="text-light-gray tz-text">Contact us</span>
+              </a>
             </li>
           </ul>
         </div>

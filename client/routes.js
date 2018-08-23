@@ -33,14 +33,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
-const config =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingConfig').config
-    : require('../config').config;
-const awsConfig =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingConfig').awsConfig
-    : require('../config').awsConfig;
+import { config, awsConfig } from '../config';
 import {
   loadCourses,
   subscribeToCategories,

@@ -212,7 +212,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                       to: email,
                       from: 'support@mysoundwise.com',
                       subject: 'Your soundwave video is ready for download!',
-                      html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p><p>p.s. Do you know you get unlimited podcast hosting for FREE on Soundwise? <a href="http://bit.ly/2GyGNz0">Check it out</a>.</p><p>p.p.s. Want to get your podcast subscribers' emails? <a href="http://bit.ly/2GyGNz0">Find out how</a>.</p>`,
+                      html: `<p>Hi!</p><p>Your soundwave video is ready! To download, click <a href=${videoUrl}>here</a>.</p><p>Please note: your download link will expire in 24 hours.</p><p>Folks at Soundwise</p><p>p.s. Do you know that Soundwise is the easiest way to sell and deliver on-demand audio programs?</p> <p>Soundwise helps you boost your audio product sales by at least 15%, and build a loyal following for your podcast.</p><p><a href="https://mysoundwise.com">Sign up today</a> and get 15 days free with the promo code FREE15 at checkout.</p>`,
                     });
 
                     // **** step 5: save user email in our email contact database
