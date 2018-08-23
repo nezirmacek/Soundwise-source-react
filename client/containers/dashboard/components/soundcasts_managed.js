@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import moment from 'moment';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Dialog from 'material-ui/Dialog';
 
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import EditSoundcast from './edit_soundcast';
@@ -23,6 +24,7 @@ export default class SoundcastsManaged extends Component {
       showStatsModal: false,
       currentEpisode: null,
       userInfo: { soundcasts_managed: {} },
+      newSoundcastModal: false,
     };
 
     this.editSoundcast = this.editSoundcast.bind(this);
@@ -421,12 +423,67 @@ export default class SoundcastsManaged extends Component {
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
                 label="Add New Soundcast"
-                onClick={() => {
-                  history.push('/dashboard/add_soundcast');
-                }}
+                onClick={() =>
+                  that.setState({
+                    newSoundcastModal: true,
+                  })
+                }
               />
             </div>
           </div>
+          <MuiThemeProvider>
+            <Dialog
+              modal={true}
+              open={this.state.newSoundcastModal}
+              onRequestClose={() =>
+                that.setState({
+                  newSoundcastModal: false,
+                })
+              }
+            >
+              <div
+                style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+                onClick={() =>
+                  that.setState({
+                    newSoundcastModal: false,
+                  })
+                }
+              >
+                &#10799;
+              </div>
+              <div
+                style={{
+                  marginTop: 47,
+                  marginBottom: 49,
+                  textAlign: 'center',
+                  fontSize: 22,
+                }}
+              >
+                How do you want to create this soundcast?
+              </div>
+              <OrangeSubmitButton
+                styles={{
+                  borderColor: Colors.link,
+                  backgroundColor: Colors.link,
+                  color: '#464646',
+                  width: 400,
+                }}
+                label="Start a new soundcast from scratch"
+                onClick={() => history.push('/dashboard/add_soundcast')}
+              />
+              <OrangeSubmitButton
+                styles={{
+                  width: 400,
+                }}
+                label="Import from an existing podcast feed"
+                onClick={() =>
+                  that.setState({
+                    newSoundcastModal: false,
+                  })
+                }
+              />
+            </Dialog>
+          </MuiThemeProvider>
         </div>
       );
     }
