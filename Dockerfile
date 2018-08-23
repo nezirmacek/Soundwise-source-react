@@ -9,7 +9,7 @@ WORKDIR /usr/soundwise
 RUN npm i
 
 # build client bundle
-RUN npm run build:staging
+RUN NODE_ENV=${NODE_ENV} npm run build
 
 # expose port
 EXPOSE 3000
