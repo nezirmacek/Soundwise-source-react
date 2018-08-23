@@ -4,12 +4,15 @@ import firebase from 'firebase';
 import moment from 'moment';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
+import Dots from 'react-activity/lib/Dots';
+import Axios from 'axios';
 
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import EditSoundcast from './edit_soundcast';
 import InviteSubscribersModal from './invite_subscribers_modal';
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 import SoundcastsBundles from './soundcasts_bundles';
 
@@ -25,6 +28,13 @@ export default class SoundcastsManaged extends Component {
       currentEpisode: null,
       userInfo: { soundcasts_managed: {} },
       newSoundcastModal: false,
+      showFeedInputs: false,
+      emailNotFoundError: false,
+      feedSubmitting: false,
+      feedSubmitError: '',
+      podcastTitle: '',
+      feedUrl: '',
+      imageUrl: '',
     };
 
     this.editSoundcast = this.editSoundcast.bind(this);
@@ -32,6 +42,10 @@ export default class SoundcastsManaged extends Component {
     this.handleStatsModal = this.handleStatsModal.bind(this);
     this.deleteEpisode = this.deleteEpisode.bind(this);
     this.deleteSoundcast = this.deleteSoundcast.bind(this);
+    this.closeSubmitModal = this.closeSubmitModal.bind(this);
+    this.submitFeed = this.submitFeed.bind(this);
+    this.submitCode = this.submitCode.bind(this);
+    this.resend = this.resend.bind(this);
   }
 
   componentDidMount() {
@@ -151,6 +165,120 @@ export default class SoundcastsManaged extends Component {
         .remove();
       alert('Soundcast has been deleted.');
     }
+  }
+
+  handleFeedSubmission(type, e) {
+    this.setState({
+      [type]: e.target.value,
+    });
+  }
+
+  closeSubmitModal() {
+    this.setState({
+      newSoundcastModal: false,
+      showFeedInputs: false,
+      feedSubmitError: '',
+    });
+  }
+
+  submitFeed() {
+    this.setState({
+      feedSubmitting: true,
+    });
+    const that = this;
+    Axios.post('/api/parse_feed', {
+      feedUrl: this.state.feedUrl,
+      // podcastTitle: this.state.podcastTitle, // not used currently
+    })
+      .then(res => {
+        // setting imageUrl, publisherEmail or notClaimed
+        res.data && that.setState({ ...res.data, feedSubmitting: false });
+      })
+      .catch(err => {
+        const errMsg =
+          (err && err.response && err.response.data) || err.toString();
+        that.setState({ feedSubmitting: false });
+        if (
+          errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email"
+        ) {
+          that.setState({ emailNotFoundError: true });
+        } else if (
+          errMsg.slice(0, 97) ===
+          'Error: This feed is already on Soundwise. If you think this is a mistake, please contact support.'
+        ) {
+          alert(
+            "Hmm...looks like this podcast has already been managed by an existing account on Soundwise. If you think you're the owner of this feed, please contact us at support@mysoundwise.com."
+          );
+        } else {
+          alert(
+            'Hmm...there is a problem parsing the feed. Please try again later.'
+          );
+        }
+      });
+  }
+
+  submitCode() {
+    const { codeSign1, codeSign2, codeSign3, codeSign4 } = this.refs;
+    const { feedUrl, publisherEmail, notClaimed } = this.state;
+    const submitCode =
+      codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
+    codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
+    Axios.post('/api/parse_feed', { feedUrl, submitCode, notClaimed })
+      .then(res => {
+        if (res.data === 'Success_code') {
+          this.props.setFeedVerified({ feedUrl, publisherEmail });
+          this.props.history.push('/signup/admin');
+        }
+      })
+      .catch(err => {
+        const errMsg =
+          (err && err.response && err.response.data) || err.toString();
+        if (errMsg.slice(0, 33) === 'Error: incorrect verfication code') {
+          alert('Code incorrect!');
+        } else {
+          console.log(
+            'verification code request failed',
+            err,
+            err && err.response && err.response.data
+          );
+          alert(
+            'Hmm...there is a problem sending verification code. Please try again later.'
+          );
+        }
+      });
+  }
+
+  onKeyDown(id, e) {
+    const refs = this.refs;
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      return;
+    }
+    if (/\d/.test(e.key)) {
+      // digits only
+      setTimeout(() => refs['codeSign' + id].focus(), 50);
+    } else {
+      e.preventDefault();
+    }
+  }
+
+  resend() {
+    const { feedUrl } = this.state;
+    Axios.post('/api/parse_feed', { feedUrl, resend: true })
+      .then(res => {
+        if (res.data === 'Success_resend') {
+          alert('Resend Success!');
+        }
+      })
+      .catch(err => {
+        console.log(
+          'resend code request failed',
+          err,
+          err && err.response && err.response.data
+        );
+        alert(
+          'Hmm...there is a problem resending code. Please try again later.'
+        );
+      });
   }
 
   render() {
@@ -432,56 +560,183 @@ export default class SoundcastsManaged extends Component {
             </div>
           </div>
           <MuiThemeProvider>
-            <Dialog
-              modal={true}
-              open={this.state.newSoundcastModal}
-              onRequestClose={() =>
-                that.setState({
-                  newSoundcastModal: false,
-                })
-              }
-            >
+            <Dialog modal={true} open={this.state.newSoundcastModal}>
               <div
                 style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
-                onClick={() =>
-                  that.setState({
-                    newSoundcastModal: false,
-                  })
-                }
+                onClick={() => this.closeSubmitModal()}
               >
-                &#10799;
+                &#10799; {/* Close button (X) */}
               </div>
-              <div
-                style={{
-                  marginTop: 47,
-                  marginBottom: 49,
-                  textAlign: 'center',
-                  fontSize: 22,
-                }}
-              >
-                How do you want to create this soundcast?
-              </div>
-              <OrangeSubmitButton
-                styles={{
-                  borderColor: Colors.link,
-                  backgroundColor: Colors.link,
-                  color: '#464646',
-                  width: 400,
-                }}
-                label="Start a new soundcast from scratch"
-                onClick={() => history.push('/dashboard/add_soundcast')}
-              />
-              <OrangeSubmitButton
-                styles={{
-                  width: 400,
-                }}
-                label="Import from an existing podcast feed"
-                onClick={() =>
-                  that.setState({
-                    newSoundcastModal: false,
-                  })
-                }
-              />
+
+              {(!this.state.showFeedInputs &&
+                !this.state.emailNotFoundError &&
+                !this.state.feedSubmitError &&
+                (!this.state.imageUrl && !this.state.publisherEmail) && (
+                  <div>
+                    <div style={{ ...styles.dialogTitle }}>
+                      How do you want to create this soundcast?
+                    </div>
+                    <OrangeSubmitButton
+                      styles={{
+                        borderColor: Colors.link,
+                        backgroundColor: Colors.link,
+                        color: '#464646',
+                        width: 400,
+                      }}
+                      label="Start a new soundcast from scratch"
+                      onClick={() => history.push('/dashboard/add_soundcast')}
+                    />
+                    <OrangeSubmitButton
+                      styles={{
+                        width: 400,
+                      }}
+                      label="Import from an existing podcast feed"
+                      onClick={() =>
+                        that.setState({
+                          showFeedInputs: true,
+                        })
+                      }
+                    />
+                  </div>
+                )) ||
+                (this.state.emailNotFoundError && (
+                  <div>
+                    <div style={{ ...styles.dialogTitle, marginTop: 37, marginBottom: 41, fontSize: 23 }}>
+                      Oops! There's a problem...
+                    </div>
+                    <div
+                      style={{
+                        ...styles.container,
+                        padding: '0px 30px',
+                        width: 490,
+                        fontSize: 15,
+                      }}
+                      className="center-col text-center"
+                    >
+                      We cannot find the podcast owner's email address in the
+                      feed you submitted. An email address is needed to confirm
+                      your ownership of the podcast. Please edit your feed to
+                      include an owner's email address and re-submit.
+                    </div>
+                    <div
+                      style={{
+                        ...styles.container,
+                        padding: 30,
+                        width: 490,
+                        fontSize: 15,
+                      }}
+                      className="center-col text-center"
+                    >
+                      If you think this is a mistake, please contact our support
+                      at <br />
+                      <span style={{ color: '#f76b1c' }}>
+                        support@mysoundwise.com
+                      </span>
+                    </div>
+                  </div>
+                )) ||
+                (this.state.showFeedInputs && (
+                  <div>
+                    <div style={{ ...styles.dialogTitle }}>
+                      Import your podcast feed
+                    </div>
+                    <div
+                      style={styles.container}
+                      className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                    >
+                      <span style={styles.greyInputText}>Podcast Title</span>
+                      <input
+                        type="text"
+                        style={styles.input}
+                        onChange={this.handleFeedSubmission.bind(
+                          this,
+                          'podcastTitle'
+                        )}
+                        value={this.state.podcastTitle}
+                      />
+                    </div>
+                    <div
+                      style={{ ...styles.container, paddingBottom: 20 }}
+                      className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+                    >
+                      <span style={styles.greyInputText}>
+                        Podcast RSS Feed URL
+                      </span>
+                      <input
+                        type="text"
+                        style={styles.input}
+                        onChange={this.handleFeedSubmission.bind(
+                          this,
+                          'feedUrl'
+                        )}
+                        value={this.state.feedUrl}
+                      />
+                    </div>
+                    {(!this.state.feedSubmitting && (
+                      <OrangeSubmitButton
+                        label="Submit"
+                        onClick={() => that.submitFeed()}
+                      />
+                    )) || (
+                      <div style={{ textAlign: 'center', marginBottom: 30 }}>
+                        <Dots color={Colors.mainOrange} size={32} speed={1} />
+                      </div>
+                    )}
+                  </div>
+                )) ||
+                (this.state.imageUrl &&
+                  this.state.publisherEmail && (
+                    <div>
+                      <img
+                        style={{ width: 200, height: 200, marginTop: 20 }}
+                        className="center-col"
+                        src={this.state.imageUrl}
+                      />
+                      <div
+                        style={{
+                          ...styles.container,
+                          padding: 30,
+                          width: 340,
+                          fontSize: 17,
+                        }}
+                        className="center-col text-center"
+                      >
+                        Almost there... to verify your ownership of the podcast,
+                        we sent a confirmation code to <br />
+                        <span style={{ color: Colors.mainOrange }}>
+                          {this.state.publisherEmail}
+                        </span>
+                      </div>
+                      <div style={{ ...styles.dialogTitle }}>
+                        Enter the confirmation code:
+                      </div>
+                      <div>
+                        <input
+                          ref="codeSign1"
+                          onKeyDown={this.onKeyDown.bind(this, 2)}
+                        />
+                        <input
+                          ref="codeSign2"
+                          onKeyDown={this.onKeyDown.bind(this, 3)}
+                        />
+                        <input
+                          ref="codeSign3"
+                          onKeyDown={this.onKeyDown.bind(this, 4)}
+                        />
+                        <input ref="codeSign4" />
+                      </div>
+                      <OrangeSubmitButton
+                        label="Submit"
+                        onClick={() => this.submitCode()}
+                      />
+                      <a
+                        style={{ color: Colors.link, marginLeft: 5 }}
+                        onClick={this.resend.bind(this)}
+                      >
+                        Resend the confirmation code
+                      </a>
+                    </div>
+                  ))}
             </Dialog>
           </MuiThemeProvider>
         </div>
@@ -497,6 +752,13 @@ SoundcastsManaged.propTypes = {
 };
 
 const styles = {
+  input: { ...commonStyles.input },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
+  },
   titleText: {
     fontSize: 12,
   },

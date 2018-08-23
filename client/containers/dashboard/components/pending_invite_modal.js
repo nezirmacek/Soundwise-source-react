@@ -10,6 +10,7 @@ import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
+import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -180,15 +181,7 @@ export default class PendingInviteModal extends Component {
 }
 
 const styles = {
-  backDrop: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    top: '0px',
-    left: '0px',
-    zIndex: '9998',
-    background: 'rgba(0, 0, 0, 0.3)',
-  },
+  backDrop: { ...commonStyles.backDrop },
   modal: {
     position: 'absolute',
     top: '30%',
