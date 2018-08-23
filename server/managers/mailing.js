@@ -1,9 +1,6 @@
 'use strict';
 const sgMail = require('@sendgrid/mail');
-const { sendGridApiKey } =
-  process.env.NODE_ENV === 'staging'
-    ? require('../../stagingConfig')
-    : require('../../config');
+const {sendGridApiKey} = require('../../config');
 const client = require('@sendgrid/client');
 
 sgMail.setApiKey(sendGridApiKey);
@@ -14,9 +11,9 @@ const createMailingList = (soundcastId, listName) =>
     .request({
       method: 'POST',
       url: '/v3/contactdb/lists',
-      body: { name: `${soundcastId}-${listName}` },
+      body: {name: `${soundcastId}-${listName}`},
     })
-    .then(([, { id }]) => id);
+    .then(([, {id}]) => id);
 
 const addRecipients = recipients =>
   client
@@ -37,7 +34,7 @@ const addRecipients = recipients =>
       ),
     })
     .then(
-      ([, { persisted_recipients: persistedRecipients }]) => persistedRecipients
+      ([, {persisted_recipients: persistedRecipients}]) => persistedRecipients
     );
 
 const addRecipientsToMailingList = (mailingListId, recipients) =>
@@ -56,7 +53,7 @@ const getRecipient = email =>
         email,
       },
     })
-    .then(([, { recipients }]) => recipients[0]);
+    .then(([, {recipients}]) => recipients[0]);
 
 const deleteRecipient = (recipientId, mailingListId) =>
   client.request({
@@ -65,7 +62,7 @@ const deleteRecipient = (recipientId, mailingListId) =>
   });
 
 const getMailingLists = () =>
-  client.request({ method: 'GET', url: '/v3/contactdb/lists' });
+  client.request({method: 'GET', url: '/v3/contactdb/lists'});
 
 const sendEmail = message => sgMail.send(message);
 

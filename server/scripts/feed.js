@@ -10,11 +10,7 @@ const Podcast = require('podcast');
 const sizeOf = require('image-size');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(
-  process.env.NODE_ENV == 'staging'
-    ? require('../../stagingConfig').sendGridApiKey
-    : require('../../config').sendGridApiKey
-);
+sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 

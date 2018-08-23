@@ -1,9 +1,6 @@
 'use strict';
 
-var stripeKey =
-  process.env.NODE_ENV == 'staging'
-    ? require('../../stagingConfig').stripe_key
-    : require('../../config').stripe_key;
+var stripeKey = require('../../config').stripe_key;
 
 const {
   publisherManager,
@@ -18,7 +15,7 @@ const delStripeSubscriptions = paymentID => {
     if (paymentID.slice(0, 3) == 'sub') {
       stripe.subscriptions.del(
         paymentID,
-        { stripe_account: publisher },
+        {stripe_account: publisher},
         (err, confirmation) => (err ? false : confirmation)
       );
     } else {
@@ -44,4 +41,4 @@ const addStripe = (userId, soundcastId, publisherID) => {
   );
 };
 
-module.exports = { delStripeSubscriptions, addStripe };
+module.exports = {delStripeSubscriptions, addStripe};

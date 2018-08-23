@@ -8,18 +8,13 @@ var multipart = require('connect-multiparty');
 var uploader = require('express-fileuploader');
 var S3Strategy = require('express-fileuploader-s3');
 var AWS = require('aws-sdk');
-var awsConfig =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingConfig').awsConfig
-    : require('../config').awsConfig;
+var awsConfig = require('../config').awsConfig;
 var S3 = require('aws-sdk').S3;
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
-var serviceAccount =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingServiceAccountKey')
-    : require('../serviceAccountKey.json');
+var serviceAccount = require('../serviceAccountKey');
+
 var cors = require('cors');
 var Axios = require('axios');
 const moment = require('moment');
@@ -72,7 +67,7 @@ Raven.config(
 console.log(serviceAccount);
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-testbase.firebaseio.com',
+  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
 var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
@@ -343,10 +338,7 @@ app.use(function(err, req, res, next) {
 });
 
 // var sgMail = require('@sendgrid/mail');
-var sendGridApiKey =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingConfig').sendGridApiKey
-    : require('../config').sendGridApiKey;
+var sendGridApiKey = require('../config').sendGridApiKey;
 // var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
 // var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
 

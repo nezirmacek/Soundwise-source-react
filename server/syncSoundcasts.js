@@ -4,17 +4,14 @@ const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../database');
 const htmlEntities = require('html-entities').XmlEntities;
-var serviceAccount =
-  process.env.NODE_ENV == 'staging'
-    ? require('../stagingServiceAccountKey')
-    : require('../serviceAccountKey.json');
+var serviceAccount = require('../serviceAccountKey');
 
 const LOG_ERR = 'logErrsSoundcasts.txt';
 const PAGE_SIZE = 100;
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-testbase.firebaseio.com',
+  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 
 const syncSoundcasts = async () => {
