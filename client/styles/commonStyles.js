@@ -105,6 +105,12 @@ const commonStyles = {
     borderRadius: 3,
     boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.5)',
   },
+  containerWrapper: {
+    overflow: 'hidden',
+    borderRadius: 3,
+    width: 'auto',
+    backgroundColor: Colors.mainWhite,
+  },
 };
 
 export default commonStyles;

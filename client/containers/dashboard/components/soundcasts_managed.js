@@ -31,9 +31,9 @@ export default class SoundcastsManaged extends Component {
       showFeedInputs: false,
       emailNotFoundError: false,
       feedSubmitting: false,
-      feedSubmitError: '',
       podcastTitle: '',
       feedUrl: '',
+      publisherEmail: '',
       imageUrl: '',
     };
 
@@ -177,7 +177,11 @@ export default class SoundcastsManaged extends Component {
     this.setState({
       newSoundcastModal: false,
       showFeedInputs: false,
-      feedSubmitError: '',
+      emailNotFoundError: false,
+      podcastTitle: '',
+      feedUrl: '',
+      publisherEmail: '',
+      imageUrl: '',
     });
   }
 
@@ -192,7 +196,15 @@ export default class SoundcastsManaged extends Component {
     })
       .then(res => {
         // setting imageUrl, publisherEmail or notClaimed
-        res.data && that.setState({ ...res.data, feedSubmitting: false });
+        if (res.data && res.data.imageUrl && res.data.publisherEmail) {
+          that.setState({
+            ...res.data,
+            feedSubmitting: false,
+            showFeedInputs: false,
+          });
+        } else {
+          alert(`Error result ${JSON.stringify(res.data)}`);
+        }
       })
       .catch(err => {
         const errMsg =
@@ -226,8 +238,29 @@ export default class SoundcastsManaged extends Component {
     Axios.post('/api/parse_feed', { feedUrl, submitCode, notClaimed })
       .then(res => {
         if (res.data === 'Success_code') {
-          this.props.setFeedVerified({ feedUrl, publisherEmail });
-          this.props.history.push('/signup/admin');
+          const reqObj = {
+            feedUrl,
+            userId: this.props.userInfo.id,
+            publisherId: this.props.userInfo.publisherID,
+            importFeedUrl: true, // run import or claim
+          };
+          Axios.post('/api/parse_feed', reqObj)
+            .then(res => {
+              // if (res.data === 'Success_import' || res.data === 'Success_claim') {
+              that.closeSubmitModal();
+              // }
+            })
+            .catch(err => {
+              console.log(
+                'import feed request failed',
+                err,
+                err && err.response && err.response.data
+              );
+              alert(
+                'Hmm...there is a problem importing feed. Please try again later.'
+              );
+              that.props.setFeedVerified(false);
+            });
         }
       })
       .catch(err => {
@@ -570,7 +603,6 @@ export default class SoundcastsManaged extends Component {
 
               {(!this.state.showFeedInputs &&
                 !this.state.emailNotFoundError &&
-                !this.state.feedSubmitError &&
                 (!this.state.imageUrl && !this.state.publisherEmail) && (
                   <div>
                     <div style={{ ...styles.dialogTitle }}>
@@ -601,7 +633,14 @@ export default class SoundcastsManaged extends Component {
                 )) ||
                 (this.state.emailNotFoundError && (
                   <div>
-                    <div style={{ ...styles.dialogTitle, marginTop: 37, marginBottom: 41, fontSize: 23 }}>
+                    <div
+                      style={{
+                        ...styles.dialogTitle,
+                        marginTop: 37,
+                        marginBottom: 41,
+                        fontSize: 23,
+                      }}
+                    >
                       Oops! There's a problem...
                     </div>
                     <div
@@ -686,7 +725,14 @@ export default class SoundcastsManaged extends Component {
                 )) ||
                 (this.state.imageUrl &&
                   this.state.publisherEmail && (
-                    <div>
+                    <div
+                      style={{
+                        ...styles.containerWrapper,
+                        padding: 20,
+                        textAlign: 'center',
+                      }}
+                      className="container-confirmation"
+                    >
                       <img
                         style={{ width: 200, height: 200, marginTop: 20 }}
                         className="center-col"
@@ -707,7 +753,7 @@ export default class SoundcastsManaged extends Component {
                           {this.state.publisherEmail}
                         </span>
                       </div>
-                      <div style={{ ...styles.dialogTitle }}>
+                      <div style={{ ...styles.dialogTitle, marginTop: 7, marginBottom: 29 }}>
                         Enter the confirmation code:
                       </div>
                       <div>
@@ -753,6 +799,7 @@ SoundcastsManaged.propTypes = {
 
 const styles = {
   input: { ...commonStyles.input },
+  containerWrapper: { ...commonStyles.containerWrapper },
   dialogTitle: {
     marginTop: 47,
     marginBottom: 49,

@@ -447,6 +447,7 @@ export default SignupOptions;
 
 const styles = {
   input: { ...commonStyles.input },
+  containerWrapper: { ...commonStyles.containerWrapper },
   row: {
     backgroundColor: Colors.window,
     paddingTop: 15,
@@ -457,12 +458,6 @@ const styles = {
   logo: {
     marginBottom: 18,
     height: 50,
-  },
-  containerWrapper: {
-    overflow: 'hidden',
-    borderRadius: 3,
-    width: 'auto',
-    backgroundColor: Colors.mainWhite,
   },
   container: {
     backgroundColor: Colors.mainWhite,
