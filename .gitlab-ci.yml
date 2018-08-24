@@ -21,7 +21,7 @@ deploy_staging:
     - sudo GITLAB_USERNAME=$GITLAB_USERNAME GITLAB_PASSWORD=$GITLAB_PASSWORD su soundwise
     - sudo chmod +x on_behalf.sh
     - sudo ./on_behalf.sh soundwise "docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com"
-    - sudo ./on_behalf.sh soundwise "docker-compose -f /home/soundwise/docker-compose-staging.yml pull && docker-compose -p soundwise_staging -f /home/soundwise/docker-compose-staging.yml up -d"
+    - sudo ./on_behalf.sh soundwise "docker-compose -f docker-compose-staging.yml pull && docker-compose -p soundwise_staging -f docker-compose-staging.yml up -d"
 
 build_production:
   stage: build
@@ -46,4 +46,4 @@ deploy_production:
     - sudo GITLAB_USERNAME=$GITLAB_USERNAME GITLAB_PASSWORD=$GITLAB_PASSWORD su soundwise
     - sudo chmod +x on_behalf.sh
     - sudo ./on_behalf.sh soundwise "docker login -u $GITLAB_USERNAME -p $GITLAB_PASSWORD registry.gitlab.com"
-    - sudo ./on_behalf.sh soundwise "docker-compose -f docker-compose-production.yml -f /home/soundwise/docker-compose.yml pull && docker-compose -p soundwise_production -f /home/soundwise/docker-compose-production.yml up -d"
+    - sudo ./on_behalf.sh soundwise "docker-compose -f docker-compose-production.yml pull && docker-compose -p soundwise_production -f docker-compose-production.yml up -d"
