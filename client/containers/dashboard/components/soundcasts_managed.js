@@ -235,6 +235,7 @@ export default class SoundcastsManaged extends Component {
     const submitCode =
       codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
+    const that = this;
     Axios.post('/api/parse_feed', { feedUrl, submitCode, notClaimed })
       .then(res => {
         if (res.data === 'Success_code') {
