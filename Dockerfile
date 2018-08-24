@@ -4,6 +4,9 @@ FROM keymetrics/pm2:8-alpine
 RUN mkdir -p /usr/sounwise
 COPY . /usr/soundwise
 
+# update npm
+RUN npm i -g npm
+
 # install node modules
 WORKDIR /usr/soundwise
 RUN npm i
