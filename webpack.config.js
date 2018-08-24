@@ -84,12 +84,7 @@ module.exports = {
     }),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
-      'process.env':
-        process.env.NODE_ENV === 'staging'
-          ? envKeys
-          : {
-              NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-            },
+      'process.env': envKeys,
     }),
   ],
 };
