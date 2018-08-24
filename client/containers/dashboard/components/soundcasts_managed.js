@@ -175,6 +175,7 @@ export default class SoundcastsManaged extends Component {
 
   closeSubmitModal() {
     this.setState({
+      feedSubmitting: false,
       newSoundcastModal: false,
       showFeedInputs: false,
       emailNotFoundError: false,
@@ -186,9 +187,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   submitFeed() {
-    this.setState({
-      feedSubmitting: true,
-    });
+    this.setState({ feedSubmitting: true });
     const that = this;
     Axios.post('/api/parse_feed', {
       feedUrl: this.state.feedUrl,
@@ -236,6 +235,7 @@ export default class SoundcastsManaged extends Component {
       codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
     const that = this;
+    this.setState({ feedSubmitting: true });
     Axios.post('/api/parse_feed', { feedUrl, submitCode, notClaimed })
       .then(res => {
         if (res.data === 'Success_code') {
@@ -252,6 +252,7 @@ export default class SoundcastsManaged extends Component {
               // }
             })
             .catch(err => {
+              that.setState({ feedSubmitting: false });
               console.log(
                 'import feed request failed',
                 err,
@@ -260,11 +261,13 @@ export default class SoundcastsManaged extends Component {
               alert(
                 'Hmm...there is a problem importing feed. Please try again later.'
               );
-              that.props.setFeedVerified(false);
             });
+        } else {
+          that.setState({ feedSubmitting: false });
         }
       })
       .catch(err => {
+        that.setState({ feedSubmitting: false });
         const errMsg =
           (err && err.response && err.response.data) || err.toString();
         if (errMsg.slice(0, 33) === 'Error: incorrect verfication code') {
@@ -754,7 +757,13 @@ export default class SoundcastsManaged extends Component {
                           {this.state.publisherEmail}
                         </span>
                       </div>
-                      <div style={{ ...styles.dialogTitle, marginTop: 7, marginBottom: 29 }}>
+                      <div
+                        style={{
+                          ...styles.dialogTitle,
+                          marginTop: 7,
+                          marginBottom: 29,
+                        }}
+                      >
                         Enter the confirmation code:
                       </div>
                       <div>
@@ -772,10 +781,16 @@ export default class SoundcastsManaged extends Component {
                         />
                         <input ref="codeSign4" />
                       </div>
-                      <OrangeSubmitButton
-                        label="Submit"
-                        onClick={() => this.submitCode()}
-                      />
+                      {(!this.state.feedSubmitting && (
+                        <OrangeSubmitButton
+                          label="Submit"
+                          onClick={() => this.submitCode()}
+                        />
+                      )) || (
+                        <div style={{ textAlign: 'center', marginBottom: 30 }}>
+                          <Dots color={Colors.mainOrange} size={32} speed={1} />
+                        </div>
+                      )}
                       <a
                         style={{ color: Colors.link, marginLeft: 5 }}
                         onClick={this.resend.bind(this)}
