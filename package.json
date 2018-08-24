@@ -4,7 +4,7 @@
   "description": "Soundwise web app",
   "main": "server/server.js",
   "engines": {
-    "node": "10"
+    "node": "8"
   },
   "scripts": {
     "lint": "eslint .",

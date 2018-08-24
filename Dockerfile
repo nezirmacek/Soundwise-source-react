@@ -1,4 +1,4 @@
-FROM keymetrics/pm2:10-alpine
+FROM keymetrics/pm2:8-alpine
 
 # create app folder and copy source files
 RUN mkdir -p /usr/sounwise
