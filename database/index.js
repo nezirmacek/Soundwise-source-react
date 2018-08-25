@@ -235,7 +235,13 @@ var PodcasterEmail = db.define(
     category: { type: Sequelize.STRING, allowNull: true },
   },
   {
-    indexes: [{ fields: ['publisherEmail'] }, { fields: ['last_update'] }],
+    indexes: [
+      { fields: ['podcastTitle'] },
+      { fields: ['publisherEmail'] },
+      { fields: ['last_update'] },
+      { fields: ['hostName'] },
+      { fields: ['category'] },
+    ],
   }
 );
 
