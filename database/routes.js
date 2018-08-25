@@ -70,15 +70,16 @@ module.exports = app => {
       });
   });
 
-  app.post('/api/category', (req, res) => {
-    database.Category.create(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
-  });
+  // - Currently only 16 static main categories getting used (see podcastCategories)
+  // app.post('/api/category', (req, res) => {
+  //   database.Category.create(req.body)
+  //     .then(data => {
+  //       res.send(data);
+  //     })
+  //     .catch(err => {
+  //       res.status(500).send(err);
+  //     });
+  // });
 
   app.post('/api/listening_session', (req, res) => {
     const data = Object.assign({}, req.body, { date: new Date(req.body.date) });

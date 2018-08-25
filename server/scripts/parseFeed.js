@@ -25,6 +25,9 @@ const nodeUrl = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
+const categoriesNames = Object.keys(podcastCategories).map(
+  i => podcastCategories[i].name
+); // main 16 categories ('Arts', 'Comedy', ...)
 
 // // Test the getFeed function:
 // setTimeout(() =>
@@ -156,7 +159,7 @@ async function parseFeed(req, res) {
         .database()
         .ref(`soundcasts/${soundcastId}`)
         .once(`value`);
-      let { publisherEmail, title } = snapshot.val();
+      let { title, publisherEmail, last_update, hostName } = snapshot.val();
       if (!publisherEmail || publisherEmail === 'null') {
         // checking if feed was updated
         let errMsg;
@@ -167,10 +170,24 @@ async function parseFeed(req, res) {
             } else {
               publisherEmail = getPublisherEmail(results.metadata);
               if (publisherEmail) {
-                await database.PodcasterEmail.update(
-                  { publisherEmail },
-                  { where: { podcastTitle: title } }
-                );
+                let category = null;
+                try {
+                  const row = await database.Category.findOne({
+                    where: { soundcastId },
+                  });
+                  if (row && row.name) {
+                    category = row.name;
+                  }
+                } catch (err) {
+                  logErr(`Category.findOne ${err}`)
+                }
+                await createPodcasterEmail({
+                  podcastTitle: title,
+                  publisherEmail,
+                  last_update,
+                  hostName,
+                  category,
+                });
                 await firebase
                   .database()
                   .ref(`soundcasts/${soundcastId}/publisherEmail`)
@@ -352,6 +369,24 @@ function sendVerificationMail(to, soundcastTitle, verificationCode) {
   });
 }
 
+const createPodcasterEmail = async row =>
+  new Promise(async resolve => {
+    // store the publisher's email address in a separate table in the database,
+    // for podcasts that are "active", i.e. has been updated in the last year
+    const yearAgo = moment()
+      .subtract(1, 'years')
+      .unix();
+    if (row.publisherEmail && Number(row.last_update) > yearAgo) {
+      // has publisherEmail and was updated in last year
+      try {
+        await database.PodcasterEmail.create(row);
+      } catch (err) {
+        logErr(`PodcasterEmail create ${err} ${row}`);
+      }
+    }
+    resolve();
+  });
+
 async function runFeedImport(
   req,
   res,
@@ -422,6 +457,7 @@ async function runFeedImport(
       // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
       return logErr(`can't obtain last_update ${originalUrl}`);
     }
+    last_update = moment(last_update).format('X');
 
     // 1. create a new soundcast from the feed
     const { description, author, image } = metadata;
@@ -429,6 +465,9 @@ async function runFeedImport(
       image.url = '';
     }
     const title = entities.decode(metadata.title);
+    const hostName = entities.decode(
+      (metadata['itunes:author'] && metadata['itunes:author']['#']) || author
+    );
     const soundcast = {
       title,
       publisherEmail,
@@ -437,10 +476,8 @@ async function runFeedImport(
       publisherName,
       short_description: entities.decode(description),
       imageURL: image.url,
-      hostName: entities.decode(
-        (metadata['itunes:author'] && metadata['itunes:author']['#']) || author
-      ),
-      last_update: moment(last_update).format('X'),
+      hostName,
+      last_update,
       fromParsedFeed: true, // this soundcast is imported from a RSS feed
       forSale: false,
       landingPage: true,
@@ -460,30 +497,10 @@ async function runFeedImport(
       soundcastId = `${moment().format('x')}s`;
     }
 
-    // store the publisher's email address in a separate table in the database,
-    // for podcasts that are "active", i.e. has been updated in the last year
-    const yearAgo = moment()
-      .subtract(1, 'years')
-      .unix();
-    if (moment(last_update).unix() > yearAgo) {
-      // updated in the last year
-      try {
-        await database.PodcasterEmail.create({
-          podcastTitle: title,
-          publisherEmail,
-          last_update: moment(last_update).format('X'),
-        });
-      } catch (err) {
-        logErr(`PodcasterEmail create ${err}`);
-      }
-    }
-
-    const categoriesNames = Object.keys(podcastCategories).map(
-      i => podcastCategories[i].name
-    ); // main 16 categories ('Arts', 'Comedy', ...)
     // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
     // This should be similar to the upload setup on the /dashboard/add_episode page
     let categories = metadata['itunes:category'];
+    let category = null;
     if (categories) {
       if (!categories.length) {
         // single category
@@ -504,6 +521,9 @@ async function runFeedImport(
           }
         }
         if (name) {
+          if (!category) {
+            category = name;
+          }
           try {
             await database.Category.create({ name, soundcastId });
           } catch (err) {
@@ -512,6 +532,14 @@ async function runFeedImport(
         }
       }
     }
+
+    await createPodcasterEmail({
+      podcastTitle: title,
+      publisherEmail,
+      last_update,
+      hostName,
+      category,
+    });
 
     // 2-a. add to publisher node in firebase
     await firebase
