@@ -107,7 +107,7 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
   const {
     publisherID,
     title,
-    imageUrl,
+    imageURL,
     category,
     published,
     landingPage,
@@ -120,7 +120,7 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
     soundcastId: key,
     publisherId: publisherID ? publisherID : null,
     title: title ? fixSpecialChars(title) : null,
-    imageUrl: imageUrl ? imageUrl : null,
+    imageUrl: imageURL ? imageURL : null,
     itunesId: null,
     forSale: forSale ? forSale : false,
     category: category ? category : null,
@@ -132,11 +132,11 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
 };
 
 const getFilter = id => {
-  return {where: {soundcastId: id}};
+  return { where: { soundcastId: id } };
 };
 
 const removeSpecialChars = (key, soundcast) => {
-  const {title, short_description, long_description} = soundcast;
+  const { title, short_description, long_description } = soundcast;
   if (title) {
     firebase
       .database()
