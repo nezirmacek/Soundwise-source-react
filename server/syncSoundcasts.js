@@ -110,7 +110,7 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
   const {
     publisherID,
     title,
-    imageUrl,
+    imageURL,
     category,
     published,
     landingPage,
@@ -123,7 +123,7 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
     soundcastId: key,
     publisherId: publisherID ? publisherID : null,
     title: title ? fixSpecialChars(title) : null,
-    imageUrl: imageUrl ? imageUrl : null,
+    imageUrl: imageURL ? imageURL : null,
     itunesId: null,
     forSale: forSale ? forSale : false,
     category: category ? category : null,
