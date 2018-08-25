@@ -788,6 +788,7 @@ module.exports.audioProcessing = async (req, res) => {
                       soundcastTitle: soundcast.title,
                       itunesExplicit: soundcast.itunesExplicit,
                       itunesImage: soundcast.itunesImage,
+                      itunesCategory: soundcast.itunesCategory,
                       autoSubmitPodcast: false,
                       email: publisherEmail,
                       firstName: publisherName,
