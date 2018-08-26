@@ -10,17 +10,31 @@ firebase.initializeApp({
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 
-// reset user password
-firebase.auth().updateUser('kmGFGvpJqgaYYPMfNdrfywMIgxi2', {
-  email: "ameenaramjohn@hotmail.com",
-  password: "111111",
-})
-.then(userRecord => {
-  console.log(userRecord.toJSON());
-})
-.catch(err => {
-  console.log(err);
+// set likes
+var id = 1534773572712;
+var list = Array.from(Array(711).keys());
+
+list.forEach(async i => {
+  await firebase.database().ref(`episodes/1534616226173e/likes/web-${id + i}`)
+  .set(moment().format('X') + i);
 });
+
+
+
+
+
+
+// reset user password
+// firebase.auth().updateUser('kmGFGvpJqgaYYPMfNdrfywMIgxi2', {
+//   email: "ameenaramjohn@hotmail.com",
+//   password: "111111",
+// })
+// .then(userRecord => {
+//   console.log(userRecord.toJSON());
+// })
+// .catch(err => {
+//   console.log(err);
+// });
 
 // edit publisher
 // var options, publisherId, name, paypalEmail;
