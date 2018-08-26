@@ -13,17 +13,26 @@ const database = require('../../database/index');
 const Sequelize = require('sequelize');
 const db = new Sequelize('soundwise', 'root', '111', {
   dialect: 'postgres',
-  port: 5433,
+  port: 5432,
   logging: false,
 });
+
+const { feedInterval } = require('../scripts/parseFeed');
 
 module.exports = function(app) {
   if (process.env.NODE_ENV === 'dev') {
     return; // prevent running in dev mode
   }
-  // rankSoundcasts
-  schedule.scheduleJob('* * 1 * * 1', async () => {
-    // schedule.scheduleJob('59 * * * * *', async () => {
+
+  // feed interval - 03 hour each day
+  schedule.scheduleJob('0 0 3 * * *', async () => {
+    console.log(`CRON_RUN feedInterval`);
+    feedInterval();
+  });
+
+  // rankSoundcasts - 01 hour each Monday
+  schedule.scheduleJob('0 0 1 * * 1', async () => {
+    console.log('CRON_RUN rankSoundcasts');
     const currentDate = moment().format('x');
     const soundcastsListens = [];
     const soundcastsCount = (await db.query(
@@ -62,9 +71,9 @@ module.exports = function(app) {
     }
   });
 
-  // detectSubscriptionsExpiration
-  schedule.scheduleJob('* * 23 * * *', async () => {
-    // schedule.scheduleJob('59 * * * * *', async () => {
+  // detectSubscriptionsExpiration - 23 hour each day
+  schedule.scheduleJob('0 0 23 * * *', async () => {
+    console.log('CRON_RUN detectSubscriptionsExpiration');
     const currentDate = moment().format('X');
     const listeningSessions = (await db.query(
       // `SELECT "userId", "soundcastId" FROM "ListeningSessions" GROUP BY "soundcastId", "userId";`
@@ -81,7 +90,7 @@ module.exports = function(app) {
         (soundcast.billingCycle !== 'free' ||
           soundcast.billingCycle !== 'one time')
       ) {
-        if (soundcast.current_period_end < currentDate) {
+        if (!!soundcast && soundcast.current_period_end < currentDate) {
           await firebase
             .database()
             .ref(
@@ -96,6 +105,9 @@ module.exports = function(app) {
               `soundcasts/${session.soundcastId}/subscribed/${session.userId}`
             )
             .remove();
+        } else {
+          console.log('soundcastId: ', snapshot.key);
+          console.log('soundcast: ', soundcast);
         }
       }
     }

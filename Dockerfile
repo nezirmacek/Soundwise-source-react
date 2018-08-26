@@ -4,12 +4,15 @@ FROM keymetrics/pm2:8-alpine
 RUN mkdir -p /usr/sounwise
 COPY . /usr/soundwise
 
+# update npm
+RUN npm i -g npm
+
 # install node modules
 WORKDIR /usr/soundwise
 RUN npm i
 
 # build client bundle
-RUN npm run build:staging
+RUN NODE_ENV=${NODE_ENV} npm run build
 
 # expose port
 EXPOSE 3000

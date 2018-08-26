@@ -267,26 +267,6 @@ class _HomePage extends Component {
                   <ul className="nav navbar-nav">
                     <li className="propClone">
                       <Link
-                        to="/podcast"
-                        className="inner-link"
-                        data-selector="nav a"
-                        style={{
-                          color: 'rgb(255, 255, 255)',
-                          backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
-                          fontFamily: 'Montserrat, sans-serif',
-                          textTransform: 'none',
-                          fontSize: '16px',
-                          fontWeight: 700,
-                        }}
-                        id="ui-id-18"
-                      >
-                        GROW LISTENER TRIBE
-                      </Link>
-                    </li>
-                    <li className="propClone">
-                      <Link
                         className="inner-link"
                         to="/selling"
                         data-selector="nav a"
@@ -303,6 +283,26 @@ class _HomePage extends Component {
                         id="ui-id-19"
                       >
                         SELL MORE AUDIOS
+                      </Link>
+                    </li>
+                    <li className="propClone">
+                      <Link
+                        to="/podcast"
+                        className="inner-link"
+                        data-selector="nav a"
+                        style={{
+                          color: 'rgb(255, 255, 255)',
+                          backgroundColor: 'rgba(0, 0, 0, 0)',
+                          borderColor:
+                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          fontFamily: 'Montserrat, sans-serif',
+                          textTransform: 'none',
+                          fontSize: '16px',
+                          fontWeight: 700,
+                        }}
+                        id="ui-id-18"
+                      >
+                        GROW LISTENER TRIBE
                       </Link>
                     </li>
                     <li className="propClone">
@@ -385,39 +385,6 @@ class _HomePage extends Component {
                       <div className="display-inline-block margin-one">
                         <Link
                           className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing"
-                          to="/podcast"
-                          data-selector="a.btn, button.btn"
-                          style={{
-                            color: 'rgb(0, 0, 0)',
-                            borderColor: 'rgba(0, 0, 0, 0)',
-                            fontWeight: 600,
-                            fontFamily: 'Montserrat, sans-serif',
-                            borderRadius: 4,
-                            backgroundColor: Colors.mainOrange,
-                            fontSize: 18,
-                          }}
-                          id="ui-id-12"
-                        >
-                          <span
-                            className="tz-text"
-                            data-selector=".tz-text"
-                            style={{
-                              backgroundColor: 'rgba(0, 0, 0, 0)',
-                              fontWeight: 600,
-                              fontFamily: 'Montserrat, sans-serif',
-                              borderRadius: 0,
-                              color: 'rgb(255, 255, 255)',
-                              fontSize: 22,
-                            }}
-                            id="ui-id-14"
-                          >
-                            CONVERT PODCAST LISTENERS
-                          </span>
-                        </Link>
-                      </div>
-                      <div className="display-inline-block margin-one">
-                        <Link
-                          className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing"
                           to="/selling"
                           data-selector="a.btn, button.btn"
                           style={{
@@ -445,6 +412,39 @@ class _HomePage extends Component {
                             id="ui-id-15"
                           >
                             SELL ON-DEMAND AUDIOS
+                          </span>
+                        </Link>
+                      </div>
+                      <div className="display-inline-block margin-one">
+                        <Link
+                          className="font-weight-600 btn-large btn line-height-20 bg-white text-black no-letter-spacing"
+                          to="/podcast"
+                          data-selector="a.btn, button.btn"
+                          style={{
+                            color: 'rgb(0, 0, 0)',
+                            borderColor: 'rgba(0, 0, 0, 0)',
+                            fontWeight: 600,
+                            fontFamily: 'Montserrat, sans-serif',
+                            borderRadius: 4,
+                            backgroundColor: Colors.link,
+                            fontSize: 18,
+                          }}
+                          id="ui-id-12"
+                        >
+                          <span
+                            className="tz-text"
+                            data-selector=".tz-text"
+                            style={{
+                              backgroundColor: 'rgba(0, 0, 0, 0)',
+                              fontWeight: 600,
+                              fontFamily: 'Montserrat, sans-serif',
+                              borderRadius: 0,
+                              color: 'rgb(255, 255, 255)',
+                              fontSize: 22,
+                            }}
+                            id="ui-id-14"
+                          >
+                            CONVERT PODCAST LISTENERS
                           </span>
                         </Link>
                       </div>

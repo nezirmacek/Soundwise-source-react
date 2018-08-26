@@ -3,10 +3,7 @@
 // **** import firebase data into algolia ****
 
 var firebase = require('firebase-admin');
-var algoliaConfig =
-  process.env.NODE_ENV == 'staging'
-    ? require('../../stagingConfig').algoliaConfig
-    : require('../../config').algoliaConfig;
+var algoliaConfig = require('../../config').algoliaConfig;
 var algoliasearch = require('algoliasearch');
 var database = firebase.database();
 

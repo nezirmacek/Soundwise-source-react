@@ -13,10 +13,7 @@ var marketingEmailTemplate = require('./helpers/marketingEmailTemplate')
   .marketingEmailTemplate;
 
 var sgMail = require('@sendgrid/mail');
-var sendGridApiKey =
-  process.env.NODE_ENV == 'staging'
-    ? require('../../stagingConfig').sendGridApiKey
-    : require('../../config').sendGridApiKey;
+var sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 var client = require('@sendgrid/client');
 client.setApiKey(sendGridApiKey);
@@ -38,12 +35,12 @@ const sendTransactionalEmails = (req, res) => {
   var _promises = req.body.invitees.map(invitee => {
     let msg = {
       to: invitee,
-      from: {email, name},
+      from: { email, name },
       subject: req.body.subject,
       html: content,
     };
     if (req.body.bcc) {
-      msg = Object.assign({}, msg, {bcc: req.body.bcc});
+      msg = Object.assign({}, msg, { bcc: req.body.bcc });
     }
     return sgMail
       .send(msg)
@@ -137,7 +134,7 @@ const sendMail = async comment => {
 
 const addToEmailList = (req, res) => {
   // req.body: {soundcastId: [string], emailListId: [number], emailAddressArr: [array]}
-  const {soundcastId, emailAddressArr, listName, emailListId} = req.body;
+  const { soundcastId, emailAddressArr, listName, emailListId } = req.body;
   const emails = emailAddressArr.map(email => {
     if (typeof email == 'string') {
       return {
@@ -170,7 +167,7 @@ const addToEmailList = (req, res) => {
         client
           .request(data)
           .then(([response, body]) => {
-            res.status(200).send({emailListId});
+            res.status(200).send({ emailListId });
           })
           .catch(err => {
             console.log('error: ', err.message);
@@ -181,7 +178,7 @@ const addToEmailList = (req, res) => {
         const data1 = {
           method: 'POST',
           url: '/v3/contactdb/lists',
-          body: {name: `${soundcastId}-${listName}`},
+          body: { name: `${soundcastId}-${listName}` },
         };
         // console.log('data1: ', data1);
         client
@@ -198,7 +195,7 @@ const addToEmailList = (req, res) => {
               'This list name is already in use. Please choose a new, unique name.'
             ) {
               client
-                .request({method: 'GET', url: '/v3/contactdb/lists'})
+                .request({ method: 'GET', url: '/v3/contactdb/lists' })
                 .then(([response, body]) => {
                   const list = body.lists.find(
                     i => i.name === `${soundcastId}-${listName}`
@@ -237,7 +234,7 @@ const addToEmailList = (req, res) => {
               .set(listId);
           })
           .then(() => {
-            res.status(200).send({emailListId: listId});
+            res.status(200).send({ emailListId: listId });
           })
           .catch(err => {
             console.log('error adding recipients: ', err.message);
@@ -312,7 +309,7 @@ const sendMarketingEmails = (req, res) => {
     suppression_group_id: unsubscribeGroup,
     status: 'Draft',
     sender_id: 204129,
-    reply_to: {email: publisherEmail, name: publisherName},
+    reply_to: { email: publisherEmail, name: publisherName },
   };
   const options = {
     method: 'POST',
@@ -330,7 +327,7 @@ const sendMarketingEmails = (req, res) => {
           url: `/v3/campaigns/${campaignId}/schedules/now`,
         })
         .then(([response, body]) => {
-          res.status(200).send({campaignId});
+          res.status(200).send({ campaignId });
         })
         .catch(err => {
           console.log('error sending campaign: ', err.message);

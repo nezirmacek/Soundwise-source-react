@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import Axios from 'axios';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import firebase from 'firebase';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import draftToHtml from 'draftjs-to-html';
@@ -20,6 +22,9 @@ import {
 } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 import { addToEmailList } from '../../../helpers/addToEmailList';
+import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
+
+import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
 import {
@@ -75,10 +80,10 @@ export default class InviteSubscribersModal extends Component {
   }
 
   async inviteListeners() {
+    const inviteeArr = this.state.inviteeList.split(',');
+    const that = this;
     const { soundcast, userInfo } = this.props;
-    const { invitation, inviteeList } = this.state;
-
-    const inviteeArr = inviteeList.split(',');
+    const { invitation } = this.state;
     for (var i = inviteeArr.length - 1; i >= 0; i--) {
       if (inviteeArr[i].indexOf('@') == -1) {
         inviteeArr.splice(i, 1);

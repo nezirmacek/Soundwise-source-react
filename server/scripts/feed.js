@@ -2,10 +2,7 @@
 const path = require('path');
 const util = require('util');
 const S3Strategy = require('express-fileuploader-s3');
-const awsConfig =
-  process.env.NODE_ENV == 'staging'
-    ? require('../../stagingConfig').awsConfig
-    : require('../../config').awsConfig;
+const awsConfig = require('../../config').awsConfig;
 const { uploader, logErr, setAudioTags } = require('./utils')('feed.js');
 const firebase = require('firebase-admin');
 const request = require('request-promise');
@@ -13,11 +10,7 @@ const Podcast = require('podcast');
 const sizeOf = require('image-size');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(
-  process.env.NODE_ENV == 'staging'
-    ? require('../../stagingConfig').sendGridApiKey
-    : require('../../config').sendGridApiKey
-);
+sgMail.setApiKey(require('../../config').sendGridApiKey);
 const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 
