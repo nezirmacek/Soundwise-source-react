@@ -1,7 +1,7 @@
 'use strict';
 
 const sendNotification = require('../scripts/messaging').sendNotification;
-const {userManager, likeManager} = require('../managers');
+const { userManager, likeManager } = require('../managers');
 const {
   likeRepository,
   commentRepository,
@@ -11,33 +11,30 @@ const {
 // ADD_LIKE
 const addLike = (req, res) => {
   const like = req.body;
+  const lastLiked = like.fullName;
   if (!like.fullName) {
-    res.status(400).send({error: 'fullName can not be null'});
+    res.status(400).send({ error: 'fullName can not be null' });
     return;
   }
   likeRepository
     .create(like)
     .then(like => {
-      const {episodeId, announcementId, commentId} = like;
+      const { episodeId, announcementId, commentId } = like;
       if (episodeId) {
         // LIKE EPISODE
-        likeManager
-          .setFullName(episodeId, fullName)
-          .then(() =>
-            likeRepository
-              .count({episodeId})
-              .then(count => likeManager.setLikesCount(episodeId, count))
-              .then(() => res.send(like))
-              .catch(error => sendError(error, res))
-          )
-          .catch(error => sendError(error, res));
+        likeRepository.count({ episodeId }).then(count =>
+          likeManager
+            .updateLikeInEpisode(episodeId, count, lastLiked)
+            .then(() => res.send(like))
+            .catch(error => sendError(error, res))
+        );
       } else if (announcementId) {
         // LIKE MESSAGE
         likeRepository
-          .count({announcementId})
-          .then(count =>
+          .count({ announcementId })
+          .then(likesCount =>
             announcementRepository
-              .update({lastLiked: fullName, likesCount: count}, announcementId)
+              .update({ lastLiked, likesCount }, announcementId)
               .then(() => res.send(like))
               .catch(error => sendError(error, res))
           )
@@ -45,10 +42,10 @@ const addLike = (req, res) => {
       } else if (commentId) {
         // LIKE COMMENT
         likeRepository
-          .count({commentId})
-          .then(count =>
+          .count({ commentId })
+          .then(likesCount =>
             commentRepository
-              .update({likesCount: count}, commentId)
+              .update({ likesCount }, commentId)
               .then(() =>
                 commentRepository
                   .get(commentId)
@@ -74,17 +71,17 @@ const deleteLike = (req, res) => {
       likeRepository
         .destroy(likeId)
         .then(() => {
-          const {episodeId, announcementId, commentId} = like;
+          const { episodeId, announcementId, commentId } = like;
           if (announcementId) {
             // UNLIKE MESSAGE
-            getNamePreviousLiker({announcementId})
+            getNamePreviousLiker({ announcementId })
               .then(lastLiked =>
                 likeRepository
-                  .count({commentId})
+                  .count({ commentId })
                   .then(likesCount =>
                     announcementRepository
-                      .update({likesCount, lastLiked}, announcementId)
-                      .then(() => res.send({lastLiked}))
+                      .update({ likesCount, lastLiked }, announcementId)
+                      .then(() => res.send({ lastLiked }))
                       .catch(error => sendError(error, res))
                   )
                   .catch(error => sendError(error, res))
@@ -92,14 +89,14 @@ const deleteLike = (req, res) => {
               .catch(error => sendError(error, res));
           } else if (commentId) {
             // UNLIKE COMMENT
-            getNamePreviousLiker({commentId})
+            getNamePreviousLiker({ commentId })
               .then(lastLiked =>
                 likeRepository
-                  .count({commentId})
+                  .count({ commentId })
                   .then(likesCount =>
                     commentRepository
-                      .update({likesCount}, commentId)
-                      .then(() => res.send({lastLiked}))
+                      .update({ likesCount }, commentId)
+                      .then(() => res.send({ lastLiked }))
                       .catch(error => sendError(error, res))
                   )
                   .catch(error => sendError(error, res))
@@ -110,11 +107,11 @@ const deleteLike = (req, res) => {
             getNamePreviousLiker(episodeId)
               .then(lastLiked =>
                 likeRepository
-                  .count({episodeId})
+                  .count({ episodeId })
                   .then(likesCount =>
                     likeManager
-                      .updateLikeInEpisode(episodeId, likesCount, fullName)
-                      .then(() => res.send({lastLiked}))
+                      .updateLikeInEpisode(episodeId, likesCount, lastLiked)
+                      .then(() => res.send({ lastLiked }))
                       .catch(error => sendError(error, res))
                   )
                   .catch(error => sendError(error, res))
@@ -155,4 +152,4 @@ const sendError = (err, res) => {
   res.status(500).send(err);
 };
 
-module.exports = {addLike, deleteLike};
+module.exports = { addLike, deleteLike };
