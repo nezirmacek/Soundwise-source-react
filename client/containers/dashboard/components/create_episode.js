@@ -677,9 +677,13 @@ class _CreateEpisode extends Component {
               // get an array of device tokens
               // console.log('snapshot.val(): ', snapshot.val());
               if (snapshot.val().subscribed) {
-                Object.keys(snapshot.val().subscribed).forEach(user => {
-                  if (typeof snapshot.val().subscribed[user] == 'object') {
-                    registrationTokens.push(snapshot.val().subscribed[user][0]); //basic version: only allow one devise per user
+                Object.keys(subscribers).forEach(user => {
+                  if (typeof subscribers[user] == 'object') {
+                    if (typeof subscribers[user][0] == 'string') {
+                      registrationTokens.push(subscribers[user][0]);
+                    } else if (typeof subscribers[user][0][0] == 'string') {
+                      registrationTokens.push(subscribers[user][0][0]);
+                    }
                   }
                 });
                 const payload = {
