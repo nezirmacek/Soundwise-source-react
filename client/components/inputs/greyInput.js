@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Colors from '../../styles/colors';
+import commonStyles from '../../styles/commonStyles';
 import ValidatedInput from '../../components/inputs/validatedInput';
 
 export const GreyInput = props => {
@@ -40,13 +41,7 @@ GreyInput.propTypes = {
 };
 
 const _styles = {
-  input: {
-    backgroundColor: Colors.window,
-    fontSize: 16,
-    height: 42,
-    borderRadius: 3,
-    boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.5)',
-  },
+  input: { ...commonStyles.input },
   errorStyles: {
     fontSize: 11,
     position: 'relative',

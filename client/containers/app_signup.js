@@ -19,6 +19,7 @@ import moment from 'moment';
 import { SoundwiseHeader } from '../components/soundwise_header';
 import { signupUser, signinUser, addDefaultSoundcast } from '../actions/index';
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 import { GreyInput } from '../components/inputs/greyInput';
 import { minLengthValidator, emailValidator } from '../helpers/validators';
 import { inviteListeners } from '../helpers/invite_listeners';
@@ -1148,6 +1149,7 @@ _AppSignup.propTypes = {
 };
 
 const styles = {
+  containerWrapper: { ...commonStyles.containerWrapper },
   row: {
     backgroundColor: Colors.window,
     paddingTop: 15,
@@ -1158,12 +1160,6 @@ const styles = {
   logo: {
     marginBottom: 18,
     height: 50,
-  },
-  containerWrapper: {
-    overflow: 'hidden',
-    borderRadius: 3,
-    width: 'auto',
-    backgroundColor: Colors.mainWhite,
   },
   container: {
     backgroundColor: Colors.mainWhite,
