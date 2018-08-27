@@ -256,14 +256,14 @@ var Coupon = db.define('Coupon', {
   timeStamp: Sequelize.BIGINT,
 });
 
-// Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
-// Episode.hasMany(Comment, {as: 'Comments'});
+Comment.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
+Episode.hasMany(Comment, {as: 'Comments'});
 
-// Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
-// Announcement.hasMany(Comment, {as: 'Comments'});
+Comment.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
+Announcement.hasMany(Comment, {as: 'Comments'});
 
-// Like.belongsTo(Comment, {foreignKey: 'commentId'});
-// Comment.hasMany(Like, {as: 'Likes'});
+Like.belongsTo(Comment, {foreignKey: 'commentId', onDelete: 'cascade'});
+Comment.hasMany(Like, {as: 'Likes'});
 
 // Comment.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Comment, {as: 'Comments'});
@@ -292,14 +292,14 @@ var Coupon = db.define('Coupon', {
 // Like.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Like, {as: 'Likes'});
 
-// Like.belongsTo(Episode, {foreignKey: 'episodeId'});
-// Episode.hasMany(Like, {as: 'Likes'});
+Like.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
+Episode.hasMany(Like, {as: 'Likes'});
 
-// Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
-// Announcement.hasMany(Like, {as: 'Likes'});
+Like.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
+Announcement.hasMany(Like, {as: 'Likes'});
 
-// Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-// Soundcast.hasMany(Announcement, {as: 'Announcements'});
+Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId', onDelete: 'cascade'});
+Soundcast.hasMany(Announcement, {as: 'Announcements'});
 
 // Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Like, {as: 'Likes'});

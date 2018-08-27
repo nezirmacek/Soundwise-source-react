@@ -122,7 +122,7 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "sendinblue-api": "^1.0.8",
-    "sequelize": "^4.8.0",
+    "sequelize": "^4.38.0",
     "serve-favicon": "^2.0.1",
     "stripe": "^5.4.0",
     "strong-error-handler": "^2.0.0",
