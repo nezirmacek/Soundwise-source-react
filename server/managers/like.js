@@ -25,23 +25,22 @@ const updateLikeInEpisode = (episodeId, likesCount, lastLiked) =>
   firebase
     .database()
     .ref(`episodes/${episodeId}`)
-    .update({lastLiked, likesCount});
+    .update({ lastLiked, likesCount });
 
 const getFullNameByUid = userId =>
-  userId
-    ? firebase
-        .database()
-        .ref(`users/${userId}`)
-        .once('value')
-        .then(snapshot => {
-          if (snapshot.val()) {
-            const user = snapshot.val();
-            return `${user.firstName} ${user.lastName}`;
-          } else {
-            return '';
-          }
-        })
-    : Promise.resolve('');
+  firebase
+    .database()
+    .ref(`users/${userId}`)
+    .once('value')
+    .then(snapshot => {
+      console.log(snapshot.val());
+      if (snapshot.val()) {
+        const user = snapshot.val();
+        return `${user.firstName} ${user.lastName}`;
+      } else {
+        return '';
+      }
+    });
 
 module.exports = {
   getById,

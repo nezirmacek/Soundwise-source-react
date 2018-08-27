@@ -1,79 +1,64 @@
 'use strict';
 
-const _ = require('lodash');
-const database = require('../../database/index');
-
 const sendMail = require('../scripts/sendEmails').sendMail;
 const sendNotification = require('../scripts/messaging').sendNotification;
 
 const {commentManager, userManager} = require('../managers');
+const {commentRepository, announcementRepository} = require('../repositories');
 
+// ADD_COMMENT
 const addComment = (req, res) => {
-  database.Comment.create(req.body)
-    .then(data => {
-      const comment = data.dataValues;
+  const comment = req.body;
+  if (!comment.soundcastId || !comment.userId) {
+    sendError({error: 'soundcastId and userId can not be null'}, res, 400);
+    return;
+  }
+
+  commentRepository
+    .create(comment)
+    .then(comment => {
       const {announcementId, episodeId, commentId} = comment;
 
       if (announcementId) {
-        database.Comment.count({
-          where: {announcementId},
-        })
-          .then(count => {
-            database.Announcement.update(
-              {commentsCount: count},
-              {where: {announcementId}}
-            );
+        updateCommentsCount(announcementId)
+          .then(() => {
+            notifyUsers(comment);
+            res.send(comment);
           })
-          .then(() =>
-            sendMail(comment)
-              .then(() => {
-                sendPush(comment);
-                res.send(data);
-              })
-              .catch(error => sendError(error, res))
-          )
           .catch(error => sendError(error, res));
       } else if (episodeId) {
-        commentManager.addCommentToEpisode(commentId, episodeId).then(() =>
-          sendMail(comment)
-            .then(() => {
-              sendPush(comment);
-              res.send(data);
-            })
-            .catch(error => sendError(error, res))
-        );
+        commentManager.addCommentToEpisode(commentId, episodeId).then(() => {
+          notifyUsers(comment);
+          res.send(comment);
+        });
       }
     })
-    .catch(error => sendError(error, res));
+    .catch(error => sendError(error, res, 400));
 };
 
+// EDIT_COMMENT
 const editComment = (req, res) => {
   const comment = req.body;
   const commentId = req.params.id;
-
-  database.Comment.update(comment, {
-    where: {commentId},
-  })
+  commentRepository
+    .update(comment, commentId)
     .then(data => res.send(data))
-    .catch(error => sendError(error, res));
+    .catch(error => sendError(error, res, 400));
 };
 
+// DELETE_COMMENT
 const deleteComment = (req, res) => {
   const commentId = req.params.id;
 
-  database.Comment.find({where: {commentId}})
+  commentRepository
+    .get(commentId)
     .then(data => {
-      const {announcementId, episodeId} = data.dataValues;
-      database.Comment.destroy({where: {commentId}}).then(() => {
+      const {announcementId, episodeId} = data;
+      commentRepository.destroy(commentId).then(() => {
         if (announcementId) {
-          database.Comment.count({where: {announcementId}}).then(count => {
-            database.Announcement.update(
-              {commentsCount: count},
-              {where: {announcementId}}
-            )
-              .then(() => res.send({response: 'OK'}))
-              .catch(error => sendError(error, res));
-          });
+          updateCommentsCount(announcementId)
+            .then(() => res.send({response: 'OK'}))
+            .catch(error => sendError(error, res));
         } else if (episodeId) {
           commentManager
             .removeCommentToEpisode(commentId, episodeId)
@@ -82,24 +67,36 @@ const deleteComment = (req, res) => {
         }
       });
     })
-    .catch(error => sendError(error, res));
+    .catch(error => sendError(error, res, 400));
 };
 
+const updateCommentsCount = announcementId =>
+  commentRepository
+    .count({announcementId})
+    .then(commentsCount =>
+      announcementRepository.update({commentsCount}, announcementId)
+    );
+
+const notifyUsers = comment =>
+  sendMail(comment)
+    .then(() => sendPush(comment))
+    .catch(error => sendError(error, res));
+
 const sendPush = comment => {
-  if (comment.parentId) {
-    database.Comment.findById(comment.parentId).then(data => {
-      userManager.getById(data.dataValues.userId).then(user => {
+  const {parentId, soundcastId, episodeId, announcementId} = comment;
+
+  if (parentId) {
+    commentRepository.get(parentId).then(comment => {
+      userManager.getById(comment.userId).then(user => {
         if (user && user.token) {
           user.token.forEach(t =>
             sendNotification(t, {
               data: {
-                type: comment.episodeId ? 'COMMENT_EPISODE' : 'COMMENT_MESSAGE',
-                [comment.episodeId
-                  ? 'episodeId'
-                  : 'messageId']: comment.episodeId
-                  ? comment.episodeId
-                  : comment.announcementId,
-                soundcastId: comment.soundcastId,
+                type: episodeId ? 'COMMENT_EPISODE' : 'COMMENT_MESSAGE',
+                [episodeId ? 'episodeId' : 'messageId']: episodeId
+                  ? episodeId
+                  : announcementId,
+                soundcastId,
               },
               notification: {
                 title: 'New comment',
@@ -113,9 +110,9 @@ const sendPush = comment => {
   }
 };
 
-const sendError = (err, res) => {
+const sendError = (err, res, status) => {
   console.log(err);
-  res.status(500).send(err);
+  res.status(status || 500).send(err);
 };
 
 module.exports = {

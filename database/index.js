@@ -257,13 +257,22 @@ var Coupon = db.define('Coupon', {
 });
 
 Comment.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
-Episode.hasMany(Comment, {as: 'Comments'});
+Episode.hasMany(Comment, {foreignKey: 'episodeId', as: 'Comments'});
 
 Comment.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
-Announcement.hasMany(Comment, {as: 'Comments'});
+Announcement.hasMany(Comment, {foreignKey: 'announcementId', as: 'Comments'});
 
 Like.belongsTo(Comment, {foreignKey: 'commentId', onDelete: 'cascade'});
-Comment.hasMany(Like, {as: 'Likes'});
+Comment.hasMany(Like, {foreignKey: 'commentId', as: 'Likes'});
+
+Like.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
+Episode.hasMany(Like, {foreignKey: 'episodeId', as: 'Likes'});
+
+Like.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
+Announcement.hasMany(Like, {foreignKey: 'announcementId', as: 'Likes'});
+
+Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId', onDelete: 'cascade'});
+Soundcast.hasMany(Announcement, {foreignKey: 'soundcastId', as: 'Announcements'});
 
 // Comment.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Comment, {as: 'Comments'});
@@ -291,15 +300,6 @@ Comment.hasMany(Like, {as: 'Likes'});
 
 // Like.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Like, {as: 'Likes'});
-
-Like.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
-Episode.hasMany(Like, {as: 'Likes'});
-
-Like.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
-Announcement.hasMany(Like, {as: 'Likes'});
-
-Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId', onDelete: 'cascade'});
-Soundcast.hasMany(Announcement, {as: 'Announcements'});
 
 // Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Like, {as: 'Likes'});
