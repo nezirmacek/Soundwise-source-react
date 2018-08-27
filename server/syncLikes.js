@@ -3,14 +3,14 @@
 const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../database');
-const {soundcastManager} = require('./managers');
+const { soundcastManager } = require('./managers');
 var serviceAccount = require('../serviceAccountKey');
 
 const LOG_ERR = 'logErrsLikes.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
+  databaseURL: 'https://soundwise-testbase.firebaseio.com',
 });
 
 const syncLikes = async () => {

@@ -11,7 +11,7 @@ const PAGE_SIZE = 100;
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
+  databaseURL: 'https://soundwise-testbase.firebaseio.com',
 });
 
 const syncSoundcasts = async () => {
@@ -132,11 +132,11 @@ const getSoundcastForPsql = (key, fbSoundcast) => {
 };
 
 const getFilter = id => {
-  return {where: {soundcastId: id}};
+  return { where: { soundcastId: id } };
 };
 
 const removeSpecialChars = (key, soundcast) => {
-  const {title, short_description, long_description} = soundcast;
+  const { title, short_description, long_description } = soundcast;
   if (title) {
     firebase
       .database()
