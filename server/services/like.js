@@ -2,6 +2,7 @@
 
 const sendNotification = require('../scripts/messaging').sendNotification;
 const { userManager, likeManager } = require('../managers');
+const Op = require('sequelize').Op;
 const {
   likeRepository,
   commentRepository,
@@ -68,13 +69,20 @@ const deleteLike = (req, res) => {
   likeRepository
     .get(likeId)
     .then(like => {
+      if (!like) {
+        sendError(`Not found this likeId ${likeId}`, res);
+        return;
+      }
       likeRepository
         .destroy(likeId)
         .then(() => {
           const { episodeId, announcementId, commentId } = like;
           if (announcementId) {
             // UNLIKE MESSAGE
-            getNamePreviousLiker({ announcementId })
+            getNamePreviousLiker({
+              announcementId,
+              likeId: { [Op.regexp]: '^(?!web-).*' },
+            })
               .then(lastLiked =>
                 likeRepository
                   .count({ commentId })
@@ -89,7 +97,10 @@ const deleteLike = (req, res) => {
               .catch(error => sendError(error, res));
           } else if (commentId) {
             // UNLIKE COMMENT
-            getNamePreviousLiker({ commentId })
+            getNamePreviousLiker({
+              commentId,
+              likeId: { [Op.regexp]: '^(?!web-).*' },
+            })
               .then(lastLiked =>
                 likeRepository
                   .count({ commentId })
@@ -104,7 +115,10 @@ const deleteLike = (req, res) => {
               .catch(error => sendError(error, res));
           } else if (episodeId) {
             // UNLIKE EPISODE
-            getNamePreviousLiker(episodeId)
+            getNamePreviousLiker({
+              episodeId,
+              likeId: { [Op.regexp]: '^(?!web-).*' },
+            })
               .then(lastLiked =>
                 likeRepository
                   .count({ episodeId })
@@ -127,7 +141,7 @@ const deleteLike = (req, res) => {
 const getNamePreviousLiker = where =>
   likeRepository
     .getPrevious(where)
-    .then(like => likeManager.getFullNameByUid(like.userId));
+    .then(like => (like ? likeManager.getFullNameByUid(like.userId) : ''));
 
 const sendPush = comment => {
   userManager.getById(comment.userId).then(user => {
@@ -135,8 +149,8 @@ const sendPush = comment => {
       sendNotification(user.token, {
         data: {
           type: 'LIKE_COMMENT',
-          commentId: like.commentId,
-          soundcastId: like.soundcastId,
+          commentId: comment.commentId,
+          soundcastId: comment.soundcastId,
         },
         notification: {
           title: 'New like',
