@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const firebase = require('firebase-admin');
+const moment = require('moment');
 const database = require('../database');
 var serviceAccount = require('../serviceAccountKey');
 
@@ -9,7 +10,7 @@ const LOG_ERR = 'logErrsMessages.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
+  databaseURL: 'https://soundwise-testbase.firebaseio.com',
 });
 
 const syncMessages = () => {
@@ -29,14 +30,24 @@ const syncMessages = () => {
       .once('value')
       .then(snapshots => {
         snapshots.forEach(snapshot => {
-          const fbMessage = snapshot.val();
+          const {
+            content,
+            creatorID,
+            publisherID,
+            soundcastID,
+            isPublished,
+            date_created,
+          } = snapshot.val();
           const message = {
             announcementId: snapshot.key,
-            content: fbMessage.content,
-            creatorId: fbMessage.creatorID,
-            publisherId: fbMessage.publisherID,
-            soundcastId: fbMessage.soundcastID,
-            isPublished: fbMessage.isPublished,
+            content: content,
+            creatorId: creatorID,
+            publisherId: publisherID,
+            soundcastId: soundcastID,
+            isPublished: isPublished ? isPublished : false,
+            createdAt: moment
+              .unix(date_created)
+              .format('YYYY-MM-DD HH:mm:ss Z'),
           };
           database.Announcement.create(message)
             .then(data => console.log(data.dataValues))
