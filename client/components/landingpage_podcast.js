@@ -229,7 +229,7 @@ class _LandingPagePodcast extends Component {
       <div>
         <Helmet>
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://mysoundwise.com/" />
+          <meta property="og:url" content="https://mysoundwise.com/podcast" />
           <meta
             property="og:title"
             content="Soundwise: Turn Casual Podcast Listeners Into Loyal Customers"
