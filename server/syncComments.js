@@ -10,10 +10,14 @@ const LOG_ERR = 'logErrsComments.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-testbase.firebaseio.com',
+  databaseURL: `https://${
+    process.env.NODE_ENV === 'production'
+      ? 'soundwise-a8e6f'
+      : 'soundwise-testbase'
+  }.firebaseio.com`,
 });
 
-const syncMessages = async () => {
+const syncComments = async () => {
   console.log('start');
   const comments = (await firebase
     .database()
@@ -111,4 +115,4 @@ const logInFile = text => {
   });
 };
 
-syncMessages();
+syncComments();

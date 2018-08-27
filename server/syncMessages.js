@@ -10,7 +10,11 @@ const LOG_ERR = 'logErrsMessages.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-testbase.firebaseio.com',
+  databaseURL: `https://${
+    process.env.NODE_ENV === 'production'
+      ? 'soundwise-a8e6f'
+      : 'soundwise-testbase'
+  }.firebaseio.com`,
 });
 
 const syncMessages = () => {
@@ -28,31 +32,45 @@ const syncMessages = () => {
       .database()
       .ref(`soundcasts/${id}/announcements`)
       .once('value')
-      .then(snapshots => {
-        snapshots.forEach(snapshot => {
-          const {
-            content,
-            creatorID,
-            publisherID,
-            soundcastID,
-            isPublished,
-            date_created,
-          } = snapshot.val();
-          const message = {
-            announcementId: snapshot.key,
-            content: content,
-            creatorId: creatorID,
-            publisherId: publisherID,
-            soundcastId: soundcastID,
-            isPublished: isPublished ? isPublished : false,
-            createdAt: moment
-              .unix(date_created)
-              .format('YYYY-MM-DD HH:mm:ss Z'),
-          };
-          database.Announcement.create(message)
-            .then(data => console.log(data.dataValues))
-            .catch(e => logInFile(`ID: ${snapshot.key}\nERROR: ${e}\n\n`));
-        });
+      .then(async snapshots => {
+        // console.log(snapshots.val());
+        if (!snapshots.val()) {
+          return;
+        }
+        const messages = snapshots.val();
+        // console.log(messages);
+        const keys = Object.keys(messages);
+        for (const key of keys) {
+          if (messages[key]) {
+            const fbMessage = messages[key];
+            console.log(fbMessage);
+            const {
+              content,
+              creatorID,
+              publisherID,
+              soundcastID,
+              isPublished,
+              date_created,
+            } = fbMessage;
+            const message = {
+              announcementId: key,
+              content: content,
+              creatorId: creatorID,
+              publisherId: publisherID,
+              soundcastId: soundcastID,
+              isPublished: isPublished ? isPublished : false,
+              createdAt: moment
+                .unix(date_created)
+                .format('YYYY-MM-DD HH:mm:ss Z'),
+            };
+            await database.Announcement.create(message)
+              .then(data => console.log(data.dataValues))
+              .catch(e => {
+                console.log(e);
+                logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
+              });
+          }
+        }
       })
   );
 };
