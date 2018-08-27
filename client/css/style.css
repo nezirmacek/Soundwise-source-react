@@ -1112,6 +1112,25 @@ button.vjs-device-button.vjs-control.vjs-icon-audio-perm,
   text-align: center;
   display: inline-block;
 }
+.container-confirmation > img.center-col {
+  margin-top: 20px;
+  width: 200px;
+  height: 200px;
+}
+@media (max-height: 800px) {
+  .container-confirmation.dialog-confirmation > img.center-col {
+    margin-top: 0;
+    width: 150px;
+    height: 150px;
+  }
+  .container-confirmation.dialog-confirmation > a {
+    position: relative;
+    top: -20px;
+  }
+  .container-confirmation.dialog-confirmation > .rss-submit-code {
+    margin-bottom: -10px;
+  }
+}
 
 .importing-feed-overlay {
   position: absolute;

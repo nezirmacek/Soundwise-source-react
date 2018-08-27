@@ -181,7 +181,6 @@ class _SignupOptions extends Component {
                   className="container-confirmation"
                 >
                   <img
-                    style={{ width: 200, height: 200, marginTop: 20 }}
                     className="center-col"
                     src={imageUrl}
                   />

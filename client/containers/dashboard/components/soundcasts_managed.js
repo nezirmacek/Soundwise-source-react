@@ -735,10 +735,9 @@ export default class SoundcastsManaged extends Component {
                         padding: 20,
                         textAlign: 'center',
                       }}
-                      className="container-confirmation"
+                      className="container-confirmation dialog-confirmation"
                     >
                       <img
-                        style={{ width: 200, height: 200, marginTop: 20 }}
                         className="center-col"
                         src={this.state.imageUrl}
                       />
@@ -766,7 +765,7 @@ export default class SoundcastsManaged extends Component {
                       >
                         Enter the confirmation code:
                       </div>
-                      <div>
+                      <div className="rss-submit-code">
                         <input
                           ref="codeSign1"
                           onKeyDown={this.onKeyDown.bind(this, 2)}
