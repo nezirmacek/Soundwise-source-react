@@ -2,10 +2,10 @@
 
 const moment = require('moment');
 const firebase = require('firebase-admin');
-const {userManager} = require('../managers');
+const { userManager } = require('../managers');
 
 const sendInvite = async (req, res) => {
-  const {inviteeArr, soundcastId} = req.body;
+  const { inviteeArr, soundcastId } = req.body;
   inviteeArr.map(async email => {
     let _email = email
       .replace(/\./g, '(dot)')
@@ -34,18 +34,22 @@ const addInvitations = (soundcastId, email, res) => {
     .once('value')
     .then(snapshot => {
       if (snapshot.val()) {
-        const update = Object.assign({}, {[soundcastId]: true}, snapshot.val());
+        const update = Object.assign(
+          {},
+          { [soundcastId]: true },
+          snapshot.val()
+        );
         firebase
           .database()
           .ref(`invitations/${email}`)
           .update(update)
-          .then(() => res.send({response: 'update invintation'}));
+          .then(() => res.send({ response: 'update invintation' }));
       } else {
         firebase
           .database()
           .ref(`invitations/${email}/${soundcastId}`)
           .set(true)
-          .then(() => res.send({response: 'create invintation'}));
+          .then(() => res.send({ response: 'create invintation' }));
       }
     });
 };
@@ -55,7 +59,7 @@ const subscibeUser = (userId, soundcastId, res) => {
     await firebase
       .database()
       .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-      .set({0: user.token[0]});
+      .set({ 0: user.token[0] });
     await firebase
       .database()
       .ref(`users/${userId}/soundcasts/${soundcastId}`)
@@ -65,8 +69,8 @@ const subscibeUser = (userId, soundcastId, res) => {
         date_subscribed: moment().format('X'),
         subscribed: true,
       })
-      .then(() => res.send({response: 'subscibe user'}));
+      .then(() => res.send({ response: 'subscibe user' }));
   });
 };
 
-module.exports = {sendInvite};
+module.exports = { sendInvite };
