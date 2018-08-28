@@ -67,9 +67,9 @@ const syncSoundcasts = async () => {
     for (const key of keys) {
       next = key !== lastId;
       let soundcast = getSoundcastForPsql(key, soundcasts[key]);
-      soundcast = handleImpotedSoundcast(key, soundcast)
-        .then(() => console.log('end handle impoted soundcast'))
-        .catch(e => logInFile(e));
+      soundcast = handleImpotedSoundcast(key, soundcast).catch(e =>
+        logInFile(e)
+      );
 
       const soundcastData = await soundcastRepository.get(key);
       if (soundcastData) {
