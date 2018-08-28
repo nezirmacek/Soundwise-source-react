@@ -9,7 +9,11 @@ const get = id =>
 
 const create = soundcast => database.Soundcast.create(soundcast);
 
+const update = (soundcast, soundcastId) =>
+  database.Soundcast.update(soundcast, { where: { soundcastId } });
+
 module.exports = {
   get,
   create,
+  update,
 };
