@@ -67,9 +67,11 @@ const syncSoundcasts = async () => {
     for (const key of keys) {
       next = key !== lastId;
       let soundcast = getSoundcastForPsql(key, soundcasts[key]);
-      soundcast = handleImpotedSoundcast(key, soundcast).catch(e =>
-        logInFile(e)
-      );
+      try {
+        soundcast = await handleImpotedSoundcast(key, soundcast);
+      } catch (e) {
+        logInFile(e);
+      }
 
       const soundcastData = await soundcastRepository.get(key);
       if (soundcastData) {
@@ -78,6 +80,7 @@ const syncSoundcasts = async () => {
         await createSoundcast(soundcast);
       }
     }
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
   console.log('finish');
 };
@@ -115,28 +118,29 @@ const getFilter = id => {
 };
 
 const handleImpotedSoundcast = async (key, soundcast) => {
-  const importedSoundcast = await database.ImportedFeed.findOne(
-    getFilter(key)
-  ).catch(e => logInFile(e));
+  const importedSoundcast = await database.ImportedFeed.findOne(getFilter(key));
   if (importedSoundcast) {
     const importedSoundcastId = importedSoundcast.dataValues.soundcastId;
     await soundcastManager.update(key, { verified: false });
 
     const episodesData = await database.Episode.findAll(
       getFilter(importedSoundcastId)
-    ).catch(e => logInFile(e));
+    );
     if (episodesData) {
       let updateEpisodes = {};
       for (const episodeData of episodesData) {
         const episodeId = episodeData.dataValues.episodeId;
         Object.assign(updateEpisodes, { [episodeId]: true });
       }
-      await firebase
-        .database()
-        .ref(`soundcasts/${importedSoundcastId}/episodes`)
-        .update(updateEpisodes)
-        .then(() => console.log('updateEpisodes: ', updateEpisodes))
-        .catch(e => logInFile(e));
+      try {
+        await firebase
+          .database()
+          .ref(`soundcasts/${importedSoundcastId}/episodes`)
+          .update(updateEpisodes);
+        console.log('updateEpisodes: ', updateEpisodes);
+      } catch (e) {
+        logInFile(e);
+      }
     }
     const fixedSoundcast = await removeSpecialChars(key, soundcast);
     return fixedSoundcast;
