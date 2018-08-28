@@ -67,7 +67,9 @@ const syncSoundcasts = async () => {
     for (const key of keys) {
       next = key !== lastId;
       let soundcast = getSoundcastForPsql(key, soundcasts[key]);
-      soundcast = handleImpotedSoundcast(key, soundcast);
+      soundcast = handleImpotedSoundcast(key, soundcast)
+        .then(() => console.log('end handle impoted soundcast'))
+        .catch(e => logInFile(e));
 
       const soundcastData = await soundcastRepository.get(key);
       if (soundcastData) {
@@ -124,17 +126,20 @@ const handleImpotedSoundcast = async (key, soundcast) => {
       getFilter(importedSoundcastId)
     ).catch(e => logInFile(e));
     if (episodesData) {
+      let updateEpisodes = {};
       for (const episodeData of episodesData) {
         const episodeId = episodeData.dataValues.episodeId;
-        await firebase
-          .database()
-          .ref(`soundcasts/${importedSoundcastId}/episodes/${episodeId}`)
-          .set(true)
-          .then(() => console.log('impotedEpisode: ' + episodeId))
-          .catch(e => logInFile(e));
+        Object.assign(updateEpisodes, { [episodeId]: true });
       }
+      await firebase
+        .database()
+        .ref(`soundcasts/${importedSoundcastId}/episodes`)
+        .update(updateEpisodes)
+        .then(() => console.log('updateEpisodes: ', updateEpisodes))
+        .catch(e => logInFile(e));
     }
-    return await removeSpecialChars(key, soundcast);
+    const fixedSoundcast = await removeSpecialChars(key, soundcast);
+    return fixedSoundcast;
   } else {
     return soundcast;
   }
@@ -146,7 +151,7 @@ const updateSoundcast = (soundcast, key) =>
     .then(data => {
       console.log('updated soundcast with id: ', key);
       console.log('data', data);
-      console.log('soundcast', soundcast);
+      console.log('soundcast', soundcast, '\n');
     })
     .catch(error => {
       logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
@@ -158,7 +163,7 @@ const createSoundcast = (soundcast, key) =>
     .create(soundcast)
     .then(data => {
       console.log('created soundcast with id: ', key);
-      console.log('data', data.dataValues);
+      console.log('data', data.dataValues, '\n');
     })
     .catch(error => {
       logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
@@ -175,13 +180,14 @@ const removeSpecialChars = (key, soundcast) => {
   firebase
     .database()
     .ref(`soundcasts/${key}`)
-    .update(fixedText);
+    .update(fixedText)
+    .then(() => console.log('fixedSoundcast', fixedSoundcast))
+    .catch(e => logInFile(e));
 
   const fixedSoundcast = Object.assign({}, soundcast, {
     title: fixedText.title,
     publisherId: importedPublisherId,
   });
-  console.log('fixedSoundcast', fixedSoundcast);
   return fixedSoundcast;
 };
 
