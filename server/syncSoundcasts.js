@@ -3,8 +3,10 @@
 const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../database');
+const _ = require('lodash');
 const htmlEntities = require('html-entities').XmlEntities;
 const { soundcastRepository } = require('./repositories');
+const { soundcastManager } = require('./managers');
 var serviceAccount = require('../serviceAccountKey');
 
 const LOG_ERR = 'logErrsSoundcasts.txt';
@@ -19,10 +21,22 @@ firebase.initializeApp({
   }.firebaseio.com`,
 });
 
+const importedPublisherId = '000123456789p';
+
 const syncSoundcasts = async () => {
   await fs.unlink(LOG_ERR, err => err);
   console.log('start');
   let next = true;
+
+  await firebase
+    .database()
+    .ref(`publishers/${importedPublisherId}`)
+    .set({
+      email: 'random@mail.coi',
+      imageUrl: 'http://cms.ipressroom.com.s3.amazonaws.com/115/...',
+      name: 'Online Podcast',
+      unAssigned: true,
+    });
 
   const firstSoundcast = (await firebase
     .database()
@@ -52,44 +66,14 @@ const syncSoundcasts = async () => {
     startId = keys[keys.length - 1];
     for (const key of keys) {
       next = key !== lastId;
-      const soundcast = getSoundcastForPsql(key, soundcasts[key]);
-      const soundcastData = await soundcastRepository.get(key);
+      let soundcast = getSoundcastForPsql(key, soundcasts[key]);
+      soundcast = handleImpotedSoundcast(key, soundcast);
 
+      const soundcastData = await soundcastRepository.get(key);
       if (soundcastData) {
         await updateSoundcast(soundcast, key);
       } else {
-        await soundcastRepository
-          .create(soundcast)
-          .then(data => {
-            console.log(data.dataValues);
-            console.log('created soundcast with id: ', key);
-          })
-          .catch(error => {
-            logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
-            console.log(error);
-          });
-      }
-      const importedSoundcast = await database.ImportedFeed.findOne(
-        getFilter(key)
-      ).catch(e => logInFile(e));
-      if (importedSoundcast) {
-        const importedSoundcastId = importedSoundcast.dataValues.soundcastId;
-        await removeSpecialChars(key, soundcasts[key]);
-        await firebase
-          .database()
-          .ref(`soundcasts/${key}/verified`)
-          .set(false);
-        const episodesData = await database.Episode.findAll(
-          getFilter(importedSoundcastId)
-        ).catch(e => logInFile(e));
-        for (const episodeData of episodesData) {
-          const episodeId = episodeData.dataValues.episodeId;
-          console.log('impotedEpisode: ' + episodeId);
-          firebase
-            .database()
-            .ref(`soundcasts/${importedSoundcastId}/episodes/${episodeId}`)
-            .set(true);
-        }
+        await createSoundcast(soundcast);
       }
     }
   }
@@ -128,40 +112,78 @@ const getFilter = id => {
   return { where: { soundcastId: id } };
 };
 
-const removeSpecialChars = (key, soundcast) => {
-  const { title, short_description } = soundcast;
-  console.log(
-    `fixSpecialChars\ntitle: ${title}\ndescription: ${short_description}\n`
-  );
-  const fixedTitle = fixSpecialChars(title);
-  if (title) {
-    firebase
-      .database()
-      .ref(`soundcasts/${key}/title`)
-      .set(fixedTitle);
-    updateSoundcast({ title: fixedTitle }, key);
+const handleImpotedSoundcast = async (key, soundcast) => {
+  const importedSoundcast = await database.ImportedFeed.findOne(
+    getFilter(key)
+  ).catch(e => logInFile(e));
+  if (importedSoundcast) {
+    const importedSoundcastId = importedSoundcast.dataValues.soundcastId;
+    await soundcastManager.update(key, { verified: false });
+
+    const episodesData = await database.Episode.findAll(
+      getFilter(importedSoundcastId)
+    ).catch(e => logInFile(e));
+    if (episodesData) {
+      for (const episodeData of episodesData) {
+        const episodeId = episodeData.dataValues.episodeId;
+        await firebase
+          .database()
+          .ref(`soundcasts/${importedSoundcastId}/episodes/${episodeId}`)
+          .set(true)
+          .then(() => console.log('impotedEpisode: ' + episodeId))
+          .catch(e => logInFile(e));
+      }
+    }
+    return await removeSpecialChars(key, soundcast);
+  } else {
+    return soundcast;
   }
-  const fixedDescription = fixSpecialChars(short_description);
-  if (typeof fixedDescription === 'string') {
-    firebase
-      .database()
-      .ref(`soundcasts/${key}/short_description`)
-      .set(fixedDescription);
-  }
-  console.log(`title: ${fixedTitle}\ndescription: ${fixedDescription}`);
 };
 
 const updateSoundcast = (soundcast, key) =>
   soundcastRepository
     .update(soundcast, key)
     .then(data => {
-      console.log(soundcast);
       console.log('updated soundcast with id: ', key);
+      console.log('data', data);
+      console.log('soundcast', soundcast);
     })
     .catch(error => {
       logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
       console.log(error);
     });
+
+const createSoundcast = (soundcast, key) =>
+  soundcastRepository
+    .create(soundcast)
+    .then(data => {
+      console.log('created soundcast with id: ', key);
+      console.log('data', data.dataValues);
+    })
+    .catch(error => {
+      logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
+      console.log(error);
+    });
+
+const removeSpecialChars = (key, soundcast) => {
+  const { title, short_description } = soundcast;
+
+  const fixedText = {
+    title: fixSpecialChars(title),
+    short_description: fixSpecialChars(short_description),
+  };
+  firebase
+    .database()
+    .ref(`soundcasts/${key}`)
+    .update(fixedText);
+
+  const fixedSoundcast = Object.assign({}, soundcast, {
+    title: fixedText.title,
+    publisherId: importedPublisherId,
+  });
+  console.log('fixedSoundcast', fixedSoundcast);
+  return fixedSoundcast;
+};
 
 const fixSpecialChars = text => {
   return new htmlEntities().decode(text);

@@ -73,6 +73,7 @@ const syncMessages = () => {
         }
       })
   );
+  console.log('finish');
 };
 
 const logInFile = text => {
