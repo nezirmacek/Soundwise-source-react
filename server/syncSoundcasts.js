@@ -12,12 +12,11 @@ const PAGE_SIZE = 100;
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
-  // databaseURL: `https://${
-  //   process.env.NODE_ENV === 'production'
-  //     ? 'soundwise-a8e6f'
-  //     : 'soundwise-testbase'
-  // }.firebaseio.com`,
+  databaseURL: `https://${
+    process.env.NODE_ENV === 'production'
+      ? 'soundwise-a8e6f'
+      : 'soundwise-testbase'
+  }.firebaseio.com`,
 });
 
 const syncSoundcasts = async () => {
