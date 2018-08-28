@@ -56,16 +56,7 @@ const syncSoundcasts = async () => {
       const soundcastData = await soundcastRepository.get(key);
 
       if (soundcastData) {
-        await soundcastRepository
-          .update(soundcast, key)
-          .then(data => {
-            console.log(soundcast);
-            console.log('updated soundcast with id: ', key);
-          })
-          .catch(error => {
-            logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
-            console.log(error);
-          });
+        await updateSoundcast(soundcast, key);
       } else {
         await soundcastRepository
           .create(soundcast)
@@ -142,24 +133,35 @@ const removeSpecialChars = (key, soundcast) => {
   console.log(
     `fixSpecialChars\ntitle: ${title}\ndescription: ${short_description}\n`
   );
+  const fixedTitle = fixSpecialChars(title);
   if (title) {
     firebase
       .database()
       .ref(`soundcasts/${key}/title`)
-      .set(fixSpecialChars(title));
+      .set(fixedTitle);
+    updateSoundcast({ title: fixedTitle }, key);
   }
-  if (typeof short_description === 'string') {
+  const fixedDescription = fixSpecialChars(short_description);
+  if (typeof fixedDescription === 'string') {
     firebase
       .database()
       .ref(`soundcasts/${key}/short_description`)
-      .set(fixSpecialChars(short_description));
+      .set(fixedDescription);
   }
-  console.log(
-    `title: ${fixSpecialChars(title)}\ndescription: ${fixSpecialChars(
-      short_description
-    )}`
-  );
+  console.log(`title: ${fixedTitle}\ndescription: ${fixedDescription}`);
 };
+
+const updateSoundcast = (soundcast, key) =>
+  soundcastRepository
+    .update(soundcast, key)
+    .then(data => {
+      console.log(soundcast);
+      console.log('updated soundcast with id: ', key);
+    })
+    .catch(error => {
+      logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
+      console.log(error);
+    });
 
 const fixSpecialChars = text => {
   return new htmlEntities().decode(text);

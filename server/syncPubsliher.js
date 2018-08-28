@@ -5,7 +5,7 @@ const firebase = require('firebase-admin');
 const database = require('../database');
 var serviceAccount = require('../serviceAccountKey');
 
-const LOG_ERR = 'logErrsComments.txt';
+const LOG_ERR = 'logErrsPublishers.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
