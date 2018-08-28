@@ -9,26 +9,33 @@ const getById = id =>
     .once('value')
     .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
 
-const setMailingListName = (soundcastId, mailingListName, mailingListId) =>
+const update = (id, update) =>
   firebase
     .database()
-    .ref(`soundcasts/${soundcastId}/${mailingListName}`)
+    .ref(`soundcasts/${id}`)
+    .update(update);
+
+const setMailingListName = (id, mailingListName, mailingListId) =>
+  firebase
+    .database()
+    .ref(`soundcasts/${id}/${mailingListName}`)
     .set(mailingListId);
 
-const addSubscribedUser = (soundcastId, userId) =>
+const addSubscribedUser = (id, userId) =>
   firebase
     .database()
-    .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+    .ref(`soundcasts/${id}/subscribed/${userId}`)
     .set(moment().format('X'));
 
-const removeSubscribedUser = (soundcastId, userId) =>
+const removeSubscribedUser = (id, userId) =>
   firebase
     .database()
-    .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+    .ref(`soundcasts/${id}/subscribed/${userId}`)
     .remove();
 
 module.exports = {
   getById,
+  update,
   setMailingListName,
   addSubscribedUser,
   removeSubscribedUser,
