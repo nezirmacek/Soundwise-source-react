@@ -687,6 +687,11 @@ class _CreateEpisode extends Component {
                   }
                 });
                 const payload = {
+                  data: {
+                    type: 'NEW_EPISODE',
+                    episodeId: this.episodeId,
+                    soundcastId: this.currentSoundcastId,
+                  },
                   notification: {
                     title: `${snapshot.val().title} just published:`,
                     body: `${this.state.title}`,

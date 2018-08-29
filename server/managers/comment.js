@@ -29,9 +29,17 @@ const getUserParentComment = id =>
     .once('value')
     .then(snap => userManager.getById(snap.val()));
 
+const getEpisodeComments = episodeId =>
+  firebase
+    .database()
+    .ref(`episodes/${episodeId}/comments`)
+    .once('value')
+    .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
+
 module.exports = {
   getById,
   addCommentToEpisode,
   removeCommentToEpisode,
   getUserParentComment,
+  getEpisodeComments,
 };

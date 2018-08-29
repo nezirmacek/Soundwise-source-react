@@ -192,6 +192,11 @@ export default class Announcements extends Component {
                     }
                   });
                   const payload = {
+                    data: {
+                      type: 'NEW_MESSAGE',
+                      announcementId: announcementID,
+                      soundcastId: currentSoundcastID,
+                    },
                     notification: {
                       // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
                       title: `${currentSoundcast.title} sent you a message`,
