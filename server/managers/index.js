@@ -8,6 +8,7 @@ const mailingManager = require('./mailing');
 const publisherManager = require('./publisher');
 const soundcastManager = require('./soundcast');
 const userManager = require('./user');
+const messageManager = require('./message');
 
 module.exports = {
   commonManager,
@@ -18,4 +19,5 @@ module.exports = {
   publisherManager,
   soundcastManager,
   userManager,
+  messageManager,
 };

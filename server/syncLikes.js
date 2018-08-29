@@ -2,11 +2,20 @@
 
 const fs = require('fs');
 const firebase = require('firebase-admin');
+const _ = require('lodash');
+const moment = require('moment');
 const database = require('../database');
-const { soundcastManager } = require('./managers');
+const { soundcastManager, messageManager, likeManager } = require('./managers');
+const { likeRepository } = require('./repositories');
 var serviceAccount = require('../serviceAccountKey');
 
 const LOG_ERR = 'logErrsLikes.txt';
+
+const logInFile = text => {
+  fs.appendFile(LOG_ERR, text, err => {
+    if (err) throw err;
+  });
+};
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -17,61 +26,142 @@ firebase.initializeApp({
   }.firebaseio.com`,
 });
 
-const syncLikes = async () => {
-  const soundcastsIds = [
-    '1509475284817s',
-    '1507828113963s',
-    '1508785327382s',
-    '1510935330009s',
-    '1513445399143s',
-    '1508293913676s',
-    '1505855025645s',
-    '1531419211997s',
-    '1531441638240s',
-    '1531459034687s',
-    '1531496828981s',
-    '1531502612113s',
-  ];
-  console.log('start');
-  for (const soundcastId of soundcastsIds) {
+const getTimestamp = timestamp => {
+  let newTimestamp = timestamp;
+  if (_.isBoolean(timestamp)) {
+    newTimestamp = moment().unix();
+  } else if (_.isString(timestamp)) {
+    newTimestamp = +timestamp;
+    if (_.isNaN(timestamp)) {
+      newTimestamp = moment().unix();
+    }
+  }
+  return newTimestamp;
+};
+
+const soundcastsIds = [
+  '1509475284817s',
+  '1507828113963s',
+  '1508785327382s',
+  '1510935330009s',
+  '1513445399143s',
+  '1508293913676s',
+  '1505855025645s',
+  '1531419211997s',
+  '1531441638240s',
+  '1531459034687s',
+  '1531496828981s',
+  '1531502612113s',
+];
+
+const syncEpisodesLikes = async () => {
+  console.log('start sync episodes likes');
+  for (let soundcastId of soundcastsIds) {
+    console.log(`process ${soundcastId} soundcast`);
     const soundcast = await soundcastManager.getById(soundcastId);
-    if (soundcast) {
-      if (soundcast.episodes) {
-        const episodesIds = Object.keys(soundcast.episodes);
-        for (const episodeId of episodesIds) {
-          const likes = await firebase
-            .database()
-            .ref(`episodes/${episodeId}/likes`)
-            .once('value');
-          if (likes.val()) {
-            const usersIds = Object.keys(likes.val());
-            for (const userId of usersIds) {
-              const like = {
-                likeId: `${userId}-${episodeId}`,
-                episodeId: episodeId,
-                userId: userId,
-                soundcastId: soundcastId,
-                timeStamp: likes.val()[userId],
-              };
-              try {
-                const data = await database.Like.create(like);
-                console.log(data.dataValues);
-              } catch (e) {
-                logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`);
-              }
-            }
+    if (soundcast && soundcast.episodes) {
+      const episodesIds = _.keys(soundcast.episodes);
+      console.log(`process ${episodesIds} episodes`);
+      for (let episodeId of episodesIds) {
+        const likes = await likeManager.getEpisodeLikes(episodeId);
+        if (likes) {
+          const usersIds = _.keys(likes);
+          for (let userId of usersIds) {
+            const newTimestamp = getTimestamp(likes[userId]);
+            const createdAt = moment
+              .unix(newTimestamp)
+              .utc()
+              .format();
+            const like = {
+              likeId: `${userId}-${episodeId}`,
+              episodeId,
+              userId,
+              soundcastId,
+              timeStamp: newTimestamp,
+              createdAt,
+              updatedAt: createdAt,
+            };
+            database.Like.create(like)
+              .then(data => console.log(data.dataValues))
+              .catch(e =>
+                logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`)
+              );
           }
+          const likeObject = await likeRepository.getPrevious({
+            episodeId,
+            likeId: { [Op.regexp]: '^(?!web-).*' },
+          });
+          const lastLiked = likeObject
+            ? await likeManager.getFullNameByUid(likeObject.userId)
+            : 'Guest';
+          await likeManager.updateLikeInEpisode(
+            episodeId,
+            usersIds.length,
+            lastLiked
+          );
         }
       }
     }
   }
-  console.log('finish');
+  console.log('finish sync episodes likes');
 };
 
-const logInFile = text => {
-  fs.appendFile(LOG_ERR, text, err => {
-    if (err) throw err;
-  });
+const syncMessagesLikes = async () => {
+  console.log('start sync messages likes');
+  for (let soundcastId of soundcastsIds) {
+    console.log(`process ${soundcastId} soundcast`);
+    const messagesBySoundcast = await messageManager.getMessagesBySoundcastId(
+      soundcastId
+    );
+    if (messagesBySoundcast) {
+      const messagesIds = _.keys(messagesBySoundcast);
+      console.log(`process ${messagesIds} messages`);
+      for (let messageId of messagesIds) {
+        const likes = await likeManager.getMessageLikes({
+          soundcastId,
+          messageId,
+        });
+        if (likes) {
+          const usersIds = _.keys(likes);
+          for (let userId of usersIds) {
+            const newTimestamp = getTimestamp(likes[userId]);
+            const createdAt = moment
+              .unix(newTimestamp)
+              .utc()
+              .format();
+            const like = {
+              likeId: `${userId}-${messageId}`,
+              messageId,
+              userId,
+              soundcastId,
+              timeStamp: newTimestamp,
+              createdAt,
+              updatedAt: createdAt,
+            };
+
+            database.Like.create(like)
+              .then(data => console.log(data.dataValues))
+              .catch(e =>
+                logInFile(`ID: ${userId}-${messageId}\nERROR: ${e}\n\n`)
+              );
+          }
+          const likeObject = await likeRepository.getPrevious({
+            messageId,
+            likeId: { [Op.regexp]: '^(?!web-).*' },
+          });
+          const lastLiked = likeObject
+            ? await likeManager.getFullNameByUid(likeObject.userId)
+            : 'Guest';
+          await database.Announcement.update({
+            likesCount: usersIds.length,
+            lastLiked,
+          }).catch(e => logInFile(`MessageId: ${messageId}\nERROR: ${e}\n\n`));
+        }
+      }
+    }
+  }
+  console.log('finish sync messages likes');
 };
 
-syncLikes();
+syncEpisodesLikes();
+syncMessagesLikes();

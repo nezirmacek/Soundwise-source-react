@@ -42,10 +42,26 @@ const getFullNameByUid = userId =>
       }
     });
 
+const getMessageLikes = ({ soundcastId, messageId }) =>
+  firebase
+    .database()
+    .ref(`soundcasts/${soundcastId}/announcements/${messageId}/likes`)
+    .once('value')
+    .then(snapshot => snapshot.val());
+
+const getEpisodeLikes = episodeId =>
+  firebase
+    .database()
+    .ref(`episodes/${episodeId}/likes`)
+    .once('value')
+    .then(snapshot => snapshot.val());
+
 module.exports = {
   getById,
   setFullName,
   setLikesCount,
+  getMessageLikes,
+  getEpisodeLikes,
   getFullNameByUid,
   updateLikeInEpisode,
 };

@@ -7,7 +7,7 @@ const getById = id =>
     .database()
     .ref(`soundcasts/${id}`)
     .once('value')
-    .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
+    .then(snapshot => snapshot.val());
 
 const update = (id, update) =>
   firebase

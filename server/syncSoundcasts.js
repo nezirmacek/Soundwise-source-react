@@ -31,21 +31,19 @@ const syncSoundcasts = async () => {
 
   console.log('\n\nstart\n\n');
 
-  const firstSoundcast = (await firebase
+  let startId = (await firebase
     .database()
     .ref('soundcasts')
     .orderByKey()
     .limitToFirst(1)
-    .once('value')).val();
-  let startId = Object.keys(firstSoundcast)[0];
+    .once('value')).key;
 
-  const lastSoundcast = (await firebase
+  const lastId = (await firebase
     .database()
     .ref('soundcasts')
     .orderByKey()
     .limitToLast(1)
-    .once('value')).val();
-  const lastId = Object.keys(lastSoundcast)[0];
+    .once('value')).key;
 
   while (next) {
     const soundcasts = (await firebase
