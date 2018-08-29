@@ -4,7 +4,9 @@ const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../database');
 const moment = require('moment');
-var serviceAccount = require('../serviceAccountKey');
+const serviceAccount = require('../serviceAccountKey');
+const { commentRepository } = require('./repositories');
+const { commentManager } = require('./managers');
 
 const LOG_ERR = 'logErrsComments.txt';
 
@@ -30,62 +32,57 @@ const syncComments = async () => {
       if (fbComment.children) {
         const childKeys = Object.keys(fbComment.children);
         for (const childKey of childKeys) {
-          const childComment = (await firebase
-            .database()
-            .ref(`comments/${childKey}`)
-            .once('value')).val();
+          const childComment = await commentManager.getById(childKey);
           if (childComment) {
             const comment = getCommentForPsql(childKey, childComment, key);
-            const isExist = await database.Comment.findById(comment.commentId);
+            const isExist = await commentRepository.get(comment.commentId);
             console.log('isExist:', !!isExist);
             if (!!isExist) {
-              console.log('update');
-              console.log('comment', comment);
-              await database.Comment.update(comment, {
-                where: { commentId: childKey },
-              })
-                .then(data => console.log(data + '\n'))
-                .catch(e => {
-                  console.log('ERROR' + e + '\n');
-                  logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
-                });
+              console.log('update comment', comment);
+              try {
+                const data = await commentRepository.update(comment, childKey);
+                console.log('data', data.dataValues + '\n');
+              } catch (e) {
+                console.log('ERROR' + e + '\n\n');
+                logInFile(`ID: ${key}\nERROR: ${e}\n`);
+              }
             } else {
               if (comment) {
-                console.log('create');
-                console.log('comment', comment);
-                await database.Comment.create(comment)
-                  .then(data => console.log('data', data.dataValues + '\n'))
-                  .catch(e => {
-                    console.log('ERROR' + e + '\n\n');
-                    logInFile(`ID: ${key}\nERROR: ${e}\n`);
-                  });
+                console.log('create comment', comment);
+                try {
+                  const data = await commentRepository.create(comment);
+                  console.log('data', data.dataValues + '\n');
+                } catch (e) {
+                  console.log('ERROR' + e + '\n\n');
+                  logInFile(`ID: ${key}\nERROR: ${e}\n`);
+                }
               }
             }
           }
         }
       } else {
         const comment = getCommentForPsql(key, fbComment);
-        const isExist = await database.Comment.findById(comment.commentId);
+        const isExist = await commentRepository.get(comment.commentId);
         console.log('isExist:', !!isExist);
         if (!!isExist) {
-          console.log('update');
-          console.log('comment', comment);
-          await database.Comment.update(comment, { where: { commentId: key } })
-            .then(data => console.log(data + '\n'))
-            .catch(e => {
-              console.log('ERROR' + e + '\n');
-              logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
-            });
+          console.log('update comment', comment);
+          try {
+            const data = await commentRepository.update(comment, key);
+            console.log(data + '\n');
+          } catch (e) {
+            console.log('ERROR' + e + '\n');
+            logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
+          }
         } else {
           if (comment) {
-            console.log('create');
-            console.log('comment', comment);
-            await database.Comment.create(comment)
-              .then(data => console.log('data', data.dataValues + '\n'))
-              .catch(e => {
-                console.log('ERROR' + e + '\n');
-                logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
-              });
+            console.log('create comment', comment);
+            try {
+              const data = await commentRepository.create(comment);
+              console.log('data', data.dataValues + '\n');
+            } catch (e) {
+              console.log('ERROR' + e + '\n');
+              logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
+            }
           }
         }
       }

@@ -5,6 +5,7 @@ const firebase = require('firebase-admin');
 const moment = require('moment');
 const database = require('../database');
 var serviceAccount = require('../serviceAccountKey');
+var { announcementRepository } = require('./repositories');
 
 const LOG_ERR = 'logErrsMessages.txt';
 
@@ -17,7 +18,7 @@ firebase.initializeApp({
   }.firebaseio.com`,
 });
 
-const syncMessages = () => {
+const syncMessages = async () => {
   const ids = [
     '1509475284817s',
     '1507828113963s',
@@ -27,53 +28,63 @@ const syncMessages = () => {
     '1508293913676s',
     '1505855025645s',
   ];
-  ids.forEach(id =>
-    firebase
+  for (const id of ids) {
+    const messages = (await firebase
       .database()
       .ref(`soundcasts/${id}/announcements`)
-      .once('value')
-      .then(async snapshots => {
-        // console.log(snapshots.val());
-        if (!snapshots.val()) {
-          return;
-        }
-        const messages = snapshots.val();
-        // console.log(messages);
-        const keys = Object.keys(messages);
-        for (const key of keys) {
-          if (messages[key]) {
-            const fbMessage = messages[key];
-            console.log(fbMessage);
-            const {
-              content,
-              creatorID,
-              publisherID,
-              soundcastID,
-              isPublished,
-              date_created,
-            } = fbMessage;
-            const message = {
-              announcementId: key,
-              content: content,
-              creatorId: creatorID,
-              publisherId: publisherID,
-              soundcastId: soundcastID,
-              isPublished: isPublished ? isPublished : false,
-              createdAt: moment
-                .unix(date_created)
-                .format('YYYY-MM-DD HH:mm:ss Z'),
-            };
-            await database.Announcement.create(message)
-              .then(data => console.log(data.dataValues))
-              .catch(e => {
-                console.log(e);
-                logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
-              });
+      .once('value')).val();
+    if (messages) {
+      const keys = Object.keys(messages);
+      for (const key of keys) {
+        if (messages[key]) {
+          const fbMessage = messages[key];
+          const message = getMessageForPsql(key, fbMessage);
+          const isExist = announcementRepository.get(key);
+          if (!!isExist) {
+            try {
+              console.log(`update message with id: ${key}`);
+              const data = await announcementRepository.update(message, key);
+              console.log(data);
+            } catch (e) {
+              console.log(e);
+              logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
+            }
+          } else {
+            try {
+              console.log(`create message with id: ${key}`);
+              const data = await announcementRepository.create(message);
+              console.log(data.dataValues);
+            } catch (e) {
+              console.log(e);
+              logInFile(`ID: ${key}\nERROR: ${e}\n\n`);
+            }
           }
         }
-      })
-  );
+      }
+    }
+  }
   console.log('finish');
+};
+
+const getMessageForPsql = (key, fbMessage) => {
+  const {
+    content,
+    creatorID,
+    publisherID,
+    soundcastID,
+    isPublished,
+    date_created,
+  } = fbMessage;
+  const message = {
+    announcementId: key,
+    content: content,
+    creatorId: creatorID,
+    publisherId: publisherID,
+    soundcastId: soundcastID,
+    isPublished: isPublished ? isPublished : false,
+    createdAt: moment.unix(date_created).format('YYYY-MM-DD HH:mm:ss Z'),
+  };
+  return message;
 };
 
 const logInFile = text => {

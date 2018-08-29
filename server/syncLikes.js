@@ -53,11 +53,12 @@ const syncLikes = async () => {
                 soundcastId: soundcastId,
                 timeStamp: likes.val()[userId],
               };
-              database.Like.create(like)
-                .then(data => console.log(data.dataValues))
-                .catch(e =>
-                  logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`)
-                );
+              try {
+                const data = await database.Like.create(like);
+                console.log(data.dataValues);
+              } catch (e) {
+                logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`);
+              }
             }
           }
         }
