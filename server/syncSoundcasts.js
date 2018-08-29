@@ -10,7 +10,7 @@ const { soundcastManager } = require('./managers');
 var serviceAccount = require('../serviceAccountKey');
 
 const LOG_ERR = 'logErrsSoundcasts.txt';
-const PAGE_SIZE = 200;
+const PAGE_SIZE = 100;
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -67,6 +67,7 @@ const syncSoundcasts = async () => {
     .once('value')).val();
   const lastId = Object.keys(lastSoundcast)[0];
 
+  let i = 0;
   while (next) {
     const soundcasts = (await firebase
       .database()
@@ -93,7 +94,10 @@ const syncSoundcasts = async () => {
         await createSoundcast(soundcast);
       }
     }
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    i = i + PAGE_SIZE;
+    console.log('\n\nstartId: ', startId + '\n');
+    console.log('handled count soundcasts', i + '\n');
   }
   console.log('finish');
 };
