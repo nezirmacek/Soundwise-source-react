@@ -72,9 +72,9 @@ const syncEpisodesLikes = async () => {
               .format();
             const like = {
               likeId: `${userId}-${episodeId}`,
-              episodeId: episodeId,
-              userId: userId,
-              soundcastId: soundcastId,
+              episodeId,
+              userId,
+              soundcastId,
               timeStamp: newTimestamp,
               createdAt,
               updatedAt: createdAt,
@@ -92,7 +92,11 @@ const syncEpisodesLikes = async () => {
           const lastLiked = likeObject
             ? await likeManager.getFullNameByUid(likeObject.userId)
             : 'Guest';
-          likeManager.updateLikeInEpisode(episodeId, likes.length, lastLiked);
+          likeManager.updateLikeInEpisode(
+            episodeId,
+            usersIds.length,
+            lastLiked
+          );
         }
       }
     }
@@ -125,9 +129,9 @@ const syncMessagesLikes = async () => {
               .format();
             const like = {
               likeId: `${userId}-${messageId}`,
-              messageId: messageId,
-              userId: userId,
-              soundcastId: soundcastId,
+              messageId,
+              userId,
+              soundcastId,
               timeStamp: newTimestamp,
               createdAt,
               updatedAt: createdAt,
