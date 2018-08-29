@@ -79,6 +79,7 @@ const syncSoundcasts = async () => {
     i = i + PAGE_SIZE;
     console.log('\n\nstartId: ', startId + '\n');
     console.log('handled count soundcasts', i + '\n');
+    logInFile('\nstartId = ' + startId + '\ncount: ' + i);
     await new Promise(resolve => setTimeout(resolve, 500));
   }
   console.log('finish');
