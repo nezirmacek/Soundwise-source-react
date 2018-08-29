@@ -57,9 +57,11 @@ const soundcastsIds = [
 const syncEpisodesLikes = async () => {
   console.log('start sync episodes likes');
   for (let soundcastId of soundcastsIds) {
+    console.log(`process ${soundcastId} soundcast`);
     const soundcast = await soundcastManager.getById(soundcastId);
     if (soundcast && soundcast.episodes) {
       const episodesIds = _.keys(soundcast.episodes);
+      console.log(`process ${episodesIds} episodes`);
       for (let episodeId of episodesIds) {
         const likes = await likeManager.getEpisodeLikes(episodeId);
         if (likes) {
