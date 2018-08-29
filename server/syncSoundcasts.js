@@ -4,7 +4,7 @@ const fs = require('fs');
 const firebase = require('firebase-admin');
 const database = require('../database');
 const _ = require('lodash');
-const htmlEntities = require('html-entities').XmlEntities;
+const htmlEntities = require('html-entities').AllHtmlEntities;
 const { soundcastRepository } = require('./repositories');
 const { soundcastManager } = require('./managers');
 var serviceAccount = require('../serviceAccountKey');
@@ -25,31 +25,11 @@ const importedPublisherId = '000123456789p';
 
 const syncSoundcasts = async () => {
   await fs.unlink(LOG_ERR, err => err);
-  console.log('start');
+  let i = 0;
   let next = true;
+  await createPublisher();
 
-  const importedPublisher = {
-    publisherId: importedPublisherId,
-    name: 'Online Imported Podcast',
-    imageUrl: 'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
-  };
-
-  try {
-    const data = await database.Publisher.create(importedPublisher);
-    await firebase
-      .database()
-      .ref(`publishers/${importedPublisherId}`)
-      .set({
-        email: 'random@mail.coi',
-        imageUrl:
-          'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
-        name: 'Online Imported Podcast',
-        unAssigned: true,
-      });
-    console.log('Publisher: ', data.dataValues);
-  } catch (e) {
-    console.log('error with imported publisher. Error: ', e);
-  }
+  console.log('\n\nstart\n\n');
 
   const firstSoundcast = (await firebase
     .database()
@@ -67,7 +47,6 @@ const syncSoundcasts = async () => {
     .once('value')).val();
   const lastId = Object.keys(lastSoundcast)[0];
 
-  let i = 0;
   while (next) {
     const soundcasts = (await firebase
       .database()
@@ -78,71 +57,53 @@ const syncSoundcasts = async () => {
       .once('value')).val();
     const keys = Object.keys(soundcasts);
     startId = keys[keys.length - 1];
+
     for (const key of keys) {
       next = key !== lastId;
-      let soundcast = getSoundcastForPsql(key, soundcasts[key]);
+      const fbSoundcast = soundcasts[key];
+      let soundcast = getSoundcastForPsql(key, fbSoundcast);
       try {
-        soundcast = await handleImpotedSoundcast(key, soundcast);
+        const isImported = await importEpisodes(key);
+        if (isImported) {
+          await removeSpecialChars(key, fbSoundcast);
+          soundcast = Object.assign({}, soundcast, {
+            publisherId: importedPublisherId,
+            title: fixSpecialChars(soundcast.title),
+          });
+        }
       } catch (e) {
         logInFile(e);
       }
-
-      const soundcastData = await soundcastRepository.get(key);
-      if (soundcastData) {
-        await updateSoundcast(soundcast, key);
-      } else {
-        await createSoundcast(soundcast);
-      }
+      await createOrUpdateSoundcast(key, soundcast);
     }
-    await new Promise(resolve => setTimeout(resolve, 500));
     i = i + PAGE_SIZE;
     console.log('\n\nstartId: ', startId + '\n');
     console.log('handled count soundcasts', i + '\n');
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
   console.log('finish');
 };
 
-const getSoundcastForPsql = (key, fbSoundcast) => {
-  const {
-    publisherID,
-    title,
-    imageURL,
-    category,
-    published,
-    landingPage,
-    last_update,
-    forSale,
-    rank,
-  } = fbSoundcast;
-
-  return {
-    soundcastId: key,
-    publisherId: publisherID ? publisherID : null,
-    title: title ? fixSpecialChars(title) : null,
-    imageUrl: imageURL ? imageURL : null,
-    itunesId: null,
-    forSale: forSale ? forSale : false,
-    category: category ? category : null,
-    published: published ? published : null,
-    landingPage: landingPage ? landingPage : null,
-    updateDate: last_update ? last_update : null,
-    rank: rank ? rank : null,
-  };
+const createOrUpdateSoundcast = async (key, soundcast) => {
+  const soundcastData = await soundcastRepository.get(key);
+  if (soundcastData) {
+    await updateSoundcast(soundcast, key);
+  } else {
+    await createSoundcast(soundcast);
+  }
 };
 
-const getFilter = id => {
-  return { where: { soundcastId: id } };
-};
-
-const handleImpotedSoundcast = async (key, soundcast) => {
-  const importedSoundcast = await database.ImportedFeed.findOne(getFilter(key));
+const importEpisodes = async key => {
+  const importedSoundcast = await database.ImportedFeed.findOne({
+    where: { soundcastId: key },
+  });
   if (importedSoundcast) {
     const importedSoundcastId = importedSoundcast.dataValues.soundcastId;
     await soundcastManager.update(key, { verified: false });
 
-    const episodesData = await database.Episode.findAll(
-      getFilter(importedSoundcastId)
-    );
+    const episodesData = await database.Episode.findAll({
+      where: { soundcastId: importedSoundcastId },
+    });
     if (episodesData) {
       let updateEpisodes = {};
       for (const episodeData of episodesData) {
@@ -159,10 +120,9 @@ const handleImpotedSoundcast = async (key, soundcast) => {
         logInFile(e);
       }
     }
-    const fixedSoundcast = await removeSpecialChars(key, soundcast);
-    return fixedSoundcast;
+    return true;
   } else {
-    return soundcast;
+    return false;
   }
 };
 
@@ -193,27 +153,70 @@ const createSoundcast = (soundcast, key) =>
 
 const removeSpecialChars = (key, soundcast) => {
   const { title, short_description } = soundcast;
-
-  const fixedText = {
-    title: fixSpecialChars(title),
-    short_description: fixSpecialChars(short_description),
-  };
-  firebase
+  return firebase
     .database()
     .ref(`soundcasts/${key}`)
-    .update(fixedText)
-    .then(() => console.log('fixedSoundcast', fixedSoundcast))
-    .catch(e => logInFile(e));
+    .update({
+      title: fixSpecialChars(title),
+      short_description: fixSpecialChars(short_description),
+    });
+};
 
-  const fixedSoundcast = Object.assign({}, soundcast, {
-    title: fixedText.title,
+const createPublisher = async () => {
+  const importedPublisher = {
     publisherId: importedPublisherId,
-  });
-  return fixedSoundcast;
+    name: 'Online Imported Podcast',
+    imageUrl: 'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+  };
+
+  try {
+    const data = await database.Publisher.create(importedPublisher);
+    await firebase
+      .database()
+      .ref(`publishers/${importedPublisherId}`)
+      .set({
+        email: 'random@mail.coi',
+        imageUrl:
+          'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+        name: 'Online Imported Podcast',
+        unAssigned: true,
+      });
+    console.log('Publisher: ', data.dataValues);
+  } catch (e) {
+    console.log('error with imported publisher. Error: ', e);
+  }
 };
 
 const fixSpecialChars = text => {
   return new htmlEntities().decode(text);
+};
+
+const getSoundcastForPsql = (key, fbSoundcast) => {
+  const {
+    publisherID,
+    title,
+    imageURL,
+    category,
+    published,
+    landingPage,
+    last_update,
+    forSale,
+    rank,
+  } = fbSoundcast;
+
+  return {
+    soundcastId: key,
+    publisherId: publisherID ? publisherID : null,
+    title: title ? fixSpecialChars(title) : null,
+    imageUrl: imageURL ? imageURL : null,
+    itunesId: null,
+    forSale: forSale ? forSale : false,
+    category: category ? category : null,
+    published: published ? published : null,
+    landingPage: landingPage ? landingPage : null,
+    updateDate: last_update ? last_update : null,
+    rank: rank ? rank : null,
+  };
 };
 
 const logInFile = text => {
