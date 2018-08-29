@@ -94,7 +94,7 @@ const syncEpisodesLikes = async () => {
           const lastLiked = likeObject
             ? await likeManager.getFullNameByUid(likeObject.userId)
             : 'Guest';
-          likeManager.updateLikeInEpisode(
+          await likeManager.updateLikeInEpisode(
             episodeId,
             usersIds.length,
             lastLiked
@@ -152,7 +152,7 @@ const syncMessagesLikes = async () => {
           const lastLiked = likeObject
             ? await likeManager.getFullNameByUid(likeObject.userId)
             : 'Guest';
-          database.Announcement.update({
+          await database.Announcement.update({
             likesCount: usersIds.length,
             lastLiked,
           }).catch(e => logInFile(`MessageId: ${messageId}\nERROR: ${e}\n\n`));
