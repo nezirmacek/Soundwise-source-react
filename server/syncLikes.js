@@ -59,6 +59,7 @@ const syncEpisodesLikes = async () => {
   for (let soundcastId of soundcastsIds) {
     console.log(`process ${soundcastId} soundcast`);
     const soundcast = await soundcastManager.getById(soundcastId);
+<<<<<<< HEAD
     if (soundcast && soundcast.episodes) {
       const episodesIds = _.keys(soundcast.episodes);
       console.log(`process ${episodesIds} episodes`);
@@ -86,6 +87,33 @@ const syncEpisodesLikes = async () => {
               .catch(e =>
                 logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`)
               );
+=======
+    if (soundcast) {
+      if (soundcast.episodes) {
+        const episodesIds = Object.keys(soundcast.episodes);
+        for (const episodeId of episodesIds) {
+          const likes = await firebase
+            .database()
+            .ref(`episodes/${episodeId}/likes`)
+            .once('value');
+          if (likes.val()) {
+            const usersIds = Object.keys(likes.val());
+            for (const userId of usersIds) {
+              const like = {
+                likeId: `${userId}-${episodeId}`,
+                episodeId: episodeId,
+                userId: userId,
+                soundcastId: soundcastId,
+                timeStamp: likes.val()[userId],
+              };
+              try {
+                const data = await database.Like.create(like);
+                console.log(data.dataValues);
+              } catch (e) {
+                logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`);
+              }
+            }
+>>>>>>> test-ci
           }
           const likeObject = await likeRepository.getPrevious({
             episodeId,

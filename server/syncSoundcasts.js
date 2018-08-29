@@ -28,15 +28,28 @@ const syncSoundcasts = async () => {
   console.log('start');
   let next = true;
 
-  await firebase
-    .database()
-    .ref(`publishers/${importedPublisherId}`)
-    .set({
-      email: 'random@mail.coi',
-      imageUrl: 'http://cms.ipressroom.com.s3.amazonaws.com/115/...',
-      name: 'Online Podcast',
-      unAssigned: true,
-    });
+  const importedPublisher = {
+    publisherId: importedPublisherId,
+    name: 'Online Imported Podcast',
+    imageUrl: 'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+  };
+
+  try {
+    const data = await database.Publisher.create(importedPublisher);
+    await firebase
+      .database()
+      .ref(`publishers/${importedPublisherId}`)
+      .set({
+        email: 'random@mail.coi',
+        imageUrl:
+          'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+        name: 'Online Imported Podcast',
+        unAssigned: true,
+      });
+    console.log('Publisher: ', data.dataValues);
+  } catch (e) {
+    console.log('error with imported publisher. Error: ', e);
+  }
 
   let startId = (await firebase
     .database()
@@ -52,6 +65,7 @@ const syncSoundcasts = async () => {
     .limitToLast(1)
     .once('value')).key;
 
+  let i = 0;
   while (next) {
     const soundcasts = (await firebase
       .database()
@@ -78,7 +92,10 @@ const syncSoundcasts = async () => {
         await createSoundcast(soundcast);
       }
     }
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    i = i + PAGE_SIZE;
+    console.log('\n\nstartId: ', startId + '\n');
+    console.log('handled count soundcasts', i + '\n');
   }
   console.log('finish');
 };
