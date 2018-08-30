@@ -141,7 +141,7 @@ const deleteLike = (req, res) => {
 const getNamePreviousLiker = where =>
   likeRepository
     .getPrevious(where)
-    .then(like => (like ? likeManager.getFullNameByUid(like.userId) : ''));
+    .then(like => (like ? likeManager.getFullNameByUid(like.userId) : 'Guest'));
 
 const sendPush = comment => {
   userManager.getById(comment.userId).then(user => {

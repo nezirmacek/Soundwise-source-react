@@ -3,21 +3,24 @@
 const sendMail = require('../scripts/sendEmails').sendMail;
 const sendNotification = require('../scripts/messaging').sendNotification;
 
-const {commentManager, userManager} = require('../managers');
-const {commentRepository, announcementRepository} = require('../repositories');
+const { commentManager, userManager } = require('../managers');
+const {
+  commentRepository,
+  announcementRepository,
+} = require('../repositories');
 
 // ADD_COMMENT
 const addComment = (req, res) => {
   const comment = req.body;
   if (!comment.soundcastId || !comment.userId) {
-    sendError({error: 'soundcastId and userId can not be null'}, res, 400);
+    sendError({ error: 'soundcastId and userId can not be null' }, res, 400);
     return;
   }
 
   commentRepository
     .create(comment)
     .then(comment => {
-      const {announcementId, episodeId, commentId} = comment;
+      const { announcementId, episodeId, commentId } = comment;
 
       if (announcementId) {
         updateCommentsCount(announcementId)
@@ -53,16 +56,16 @@ const deleteComment = (req, res) => {
   commentRepository
     .get(commentId)
     .then(data => {
-      const {announcementId, episodeId} = data;
+      const { announcementId, episodeId } = data;
       commentRepository.destroy(commentId).then(() => {
         if (announcementId) {
           updateCommentsCount(announcementId)
-            .then(() => res.send({response: 'OK'}))
+            .then(() => res.send({ response: 'OK' }))
             .catch(error => sendError(error, res));
         } else if (episodeId) {
           commentManager
             .removeCommentToEpisode(commentId, episodeId)
-            .then(() => res.send({response: 'OK'}))
+            .then(() => res.send({ response: 'OK' }))
             .catch(error => sendError(error, res));
         }
       });
@@ -72,18 +75,18 @@ const deleteComment = (req, res) => {
 
 const updateCommentsCount = announcementId =>
   commentRepository
-    .count({announcementId})
+    .count({ announcementId })
     .then(commentsCount =>
-      announcementRepository.update({commentsCount}, announcementId)
+      announcementRepository.update({ commentsCount }, announcementId)
     );
 
 const notifyUsers = comment =>
   sendMail(comment)
     .then(() => sendPush(comment))
-    .catch(error => sendError(error, res));
+    .catch(error => sendError(error));
 
 const sendPush = comment => {
-  const {parentId, soundcastId, episodeId, announcementId} = comment;
+  const { parentId, soundcastId, episodeId, announcementId } = comment;
 
   if (parentId) {
     commentRepository.get(parentId).then(comment => {

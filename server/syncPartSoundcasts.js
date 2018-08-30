@@ -10,7 +10,6 @@ const { soundcastManager } = require('./managers');
 var serviceAccount = require('../serviceAccountKey');
 
 const LOG_ERR = 'logErrsSoundcasts.txt';
-const PAGE_SIZE = 100;
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -130,7 +129,7 @@ const createSoundcast = (soundcast, key) =>
     .create(soundcast)
     .then(data => {
       console.log('created soundcast with id: ', key);
-      console.log('data', data.dataValues, '\n');
+      console.log('data', data, '\n');
     })
     .catch(error => {
       logInFile(`soundcastId: ${key}\nerr: ${error}\n\n`);
@@ -169,7 +168,7 @@ const createPublisher = async () => {
       });
     console.log('Publisher: ', data.dataValues);
   } catch (e) {
-    console.log('error with imported publisher. Error: ', e);
+    console.log('error create with imported publisher.');
   }
 };
 

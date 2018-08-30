@@ -1,4 +1,5 @@
 'use strict';
+
 const moment = require('moment');
 const firebase = require('firebase-admin');
 
@@ -38,7 +39,7 @@ const getFullNameByUid = userId =>
         const user = snapshot.val();
         return `${user.firstName} ${user.lastName}`;
       } else {
-        return '';
+        return 'Guest';
       }
     });
 

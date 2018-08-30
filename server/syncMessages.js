@@ -49,7 +49,7 @@ const syncMessages = async () => {
         if (messages[key]) {
           const fbMessage = messages[key];
           const message = getMessageForPsql(key, fbMessage);
-          const isExist = announcementRepository.get(key);
+          const isExist = await announcementRepository.get(key);
           if (!!isExist) {
             try {
               console.log(`update message with id: ${key}`);

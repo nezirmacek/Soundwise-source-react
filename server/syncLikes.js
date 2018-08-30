@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const firebase = require('firebase-admin');
+const Op = require('sequelize').Op;
 const _ = require('lodash');
 const moment = require('moment');
 const database = require('../database');
@@ -72,13 +73,13 @@ const syncEpisodesLikes = async () => {
         if (likes) {
           const usersIds = _.keys(likes);
           for (let userId of usersIds) {
+            const likeId = `${userId}-${episodeId}`;
             const newTimestamp = getTimestamp(likes[userId]);
             const createdAt = moment
               .unix(newTimestamp)
-              .utc()
-              .format();
+              .format('YYYY-MM-DD HH:mm:ss Z');
             const like = {
-              likeId: `${userId}-${episodeId}`,
+              likeId,
               episodeId,
               userId,
               soundcastId,
@@ -86,11 +87,7 @@ const syncEpisodesLikes = async () => {
               createdAt,
               updatedAt: createdAt,
             };
-            database.Like.create(like)
-              .then(data => console.log(data.dataValues))
-              .catch(e =>
-                logInFile(`ID: ${userId}-${episodeId}\nERROR: ${e}\n\n`)
-              );
+            await createOrUpdate(likeId, like);
           }
           const likeObject = await likeRepository.getPrevious({
             episodeId,
@@ -129,13 +126,13 @@ const syncMessagesLikes = async () => {
         if (likes) {
           const usersIds = _.keys(likes);
           for (let userId of usersIds) {
+            const likeId = `${userId}-${messageId}`;
             const newTimestamp = getTimestamp(likes[userId]);
             const createdAt = moment
               .unix(newTimestamp)
-              .utc()
-              .format();
+              .format('YYYY-MM-DD HH:mm:ss Z');
             const like = {
-              likeId: `${userId}-${messageId}`,
+              likeId,
               messageId,
               userId,
               soundcastId,
@@ -143,12 +140,7 @@ const syncMessagesLikes = async () => {
               createdAt,
               updatedAt: createdAt,
             };
-
-            database.Like.create(like)
-              .then(data => console.log(data.dataValues))
-              .catch(e =>
-                logInFile(`ID: ${userId}-${messageId}\nERROR: ${e}\n\n`)
-              );
+            await createOrUpdate(likeId, like);
           }
           const likeObject = await likeRepository.getPrevious({
             messageId,
@@ -166,6 +158,19 @@ const syncMessagesLikes = async () => {
     }
   }
   console.log('finish sync messages likes');
+};
+
+const createOrUpdate = async (likeId, like) => {
+  const isExist = await likeRepository.get(likeId);
+  if (!!isExist) {
+    database.Like.update(like, { where: { likeId } })
+      .then(data => console.log(data))
+      .catch(e => logInFile(`ID: ${likeId}\nERROR: ${e}\n\n`));
+  } else {
+    database.Like.create(like)
+      .then(data => console.log(data.dataValues))
+      .catch(e => logInFile(`ID: ${likeId}\nERROR: ${e}\n\n`));
+  }
 };
 
 syncEpisodesLikes();

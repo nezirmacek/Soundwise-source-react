@@ -42,6 +42,19 @@ const ids = [
   '1531844035660s',
 ];
 
+const getTimestamp = timestamp => {
+  let newTimestamp = timestamp;
+  if (_.isBoolean(timestamp)) {
+    newTimestamp = moment().unix();
+  } else if (_.isString(timestamp)) {
+    newTimestamp = +timestamp;
+    if (_.isNaN(timestamp)) {
+      newTimestamp = moment().unix();
+    }
+  }
+  return newTimestamp;
+};
+
 const syncEpisodesCommets = async () => {
   console.log('start');
   for (let id of ids) {
@@ -57,23 +70,8 @@ const syncEpisodesCommets = async () => {
           for (let commentId of commentsIds) {
             const fbComment = await commentManager.getById(commentId);
             if (fbComment) {
-              if (fbComment.children) {
-                const childKeys = Object.keys(fbComment.children);
-                for (const childKey of childKeys) {
-                  const childComment = await commentManager.getById(childKey);
-                  if (childComment) {
-                    const comment = getCommentForPsql(
-                      childKey,
-                      childComment,
-                      id
-                    );
-                    createOrUpdate(comment, childKey);
-                  }
-                }
-              } else {
-                const comment = getCommentForPsql(id, fbComment);
-                createOrUpdate(comment, id);
-              }
+              const comment = getCommentForPsql(commentId, fbComment);
+              createOrUpdate(comment, commentId);
             } else {
               logInFile(
                 `episodeId: ${episodeId}\ndelete comment: ${commentId}\n`
@@ -104,23 +102,8 @@ const syncAnnouncementsCommets = async () => {
           for (let commentId of commentsIds) {
             const fbComment = await commentManager.getById(commentId);
             if (fbComment) {
-              if (fbComment.children) {
-                const childKeys = Object.keys(fbComment.children);
-                for (const childKey of childKeys) {
-                  const childComment = await commentManager.getById(childKey);
-                  if (childComment) {
-                    const comment = getCommentForPsql(
-                      childKey,
-                      childComment,
-                      id
-                    );
-                    createOrUpdate(comment, childKey);
-                  }
-                }
-              } else {
-                const comment = getCommentForPsql(id, fbComment);
-                createOrUpdate(comment, id);
-              }
+              const comment = getCommentForPsql(commentId, fbComment);
+              createOrUpdate(comment, commentId);
             } else {
               logInFile(
                 `episodeId: ${announcementsId}\ndelete comment: ${commentId}\n`
@@ -147,7 +130,7 @@ const createOrUpdate = async (comment, key) => {
     console.log('update comment', comment);
     try {
       const data = await commentRepository.update(comment, key);
-      console.log('data', data.dataValues + '\n');
+      console.log('data', data + '\n');
     } catch (e) {
       console.log('ERROR' + e + '\n\n');
       logInFile(`ID: ${key}\nERROR: ${e}\n`);
@@ -166,18 +149,24 @@ const createOrUpdate = async (comment, key) => {
   }
 };
 
-const getCommentForPsql = (key, fbComment, parent) => {
+const getCommentForPsql = (key, fbComment) => {
+  const createdAt = moment
+    .unix(getTimestamp(fbComment.timestamp))
+    .format('YYYY-MM-DD HH:mm:ss Z');
+  const parentId = key.split('-');
+  parentId.shift();
   const comment = {
     commentId: key,
     userId: fbComment.userID || fbComment.userId || null,
     content: fbComment.content,
-    parentId: parent ? parent : fbComment.parentID || fbComment.parentId,
+    parentId: parentId.lenght >= 2 ? parentId.join('-') : null,
     episodeId: fbComment.episodeID || null,
     soundcastId: fbComment.soundcastId || fbComment.soundcastID || null,
     announcementId:
       fbComment.announcementId || fbComment.announcementID || null,
     timeStamp: fbComment.timestamp || fbComment.timeStamp || null,
-    createdAt: moment.unix(fbComment.timestamp).format('YYYY-MM-DD HH:mm:ss Z'),
+    createdAt,
+    updatedAt: createdAt,
   };
   return comment;
 };
