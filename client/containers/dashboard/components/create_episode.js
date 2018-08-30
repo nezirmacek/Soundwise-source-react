@@ -695,8 +695,6 @@ class _CreateEpisode extends Component {
                   notification: {
                     title: `${snapshot.val().title} just published:`,
                     body: `${this.state.title}`,
-                    sound: 'default',
-                    badge: '1',
                   },
                 };
                 // console.log('notification sending is triggered from create_episode.js');

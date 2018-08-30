@@ -201,8 +201,6 @@ export default class Announcements extends Component {
                       // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
                       title: `${currentSoundcast.title} sent you a message`,
                       body: message,
-                      badge: '1',
-                      sound: 'default',
                     },
                   };
                   sendNotifications(registrationTokens, payload); //sent push notificaiton
