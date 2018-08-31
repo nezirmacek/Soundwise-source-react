@@ -75,7 +75,7 @@ const syncLikesCountEpisodes = async () => {
             .database()
             .ref(`episodes/${key}`)
             .update({ likesCount });
-          console.log(data, `\nid:${key} likesCount: ${likesCount}`);
+          console.log(`\nid:${key} likesCount: ${likesCount}`);
         } catch (e) {
           logInFile(e);
         }

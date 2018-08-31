@@ -192,5 +192,5 @@ module.exports = app => {
 
   app.delete('/api/likes/:id', likeService.deleteLike);
 
-  app.patch('/api/listeners/:id', userService.editUserInfo)
+  app.patch('/api/listeners/:id', userService.editUserInfo);
 };

@@ -152,10 +152,13 @@ const editUserInfo = (req, res) => {
   const userId = req.params.id;
   let userInfo = req.body;
   // for firebase naming pic_url
+  console.log(userId);
+  console.log('userInfo', userInfo);
   if (userInfo.picURL) {
     userInfo = { pic_url: userInfo.picURL, ..._.omit(userInfo, ['picURL']) };
   }
-  userRepository.update(userInfo, userId).then(() =>
+  console.log('fb', userInfo);
+  userRepository.update(req.body, userId).then(() =>
     userManager
       .update(userId, userInfo)
       .then(() => res.send({ status: 'OK' }))
