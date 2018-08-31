@@ -149,16 +149,18 @@ const completeSignUp = async ({ email, firstName, lastName, picUrl }) => {
 };
 
 const editUserInfo = (req, res) => {
+  const userId = req.params.id;
   let userInfo = req.body;
   // for firebase naming pic_url
-  if (userInfo.picUrl) {
-    userInfo = { pic_url: userInfo.picUrl, ..._.omit(userInfo, ['picUrl']) };
+  if (userInfo.picURL) {
+    userInfo = { pic_url: userInfo.picURL, ..._.omit(userInfo, ['picURL']) };
   }
-  const userId = req.params.id;
-  userManager
-    .update(userId, userInfo)
-    .then(() => res.sendStatus(200))
-    .catch(error => sendError(error, res, 400));
+  userRepository.update(userInfo, userId).then(() =>
+    userManager
+      .update(userId, userInfo)
+      .then(() => res.send({ status: 'OK' }))
+      .catch(error => res.status(500).send({ error }))
+  );
 };
 
 module.exports = {
