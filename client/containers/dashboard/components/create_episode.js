@@ -677,6 +677,7 @@ class _CreateEpisode extends Component {
               // get an array of device tokens
               // console.log('snapshot.val(): ', snapshot.val());
               if (snapshot.val().subscribed) {
+                const subscribers = snapshot.val().subscribed;
                 Object.keys(subscribers).forEach(user => {
                   if (typeof subscribers[user] == 'object') {
                     if (typeof subscribers[user][0] == 'string') {
