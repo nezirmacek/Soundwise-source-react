@@ -10,7 +10,7 @@ const {
   userManager,
 } = require('../managers');
 const mailingService = require('./mailing');
-const {userRepository} = require('../repositories');
+const { userRepository } = require('../repositories');
 
 const replaceDots = x => x.replace('.', '(dot)');
 
@@ -25,7 +25,7 @@ const subscribeToSoundcast = async (soundcastId, userId, email) => {
         )
       );
     } else {
-      const {inviteeEmailList, subscriberEmailList, publisherID} = soundcast;
+      const { inviteeEmailList, subscriberEmailList, publisherID } = soundcast;
 
       const emailWithDotsReplaced = replaceDots(email);
 
@@ -75,7 +75,7 @@ const subscribeToSoundcast = async (soundcastId, userId, email) => {
   }
 };
 
-const completeSignUp = async ({email, firstName, lastName, picUrl}) => {
+const completeSignUp = async ({ email, firstName, lastName, picUrl }) => {
   const emailWithDotsReplaced = replaceDots(email);
 
   let userId;
@@ -135,7 +135,7 @@ const completeSignUp = async ({email, firstName, lastName, picUrl}) => {
   }
 
   await mailingService.sendTransactionalEmails(
-    [{firstName, lastName, email}],
+    [{ firstName, lastName, email }],
     `What are you creating, ${_.capitalize(firstName)}?`,
     `<p>Hello ${_.capitalize(
       firstName
@@ -148,6 +148,22 @@ const completeSignUp = async ({email, firstName, lastName, picUrl}) => {
   );
 };
 
+const editUserInfo = (req, res) => {
+  const userId = req.params.id;
+  let userInfo = req.body;
+  // for firebase naming pic_url
+  if (userInfo.picURL) {
+    userInfo = { pic_url: userInfo.picURL, ..._.omit(userInfo, ['picURL']) };
+  }
+  userRepository.update(userInfo, userId).then(() =>
+    userManager
+      .update(userId, userInfo)
+      .then(() => res.send({ status: 'OK' }))
+      .catch(error => res.status(500).send({ error }))
+  );
+};
+
 module.exports = {
   completeSignUp,
+  editUserInfo,
 };

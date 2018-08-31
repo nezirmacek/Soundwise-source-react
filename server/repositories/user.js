@@ -14,4 +14,7 @@ const create = ({ userId, firstName, lastName, picUrl }) =>
     },
   });
 
-module.exports = { create };
+const update = (user, userId) =>
+  database.User.update(user, { where: { userId } });
+
+module.exports = { create, update };

@@ -5,6 +5,7 @@ const {
   commentService,
   likeService,
   soundcastService,
+  userService
 } = require('../server/services');
 
 module.exports = app => {
@@ -190,4 +191,6 @@ module.exports = app => {
   app.post('/api/likes', likeService.addLike);
 
   app.delete('/api/likes/:id', likeService.deleteLike);
+
+  app.patch('/api/listeners/:id', userService.editUserInfo)
 };
