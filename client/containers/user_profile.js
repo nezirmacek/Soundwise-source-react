@@ -56,7 +56,7 @@ class _UserProfile extends Component {
       console.log('Stripe: setting test key');
       Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     } else {
-      Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+      Stripe.setPublishableKey('pk_live_rR36Qeypo5CrbG1FKgE1XdlL');
     }
 
     firebase.auth().onAuthStateChanged(function(user) {
