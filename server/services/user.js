@@ -133,19 +133,6 @@ const completeSignUp = async ({ email, firstName, lastName, picUrl }) => {
       );
     }
   }
-
-  await mailingService.sendTransactionalEmails(
-    [{ firstName, lastName, email }],
-    `What are you creating, ${_.capitalize(firstName)}?`,
-    `<p>Hello ${_.capitalize(
-      firstName
-    )},</p><p></p><p>This is Natasha, founder of Soundwise. We're so excited to have you join our expanding community of knowledge creators!</p><p>If you're creating a podcast, make sure to check out our <a href="http://bit.ly/2IILSGm">quick start guide</a> and <a href="http://bit.ly/2qlyVKK">"how to get subscribers" guide</a>.</p><p>I'm curious...would you mind sharing what kind of content you're creating? </p><p></p><p>Click reply and let me know.</p><p></p><p>Natasha</p><p></p><p>p.s. If you need help with anything related to creating your audio program, please don't hesitate to shoot me an email. We'll try our best to help.</p>`,
-    'Natasha Che',
-    'natasha@mysoundwise.com',
-    null,
-    true,
-    'natasha@mysoundwise.com'
-  );
 };
 
 const editUserInfo = (req, res) => {

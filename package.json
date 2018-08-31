@@ -12,7 +12,9 @@
     "test": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "start": "webpack --watch",
     "start:server": "nodemon server/server.js",
-    "build": "webpack"
+    "build": "webpack",
+    "start:server:free": "NODE_SC=onlyFree nodemon server/server.js",
+    "build:staging": "NODE_ENV=staging webpack"
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.5",

@@ -55,12 +55,12 @@ const addInvitations = (soundcastId, email, res) => {
 };
 
 const subscibeUser = (userId, soundcastId, res) => {
-  userManager.getById(userId).then(async user => {
-    await firebase
+  userManager.getById(userId).then(user => {
+    firebase
       .database()
       .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-      .set({ 0: user.token[0] });
-    await firebase
+      .set(user.token || true);
+    firebase
       .database()
       .ref(`users/${userId}/soundcasts/${soundcastId}`)
       .set({
