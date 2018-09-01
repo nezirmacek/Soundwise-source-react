@@ -63,7 +63,7 @@ const syncMessages = async () => {
             try {
               console.log(`create message with id: ${key}`);
               const data = await announcementRepository.create(message);
-              console.log(data.dataValues);
+              console.log(data);
             } catch (e) {
               console.log(e);
               logInFile(`ID: ${key}\nERROR: ${e}\n\n`);

@@ -71,7 +71,7 @@ const syncEpisodesCommets = async () => {
             const fbComment = await commentManager.getById(commentId);
             if (fbComment) {
               const comment = getCommentForPsql(commentId, fbComment);
-              createOrUpdate(comment, commentId);
+              await createOrUpdate(comment, commentId);
             } else {
               logInFile(
                 `episodeId: ${episodeId}\ndelete comment: ${commentId}\n`
@@ -103,7 +103,7 @@ const syncAnnouncementsCommets = async () => {
             const fbComment = await commentManager.getById(commentId);
             if (fbComment) {
               const comment = getCommentForPsql(commentId, fbComment);
-              createOrUpdate(comment, commentId);
+              await createOrUpdate(comment, commentId);
             } else {
               logInFile(
                 `episodeId: ${announcementsId}\ndelete comment: ${commentId}\n`
@@ -140,7 +140,7 @@ const createOrUpdate = async (comment, key) => {
       console.log('create comment', comment);
       try {
         const data = await commentRepository.create(comment);
-        console.log('data', data.dataValues + '\n');
+        console.log('data', data + '\n');
       } catch (e) {
         console.log('ERROR' + e + '\n\n');
         logInFile(`ID: ${key}\nERROR: ${e}\n`);
@@ -159,7 +159,7 @@ const getCommentForPsql = (key, fbComment) => {
     commentId: key,
     userId: fbComment.userID || fbComment.userId || null,
     content: fbComment.content,
-    parentId: parentId.lenght >= 2 ? parentId.join('-') : null,
+    parentId: parentId.length >= 2 ? parentId.join('-') : null,
     episodeId: fbComment.episodeID || null,
     soundcastId: fbComment.soundcastId || fbComment.soundcastID || null,
     announcementId:
