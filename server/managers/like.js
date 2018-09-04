@@ -43,12 +43,12 @@ const getFullNameByUid = userId =>
       }
     });
 
-const getMessageLikes = ({ soundcastId, messageId }) =>
+const getMessageLikes = (soundcastId, messageId) =>
   firebase
     .database()
     .ref(`soundcasts/${soundcastId}/announcements/${messageId}/likes`)
     .once('value')
-    .then(snapshot => snapshot.val());
+    .then(snapshot => (snapshot.exists() ? snapshot.val() : null));
 
 const getEpisodeLikes = episodeId =>
   firebase
