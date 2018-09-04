@@ -1,6 +1,6 @@
 {
   "db": {
-    "host": "db",
+    "host": "localhost",
     "port": 5432,
     "database": "soundwise",
     "password": "111",
