@@ -40,7 +40,7 @@
       "type": "string",
       "required": false
     },
-    "messageId": {
+    "announcementId": {
       "type": "string"
     },
     "publisherId": {

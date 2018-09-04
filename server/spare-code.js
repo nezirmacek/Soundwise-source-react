@@ -10,30 +10,72 @@ firebase.initializeApp({
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 
-stripe.subscriptions.retrieve('sub_DDaOA8Q6MZvchh', (err, subscription) => {
-  console.log(util.inspect(subscription, false, null));
-})
+var options, publisherId, name, paypalEmail;
+var date = moment().format();
+const ids = ['1503002103690p'];
+var processPublishers = async () => {
+  for (const id of ids) {
+    const process = await firebase
+      .database()
+      .ref(`publishers/${id}`)
+      .once('value')
+      .then(snapshot => {
+        const publisher = snapshot.val();
+        publisherId = id;
+        name = snapshot.val().name;
+        paypalEmail = snapshot.val().email;
+        request(
+          `https://mysoundwise.com/api/publishers/${publisherId}/exists`
+        ).then(res => {
+          options = {
+            uri: 'https://mysoundwise.com/api/publishers/replaceOrCreate',
+            body: {
+              publisherId,
+              name,
+              paypalEmail,
+              updatedAt: date,
+              createdAt: date,
+            },
+            json: true,
+          };
+          console.log(JSON.parse(res));
+          if (JSON.parse(res).exists) {
+            options.method = 'PUT';
+            request(options)
+              .then(res => {})
+              .catch(err => {
+                console.log(`error posting ${publisherId}`);
+                // console.log(err);
+              });
+          } else {
+            options.method = 'POST';
+            request(options)
+              .then(res => {})
+              .catch(err => {
+                console.log(`error posting ${publisherId}`);
+                // console.log(err);
+              });
+          }
+        });
+      })
+      .catch(err => console.log(err));
+  }
+};
 
-// set likes
-// var id = 1534773572712;
-// var list = Array.from(Array(711).keys());
-
-// list.forEach(async i => {
-//   await firebase.database().ref(`episodes/1534616226173e/likes/web-${id + i}`)
-//   .set(moment().format('X') + i);
-// });
-
+processPublishers();
 // reset user password
-// firebase.auth().updateUser('kmGFGvpJqgaYYPMfNdrfywMIgxi2', {
-//   email: "ameenaramjohn@hotmail.com",
-//   password: "111111",
-// })
-// .then(userRecord => {
-//   console.log(userRecord.toJSON());
-// })
-// .catch(err => {
-//   console.log(err);
-// });
+firebase
+  .auth()
+  .updateUser('kmGFGvpJqgaYYPMfNdrfywMIgxi2', {
+    email: 'ameenaramjohn@hotmail.com',
+    password: '111111',
+  })
+  .then(userRecord => {
+    console.log(userRecord.toJSON());
+  })
+  .catch(err => {
+    console.log(err);
+  });
 
 // edit publisher
 // var options, publisherId, name, paypalEmail;

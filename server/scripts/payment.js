@@ -65,14 +65,14 @@ module.exports.createUpdatePlans = async (req, res) => {
     // old coupons removal
     for (const code of couponsToRemove) {
       await new Promise(resolve =>
-        stripe.coupons.del(code, { stripe_account }, () => resolve())
+        stripe.coupons.del(code, {stripe_account}, () => resolve())
       );
     }
   }
 
   // Remove all old plans with this particular publisherID-soundcastID key
   await new Promise(resolve =>
-    stripe.plans.list({ stripe_account }, (err, list) => {
+    stripe.plans.list({stripe_account}, (err, list) => {
       if (err || !list) {
         err && console.log(`Error: payment.js plans list ${err}`, req.body);
         return resolve();
@@ -83,7 +83,7 @@ module.exports.createUpdatePlans = async (req, res) => {
             new Promise(resolve2 => {
               const [publisher, soundcast] = i.id.split('-'); // planID split
               if (publisher === publisherID && soundcast === soundcastID) {
-                stripe.plans.del(i.id, { stripe_account }, () => resolve2()); // delete plan
+                stripe.plans.del(i.id, {stripe_account}, () => resolve2()); // delete plan
               } else {
                 resolve2();
               }
@@ -98,7 +98,7 @@ module.exports.createUpdatePlans = async (req, res) => {
     prices.map(
       item =>
         new Promise((resolve, reject) => {
-          const { billingCycle, paymentPlan, price, coupons } = item;
+          const {billingCycle, paymentPlan, price, coupons} = item;
           if (!['monthly', 'quarterly', 'annual'].includes(billingCycle)) {
             return resolve(); // ignore if it isn't subscription (one time charge)
           }
@@ -123,7 +123,7 @@ module.exports.createUpdatePlans = async (req, res) => {
               interval: 'month',
               currency: 'usd',
             },
-            { stripe_account },
+            {stripe_account},
             (err, plan) => {
               if (err || !plan) {
                 console.log(
@@ -140,43 +140,39 @@ module.exports.createUpdatePlans = async (req, res) => {
                 coupons.map(
                   coupon =>
                     new Promise(resolve2 => {
-                      stripe.coupons.del(
-                        coupon.code,
-                        { stripe_account },
-                        () => {
-                          if (
-                            coupon.couponType === 'trial_period' ||
-                            coupon.expiration - 10 < Date.now() / 1000
-                          ) {
-                            // trial period or outdated
-                            resolve2();
-                          } else {
-                            stripe.coupons.create(
-                              {
-                                percent_off: Number(coupon.percentOff),
-                                duration: 'forever',
-                                redeem_by: coupon.expiration,
-                                id: coupon.code,
-                              },
-                              { stripe_account },
-                              (err, result) => {
-                                if (err) {
-                                  console.log(
-                                    `Error: payment.js coupon creation ${planID} ${err}`,
+                      stripe.coupons.del(coupon.code, {stripe_account}, () => {
+                        if (
+                          coupon.couponType === 'trial_period' ||
+                          coupon.expiration - 10 < Date.now() / 1000
+                        ) {
+                          // trial period or outdated
+                          resolve2();
+                        } else {
+                          stripe.coupons.create(
+                            {
+                              percent_off: Number(coupon.percentOff),
+                              duration: 'forever',
+                              redeem_by: coupon.expiration,
+                              id: coupon.code,
+                            },
+                            {stripe_account},
+                            (err, result) => {
+                              if (err) {
+                                console.log(
+                                  `Error: payment.js coupon creation ${planID} ${err}`,
+                                  coupon
+                                );
+                                return reject(
+                                  `${planID} coupon ${JSON.stringify(
                                     coupon
-                                  );
-                                  return reject(
-                                    `${planID} coupon ${JSON.stringify(
-                                      coupon
-                                    )} ${err}`
-                                  );
-                                }
-                                resolve2(); // coupon creation success
+                                  )} ${err}`
+                                );
                               }
-                            );
-                          }
+                              resolve2(); // coupon creation success
+                            }
+                          );
                         }
-                      );
+                      });
                     })
                 )
               ).then(() => resolve());
@@ -190,6 +186,12 @@ module.exports.createUpdatePlans = async (req, res) => {
 };
 
 module.exports.handleRecurringPayment = async (req, res) => {
+  handlePayment(req.body).then(
+    response => (response ? res.send(response) : res.status(500).send({}))
+  );
+};
+
+module.exports.recurringPayment = async body => {
   const {
     source,
     receipt_email,
@@ -200,7 +202,7 @@ module.exports.handleRecurringPayment = async (req, res) => {
     soundcastID,
     coupon,
     isTrial,
-  } = req.body;
+  } = body;
   if (coupon) {
     // Checking coupon
     const snapshot = await firebase
@@ -210,7 +212,7 @@ module.exports.handleRecurringPayment = async (req, res) => {
     const prices = snapshot.val();
     let errMsg = `Error cannot obtain soundcast prices ${soundcastID}`;
     if (!prices || !prices.length) {
-      return res.status(500).send(errMsg);
+      return false;
     }
     const allCoupons = [];
     prices.forEach(i => {
@@ -221,11 +223,11 @@ module.exports.handleRecurringPayment = async (req, res) => {
     const usedCoupon = allCoupons.find(i => i.code === coupon);
     if (!usedCoupon) {
       errMsg = `Error cannot obtain soundcast used coupon ${soundcastID} ${coupon}`;
-      return res.status(500).send(errMsg);
+      return false;
     }
     if (isTrial && usedCoupon.couponType !== 'trial_period') {
       errMsg = `Error coupon incorrect trial property ${soundcastID} ${coupon} ${isTrial}`;
-      return res.status(500).send(errMsg);
+      return false;
     }
   }
 
@@ -282,9 +284,9 @@ module.exports.handleRecurringPayment = async (req, res) => {
       console.log('customers: ', customers);
       const newSub = {
         customer: customers.connectedCustomer,
-        metadata: { platformCustomer: customers.platformCustomer },
+        metadata: {platformCustomer: customers.platformCustomer},
         application_fee_percent: soundwiseFeePercent,
-        items: [{ plan: planID }],
+        items: [{plan: planID}],
       };
       if (!isTrial && coupon) {
         newSub.coupon = coupon;
@@ -296,19 +298,19 @@ module.exports.handleRecurringPayment = async (req, res) => {
       }
       stripe.subscriptions.create(
         newSub,
-        { stripe_account },
+        {stripe_account},
         (err, subscription) => {
           if (err) {
             console.log(err);
-            return res.status(err.raw.statusCode).send(err.raw.message);
+            return false;
           }
-          res.send(Object.assign({}, subscription, customers));
+          return Object.assign({}, subscription, customers);
         }
       );
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).send(err);
+      return false;
     });
 };
 
@@ -321,8 +323,8 @@ function createCustomer(
 ) {
   // create token from platform customer
   stripe.tokens.create(
-    { customer: platformCustomer },
-    { stripe_account },
+    {customer: platformCustomer},
+    {stripe_account},
     (err, token) => {
       if (err) {
         return reject(err);
@@ -334,7 +336,7 @@ function createCustomer(
           description,
           source: token.id,
         },
-        { stripe_account },
+        {stripe_account},
         (err, customer) => {
           if (err) {
             return reject(err);
@@ -362,12 +364,12 @@ module.exports.retrieveCustomer = (req, res) => {
       return res.status(err.raw.statusCode).send(err.raw.message);
     }
     // console.log('customer: ', customer);
-    res.send({ customer });
+    res.send({customer});
   });
 };
 
 module.exports.updateCreditCard = (req, res) => {
-  const { source, customer, email } = req.body;
+  const {source, customer, email} = req.body;
   // console.log('source: ', source);
   if (customer) {
     // if it's existing customer

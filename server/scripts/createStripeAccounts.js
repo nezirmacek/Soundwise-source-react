@@ -12,7 +12,7 @@ module.exports.createStripeAccount = (req, res) => {
   };
   let stripe_user_id;
   request
-    .post('https://connect.stripe.com/oauth/token', { form: formData })
+    .post('https://connect.stripe.com/oauth/token', {form: formData})
     .then(response => {
       stripe_user_id = JSON.parse(response).stripe_user_id;
       firebase

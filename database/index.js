@@ -10,9 +10,9 @@ if (process.env.DATABASE_URL) {
     protocol: 'postgres',
     port: match[4],
     host: match[3],
-    logging: true,
+    logging: false,
     dialectOptions: {
-      ssl: true,
+      ssl: false,
     },
   });
 } else {
@@ -20,6 +20,9 @@ if (process.env.DATABASE_URL) {
     dialect: 'postgres',
     port: 5432,
     logging: false,
+    dialectOptions: {
+      ssl: false,
+    },
   });
 }
 
@@ -35,6 +38,8 @@ var Comment = db.define('Comment', {
   content: Sequelize.TEXT,
   userId: { type: Sequelize.STRING, allowNull: false },
   announcementId: Sequelize.STRING,
+  parentId: { type: Sequelize.STRING, allowNull: true },
+  likesCount: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
   episodeId: Sequelize.STRING,
   soundcastId: Sequelize.STRING,
   timeStamp: Sequelize.BIGINT,
@@ -42,10 +47,14 @@ var Comment = db.define('Comment', {
 
 var Announcement = db.define('Announcement', {
   announcementId: { type: Sequelize.STRING, primaryKey: true },
-  content: Sequelize.STRING,
-  userId: { type: Sequelize.STRING, allowNull: false },
+  content: Sequelize.TEXT,
   publisherId: { type: Sequelize.STRING, allowNull: false },
   soundcastId: { type: Sequelize.STRING, allowNull: false },
+  creatorId: { type: Sequelize.STRING, allowNull: false },
+  lastLiked: { type: Sequelize.STRING, allowNull: true, defaultValue: '' },
+  likesCount: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
+  commentsCount: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
+  isPublished: Sequelize.BOOLEAN,
 });
 
 var Like = db.define('Like', {
@@ -73,6 +82,7 @@ var Soundcast = db.define('Soundcast', {
   title: Sequelize.STRING,
   imageUrl: Sequelize.STRING,
   itunesId: Sequelize.STRING, // if the soundcast is imported from itunes
+  forSale: { type: Sequelize.BOOLEAN, defaultValue: false },
   category: Sequelize.STRING,
   rank: Sequelize.FLOAT,
   updateDate: Sequelize.BIGINT,
@@ -179,7 +189,7 @@ var Event = db.define('Event', {
   episodeId: { type: Sequelize.STRING, allowNull: true },
   likeId: { type: Sequelize.STRING, allowNull: true },
   soundcastId: { type: Sequelize.STRING, allowNull: true },
-  messageId: { type: Sequelize.STRING, allowNull: true },
+  announcementId: { type: Sequelize.STRING, allowNull: true },
   publisherId: { type: Sequelize.STRING, allowNull: true },
   commentId: { type: Sequelize.STRING, allowNull: true },
   commentUserId: { type: Sequelize.STRING, allowNull: true },
@@ -254,6 +264,27 @@ var Coupon = db.define('Coupon', {
   timeStamp: Sequelize.BIGINT,
 });
 
+Comment.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
+Episode.hasMany(Comment, {foreignKey: 'episodeId', as: 'Comments'});
+
+Comment.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
+Announcement.hasMany(Comment, {foreignKey: 'announcementId', as: 'Comments'});
+
+Like.belongsTo(Comment, {foreignKey: 'commentId', onDelete: 'cascade'});
+Comment.hasMany(Like, {foreignKey: 'commentId', as: 'Likes'});
+
+Like.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
+Episode.hasMany(Like, {foreignKey: 'episodeId', as: 'Likes'});
+
+Like.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
+Announcement.hasMany(Like, {foreignKey: 'announcementId', as: 'Likes'});
+
+Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId', onDelete: 'cascade'});
+Soundcast.hasMany(Announcement, {foreignKey: 'soundcastId', as: 'Announcements'});
+
+// Comment.belongsTo(User, {foreignKey: 'userId'});
+// User.hasMany(Comment, {as: 'Comments'});
+
 // Episode.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Episode, {as: 'Episodes'});
 
@@ -272,32 +303,11 @@ var Coupon = db.define('Coupon', {
 // ListeningSession.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(ListeningSession, {as: 'ListeningSessions'});
 
-// Comment.belongsTo(User, {foreignKey: 'userId'});
-// User.hasMany(Comment, {as: 'Comments'});
-
 // Announcement.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Announcement, {as: 'Announcements'});
 
 // Like.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Like, {as: 'Likes'});
-
-// Comment.belongsTo(Episode, {foreignKey: 'episodeId'});
-// Episode.hasMany(Comment, {as: 'Comments'});
-
-// Like.belongsTo(Episode, {foreignKey: 'episodeId'});
-// Episode.hasMany(Like, {as: 'Likes'});
-
-// Comment.belongsTo(Announcement, {foreignKey: 'announcementId'});
-// Announcement.hasMany(Comment, {as: 'Comments'});
-
-// Like.belongsTo(Announcement, {foreignKey: 'announcementId'});
-// Announcement.hasMany(Like, {as: 'Likes'});
-
-// Like.belongsTo(Comment, {foreignKey: 'commentId'});
-// Comment.hasMany(Like, {as: 'Likes'});
-
-// Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
-// Soundcast.hasMany(Announcement, {as: 'Announcements'});
 
 // Like.belongsTo(Soundcast, {foreignKey: 'soundcastId'});
 // Soundcast.hasMany(Like, {as: 'Likes'});
@@ -320,7 +330,7 @@ var Coupon = db.define('Coupon', {
 User.sync({ force: false, alter: true });
 Publisher.sync({ force: false, alter: true });
 Comment.sync({ force: false, alter: true });
-Announcement.sync({ force: false });
+Announcement.sync({ force: false, alter: true });
 Like.sync({ force: false, alter: true });
 Soundcast.sync({ force: false, alter: true });
 Episode.sync({ force: false, alter: true });
@@ -350,6 +360,7 @@ module.exports = {
   PlatformCharges,
   Transfers,
   ImportedFeed,
+  Event,
   db,
   Category,
   PodcasterEmail,

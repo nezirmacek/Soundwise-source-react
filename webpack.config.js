@@ -1,6 +1,18 @@
 const path = require('path');
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
+const dotenv = require('dotenv');
+
+const env =
+  dotenv.config({ path: path.resolve(process.cwd(), 'client.env') }) || {};
+
+const envKeys = Object.keys(env).reduce(
+  (prev, next) => ({
+    ...prev,
+    [next]: JSON.stringify(env[next]),
+  }),
+  {}
+);
 
 module.exports = {
   context: __dirname,
@@ -18,14 +30,15 @@ module.exports = {
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.json$/,
+        exclude: [/node_modules/],
         loader: 'json-loader',
       },
       {
         exclude: /node_modules/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: {
           presets: ['react', 'es2015', 'stage-1'],
         },
@@ -49,8 +62,11 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    minimizer: [new UglifyJsPlugin()],
+  },
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json'],
+    extensions: ['.js', '.jsx', '.json'],
     alias: {
       videojs: 'video.js',
       WaveSurfer: 'wavesurfer.js',
@@ -70,11 +86,8 @@ module.exports = {
       RecordRTC: 'recordrtc',
       'window.RecordRTC': 'recordrtc',
     }),
-    new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-      },
+      'process.env': envKeys,
     }),
   ],
 };

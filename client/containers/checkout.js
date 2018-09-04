@@ -42,7 +42,7 @@ class _Checkout extends Component {
   }
 
   componentDidMount() {
-    if (process.env.NODE_ENV === 'dev') {
+    if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
       console.log('Stripe: setting test key');
       stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     } else {

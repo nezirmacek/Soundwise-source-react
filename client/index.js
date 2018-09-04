@@ -15,6 +15,7 @@ import Raven from 'raven-js';
 
 import { config } from '../config';
 import { Routes } from './routes';
+
 import rootReducer from './reducers';
 
 Raven.config(

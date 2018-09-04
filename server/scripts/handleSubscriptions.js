@@ -1,54 +1,89 @@
 'use strict';
+const moment = require('moment');
+const {
+  publisherManager,
+  soundcastManager,
+  userManager,
+} = require('../managers');
+const {mailingService, subscriptionService} = require('../services');
 
-var admin = require('firebase-admin');
+const unsubscribe = (req, res) => {
+  const {paymentId, userId, soundcastId, publisherId} = req.body;
 
-var stripe_key = require('../../config').stripe_key;
-
-var stripe = require('stripe')(stripe_key);
-
-// module.exports.subscriptionRenewal = (req, res) => { //moved to transaction.js
-//   let userId;
-//   if (req.body.data.object.lines.data[0].period.end) {
-//     const customer = req.body.data.object.customer;
-//     const db = admin.database();
-//     const ref = db.ref('users');
-//     ref.orderByChild('stripe_id').equalTo(customer)
-//       .on('value', snapshot => {
-//         snapshot.forEach(data => {
-//           userId = data.key;
-//         });
-//         db.ref(`users/${userId}/soundcasts`).orderByChild('planID').equalTo(req.body.data.object.lines.data[0].plan.id)
-//           .on('value', snapshot => {
-//             let soundcast;
-//             snapshot.forEach(data => {
-//               soundcast = data.key;
-//             });
-//             db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`)
-//               .set(req.body.data.object.lines.data[0].period.end);
-//           });
-//       });
-//     res.status(200).send({});
-//   }
-// };
-
-module.exports.unsubscribe = (req, res) => {
-  if (req.body.paymentID.slice(0, 3) == 'sub') {
-    stripe.subscriptions.del(
-      req.body.paymentID,
-      {
-        stripe_account: req.body.publisher,
-      },
-      function(err, confirmation) {
-        if (err) {
-          console.log('error');
-          res.status(500).send(err);
-          return;
-        }
-        // console.log('confirmation: ', confirmation);
-        res.send(confirmation);
-      }
+  userManager
+    .getById(userId)
+    .then(user =>
+      soundcastManager
+        .getById(soundcastId)
+        .then(soundcast =>
+          mailingService.deleteFromMailingList(
+            user.email,
+            soundcast.subscriberEmailList
+          )
+        )
     );
-  } else {
-    res.status(200).send({});
-  }
+
+  soundcastManager
+    .removeSubscribedUser(soundcastId, userId)
+    .then(() =>
+      userManager
+        .unsubscribe(userId, soundcastId)
+        .then(
+          () =>
+            paymentId
+              ? subscriptionService
+                  .delStripeSubscriptions(paymentId)
+                  .then(
+                    response =>
+                      response
+                        ? res.status(200).send(response)
+                        : res.status(500).send({error: response})
+                  )
+              : publisherManager
+                  .removeFreeSubscriberCount(publisherId, userId, soundcastId)
+                  .then(() =>
+                    publisherManager
+                      .decrementFreeSubscriberCount(publisherId)
+                      .then(() => res.send({response: 'OK'}))
+                  )
+        )
+    )
+    .catch(error =>
+      res.status(500).send({message: 'Failed free unsubscription', error})
+    );
 };
+
+const subscribe = (req, res) => {
+  const {soundcastId, userId} = req.body;
+
+  addSoundcastToUser(userId, soundcastId)
+    .then(() => res.send({response: 'OK'}))
+    .catch(error => res.status(500).send(error));
+};
+
+const subscribeUserToSoundcast = (id, userId, publisherId) =>
+  soundcastManager
+    .addSubscribedUser(id, userId)
+    .then(() => userManager.subscribe(userId, id))
+    .then(() => publisherManager.incrementFreeSubscriberCount(publisherId));
+
+const addSoundcastToUser = (userId, soundcastId) =>
+  soundcastManager.getById(soundcastId).then(soundcast => {
+    if (soundcast) {
+      if (soundcast.bundle) {
+        return Promise.all(
+          soundcast.soundcastsIncluded.map(id =>
+            subscribeUserToSoundcast(id, userId, soundcast.publisherId)
+          )
+        );
+      }
+
+      return subscribeUserToSoundcast(
+        soundcastId,
+        userId,
+        soundcast.publisherId
+      );
+    }
+  });
+
+module.exports = {subscribe, unsubscribe};

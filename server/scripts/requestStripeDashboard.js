@@ -10,6 +10,6 @@ module.exports = (req, res) => {
       return res.status(err.raw.statusCode).send(err.raw.message);
     }
     console.log('link: ', link);
-    res.send({ url: link.url });
+    res.send({url: link.url});
   });
 };

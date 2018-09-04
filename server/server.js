@@ -13,7 +13,8 @@ var S3 = require('aws-sdk').S3;
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
-var serviceAccount = require('../serviceAccountKey.json');
+var serviceAccount = require('../serviceAccountKey');
+
 var cors = require('cors');
 var Axios = require('axios');
 const moment = require('moment');
@@ -42,15 +43,18 @@ const Emails = require('./scripts/sendEmails.js');
 const { createFeed, requestFeed } = require('./scripts/feed.js');
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
+
+const {sendInvite} = require('./scripts/invites');
 const {
   audioProcessing,
   audioProcessingReplace,
 } = require('./scripts/audioProcessing');
 
 const parseFeed = require('./scripts/parseFeed.js').parseFeed;
-const sendNotification = require('./scripts/messaging.js').sendNotification;
+const pushNotification = require('./scripts/messaging.js').pushNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
+const subscribe = require('./scripts/handleSubscriptions.js').subscribe;
 const createStripeAccount = require('./scripts/createStripeAccounts.js')
   .createStripeAccount;
 const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
@@ -60,7 +64,7 @@ var database = require('../database');
 Raven.config(
   'https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847'
 ).install();
-
+console.log(serviceAccount);
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
@@ -70,7 +74,7 @@ var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
 var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
 var firebaseListeners = require('./bin/firebase-listeners.js')
   .firebaseListeners;
-
+const {userService} = require('./services');
 // sync firebase with Algolia and postgres
 // algoliaIndex();
 // transferLikes();
@@ -189,10 +193,11 @@ app.post('/api/send_marketing_emails', Emails.sendMarketingEmails);
 app.post('/api/delete_emails', Emails.deleteFromEmailList);
 app.post('/api/add_emails', Emails.addToEmailList);
 
-app.post('/api/send_notification', sendNotification);
+app.post('/api/send_notification', pushNotification);
 app.post('/api/subscription_renewal', renewSubscription);
 app.post('/api/cancel_plan', cancelSubscription);
 app.post('/api/unsubscribe', unsubscribe);
+app.post('/api/subscribe', subscribe);
 app.use('/api/upload', multipart());
 app.post('/api/upload', function(req, res, next) {
   // console.log(req.files);
@@ -219,6 +224,7 @@ app.post('/api/upload', function(req, res, next) {
 app.post('/api/audiowave', multipart(), createAudioWaveVid);
 app.post('/api/audio_processing', audioProcessing);
 app.post('/api/audio_processing_replace', audioProcessingReplace);
+app.post('/api/invite', sendInvite);
 
 app.use(
   '/s3',
@@ -402,3 +408,10 @@ client.setApiKey(sendGridApiKey);
 //   }
 // }
 // changeUrl();
+
+app.post('/api/complete_sign_up', (req, res) => {
+  userService
+    .completeSignUp(req.body)
+    .then(() => res.sendStatus(200))
+    .catch(error => res.send(error));
+});

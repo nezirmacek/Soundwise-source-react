@@ -99,7 +99,7 @@ module.exports = function(Transaction) {
         break;
       case 'charge.refunded':
         data.data.object.refunds.data.forEach((refund, i) => {
-          Transaction.find({ where: { chargeId: refund.charge } })
+          Transaction.find({where: {chargeId: refund.charge}})
             .then(res => {
               const publisherId = (res.length && res[0].publisherId) || null;
               const soundcastId = (res.length && res[0].soundcastId) || null;
@@ -175,10 +175,10 @@ module.exports = function(Transaction) {
     accepts: {
       arg: 'data',
       type: 'object',
-      http: { source: 'body' },
+      http: {source: 'body'},
       required: true,
     },
-    returns: { type: 'array', root: true },
+    returns: {type: 'array', root: true},
   });
 
   Transaction.handleOnetimeCharge = function(req, cb) {
@@ -198,7 +198,7 @@ module.exports = function(Transaction) {
     } else {
       // if customer id is in the reqest body, create a charge using the existing customer id
       console.log('customer: ', req.customer);
-      const data = Object.assign({}, req, { platformCustomer: req.customer });
+      const data = Object.assign({}, req, {platformCustomer: req.customer});
       createCharge(Transaction, data, cb);
     }
   };
@@ -215,13 +215,13 @@ module.exports = function(Transaction) {
     accepts: {
       arg: 'req',
       type: 'object',
-      http: { source: 'body' },
+      http: {source: 'body'},
       required: true,
     },
     returns: {
       arg: 'res',
       type: 'object',
-      http: { source: 'body' },
+      http: {source: 'body'},
       required: true,
     },
   });
@@ -350,7 +350,7 @@ async function createCharge(Transaction, data, cb) {
 
           Transaction.create(_transaction)
             .then(() => {
-              return cb(null, Object.assign({}, charge, { platformCustomer }));
+              return cb(null, Object.assign({}, charge, {platformCustomer}));
             })
             .catch(err => {
               return cb(err);

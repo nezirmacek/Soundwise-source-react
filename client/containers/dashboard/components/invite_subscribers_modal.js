@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import draftToHtml from 'draftjs-to-html';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import moment from 'moment';
 import Papa from 'papaparse';
 import { Editor } from 'react-draft-wysiwyg';
 import {
@@ -14,7 +13,6 @@ import {
   convertToRaw,
   EditorState,
   convertFromHTML,
-  createFromBlockArray,
   ContentState,
 } from 'draft-js';
 
@@ -23,8 +21,8 @@ import {
   maxLengthValidator,
 } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
-import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 import { addToEmailList } from '../../../helpers/addToEmailList';
+import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -102,7 +100,7 @@ export default class InviteSubscribersModal extends Component {
       inviteeArr,
       'inviteeEmailList',
       soundcast.inviteeEmailList
-    ).then(listId => {
+    ).then(() => {
       inviteListeners(
         inviteeArr,
         subject,
@@ -113,64 +111,15 @@ export default class InviteSubscribersModal extends Component {
       ); // use transactional email for this
     });
 
-    var invitationPromise = inviteeArr.map(email => {
-      let _email = email.replace(/\./g, '(dot)');
-      _email = _email.trim().toLowerCase();
-      if (_email) {
-        return firebase
-          .database()
-          .ref(`soundcasts/${this.props.soundcast.id}/invited/${_email}`)
-          .set(moment().format('X')) //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
-          .then(() => {
-            firebase
-              .database()
-              .ref(`invitations/${_email}`)
-              .once('value')
-              .then(snapshot => {
-                if (snapshot.val()) {
-                  const update = {
-                    ...snapshot.val(),
-                    [that.props.soundcast.id]: true,
-                  };
-                  firebase
-                    .database()
-                    .ref(`invitations/${_email}`)
-                    .update(update);
-                } else {
-                  firebase
-                    .database()
-                    .ref(`invitations/${_email}/${that.props.soundcast.id}`)
-                    .set(true);
-                }
-              })
-              .then(
-                res => {
-                  return res;
-                },
-                err => {
-                  console.log('ERROR adding invitee: ', err);
-                  Promise.reject(err);
-                }
-              );
-          });
-      } else {
-        return null;
-      }
-    });
-
-    Promise.all(invitationPromise).then(
-      res => {
-        firebase
-          .database()
-          .ref(`soundcasts/${that.props.soundcast.id}/invitationEmail`)
-          .set(JSON.stringify(convertToRaw(invitation.getCurrentContent())))
-          .catch(err => console.log('error'));
-        return res;
-      },
-      err => {
-        console.log('failed to complete adding invitees: ', err);
-      }
-    );
+    Axios.post('/api/invite', {
+      soundcastId: soundcast.id,
+      inviteeArr,
+      invitation: invitation.getCurrentContent(),
+    })
+      .then(res => res)
+      .catch(err => {
+        console.log('ERROR send emails to subscribers: ', err);
+      });
 
     this.setState({
       submitted: true,

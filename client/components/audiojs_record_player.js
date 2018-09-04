@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import '!style!css!video.js/dist/video-js.min.css';
-import '!style!css!videojs-record/dist/css/videojs.record.css';
+import '!style-loader!css-loader!video.js/dist/video-js.min.css';
+import '!style-loader!css-loader!videojs-record/dist/css/videojs.record.css';
 import 'videojs-record';
 import 'videojs-record/dist/plugins/videojs.record.lamejs.min.js';
 import WaveSurfer from 'wavesurfer.js';

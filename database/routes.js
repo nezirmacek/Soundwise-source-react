@@ -1,7 +1,12 @@
 'use strict';
 
 const database = require('./index');
-const soundcastService = require('../server/services').soundcastService;
+const {
+  commentService,
+  likeService,
+  soundcastService,
+  userService,
+} = require('../server/services');
 
 module.exports = app => {
   app.post('/api/user', (req, res) => {
@@ -11,24 +16,14 @@ module.exports = app => {
       },
       defaults: req.body,
     })
-      .then(data => {
-        console.log('data: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/coupon', (req, res) => {
     database.Coupon.create(req.body)
-      .then(data => {
-        console.log('data: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/coupon', (req, res) => {
@@ -44,24 +39,41 @@ module.exports = app => {
       });
   });
 
+  app.get('/api/announcements', (req, res) => {
+    const query = JSON.parse(req.query.filter);
+    database.Announcement.findAll({
+      where: query.where,
+      order: [['createdAt', 'DESC']],
+    })
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
+
+  app.get('/api/announcements/:id', (req, res) => {
+    const id = req.params.id;
+    database.Announcement.findById(id)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
+
   app.post('/api/episode', (req, res) => {
     database.Episode.findOrCreate({
       where: { episodeId: req.body.episodeId },
       defaults: req.body,
     })
-      .then(data => {
-        console.log('response: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        console.log('error: ', err);
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.post('/api/soundcast', (req, res) => {
     soundcastService
       .createOrUpdate(req.body)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
+
+  app.post('/api/announcements', (req, res) => {
+    database.Announcement.create(req.body)
       .then(data => {
         res.send(data);
       })
@@ -70,31 +82,20 @@ module.exports = app => {
       });
   });
 
-  // - Currently only 16 static main categories getting used (see podcastCategories)
-  // app.post('/api/category', (req, res) => {
-  //   database.Category.create(req.body)
-  //     .then(data => {
-  //       res.send(data);
-  //     })
-  //     .catch(err => {
-  //       res.status(500).send(err);
-  //     });
-  // });
+  app.post('/api/category', (req, res) => {
+    database.Category.create(req.body)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
+  });
 
   app.post('/api/listening_session', (req, res) => {
     const data = Object.assign({}, req.body, { date: new Date(req.body.date) });
     database.ListeningSession.create(req.body)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user', (req, res) => {
-    // console.log('req.query: ', req.query);
     database.ListeningSession.findAll({
       where: {
         userId: req.query.userId,
@@ -105,25 +106,16 @@ module.exports = app => {
       },
       order: [['date', 'ASC']],
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/category', (req, res) => {
-    // console.log('req.query: ', req.query);
     database.Category.findAll({
       order: [['name', 'ASC']],
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user_publisher', (req, res) => {
@@ -138,13 +130,8 @@ module.exports = app => {
       },
       order: [['date', 'ASC']],
     })
-      .then(data => {
-        console.log('data sent: ', data);
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_episode', (req, res) => {
@@ -159,9 +146,7 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_soundcast', (req, res) => {
@@ -176,10 +161,7 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/stats_by_user_episode', (req, res) => {
@@ -195,8 +177,20 @@ module.exports = app => {
       order: [['date', 'ASC']],
     })
       .then(data => res.send(data))
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .catch(err => res.status(500).send(err));
   });
+
+  app.post('/api/comments', commentService.addComment);
+
+  app.delete('/api/comments/:id', commentService.deleteComment);
+
+  app.put('/api/comments/:id', commentService.editComment);
+
+  app.patch('/api/comments/:id', commentService.editComment);
+
+  app.post('/api/likes', likeService.addLike);
+
+  app.delete('/api/likes/:id', likeService.deleteLike);
+
+  app.patch('/api/listeners/:id', userService.editUserInfo);
 };

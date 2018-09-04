@@ -2,6 +2,7 @@
 var Raven = require('raven');
 // var sendinblue = require('sendinblue-api');
 // var sendinBlueApiKey = require('../../config').sendinBlueApiKey;
+const _ = require('lodash');
 var firebase = require('firebase-admin');
 var moment = require('moment');
 
@@ -66,16 +67,22 @@ const sendTransactionalEmails = (req, res) => {
 };
 
 const sendCommentNotification = async (req, res) => {
-  const {
-    userID,
-    content,
-    soundcastId,
-    announcementID,
-    episodeID,
-  } = req.body.comment;
+  sendMail(req.body.comment).then(() => res.status(200).send({}));
+};
+
+const sendMail = async comment => {
+  let fbComment = {
+    userID: comment.userId,
+    episodeID: comment.episodeId,
+    soundcastID: comment.soundcastId,
+    announcementID: comment.announcementId,
+    timestamp: comment.timeStamp,
+  };
+  fbComment = _.pickBy(fbComment, _.identity);
+  const {userID, soundcastID, announcementID, episodeID, timestamp} = fbComment;
   const publisherID = await firebase
     .database()
-    .ref(`soundcasts/${soundcastId}/publisherID`)
+    .ref(`soundcasts/${soundcastID}/publisherID`)
     .once('value');
   const admins = await firebase
     .database()
@@ -91,31 +98,26 @@ const sendCommentNotification = async (req, res) => {
     const commentorName = `${commentor.val().firstName} ${
       commentor.val().lastName
     }`;
-    let adminsEmails = [],
-      email;
+    let adminsEmails = [];
     for (var i = 0; i < adminsArr.length; i++) {
-      email = await firebase
+      const email = await firebase
         .database()
         .ref(`users/${adminsArr[i]}/email`)
         .once('value');
-      adminsEmails.push(email.val()[0]);
+      email.val() && adminsEmails.push(email.val()[0]);
     }
-    let episodeTitle, announcement, announcementDate;
+
+    let episodeTitle = '';
+    let announcementDate = '';
+
     if (episodeID) {
-      episodeTitle = await firebase
+      episodeTitle = (await firebase
         .database()
         .ref(`episodes/${episodeID}/title`)
-        .once('value');
-      episodeTitle = episodeTitle.val();
+        .once('value')).val();
     }
     if (announcementID) {
-      announcement = await firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}/announcements/${announcementID}`)
-        .once('value');
-      announcementDate = moment(announcement.val().date_created * 1000).format(
-        'MMM DD YYYY'
-      );
+      announcementDate = moment.unix(timestamp).format('MMM DD YYYY');
     }
     const subject = episodeTitle
       ? episodeTitle
@@ -126,11 +128,7 @@ const sendCommentNotification = async (req, res) => {
       subject: `There's a new comment posted for ${subject}`,
       html: `<p>Hi!</p><p></p><p>${commentorName} just made a new comment on ${subject}.</p><p></p><p>Check it out and reply on the Soundwise app.</p><p></p><p>Folks at Soundwise</p>`,
     };
-    sgMail.send(msg).then(response => {
-      res.status(200).send({});
-    });
-  } else {
-    res.status(200).send({});
+    return sgMail.send(msg);
   }
 };
 
@@ -343,6 +341,7 @@ const sendMarketingEmails = (req, res) => {
 };
 
 module.exports = {
+  sendMail,
   sendTransactionalEmails,
   addToEmailList,
   deleteFromEmailList,

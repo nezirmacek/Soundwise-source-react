@@ -42,6 +42,13 @@
         "column": "userId"
       }
     },
+    "parentId": {
+      "type": "string",
+      "required": true,
+      "postgresql": {
+        "column": "parentId"
+      }
+    },
     "soundcastId": {
       "type": "string",
       "required": true,
@@ -56,9 +63,16 @@
         "dataType": "bigint"
       }
     },
+    "likesCount": {
+      "type": "number",
+      "postgresql": {
+        "column": "likesCount"
+      }
+    },
     "createdAt": {
       "type": "date",
       "required": true,
+      "defaultFn": "now",
       "postgresql": {
         "column": "createdAt"
       }
@@ -66,6 +80,7 @@
     "updatedAt": {
       "type": "date",
       "required": true,
+      "defaultFn": "now",
       "postgresql": {
         "column": "updatedAt"
       }
@@ -73,10 +88,20 @@
   },
   "validations": [],
   "relations": {
+    "comment": {
+      "type": "hasMany",
+      "model": "comment",
+      "foreignKey": "parentId"
+    },
     "soundcast": {
       "type": "belongsTo",
       "model": "soundcast",
       "foreignKey": "soundcastId"
+    },
+    "announcementId": {
+      "type": "belongsTo",
+      "model": "announcement",
+      "foreignKey": "announcementId"
     },
     "episode": {
       "type": "belongsTo",

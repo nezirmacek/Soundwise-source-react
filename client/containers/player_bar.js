@@ -1,8 +1,7 @@
-
 // ** not in use
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import firebase from 'firebase';
 import { grey50, orange500 } from 'material-ui/styles/colors';
 import DropDownMenu from 'material-ui/DropDownMenu';

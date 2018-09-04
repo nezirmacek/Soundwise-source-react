@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import axios from 'axios';
+import Axios from 'axios';
 import firebase from 'firebase';
 import Toggle from 'react-toggle';
 
@@ -123,29 +123,14 @@ export default class Announcements extends Component {
   }
 
   sortAnnouncements(id) {
-    const that = this;
-    firebase
-      .database()
-      .ref(`soundcasts/${id}`)
-      .on('value', snapshot => {
-        const announcements = snapshot.val().announcements;
-        if (announcements) {
-          const announcementsArr = Object.keys(announcements).map(
-            key => announcements[key]
-          );
-
-          // sort published announcements, latest one comes first
-          announcementsArr.sort((a, b) => b.date_created - a.date_created);
-
-          that.setState({
-            announcementsArr,
-          });
-        } else {
-          that.setState({
-            announcementsArr: [],
-          });
-        }
+    Axios.get('/api/announcements', {
+      params: { filter: { where: { soundcastId: id } } },
+    }).then(res => {
+      const announcementsArr = res.data;
+      this.setState({
+        announcementsArr: announcementsArr ? announcementsArr : [],
       });
+    });
   }
 
   changeSoundcastId(e) {
@@ -161,16 +146,7 @@ export default class Announcements extends Component {
         currentSoundcast = soundcast;
       }
     });
-
-    // for(let userId in currentSoundcast.subscribed) {
-    //   this.retrieveSubscriberInfo(userId);
-    // }
-
-    this.setState({
-      // subscribers: this.subscribers,
-      currentSoundcast,
-    });
-
+    this.setState({ currentSoundcast });
     this.sortAnnouncements(e.target.value);
   }
 
@@ -181,67 +157,68 @@ export default class Announcements extends Component {
     const announcementID = `${moment().format('x')}a`;
 
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
-      if (user && that.firebaseListener) {
+      if (user && that.firebaseListener && !!message) {
         const creatorID = user.uid;
         const newAnnouncement = {
           content: message,
           date_created: moment().format('X'),
-          creatorID: creatorID,
-          publisherID: that.props.userInfo.publisherID,
-          soundcastID: currentSoundcastID,
+          creatorId: creatorID,
+          publisherId: that.props.userInfo.publisherID,
+          soundcastId: currentSoundcastID,
           isPublished: true,
-          id: announcementID,
+          announcementId: announcementID,
         };
 
-        firebase
-          .database()
-          .ref(
-            `soundcasts/${currentSoundcastID}/announcements/${announcementID}`
-          )
-          .set(newAnnouncement)
-          .then(
-            res => {
-              that.setState({
-                message: '',
-              });
-
-              firebase
-                .database()
-                .ref(`soundcasts/${currentSoundcastID}/subscribed`)
-                .once('value', snapshot => {
-                  if (snapshot.val()) {
-                    let registrationTokens = [];
-                    // get an array of device tokens
-                    Object.keys(snapshot.val()).forEach(user => {
-                      if (typeof snapshot.val()[user] == 'object') {
-                        registrationTokens.push(snapshot.val()[user][0]); //basic version: only allow one devise per user
+        Axios.post('/api/announcements', newAnnouncement).then(
+          data => {
+            that.setState({
+              message: '',
+            });
+            firebase
+              .database()
+              .ref(`soundcasts/${currentSoundcastID}/subscribed`)
+              .once('value', snapshot => {
+                if (snapshot.val()) {
+                  let registrationTokens = [];
+                  const subscribers = snapshot.val();
+                  // get an array of device tokens
+                  Object.keys(subscribers).forEach(user => {
+                    if (typeof subscribers[user] == 'object') {
+                      if (typeof subscribers[user][0] == 'string') {
+                        registrationTokens.push(subscribers[user][0]);
+                      } else if (typeof subscribers[user][0][0] == 'string') {
+                        registrationTokens.push(subscribers[user][0][0]);
                       }
-                    });
-                    const payload = {
-                      notification: {
-                        // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
-                        title: `${currentSoundcast.title} sent you a message`,
-                        body: message,
-                        badge: '1',
-                        sound: 'default',
-                      },
-                    };
-                    sendNotifications(registrationTokens, payload); //sent push notificaiton
-                    if (that.state.sendEmails) {
-                      that.emailListeners(currentSoundcast, message);
                     }
-                    alert('Announcement sent!');
-                    that.firebaseListener = null;
+                  });
+                  const payload = {
+                    data: {
+                      type: 'NEW_MESSAGE',
+                      announcementId: announcementID,
+                      soundcastId: currentSoundcastID,
+                    },
+                    notification: {
+                      // title: `${userInfo.firstName} ${userInfo.lastName} sent you a message`,
+                      title: `${currentSoundcast.title} sent you a message`,
+                      body: message,
+                    },
+                  };
+                  sendNotifications(registrationTokens, payload); //sent push notificaiton
+                  if (that.state.sendEmails) {
+                    that.emailListeners(currentSoundcast, message);
                   }
-                });
-            },
-            err => {
-              console.log('ERROR adding announcement: ', err);
-            }
-          );
+                  that.sortAnnouncements(currentSoundcastID);
+                  alert('Announcement sent!');
+                  that.firebaseListener = null;
+                }
+              });
+          },
+          err => {
+            console.log('ERROR adding announcement: ', err);
+          }
+        );
       } else {
-        // alert('Announcement saving failed. Please try again later.');
-        // Raven.captureMessage('announcement saving failed!')
+        alert('Announcement not sent!');
       }
     });
 
@@ -400,19 +377,15 @@ export default class Announcements extends Component {
           </div>
           <div>
             {announcementsArr.map((announcement, i) => {
-              const likes = announcement.likes
-                ? Object.keys(announcement.likes).length
-                : 0;
-              const comments = announcement.comments
-                ? Object.keys(announcement.comments).length
-                : 0;
+              const likes = announcement.likesCount;
+              const comments = announcement.commentsCount;
               return (
                 <div style={styles.existingAnnouncement} key={i}>
                   <div style={styles.announcementContainer}>
                     <div style={styles.date}>
-                      {moment
-                        .unix(announcement.date_created)
-                        .format('dddd, MMMM Do YYYY, h:mm a')}
+                      {moment(announcement.updatedAt).format(
+                        'dddd, MMMM Do YYYY, h:mm a'
+                      )}
                     </div>
                     <div
                       style={{ ...styles.content, whiteSpace: 'pre-wrap' }}

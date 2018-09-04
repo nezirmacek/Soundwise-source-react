@@ -1,5 +1,5 @@
 'use strict';
-
+const _ = require('lodash');
 const util = require('util');
 const path = require('path');
 const fs = require('fs');
@@ -232,7 +232,77 @@ const podcastCategories = {
   },
 }; // podcastCategories
 
+const createContentPush = (type, announcementId, soundcastId, title, body) => {
+  return {
+    data: { type, announcementId, soundcastId },
+    notification: { title, body },
+  };
+};
+
+const getContentPush = entity => {
+  const soundcastId = entity.soundcastId;
+  if (entity.likeId === undefined) {
+    return entity.announcementId
+      ? createContentPush(
+          'COMMENT_MESSAGE',
+          entity.announcementId,
+          soundcastId,
+          'Comment message',
+          'text'
+        )
+      : createContentPush(
+          'COMMENT_EPISODE',
+          entity.episodeId,
+          soundcastId,
+          'Comment episode',
+          entity.content
+        );
+  } else {
+    return entity.announcementId
+      ? createContentPush(
+          'LIKE_MESSAGE',
+          entity.announcementId,
+          soundcastId,
+          'Like message',
+          'text'
+        )
+      : entity.episodeId
+        ? createContentPush(
+            'LIKE_EPISODE',
+            entity.episodeId,
+            soundcastId,
+            'Like episode',
+            'text'
+          )
+        : createContentPush(
+            'LIKE_COMMENT',
+            entity.commentId,
+            soundcastId,
+            'Like comment',
+            'text'
+          );
+  }
+};
+
+const getEvent = (type, entity) => {
+  let event = {
+    type,
+    // story: 'string',
+    userId: entity.userId,
+    episodeId: entity.episodeId,
+    likeId: entity.likeId,
+    soundcastId: entity.soundcastId,
+    announcementId: entity.announcementId,
+    commentId: entity.commentId,
+    parentId: entity.commentId,
+  };
+  event = _.pickBy(event, _.identity);
+  return event;
+};
+
 module.exports = prefix => ({
+  getEvent,
+  getContentPush,
   uploader,
   setAudioTags,
   parseSilenceDetect,

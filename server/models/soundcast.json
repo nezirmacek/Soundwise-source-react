@@ -56,11 +56,25 @@
         "column": "published"
       }
     },
+    "rank": {
+      "type": "number",
+      "required": true,
+      "postgresql": {
+        "column": "rank"
+      }
+    },
     "landingPage": {
       "type": "boolean",
       "required": false,
       "postgresql": {
         "column": "landingPage"
+      }
+    },
+    "forSale": {
+      "type": "boolean",
+      "required": false,
+      "postgresql": {
+        "column": "forSale"
       }
     },
     "updateDate": {
