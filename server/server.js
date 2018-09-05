@@ -96,6 +96,9 @@ app.start = function() {
   // server.timeout = 10*60*1000; // 10 minutes
 };
 
+console.log('key:', awsConfig.accessKeyId);
+console.log('secret:', awsConfig.secretAccessKey);
+
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
