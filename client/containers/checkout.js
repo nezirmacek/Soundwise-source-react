@@ -46,7 +46,7 @@ class _Checkout extends Component {
       console.log('Stripe: setting test key');
       stripe = Stripe.setPublishableKey('pk_test_BwjUV9yHQNcgRzx59dSA3Mjt');
     } else {
-      stripe = Stripe.setPublishableKey('pk_live_Ocr32GQOuvASmfyz14B7nsRP');
+      stripe = Stripe.setPublishableKey('pk_live_rR36Qeypo5CrbG1FKgE1XdlL');
     }
     this.setState({
       totalPay: this.props.total,

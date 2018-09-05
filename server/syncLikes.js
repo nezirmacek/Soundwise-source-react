@@ -119,10 +119,7 @@ const syncMessagesLikes = async () => {
       const messagesIds = _.keys(messagesBySoundcast);
       console.log(`process ${messagesIds} messages`);
       for (let messageId of messagesIds) {
-        const likes = await likeManager.getMessageLikes({
-          soundcastId,
-          messageId,
-        });
+        const likes = await likeManager.getMessageLikes(soundcastId, messageId);
         if (likes) {
           const usersIds = _.keys(likes);
           for (let userId of usersIds) {
@@ -133,7 +130,7 @@ const syncMessagesLikes = async () => {
               .format('YYYY-MM-DD HH:mm:ss Z');
             const like = {
               likeId,
-              messageId,
+              announcementId: messageId,
               userId,
               soundcastId,
               timeStamp: newTimestamp,
@@ -142,17 +139,25 @@ const syncMessagesLikes = async () => {
             };
             await createOrUpdate(likeId, like);
           }
-          const likeObject = await likeRepository.getPrevious({
-            messageId,
-            likeId: { [Op.regexp]: '^(?!web-).*' },
-          });
-          const lastLiked = likeObject
-            ? await likeManager.getFullNameByUid(likeObject.userId)
-            : 'Guest';
-          await database.Announcement.update({
-            likesCount: usersIds.length,
-            lastLiked,
-          }).catch(e => logInFile(`MessageId: ${messageId}\nERROR: ${e}\n\n`));
+          try {
+            const likeObject = await likeRepository.getPrevious({
+              announcementId: messageId,
+              likeId: { [Op.regexp]: '^(?!web-).*' },
+            });
+            const lastLiked = likeObject
+              ? await likeManager.getFullNameByUid(likeObject.userId)
+              : 'Guest';
+
+            await database.Announcement.update(
+              {
+                likesCount: usersIds.length,
+                lastLiked,
+              },
+              { announcementId: messageId }
+            );
+          } catch (e) {
+            logInFile(`MessageId: ${messageId}\nERROR: ${e}\n\n`);
+          }
         }
       }
     }

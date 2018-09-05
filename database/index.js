@@ -241,9 +241,17 @@ var PodcasterEmail = db.define(
     podcastTitle: { type: Sequelize.STRING, allowNull: false },
     publisherEmail: { type: Sequelize.STRING, allowNull: false },
     last_update: { type: Sequelize.STRING, allowNull: false },
+    hostName: { type: Sequelize.STRING, allowNull: true },
+    category: { type: Sequelize.STRING, allowNull: true },
   },
   {
-    indexes: [{ fields: ['publisherEmail'] }, { fields: ['last_update'] }],
+    indexes: [
+      { fields: ['podcastTitle'] },
+      { fields: ['publisherEmail'] },
+      { fields: ['last_update'] },
+      { fields: ['hostName'] },
+      { fields: ['category'] },
+    ],
   }
 );
 

@@ -89,6 +89,28 @@ const commonStyles = {
     backgroundColor: 'white',
     padding: 10,
   },
+  backDrop: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: '0px',
+    left: '0px',
+    zIndex: '9998',
+    background: 'rgba(0, 0, 0, 0.3)',
+  },
+  input: {
+    backgroundColor: Colors.window,
+    fontSize: 16,
+    height: 42,
+    borderRadius: 3,
+    boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.5)',
+  },
+  containerWrapper: {
+    overflow: 'hidden',
+    borderRadius: 3,
+    width: 'auto',
+    backgroundColor: Colors.mainWhite,
+  },
 };
 
 export default commonStyles;

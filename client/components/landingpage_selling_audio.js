@@ -227,7 +227,7 @@ class _LandingPageSelling extends Component {
       <div>
         <Helmet>
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://mysoundwise.com/" />
+          <meta property="og:url" content="https://mysoundwise.com/selling" />
           <meta
             property="og:title"
             content="Soundwise: #1 Mobile-Centric Platform For Selling & Delivering On-Demand Audios"

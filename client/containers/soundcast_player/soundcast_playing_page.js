@@ -232,6 +232,7 @@ class _SoundcastPlayingPage extends Component {
       ],
       currentEpisode: episode,
     });
+    this.audio.preload = 'auto';
     this.audio.src = episode.url;
     if (iOS) {
       // canplay event is not supported on iOS devices
@@ -243,6 +244,7 @@ class _SoundcastPlayingPage extends Component {
       });
     } else {
       this.audio.oncanplay = () => {
+        console.log('soundcast_playing_page: canplay callback')
         that.audio.play();
         that.setState({
           playing: true,

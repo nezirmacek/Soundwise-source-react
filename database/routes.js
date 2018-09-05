@@ -5,7 +5,7 @@ const {
   commentService,
   likeService,
   soundcastService,
-  userService
+  userService,
 } = require('../server/services');
 
 module.exports = app => {

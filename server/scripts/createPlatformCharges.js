@@ -10,7 +10,7 @@ const sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const database = require('../../database/index');
 
-module.exports.createSubscription = (req, res) => {
+module.exports.createSubscription = async (req, res) => {
   const options = {
     items: [{plan: req.body.plan}],
     metadata: {
@@ -75,6 +75,8 @@ module.exports.createSubscription = (req, res) => {
     }
   } else {
     // if subscription exists, update existing subscription
+    const subscription = await stripe.subscriptions.retrieve(req.body.subscriptionID);
+    options.items[0].id = subscription.items.data[0].id;
     stripe.subscriptions
       .update(req.body.subscriptionID, options)
       .then(subscription => {

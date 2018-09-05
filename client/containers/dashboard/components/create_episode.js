@@ -323,6 +323,8 @@ class _CreateEpisode extends Component {
       });
       // console.log('duration of audio: ', duration);
     };
+    console.log('create_episode: setAudioDuration')
+    audio.preload = 'auto';
     audio.src = URL.createObjectURL(file);
   }
 

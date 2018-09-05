@@ -17,6 +17,7 @@ import moment from 'moment';
 
 import { SoundwiseHeader } from '../components/soundwise_header';
 import Colors from '../styles/colors';
+import commonStyles from '../styles/commonStyles';
 import { GreyInput } from '../components/inputs/greyInput';
 import { inviteListeners } from '../helpers/invite_listeners';
 import { addToEmailList } from '../helpers/addToEmailList';
@@ -180,7 +181,6 @@ class _SignupOptions extends Component {
                   className="container-confirmation"
                 >
                   <img
-                    style={{ width: 200, height: 200, marginTop: 20 }}
                     className="center-col"
                     src={imageUrl}
                   />
@@ -299,8 +299,6 @@ class _SignupOptions extends Component {
                     <input
                       type="text"
                       style={styles.input}
-                      wrapperStyles={styles.inputTitleWrapper}
-                      // placeholder={''}
                       onChange={this.handleFeedSubmission.bind(
                         this,
                         'podcastTitle'
@@ -318,8 +316,6 @@ class _SignupOptions extends Component {
                     <input
                       type="text"
                       style={styles.input}
-                      wrapperStyles={styles.inputTitleWrapper}
-                      // placeholder={''}
                       onChange={this.handleFeedSubmission.bind(this, 'feedUrl')}
                       value={feedUrl}
                     />
@@ -449,6 +445,8 @@ const SignupOptions = connect(
 export default SignupOptions;
 
 const styles = {
+  input: { ...commonStyles.input },
+  containerWrapper: { ...commonStyles.containerWrapper },
   row: {
     backgroundColor: Colors.window,
     paddingTop: 15,
@@ -459,12 +457,6 @@ const styles = {
   logo: {
     marginBottom: 18,
     height: 50,
-  },
-  containerWrapper: {
-    overflow: 'hidden',
-    borderRadius: 3,
-    width: 'auto',
-    backgroundColor: Colors.mainWhite,
   },
   container: {
     backgroundColor: Colors.mainWhite,
@@ -531,12 +523,5 @@ const styles = {
     fontSize: 16,
     float: 'left',
     paddingBottom: 5,
-  },
-  input: {
-    backgroundColor: Colors.window,
-    fontSize: 16,
-    height: 42,
-    borderRadius: 3,
-    boxShadow: '0 -1px 2px rgba(0, 0, 0, 0.5)',
   },
 };

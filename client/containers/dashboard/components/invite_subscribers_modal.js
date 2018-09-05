@@ -295,15 +295,6 @@ export default class InviteSubscribersModal extends Component {
 
 const styles = {
   inputFileHidden: { ...commonStyles.inputFileHidden },
-  backDrop: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    top: '0px',
-    left: '0px',
-    zIndex: '9998',
-    background: 'rgba(0, 0, 0, 0.3)',
-  },
   modal: {
     position: 'absolute',
     top: '30%',
