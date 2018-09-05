@@ -10,18 +10,14 @@ firebase.initializeApp({
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
 });
 
-stripe.subscriptions.retrieve('sub_DDaOA8Q6MZvchh', (err, subscription) => {
-  console.log(util.inspect(subscription, false, null));
-})
-
 // set likes
-// var id = 1534773572712;
-// var list = Array.from(Array(711).keys());
+var id = 1535352228402;
+var list = Array.from(Array(611).keys());
 
-// list.forEach(async i => {
-//   await firebase.database().ref(`episodes/1534616226173e/likes/web-${id + i}`)
-//   .set(moment().format('X') + i);
-// });
+list.forEach(async i => {
+  await firebase.database().ref(`episodes/1535753699165e/likes/web-${id + i}`)
+  .set(Number(moment().format('X')) + i + 100);
+});
 
 // reset user password
 // firebase.auth().updateUser('kmGFGvpJqgaYYPMfNdrfywMIgxi2', {
