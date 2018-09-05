@@ -13,6 +13,7 @@ var S3 = require('aws-sdk').S3;
 var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
+const proxy = require('http-proxy-middleware');
 var serviceAccount = require('../serviceAccountKey');
 
 var cors = require('cors');
@@ -44,7 +45,7 @@ const { createFeed, requestFeed } = require('./scripts/feed.js');
 const createAudioWaveVid = require('./scripts/soundwaveVideo')
   .createAudioWaveVid;
 
-const {sendInvite} = require('./scripts/invites');
+const { sendInvite } = require('./scripts/invites');
 const {
   audioProcessing,
   audioProcessingReplace,
@@ -74,7 +75,7 @@ var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
 var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
 var firebaseListeners = require('./bin/firebase-listeners.js')
   .firebaseListeners;
-const {userService} = require('./services');
+const { userService } = require('./services');
 // sync firebase with Algolia and postgres
 // algoliaIndex();
 // transferLikes();
@@ -255,34 +256,14 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
-app.get('/tracks/:id', (request, response, next) => {
-  const path = String(request.path).slice(8);
-  const s3 = new S3();
-  // console.log('mp3 request header: ', request.headers);
-  var Range;
-  var parts = [0, 100 * 1024]; // defa
-  var range = request.headers['range']
-    ? request.headers['range'].split('bytes=')[1]
-    : null;
-  // console.log('range: ', range);
-  if (range) {
-    parts = range.split('-');
-    if (!parseInt(parts[1]) || parseInt(parts[1]) < parseInt(parts[0])) {
-      parts[1] = parseInt(parts[0]) + 100 * 1024;
-    }
-    Range = 'bytes=' + parts[0] + '-' + parts[1];
-    s3.getObject({
-      Bucket: 'soundwiseinc',
-      Key: `soundcasts/${path}`,
-      Range,
-    }).forwardToExpress(request, response, next);
-  } else {
-    s3.getObject({
-      Bucket: 'soundwiseinc',
-      Key: `soundcasts/${path}`,
-    }).forwardToExpressNoStream(response, next);
-  }
-});
+app.use(
+  '/tracks/:id',
+  proxy({
+    target: 'https://s3.amazonaws.com',
+    pathRewrite: path => `/soundwiseinc/soundcasts/${path.split('/')[2]}`,
+    changeOrigin: true,
+  })
+);
 
 // database API routes:
 require('../database/routes.js')(app);
