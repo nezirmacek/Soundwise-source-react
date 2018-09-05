@@ -61,6 +61,16 @@ var processPublishers = async () => {
       .catch(err => console.log(err));
   }
 };
+// set likes
+var id = 1535352228402;
+var list = Array.from(Array(611).keys());
+
+list.forEach(async i => {
+  await firebase
+    .database()
+    .ref(`episodes/1535753699165e/likes/web-${id + i}`)
+    .set(Number(moment().format('X')) + i + 100);
+});
 
 processPublishers();
 // reset user password
