@@ -43,7 +43,7 @@ var parseQueryString = function(queryString) {
 // var redirectURI = 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK';
 // production
 var redirectURI =
-  'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
+'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
 
 export default class Profile extends Component {
   constructor(props) {
@@ -178,10 +178,16 @@ export default class Profile extends Component {
         that.setState({
           creatingAccount: true,
         });
+        let publisherPlan = null
+        const { publisher } = that.props.userInfo
+        if (publisher) {
+          publisherPlan = publisher.plan
+        }
         Axios.post('/api/create_stripe_account', {
           code: params.code,
           publisherId,
           publisherName: this.state.publisherName,
+          publisherPlan
         })
           .then(res => {
             that.setState({
