@@ -3,6 +3,8 @@ var stripe_key = require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 var request = require('request-promise');
 var firebase = require('firebase-admin');
+const updateStripeAccount = require('./updateStripeAccounts.js')
+    .updateStripeAccount;
 
 module.exports.createStripeAccount = (req, res) => {
   let formData = {
@@ -23,27 +25,7 @@ module.exports.createStripeAccount = (req, res) => {
       return JSON.parse(response);
     })
     .then(response => {
-      let payout_schedule;
-      if (req.body.publisherPlan === 'pro' || req.body.publisherPlan === 'platinum') {
-        payout_schedule = {
-          interval: 'daily',
-        };
-      } else {
-        payout_schedule = {
-          // monthly payouts, with two week delay
-          delay_days: 3,
-          interval: 'monthly',
-          monthly_anchor: 1,
-        };
-      }
-      stripe.accounts.update(stripe_user_id, {
-        payout_schedule,
-        metadata: {
-          publisherId: req.body.publisherId,
-        },
-        payout_statement_descriptor: 'Soundwise transfer',
-        debit_negative_balances: true,
-      });
+      updateStripeAccount(stripe_user_id, req.body.publisherId, req.body.publisherPlan);
       res.send(response);
     })
     .catch(error => {

@@ -281,6 +281,7 @@ class _SoundwiseCheckout extends Component {
         metaData,
         trialPeriod,
         publisherID: publisherID,
+        publisherPlan: plan,
         referredBy,
         plan: `${plan}-${frequency}`,
         statement_descriptor: `Soundwise ${plan} plan: ${frequency}`,

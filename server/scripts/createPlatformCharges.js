@@ -9,6 +9,8 @@ const sgMail = require('@sendgrid/mail');
 const sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const database = require('../../database/index');
+const updateStripeAccount = require('./updateStripeAccounts.js')
+    .updateStripeAccount;
 
 module.exports.createSubscription = async (req, res) => {
   const options = {
@@ -74,7 +76,16 @@ module.exports.createSubscription = async (req, res) => {
         });
     }
   } else {
-    // if subscription exists, update existing subscription
+    // if subscription exists
+
+    // update publisher's payout interval to daily when plan is 'pro' or 'platinum'
+    const stripe_user_id = (await firebase
+      .database()
+      .ref(`publishers/${req.body.publisherId}/stripe_user_id`)
+      .once('value')).val();
+    updateStripeAccount(stripe_user_id, req.body.publisherId, req.body.publisherPlan);
+
+    // update existing subscription
     const subscription = await stripe.subscriptions.retrieve(req.body.subscriptionID);
     options.items[0].id = subscription.items.data[0].id;
     stripe.subscriptions
