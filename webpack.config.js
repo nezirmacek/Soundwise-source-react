@@ -15,6 +15,7 @@ const envKeys = Object.keys(env).reduce(
 );
 
 module.exports = {
+  mode: 'development',
   context: __dirname,
   node: {
     // console: 'empty',
