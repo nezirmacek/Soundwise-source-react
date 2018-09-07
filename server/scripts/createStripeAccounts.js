@@ -23,13 +23,21 @@ module.exports.createStripeAccount = (req, res) => {
       return JSON.parse(response);
     })
     .then(response => {
-      stripe.accounts.update(stripe_user_id, {
-        payout_schedule: {
+      let payout_schedule;
+      if (req.body.publisherPlan === 'pro' || req.body.publisherPlan === 'platinum') {
+        payout_schedule = {
+          interval: 'daily',
+        };
+      } else {
+        payout_schedule = {
           // monthly payouts, with two week delay
           delay_days: 3,
           interval: 'monthly',
           monthly_anchor: 1,
-        },
+        };
+      }
+      stripe.accounts.update(stripe_user_id, {
+        payout_schedule,
         metadata: {
           publisherId: req.body.publisherId,
         },
