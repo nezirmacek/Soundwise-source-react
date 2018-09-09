@@ -91,7 +91,21 @@ npm run-script start
 
 ### Start the server.js and webpack bundle compiler in development mode (stripe testing)
 
-Set *mode: 'development',* line in *webpack.config.js*, run:
+Load development environment variables with:
+```
+set -o allexport
+source api-development.env
+source db.env
+source client-development.env
+set +o allexport
+```
+
+Set **mode: 'development',** line and comment **devtool: 'source-map',** in **webpack.config.js**:
+```
+  mode: 'development',
+  // devtool: 'source-map',
+```
+then run:
 ```
 NODE_ENV=dev node --inspect server/server.js
 NODE_ENV=dev npm run-script start
@@ -139,7 +153,20 @@ node .
 
 # Server update:
 
-Set *mode: 'production',* line in *webpack.config.js*
+Load production environment variables with:
+```
+set -o allexport
+source api-production.env
+source db.env
+source client-production.env
+set +o allexport
+```
+
+Set **mode: 'production',** line and uncomment **devtool: 'source-map',** in **webpack.config.js**:
+```
+  mode: 'production',
+  devtool: 'source-map',
+```
 
 Run webpack bundle compiler:
 
@@ -160,7 +187,7 @@ additional info: https://digitalocean.com/community/tutorials/how-to-set-up-auto
 Push to deployed server
 >git push live --force
 
-copy uglified *bundle.js/bundle.js.map* files to the server:
+copy uglified **bundle.js/bundle.js.map** files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
 
 for example, if under root folder:
