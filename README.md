@@ -94,7 +94,7 @@ npm run-script start
 Load development environment variables with:
 ```
 set -o allexport
-source api-development.env
+source api.env
 source db.env
 source client-development.env
 set +o allexport
@@ -156,7 +156,7 @@ node .
 Load production environment variables with:
 ```
 set -o allexport
-source api-production.env
+source api.env
 source db.env
 source client-production.env
 set +o allexport
