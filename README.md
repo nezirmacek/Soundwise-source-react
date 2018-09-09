@@ -194,7 +194,7 @@ for example, if under root folder:
 > scp ./client/bundle.js* root@162.243.196.88:/var/www/mysoundwise.com/client/
 
 under root(!) on remote server run:
->pm2 restart soundwise
+>pm2 restart server
 
 
 # Issues:
