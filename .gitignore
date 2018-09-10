@@ -19,12 +19,9 @@ coverage
 node_modules
 npm-debug.log
 
-
 /_.*
 _.*
 _*
-
-
 
 npm-debug.log
 .DS_Store
@@ -55,4 +52,6 @@ coverage
 .vscode
 
 # Build outputs
+client/bundle.js
+client/bundle.js.map
 
