@@ -4,7 +4,14 @@ const webpack = require('webpack');
 const dotenv = require('dotenv');
 
 const env =
-  dotenv.config({ path: path.resolve(process.cwd(), 'client.env') }) || {};
+  dotenv.config({
+    path: path.resolve(
+      process.cwd(),
+      `client-${
+        process.env.NODE_ENV === 'dev' ? 'development' : 'production'
+      }.env`
+    ),
+  }) || {};
 
 const envKeys = Object.keys(env).reduce(
   (prev, next) => ({
