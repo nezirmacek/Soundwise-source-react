@@ -568,6 +568,18 @@ class _AppSignup extends Component {
   }
 
   handleChange(prop, e) {
+    if (e.target.value) {
+      // cache values (bug #58)
+      if (prop === 'firstName') {
+        localStorage.setItem('soundwiseSignupFName', e.target.value);
+      }
+      if (prop === 'lastName') {
+        localStorage.setItem('soundwiseSignupLName', e.target.value);
+      }
+      if (prop === 'email') {
+        localStorage.setItem('soundwiseSignupEmail', e.target.value);
+      }
+    }
     this.setState({ [prop]: e.target.value });
   }
 
