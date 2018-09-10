@@ -153,7 +153,7 @@ node .
 
 # Server update:
 
-Load production environment variables with:
+Load production environment variables (both on the server and before bundle compiling) with:
 ```
 set -o allexport
 source api.env
