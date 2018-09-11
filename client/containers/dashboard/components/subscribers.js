@@ -4,6 +4,18 @@ import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
 import { CSVLink, CSVDownload } from 'react-csv';
+import Autosuggest from 'react-autosuggest';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import { withStyles } from '@material-ui/core/styles';
+import deburr from 'lodash/deburr';
+
+
+// Need to start migrating to latest material ui, for now new components can co-exist with older.
+// https://material-ui.com/guides/migration-v0x/
 
 import {
   minLengthValidator,
@@ -20,7 +32,69 @@ import InviteSubscribersModal from './invite_subscribers_modal';
 import Subscriber from './subscriber';
 import PendingInviteModal from './pending_invite_modal';
 
-export default class Subscribers extends Component {
+function getSuggestions(value, subscribers) {
+  const inputValue = deburr(value.trim()).toLowerCase();
+  const inputLength = inputValue.length;
+  let count = 0;
+
+  return inputLength === 0
+    ? []
+    : subscribers.filter(subscriber => {
+        if (typeof subscriber.firstName != 'undefined'){
+          const keep =
+          count < 5 && subscriber.firstName.slice(0, inputLength).toLowerCase() === inputValue;
+
+          if (keep) {
+            count += 1;
+          }     
+          return keep;   
+        }
+        return false;
+      });
+}
+
+function renderSuggestion(suggestion, { query, isHighlighted }) {
+  const matches = match(suggestion.firstName, query);
+  const name = `${suggestion.firstName} ${suggestion.lastName}`
+  const parts = parse(name, matches);
+
+  return (
+    <MenuItem selected={isHighlighted} component="div">
+      <div>
+        {parts.map((part, index) => {
+          return part.highlight ? (
+            <span key={String(index)} style={{ fontWeight: 500 }}>
+              {part.text}
+            </span>
+          ) : (
+            <strong key={String(index)} style={{ fontWeight: 300 }}>
+              {part.text}
+            </strong>
+          );
+        })}
+      </div>
+    </MenuItem>
+  );
+}
+
+function renderInputComponent(inputProps) {
+  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+  return (
+          <div>
+            <input
+            {...inputProps}
+            type="text"
+            style={styles.searchTerm}
+            placeholder="Search subscribers"
+            />
+            <button type="submit" style={styles.searchButton}>
+              <i className="fa fa-search" />
+            </button>
+          </div>
+  );
+}
+
+class Subscribers extends Component {
   constructor(props) {
     super(props);
 
@@ -34,15 +108,21 @@ export default class Subscribers extends Component {
       showModal: false,
       showPendingInvite: false,
       modalOpen: false,
+      suggestions: [],
+      value: '',
     };
 
     this.subscribers = [];
+    this.allSubscribers = [];
 
     this.retrieveSubscriberInfo = this.retrieveSubscriberInfo.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
     this.deleteSubscriber = this.deleteSubscriber.bind(this);
     this.handleModal = this.handleModal.bind(this);
     this.handlePendingInvite = this.handlePendingInvite.bind(this);
+    this.handleSuggestionsFetchRequested = this.handleSuggestionsFetchRequested.bind(this);
+    this.handleSuggestionsClearRequested = this.handleSuggestionsClearRequested.bind(this);
+    this.handleSuggestionSelected = this.handleSuggestionSelected.bind(this);
   }
 
   componentDidMount() {
@@ -109,6 +189,7 @@ export default class Subscribers extends Component {
                   );
                 }
               });
+              that.allSubscribers = res;      
               that.setState({
                 soundcasts_managed: _soundcasts_managed,
                 currentSoundcastID: _soundcasts_managed[0].id,
@@ -188,6 +269,7 @@ export default class Subscribers extends Component {
                   return -1;
                 }
               });
+              that.allSubscribers = res;      
               that.setState({
                 currentSoundcastID,
                 currentSoundcast: _soundcasts_managed[0],
@@ -438,6 +520,44 @@ export default class Subscribers extends Component {
     }
   }
 
+  handleSuggestionsFetchRequested({ value }) {
+    this.setState({
+      suggestions: getSuggestions(value, this.allSubscribers)
+    });  
+    //Perform setState with updater function, as it depends on previous state.
+    this.setState((state, props) => ({
+      subscribers: state.suggestions
+    }));    
+  };
+
+  handleSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
+    this.setState({
+      subscribers: [suggestion],
+    });
+
+  }
+  handleSuggestionsClearRequested (value) {
+    this.setState({
+      suggestions: [],
+    });
+  };
+
+  handleChange = name => (event, prop) => {
+    const { newValue } = prop;
+    let selectedSubscriber = this.allSubscribers.filter(subscriber => subscriber.firstName === newValue)
+    if (selectedSubscriber.length === 0){
+      selectedSubscriber = this.allSubscribers;
+    }
+    this.setState({
+      [name]: newValue,
+      subscribers: selectedSubscriber
+    });
+  };
+
+  getSuggestionValue(suggestion) {
+    return suggestion.firstName;
+  }
+
   render() {
     const {
       soundcasts_managed,
@@ -446,13 +566,26 @@ export default class Subscribers extends Component {
       currentSoundcast,
       currentSoundcastID,
       modalOpen,
+      value, 
+      suggestions,
     } = this.state;
     const that = this;
     const { history } = this.props;
+    const { classes } = this.props;
 
     let csvData = [['First Name', 'Last Name', 'Email']];
 
-    subscribers.forEach(subscriber => {
+    const autosuggestProps = {
+      renderInputComponent,
+      suggestions: this.state.suggestions,
+      onSuggestionsFetchRequested: this.handleSuggestionsFetchRequested,
+      onSuggestionSelected: this.handleSuggestionSelected,
+      onSuggestionsClearRequested: this.handleSuggestionsClearRequested,
+      getSuggestionValue: this.getSuggestionValue,
+      renderSuggestion,
+    };
+
+    this.allSubscribers.forEach(subscriber => {
       if (subscriber.email && subscriber.email[0]) {
         csvData.push([
           subscriber.firstName,
@@ -549,14 +682,26 @@ export default class Subscribers extends Component {
               className="col-md-4 col-sm-12 col-xs-12"
               style={styles.searchWrap}
             >
-              <input
-                type="text"
-                style={styles.searchTerm}
-                placeholder="Search subscribers"
+              <Autosuggest
+                {...autosuggestProps}
+                inputProps={{
+                  classes,
+                  value: this.state.value,
+                  onChange: this.handleChange('value'),
+                  placeholder: "Search subscribers"            
+                }}
+                theme={{
+                  container: classes.container,
+                  suggestionsContainerOpen: classes.suggestionsContainerOpen,
+                  suggestionsList: classes.suggestionsList,
+                  suggestion: classes.suggestion,
+                }}
+                renderSuggestionsContainer={options => (
+                  <Paper {...options.containerProps} square>
+                    {options.children}
+                  </Paper>
+                )}
               />
-              <button type="submit" style={styles.searchButton}>
-                <i className="fa fa-search" />
-              </button>
             </div>
           </row>
           <row style={{ marginBottom: 25 }}>
@@ -733,13 +878,12 @@ const styles = {
   },
   searchTerm: {
     position: 'relative',
-    float: 'left',
-    width: '100%',
+    // marginTop: '2px',
     border: '1px solid ',
     borderColor: Colors.link,
-    padding: '5px',
-    // marginTop: '2px',
     height: '35px',
+    marginBottom: '0px',
+    // marginTop: '2px',
     borderRadius: '5px',
     outline: 'none',
     fontSize: 16,
@@ -853,3 +997,37 @@ const styles = {
     verticalAlign: 'middle',
   },
 };
+
+const autosuggestStyles = theme => ({
+  root: {
+    height: 250,
+    flexGrow: 1,
+  },
+  container: {
+    position: 'relative',
+    float: 'left',
+    width: '100%',
+    marginBottom: '20px',
+  },
+  suggestionsContainerOpen: {
+    position: 'absolute',
+    zIndex: 1,
+    marginTop: '8px',
+    left: 0,
+    right: 0,
+  },
+  suggestion: {
+    display: 'block',
+  },
+  suggestionsList: {
+    margin: 0,
+    padding: 0,
+    listStyleType: 'none',
+  },
+  divider: {
+    height: 8 * 2,
+  },
+});
+
+
+export default withStyles(autosuggestStyles)(Subscribers);
