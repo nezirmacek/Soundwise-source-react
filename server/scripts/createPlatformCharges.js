@@ -45,6 +45,7 @@ module.exports.createSubscription = async (req, res) => {
           stripe.subscriptions
             .create(options)
             .then(subscription => {
+              console.log('1, subscription = ', subscription);
               res.send(subscription);
             })
             .catch(err => {
@@ -65,6 +66,7 @@ module.exports.createSubscription = async (req, res) => {
       stripe.subscriptions
         .create(options)
         .then(subscription => {
+          console.log('2, subscription = ', subscription);
           res.send(subscription);
         })
         .catch(err => {
@@ -88,10 +90,13 @@ module.exports.createSubscription = async (req, res) => {
 
     // update existing subscription
     const subscription = await stripe.subscriptions.retrieve(req.body.subscriptionID);
+    console.log('publisherId = ', publisherId);
+    console.log('3, subscription = ', subscription);
     options.items[0].id = subscription.items.data[0].id;
     stripe.subscriptions
       .update(req.body.subscriptionID, options)
       .then(subscription => {
+        console.log('4, subscription = ', subscription);
         res.send(subscription);
       })
       .catch(err => {
