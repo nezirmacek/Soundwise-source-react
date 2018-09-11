@@ -45,6 +45,7 @@ module.exports.createSubscription = async (req, res) => {
           stripe.subscriptions
             .create(options)
             .then(subscription => {
+              console.log('1, subscription = ', subscription);
               res.send(subscription);
             })
             .catch(err => {
@@ -65,6 +66,7 @@ module.exports.createSubscription = async (req, res) => {
       stripe.subscriptions
         .create(options)
         .then(subscription => {
+          console.log('2, subscription = ', subscription);
           res.send(subscription);
         })
         .catch(err => {
@@ -77,20 +79,24 @@ module.exports.createSubscription = async (req, res) => {
     }
   } else {
     // if subscription exists
+    const publisherId = req.body.publisherID;
 
     // update publisher's payout interval to daily when plan is 'pro' or 'platinum'
     const stripe_user_id = (await firebase
       .database()
-      .ref(`publishers/${req.body.publisherId}/stripe_user_id`)
+      .ref(`publishers/${publisherId}/stripe_user_id`)
       .once('value')).val();
-    updateStripeAccount(stripe_user_id, req.body.publisherId, req.body.publisherPlan);
+    updateStripeAccount(stripe_user_id, publisherId, req.body.publisherPlan);
 
     // update existing subscription
     const subscription = await stripe.subscriptions.retrieve(req.body.subscriptionID);
+    console.log('publisherId = ', publisherId);
+    console.log('3, subscription = ', subscription);
     options.items[0].id = subscription.items.data[0].id;
     stripe.subscriptions
       .update(req.body.subscriptionID, options)
       .then(subscription => {
+        console.log('4, subscription = ', subscription);
         res.send(subscription);
       })
       .catch(err => {
