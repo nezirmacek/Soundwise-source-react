@@ -77,13 +77,14 @@ module.exports.createSubscription = async (req, res) => {
     }
   } else {
     // if subscription exists
+    const publisherId = req.body.publisherID;
 
     // update publisher's payout interval to daily when plan is 'pro' or 'platinum'
     const stripe_user_id = (await firebase
       .database()
-      .ref(`publishers/${req.body.publisherId}/stripe_user_id`)
+      .ref(`publishers/${publisherId}/stripe_user_id`)
       .once('value')).val();
-    updateStripeAccount(stripe_user_id, req.body.publisherId, req.body.publisherPlan);
+    updateStripeAccount(stripe_user_id, publisherId, req.body.publisherPlan);
 
     // update existing subscription
     const subscription = await stripe.subscriptions.retrieve(req.body.subscriptionID);
