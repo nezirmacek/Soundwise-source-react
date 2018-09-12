@@ -32,6 +32,18 @@ import InviteSubscribersModal from './invite_subscribers_modal';
 import Subscriber from './subscriber';
 import PendingInviteModal from './pending_invite_modal';
 
+
+function matchEmail(emails, inputLength, inputValue) {
+  if (typeof emails != 'undefined') {
+    for(var i = 0; i < emails.length; i++) {
+      if (emails[i].slice(0, inputLength).toLowerCase() === inputValue) {
+        return true;
+      }
+    }    
+  }
+  return false;
+}
+
 function getSuggestions(value, subscribers) {
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
@@ -42,7 +54,11 @@ function getSuggestions(value, subscribers) {
     : subscribers.filter(subscriber => {
         if (typeof subscriber.firstName != 'undefined'){
           const keep =
-          count < 5 && subscriber.firstName.slice(0, inputLength).toLowerCase() === inputValue;
+          count < 5 && (
+            (subscriber.firstName.slice(0, inputLength).toLowerCase() === inputValue) ||
+            (subscriber.lastName.slice(0, inputLength).toLowerCase() === inputValue) ||
+            matchEmail(subscriber.email, inputLength, inputValue)
+          )
 
           if (keep) {
             count += 1;
@@ -54,13 +70,17 @@ function getSuggestions(value, subscribers) {
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.firstName, query);
-  const name = `${suggestion.firstName} ${suggestion.lastName}`
+  let matches = match(suggestion.firstName, query);
+  let name = `${suggestion.firstName} ${suggestion.lastName}`
+  if (matches.length === 0) {
+    matches = match(suggestion.lastName, query);
+    name = `${suggestion.lastName} ${suggestion.firstName} `
+  }
   const parts = parse(name, matches);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
-      <div>
+      <div style={{ fontSize: 16 }}>
         {parts.map((part, index) => {
           return part.highlight ? (
             <span key={String(index)} style={{ fontWeight: 500 }}>
@@ -396,11 +416,11 @@ class Subscribers extends Component {
   }
 
   deleteSubscriber() {
-    const { currentSoundcastID, currentSoundcast, subscribers } = this.state;
+    const { currentSoundcastID, currentSoundcast } = this.state;
     const { userInfo } = this.props;
     const publisherID = userInfo.publisherID;
 
-    this.subscribers = subscribers.slice(0);
+    this.subscribers = this.allSubscribers.slice(0);
     if (
       confirm(
         `Are you sure you want to unsubscribe these listeners from ${
@@ -509,6 +529,7 @@ class Subscribers extends Component {
             return -1;
           }
         });
+        this.allSubscribers = this.subscribers.slice(0);
         this.setState({
           subscribers: this.subscribers,
           checked: false,
@@ -1028,6 +1049,5 @@ const autosuggestStyles = theme => ({
     height: 8 * 2,
   },
 });
-
 
 export default withStyles(autosuggestStyles)(Subscribers);
