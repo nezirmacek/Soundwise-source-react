@@ -186,12 +186,16 @@ module.exports.createUpdatePlans = async (req, res) => {
 };
 
 module.exports.handleRecurringPayment = async (req, res) => {
-  handlePayment(req.body).then(
-    response => (response ? res.send(response) : res.status(500).send({}))
-  );
+  recurringPayment(req.body).then(result => {
+    if (result && result.errMsg) {
+      res.status(500).send(result.errMsg);
+    } else {
+      res.send(result);
+    }
+  });
 };
 
-module.exports.recurringPayment = async body => {
+const recurringPayment = async body => {
   const {
     source,
     receipt_email,
@@ -212,7 +216,7 @@ module.exports.recurringPayment = async body => {
     const prices = snapshot.val();
     let errMsg = `Error cannot obtain soundcast prices ${soundcastID}`;
     if (!prices || !prices.length) {
-      return false;
+      return { errMsg };
     }
     const allCoupons = [];
     prices.forEach(i => {
@@ -223,11 +227,11 @@ module.exports.recurringPayment = async body => {
     const usedCoupon = allCoupons.find(i => i.code === coupon);
     if (!usedCoupon) {
       errMsg = `Error cannot obtain soundcast used coupon ${soundcastID} ${coupon}`;
-      return false;
+      return { errMsg };
     }
     if (isTrial && usedCoupon.couponType !== 'trial_period') {
       errMsg = `Error coupon incorrect trial property ${soundcastID} ${coupon} ${isTrial}`;
-      return false;
+      return { errMsg };
     }
   }
 
@@ -302,7 +306,7 @@ module.exports.recurringPayment = async body => {
         (err, subscription) => {
           if (err) {
             console.log(err);
-            return false;
+            return { errMsg: err && err.raw && err.raw.message };
           }
           return Object.assign({}, subscription, customers);
         }
@@ -310,9 +314,10 @@ module.exports.recurringPayment = async body => {
     })
     .catch(err => {
       console.log(err);
-      return false;
+      return { errMsg: err.toString() };
     });
 };
+module.exports.recurringPayment = recurringPayment;
 
 function createCustomer(
   platformCustomer,
