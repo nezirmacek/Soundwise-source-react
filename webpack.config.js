@@ -7,9 +7,9 @@ const env =
   dotenv.config({
     path: path.resolve(
       process.cwd(),
-      `client-${
-        process.env.NODE_ENV === 'dev' ? 'development' : 'production'
-      }.env`
+      process.env.NODE_ENV === 'dev'
+        ? 'client-development.env'
+        : 'client-production.env'
     ),
   }) || {};
 

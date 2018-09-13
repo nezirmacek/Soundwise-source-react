@@ -105,10 +105,13 @@ Set **mode: 'development',** line and comment **devtool: 'source-map',** in **we
   mode: 'development',
   // devtool: 'source-map',
 ```
-then run:
+To run server:
 ```
-NODE_ENV=dev node --inspect server/server.js
-NODE_ENV=dev npm run-script start
+node --inspect server/server.js
+```
+To run client (in second terminal, with same environment imports):
+```
+npm run-script start
 ```
 
 ### Start loppback api
