@@ -29,6 +29,7 @@ export default class SoundcastsManaged extends Component {
       userInfo: { soundcasts_managed: {} },
       newSoundcastModal: false,
       upgradeModal: false,
+      upgradeModalTitle: '',
       showFeedInputs: false,
       emailNotFoundError: false,
       feedSubmitting: false,
@@ -47,6 +48,7 @@ export default class SoundcastsManaged extends Component {
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.resend = this.resend.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
     this.handleAddNewSoundcast = this.handleAddNewSoundcast.bind(this);
   }
 
@@ -90,19 +92,26 @@ export default class SoundcastsManaged extends Component {
     });
   }
 
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (userInfo.publisher && userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime) {
+      return false
+    }
+    return true
+  }
+
   handleAddNewSoundcast(currentSoundcastCount) {
     const { userInfo } = this.props;
     if (userInfo.publisher) {
-      const curTime = moment().format('X');
+      
       // if basic plan or end current plan then limit to 1 soundcast
-      if ((currentSoundcastCount === 0) || (userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime)) {
+      if (currentSoundcastCount === 0 || !this.isFreeAccount()) {
         this.setState({
           newSoundcastModal: true,
         });
       } else {
-        this.setState({
-          upgradeModal: true,
-        });
+        this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create more soundcasts' });
       }
     }
   }
@@ -403,9 +412,15 @@ export default class SoundcastsManaged extends Component {
               </Link>
             </li>
             <li role="presentation">
-              <Link to="/dashboard/soundcasts/bundles">
-                <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
-              </Link>
+              {this.isFreeAccount() ?
+                <a onClick={() => this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create soundcast bundles' })}>
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
+                </a>
+                :
+                <Link to="/dashboard/soundcasts/bundles">
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
+                </Link>
+              }
             </li>
           </ul>
           {_soundcasts_managed.map((soundcast, i) => {
@@ -825,7 +840,7 @@ export default class SoundcastsManaged extends Component {
 
               <div>
                 <div style={{ ...styles.dialogTitle }}>
-                  Please upgrade to create more soundcasts.
+                  {this.state.upgradeModalTitle}
                 </div>
                 <OrangeSubmitButton
                   styles={{
