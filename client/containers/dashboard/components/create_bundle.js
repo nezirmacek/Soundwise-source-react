@@ -294,7 +294,6 @@ export default class CreateBundle extends Component {
   submit(publish) {
     let {
       title,
-      imageURL,
       subscribers,
       short_description,
       long_description,
@@ -305,6 +304,11 @@ export default class CreateBundle extends Component {
       prices,
       confirmationEmail,
     } = this.state;
+    const imageURL =
+      this.state.imageURL ||
+      `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+        title
+      )}`;
     if (title.length == 0) {
       alert('Please enter a bundle title before saving.');
       return;
@@ -337,11 +341,7 @@ export default class CreateBundle extends Component {
           bundle: true,
           creatorID,
           soundcastsIncluded: soundcastsArr,
-          imageURL: imageURL
-            ? imageURL
-            : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
-                title
-              )}`,
+          imageURL,
           short_description,
           long_description: JSON.stringify(
             convertToRaw(long_description.getCurrentContent())
@@ -399,6 +399,9 @@ export default class CreateBundle extends Component {
             publisherId: userInfo.publisherID,
             updateDate: last_update,
             title,
+            imageURL,
+            landingPage,
+            published: publish,
           })
             .then(async res => {
               if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
@@ -483,9 +486,8 @@ export default class CreateBundle extends Component {
   }
 
   handleCheck() {
-    const { landingPage } = this.state;
     this.setState({
-      landingPage: !landingPage,
+      landingPage: !this.state.landingPage,
     });
   }
 
