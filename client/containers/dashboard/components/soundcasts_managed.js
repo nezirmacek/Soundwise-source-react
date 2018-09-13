@@ -104,15 +104,19 @@ export default class SoundcastsManaged extends Component {
   handleAddNewSoundcast(currentSoundcastCount) {
     const { userInfo } = this.props;
     if (userInfo.publisher) {
-      
-      // if basic plan or end current plan then limit to 1 soundcast
-      if (currentSoundcastCount === 0 || !this.isFreeAccount()) {
-        this.setState({
-          newSoundcastModal: true,
-        });
-      } else {
+      const is_free_account = this.isFreeAccount();
+      // if plus plan and has already 10 soundcast then limit
+      if (currentSoundcastCount >= 10 && !is_free_account && userInfo.publisher.plan === "plus") {
         this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create more soundcasts' });
+        return;
       }
+      // if basic plan or end current plan then limit to 1 soundcast
+      if (currentSoundcastCount > 0 && is_free_account) {
+        this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create more soundcasts' });
+        return;
+      }
+      // allow
+      this.setState({ newSoundcastModal: true });
     }
   }
 
