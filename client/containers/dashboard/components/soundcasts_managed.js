@@ -28,6 +28,7 @@ export default class SoundcastsManaged extends Component {
       currentEpisode: null,
       userInfo: { soundcasts_managed: {} },
       newSoundcastModal: false,
+      upgradeModal: false,
       showFeedInputs: false,
       emailNotFoundError: false,
       feedSubmitting: false,
@@ -46,6 +47,7 @@ export default class SoundcastsManaged extends Component {
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.resend = this.resend.bind(this);
+    this.handleAddNewSoundcast = this.handleAddNewSoundcast.bind(this);
   }
 
   componentDidMount() {
@@ -58,7 +60,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.userInfo) {
+      if (nextProps.userInfo) {
       const { userInfo } = nextProps;
       this.setState({
         userInfo,
@@ -86,6 +88,23 @@ export default class SoundcastsManaged extends Component {
         episode,
       },
     });
+  }
+
+  handleAddNewSoundcast(currentSoundcastCount) {
+    const { userInfo } = this.props;
+    if (userInfo.publisher) {
+      const curTime = moment().format('X');
+      // if basic plan or end current plan then limit to 1 soundcast
+      if ((currentSoundcastCount === 0) || (userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime)) {
+        this.setState({
+          newSoundcastModal: true,
+        });
+      } else {
+        this.setState({
+          upgradeModal: true,
+        });
+      }
+    }
   }
 
   handleModal(soundcast) {
@@ -177,6 +196,7 @@ export default class SoundcastsManaged extends Component {
     this.setState({
       feedSubmitting: false,
       newSoundcastModal: false,
+      upgradeModal: false,
       showFeedInputs: false,
       emailNotFoundError: false,
       podcastTitle: '',
@@ -588,11 +608,7 @@ export default class SoundcastsManaged extends Component {
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
                 label="Add New Soundcast"
-                onClick={() =>
-                  that.setState({
-                    newSoundcastModal: true,
-                  })
-                }
+                onClick={() => this.handleAddNewSoundcast(_soundcasts_managed.length)}
               />
             </div>
           </div>
@@ -798,6 +814,34 @@ export default class SoundcastsManaged extends Component {
                       </a>
                     </div>
                   ))}
+            </Dialog>
+            <Dialog modal={true} open={this.state.upgradeModal}>
+              <div
+                style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+                onClick={() => this.closeSubmitModal()}
+              >
+                &#10799; {/* Close button (X) */}
+              </div>
+
+              <div>
+                <div style={{ ...styles.dialogTitle }}>
+                  Please upgrade to create more soundcasts.
+                </div>
+                <OrangeSubmitButton
+                  styles={{
+                    borderColor: Colors.link,
+                    backgroundColor: Colors.link,
+                    color: '#464646',
+                    width: 400,
+                  }}
+                  label="Change Plan"
+                  onClick={() =>
+                    that.props.history.push({
+                      pathname: '/pricing',
+                    })
+                  }
+                />
+              </div>
             </Dialog>
           </MuiThemeProvider>
         </div>
