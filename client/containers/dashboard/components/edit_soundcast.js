@@ -121,6 +121,8 @@ export default class EditSoundcast extends Component {
     this.submit = this.submit.bind(this);
     this.onEditorStateChange = this.onEditorStateChange.bind(this);
     this.showIntroOutro = this.showIntroOutro.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -199,6 +201,7 @@ export default class EditSoundcast extends Component {
       itunesImage,
       podcastFeedVersion,
       autoSubmitPodcast,
+      published,
     } = soundcast;
     // const {title0, subscribed0, imageURL0, short_description0,
     //        long_description0, landingPage0,
@@ -252,8 +255,31 @@ export default class EditSoundcast extends Component {
       subscribed: subscribed || this.state.subscribed,
       features: features || this.state.features,
       prices: prices || this.state.prices,
+      published,
     });
     userInfo.publisher && this.checkUserStatus(userInfo);
+  }
+
+  isShownSoundcastSignup() {
+    const { userInfo } = this.props;
+    if (this.state.published === true) {
+      if (!this.state.forSale) {
+        return true;
+      }
+      if (this.state.forSale === true && !this.isFreeAccount() && (userInfo.publisher.plan === 'pro' ||  userInfo.publisher.plan === 'platinum')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (userInfo.publisher && userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime) {
+      return false
+    }
+    return true
   }
 
   checkUserStatus(userInfo) {
@@ -1890,22 +1916,24 @@ export default class EditSoundcast extends Component {
                     </span>
                   </a>
                 </li>
-                <li role="presentation">
-                  <a
-                    target="_blank"
-                    href={`https://mysoundwise.com/signup/soundcast_user/${id}`}
-                  >
-                    <span
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 600,
-                        color: Colors.link,
-                      }}
+                {this.isShownSoundcastSignup() &&
+                  <li role="presentation">
+                    <a
+                      target="_blank"
+                      href={`https://mysoundwise.com/signup/soundcast_user/${id}`}
                     >
-                      View Signup Form
-                    </span>
-                  </a>
-                </li>
+                      <span
+                        style={{
+                          fontSize: 18,
+                          fontWeight: 600,
+                          color: Colors.link,
+                        }}
+                      >
+                        View Signup Form
+                      </span>
+                    </a>
+                  </li>
+                }
               </ul>
             )) ||
               null}

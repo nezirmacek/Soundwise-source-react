@@ -48,6 +48,7 @@ export default class SoundcastsManaged extends Component {
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.resend = this.resend.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
     this.isFreeAccount = this.isFreeAccount.bind(this);
     this.handleAddNewSoundcast = this.handleAddNewSoundcast.bind(this);
   }
@@ -90,6 +91,19 @@ export default class SoundcastsManaged extends Component {
         episode,
       },
     });
+  }
+
+  isShownSoundcastSignup(soundcast) {
+    const { userInfo } = this.props;
+    if (soundcast.published === true) {
+      if (!soundcast.forSale) {
+        return true;
+      }
+      if (soundcast.forSale === true && !this.isFreeAccount() && (userInfo.publisher.plan === 'pro' ||  userInfo.publisher.plan === 'platinum')) {
+        return true;
+      }
+    }
+    return false;
   }
 
   isFreeAccount() {
@@ -498,22 +512,24 @@ export default class SoundcastsManaged extends Component {
                               <strong>Landing page</strong>
                             </span>
                           </a>
-                          <a
-                            target="_blank"
-                            href={`https://mysoundwise.com/signup/soundcast_user/${
-                              soundcast.id
-                            }`}
-                            style={{ paddingLeft: 15 }}
-                          >
-                            <span
-                              datatoggle="tooltip"
-                              dataplacement="top"
-                              title="view soundcast signup form"
-                              style={{ color: Colors.link }}
+                          {this.isShownSoundcastSignup(soundcast) &&
+                            <a
+                              target="_blank"
+                              href={`https://mysoundwise.com/signup/soundcast_user/${
+                                soundcast.id
+                              }`}
+                              style={{ paddingLeft: 15 }}
                             >
-                              <strong>Signup form</strong>
-                            </span>
-                          </a>
+                              <span
+                                datatoggle="tooltip"
+                                dataplacement="top"
+                                title="view soundcast signup form"
+                                style={{ color: Colors.link }}
+                              >
+                                <strong>Signup form</strong>
+                              </span>
+                            </a>
+                          }
                           {(soundcast.prices &&
                             soundcast.prices[0].price > 0 && (
                               <a
