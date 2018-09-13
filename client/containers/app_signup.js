@@ -379,7 +379,7 @@ class _AppSignup extends Component {
 
             const soundcastId = `${moment().format('x')}s`;
 
-            const imageURL = 'https://s3.amazonaws.com/soundwiseinc/default+image.jpg',
+            const imageURL = 'https://s3.amazonaws.com/soundwiseinc/default+image.jpg';
             const newSoundcast = {
               title: 'Default Soundcast',
               imageURL,
