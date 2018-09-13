@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
-import { CSVLink, CSVDownload } from 'react-csv';
+import { CSVLink } from 'react-csv';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
@@ -17,19 +15,12 @@ import deburr from 'lodash/deburr';
 // Need to start migrating to latest material ui, for now new components can co-exist with older.
 // https://material-ui.com/guides/migration-v0x/
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
-import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
-  TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 import InviteSubscribersModal from './invite_subscribers_modal';
-import Subscriber from './subscriber';
 import PendingInviteModal from './pending_invite_modal';
 
 
@@ -114,6 +105,7 @@ function renderInputComponent(inputProps) {
   );
 }
 
+
 class Subscribers extends Component {
   constructor(props) {
     super(props);
@@ -143,94 +135,20 @@ class Subscribers extends Component {
     this.handleSuggestionsFetchRequested = this.handleSuggestionsFetchRequested.bind(this);
     this.handleSuggestionsClearRequested = this.handleSuggestionsClearRequested.bind(this);
     this.handleSuggestionSelected = this.handleSuggestionSelected.bind(this);
+    this.onMountOrReceiveProps = this.onMountOrReceiveProps.bind(this);
+    this.retrieveSubscribers = this.retrieveSubscribers.bind(this);
   }
 
   componentDidMount() {
-    const that = this;
-    const { userInfo } = this.props;
-    if (userInfo.publisher) {
-      if (
-        (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
-      ) {
-        this.setState({
-          modalOpen: true,
-        });
-      }
-    }
-    if (
-      this.props.userInfo.soundcasts_managed &&
-      this.props.userInfo.publisher
-    ) {
-      if (
-        typeof Object.values(this.props.userInfo.soundcasts_managed)[0] ==
-        'object'
-      ) {
-        const that = this;
-        const { userInfo } = this.props;
-        const _subscribers = [];
-        const _soundcasts_managed = [];
-
-        for (let id in userInfo.soundcasts_managed) {
-          const _soundcast = JSON.parse(
-            JSON.stringify(userInfo.soundcasts_managed[id])
-          );
-          if (_soundcast.title) {
-            _soundcast.id = id;
-            _soundcasts_managed.push(_soundcast);
-          }
-        }
-        // console.log('_soundcasts_managed: ', _soundcasts_managed);
-        this.setState({
-          soundcasts_managed: _soundcasts_managed,
-        });
-        const promises = [];
-
-        if (!this.state.currentSoundcastID) {
-          //if loading for the first time, retrieve subscribers
-          for (let userId in _soundcasts_managed[0].subscribed) {
-            promises.push(this.retrieveSubscriberInfo(userId));
-          }
-
-          Promise.all(promises).then(
-            res => {
-              const currentSoundcastID = _soundcasts_managed[0].id;
-              res.sort((a, b) => {
-                if (
-                  a.soundcasts &&
-                  b.soundcasts &&
-                  b.soundcasts[currentSoundcastID] &&
-                  a.soundcasts[currentSoundcastID]
-                ) {
-                  return (
-                    b.soundcasts[currentSoundcastID].date_subscribed -
-                    a.soundcasts[currentSoundcastID].date_subscribed
-                  );
-                }
-              });
-              that.allSubscribers = res;      
-              that.setState({
-                soundcasts_managed: _soundcasts_managed,
-                currentSoundcastID: _soundcasts_managed[0].id,
-                currentSoundcast: _soundcasts_managed[0],
-                // subscribers: that.subscribers,
-                subscribers: res,
-              });
-              // that.subscribers = [];
-            },
-            err => {
-              console.log('promise error: ', err);
-            }
-          );
-        }
-      }
-    }
+    this.onMountOrReceiveProps(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    const that = this;
-    const { userInfo } = nextProps;
+    this.onMountOrReceiveProps(nextProps);
+  }
+
+  onMountOrReceiveProps(props){
+    const { userInfo } = props;
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
@@ -242,14 +160,11 @@ class Subscribers extends Component {
         });
       }
     }
-    if (nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
+    if (userInfo.soundcasts_managed && userInfo.publisher) {
       if (
-        typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] ==
+        typeof Object.values(userInfo.soundcasts_managed)[0] ==
         'object'
       ) {
-        const that = this;
-        const { userInfo } = nextProps;
-        const _subscribers = [];
         const _soundcasts_managed = [];
 
         for (let id in userInfo.soundcasts_managed) {
@@ -264,44 +179,9 @@ class Subscribers extends Component {
         this.setState({
           soundcasts_managed: _soundcasts_managed,
         });
-        const promises = [];
 
         if (!this.state.currentSoundcastID) {
-          for (let userId in _soundcasts_managed[0].subscribed) {
-            promises.push(this.retrieveSubscriberInfo(userId));
-          }
-
-          Promise.all(promises).then(
-            res => {
-              const currentSoundcastID = _soundcasts_managed[0].id;
-              res.sort((a, b) => {
-                if (
-                  a.soundcasts &&
-                  b.soundcasts &&
-                  b.soundcasts[currentSoundcastID] &&
-                  a.soundcasts[currentSoundcastID]
-                ) {
-                  return (
-                    b.soundcasts[currentSoundcastID].date_subscribed -
-                    a.soundcasts[currentSoundcastID].date_subscribed
-                  );
-                } else {
-                  return -1;
-                }
-              });
-              that.allSubscribers = res;      
-              that.setState({
-                currentSoundcastID,
-                currentSoundcast: _soundcasts_managed[0],
-                // subscribers: that.subscribers,
-                subscribers: res,
-              });
-              // that.subscribers = [];
-            },
-            err => {
-              console.log('promise error: ', err);
-            }
-          );
+          this.retrieveSubscribers(_soundcasts_managed[0]);
         }
       }
     }
@@ -331,9 +211,42 @@ class Subscribers extends Component {
     }
   }
 
+  retrieveSubscribers(currentSoundcast) {
+    const promises = [];
+    for (let userId in currentSoundcast.subscribed) {
+      promises.push(this.retrieveSubscriberInfo(userId));
+    }
+
+    Promise.all(promises).then(
+      res => {
+        res.sort((a, b) => {
+          if (
+            a.soundcasts &&
+            b.soundcasts &&
+            b.soundcasts[currentSoundcast.id] &&
+            a.soundcasts[currentSoundcast.id]
+          ) {
+            return (
+              b.soundcasts[currentSoundcast.id].date_subscribed -
+              a.soundcasts[currentSoundcast.id].date_subscribed
+            );
+          } else {
+            return -1;
+          }
+        });
+        this.allSubscribers = res;      
+        this.setState({
+          subscribers: res,
+          currentSoundcast,
+        });
+      },
+      err => {
+        console.log('promise error: ', err);
+      }
+    );
+  }
+
   retrieveSubscriberInfo(userId) {
-    const that = this;
-    const { currentSoundcastID } = this.state;
     return firebase
       .database()
       .ref('users/' + userId)
@@ -346,7 +259,6 @@ class Subscribers extends Component {
   }
 
   changeSoundcastId(e) {
-    const that = this;
     const currentSoundcastID = e.target.value;
     this.setState({
       currentSoundcastID,
@@ -361,38 +273,7 @@ class Subscribers extends Component {
         currentSoundcast = soundcast;
       }
     });
-
-    const promises = [];
-    for (let userId in currentSoundcast.subscribed) {
-      promises.push(this.retrieveSubscriberInfo(userId));
-    }
-
-    Promise.all(promises).then(
-      res => {
-        res.sort((a, b) => {
-          if (
-            a.soundcasts &&
-            b.soundcasts &&
-            b.soundcasts[currentSoundcastID] &&
-            a.soundcasts[currentSoundcastID]
-          ) {
-            return (
-              b.soundcasts[currentSoundcastID].date_subscribed -
-              a.soundcasts[currentSoundcastID].date_subscribed
-            );
-          } else {
-            return -1;
-          }
-        });
-        that.setState({
-          subscribers: res,
-          currentSoundcast,
-        });
-      },
-      err => {
-        console.log('promise error: ', err);
-      }
-    );
+    this.retrieveSubscribers(currentSoundcast);
   }
 
   handleCheck(e) {
