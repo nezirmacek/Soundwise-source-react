@@ -78,7 +78,7 @@ class _AppSignup extends Component {
         .once('value')
         .then(snapshot => {
           const soundcast = snapshot.val();
-          if (this.isShownSoundcastSignup(soundcast)) {
+          if (!this.isShownSoundcastSignup(soundcast)) {
             this.props.history.push('/notfound');
             return;
           }
