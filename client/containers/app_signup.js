@@ -15,6 +15,7 @@ import {
 import { withRouter } from 'react-router';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
+import Dots from 'react-activity/lib/Dots';
 
 import { SoundwiseHeader } from '../components/soundwise_header';
 import { signupUser, signinUser, addDefaultSoundcast } from '../actions/index';
@@ -50,6 +51,7 @@ class _AppSignup extends Component {
         props.match.params.mode == 'soundcast_user' && props.match.params.id
           ? {}
           : null,
+      loading: true,
     };
 
     this.publisherID = moment().format('x') + 'p';
@@ -58,6 +60,8 @@ class _AppSignup extends Component {
     this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this);
     this.signupCallback = this.signupCallback.bind(this);
     this.sendWelcomeEmail = this.sendWelcomeEmail.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
   }
 
   componentWillMount() {
@@ -73,14 +77,20 @@ class _AppSignup extends Component {
         .ref(`soundcasts/${this.props.match.params.id}`)
         .once('value')
         .then(snapshot => {
-          if (snapshot.val()) {
+          const soundcast = snapshot.val();
+          if (this.isShownSoundcastSignup(soundcast)) {
+            this.props.history.push('/notfound');
+            return;
+          }
+          if (soundcast) {
             that.setState({
-              soundcast: snapshot.val(),
+              loading: false,
+              soundcast,
               soundcastID: that.props.match.params.id,
               checked: checked ? checked : 0,
               sumTotal: checked
-                ? snapshot.val().prices[checked].price
-                : snapshot.val().prices[0].price,
+                ? soundcast.prices[checked].price
+                : soundcast.prices[0].price,
             });
           }
         });
@@ -113,6 +123,49 @@ class _AppSignup extends Component {
   componentWillUnmount() {
     this.firebaseListener = null;
     this.firebaseListener2 = null;
+  }
+
+  isShownSoundcastSignup(soundcast) {
+    const { userInfo } = this.props;
+    if (soundcast.published === true) {
+      if (!soundcast.forSale) {
+        return true;
+      }
+      if (soundcast.forSale === true && !this.isFreeAccount() && (userInfo.publisher.plan === 'pro' ||  userInfo.publisher.plan === 'platinum')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  renderProgressBar() {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: '1em',
+        }}
+      >
+        <Dots
+          style={{ display: 'flex' }}
+          color="#727981"
+          size={32}
+          speed={1}
+        />
+      </div>
+    );
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (userInfo.publisher && userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime) {
+      return false
+    }
+    return true
   }
 
   setStatePromise(that, newState) {
@@ -751,6 +804,7 @@ class _AppSignup extends Component {
       soundcast,
       checked,
       soundcastID,
+      loading,
     } = this.state;
     const { from } = this.props.location.state || {
       from: { pathname: '/courses' },
@@ -758,6 +812,10 @@ class _AppSignup extends Component {
 
     if (redirectToReferrer) {
       return <Redirect to={from} />;
+    }
+
+    if (loading) {
+      return this.renderProgressBar();
     }
 
     return (
