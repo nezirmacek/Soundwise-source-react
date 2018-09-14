@@ -168,7 +168,6 @@ export default class EditSoundcast extends Component {
 
   setSoundcastState(soundcast) {
     const { userInfo } = this.props;
-    const { categories } = this.state;
     const {
       title,
       subscribed,
@@ -560,6 +559,7 @@ export default class EditSoundcast extends Component {
                     title,
                     soundcastId: history.location.state.id,
                     imageURL,
+                    forSale,
                     landingPage,
                     published: publish,
                     updateDate: last_update,

@@ -263,7 +263,6 @@ export default class AddSoundcast extends Component {
   submit(publish) {
     let {
       title,
-      imageURL,
       blurredImageURL,
       subscribers,
       short_description,
@@ -280,6 +279,11 @@ export default class AddSoundcast extends Component {
       outroUrl,
       selectedCategory,
     } = this.state;
+    const imageURL =
+      this.state.imageURL ||
+      `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+        title
+      )}`;
     if (title.length == 0) {
       return alert('Please enter a soundcast title before saving.');
     }
@@ -335,17 +339,13 @@ export default class AddSoundcast extends Component {
       invited[_email] = moment().format('X'); //invited listeners are different from subscribers. Subscribers are invited listeners who've accepted the invitation and signed up via mobile app
     });
 
-    this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+    this.firebaseListener = firebase.auth().onAuthStateChanged(user => {
       if (user && that.firebaseListener) {
         const creatorID = user.uid;
         const last_update = Number(moment().format('X'));
         const newSoundcast = {
           title,
-          imageURL: imageURL
-            ? imageURL
-            : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
-                title
-              )}`,
+          imageURL,
           blurredImageURL,
           creatorID,
           short_description,
@@ -429,14 +429,11 @@ export default class AddSoundcast extends Component {
             title,
             soundcastId: that.soundcastId,
             publisherId: userInfo.publisherID,
-            imageURL: imageURL
-              ? imageURL
-              : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
-                  title
-                )}`,
+            imageURL,
             category: selectedCategory.name,
             published: publish,
             landingPage,
+            forSale,
             updateDate: last_update,
           })
             .then(res => {
