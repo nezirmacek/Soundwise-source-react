@@ -281,7 +281,7 @@ export default class AddSoundcast extends Component {
     } = this.state;
     const imageURL =
       this.state.imageURL ||
-      `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+      `https://dummyimage.com/300.png/${this.getRandomColor()}/ffffff&text=${encodeURIComponent(
         title
       )}`;
     if (title.length == 0) {
