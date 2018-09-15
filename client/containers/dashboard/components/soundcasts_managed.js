@@ -850,6 +850,7 @@ export default class SoundcastsManaged extends Component {
                     </div>
                   ))}
             </Dialog>
+            
             <Dialog modal={true} open={this.state.upgradeModal}>
               <div
                 style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
