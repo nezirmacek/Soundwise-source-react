@@ -48,6 +48,7 @@ export default class SoundcastsManaged extends Component {
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.resend = this.resend.bind(this);
+    this.handleSoundcastSignup = this.handleSoundcastSignup.bind(this);
     this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
     this.isFreeAccount = this.isFreeAccount.bind(this);
     this.handleAddNewSoundcast = this.handleAddNewSoundcast.bind(this);
@@ -91,6 +92,14 @@ export default class SoundcastsManaged extends Component {
         episode,
       },
     });
+  }
+
+  handleSoundcastSignup(soundcast) {
+    if (this.isShownSoundcastSignup(soundcast)) {
+      this.props.history.push(`/signup/soundcast_user/${soundcast.id}`);
+    } else {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Signup forms for paid soundcasts are only available on PRO and PLATINUM plans.' });
+    }
   }
 
   isShownSoundcastSignup(soundcast) {
@@ -512,24 +521,20 @@ export default class SoundcastsManaged extends Component {
                               <strong>Landing page</strong>
                             </span>
                           </a>
-                          {this.isShownSoundcastSignup(soundcast) &&
-                            <a
-                              target="_blank"
-                              href={`https://mysoundwise.com/signup/soundcast_user/${
-                                soundcast.id
-                              }`}
-                              style={{ paddingLeft: 15 }}
+                          <a
+                            target="_blank"
+                            style={{ paddingLeft: 15 }}
+                            onClick={() => that.handleSoundcastSignup(soundcast)}
+                          >
+                            <span
+                              datatoggle="tooltip"
+                              dataplacement="top"
+                              title="view soundcast signup form"
+                              style={{ color: Colors.link }}
                             >
-                              <span
-                                datatoggle="tooltip"
-                                dataplacement="top"
-                                title="view soundcast signup form"
-                                style={{ color: Colors.link }}
-                              >
-                                <strong>Signup form</strong>
-                              </span>
-                            </a>
-                          }
+                              <strong>Signup form</strong>
+                            </span>
+                          </a>
                           {(soundcast.prices &&
                             soundcast.prices[0].price > 0 && (
                               <a

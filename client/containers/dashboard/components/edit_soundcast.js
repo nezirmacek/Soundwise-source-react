@@ -123,6 +123,7 @@ export default class EditSoundcast extends Component {
     this.submit = this.submit.bind(this);
     this.onEditorStateChange = this.onEditorStateChange.bind(this);
     this.showIntroOutro = this.showIntroOutro.bind(this);
+    this.handleSoundcastSignup = this.handleSoundcastSignup.bind(this);
     this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
     this.isFreeAccount = this.isFreeAccount.bind(this);
     this.isAvailableCoupon100PercentOff = this.isAvailableCoupon100PercentOff.bind(this);
@@ -261,6 +262,14 @@ export default class EditSoundcast extends Component {
       published,
     });
     userInfo.publisher && this.checkUserStatus(userInfo);
+  }
+
+  handleSoundcastSignup() {
+    if (this.isShownSoundcastSignup()) {
+      this.props.history.push(`/signup/soundcast_user/${this.props.id}`);
+    } else {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Signup forms for paid soundcasts are only available on PRO and PLATINUM plans.' });
+    }
   }
 
   isShownSoundcastSignup() {
@@ -1950,24 +1959,22 @@ export default class EditSoundcast extends Component {
                     </span>
                   </a>
                 </li>
-                {this.isShownSoundcastSignup() &&
-                  <li role="presentation">
-                    <a
-                      target="_blank"
-                      href={`https://mysoundwise.com/signup/soundcast_user/${id}`}
+                <li role="presentation">
+                  <a
+                    target="_blank"
+                    onClick={() => that.handleSoundcastSignup()}
+                  >
+                    <span
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 600,
+                        color: Colors.link,
+                      }}
                     >
-                      <span
-                        style={{
-                          fontSize: 18,
-                          fontWeight: 600,
-                          color: Colors.link,
-                        }}
-                      >
-                        View Signup Form
-                      </span>
-                    </a>
-                  </li>
-                }
+                      View Signup Form
+                    </span>
+                  </a>
+                </li>
               </ul>
             )) ||
               null}
