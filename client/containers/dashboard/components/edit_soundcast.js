@@ -96,6 +96,8 @@ export default class EditSoundcast extends Component {
       showTimeStamps: false,
       showSubscriberCount: false,
       modalOpen: false,
+      upgradeModal: false,
+      upgradeModalTitle: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
       isPodcast: false,
       createPodcast: false,
@@ -123,6 +125,8 @@ export default class EditSoundcast extends Component {
     this.showIntroOutro = this.showIntroOutro.bind(this);
     this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
     this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.isAvailableCoupon100PercentOff = this.isAvailableCoupon100PercentOff.bind(this);
+    this.closeUpgradeModal = this.closeUpgradeModal.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -280,6 +284,31 @@ export default class EditSoundcast extends Component {
       return false
     }
     return true
+  }
+
+  isAvailableCoupon100PercentOff(prices) {
+    if (!prices) {
+      return true
+    }
+    const { userInfo } = this.props;
+    for (let i = 0; i < prices.length; i+=1) {
+      if (prices[i].coupons) {
+        for (let j = 0; j < prices[i].coupons.length; j+=1) {
+          if (prices[i].coupons[j].percentOff === "100") {
+            if (this.isFreeAccount() || (userInfo.publisher.plan === 'plus')) {
+              console.log('this account is free or plus, so you can\'t set coupon 100%')
+              return false
+            }
+          }
+        }
+      }
+    }
+
+    return true
+  }
+
+  closeUpgradeModal() {
+    this.setState({ upgradeModal: false })
   }
 
   checkUserStatus(userInfo) {
@@ -517,6 +546,11 @@ export default class EditSoundcast extends Component {
     } = this.state;
     const { userInfo, history } = this.props;
     const that = this;
+
+    if (!this.isAvailableCoupon100PercentOff(prices)) {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create 100% off discounts' })
+      return
+    }
 
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
       if (user && that.firebaseListener) {
@@ -2345,6 +2379,35 @@ export default class EditSoundcast extends Component {
             </div>
           </div>
         </div>
+
+        <Dialog modal={true} open={this.state.upgradeModal}>
+          <div
+            style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+            onClick={() => this.closeUpgradeModal()}
+          >
+            &#10799; {/* Close button (X) */}
+          </div>
+
+          <div>
+            <div style={{ ...styles.dialogTitle }}>
+              {this.state.upgradeModalTitle}
+            </div>
+            <OrangeSubmitButton
+              styles={{
+                borderColor: Colors.link,
+                backgroundColor: Colors.link,
+                color: '#464646',
+                width: 400,
+              }}
+              label="Change Plan"
+              onClick={() =>
+                that.props.history.push({
+                  pathname: '/pricing',
+                })
+              }
+            />
+          </div>
+        </Dialog>
       </MuiThemeProvider>
     );
   }
@@ -2460,5 +2523,11 @@ const styles = {
     marginRight: 10,
     marginTop: 5,
     fontSize: 16,
+  },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
   },
 };
