@@ -34,6 +34,7 @@ import {
   TransparentShortSubmitButton,
 } from '../../../components/buttons/buttons';
 import Coupons from './coupons';
+const { podcastCategories } = require('../../../../server/scripts/utils.js')();
 
 const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscriber first name],</p>
 <p></p>
@@ -76,6 +77,10 @@ export default class CreateBundle extends Component {
       modalOpen: false,
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
       submitted: false,
+      categories: Object.keys(podcastCategories).map(i => {
+        return { name: podcastCategories[i].name };
+      }), // main 16 categories ('Arts', 'Comedy', ...)
+      selectedCategory: null,
     };
 
     this.soundcastId = `${moment().format('x')}s`;
@@ -104,6 +109,7 @@ export default class CreateBundle extends Component {
           prices,
           soundcastsIncluded,
           confirmationEmail,
+          category,
         } = bundle;
         if (long_description) {
           let contentState = convertFromRaw(JSON.parse(long_description));
@@ -133,6 +139,7 @@ export default class CreateBundle extends Component {
           forSale,
           prices,
           selectedSoundcastsArr: soundcastsIncluded,
+          selectedCategory: { name: category },
         });
       }
     }
@@ -294,7 +301,6 @@ export default class CreateBundle extends Component {
   submit(publish) {
     let {
       title,
-      imageURL,
       subscribers,
       short_description,
       long_description,
@@ -304,18 +310,25 @@ export default class CreateBundle extends Component {
       forSale,
       prices,
       confirmationEmail,
+      selectedCategory,
     } = this.state;
+    const imageURL =
+      this.state.imageURL ||
+      `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
+        title
+      )}`;
     if (title.length == 0) {
-      alert('Please enter a bundle title before saving.');
-      return;
+      return alert('Please enter a bundle title before saving.');
     }
     if (short_description == 0) {
       alert('Please enter a short description for the bundle before saving.');
       return;
     }
     if (selectedSoundcasts.length < 2) {
-      alert('Please select at least two soundcasts to form the bundle.');
-      return;
+      return alert('Please select at least two soundcasts to form the bundle.');
+    }
+    if (!selectedCategory) {
+      return alert('Please choose a category before saving.');
     }
     if (prices.length === 0) {
       //if pricing isn't specified, then this is a free soundcast
@@ -328,7 +341,7 @@ export default class CreateBundle extends Component {
     this.setState({
       submitted: true,
     });
-    this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+    this.firebaseListener = firebase.auth().onAuthStateChanged(user => {
       if (user && that.firebaseListener) {
         const creatorID = user.uid;
         const last_update = Number(moment().format('X'));
@@ -337,11 +350,7 @@ export default class CreateBundle extends Component {
           bundle: true,
           creatorID,
           soundcastsIncluded: soundcastsArr,
-          imageURL: imageURL
-            ? imageURL
-            : `https://dummyimage.com/300.png/${that.getRandomColor()}/ffffff&text=${encodeURIComponent(
-                title
-              )}`,
+          imageURL,
           short_description,
           long_description: JSON.stringify(
             convertToRaw(long_description.getCurrentContent())
@@ -357,6 +366,7 @@ export default class CreateBundle extends Component {
           prices,
           last_update,
           published: publish,
+          category: selectedCategory.name,
         };
 
         let _promises_1 = [
@@ -399,6 +409,11 @@ export default class CreateBundle extends Component {
             publisherId: userInfo.publisherID,
             updateDate: last_update,
             title,
+            imageURL,
+            forSale,
+            category: selectedCategory.name,
+            landingPage,
+            published: publish,
           })
             .then(async res => {
               if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
@@ -483,9 +498,8 @@ export default class CreateBundle extends Component {
   }
 
   handleCheck() {
-    const { landingPage } = this.state;
     this.setState({
-      landingPage: !landingPage,
+      landingPage: !this.state.landingPage,
     });
   }
 
@@ -960,6 +974,8 @@ export default class CreateBundle extends Component {
       soundcasts,
       selectedSoundcasts,
       submitted,
+      categories,
+      selectedCategory,
     } = this.state;
     const { userInfo, history } = this.props;
     const that = this;
@@ -1035,7 +1051,6 @@ export default class CreateBundle extends Component {
             <span style={{ fontSize: 17 }}>
               <i> (300 characters max)</i>
             </span>
-
             <div style={{ ...styles.inputTitleWrapper, marginBottom: 0 }}>
               <textarea
                 type="text"
@@ -1047,7 +1062,9 @@ export default class CreateBundle extends Component {
                 value={this.state.short_description}
               />
             </div>
-            <div>
+
+            {/*Soundcasts in bundle*/}
+            <div style={{ paddingBottom: 24 }}>
               <span style={styles.titleText}>
                 Soundcasts included in the bundle
               </span>
@@ -1111,6 +1128,42 @@ export default class CreateBundle extends Component {
                   })}
                 </CheckboxGroup>
               </div>
+            </div>
+
+            {/*Category*/}
+            <span style={styles.titleText}>Category</span>
+            <span style={{ ...styles.titleText, color: 'red' }}>*</span>
+            <div style={{ width: 370 }} className="dropdown">
+              <div
+                style={{ width: '100%', padding: 0, marginTop: 20 }}
+                className="btn dropdown-toggle"
+                data-toggle="dropdown"
+              >
+                <div style={styles.dropdownTitle}>
+                  <span>
+                    {(selectedCategory && selectedCategory.name) ||
+                      'Choose category'}
+                  </span>
+                  <span
+                    style={{ position: 'absolute', right: 10, top: 40 }}
+                    className="caret"
+                  />
+                </div>
+              </div>
+              <ul style={{ padding: 0 }} className="dropdown-menu">
+                {categories.map((category, i) => (
+                  <li style={{ fontSize: '16px' }} key={`category_option${i}`}>
+                    <button
+                      style={styles.categoryButton}
+                      onClick={() =>
+                        this.setState({ selectedCategory: category })
+                      }
+                    >
+                      {category.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/*Soundcast cover art*/}
@@ -1252,6 +1305,8 @@ const styles = {
   image: { ...commonStyles.image },
   loaderWrapper: { ...commonStyles.loaderWrapper },
   cancelImg: { ...commonStyles.cancelImg },
+  dropdownTitle: { ...commonStyles.dropdownTitle },
+  categoryButton: { ...commonStyles.categoryButton },
   inputDescription: {
     height: 100,
     fontSize: 18,
