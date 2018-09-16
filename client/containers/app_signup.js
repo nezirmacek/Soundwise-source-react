@@ -134,6 +134,9 @@ class _AppSignup extends Component {
       if (soundcast.forSale === true && !this.isFreeAccount() && (userInfo.publisher.plan === 'pro' ||  userInfo.publisher.plan === 'platinum')) {
         return true;
       }
+      if (userInfo.publisher && userInfo.publisher.id === "1531418940327p") {
+        return true;
+      }
     }
     return false;
   }
