@@ -236,8 +236,9 @@ class Subscribers extends Component {
         });
         this.allSubscribers = res;      
         this.setState({
+          currentSoundcastID: currentSoundcast.id,
+          currentSoundcast: currentSoundcast,
           subscribers: res,
-          currentSoundcast,
         });
       },
       err => {
