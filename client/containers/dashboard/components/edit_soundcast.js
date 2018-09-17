@@ -96,6 +96,8 @@ export default class EditSoundcast extends Component {
       showTimeStamps: false,
       showSubscriberCount: false,
       modalOpen: false,
+      upgradeModal: false,
+      upgradeModalTitle: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
       isPodcast: false,
       createPodcast: false,
@@ -121,6 +123,11 @@ export default class EditSoundcast extends Component {
     this.submit = this.submit.bind(this);
     this.onEditorStateChange = this.onEditorStateChange.bind(this);
     this.showIntroOutro = this.showIntroOutro.bind(this);
+    this.handleSoundcastSignup = this.handleSoundcastSignup.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.isAvailableCoupon100PercentOff = this.isAvailableCoupon100PercentOff.bind(this);
+    this.closeUpgradeModal = this.closeUpgradeModal.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -198,6 +205,7 @@ export default class EditSoundcast extends Component {
       itunesImage,
       podcastFeedVersion,
       autoSubmitPodcast,
+      published,
     } = soundcast;
     // const {title0, subscribed0, imageURL0, short_description0,
     //        long_description0, landingPage0,
@@ -251,8 +259,67 @@ export default class EditSoundcast extends Component {
       subscribed: subscribed || this.state.subscribed,
       features: features || this.state.features,
       prices: prices || this.state.prices,
+      published,
     });
     userInfo.publisher && this.checkUserStatus(userInfo);
+  }
+
+  handleSoundcastSignup() {
+    if (this.isShownSoundcastSignup()) {
+      this.props.history.push(`/signup/soundcast_user/${this.props.id}`);
+    } else {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Signup forms for paid soundcasts are only available on PRO and PLATINUM plans.' });
+    }
+  }
+
+  isShownSoundcastSignup() {
+    const { userInfo } = this.props;
+    if (this.state.published === true) {
+      if (!this.state.forSale) {
+        return true;
+      }
+      if (this.state.forSale === true && !this.isFreeAccount() && (userInfo.publisher.plan === 'pro' ||  userInfo.publisher.plan === 'platinum')) {
+        return true;
+      }
+      if (userInfo.publisher && userInfo.publisher.id === "1531418940327p") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (userInfo.publisher && userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime) {
+      return false
+    }
+    return true
+  }
+
+  isAvailableCoupon100PercentOff(prices) {
+    if (!prices) {
+      return true
+    }
+    const { userInfo } = this.props;
+    for (let i = 0; i < prices.length; i+=1) {
+      if (prices[i].coupons) {
+        for (let j = 0; j < prices[i].coupons.length; j+=1) {
+          if (prices[i].coupons[j].percentOff === "100") {
+            if (this.isFreeAccount() || (userInfo.publisher.plan === 'plus')) {
+              console.log('this account is free or plus, so you can\'t set coupon 100%')
+              return false
+            }
+          }
+        }
+      }
+    }
+
+    return true
+  }
+
+  closeUpgradeModal() {
+    this.setState({ upgradeModal: false })
   }
 
   checkUserStatus(userInfo) {
@@ -490,6 +557,11 @@ export default class EditSoundcast extends Component {
     } = this.state;
     const { userInfo, history } = this.props;
     const that = this;
+
+    if (!this.isAvailableCoupon100PercentOff(prices)) {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create 100% off discounts' })
+      return
+    }
 
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
       if (user && that.firebaseListener) {
@@ -1893,7 +1965,7 @@ export default class EditSoundcast extends Component {
                 <li role="presentation">
                   <a
                     target="_blank"
-                    href={`https://mysoundwise.com/signup/soundcast_user/${id}`}
+                    onClick={() => that.handleSoundcastSignup()}
                   >
                     <span
                       style={{
@@ -2317,6 +2389,35 @@ export default class EditSoundcast extends Component {
             </div>
           </div>
         </div>
+
+        <Dialog modal={true} open={this.state.upgradeModal}>
+          <div
+            style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+            onClick={() => this.closeUpgradeModal()}
+          >
+            &#10799; {/* Close button (X) */}
+          </div>
+
+          <div>
+            <div style={{ ...styles.dialogTitle }}>
+              {this.state.upgradeModalTitle}
+            </div>
+            <OrangeSubmitButton
+              styles={{
+                borderColor: Colors.link,
+                backgroundColor: Colors.link,
+                color: '#464646',
+                width: 400,
+              }}
+              label="Change Plan"
+              onClick={() =>
+                that.props.history.push({
+                  pathname: '/pricing',
+                })
+              }
+            />
+          </div>
+        </Dialog>
       </MuiThemeProvider>
     );
   }
@@ -2432,5 +2533,11 @@ const styles = {
     marginRight: 10,
     marginTop: 5,
     fontSize: 16,
+  },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
   },
 };

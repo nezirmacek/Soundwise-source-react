@@ -28,6 +28,8 @@ export default class SoundcastsManaged extends Component {
       currentEpisode: null,
       userInfo: { soundcasts_managed: {} },
       newSoundcastModal: false,
+      upgradeModal: false,
+      upgradeModalTitle: '',
       showFeedInputs: false,
       emailNotFoundError: false,
       feedSubmitting: false,
@@ -46,6 +48,10 @@ export default class SoundcastsManaged extends Component {
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.resend = this.resend.bind(this);
+    this.handleSoundcastSignup = this.handleSoundcastSignup.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.handleAddNewSoundcast = this.handleAddNewSoundcast.bind(this);
   }
 
   componentDidMount() {
@@ -58,7 +64,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.userInfo) {
+      if (nextProps.userInfo) {
       const { userInfo } = nextProps;
       this.setState({
         userInfo,
@@ -86,6 +92,58 @@ export default class SoundcastsManaged extends Component {
         episode,
       },
     });
+  }
+
+  handleSoundcastSignup(soundcast) {
+    if (this.isShownSoundcastSignup(soundcast)) {
+      this.props.history.push(`/signup/soundcast_user/${soundcast.id}`);
+    } else {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Signup forms for paid soundcasts are only available on PRO and PLATINUM plans.' });
+    }
+  }
+
+  isShownSoundcastSignup(soundcast) {
+    const { userInfo } = this.props;
+    if (soundcast.published === true) {
+      if (!soundcast.forSale) {
+        return true;
+      }
+      if (soundcast.forSale === true && !this.isFreeAccount() && (userInfo.publisher.plan === 'pro' ||  userInfo.publisher.plan === 'platinum')) {
+        return true;
+      }
+      if (userInfo.publisher && userInfo.publisher.id === "1531418940327p") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (userInfo.publisher && userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime) {
+      return false
+    }
+    return true
+  }
+
+  handleAddNewSoundcast(currentSoundcastCount) {
+    const { userInfo } = this.props;
+    if (userInfo.publisher) {
+      const is_free_account = this.isFreeAccount();
+      // if plus plan and has already 10 soundcast then limit
+      if (currentSoundcastCount >= 10 && !is_free_account && userInfo.publisher.plan === "plus") {
+        this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create more soundcasts' });
+        return;
+      }
+      // if basic plan or end current plan then limit to 1 soundcast
+      if (currentSoundcastCount > 0 && is_free_account) {
+        this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create more soundcasts' });
+        return;
+      }
+      // allow
+      this.setState({ newSoundcastModal: true });
+    }
   }
 
   handleModal(soundcast) {
@@ -177,6 +235,7 @@ export default class SoundcastsManaged extends Component {
     this.setState({
       feedSubmitting: false,
       newSoundcastModal: false,
+      upgradeModal: false,
       showFeedInputs: false,
       emailNotFoundError: false,
       podcastTitle: '',
@@ -383,9 +442,15 @@ export default class SoundcastsManaged extends Component {
               </Link>
             </li>
             <li role="presentation">
-              <Link to="/dashboard/soundcasts/bundles">
-                <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
-              </Link>
+              {this.isFreeAccount() ?
+                <a onClick={() => this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create soundcast bundles' })}>
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
+                </a>
+                :
+                <Link to="/dashboard/soundcasts/bundles">
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
+                </Link>
+              }
             </li>
           </ul>
           {_soundcasts_managed.map((soundcast, i) => {
@@ -461,10 +526,8 @@ export default class SoundcastsManaged extends Component {
                           </a>
                           <a
                             target="_blank"
-                            href={`https://mysoundwise.com/signup/soundcast_user/${
-                              soundcast.id
-                            }`}
                             style={{ paddingLeft: 15 }}
+                            onClick={() => that.handleSoundcastSignup(soundcast)}
                           >
                             <span
                               datatoggle="tooltip"
@@ -588,11 +651,7 @@ export default class SoundcastsManaged extends Component {
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
                 label="Add New Soundcast"
-                onClick={() =>
-                  that.setState({
-                    newSoundcastModal: true,
-                  })
-                }
+                onClick={() => this.handleAddNewSoundcast(_soundcasts_managed.length)}
               />
             </div>
           </div>
@@ -798,6 +857,35 @@ export default class SoundcastsManaged extends Component {
                       </a>
                     </div>
                   ))}
+            </Dialog>
+            
+            <Dialog modal={true} open={this.state.upgradeModal}>
+              <div
+                style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+                onClick={() => this.closeSubmitModal()}
+              >
+                &#10799; {/* Close button (X) */}
+              </div>
+
+              <div>
+                <div style={{ ...styles.dialogTitle }}>
+                  {this.state.upgradeModalTitle}
+                </div>
+                <OrangeSubmitButton
+                  styles={{
+                    borderColor: Colors.link,
+                    backgroundColor: Colors.link,
+                    color: '#464646',
+                    width: 400,
+                  }}
+                  label="Change Plan"
+                  onClick={() =>
+                    that.props.history.push({
+                      pathname: '/pricing',
+                    })
+                  }
+                />
+              </div>
             </Dialog>
           </MuiThemeProvider>
         </div>

@@ -79,6 +79,8 @@ export default class AddSoundcast extends Component {
       forSale: false,
       prices: [],
       modalOpen: false,
+      upgradeModal: false,
+      upgradeModalTitle: '',
       categories: Object.keys(podcastCategories).map(i => {
         return { name: podcastCategories[i].name };
       }), // main 16 categories ('Arts', 'Comedy', ...)
@@ -100,6 +102,9 @@ export default class AddSoundcast extends Component {
     this.uploadOutroAudioInput = null;
     this.addFeature = this.addFeature.bind(this);
     this.showIntroOutro = this.showIntroOutro.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.isAvailableCoupon100PercentOff = this.isAvailableCoupon100PercentOff.bind(this);
+    this.closeUpgradeModal = this.closeUpgradeModal.bind(this);
   }
 
   componentDidMount() {
@@ -111,6 +116,40 @@ export default class AddSoundcast extends Component {
     if (!this.state.proUser && nextProps.userInfo.publisher) {
       this.checkUserStatus(nextProps.userInfo);
     }
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (userInfo.publisher && userInfo.publisher.plan && userInfo.publisher.current_period_end > curTime) {
+      return false
+    }
+    return true
+  }
+
+  isAvailableCoupon100PercentOff(prices) {
+    if (!prices) {
+      return true
+    }
+    const { userInfo } = this.props;
+    for (let i = 0; i < prices.length; i+=1) {
+      if (prices[i].coupons) {
+        for (let j = 0; j < prices[i].coupons.length; j+=1) {
+          if (prices[i].coupons[j].percentOff === "100") {
+            if (this.isFreeAccount() || (userInfo.publisher.plan === 'plus')) {
+              console.log('this account is free or plus, so you can\'t set coupon 100%')
+              return false
+            }
+          }
+        }
+      }
+    }
+
+    return true
+  }
+
+  closeUpgradeModal() {
+    this.setState({ upgradeModal: false })
   }
 
   checkUserStatus(userInfo) {
@@ -302,6 +341,11 @@ export default class AddSoundcast extends Component {
     const { userInfo, history } = this.props;
     // const host = [{hostName, hostBio, hostImageURL}];
     const that = this;
+
+    if (!this.isAvailableCoupon100PercentOff(prices)) {
+      this.setState({ upgradeModal: true, upgradeModalTitle: 'Please upgrade to create 100% off discounts' })
+      return
+    }
 
     // need to remove all spaces
     subscribers = subscribers.replace(/\s/g, '');
@@ -1485,6 +1529,35 @@ export default class AddSoundcast extends Component {
             </div>
           </div>
         </div>
+
+        <Dialog modal={true} open={this.state.upgradeModal}>
+          <div
+            style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+            onClick={() => this.closeUpgradeModal()}
+          >
+            &#10799; {/* Close button (X) */}
+          </div>
+
+          <div>
+            <div style={{ ...styles.dialogTitle }}>
+              {this.state.upgradeModalTitle}
+            </div>
+            <OrangeSubmitButton
+              styles={{
+                borderColor: Colors.link,
+                backgroundColor: Colors.link,
+                color: '#464646',
+                width: 400,
+              }}
+              label="Change Plan"
+              onClick={() =>
+                that.props.history.push({
+                  pathname: '/pricing',
+                })
+              }
+            />
+          </div>
+        </Dialog>
       </MuiThemeProvider>
     );
   }
@@ -1581,5 +1654,11 @@ const styles = {
   },
   trackSwitched: {
     backgroundColor: Colors.link,
+  },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
   },
 };
