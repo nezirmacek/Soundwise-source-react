@@ -11,26 +11,22 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import deburr from 'lodash/deburr';
 
-
 // Need to start migrating to latest material ui, for now new components can co-exist with older.
 // https://material-ui.com/guides/migration-v0x/
 
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
-import {
-  OrangeSubmitButton,
-} from '../../../components/buttons/buttons';
+import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 import InviteSubscribersModal from './invite_subscribers_modal';
 import PendingInviteModal from './pending_invite_modal';
 
-
 function matchEmail(emails, inputLength, inputValue) {
   if (typeof emails != 'undefined') {
-    for(var i = 0; i < emails.length; i++) {
+    for (var i = 0; i < emails.length; i++) {
       if (emails[i].slice(0, inputLength).toLowerCase() === inputValue) {
         return true;
       }
-    }    
+    }
   }
   return false;
 }
@@ -43,18 +39,17 @@ function getSuggestions(value, subscribers) {
   return inputLength === 0
     ? []
     : subscribers.filter(subscriber => {
-        if (typeof subscriber.firstName != 'undefined'){
+        if (typeof subscriber.firstName != 'undefined') {
           const keep =
-          count < 5 && (
-            (subscriber.firstName.slice(0, inputLength).toLowerCase() === inputValue) ||
-            (subscriber.lastName.slice(0, inputLength).toLowerCase() === inputValue) ||
-            matchEmail(subscriber.email, inputLength, inputValue)
-          )
+            count < 5 &&
+            (subscriber.firstName.slice(0, inputLength).toLowerCase() === inputValue ||
+              subscriber.lastName.slice(0, inputLength).toLowerCase() === inputValue ||
+              matchEmail(subscriber.email, inputLength, inputValue));
 
           if (keep) {
             count += 1;
-          }     
-          return keep;   
+          }
+          return keep;
         }
         return false;
       });
@@ -62,10 +57,10 @@ function getSuggestions(value, subscribers) {
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   let matches = match(suggestion.firstName, query);
-  let name = `${suggestion.firstName} ${suggestion.lastName}`
+  let name = `${suggestion.firstName} ${suggestion.lastName}`;
   if (matches.length === 0) {
     matches = match(suggestion.lastName, query);
-    name = `${suggestion.lastName} ${suggestion.firstName} `
+    name = `${suggestion.lastName} ${suggestion.firstName} `;
   }
   const parts = parse(name, matches);
 
@@ -91,20 +86,19 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
   return (
-          <div>
-            <input
-            {...inputProps}
-            type="text"
-            style={styles.searchTerm}
-            placeholder="Search subscribers"
-            />
-            <button type="submit" style={styles.searchButton}>
-              <i className="fa fa-search" />
-            </button>
-          </div>
+    <div>
+      <input
+        {...inputProps}
+        type="text"
+        style={styles.searchTerm}
+        placeholder="Search subscribers"
+      />
+      <button type="submit" style={styles.searchButton}>
+        <i className="fa fa-search" />
+      </button>
+    </div>
   );
 }
-
 
 class Subscribers extends Component {
   constructor(props) {
@@ -147,13 +141,12 @@ class Subscribers extends Component {
     this.onMountOrReceiveProps(nextProps);
   }
 
-  onMountOrReceiveProps(props){
+  onMountOrReceiveProps(props) {
     const { userInfo } = props;
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
@@ -161,16 +154,11 @@ class Subscribers extends Component {
       }
     }
     if (userInfo.soundcasts_managed && userInfo.publisher) {
-      if (
-        typeof Object.values(userInfo.soundcasts_managed)[0] ==
-        'object'
-      ) {
+      if (typeof Object.values(userInfo.soundcasts_managed)[0] == 'object') {
         const _soundcasts_managed = [];
 
         for (let id in userInfo.soundcasts_managed) {
-          const _soundcast = JSON.parse(
-            JSON.stringify(userInfo.soundcasts_managed[id])
-          );
+          const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
           if (_soundcast.title) {
             _soundcast.id = id;
             _soundcasts_managed.push(_soundcast);
@@ -234,7 +222,7 @@ class Subscribers extends Component {
             return -1;
           }
         });
-        this.allSubscribers = res;      
+        this.allSubscribers = res;
         this.setState({
           currentSoundcastID: currentSoundcast.id,
           currentSoundcast: currentSoundcast,
@@ -314,22 +302,13 @@ class Subscribers extends Component {
       this.state.toBeUnsubscribed.forEach(listenerID => {
         firebase
           .database()
-          .ref(
-            'soundcasts/' +
-              this.state.currentSoundcastID +
-              '/subscribed/' +
-              listenerID
-          )
+          .ref('soundcasts/' + this.state.currentSoundcastID + '/subscribed/' + listenerID)
           .remove();
 
         firebase
           .database()
           .ref(
-            'users/' +
-              listenerID +
-              '/soundcasts/' +
-              this.state.currentSoundcastID +
-              '/subscribed'
+            'users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/subscribed'
           )
           .set(false);
 
@@ -425,35 +404,39 @@ class Subscribers extends Component {
 
   handleSuggestionsFetchRequested({ value }) {
     this.setState({
-      suggestions: getSuggestions(value, this.allSubscribers)
-    });  
+      suggestions: getSuggestions(value, this.allSubscribers),
+    });
     //Perform setState with updater function, as it depends on previous state.
     this.setState((state, props) => ({
-      subscribers: state.suggestions
-    }));    
-  };
+      subscribers: state.suggestions,
+    }));
+  }
 
-  handleSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
+  handleSuggestionSelected(
+    event,
+    { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }
+  ) {
     this.setState({
       subscribers: [suggestion],
     });
-
   }
-  handleSuggestionsClearRequested (value) {
+  handleSuggestionsClearRequested(value) {
     this.setState({
       suggestions: [],
     });
-  };
+  }
 
   handleChange = name => (event, prop) => {
     const { newValue } = prop;
-    let selectedSubscriber = this.allSubscribers.filter(subscriber => subscriber.firstName === newValue)
-    if (selectedSubscriber.length === 0){
+    let selectedSubscriber = this.allSubscribers.filter(
+      subscriber => subscriber.firstName === newValue
+    );
+    if (selectedSubscriber.length === 0) {
       selectedSubscriber = this.allSubscribers;
     }
     this.setState({
       [name]: newValue,
-      subscribers: selectedSubscriber
+      subscribers: selectedSubscriber,
     });
   };
 
@@ -469,7 +452,7 @@ class Subscribers extends Component {
       currentSoundcast,
       currentSoundcastID,
       modalOpen,
-      value, 
+      value,
       suggestions,
     } = this.state;
     const that = this;
@@ -490,11 +473,7 @@ class Subscribers extends Component {
 
     this.allSubscribers.forEach(subscriber => {
       if (subscriber.email && subscriber.email[0]) {
-        csvData.push([
-          subscriber.firstName,
-          subscriber.lastName,
-          subscriber.email[0],
-        ]);
+        csvData.push([subscriber.firstName, subscriber.lastName, subscriber.email[0]]);
       }
     });
 
@@ -535,22 +514,17 @@ class Subscribers extends Component {
               zIndex: 103,
             }}
           >
-            <div
-              className="title-medium"
-              style={{ margin: 25, fontWeight: 800 }}
-            >
+            <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
               Upgrade to view subscribers
             </div>
             <div className="title-small" style={{ margin: 25 }}>
-              Subscriber data is available on PLUS and PRO plans. Please upgrade
-              to access the feature.
+              Subscriber data is available on PLUS and PRO plans. Please upgrade to access the
+              feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() =>
-                  that.props.history.push({ pathname: '/pricing' })
-                }
+                onClick={() => that.props.history.push({ pathname: '/pricing' })}
                 styles={{ width: '60%' }}
               />
             </div>
@@ -561,10 +535,7 @@ class Subscribers extends Component {
             <div className="col-md-2 col-sm-4 col-xs-12">
               <span className="title-medium ">Subscribers</span>
             </div>
-            <div
-              className="col-md-6 col-sm-8 col-xs-12"
-              style={styles.soundcastSelectWrapper}
-            >
+            <div className="col-md-6 col-sm-8 col-xs-12" style={styles.soundcastSelectWrapper}>
               <select
                 style={styles.soundcastSelect}
                 value={currentSoundcastID}
@@ -581,17 +552,14 @@ class Subscribers extends Component {
                 })}
               </select>
             </div>
-            <div
-              className="col-md-4 col-sm-12 col-xs-12"
-              style={styles.searchWrap}
-            >
+            <div className="col-md-4 col-sm-12 col-xs-12" style={styles.searchWrap}>
               <Autosuggest
                 {...autosuggestProps}
                 inputProps={{
                   classes,
                   value: this.state.value,
                   onChange: this.handleChange('value'),
-                  placeholder: "Search subscribers"            
+                  placeholder: 'Search subscribers',
                 }}
                 theme={{
                   container: classes.container,
@@ -609,35 +577,23 @@ class Subscribers extends Component {
           </row>
           <row style={{ marginBottom: 25 }}>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
-              <span
-                style={{ color: Colors.mainOrange }}
-                onClick={this.handleModal}
-              >
+              <span style={{ color: Colors.mainOrange }} onClick={this.handleModal}>
                 Invite Subscribers
               </span>
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
-              <span
-                style={{ color: Colors.link }}
-                onClick={this.handlePendingInvite}
-              >
+              <span style={{ color: Colors.link }} onClick={this.handlePendingInvite}>
                 See Pending Invites
               </span>
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
-              <CSVLink
-                data={csvData}
-                filename={`${currentSoundcast.title} subscribers.csv`}
-              >
+              <CSVLink data={csvData} filename={`${currentSoundcast.title} subscribers.csv`}>
                 <span>Download Subscribers</span>
               </CSVLink>
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12">
               {(this.state.toBeUnsubscribed.length > 0 && (
-                <div
-                  style={{ ...styles.button, color: 'red' }}
-                  onClick={this.deleteSubscriber}
-                >
+                <div style={{ ...styles.button, color: 'red' }} onClick={this.deleteSubscriber}>
                   Unsubscribe
                 </div>
               )) ||
@@ -666,9 +622,9 @@ class Subscribers extends Component {
                       return (
                         <tr key={i} style={styles.tr}>
                           <td style={{ ...styles.td }} />
-                          <td style={{ ...styles.td }}>{`${
-                            subscriber.firstName
-                          } ${subscriber.lastName}`}</td>
+                          <td style={{ ...styles.td }}>{`${subscriber.firstName} ${
+                            subscriber.lastName
+                          }`}</td>
                           <td style={{ ...styles.td }}>
                             <a
                               style={{
@@ -683,11 +639,9 @@ class Subscribers extends Component {
                           <td style={{ ...styles.td }}>
                             {(subscriber.soundcasts &&
                               subscriber.soundcasts[currentSoundcastID] &&
-                              subscriber.soundcasts[currentSoundcastID]
-                                .date_subscribed &&
+                              subscriber.soundcasts[currentSoundcastID].date_subscribed &&
                               moment(
-                                subscriber.soundcasts[currentSoundcastID]
-                                  .date_subscribed * 1000
+                                subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000
                               ).format('YYYY-MM-DD')) ||
                               '__'}
                           </td>
@@ -695,9 +649,7 @@ class Subscribers extends Component {
                             <span
                               onClick={() => {
                                 history.push({
-                                  pathname: `/dashboard/subscriber/${
-                                    subscriber.id
-                                  }`,
+                                  pathname: `/dashboard/subscriber/${subscriber.id}`,
                                   state: {
                                     subscriber,
                                     soundcast: currentSoundcast,
@@ -705,10 +657,7 @@ class Subscribers extends Component {
                                 });
                               }}
                             >
-                              <i
-                                className="far fa-chart-bar"
-                                style={styles.itemChartIcon}
-                              />
+                              <i className="far fa-chart-bar" style={styles.itemChartIcon} />
                             </span>
                           </td>
                           <td style={{ ...styles.td }}>

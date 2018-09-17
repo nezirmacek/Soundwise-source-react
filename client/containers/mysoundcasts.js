@@ -101,43 +101,27 @@ class _MySoundcasts extends Component {
                     .remove();
                   firebase
                     .database()
-                    .ref(
-                      `publishers/${
-                        snapshot.val().publisherID
-                      }/freeSubscribers/${userId}/${id}`
-                    )
+                    .ref(`publishers/${snapshot.val().publisherID}/freeSubscribers/${userId}/${id}`)
                     .remove();
                 }
               })
               .then(() => {
                 firebase
                   .database()
-                  .ref(
-                    `publishers/${
-                      snapshot.val().publisherID
-                    }/freeSubscribers/${userId}`
-                  )
+                  .ref(`publishers/${snapshot.val().publisherID}/freeSubscribers/${userId}`)
                   .once('value')
                   .then(freeSubsObj => {
                     if (!freeSubsObj.val()) {
                       firebase
                         .database()
-                        .ref(
-                          `publishers/${
-                            snapshot.val().publisherID
-                          }/freeSubscriberCount`
-                        )
+                        .ref(`publishers/${snapshot.val().publisherID}/freeSubscriberCount`)
                         .once('value')
                         .then(subsCountObj => {
                           if (subsCountObj.val()) {
                             const count = subsCountObj.val();
                             firebase
                               .database()
-                              .ref(
-                                `publishers/${
-                                  snapshot.val().publisherID
-                                }/freeSubscriberCount`
-                              )
+                              .ref(`publishers/${snapshot.val().publisherID}/freeSubscriberCount`)
                               .set(count - 1);
                           }
                         });
@@ -179,9 +163,7 @@ class _MySoundcasts extends Component {
 
     //if subsubscribed == true, unsubscribe; if subscribed == false, re-subscribe
     if (subscribed) {
-      const confirmUnsubscribe = confirm(
-        'Are you sure you want to unsubscribe this soundcast?'
-      );
+      const confirmUnsubscribe = confirm('Are you sure you want to unsubscribe this soundcast?');
       if (confirmUnsubscribe) {
         firebase
           .database()
@@ -221,16 +203,12 @@ class _MySoundcasts extends Component {
             // if it's a free soundcast, end the current subscription period immediately
             firebase
               .database()
-              .ref(
-                `users/${userId}/soundcasts/${soundcastId}/current_period_end`
-              )
+              .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
               .set(moment().format('X'));
 
             firebase
               .database()
-              .ref(
-                `publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`
-              )
+              .ref(`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`)
               .remove();
 
             firebase
@@ -308,9 +286,7 @@ class _MySoundcasts extends Component {
     const paymentID = charge.id ? charge.id : null;
     const planID = charge.plan ? charge.plan.id : null;
     const billingCycle = soundcast.billingCycle ? soundcast.billingCycle : null;
-    const current_period_end = charge.current_period_end
-      ? charge.current_period_end
-      : 4638902400; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+    const current_period_end = charge.current_period_end ? charge.current_period_end : 4638902400; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
 
     const userId = this.state.userId;
     // add soundcast to user
@@ -397,22 +373,15 @@ class _MySoundcasts extends Component {
                         className="col-lg-7 col-md-7 col-sm-7 col-xs-12"
                         style={styles.soundcastInfo}
                       >
-                        <img
-                          src={soundcast.imageURL}
-                          style={styles.soundcastImage}
-                        />
+                        <img src={soundcast.imageURL} style={styles.soundcastImage} />
                         <div style={styles.soundcastDescription}>
-                          <label style={styles.soundcastTitle}>
-                            {soundcast.title}
-                          </label>
+                          <label style={styles.soundcastTitle}>{soundcast.title}</label>
                           <label>
                             {(soundcast.subscribed &&
-                              Number(soundcast.current_period_end) ==
-                                4638902400 &&
+                              Number(soundcast.current_period_end) == 4638902400 &&
                               'Current access is valid') ||
                               (soundcast.subscribed &&
-                                Number(soundcast.current_period_end) <
-                                  4638902400 &&
+                                Number(soundcast.current_period_end) < 4638902400 &&
                                 `Current access is valid till ${moment
                                   .unix(soundcast.current_period_end)
                                   .format('MM/DD/YYYY')}`) ||
@@ -429,11 +398,7 @@ class _MySoundcasts extends Component {
                     >
                       {(soundcast.subscribed && (
                         <span style={{ ...styles.statusText }}>Active</span>
-                      )) || (
-                        <span style={{ ...styles.statusText, color: 'red' }}>
-                          Inactive
-                        </span>
-                      )}
+                      )) || <span style={{ ...styles.statusText, color: 'red' }}>Inactive</span>}
                     </div>
                     <div
                       className="col-lg-3 col-md-3 col-sm-3 col-xs-12"

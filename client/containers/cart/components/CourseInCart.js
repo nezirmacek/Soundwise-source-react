@@ -27,17 +27,11 @@ export default class CourseInCart extends Component {
       .ref('/coupons')
       .once('value')
       .then(snapshot => {
-        const {
-          course,
-          setDiscountedPrise,
-          addCourseToUser,
-          userInfo,
-        } = this.props;
+        const { course, setDiscountedPrise, addCourseToUser, userInfo } = this.props;
         const coupons = snapshot.val();
         const today = Date.now();
         const expiration =
-          (coupons[that.state.coupon] &&
-            Date.parse(coupons[that.state.coupon].expiration)) ||
+          (coupons[that.state.coupon] && Date.parse(coupons[that.state.coupon].expiration)) ||
           today;
 
         if (coupons[that.state.coupon] && today <= expiration) {
@@ -46,8 +40,7 @@ export default class CourseInCart extends Component {
           if (course.id === coupon.course_id) {
             // count coupon only when it is applied
             let updates = {};
-            updates['/coupons/' + that.state.coupon + '/count'] =
-              coupon.count + 1;
+            updates['/coupons/' + that.state.coupon + '/count'] = coupon.count + 1;
             firebase
               .database()
               .ref()
@@ -55,10 +48,7 @@ export default class CourseInCart extends Component {
 
             // send new discountedPrice to cart
             let discountedPrice = course.price * (1 - coupon.discount / 100);
-            setDiscountedPrise(
-              course.id,
-              Math.floor(discountedPrice * 100) / 100
-            );
+            setDiscountedPrise(course.id, Math.floor(discountedPrice * 100) / 100);
             if (discountedPrice == 0) {
               addCourseToUser();
             }
@@ -99,22 +89,13 @@ export default class CourseInCart extends Component {
                   style={styles.couponInput}
                   onChange={this.handleChange.bind(this)}
                 />
-                <div
-                  style={styles.applyCouponButton}
-                  onClick={this.handleCoupon.bind(this)}
-                >
+                <div style={styles.applyCouponButton} onClick={this.handleCoupon.bind(this)}>
                   Apply
                 </div>
                 <div style={{ color: 'red' }}>{this.state.couponError}</div>
               </div>
-              <div
-                className="feature-box-details-second pull-right"
-                style={styles.priceWrapper}
-              >
-                <a
-                  onClick={() => this.props.deleteCourseFromCart(course)}
-                  style={styles.trash}
-                >
+              <div className="feature-box-details-second pull-right" style={styles.priceWrapper}>
+                <a onClick={() => this.props.deleteCourseFromCart(course)} style={styles.trash}>
                   <i className="fa fa-trash fa-2x" aria-hidden="true" />
                 </a>
                 <span className="margin-five-bottom" style={styles.price}>

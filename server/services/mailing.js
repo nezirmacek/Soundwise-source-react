@@ -3,63 +3,33 @@ const { mailingManager, soundcastManager } = require('../managers');
 const { emailTemplate } = require('../scripts/helpers/emailTemplate');
 const Raven = require('raven');
 
-const addToMailingList = async (
-  soundcastId,
-  recipients,
-  listName,
-  mailingListId
-) => {
+const addToMailingList = async (soundcastId, recipients, listName, mailingListId) => {
   const persistedRecipients = await mailingManager.addRecipients(recipients);
 
   if (mailingListId) {
-    await mailingManager.addRecipientsToMailingList(
-      mailingListId,
-      persistedRecipients
-    );
+    await mailingManager.addRecipientsToMailingList(mailingListId, persistedRecipients);
   } else {
     try {
-      const listId = await mailingManager.createMailingList(
-        soundcastId,
-        listName
-      );
+      const listId = await mailingManager.createMailingList(soundcastId, listName);
 
-      await mailingManager.addRecipientsToMailingList(
-        listId,
-        persistedRecipients
-      );
+      await mailingManager.addRecipientsToMailingList(listId, persistedRecipients);
 
-      await soundcastManager.setMailingListName(
-        soundcastId,
-        listName,
-        mailingListId
-      );
+      await soundcastManager.setMailingListName(soundcastId, listName, mailingListId);
     } catch (err) {
       let message;
 
       try {
         message = err.response.body.errors[0].message;
       } finally {
-        if (
-          message ===
-          'This list name is already in use. Please choose a new, unique name.'
-        ) {
+        if (message === 'This list name is already in use. Please choose a new, unique name.') {
           const [, body] = await mailingManager.getMailingLists();
 
-          const list = body.lists.find(
-            i => i.name === `${soundcastId}-${listName}`
-          );
+          const list = body.lists.find(i => i.name === `${soundcastId}-${listName}`);
 
           if (list) {
-            await mailingManager.addRecipientsToMailingList(
-              list.id,
-              persistedRecipients
-            );
+            await mailingManager.addRecipientsToMailingList(list.id, persistedRecipients);
 
-            await soundcastManager.setMailingListName(
-              soundcastId,
-              listName,
-              mailingListId
-            );
+            await soundcastManager.setMailingListName(soundcastId, listName, mailingListId);
           }
         }
       }
@@ -96,9 +66,7 @@ const sendTransactionalEmails = (
             name: publisherName,
           },
           subject,
-          html: plainEmail
-            ? content
-            : emailTemplate(publisherName, publisherImage, content),
+          html: plainEmail ? content : emailTemplate(publisherName, publisherImage, content),
           bcc,
         })
         .catch(err => {

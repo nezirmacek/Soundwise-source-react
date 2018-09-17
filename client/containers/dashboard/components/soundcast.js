@@ -110,11 +110,7 @@ export default class Soundcast extends Component {
     if (!result.destination) {
       return;
     }
-    const episodes = reorder(
-      this.state.episodes,
-      result.source.index,
-      result.destination.index
-    );
+    const episodes = reorder(this.state.episodes, result.source.index, result.destination.index);
 
     this.setState({
       episodes,
@@ -161,11 +157,7 @@ export default class Soundcast extends Component {
 
   async deleteEpisode(episode) {
     const title = episode.title;
-    if (
-      confirm(
-        `Are you sure you want to delete ${title}? You won't be able to go back.`
-      )
-    ) {
+    if (confirm(`Are you sure you want to delete ${title}? You won't be able to go back.`)) {
       await firebase
         .database()
         .ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`)
@@ -220,10 +212,7 @@ export default class Soundcast extends Component {
           userInfo={this.props.userInfo}
         />
         <div className="row " style={styles.itemHeader}>
-          <div
-            className="col-lg-9 col-md-9 col-sm-8 col-xs-12"
-            style={styles.itemTitle}
-          >
+          <div className="col-lg-9 col-md-9 col-sm-8 col-xs-12" style={styles.itemTitle}>
             {soundcast.title} - Episodes
           </div>
           <div
@@ -245,22 +234,13 @@ export default class Soundcast extends Component {
               <div className="col-md-6" style={{ ...styles.th }}>
                 TITLE
               </div>
-              <div
-                className="col-md-2"
-                style={{ ...styles.th, textAlign: 'center' }}
-              >
+              <div className="col-md-2" style={{ ...styles.th, textAlign: 'center' }}>
                 PUBLISHED ON
               </div>
-              <div
-                className="col-md-2"
-                style={{ ...styles.th, textAlign: 'center' }}
-              >
+              <div className="col-md-2" style={{ ...styles.th, textAlign: 'center' }}>
                 LENGTH
               </div>
-              <div
-                className="col-md-2"
-                style={{ ...styles.th, textAlign: 'center' }}
-              >
+              <div className="col-md-2" style={{ ...styles.th, textAlign: 'center' }}>
                 ANALYTICS
               </div>
             </div>
@@ -270,18 +250,11 @@ export default class Soundcast extends Component {
           <DragDropContext onDragEnd={this.onDragEnd}>
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}
-                >
+                <div ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
                   {this.state.episodes.map(episode => {
-                    episode.creator =
-                      userInfo.publisher.administrators[episode.creatorID];
+                    episode.creator = userInfo.publisher.administrators[episode.creatorID];
                     return (
-                      <Draggable
-                        key={episode.index}
-                        draggableId={episode.index}
-                      >
+                      <Draggable key={episode.index} draggableId={episode.index}>
                         {(provided, snapshot) => (
                           <div
                             className=""
@@ -293,16 +266,10 @@ export default class Soundcast extends Component {
                             <div
                               ref={provided.innerRef}
                               className="col-md-12"
-                              style={getItemStyle(
-                                provided.draggableStyle,
-                                snapshot.isDragging
-                              )}
+                              style={getItemStyle(provided.draggableStyle, snapshot.isDragging)}
                               {...provided.dragHandleProps}
                             >
-                              <div
-                                className="col-md-6"
-                                style={{ ...styles.td }}
-                              >
+                              <div className="col-md-6" style={{ ...styles.td }}>
                                 <div style={{ marginRight: 20 }}>
                                   <div style={{ marginTop: 0, cursor: 'move' }}>
                                     {episode.title}
@@ -315,9 +282,7 @@ export default class Soundcast extends Component {
                                         fontSize: 15,
                                         color: 'red',
                                       }}
-                                      onClick={() =>
-                                        this.deleteEpisode(episode)
-                                      }
+                                      onClick={() => this.deleteEpisode(episode)}
                                     >
                                       Delete
                                     </span>
@@ -335,9 +300,7 @@ export default class Soundcast extends Component {
                                     {(episode.publicEpisode && (
                                       <a
                                         target="_blank"
-                                        href={`https://mysoundwise.com/episodes/${
-                                          episode.id
-                                        }`}
+                                        href={`https://mysoundwise.com/episodes/${episode.id}`}
                                       >
                                         <span
                                           className="text-dark-gray"
@@ -356,9 +319,7 @@ export default class Soundcast extends Component {
                                       <CopyToClipboard
                                         text={episode.url}
                                         onCopy={() => {
-                                          alert(
-                                            'Audio file URL copied to clipboard.'
-                                          );
+                                          alert('Audio file URL copied to clipboard.');
                                         }}
                                       >
                                         <span
@@ -385,9 +346,7 @@ export default class Soundcast extends Component {
                                 }}
                               >
                                 {(episode.isPublished &&
-                                  moment(episode.date_created * 1000).format(
-                                    'MMM DD YYYY'
-                                  )) ||
+                                  moment(episode.date_created * 1000).format('MMM DD YYYY')) ||
                                   'draft'}
                               </div>
                               <div
@@ -399,9 +358,7 @@ export default class Soundcast extends Component {
                                 }}
                               >
                                 {(episode.duration &&
-                                  `${Math.round(
-                                    episode.duration / 60
-                                  )} minutes`) ||
+                                  `${Math.round(episode.duration / 60)} minutes`) ||
                                   '-'}
                               </div>
                               <div

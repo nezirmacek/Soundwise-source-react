@@ -87,27 +87,21 @@ function user(
     case types.ADD_EPISODES:
       action.payload.map(episode => {
         if (newState.userInfo.soundcasts_managed[episode.soundcastID]) {
-          newState.userInfo.soundcasts_managed[episode.soundcastID].episodes[
-            episode.id
-          ] = episode;
+          newState.userInfo.soundcasts_managed[episode.soundcastID].episodes[episode.id] = episode;
         }
         if (newState.userInfo.subscriptions[episode.soundcastID]) {
-          newState.userInfo.subscriptions[episode.soundcastID].episodes[
-            episode.id
-          ] = episode;
+          newState.userInfo.subscriptions[episode.soundcastID].episodes[episode.id] = episode;
         }
       });
       return newState;
     case types.EDIT_EPISODE:
       if (newState.userInfo.soundcasts_managed[action.payload.soundcastID]) {
-        newState.userInfo.soundcasts_managed[
-          action.payload.soundcastID
-        ].episodes[episode.id] = episode;
-      }
-      if (newState.userInfo.subscriptions[action.payload.soundcastID]) {
-        newState.userInfo.subscriptions[action.payload.soundcastID].episodes[
+        newState.userInfo.soundcasts_managed[action.payload.soundcastID].episodes[
           episode.id
         ] = episode;
+      }
+      if (newState.userInfo.subscriptions[action.payload.soundcastID]) {
+        newState.userInfo.subscriptions[action.payload.soundcastID].episodes[episode.id] = episode;
       }
       return newState;
     case types.CONTENT_SAVED:

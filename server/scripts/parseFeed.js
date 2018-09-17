@@ -25,9 +25,7 @@ const nodeUrl = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
-const categoriesNames = Object.keys(podcastCategories).map(
-  i => podcastCategories[i].name
-); // main 16 categories ('Arts', 'Comedy', ...)
+const categoriesNames = Object.keys(podcastCategories).map(i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
 
 // // Test the getFeed function:
 // setTimeout(() =>
@@ -105,8 +103,7 @@ function getPublisherEmail(metadata) {
     metadata['itunes:owner'] &&
     metadata['itunes:owner']['itunes:email'] &&
     metadata['itunes:owner']['itunes:email']['#'];
-  const managingEmail =
-    metadata['rss:managingeditor'] && metadata['rss:managingeditor']['email'];
+  const managingEmail = metadata['rss:managingeditor'] && metadata['rss:managingeditor']['email'];
   return itunesEmail || managingEmail || null;
 }
 
@@ -179,7 +176,7 @@ async function parseFeed(req, res) {
                     category = row.name;
                   }
                 } catch (err) {
-                  logErr(`Category.findOne ${err}`)
+                  logErr(`Category.findOne ${err}`);
                 }
                 await createPodcasterEmail({
                   podcastTitle: title,
@@ -247,10 +244,7 @@ async function parseFeed(req, res) {
           { claimed: true, userId, publisherId },
           { where: { soundcastId } }
         );
-        await database.Soundcast.update(
-          { publisherId },
-          { where: { soundcastId } }
-        );
+        await database.Soundcast.update({ publisherId }, { where: { soundcastId } });
         await firebase
           .database()
           .ref(`soundcasts/${soundcastId}/publisherID`)
@@ -268,10 +262,7 @@ async function parseFeed(req, res) {
           where: { soundcastId },
         });
         if (episodes.length) {
-          await database.Episode.update(
-            { publisherId },
-            { where: { soundcastId } }
-          );
+          await database.Episode.update({ publisherId }, { where: { soundcastId } });
           for (const episode of episodes) {
             await firebase
               .database()
@@ -307,19 +298,13 @@ async function parseFeed(req, res) {
             feedItems,
             originalUrl: feedUrl,
           };
-          sendVerificationMail(
-            publisherEmail,
-            metadata.title,
-            verificationCode
-          );
+          sendVerificationMail(publisherEmail, metadata.title, verificationCode);
           res.json({ imageUrl: metadata.image.url, publisherEmail });
         });
       }
 
       if (!feedUrls[url]) {
-        console.log(
-          `Error parseFeed: feed wasn't found in cache object ${url}`
-        );
+        console.log(`Error parseFeed: feed wasn't found in cache object ${url}`);
         return res.status(400).send(`Error: feed wasn't found in cache object`);
       }
 
@@ -336,11 +321,7 @@ async function parseFeed(req, res) {
       }
 
       if (resend) {
-        sendVerificationMail(
-          publisherEmail,
-          metadata.title,
-          feedUrls[url].verificationCode
-        );
+        sendVerificationMail(publisherEmail, metadata.title, feedUrls[url].verificationCode);
         return res.send('Success_resend');
       }
 
@@ -436,9 +417,7 @@ async function runFeedImport(
 
     feedItems.sort((a, b) => {
       // sort feedItems by date or pubdate or pubDate
-      return (
-        (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate)
-      );
+      return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
     });
 
     if (feedItems.length > 100) {
@@ -450,8 +429,7 @@ async function runFeedImport(
     if (!last_update) {
       // take first episode's date
       const newestEpisode = feedItems[feedItems.length - 1]; // last in array
-      last_update =
-        newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
+      last_update = newestEpisode.date || newestEpisode.pubdate || newestEpisode.pubDate;
     }
     if (!last_update || moment(last_update).format('X') === 'Invalid date') {
       // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
@@ -486,8 +464,7 @@ async function runFeedImport(
       verified: isVerified, // ownership verification, set to true from client after ownership is verified
       showSubscriberCount: false,
       showTimeStamps: true,
-      hostImageURL:
-        'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
+      hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
       episodes: {},
     };
 
@@ -629,15 +606,7 @@ async function runFeedImport(
   }
 } // runFeedImport
 
-async function addFeedEpisode(
-  item,
-  userId,
-  publisherId,
-  soundcastId,
-  soundcast,
-  metadata,
-  i
-) {
+async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast, metadata, i) {
   try {
     const { title, description, summary, date, image, enclosures } = item;
     let duration = null;
@@ -683,12 +652,9 @@ async function addFeedEpisode(
       coverArtUrl: image.url || soundcast.imageURL || '',
       creatorID: userId,
       date_created:
-        date_created === 'Invalid date'
-          ? Math.floor(Date.now() / 1000)
-          : Number(date_created),
+        date_created === 'Invalid date' ? Math.floor(Date.now() / 1000) : Number(date_created),
       description:
-        (description && entities.decode(description)) ||
-        (summary && entities.decode(summary)),
+        (description && entities.decode(description)) || (summary && entities.decode(summary)),
       duration,
       id3Tagged: true,
       index: i + 1,
@@ -765,27 +731,19 @@ async function feedInterval() {
 
             results.feedItems.sort((a, b) => {
               // sort feedItems by date or pubdate or pubDate
-              return (
-                (a.date || a.pubdate || a.pubDate) -
-                (b.date || b.pubdate || b.pubDate)
-              );
+              return (a.date || a.pubdate || a.pubDate) - (b.date || b.pubdate || b.pubDate);
             });
 
             for (const feed of results.feedItems) {
-              const pub_date = Number(
-                moment(feed.pubdate || feed.pubDate).format('X')
-              );
+              const pub_date = Number(moment(feed.pubdate || feed.pubDate).format('X'));
               const hasEnclosures =
-                feed.enclosures &&
-                feed.enclosures.length &&
-                feed.enclosures[0].url;
+                feed.enclosures && feed.enclosures.length && feed.enclosures[0].url;
               if (hasEnclosures && pub_date && pub_date > item.updated) {
                 // 3. create new episodes from the new feed items, and add them to their respective soundcast
                 //    *episode.index for the new episodes should be the number of existing episodes
                 //     in the  soundcast + 1
                 const soundcast = {};
-                soundcast.imageURL =
-                  metadata && metadata.image && metadata.image.url;
+                soundcast.imageURL = metadata && metadata.image && metadata.image.url;
                 soundcast.title = metadata && metadata.title;
                 await addFeedEpisode(
                   feed,

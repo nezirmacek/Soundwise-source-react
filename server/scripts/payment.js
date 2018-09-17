@@ -52,21 +52,12 @@ module.exports.handlePayment = (req, res) => {
 };
 
 module.exports.createUpdatePlans = async (req, res) => {
-  const {
-    publisherID,
-    soundcastID,
-    stripe_account,
-    title,
-    prices,
-    couponsToRemove,
-  } = req.body;
+  const { publisherID, soundcastID, stripe_account, title, prices, couponsToRemove } = req.body;
 
   if (couponsToRemove) {
     // old coupons removal
     for (const code of couponsToRemove) {
-      await new Promise(resolve =>
-        stripe.coupons.del(code, { stripe_account }, () => resolve())
-      );
+      await new Promise(resolve => stripe.coupons.del(code, { stripe_account }, () => resolve()));
     }
   }
 
@@ -126,10 +117,7 @@ module.exports.createUpdatePlans = async (req, res) => {
             { stripe_account },
             (err, plan) => {
               if (err || !plan) {
-                console.log(
-                  `Error: payment.js plan creation ${planID} ${err}`,
-                  req.body
-                );
+                console.log(`Error: payment.js plan creation ${planID} ${err}`, req.body);
                 return reject(`${planID} ${err}`);
               }
               console.log(`New plan ${planID} successfully created:`, plan);
@@ -140,43 +128,35 @@ module.exports.createUpdatePlans = async (req, res) => {
                 coupons.map(
                   coupon =>
                     new Promise(resolve2 => {
-                      stripe.coupons.del(
-                        coupon.code,
-                        { stripe_account },
-                        () => {
-                          if (
-                            coupon.couponType === 'trial_period' ||
-                            coupon.expiration - 10 < Date.now() / 1000
-                          ) {
-                            // trial period or outdated
-                            resolve2();
-                          } else {
-                            stripe.coupons.create(
-                              {
-                                percent_off: Number(coupon.percentOff),
-                                duration: 'forever',
-                                redeem_by: coupon.expiration,
-                                id: coupon.code,
-                              },
-                              { stripe_account },
-                              (err, result) => {
-                                if (err) {
-                                  console.log(
-                                    `Error: payment.js coupon creation ${planID} ${err}`,
-                                    coupon
-                                  );
-                                  return reject(
-                                    `${planID} coupon ${JSON.stringify(
-                                      coupon
-                                    )} ${err}`
-                                  );
-                                }
-                                resolve2(); // coupon creation success
+                      stripe.coupons.del(coupon.code, { stripe_account }, () => {
+                        if (
+                          coupon.couponType === 'trial_period' ||
+                          coupon.expiration - 10 < Date.now() / 1000
+                        ) {
+                          // trial period or outdated
+                          resolve2();
+                        } else {
+                          stripe.coupons.create(
+                            {
+                              percent_off: Number(coupon.percentOff),
+                              duration: 'forever',
+                              redeem_by: coupon.expiration,
+                              id: coupon.code,
+                            },
+                            { stripe_account },
+                            (err, result) => {
+                              if (err) {
+                                console.log(
+                                  `Error: payment.js coupon creation ${planID} ${err}`,
+                                  coupon
+                                );
+                                return reject(`${planID} coupon ${JSON.stringify(coupon)} ${err}`);
                               }
-                            );
-                          }
+                              resolve2(); // coupon creation success
+                            }
+                          );
                         }
-                      );
+                      });
                     })
                 )
               ).then(() => resolve());
@@ -246,14 +226,10 @@ const recurringPayment = async body => {
   const publisher = publisherObj.val();
 
   let soundwiseFeePercent = 0;
-  if (
-    publisher.plan == 'plus' &&
-    publisher.current_period_end > moment().format('X')
-  ) {
+  if (publisher.plan == 'plus' && publisher.current_period_end > moment().format('X')) {
     soundwiseFeePercent = 5;
   } else if (
-    (publisher.plan == 'pro' &&
-      publisher.current_period_end > moment().format('X')) ||
+    (publisher.plan == 'pro' && publisher.current_period_end > moment().format('X')) ||
     publisher.beta
   ) {
     soundwiseFeePercent = 0;
@@ -265,18 +241,10 @@ const recurringPayment = async body => {
   try {
     const customers = await new Promise((resolve, reject) => {
       console.log('req.body.platformCustomer: ', platformCustomer);
-      const email = platformCustomer
-        ? platformCustomer.receipt_email
-        : receipt_email;
+      const email = platformCustomer ? platformCustomer.receipt_email : receipt_email;
       if (platformCustomer) {
         // if customer exists on platform
-        createCustomer(
-          platformCustomer,
-          email,
-          stripe_account,
-          resolve,
-          reject
-        );
+        createCustomer(platformCustomer, email, stripe_account, resolve, reject);
       } else {
         stripe.customers.create(
           {
@@ -311,17 +279,13 @@ const recurringPayment = async body => {
         .unix();
     }
     const result = await new Promise((resolve, reject) => {
-      stripe.subscriptions.create(
-        newSub,
-        { stripe_account },
-        (err, subscription) => {
-          if (err) {
-            console.log(err);
-            return reject({ errMsg: err && err.raw && err.raw.message });
-          }
-          return resolve(Object.assign({}, subscription, customers));
+      stripe.subscriptions.create(newSub, { stripe_account }, (err, subscription) => {
+        if (err) {
+          console.log(err);
+          return reject({ errMsg: err && err.raw && err.raw.message });
         }
-      );
+        return resolve(Object.assign({}, subscription, customers));
+      });
     });
     return result;
   } catch (err) {
@@ -331,46 +295,32 @@ const recurringPayment = async body => {
 };
 module.exports.recurringPayment = recurringPayment;
 
-function createCustomer(
-  platformCustomer,
-  description,
-  stripe_account,
-  resolve,
-  reject
-) {
+function createCustomer(platformCustomer, description, stripe_account, resolve, reject) {
   // create token from platform customer
-  stripe.tokens.create(
-    { customer: platformCustomer },
-    { stripe_account },
-    (err, token) => {
-      if (err) {
-        return reject(err);
-      }
-      console.log('token: ', token.id);
-      stripe.customers.create(
-        {
-          // then create customer using token on connected account
-          description,
-          source: token.id,
-        },
-        { stripe_account },
-        (err, customer) => {
-          if (err) {
-            return reject(err);
-          }
-          console.log(
-            'Success: payment.js customer',
-            platformCustomer,
-            customer.id
-          );
-          return resolve({
-            platformCustomer,
-            connectedCustomer: customer.id,
-          });
-        }
-      );
+  stripe.tokens.create({ customer: platformCustomer }, { stripe_account }, (err, token) => {
+    if (err) {
+      return reject(err);
     }
-  );
+    console.log('token: ', token.id);
+    stripe.customers.create(
+      {
+        // then create customer using token on connected account
+        description,
+        source: token.id,
+      },
+      { stripe_account },
+      (err, customer) => {
+        if (err) {
+          return reject(err);
+        }
+        console.log('Success: payment.js customer', platformCustomer, customer.id);
+        return resolve({
+          platformCustomer,
+          connectedCustomer: customer.id,
+        });
+      }
+    );
+  });
 }
 
 module.exports.retrieveCustomer = (req, res) => {

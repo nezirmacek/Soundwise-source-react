@@ -116,10 +116,7 @@ export default class CourseOutline extends Component {
               }}
             >
               <strong>
-                <i
-                  className="material-icons"
-                  style={{ paddingRight: '1em', color: 'green' }}
-                >
+                <i className="material-icons" style={{ paddingRight: '1em', color: 'green' }}>
                   check
                 </i>
               </strong>
@@ -136,18 +133,16 @@ export default class CourseOutline extends Component {
       <Card>
         <CardHeader title={course.name} style={styles.moduleTitle} />
         <div>
-          {course.sections
-            .sort((a, b) => a.section_number - b.section_number)
-            .map((section, i) => (
-              <LessonPlayer
-                key={i}
-                index={i}
-                section={section}
-                showDialogCb={this.checkOut.bind(this)}
-                playingCb={this.setPlayingLesson}
-                isPlaying={section.section_id === this.state.playingLessonId}
-              />
-            ))}
+          {course.sections.sort((a, b) => a.section_number - b.section_number).map((section, i) => (
+            <LessonPlayer
+              key={i}
+              index={i}
+              section={section}
+              showDialogCb={this.checkOut.bind(this)}
+              playingCb={this.setPlayingLesson}
+              isPlaying={section.section_id === this.state.playingLessonId}
+            />
+          ))}
         </div>
       </Card>
     );
@@ -167,17 +162,10 @@ export default class CourseOutline extends Component {
                   WHAT YOU WILL GET
                 </h2>
               </div>
-              <div className="col-md-12 col-sm-12 col-xs-12">
-                {this.renderFeatures()}
-              </div>
+              <div className="col-md-12 col-sm-12 col-xs-12">{this.renderFeatures()}</div>
             </div>
-            <div
-              className="row padding-40px-tb"
-              style={{ backgroundColor: '#FFF3E0' }}
-            >
-              <div className="col-md-12 col-sm-12 col-xs-12">
-                {this.renderDescription()}
-              </div>
+            <div className="row padding-40px-tb" style={{ backgroundColor: '#FFF3E0' }}>
+              <div className="col-md-12 col-sm-12 col-xs-12">{this.renderDescription()}</div>
             </div>
             <HowItWorks />
             <div style={styles.curriculumContainer}>
@@ -212,10 +200,7 @@ export default class CourseOutline extends Component {
                   FREQUENTLY ASKED QUESTIONS
                 </h2>
               </div>
-              <div
-                className="col-md-12 col-sm-12 col-xs-12 container"
-                style={{}}
-              >
+              <div className="col-md-12 col-sm-12 col-xs-12 container" style={{}}>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   How long do I have access to the content?
                 </h2>
@@ -232,14 +217,12 @@ export default class CourseOutline extends Component {
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left"
                   style={{ lineHeight: '30px' }}
                 >
-                  Once you sign up for the program, you'll see an "enable
-                  offline" button on the right hand side of every audio section.
-                  Click on that, and voila! Now you can play the section even
-                  when you don't have internet or you don't want to use your
-                  cellphone data plan for streaming. The offline function works
-                  best on computer and android phone in a Chrome browser. Sadly,
-                  if you have an iPhone you can't use the offline function. But
-                  we're working on an iOS app. Stay tuned :)
+                  Once you sign up for the program, you'll see an "enable offline" button on the
+                  right hand side of every audio section. Click on that, and voila! Now you can play
+                  the section even when you don't have internet or you don't want to use your
+                  cellphone data plan for streaming. The offline function works best on computer and
+                  android phone in a Chrome browser. Sadly, if you have an iPhone you can't use the
+                  offline function. But we're working on an iOS app. Stay tuned :)
                 </h5>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   What should I do if I have technical issues?
@@ -249,10 +232,7 @@ export default class CourseOutline extends Component {
                   style={{ lineHeight: '30px' }}
                 >
                   Shoot us an email at{' '}
-                  <a href="mailto:support@mysoundwise.com">
-                    support@mysoundwise.com
-                  </a>
-                  .
+                  <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a>.
                 </h5>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   What if I'm not happy with the content?
@@ -261,13 +241,9 @@ export default class CourseOutline extends Component {
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text"
                   style={{ lineHeight: '30px' }}
                 >
-                  We want you to be happy! If you are unsatisfied with the
-                  course, let us know at{' '}
-                  <a href="mailto:support@mysoundwise.com">
-                    support@mysoundwise.com
-                  </a>{' '}
-                  within 14 days of your purchase and we will give you a full
-                  refund.
+                  We want you to be happy! If you are unsatisfied with the course, let us know at{' '}
+                  <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14
+                  days of your purchase and we will give you a full refund.
                 </h5>
               </div>
             </div>
@@ -275,19 +251,13 @@ export default class CourseOutline extends Component {
         </section>
         <DialogPopup
           dialogType={'lessonDisabled'}
-          buttonActions={[
-            this.takeCourse.bind(this),
-            this.showDialog.bind(this, false),
-          ]}
+          buttonActions={[this.takeCourse.bind(this), this.showDialog.bind(this, false)]}
           isShown={this.state.isTakeLessonDialogShown}
           onRequestClose={this.showDialog.bind(this, false)}
         />
         <DialogPopup
           dialogType={'buyCourseOfLesson'}
-          buttonActions={[
-            this.buyCourse.bind(this),
-            this.showDialog.bind(this, false),
-          ]}
+          buttonActions={[this.buyCourse.bind(this), this.showDialog.bind(this, false)]}
           isShown={this.state.isBuyCourseDialogShown}
           onRequestClose={this.showDialog.bind(this, false)}
         />

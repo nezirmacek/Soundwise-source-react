@@ -69,17 +69,14 @@ class _LandingPageSelling extends Component {
                     style={{
                       color: 'rgb(255, 255, 255)',
                       backgroundColor: 'rgba(0, 0, 0, 0)',
-                      borderColor:
-                        'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                      borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                       fontFamily: 'Montserrat, sans-serif',
                       textTransform: 'none',
                       fontSize: '16px',
                       fontWeight: 700,
                     }}
                   >
-                    {`Hello, ${this.capFirstLetter(
-                      this.props.userInfo.firstName
-                    )} `}
+                    {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                     <span className="caret" />
                   </div>
                 </div>
@@ -93,10 +90,7 @@ class _LandingPageSelling extends Component {
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link
-                        to="/dashboard/soundcasts"
-                        style={{ color: 'black' }}
-                      >
+                      <Link to="/dashboard/soundcasts" style={{ color: 'black' }}>
                         Admin Dashboard
                       </Link>
                     </li>
@@ -145,9 +139,7 @@ class _LandingPageSelling extends Component {
             )}
             <li className="propClone sm-no-border">
               <a className="dropdown-toggle" data-toggle="dropdown">
-                {`Hello, ${this.capFirstLetter(
-                  this.props.userInfo.firstName
-                )} `}
+                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                 <span className="caret" />
               </a>
               <ul className="dropdown-menu">
@@ -185,8 +177,7 @@ class _LandingPageSelling extends Component {
               style={{
                 color: 'rgb(255, 255, 255)',
                 backgroundColor: 'rgba(0, 0, 0, 0)',
-                borderColor:
-                  'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                 fontFamily: 'Montserrat, sans-serif',
                 textTransform: 'none',
                 fontSize: '16px',
@@ -242,8 +233,7 @@ class _LandingPageSelling extends Component {
             content="https://mysoundwise.com/images/soundwise-selling.png"
           />
           <title>
-            Soundwise: #1 Mobile-Centric Platform For Selling & Delivering
-            On-Demand Audios{' '}
+            Soundwise: #1 Mobile-Centric Platform For Selling & Delivering On-Demand Audios{' '}
           </title>
           <meta
             name="description"
@@ -303,8 +293,7 @@ class _LandingPageSelling extends Component {
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -323,8 +312,7 @@ class _LandingPageSelling extends Component {
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -343,8 +331,7 @@ class _LandingPageSelling extends Component {
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -409,8 +396,8 @@ class _LandingPageSelling extends Component {
                           id="ui-id-20"
                         >
                           <p>
-                            The #1 mobile and web platform for selling and
-                            delivering on-demand audio streaming programs.&nbsp;
+                            The #1 mobile and web platform for selling and delivering on-demand
+                            audio streaming programs.&nbsp;
                           </p>
                         </div>
                         <div className="btn-dual">
@@ -499,10 +486,9 @@ class _LandingPageSelling extends Component {
                     id="ui-id-52"
                   >
                     <p>
-                      Give listeners the opportunity to buy more of your audios
-                      right from their phone. While they’re listening to one of
-                      your programs. Automatic increase of customer lifetime
-                      value. Without any extra work.
+                      Give listeners the opportunity to buy more of your audios right from their
+                      phone. While they’re listening to one of your programs. Automatic increase of
+                      customer lifetime value. Without any extra work.
                     </p>
                   </div>
                   <Link
@@ -568,8 +554,7 @@ class _LandingPageSelling extends Component {
                     }}
                     id="ui-id-53"
                   >
-                    Beautiful mobile and web sales pages for all your
-                    audios.&nbsp;
+                    Beautiful mobile and web sales pages for all your audios.&nbsp;
                   </span>
                 </div>
               </div>
@@ -675,9 +660,9 @@ class _LandingPageSelling extends Component {
                     id="ui-id-47"
                   >
                     <p>
-                      Create your own audio “Netflix” by bundling different
-                      programs. Sell your audios as subscription or one-time
-                      purchase. Deliver companion content with ease.&nbsp;&nbsp;
+                      Create your own audio “Netflix” by bundling different programs. Sell your
+                      audios as subscription or one-time purchase. Deliver companion content with
+                      ease.&nbsp;&nbsp;
                     </p>
                   </div>
                   <div
@@ -766,26 +751,72 @@ class _LandingPageSelling extends Component {
           </div>
         </section>
         <div className="hero-style4">
-            <section id="testimonials-section11" className="bg-light-orange builder-bg testimonial-style11 border-none">
-                <div className="container position-relative">
-                    <div className="row equalize xs-equalize-auto equalize-display-inherit">
-                        <div className="col-md-6 col-sm-6 col-xs-12 slider-text-middle text-left xs-text-center pull-right display-table" style={{height: 698}}>
-                            <div className="display-table-cell-vertical-middle padding-nineteen no-padding-lr">
-                                <div className="icon-big text-white margin-two-bottom"><i className="fas fa-quote-left tz-icon-color" aria-hidden="true"></i></div>
-                                <h1 className="alt-font text-large text-white sm-title-small xs-title-medium margin-eight-bottom tz-text width-80 sm-width-100 font-weight-600">I chose to create my teaching materials in audio, because my customers are busy parents who often don’t have the blocks of time to read or watch content. Using Soundwise allows them to listen and learn about parenting from me while driving their kids around. I’m not necessarily tech savvy. That’s why Soundwise is a godsend. Because their team held my hand through every step of setting up my soundcasts. They really have the best customer service!</h1>
-                                <div className="text-large text-golden-yellow margin-ten-top"><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb no-margin-left" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i></div>
-                                <div className="tz-text alt-font text-medium text-dark-gray font-weight-600">Evonne Weinhaus, best-selling author and relationship therapist </div>
-                                <div><a target='_blank' href='http://evonneweinhaus.com/' className="tz-text alt-font text-white text-medium sm-text-medium">evonneweinhaus.com</a></div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6 col-xs-12 display-table" style={{height: 698}}>
-                            <div className="display-table-cell-vertical-bottom">
-                                <img src="images/testimonial1.png" data-img-size="(W)600px X (H)741px" alt=""/>
-                            </div>
-                        </div>
+          <section
+            id="testimonials-section11"
+            className="bg-light-orange builder-bg testimonial-style11 border-none"
+          >
+            <div className="container position-relative">
+              <div className="row equalize xs-equalize-auto equalize-display-inherit">
+                <div
+                  className="col-md-6 col-sm-6 col-xs-12 slider-text-middle text-left xs-text-center pull-right display-table"
+                  style={{ height: 698 }}
+                >
+                  <div className="display-table-cell-vertical-middle padding-nineteen no-padding-lr">
+                    <div className="icon-big text-white margin-two-bottom">
+                      <i className="fas fa-quote-left tz-icon-color" aria-hidden="true" />
                     </div>
+                    <h1 className="alt-font text-large text-white sm-title-small xs-title-medium margin-eight-bottom tz-text width-80 sm-width-100 font-weight-600">
+                      I chose to create my teaching materials in audio, because my customers are
+                      busy parents who often don’t have the blocks of time to read or watch content.
+                      Using Soundwise allows them to listen and learn about parenting from me while
+                      driving their kids around. I’m not necessarily tech savvy. That’s why
+                      Soundwise is a godsend. Because their team held my hand through every step of
+                      setting up my soundcasts. They really have the best customer service!
+                    </h1>
+                    <div className="text-large text-golden-yellow margin-ten-top">
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb no-margin-left"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="tz-text alt-font text-medium text-dark-gray font-weight-600">
+                      Evonne Weinhaus, best-selling author and relationship therapist{' '}
+                    </div>
+                    <div>
+                      <a
+                        target="_blank"
+                        href="http://evonneweinhaus.com/"
+                        className="tz-text alt-font text-white text-medium sm-text-medium"
+                      >
+                        evonneweinhaus.com
+                      </a>
+                    </div>
+                  </div>
                 </div>
-            </section>
+                <div className="col-md-6 col-sm-6 col-xs-12 display-table" style={{ height: 698 }}>
+                  <div className="display-table-cell-vertical-bottom">
+                    <img src="images/testimonial1.png" data-img-size="(W)600px X (H)741px" alt="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         <section
           className="padding-110px-tb xs-padding-60px-tb bg-light-gray builder-bg border-none"
@@ -807,10 +838,7 @@ class _LandingPageSelling extends Component {
                   />
                 </div>
               </div>
-              <div
-                className="col-md-7 col-sm-7 col-xs-12 display-table"
-                style={{ height: 603 }}
-              >
+              <div className="col-md-7 col-sm-7 col-xs-12 display-table" style={{ height: 603 }}>
                 <div className="display-table-cell-vertical-middle">
                   <div className="row">
                     <div className="col-md-12 col-sm-12 col-xs-12 section-title5 margin-eleven-bottom xs-margin-fifteen-bottom xs-text-center">
@@ -842,9 +870,8 @@ class _LandingPageSelling extends Component {
                         }}
                         id="ui-id-40"
                       >
-                        No more file transfer hassle for your listeners.
-                        Immediate access to your content on Soundwise mobile and
-                        web apps after purchase.
+                        No more file transfer hassle for your listeners. Immediate access to your
+                        content on Soundwise mobile and web apps after purchase.
                       </div>
                     </div>
                   </div>
@@ -893,8 +920,8 @@ class _LandingPageSelling extends Component {
                       >
                         <p>
                           <span>
-                            Listeners can enjoy your audios from their phone
-                            IMMEDIATELY after they buy.
+                            Listeners can enjoy your audios from their phone IMMEDIATELY after they
+                            buy.
                           </span>
                         </p>
                       </div>
@@ -937,8 +964,8 @@ class _LandingPageSelling extends Component {
                         id="ui-id-44"
                       >
                         <p>
-                          Your audios files are never exposed. No need to worry
-                          about unauthorized copying.
+                          Your audios files are never exposed. No need to worry about unauthorized
+                          copying.
                         </p>
                       </div>
                     </div>
@@ -976,8 +1003,8 @@ class _LandingPageSelling extends Component {
                         id="ui-id-45"
                       >
                         <p>
-                          Know how your content is consumed. Track listening
-                          record of every listener.
+                          Know how your content is consumed. Track listening record of every
+                          listener.
                         </p>
                       </div>
                     </div>
@@ -1015,8 +1042,7 @@ class _LandingPageSelling extends Component {
                         id="ui-id-46"
                       >
                         <p>
-                          Your customers can listen from all their devices with
-                          progress remembered.
+                          Your customers can listen from all their devices with progress remembered.
                         </p>
                       </div>
                     </div>
@@ -1057,10 +1083,9 @@ class _LandingPageSelling extends Component {
                     data-selector=".tz-text"
                   >
                     <div>
-                      Inspire listeners to become active members of your
-                      community. Listener avatars and profiles help them get to
-                      know one another. Comments and messages help you stay
-                      connected.
+                      Inspire listeners to become active members of your community. Listener avatars
+                      and profiles help them get to know one another. Comments and messages help you
+                      stay connected.
                     </div>
                     <div />
                   </div>
@@ -1140,26 +1165,74 @@ class _LandingPageSelling extends Component {
           </div>
         </section>
         <div className="hero-style4">
-            <section id="testimonials-section11" className="bg-light-orange builder-bg testimonial-style11 border-none">
-                <div className="container position-relative">
-                    <div className="row equalize xs-equalize-auto equalize-display-inherit">
-                        <div className="col-md-6 col-sm-6 col-xs-12 pull-right slider-text-middle text-left xs-text-center  display-table" style={{height: 598}}>
-                            <div className="display-table-cell-vertical-middle padding-nineteen no-padding-lr">
-                                <div className="icon-big text-white margin-two-bottom"><i className="fas fa-quote-left tz-icon-color" aria-hidden="true"></i></div>
-                                <h1 className="alt-font text-large text-white sm-title-small xs-title-medium margin-eight-bottom tz-text width-80 sm-width-100 font-weight-600">It’s been a fantastic experience using Soundwise to deliver our automobile sales training materials. Our students are sales professionals who are on the go a lot. Having the trainings in audio delivered to their phone not only saves their time, but gives them the maximum learning flexibility. The team at Soundwise is the most helpful and customer-oriented. They go above and beyond to help us achieve what we want, and have given us recommendations on positioning and selling our materials that we might not have otherwise thought of. We couldn’t have asked for a better partner...</h1>
-                                <div className="text-large text-golden-yellow margin-ten-top"><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb no-margin-left" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i><i className="fa fa-star tz-icon-color margin-one-half no-margin-tb" aria-hidden="true"></i></div>
-                                <div className="tz-text alt-font text-medium text-dark-gray font-weight-600">Steven Burns, Founder & CEO, MOTiiV</div>
-                                <div><a target='_blank' href='https://www.motiiv.net/' className="tz-text alt-font text-white text-medium sm-text-medium">motiiv.net</a></div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6 col-xs-12 display-table" style={{height: 598}}>
-                            <div className="display-table-cell-vertical-bottom">
-                                <img src="images/testimonial2.png" data-img-size="(W)600px X (H)741px" alt=""/>
-                            </div>
-                        </div>
+          <section
+            id="testimonials-section11"
+            className="bg-light-orange builder-bg testimonial-style11 border-none"
+          >
+            <div className="container position-relative">
+              <div className="row equalize xs-equalize-auto equalize-display-inherit">
+                <div
+                  className="col-md-6 col-sm-6 col-xs-12 pull-right slider-text-middle text-left xs-text-center  display-table"
+                  style={{ height: 598 }}
+                >
+                  <div className="display-table-cell-vertical-middle padding-nineteen no-padding-lr">
+                    <div className="icon-big text-white margin-two-bottom">
+                      <i className="fas fa-quote-left tz-icon-color" aria-hidden="true" />
                     </div>
+                    <h1 className="alt-font text-large text-white sm-title-small xs-title-medium margin-eight-bottom tz-text width-80 sm-width-100 font-weight-600">
+                      It’s been a fantastic experience using Soundwise to deliver our automobile
+                      sales training materials. Our students are sales professionals who are on the
+                      go a lot. Having the trainings in audio delivered to their phone not only
+                      saves their time, but gives them the maximum learning flexibility. The team at
+                      Soundwise is the most helpful and customer-oriented. They go above and beyond
+                      to help us achieve what we want, and have given us recommendations on
+                      positioning and selling our materials that we might not have otherwise thought
+                      of. We couldn’t have asked for a better partner...
+                    </h1>
+                    <div className="text-large text-golden-yellow margin-ten-top">
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb no-margin-left"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                      <i
+                        className="fa fa-star tz-icon-color margin-one-half no-margin-tb"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className="tz-text alt-font text-medium text-dark-gray font-weight-600">
+                      Steven Burns, Founder & CEO, MOTiiV
+                    </div>
+                    <div>
+                      <a
+                        target="_blank"
+                        href="https://www.motiiv.net/"
+                        className="tz-text alt-font text-white text-medium sm-text-medium"
+                      >
+                        motiiv.net
+                      </a>
+                    </div>
+                  </div>
                 </div>
-            </section>
+                <div className="col-md-6 col-sm-6 col-xs-12 display-table" style={{ height: 598 }}>
+                  <div className="display-table-cell-vertical-bottom">
+                    <img src="images/testimonial2.png" data-img-size="(W)600px X (H)741px" alt="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         <section
           className="padding-110px-tb bg-white builder-bg feature-style1 xs-padding-60px-tb"
@@ -1200,10 +1273,7 @@ class _LandingPageSelling extends Component {
                     >
                       UPLOAD
                     </h3>
-                    <div
-                      className="tz-text text-medium"
-                      data-selector=".tz-text"
-                    >
+                    <div className="tz-text text-medium" data-selector=".tz-text">
                       {' '}
                       <p className="no-margin-bottom">
                         Upload your audios and supplementary materials.
@@ -1234,10 +1304,7 @@ class _LandingPageSelling extends Component {
                     >
                       POLISH
                     </h3>
-                    <div
-                      className="tz-text text-medium"
-                      data-selector=".tz-text"
-                    >
+                    <div className="tz-text text-medium" data-selector=".tz-text">
                       {' '}
                       <p className="no-margin-bottom">
                         Make a landing page and make it pretty.
@@ -1268,10 +1335,7 @@ class _LandingPageSelling extends Component {
                     >
                       PRICE IT
                     </h3>
-                    <div
-                      className="tz-text text-medium"
-                      data-selector=".tz-text"
-                    >
+                    <div className="tz-text text-medium" data-selector=".tz-text">
                       {' '}
                       <p className="no-margin-bottom">
                         Set your price and connect your payout account.
@@ -1302,10 +1366,7 @@ class _LandingPageSelling extends Component {
                     >
                       SELL
                     </h3>
-                    <div
-                      className="tz-text text-medium"
-                      data-selector=".tz-text"
-                    >
+                    <div className="tz-text text-medium" data-selector=".tz-text">
                       {' '}
                       <p className="no-margin-bottom">
                         Start selling on web and mobile. Collect money.
@@ -1359,9 +1420,8 @@ class _LandingPageSelling extends Component {
                       id="ui-id-59"
                     >
                       <p>
-                        Get your audio programs on Soundwise today. Make more
-                        money. Make a bigger impact. Make your customers
-                        happy.&nbsp;
+                        Get your audio programs on Soundwise today. Make more money. Make a bigger
+                        impact. Make your customers happy.&nbsp;
                       </p>
                     </div>
                   </div>

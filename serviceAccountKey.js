@@ -2,9 +2,7 @@ module.exports = {
   type: 'service_account',
   project_id: process.env.FIREBASE_PROJECT_ID,
   private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-  private_key: new Buffer(process.env.FIREBASE_PRIVATE_KEY, 'base64').toString(
-    'ascii'
-  ),
+  private_key: new Buffer(process.env.FIREBASE_PRIVATE_KEY, 'base64').toString('ascii'),
   client_email: `firebase-adminsdk-s685d@${
     process.env.FIREBASE_PROJECT_ID
   }.iam.gserviceaccount.com`,

@@ -17,11 +17,7 @@ export default class Banner extends Component {
     const { displayedPrice, post } = this.props.getPrice();
 
     return (
-      <section
-        className=" builder-bg border-none"
-        id="callto-action2"
-        style={styles.footer}
-      >
+      <section className=" builder-bg border-none" id="callto-action2" style={styles.footer}>
         <div className="container">
           <div
             className=""

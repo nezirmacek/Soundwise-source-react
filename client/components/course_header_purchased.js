@@ -20,8 +20,7 @@ class _CourseHeaderPurchased extends Component {
       const rt_hour = Math.floor(this.props.course.run_time / 3600);
       const rt_min = Math.floor(this.props.course.run_time / 60 - rt_hour * 60);
       const rt_sec = this.props.course.run_time % 60;
-      run_time =
-        rt_hour > 0 ? `${rt_hour}h ${rt_min}m` : `${rt_min}m ${rt_sec}s`;
+      run_time = rt_hour > 0 ? `${rt_hour}h ${rt_min}m` : `${rt_min}m ${rt_sec}s`;
     }
 
     let average_rating = 0,
@@ -40,11 +39,7 @@ class _CourseHeaderPurchased extends Component {
 
     return (
       <div>
-        <section
-          className=" bg-white"
-          id="content-section23"
-          style={{ paddingBottom: '15px' }}
-        >
+        <section className=" bg-white" id="content-section23" style={{ paddingBottom: '15px' }}>
           <div className="container">
             <div className="row equalize sm-equalize-auto equalize-display-inherit">
               <div
@@ -53,10 +48,7 @@ class _CourseHeaderPurchased extends Component {
               >
                 <div className="display-table-cell-vertical-middle">
                   <div className="row">
-                    <div
-                      className="col-md-12 col-sm-12 col-xs-12"
-                      style={{ textAlign: 'center' }}
-                    >
+                    <div className="col-md-12 col-sm-12 col-xs-12" style={{ textAlign: 'center' }}>
                       <h2 className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text">
                         {this.props.course.name}
                       </h2>
@@ -77,9 +69,9 @@ class _CourseHeaderPurchased extends Component {
                           edit={false}
                           color2={'#ffd700'}
                         />
-                        <span
-                          style={{ marginLeft: '5px', fontSize: '18px' }}
-                        >{`(${ratings.length})`}</span>
+                        <span style={{ marginLeft: '5px', fontSize: '18px' }}>{`(${
+                          ratings.length
+                        })`}</span>
                       </div>
                       <div
                         className="col-md-12 col-sm-12 col-xs-12"

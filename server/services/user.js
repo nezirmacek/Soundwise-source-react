@@ -20,9 +20,7 @@ const subscribeToSoundcast = async (soundcastId, userId, email) => {
   if (soundcast) {
     if (soundcast.bundle) {
       await Promise.all(
-        soundcast.soundcastsIncluded.map(id =>
-          subscribeToSoundcast(id, userId, email)
-        )
+        soundcast.soundcastsIncluded.map(id => subscribeToSoundcast(id, userId, email))
       );
     } else {
       const { inviteeEmailList, subscriberEmailList, publisherID } = soundcast;
@@ -95,10 +93,7 @@ const completeSignUp = async ({ email, firstName, lastName, picUrl }) => {
     };
 
     try {
-      await userManager.update(
-        userId,
-        _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x)))
-      );
+      await userManager.update(userId, _.pickBy(userInfo, x => !(_.isNil(x) || _.isEmpty(x))));
     } catch (error) {
       console.log(error);
     }
@@ -118,18 +113,14 @@ const completeSignUp = async ({ email, firstName, lastName, picUrl }) => {
     let invitations;
 
     try {
-      invitations = await invitationManager.getUserInvitations(
-        emailWithDotsReplaced
-      );
+      invitations = await invitationManager.getUserInvitations(emailWithDotsReplaced);
     } catch (error) {
       console.log(error);
     }
 
     if (invitations) {
       await Promise.all(
-        invitations.map(soundcastId =>
-          subscribeToSoundcast(soundcastId, userId, email)
-        )
+        invitations.map(soundcastId => subscribeToSoundcast(soundcastId, userId, email))
       );
     }
   }

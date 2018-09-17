@@ -15,14 +15,7 @@ const fs = require('fs');
 const ffmpeg = require('./ffmpeg');
 
 module.exports.createFeed = async (req, res) => {
-  const {
-      soundcastId,
-      soundcastTitle,
-      itunesExplicit,
-      itunesImage,
-      email,
-      firstName,
-    } = req.body,
+  const { soundcastId, soundcastTitle, itunesExplicit, itunesImage, email, firstName } = req.body,
     categories = [];
   const soundcast = await firebase
     .database()
@@ -53,13 +46,9 @@ module.exports.createFeed = async (req, res) => {
       })
       .then(async body => {
         const { height, width } = sizeOf(body); // { height: 1400, width: 1400, type: "jpg" }
-        if (
-          !(height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000)
-        ) {
+        if (!(height >= 1400 && width >= 1400 && height <= 3000 && width <= 3000)) {
           // check image size
-          res.error(
-            `Error: image size must be between 1400x1400 px and 3000x3000 px`
-          );
+          res.error(`Error: image size must be between 1400x1400 px and 3000x3000 px`);
         }
         imageBody = body;
         resolve();
@@ -72,9 +61,7 @@ module.exports.createFeed = async (req, res) => {
 
   // creating feed xml
   const itunesSummary =
-    short_description.length >= 4000
-      ? short_description.slice(0, 3997) + '..'
-      : short_description;
+    short_description.length >= 4000 ? short_description.slice(0, 3997) + '..' : short_description;
   const itunesOwner = autoSubmitPodcast
     ? { name: 'Soundwise', email: 'support@mysoundwise.com' }
     : { name: hostName, email };
@@ -99,8 +86,7 @@ module.exports.createFeed = async (req, res) => {
     itunesCategory,
     itunesImage, // need to be between 1400x1400 px and 3000x3000 px
     customNamespaces: {
-      googleplay:
-        'http://www.google.com/schemas/play-podcasts/1.0/play-podcasts.xsd',
+      googleplay: 'http://www.google.com/schemas/play-podcasts/1.0/play-podcasts.xsd',
     },
     customElements: [
       { 'googleplay:email': googleplayEmail },
@@ -181,10 +167,7 @@ module.exports.createFeed = async (req, res) => {
             file.addCommand('-vf', `scale=300:300`);
             file.save(resizedPath, err => {
               if (err) {
-                logErr(
-                  `ffmpeg cannot save updated image ${itunesImagePath} ${err}`,
-                  res
-                );
+                logErr(`ffmpeg cannot save updated image ${itunesImagePath} ${err}`, res);
               } else {
                 fs.unlink(itunesImagePath, err => 0); // remove original file
                 itunesImagePath = resizedPath;
@@ -192,12 +175,7 @@ module.exports.createFeed = async (req, res) => {
               resolve();
             });
           },
-          err =>
-            logErr(
-              `itunesImage unable to parse file with ffmpeg ${err}`,
-              res,
-              resolve
-            )
+          err => logErr(`itunesImage unable to parse file with ffmpeg ${err}`, res, resolve)
         );
       });
     });
@@ -215,9 +193,7 @@ module.exports.createFeed = async (req, res) => {
               const filePath = `/tmp/${id + path.extname(episode.url)}`;
               fs.writeFile(filePath, body, async err => {
                 if (err) {
-                  return reject(
-                    `Error: cannot write tmp audio file ${filePath}`
-                  );
+                  return reject(`Error: cannot write tmp audio file ${filePath}`);
                 }
                 try {
                   let mp3codecPath;
@@ -232,18 +208,13 @@ module.exports.createFeed = async (req, res) => {
                         mp3codecPath = `${filePath.slice(0, -4)}_mp3codec.mp3}`;
                         file.save(mp3codecPath, err => {
                           if (err) {
-                            return reject(
-                              `feed.js setMP3Codec save fails ${mp3codecPath} ${err}`
-                            );
+                            return reject(`feed.js setMP3Codec save fails ${mp3codecPath} ${err}`);
                           }
                           fs.unlink(filePath, err => 0); // remove original
                           resolve();
                         });
                       },
-                      err =>
-                        reject(
-                          `feed.js setMP3Codec unable to parse file with ffmpeg ${err}`
-                        )
+                      err => reject(`feed.js setMP3Codec unable to parse file with ffmpeg ${err}`)
                     );
                   });
 
@@ -255,23 +226,16 @@ module.exports.createFeed = async (req, res) => {
                         .get({ url: episode.coverArtUrl, encoding: null })
                         .then(body => {
                           const { height, width } = sizeOf(body);
-                          coverPath = `/tmp/${id}_cover${path.extname(
-                            episode.coverArtUrl
-                          )}`;
+                          coverPath = `/tmp/${id}_cover${path.extname(episode.coverArtUrl)}`;
                           fs.writeFile(coverPath, body, err => {
                             if (err) {
-                              reject(
-                                `Error: feed.js unable to save coverArtUrl ${err}`
-                              );
+                              reject(`Error: feed.js unable to save coverArtUrl ${err}`);
                               return resolve();
                             }
                             if (height > 300 || width > 300) {
                               new ffmpeg(coverPath).then(
                                 imageFile => {
-                                  const resizedPath = `${coverPath.slice(
-                                    0,
-                                    -4
-                                  )}_resized.png`;
+                                  const resizedPath = `${coverPath.slice(0, -4)}_resized.png`;
                                   imageFile.addCommand('-vf', `scale=300:300`);
                                   imageFile.save(resizedPath, err => {
                                     if (err) {
@@ -286,9 +250,7 @@ module.exports.createFeed = async (req, res) => {
                                   });
                                 },
                                 err => {
-                                  reject(
-                                    `unable to parse file with ffmpeg ${err}`
-                                  );
+                                  reject(`unable to parse file with ffmpeg ${err}`);
                                   resolve();
                                 }
                               );
@@ -309,29 +271,17 @@ module.exports.createFeed = async (req, res) => {
                         resolve({
                           id,
                           fileDuration:
-                            Math.round(episode.duration) ||
-                            file.metadata.duration.seconds,
+                            Math.round(episode.duration) || file.metadata.duration.seconds,
                         });
                       } else {
                         // not tagged, setting up ID3
                         const imgPath = coverPath || itunesImagePath;
-                        setAudioTags(
-                          file,
-                          imgPath,
-                          episode.title,
-                          episode.index,
-                          hostName
-                        );
+                        setAudioTags(file, imgPath, episode.title, episode.index, hostName);
                         console.log(`Episode: ${id} tagged, path ${filePath}`);
-                        const updatedPath = `${filePath.slice(
-                          0,
-                          -4
-                        )}_updated.mp3`;
+                        const updatedPath = `${filePath.slice(0, -4)}_updated.mp3`;
                         file.save(updatedPath, err => {
                           if (err) {
-                            return reject(
-                              `Error: saving fails ${filePath} ${err}`
-                            );
+                            return reject(`Error: saving fails ${filePath} ${err}`);
                           }
                           console.log(`File ${filePath} successfully saved`);
                           uploader.use(
@@ -354,9 +304,7 @@ module.exports.createFeed = async (req, res) => {
                               fs.unlink(updatedPath, err => 0); // remove converted file
                               coverPath && fs.unlink(coverPath, err => 0); // remove cover image
                               if (err) {
-                                return reject(
-                                  `Error: uploading ${id}.mp3 to S3 ${err}`
-                                );
+                                return reject(`Error: uploading ${id}.mp3 to S3 ${err}`);
                               }
                               // after upload success, change episode tagged record in firebase:
                               console.log(
@@ -371,9 +319,7 @@ module.exports.createFeed = async (req, res) => {
                               firebase
                                 .database()
                                 .ref(`episodes/${id}/url`)
-                                .set(
-                                  `https://mysoundwise.com/tracks/${id}.mp3`
-                                ); // use the proxy
+                                .set(`https://mysoundwise.com/tracks/${id}.mp3`); // use the proxy
                               resolve({
                                 id,
                                 fileDuration: file.metadata.duration.seconds,
@@ -383,17 +329,14 @@ module.exports.createFeed = async (req, res) => {
                         });
                       }
                     },
-                    err =>
-                      reject(`Error: unable to parse file with ffmpeg ${err}`)
+                    err => reject(`Error: unable to parse file with ffmpeg ${err}`)
                   );
                 } catch (e) {
                   reject(`Error: ffmpeg catch ${e.body || e.stack}`);
                 }
               }); // fs.writeFile
             })
-            .catch(err =>
-              reject(`Error: unable to obtain episode ${episode.url}`)
-            );
+            .catch(err => reject(`Error: unable to obtain episode ${episode.url}`));
         })
     )
   )
@@ -421,16 +364,13 @@ module.exports.createFeed = async (req, res) => {
           enclosure: { url: episode.url }, // link to audio file
           itunesAuthor: hostName,
           itunesSubtitle:
-            episode.title.length >= 255
-              ? episode.title.slice(0, 252) + '..'
-              : episode.title, // need to be < 255 characters
+            episode.title.length >= 255 ? episode.title.slice(0, 252) + '..' : episode.title, // need to be < 255 characters
           // todo: check whether CDATA tag is actually needed
           itunesSummary,
           // itunesSummary: `<![CDATA[${itunesSummary}]]>`, // may contain html, need to be wrapped within <![CDATA[ ... ]]> tag, and need to be < 4000 characters
           itunesExplicit,
           itunesDuration:
-            Math.round(episode.duration) ||
-            results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
+            Math.round(episode.duration) || results.find(i => i.id === episode.id).fileDuration, // check if episode.duration exists, if so, use that, if not, need to get the duration of the audio file in seconds
           customElements: [{ 'content:encoded': { _cdata: itunesSummary } }],
         };
         // check if episode.keywords exists, if so, use that, if not, don't add it
