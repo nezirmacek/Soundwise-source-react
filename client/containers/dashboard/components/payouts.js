@@ -133,6 +133,11 @@ export default class Payouts extends Component {
               <span style={{ fontSize: 15, fontWeight: 600 }}>Settings</span>
             </Link>
           </li>
+          <li role="presentation">
+            <Link to="/dashboard/publisher/integrations">
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Integration</span>
+            </Link>
+          </li>
         </ul>
         {(this.state.payouts.length > 0 && (
           <row>
