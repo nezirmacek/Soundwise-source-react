@@ -36,11 +36,10 @@ var parseQueryString = function(queryString) {
   return params;
 };
 
-// development
-// var redirectURI = 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK';
-// production
-var redirectURI =
-  'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
+const redirectURI =
+  process.env.NODE_ENV === 'dev'
+    ? 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK'
+    : 'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
 
 export default class Profile extends Component {
   constructor(props) {
@@ -184,7 +183,7 @@ export default class Profile extends Component {
         })
           .then(res => {
             that.setState({
-              stripe_user_id: res.stripe_user_id,
+              stripe_user_id: res.data.stripe_user_id,
               authorized: true,
               creatingAccount: false,
             });
