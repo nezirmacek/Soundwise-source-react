@@ -27,6 +27,7 @@ class _Payment extends Component {
       exp_month: 0,
       exp_year: new Date().getFullYear(),
       totalPay: 0,
+      isFreeSoundcast: true,
       paid: false,
       startPaymentSubmission: false,
       stripe_id: '',
@@ -137,6 +138,13 @@ class _Payment extends Component {
         price,
         rentalPeriod,
       } = soundcast.prices[checked];
+
+      // in case of the paid soundcast
+      if ((sumTotal && sumTotal > 0) || (coupon && coupon !== "") || (totalPay !== 0 && totalPay !== 'free')) {
+        // console.log('paid soundcast: sumTotal = ', sumTotal, 'coupon = ', coupon, 'totalPay = ', totalPay)
+        this.setState({ isFreeSoundcast: false })
+      }
+
       let current_period_end = rentalPeriod
         ? moment()
             .add(Number(rentalPeriod), 'days')
@@ -505,29 +513,31 @@ class _Payment extends Component {
   }
 
   renderProgressBar() {
-    if (this.state.startPaymentSubmission) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: '1em',
-          }}
-        >
-          <Dots
-            style={{ display: 'flex' }}
-            color="#727981"
-            size={32}
-            speed={1}
-          />
-        </div>
-      );
-    }
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: '1em',
+        }}
+      >
+        <Dots
+          style={{ display: 'flex' }}
+          color="#727981"
+          size={32}
+          speed={1}
+        />
+      </div>
+    );
   }
 
   render() {
+    if (this.state.isFreeSoundcast) {
+      return this.renderProgressBar();
+    }
+
     const { totalPrice, hideCardInputs } = this.props;
     const showInputs = !(this.props.userInfo && this.props.userInfo.firstName);
 
@@ -707,7 +717,7 @@ class _Payment extends Component {
                           style={styles.stripeImage}
                         />
                       </div>
-                      {this.renderProgressBar()}
+                      {this.state.startPaymentSubmission && this.renderProgressBar()}
                     </div>
                   )}
                 </form>
