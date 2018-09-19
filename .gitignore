@@ -54,5 +54,8 @@ coverage
 # VSCode
 .vscode
 
+# Docker
+docker-compose-dev.yml
+
 # Build outputs
 
