@@ -77,7 +77,7 @@ export default class App extends Component {
     //   }
     // })
     // const reactVersion = React.version;
-    // console.log('reactVersion: ', reactVersion);
+    // console.log(process.env.NODE_ENV);
   }
 
   render() {
