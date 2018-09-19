@@ -14,13 +14,13 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var firebase = require('firebase-admin');
 const proxy = require('http-proxy-middleware');
-var serviceAccount = require('../serviceAccountKey');
-
 var cors = require('cors');
 var Axios = require('axios');
 const moment = require('moment');
 // var request = require('request');
 const request = require('request-promise');
+
+var serviceAccount = require('../serviceAccountKey');
 
 const {
   handlePayment,
@@ -61,6 +61,7 @@ const createStripeAccount = require('./scripts/createStripeAccounts.js')
 const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
 var Raven = require('raven');
 var database = require('../database');
+const { updateMailChimp } = require('./scripts/updateMailChimp.js')
 
 Raven.config(
   'https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847'
@@ -258,6 +259,8 @@ app.get('/api/custom_token', (req, res) => {
       res.status(500).send(error);
     });
 });
+
+app.post('/api/mail_manage', updateMailChimp);
 
 app.use(
   '/tracks/:id',

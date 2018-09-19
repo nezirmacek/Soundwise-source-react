@@ -15,13 +15,67 @@ export default class Integrations extends Component {
     super(props);
     this.state = {
       integrationSelected : '',
+      apiKey: '',
+      connectionStatus: false,
+      invalidApiKey : false,
     };
+    this.apiKey = '';
+    this.saveIntegration = this.saveIntegration.bind(this);
+    this.retrieveMailChimpKey = this.retrieveMailChimpKey.bind(this);
   }
 
   componentDidMount() {
+    const { userInfo } = this.props;
+    this.retrieveMailChimpKey(userInfo)
   }
 
   componentWillReceiveProps(nextProps) {
+    const { userInfo } = nextProps;
+    this.retrieveMailChimpKey(userInfo)
+  }
+
+  retrieveMailChimpKey(userInfo) {
+    if (userInfo && userInfo.publisher) {
+      const publisherId = userInfo.publisherID;
+      firebase
+        .database()
+        .ref(`publishers/${publisherId}/mailChimp`)
+        .on('value', snapshot => {
+          const mailChimp = snapshot.val();
+          if (mailChimp != null) {
+            this.apiKey = mailChimp.apiKey;
+            this.setState({ apiKey : mailChimp.apiKey,
+              connectionStatus: true,
+              integrationSelected: 'Mailchimp',
+              invalidApiKey : false,
+            })
+          }
+        });
+    }
+  }
+
+  saveIntegration() {
+    if (this.state.integrationSelected != '' && 
+        this.state.integrationSelected != '' &&
+        this.state.apiKey != this.apiKey) {
+      Axios.post('/api/mail_manage', {
+        publisherId : this.props.userInfo.publisherID,
+        integrationSelected: this.state.integrationSelected,
+        apiKey: this.state.apiKey,
+      })
+      .then(res => {
+        //As firebase sends realtime notifications, we do not really need this, but what the heck!
+        this.apiKey = this.state.apiKey;
+        this.setState({ invalidApiKey : false,
+          connectionStatus: true })
+      })
+      .catch((error) => {
+        if(error.response.status === 404) {
+          this.setState({invalidApiKey : true})
+        }
+      });  
+
+    }
   }
 
   render() {
@@ -147,7 +201,8 @@ export default class Integrations extends Component {
                         padding: '10px 10px 10px 0px', 
                         marginRight: '16'}}
                 >
-                  Not Connected
+                  { this.state.connectionStatus ? <span style={styles.muted}>Connected</span> :  
+                    <span>Not Connected</span> }
                 </span>
               </div>
               <div style={{ ...styles.inputTitleWrapper, display: 'flex'}}>
@@ -162,11 +217,16 @@ export default class Integrations extends Component {
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%'}}>
                   <input
                     type="text"
-                    style={{ ...styles.inputTitle, flexGrow: '1' }}
+                    style={{ ...styles.inputTitle, flexGrow: '1', 
+                    color: this.apiKey == this.state.apiKey ? Colors.fontGrey : Colors.fontBlack }}
+                    value={ this.state.apiKey }
                     onChange={e => {
-                      this.setState({ publisherName: e.target.value });
+                      this.setState({ apiKey: e.target.value });
                     }}
                   />
+                  {
+                    this.state.invalidApiKey ? <div style={{color: Colors.mainOrange}}> Invalid API Key </div> : null
+                  }
                   <span>
                     The API key for connecting with your MailChimp account.
                     <a 
@@ -185,9 +245,7 @@ export default class Integrations extends Component {
               <div>
                 <OrangeSubmitButton
                   label="Save"
-                  onClick={() =>
-                    console.log("save integration")
-                  }
+                  onClick={this.saveIntegration}
                   styles={{
                     margin: '7px 0 50px',
                     backgroundColor: Colors.link,
@@ -209,4 +267,11 @@ const styles = {
   inputTitle: { ...commonStyles.inputTitle, fontSize: 16 },
   dropdownTitle: { ...commonStyles.dropdownTitle },
   categoryButton: { ...commonStyles.categoryButton },
+  muted: {
+    fontSize: 16,
+    color: Colors.fontGrey,
+    fontWeight: 'regular',
+    verticalAlign: 'middle',
+    wordWrap: 'break-word',
+  },
 };
