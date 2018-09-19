@@ -143,8 +143,7 @@ class _SoundcastPage extends Component {
               } else {
                 // discount coupon type (default)
                 couponPrice = Math.round(
-                  (Number(price.price) * (100 - Number(coupon.percentOff))) /
-                    100
+                  (Number(price.price) * (100 - Number(coupon.percentOff))) / 100
                 );
               }
               return true;
@@ -202,8 +201,7 @@ class _SoundcastPage extends Component {
     // TODO http://underscorejs.org/#throttle
     const headerHeight = this.header.clientHeight;
     const bodyHeigher = this.body.clientHeight;
-    const showBanner =
-      window.pageYOffset > headerHeight && window.pageYOffset < bodyHeigher;
+    const showBanner = window.pageYOffset > headerHeight && window.pageYOffset < bodyHeigher;
     this.setState({ showBanner });
   }
 
@@ -268,11 +266,7 @@ class _SoundcastPage extends Component {
       checkedPrice,
       bundle,
     } = this.state;
-    if (
-      !soundcastID ||
-      !soundcast ||
-      (soundcast && soundcast.title && !soundcast.landingPage)
-    ) {
+    if (!soundcastID || !soundcast || (soundcast && soundcast.title && !soundcast.landingPage)) {
       return <Redirect to="/notfound" />;
     }
 
@@ -289,24 +283,15 @@ class _SoundcastPage extends Component {
           )) ||
             null}
           <title>{`${soundcast.title} | Soundwise`}</title>
-          <meta
-            property="og:url"
-            content={`https://mysoundwise.com/soundcasts/${soundcastID}`}
-          />
+          <meta property="og:url" content={`https://mysoundwise.com/soundcasts/${soundcastID}`} />
           <meta property="fb:app_id" content="1726664310980105" />
           <meta property="og:title" content={soundcast.title} />
-          <meta
-            property="og:description"
-            content={soundcast.short_description}
-          />
+          <meta property="og:description" content={soundcast.short_description} />
           <meta property="og:image" content={soundcast.imageURL} />
           <meta name="description" content={soundcast.short_description} />
           <meta name="keywords" content={soundcast.keywords} />
           <meta name="twitter:title" content={soundcast.title} />
-          <meta
-            name="twitter:description"
-            content={soundcast.short_description}
-          />
+          <meta name="twitter:description" content={soundcast.short_description} />
           <meta name="twitter:image" content={soundcast.imageURL} />
           <meta name="twitter:card" content={soundcast.imageURL} />
         </Helmet>
@@ -401,16 +386,10 @@ class _SoundcastPage extends Component {
               />
             </div>
             {(showBanner && (
-              <Banner
-                getPrice={this.getPrice}
-                openModal={this.handleModal.bind(this)}
-              />
+              <Banner getPrice={this.getPrice} openModal={this.handleModal.bind(this)} />
             )) ||
               null}
-            <SoundcastFooter
-              getPrice={this.getPrice}
-              openModal={this.handleModal.bind(this)}
-            />
+            <SoundcastFooter getPrice={this.getPrice} openModal={this.handleModal.bind(this)} />
             <SoundwiseFooter />
           </div>
         </MuiThemeProvider>

@@ -21,10 +21,7 @@ import {
 import Toggle from 'material-ui/Toggle';
 
 import ImageCropModal from './image_crop_modal';
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -49,9 +46,7 @@ const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscr
 </strong></p><p></p>
 <p>...and then sign in to the app with the same credential you used to sign up to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
 </div>`;
-const subscriptionConfirmationEmail = convertFromHTML(
-  subscriptionConfirmEmailHtml
-);
+const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
 const confirmationEmail = ContentState.createFromBlockArray(
   subscriptionConfirmationEmail.contentBlocks,
   subscriptionConfirmationEmail.entityMap
@@ -122,9 +117,7 @@ export default class CreateBundle extends Component {
           let confirmEmailText = convertFromRaw(
             JSON.parse(confirmationEmail.replace('[soundcast title]', title))
           );
-          confirmEmailEditorState = EditorState.createWithContent(
-            confirmEmailText
-          );
+          confirmEmailEditorState = EditorState.createWithContent(confirmEmailText);
         } else {
           confirmEmailEditorState = this.state.confirmationEmail;
         }
@@ -179,11 +172,7 @@ export default class CreateBundle extends Component {
         .database()
         .ref(`soundcasts/${soundcastsArr[i]}`)
         .once('value');
-      if (
-        soundcast.val() &&
-        soundcast.val().published &&
-        !soundcast.val().bundle
-      ) {
+      if (soundcast.val() && soundcast.val().published && !soundcast.val().bundle) {
         // only add the soundcasts that are not bundles
         soundcasts.push({ title: soundcast.val().title, id: soundcastsArr[i] });
       }
@@ -198,8 +187,7 @@ export default class CreateBundle extends Component {
     }
     this.setState({
       soundcasts,
-      selectedSoundcasts:
-        selectedSoundcasts.length > 0 ? selectedSoundcasts : soundcasts,
+      selectedSoundcasts: selectedSoundcasts.length > 0 ? selectedSoundcasts : soundcasts,
     });
   }
 
@@ -267,12 +255,7 @@ export default class CreateBundle extends Component {
       }
     }
 
-    const allowedFileTypes = [
-      'image/png',
-      'image/jpeg',
-      'image/jpg',
-      'image/gif',
-    ];
+    const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
     if (allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
       alert('Only .png or .jpeg files are accepted. Please upload a new file.');
       if (hostImg) {
@@ -352,12 +335,8 @@ export default class CreateBundle extends Component {
           soundcastsIncluded: soundcastsArr,
           imageURL,
           short_description,
-          long_description: JSON.stringify(
-            convertToRaw(long_description.getCurrentContent())
-          ),
-          confirmationEmail: JSON.stringify(
-            convertToRaw(confirmationEmail.getCurrentContent())
-          ),
+          long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+          confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
           date_created: moment().format('X'),
           publisherID: userInfo.publisherID,
           landingPage,
@@ -388,11 +367,7 @@ export default class CreateBundle extends Component {
           // add soundcast to publisher
           firebase
             .database()
-            .ref(
-              `publishers/${userInfo.publisherID}/soundcasts/${
-                that.soundcastId
-              }`
-            )
+            .ref(`publishers/${userInfo.publisherID}/soundcasts/${that.soundcastId}`)
             .set(true)
             .then(
               res => {
@@ -423,9 +398,7 @@ export default class CreateBundle extends Component {
                   .once('value');
                 const couponsToRemove = [];
                 (snapshot.val().prices || []).forEach(price => {
-                  (price.coupons || []).forEach(coupon =>
-                    couponsToRemove.push(coupon.code)
-                  );
+                  (price.coupons || []).forEach(coupon => couponsToRemove.push(coupon.code));
                 });
                 Axios.post('/api/createUpdatePlans', {
                   soundcastID: that.soundcastId,
@@ -458,10 +431,7 @@ export default class CreateBundle extends Component {
                 return res;
               },
               err => {
-                console.log(
-                  'ERROR add soundcast to admin.soundcasts_managed: ',
-                  err
-                );
+                console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
                 Promise.reject(err);
               }
             );
@@ -607,9 +577,7 @@ export default class CreateBundle extends Component {
       confirmationEmail,
     } = this.state;
     const { userInfo } = this.props;
-    const isProOrPlus = ['pro', 'plus'].includes(
-      userInfo.publisher && userInfo.publisher.plan
-    );
+    const isProOrPlus = ['pro', 'plus'].includes(userInfo.publisher && userInfo.publisher.plan);
     const that = this;
     const actions = [
       <FlatButton
@@ -622,9 +590,7 @@ export default class CreateBundle extends Component {
     return (
       <div style={{ marginTop: 25, marginBottom: 25 }}>
         {/*What Listeners Will Get*/}
-        <span style={{ ...styles.titleText, marginBottom: 5 }}>
-          What Listeners Will Get
-        </span>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>What Listeners Will Get</span>
         <span>
           <i>{` (list the main benefits and features of this bundle)`}</i>
         </span>
@@ -636,9 +602,7 @@ export default class CreateBundle extends Component {
                 <input
                   type="text"
                   style={{ ...styles.inputTitle, width: '85%' }}
-                  placeholder={
-                    'e.g. Learn how to analyze financial statement with ease'
-                  }
+                  placeholder={'e.g. Learn how to analyze financial statement with ease'}
                   onChange={this.setFeatures.bind(this, i)}
                   value={this.state.features[i]}
                 />
@@ -660,9 +624,7 @@ export default class CreateBundle extends Component {
         </div>
 
         {/*Long Description*/}
-        <span style={{ ...styles.titleText, marginBottom: 5 }}>
-          Long Description
-        </span>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>Long Description</span>
         <div>
           <Editor
             editorState={long_description}
@@ -686,9 +648,7 @@ export default class CreateBundle extends Component {
                 style={{ fontSize: 20, width: '50%' }}
               />
               <Dialog
-                title={`Hold on, ${
-                  userInfo.firstName
-                }! Please set up payout first. `}
+                title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
                 actions={actions}
                 modal={true}
                 open={!!this.state.paypalModalOpen}
@@ -696,10 +656,9 @@ export default class CreateBundle extends Component {
               >
                 <div style={{ fontSize: 17 }}>
                   <span>
-                    You need a payout account so that we could send you your
-                    sales proceeds. Please save this soundcast, and go to
-                    publisher setting to enter your payout method, before
-                    setting up pricing.
+                    You need a payout account so that we could send you your sales proceeds. Please
+                    save this soundcast, and go to publisher setting to enter your payout method,
+                    before setting up pricing.
                   </span>
                 </div>
               </Dialog>
@@ -746,12 +705,8 @@ export default class CreateBundle extends Component {
                           >
                             <option value="one time">one time purchase</option>
                             <option value="rental">one time rental</option>
-                            <option value="monthly">
-                              monthly subscription
-                            </option>
-                            <option value="quarterly">
-                              quarterly subscription
-                            </option>
+                            <option value="monthly">monthly subscription</option>
+                            <option value="quarterly">quarterly subscription</option>
                             <option value="annual">annual subscription</option>
                           </select>
                         </div>
@@ -781,14 +736,8 @@ export default class CreateBundle extends Component {
                         </span>
                       </div>
                       {(prices[i].billingCycle == 'rental' && (
-                        <div
-                          className="col-md-12"
-                          style={{ marginTop: 10, marginBottom: 15 }}
-                        >
-                          <div
-                            className="col-md-4 col-md-offset-6"
-                            style={{ marginRight: 10 }}
-                          >
+                        <div className="col-md-12" style={{ marginTop: 10, marginBottom: 15 }}>
+                          <div className="col-md-4 col-md-offset-6" style={{ marginRight: 10 }}>
                             <span>Rental period</span>
                             <div>
                               <input
@@ -868,10 +817,7 @@ export default class CreateBundle extends Component {
                     </div>
                   );
                 })}
-                <div
-                  onClick={this.addPriceOption.bind(this)}
-                  style={styles.addFeature}
-                >
+                <div onClick={this.addPriceOption.bind(this)} style={styles.addFeature}>
                   Add another price option
                 </div>
               </div>
@@ -991,9 +937,7 @@ export default class CreateBundle extends Component {
             file={this.currentImageRef}
           />
           <div className="padding-bottom-20px">
-            <span className="title-medium ">
-              Create A Multi-Soundcast Bundle
-            </span>
+            <span className="title-medium ">Create A Multi-Soundcast Bundle</span>
           </div>
           <div className="col-lg-10 col-md-11 col-sm-12 col-xs-12">
             {/*The landing page*/}
@@ -1014,9 +958,7 @@ export default class CreateBundle extends Component {
                   <a
                     target="_blank"
                     style={{ color: Colors.mainOrange }}
-                    href={`https://mysoundwise.com/soundcasts/${
-                      this.soundcastId
-                    }`}
+                    href={`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
                   >
                     {`https://mysoundwise.com/soundcasts/${this.soundcastId}`}
                   </a>
@@ -1039,10 +981,7 @@ export default class CreateBundle extends Component {
                 this.setState({ title: e.target.value });
               }}
               value={this.state.title}
-              validators={[
-                minLengthValidator.bind(null, 1),
-                maxLengthValidator.bind(null, 60),
-              ]}
+              validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
             />
 
             {/*Short Description*/}
@@ -1065,9 +1004,7 @@ export default class CreateBundle extends Component {
 
             {/*Soundcasts in bundle*/}
             <div style={{ paddingBottom: 24 }}>
-              <span style={styles.titleText}>
-                Soundcasts included in the bundle
-              </span>
+              <span style={styles.titleText}>Soundcasts included in the bundle</span>
               <span style={{ ...styles.titleText, color: 'red' }}>*</span>
               <div style={{ marginTop: 10, marginBottom: 10, paddingLeft: 10 }}>
                 <label
@@ -1117,10 +1054,7 @@ export default class CreateBundle extends Component {
                             alignItems: 'center',
                           }}
                         >
-                          <Checkbox
-                            style={{ width: 50, height: 30 }}
-                            value={soundcast}
-                          />
+                          <Checkbox style={{ width: 50, height: 30 }} value={soundcast} />
                           {soundcast.title}
                         </label>
                       </div>
@@ -1140,14 +1074,8 @@ export default class CreateBundle extends Component {
                 data-toggle="dropdown"
               >
                 <div style={styles.dropdownTitle}>
-                  <span>
-                    {(selectedCategory && selectedCategory.name) ||
-                      'Choose category'}
-                  </span>
-                  <span
-                    style={{ position: 'absolute', right: 10, top: 40 }}
-                    className="caret"
-                  />
+                  <span>{(selectedCategory && selectedCategory.name) || 'Choose category'}</span>
+                  <span style={{ position: 'absolute', right: 10, top: 40 }} className="caret" />
                 </div>
               </div>
               <ul style={{ padding: 0 }} className="dropdown-menu">
@@ -1155,9 +1083,7 @@ export default class CreateBundle extends Component {
                   <li style={{ fontSize: '16px' }} key={`category_option${i}`}>
                     <button
                       style={styles.categoryButton}
-                      onClick={() =>
-                        this.setState({ selectedCategory: category })
-                      }
+                      onClick={() => this.setState({ selectedCategory: category })}
                     >
                       {category.name}
                     </button>
@@ -1175,9 +1101,7 @@ export default class CreateBundle extends Component {
               </div>
               <div className="col-md-9">
                 <div style={styles.loaderWrapper}>
-                  <div style={{ ...styles.titleText, marginLeft: 10 }}>
-                    Bundle cover art
-                  </div>
+                  <div style={{ ...styles.titleText, marginLeft: 10 }}>Bundle cover art</div>
                   <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
                     <input
                       type="file"
@@ -1198,9 +1122,7 @@ export default class CreateBundle extends Component {
                               fileUploaded: false,
                               imageURL: '',
                             });
-                            document.getElementById(
-                              'upload_hidden_cover'
-                            ).value = null;
+                            document.getElementById('upload_hidden_cover').value = null;
                           }}
                         >
                           Cancel
@@ -1210,9 +1132,7 @@ export default class CreateBundle extends Component {
                       <div>
                         <button
                           onClick={() => {
-                            document
-                              .getElementById('upload_hidden_cover')
-                              .click();
+                            document.getElementById('upload_hidden_cover').click();
                           }}
                           style={{
                             ...styles.uploadButton,
@@ -1223,8 +1143,8 @@ export default class CreateBundle extends Component {
                         </button>
                         <div style={styles.fileTypesLabel}>
                           <span>
-                            (jpg or png files accepted; square image,
-                            recommended at least 800px by 800px)
+                            (jpg or png files accepted; square image, recommended at least 800px by
+                            800px)
                           </span>
                         </div>
                       </div>
@@ -1250,9 +1170,7 @@ export default class CreateBundle extends Component {
                   editorState={this.state.confirmationEmail}
                   editorStyle={styles.editorStyle}
                   wrapperStyle={styles.wrapperStyle}
-                  onEditorStateChange={this.onConfirmationStateChange.bind(
-                    this
-                  )}
+                  onEditorStateChange={this.onConfirmationStateChange.bind(this)}
                 />
               </div>
             </div>
@@ -1266,9 +1184,7 @@ export default class CreateBundle extends Component {
                     backgroundColor: Colors.link,
                     borderColor: Colors.link,
                   }}
-                  onClick={
-                    !submitted ? this.submit.bind(this, false) : () => {}
-                  }
+                  onClick={!submitted ? this.submit.bind(this, false) : () => {}}
                 />
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
@@ -1278,10 +1194,7 @@ export default class CreateBundle extends Component {
                 />
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <TransparentShortSubmitButton
-                  label="Cancel"
-                  onClick={() => history.goBack()}
-                />
+                <TransparentShortSubmitButton label="Cancel" onClick={() => history.goBack()} />
               </div>
             </div>
           </div>

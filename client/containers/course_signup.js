@@ -110,9 +110,7 @@ class _CourseSignup extends Component {
     }
 
     try {
-      await firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.state.email, this.state.password);
+      await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password);
 
       this.setState({
         response: 'account created',
@@ -211,10 +209,7 @@ class _CourseSignup extends Component {
                 </h3>
                 <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom  tz-text">
                   Already have a Soundwise account?{' '}
-                  <a
-                    onClick={() => this.switchForm()}
-                    className="text-decoration-underline"
-                  >
+                  <a onClick={() => this.switchForm()} className="text-decoration-underline">
                     Log in here.
                   </a>
                 </div>
@@ -311,10 +306,7 @@ class _CourseSignup extends Component {
               </h2>
               <div className="text-extra-large sm-text-extra-large text-medium-gray width-80 xs-width-100 center-col margin-four-bottom tz-text">
                 Need a Soundwise account?{' '}
-                <a
-                  onClick={() => this.switchForm()}
-                  className="text-decoration-underline"
-                >
+                <a onClick={() => this.switchForm()} className="text-decoration-underline">
                   Get started here.
                 </a>
               </div>
@@ -361,10 +353,7 @@ class _CourseSignup extends Component {
                 className="big-input bg-light-gray alt-font border-radius-4"
               />
               <div className="pull-right">
-                <a
-                  href="https://mysoundwise.com/password_reset"
-                  target="_blank"
-                >
+                <a href="https://mysoundwise.com/password_reset" target="_blank">
                   Forgot your password?
                 </a>
               </div>
@@ -472,8 +461,7 @@ class _CourseSignup extends Component {
             .ref('users/' + userId)
             .once('value')
             .then(snapshot => {
-              const { firstName, lastName, email, pic_url, courses } =
-                snapshot.val() || {};
+              const { firstName, lastName, email, pic_url, courses } = snapshot.val() || {};
               // if(!courses) {
               //   firebase.database().ref('users/' + userId).set({
               //     courses: {}
@@ -545,8 +533,7 @@ class _CourseSignup extends Component {
             .ref('users/' + userId)
             .once('value')
             .then(snapshot => {
-              const { firstName, lastName, email, pic_url } =
-                snapshot.val() || {};
+              const { firstName, lastName, email, pic_url } = snapshot.val() || {};
               that.props.signupUser({ firstName, lastName, email, pic_url });
               if (that.props.course.price == 0) {
                 that.addCourseToUser();

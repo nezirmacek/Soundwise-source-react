@@ -135,8 +135,8 @@ export default class Referral extends Component {
                   GIFT A SOUNDWISE COURSE TO FRIENDS. IT'S FREE!
                 </h2>
                 <h3 className="text-extra-large sm-text-extra-large font-weight-500 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text text-dark-gray">
-                  We'll send a 100% off coupon for Soundwise pilot courses to
-                  your friends on your behalf.
+                  We'll send a 100% off coupon for Soundwise pilot courses to your friends on your
+                  behalf.
                 </h3>
               </div>
               <div className="col-md-12 col-sm-12 center-col contact-form-style2 no-padding row">

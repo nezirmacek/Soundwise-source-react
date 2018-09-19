@@ -8,10 +8,7 @@ import Dots from 'react-activity/lib/Dots';
 import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -39,11 +36,10 @@ var parseQueryString = function(queryString) {
   return params;
 };
 
-// development
-// var redirectURI = 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK';
-// production
-var redirectURI =
-'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
+const redirectURI =
+  process.env.NODE_ENV === 'dev'
+    ? 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK'
+    : 'https://mysoundwise.com/dashboard/publisher&client_id=ca_BwcFxIj5tpCcv3JqmXy7usb88tBSBRD4';
 
 export default class Profile extends Component {
   constructor(props) {
@@ -170,28 +166,24 @@ export default class Profile extends Component {
     if (queryString.length > 0) {
       const params = parseQueryString(queryString);
       // console.log('params.code: ', params.code);
-      if (
-        params.state == publisherId &&
-        !this.state.authorized &&
-        !this.state.creatingAccount
-      ) {
+      if (params.state == publisherId && !this.state.authorized && !this.state.creatingAccount) {
         that.setState({
           creatingAccount: true,
         });
-        let publisherPlan = null
-        const { publisher } = that.props.userInfo
+        let publisherPlan = null;
+        const { publisher } = that.props.userInfo;
         if (publisher) {
-          publisherPlan = publisher.plan
+          publisherPlan = publisher.plan;
         }
         Axios.post('/api/create_stripe_account', {
           code: params.code,
           publisherId,
           publisherName: this.state.publisherName,
-          publisherPlan
+          publisherPlan,
         })
           .then(res => {
             that.setState({
-              stripe_user_id: res.stripe_user_id,
+              stripe_user_id: res.data.stripe_user_id,
               authorized: true,
               creatingAccount: false,
             });
@@ -262,16 +254,9 @@ export default class Profile extends Component {
   setFileName(e) {
     // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
     if (this.fileInputRef.files[0]) {
-      const allowedFileTypes = [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        'image/gif',
-      ];
+      const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
       if (allowedFileTypes.indexOf(this.fileInputRef.files[0].type) < 0) {
-        alert(
-          'Only .png or .jpeg files are accepted. Please upload a new file.'
-        );
+        alert('Only .png or .jpeg files are accepted. Please upload a new file.');
         this.setState({ fileUploaded: false });
         return;
       }
@@ -427,26 +412,17 @@ export default class Profile extends Component {
 
     return (
       <div className="padding-30px-tb">
-        <div
-          className="padding-bottom-20px"
-          style={{ display: 'flex', alignItems: 'center' }}
-        >
+        <div className="padding-bottom-20px" style={{ display: 'flex', alignItems: 'center' }}>
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
-            <span
-              className="text-medium"
-              style={{ marginLeft: 15, color: Colors.mainOrange }}
-            >
+            <span className="text-medium" style={{ marginLeft: 15, color: Colors.mainOrange }}>
               <strong>View Publisher Page</strong>
             </span>
           </Link>
         </div>
         <ul className="nav nav-pills">
           <li role="presentation" className="active">
-            <Link
-              style={{ backgroundColor: 'transparent' }}
-              to="/dashboard/publisher"
-            >
+            <Link style={{ backgroundColor: 'transparent' }} to="/dashboard/publisher">
               <span
                 style={{
                   fontSize: 15,
@@ -460,9 +436,7 @@ export default class Profile extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/transactions">
-              <span style={{ fontSize: 15, fontWeight: 600 }}>
-                Transactions
-              </span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Transactions</span>
             </Link>
           </li>
           <li role="presentation">
@@ -490,14 +464,9 @@ export default class Profile extends Component {
             file={this.currentImageRef}
           />
           <div className="row">
-            <div
-              className="col-lg-6 col-md-6 col-sm-12 col-xs-12"
-              style={{ minHeight: 700 }}
-            >
+            <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12" style={{ minHeight: 700 }}>
               <div style={{ marginTop: 20 }}>
-                <span style={{ ...styles.titleText, marginTop: 20 }}>
-                  Publisher Name
-                </span>
+                <span style={{ ...styles.titleText, marginTop: 20 }}>Publisher Name</span>
               </div>
               <div style={styles.inputTitleWrapper}>
                 <input
@@ -534,9 +503,7 @@ export default class Profile extends Component {
                           style={styles.cancelImg}
                           onClick={() => {
                             that.setState({ fileUploaded: false });
-                            document.getElementById(
-                              'upload_hidden_cover'
-                            ).value = null;
+                            document.getElementById('upload_hidden_cover').value = null;
                             that.loadFromProp(userInfo);
                           }}
                         >
@@ -548,9 +515,7 @@ export default class Profile extends Component {
                         <div>
                           <button
                             onClick={() => {
-                              document
-                                .getElementById('upload_hidden_cover')
-                                .click();
+                              document.getElementById('upload_hidden_cover').click();
                             }}
                             style={{
                               ...styles.uploadButton,
@@ -559,9 +524,7 @@ export default class Profile extends Component {
                           >
                             Upload
                           </button>
-                          <span style={styles.fileTypesLabel}>
-                            .jpg or .png files accepted
-                          </span>
+                          <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                         </div>
                       ))}
                   </div>
@@ -569,9 +532,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    Publisher Info
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>Publisher Info</span>
                   <span>
                     <i>{` (280 characters max)`}</i>
                   </span>
@@ -589,9 +550,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    Publisher Email
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>Publisher Email</span>
                 </div>
                 <div style={styles.inputTitleWrapper}>
                   <input
@@ -606,9 +565,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    Website
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>Website</span>
                 </div>
                 <div style={styles.inputTitleWrapper}>
                   <input
@@ -623,9 +580,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    Facebook
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>Facebook</span>
                 </div>
                 <div style={styles.inputTitleWrapper}>
                   <input
@@ -640,9 +595,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    Twitter
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>Twitter</span>
                 </div>
                 <div style={styles.inputTitleWrapper}>
                   <input
@@ -657,9 +610,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    LinkedIn
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>LinkedIn</span>
                 </div>
                 <div style={styles.inputTitleWrapper}>
                   <input
@@ -674,9 +625,7 @@ export default class Profile extends Component {
               </div>
               <div>
                 <div style={{ marginTop: 20 }}>
-                  <span style={{ ...styles.titleText, marginTop: 20 }}>
-                    Instagram
-                  </span>
+                  <span style={{ ...styles.titleText, marginTop: 20 }}>Instagram</span>
                 </div>
                 <div style={styles.inputTitleWrapper}>
                   <input
@@ -699,9 +648,7 @@ export default class Profile extends Component {
                         justifyContent: 'center',
                       }}
                     >
-                      <span style={{ fontSize: 16, color: Colors.mainOrange }}>
-                        Saved
-                      </span>
+                      <span style={{ fontSize: 16, color: Colors.mainOrange }}>Saved</span>
                     </div>
                   )) || (
                     <OrangeSubmitButton
@@ -742,29 +689,16 @@ export default class Profile extends Component {
                       >
                         <i className="fa fa-check" aria-hidden="true" />
                       </span>
-                      <span style={styles.titleText}>
-                        Stripe Payout Account Connected
-                      </span>
+                      <span style={styles.titleText}>Stripe Payout Account Connected</span>
                     </div>
                   )) ||
                     (creatingAccount && (
-                      <span style={styles.titleText}>
-                        Setting up Stripe Account
-                      </span>
-                    )) || (
-                      <span style={styles.titleText}>
-                        Set up Payouts with Stripe
-                      </span>
-                    )}
+                      <span style={styles.titleText}>Setting up Stripe Account</span>
+                    )) || <span style={styles.titleText}>Set up Payouts with Stripe</span>}
                 </div>
                 <div className="col-md-4">
                   {(creatingAccount && (
-                    <Dots
-                      style={{ display: 'flex' }}
-                      color="#727981"
-                      size={24}
-                      speed={1}
-                    />
+                    <Dots style={{ display: 'flex' }} color="#727981" size={24} speed={1} />
                   )) || (
                     <a
                       href={`https://connect.stripe.com/express/oauth/authorize?redirect_uri=${redirectURI}&state=${
@@ -775,9 +709,7 @@ export default class Profile extends Component {
                         label={stripe_user_id ? 'Reconnect >' : 'Start >>'}
                         styles={{
                           backgroundColor: 'transparent',
-                          borderColor: stripe_user_id
-                            ? 'transparent'
-                            : Colors.softBlack,
+                          borderColor: stripe_user_id ? 'transparent' : Colors.softBlack,
                           width: '100%',
                           margin: '0px auto',
                           color: Colors.softBlack,
@@ -800,26 +732,22 @@ export default class Profile extends Component {
                       >
                         <span>View Payout Account</span>
                       </div>
-                      <div style={{ color: 'red' }}>
-                        {this.state.errorMessage}
-                      </div>
+                      <div style={{ color: 'red' }}>{this.state.errorMessage}</div>
                     </div>
                   </div>
                 )) ||
                   null}
               </div>
               <div style={{ marginTop: 20 }}>
-                <span style={{ ...styles.titleText, marginTop: 20 }}>
-                  Admins
-                </span>
+                <span style={{ ...styles.titleText, marginTop: 20 }}>Admins</span>
               </div>
               <div style={{ marginTop: 10, marginBottom: 20 }}>
                 <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
                   {admins.map((admin, i) => (
                     <li key={i}>
-                      <span className="text-large">{`${admin.firstName} ${
-                        admin.lastName
-                      } (${admin.email})`}</span>
+                      <span className="text-large">{`${admin.firstName} ${admin.lastName} (${
+                        admin.email
+                      })`}</span>
                     </li>
                   ))}
                 </ul>
@@ -842,10 +770,7 @@ export default class Profile extends Component {
               </div>
               {adminFormShow &&
                 !inviteSent && (
-                  <div
-                    className="row"
-                    style={{ marginBottom: 10, marginLeft: 5 }}
-                  >
+                  <div className="row" style={{ marginBottom: 10, marginLeft: 5 }}>
                     <div
                       style={{
                         width: '25%',
@@ -911,8 +836,7 @@ export default class Profile extends Component {
                 inviteSent && (
                   <div style={{ marginTop: 10 }}>
                     <span className="text-large">
-                      <i
-                      >{`An email invitation has been sent to ${inviteeEmail}.`}</i>
+                      <i>{`An email invitation has been sent to ${inviteeEmail}.`}</i>
                     </span>
                   </div>
                 )}

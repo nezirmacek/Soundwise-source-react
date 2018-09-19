@@ -8,9 +8,7 @@ const get = announcementId =>
   );
 
 const create = announcement =>
-  database.Announcement.create(announcement).then(
-    data => (data ? data.dataValues : null)
-  );
+  database.Announcement.create(announcement).then(data => (data ? data.dataValues : null));
 
 const update = (announcement, id) =>
   database.Announcement.update(announcement, { where: { announcementId: id } });

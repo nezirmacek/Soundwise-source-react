@@ -71,9 +71,7 @@ export default class Coupons extends Component {
                   value={price.coupons[j].couponType}
                 >
                   <option value="discount">Discount</option>
-                  {isSubscription && (
-                    <option value="trial_period">Trial Period</option>
-                  )}
+                  {isSubscription && <option value="trial_period">Trial Period</option>}
                 </select>
               </div>
             </div>
@@ -175,10 +173,7 @@ export default class Coupons extends Component {
               }}
             >
               <span>Expires on</span>
-              <div
-                className="dateTimeInput"
-                style={{ minWidth: 145, marginTop: 5 }}
-              >
+              <div className="dateTimeInput" style={{ minWidth: 145, marginTop: 5 }}>
                 <Datetime
                   value={moment.unix(coupon.expiration)}
                   onChange={date => {

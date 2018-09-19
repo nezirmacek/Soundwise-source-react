@@ -7,10 +7,7 @@ import { Bar } from 'react-chartjs-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from 'material-ui/Dialog';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { getDateArray } from '../../../helpers/get_date_array';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
@@ -61,8 +58,7 @@ export default class Analytics extends Component {
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
@@ -81,8 +77,7 @@ export default class Analytics extends Component {
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
@@ -90,10 +85,7 @@ export default class Analytics extends Component {
       }
     }
     if (nextProps.userInfo.soundcasts_managed) {
-      if (
-        typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] ==
-        'object'
-      ) {
+      if (typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
         this.loadData(nextProps.userInfo);
       }
     }
@@ -103,9 +95,7 @@ export default class Analytics extends Component {
     const _subscribers = [];
     const _soundcasts_managed = [];
     for (let id in userInfo.soundcasts_managed) {
-      const _soundcast = JSON.parse(
-        JSON.stringify(userInfo.soundcasts_managed[id])
-      );
+      const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
       if (_soundcast.title) {
         _soundcast.id = id;
         _soundcasts_managed.push(_soundcast);
@@ -282,9 +272,7 @@ export default class Analytics extends Component {
           episodeArr[i] = {
             ...episode,
             title: snapshot.val().title,
-            date_created: new Date(1000 * snapshot.val().date_created)
-              .toISOString()
-              .slice(0, 10),
+            date_created: new Date(1000 * snapshot.val().date_created).toISOString().slice(0, 10),
           };
         })
         .then(res => res, err => console.log(err));
@@ -323,12 +311,7 @@ export default class Analytics extends Component {
   }
 
   render() {
-    const {
-      soundcasts_managed,
-      data,
-      currentSoundcastID,
-      modalOpen,
-    } = this.state;
+    const { soundcasts_managed, data, currentSoundcastID, modalOpen } = this.state;
     const that = this;
     return (
       <div className="padding-30px-tb">
@@ -355,22 +338,17 @@ export default class Analytics extends Component {
               zIndex: 103,
             }}
           >
-            <div
-              className="title-medium"
-              style={{ margin: 25, fontWeight: 800 }}
-            >
+            <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
               Upgrade to view analytics
             </div>
             <div className="title-small" style={{ margin: 25 }}>
-              Listening analytics is available on PLUS and PRO plans. Please
-              upgrade to access the feature.
+              Listening analytics is available on PLUS and PRO plans. Please upgrade to access the
+              feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() =>
-                  that.props.history.push({ pathname: '/pricing' })
-                }
+                onClick={() => that.props.history.push({ pathname: '/pricing' })}
                 styles={{ width: '60%' }}
               />
             </div>
@@ -419,10 +397,7 @@ export default class Analytics extends Component {
             </div>
           </div>
           <div className="row" style={{ marginLeft: 5, marginRight: 5 }}>
-            <div
-              className="col-md-6 col-sm-12 col-xs-12"
-              style={{ ...styles.tableWrapper }}
-            >
+            <div className="col-md-6 col-sm-12 col-xs-12" style={{ ...styles.tableWrapper }}>
               <div style={styles.sectionTitleWrapper}>TOP EPISODES</div>
               <table className="table">
                 <thead>
@@ -435,9 +410,7 @@ export default class Analytics extends Component {
                 </thead>
                 <tbody>
                   {this.state.episodeArr.map((episode, i) => {
-                    const ave_duration = Math.floor(
-                      episode.length / episode.listens / 60
-                    );
+                    const ave_duration = Math.floor(episode.length / episode.listens / 60);
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{ ...styles.td }}>{`${episode.title}`}</td>
@@ -461,9 +434,7 @@ export default class Analytics extends Component {
                     <th style={{ ...styles.th, width: '10%' }} />
                     <th style={{ ...styles.th, width: '40%' }}>NAME</th>
                     <th style={{ ...styles.th, width: '25%' }}># OF LISTENS</th>
-                    <th style={{ ...styles.th, width: '25%' }}>
-                      TOTAL MINUTES
-                    </th>
+                    <th style={{ ...styles.th, width: '25%' }}>TOTAL MINUTES</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -478,12 +449,10 @@ export default class Analytics extends Component {
                             }}
                           />
                         </td>
-                        <td style={{ ...styles.td, width: '40%' }}>{`${
-                          user.firstName
-                        } ${user.lastName}`}</td>
-                        <td style={{ ...styles.td, width: '25%' }}>
-                          {user.listens}
-                        </td>
+                        <td style={{ ...styles.td, width: '40%' }}>{`${user.firstName} ${
+                          user.lastName
+                        }`}</td>
+                        <td style={{ ...styles.td, width: '25%' }}>{user.listens}</td>
                         <td style={{ ...styles.td, width: '25%' }}>
                           {Math.floor(user.length / 60)}
                         </td>

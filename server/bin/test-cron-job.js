@@ -8,7 +8,7 @@ var firebase = require('firebase-admin');
 const sendinblue = require('sendinblue-api');
 const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 
-const parameters = {apiKey: sendinBlueApiKey, timeout: 5000};
+const parameters = { apiKey: sendinBlueApiKey, timeout: 5000 };
 const sendinObj = new sendinblue(parameters);
 var paypalConfig = require('../../config').paypalConfig;
 
@@ -45,9 +45,7 @@ Transaction.find({
   if (transactions.length > 0) {
     // ************** step 2
     transactions.map(transaction => {
-      const fees =
-        transaction.amount * (stripeFeePercent + soundwiseFeePercent) +
-        stripeFeeFixed;
+      const fees = transaction.amount * (stripeFeePercent + soundwiseFeePercent) + stripeFeeFixed;
       if (!publishersObj[transaction.publisherId]) {
         publishersObj[transaction.publisherId] = {
           payoutAmount:
@@ -57,9 +55,7 @@ Transaction.find({
         };
       } else {
         publishersObj[transaction.publisherId].payoutAmount +=
-          transaction.type == 'charge'
-            ? +transaction.amount - fees
-            : -(+transaction.amount - fees);
+          transaction.type == 'charge' ? +transaction.amount - fees : -(+transaction.amount - fees);
       }
     });
 
@@ -76,7 +72,7 @@ Transaction.find({
     // if there's nothing to payout, return and call it a day
     if (publishersArr.length == 0) {
       const input = {
-        to: {['natasha@mysoundwise.com']: 'Natasha Che'},
+        to: { ['natasha@mysoundwise.com']: 'Natasha Che' },
         from: ['support@mysoundwise.com', 'Soundwise'],
         subject: 'There is no payouts this month',
         html: '<p>Yippee!</p>',
@@ -134,7 +130,7 @@ Transaction.find({
           if (error) {
             console.log('paypal payout creation error: ', error.response);
             const errorEmail = {
-              to: {['natasha@mysoundwise.com']: 'Natasha Che'},
+              to: { ['natasha@mysoundwise.com']: 'Natasha Che' },
               from: ['support@mysoundwise.com', 'Soundwise'],
               subject: "There is a problem with this month's payout!",
               html: `<p>Check server logs.</p>
@@ -146,7 +142,7 @@ Transaction.find({
           } else {
             console.log('payout response: ', payout);
             const successEmail = {
-              to: {['natasha@mysoundwise.com']: 'Natasha Che'},
+              to: { ['natasha@mysoundwise.com']: 'Natasha Che' },
               from: ['support@mysoundwise.com', 'Soundwise'],
               subject: "This month's payout is successfully generated!",
               html: '<p>Yippee!</p>',

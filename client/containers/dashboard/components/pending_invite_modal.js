@@ -2,10 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import firebase from 'firebase';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -42,15 +39,13 @@ export default class PendingInviteModal extends Component {
     const { soundcast, userInfo } = this.props;
 
     // send email invitations to invited listeners
-    const subject = `[Reminder] ${
-      userInfo.publisher.name
-    } invited you to subscribe to ${soundcast.title}`;
+    const subject = `[Reminder] ${userInfo.publisher.name} invited you to subscribe to ${
+      soundcast.title
+    }`;
     const content = `<p>Hi there!</p><p></p><p>This is to remind you that you've got an invitation from ${
       userInfo.publisher.name
     } to subscribe to <a href="${
-      soundcast.landingPage
-        ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
-        : ''
+      soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcast.id : ''
     }" target="_blank">${
       soundcast.title
     }</a> on Soundwise. </p><p> If you don't have the Soundwise app on your phone--</p><p><strong>iPhone user: <strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: <strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>Once you have the app, simply log in using the email address that this email was sent to. Your new soundcast will be loaded automatically.</p><p>The Soundwise Team</p>`;
@@ -117,20 +112,14 @@ export default class PendingInviteModal extends Component {
                   {`Pending Invite List for ${this.props.soundcast.title}`}
                 </div>
                 <div style={styles.closeButtonWrap}>
-                  <div
-                    style={{ cursor: 'pointer' }}
-                    onClick={this.closeModal.bind(this)}
-                  >
+                  <div style={{ cursor: 'pointer' }} onClick={this.closeModal.bind(this)}>
                     <i className="fa fa-times fa-2x" style={{ color: 'red' }} />
                   </div>
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-12" style={styles.button}>
-                  <span
-                    style={{ color: Colors.link }}
-                    onClick={this.sendInviteReminder}
-                  >
+                  <span style={{ color: Colors.link }} onClick={this.sendInviteReminder}>
                     Send Invite Reminder
                   </span>
                 </div>
@@ -158,9 +147,7 @@ export default class PendingInviteModal extends Component {
                       return (
                         <tr key={i} style={styles.tr}>
                           <td style={{ ...styles.td, width: 37 }} />
-                          <td style={{ ...styles.td, width: 350 }}>
-                            {invitee.email}
-                          </td>
+                          <td style={{ ...styles.td, width: 350 }}>{invitee.email}</td>
                           <td style={{ ...styles.td, width: 150 }}>
                             {typeof invitee.date == 'boolean'
                               ? '__'

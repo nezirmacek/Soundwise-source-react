@@ -20,7 +20,7 @@ const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendError = (res, err) => {
   console.log(`Error: soundwaveVideo ${err}`);
-  res.status(500).send({error: err});
+  res.status(500).send({ error: err });
 };
 
 // **** The task: generate video combing audio wave and picture with audio file and picture uploaded from front end
@@ -31,9 +31,9 @@ module.exports.createAudioWaveVid = async (req, res) => {
   }
   const audioPath = req.files.audio.path;
   const imagePath = req.files.image.path;
-  const {color, position, email} = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
+  const { color, position, email } = req.body; // image and audio are image and audio files. Color (string) is color code for the audio wave. Position (string) is the position of the audio wave. It can be "top", "middle", "bottom". Email (string) is the user's email address.
   fs.readFile(imagePath, (err, imageBuffer) => {
-    const {height, width} = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
+    const { height, width } = sizeOf(imageBuffer); // {height: 200, width: 300, type: "jpg"}
     console.log(`height: ${height}, width: ${width}`);
     try {
       new ffmpeg(audioPath).then(
@@ -68,45 +68,28 @@ module.exports.createAudioWaveVid = async (req, res) => {
             const audioTrimmedPath = audioPath.slice(0, -4) + '_trimmed.mp3';
             audioFile.save(audioTrimmedPath, err => {
               if (err) {
-                return console.log(
-                  `Error: trimmed audio saving fails ${audioTrimmedPath} ${err}`
-                );
+                return console.log(`Error: trimmed audio saving fails ${audioTrimmedPath} ${err}`);
               }
               fs.unlink(audioPath, err => 0); // remove original
-              new ffmpeg(audioTrimmedPath, {timeout: 10 * 60 * 1000}).then(
-                audioTrimmedFile => {
-                  if (doResize.length) {
-                    // resizing
-                    new ffmpeg(imagePath).then(imageFile => {
-                      const updatedImagePath = `${imagePath.slice(
-                        0,
-                        -4
-                      )}_updated.png`;
-                      // ffmpeg -i ep-18-square.png -vf scale=1080:1080 out.png
-                      imageFile.addCommand(
-                        '-vf',
-                        `scale=${doResize[0]}:${doResize[1]}`
-                      );
-                      imageFile.save(updatedImagePath, err => {
-                        if (err) {
-                          return sendError(
-                            res,
-                            `cannot save updated image ${imagePath} ${err}`
-                          );
-                        }
-                        fs.unlink(imagePath, err => 0); // removing original image file
-                        resolve([
-                          updatedImagePath,
-                          audioTrimmedPath,
-                          audioTrimmedFile,
-                        ]);
-                      });
+              new ffmpeg(audioTrimmedPath, { timeout: 10 * 60 * 1000 }).then(audioTrimmedFile => {
+                if (doResize.length) {
+                  // resizing
+                  new ffmpeg(imagePath).then(imageFile => {
+                    const updatedImagePath = `${imagePath.slice(0, -4)}_updated.png`;
+                    // ffmpeg -i ep-18-square.png -vf scale=1080:1080 out.png
+                    imageFile.addCommand('-vf', `scale=${doResize[0]}:${doResize[1]}`);
+                    imageFile.save(updatedImagePath, err => {
+                      if (err) {
+                        return sendError(res, `cannot save updated image ${imagePath} ${err}`);
+                      }
+                      fs.unlink(imagePath, err => 0); // removing original image file
+                      resolve([updatedImagePath, audioTrimmedPath, audioTrimmedFile]);
                     });
-                  } else {
-                    resolve([imagePath, audioTrimmedPath, audioTrimmedFile]);
-                  }
+                  });
+                } else {
+                  resolve([imagePath, audioTrimmedPath, audioTrimmedFile]);
                 }
-              );
+              });
             });
           })
             .then(([imagePath, audioTrimmedPath, audioFile]) => {
@@ -159,13 +142,9 @@ module.exports.createAudioWaveVid = async (req, res) => {
                       bcc: 'natasha@mysoundwise.com',
                       html: `<p>Hi!</p><p>There was a glitch in creating your soundwave video.</p><p>Please try uploading the audio clip and image again later.</p><p>Folks at Soundwise</p>`,
                     });
-                    return console.log(
-                      `Error: video saving timeout ${videoPath} ${err}`
-                    );
+                    return console.log(`Error: video saving timeout ${videoPath} ${err}`);
                   } else {
-                    return console.log(
-                      `Error: video saving fails ${videoPath} ${err}`
-                    );
+                    return console.log(`Error: video saving fails ${videoPath} ${err}`);
                   }
                 }
                 console.log(`Video file ${videoPath} successfully saved`);
@@ -192,14 +171,10 @@ module.exports.createAudioWaveVid = async (req, res) => {
                   },
                   (err, files) => {
                     if (err) {
-                      return console.log(
-                        `Error: uploading wavevideo ${videoPath} to S3 ${err}`
-                      );
+                      return console.log(`Error: uploading wavevideo ${videoPath} to S3 ${err}`);
                     }
                     const videoUrl = files[0].url.replace('http', 'https');
-                    console.log(
-                      `Wavevideo ${videoPath} uploaded to: ${videoUrl}`
-                    );
+                    console.log(`Wavevideo ${videoPath} uploaded to: ${videoUrl}`);
                     // **** step 4: email the user the download link of the video file. If there is a processing error, notify user by email that there is an error.
                     sgMail.send({
                       // send email
@@ -214,7 +189,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                       .request({
                         method: 'POST',
                         url: '/v3/contactdb/recipients',
-                        body: [{email}],
+                        body: [{ email }],
                       })
                       .then(([response, body]) =>
                         client.request({
@@ -257,33 +232,21 @@ module.exports.createAudioWaveVid = async (req, res) => {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjectsV2-property
 setInterval(
   f =>
-    s3.listObjectsV2(
-      {Bucket: 'soundwiseinc', Prefix: 'wavevideo'},
-      (err, data) => {
-        if (err) {
-          return console.log(
-            `Error: soundwaveVideo cannot access s3 bucket ${err}`
-          );
-        }
-        data.Contents.forEach(el => {
-          if (moment().diff(el.LastModified, 'minutes') > 1440) {
-            // 24 hours
-            s3.deleteObject(
-              {Bucket: 'soundwiseinc', Key: el.Key},
-              (err, data) => {
-                if (err) {
-                  return console.log(
-                    `Error: soundwaveVideo cannot delete object ${
-                      el.Key
-                    } ${err}`
-                  );
-                }
-                console.log(`SoundwaveVideo Successfully deleted ${el.Key}`);
-              }
-            );
-          }
-        });
+    s3.listObjectsV2({ Bucket: 'soundwiseinc', Prefix: 'wavevideo' }, (err, data) => {
+      if (err) {
+        return console.log(`Error: soundwaveVideo cannot access s3 bucket ${err}`);
       }
-    ),
+      data.Contents.forEach(el => {
+        if (moment().diff(el.LastModified, 'minutes') > 1440) {
+          // 24 hours
+          s3.deleteObject({ Bucket: 'soundwiseinc', Key: el.Key }, (err, data) => {
+            if (err) {
+              return console.log(`Error: soundwaveVideo cannot delete object ${el.Key} ${err}`);
+            }
+            console.log(`SoundwaveVideo Successfully deleted ${el.Key}`);
+          });
+        }
+      });
+    }),
   60 * 60 * 1000
 ); // check every hour

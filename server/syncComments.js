@@ -13,9 +13,7 @@ const LOG_ERR = 'logErrsComments.txt';
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: `https://${
-    process.env.NODE_ENV === 'production'
-      ? 'soundwise-a8e6f'
-      : 'soundwise-testbase'
+    process.env.NODE_ENV === 'production' ? 'soundwise-a8e6f' : 'soundwise-testbase'
   }.firebaseio.com`,
 });
 
@@ -99,8 +97,7 @@ const getCommentForPsql = (key, fbComment, parent) => {
     parentId: parent ? parent : fbComment.parentID || fbComment.parentId,
     episodeId: fbComment.episodeID || null,
     soundcastId: fbComment.soundcastId || fbComment.soundcastID || null,
-    announcementId:
-      fbComment.announcementId || fbComment.announcementID || null,
+    announcementId: fbComment.announcementId || fbComment.announcementID || null,
     timeStamp: fbComment.timestamp || fbComment.timeStamp || null,
     createdAt: moment.unix(fbComment.timestamp).format('YYYY-MM-DD HH:mm:ss Z'),
   };

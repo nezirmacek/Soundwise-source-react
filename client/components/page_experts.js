@@ -19,8 +19,7 @@ const customContentStyle = {
 
 const headerProps = {
   title: 'MONETIZE YOUR EXPERTISE WITH AUDIO',
-  tagline:
-    'Create and sell audio courses and subscription programs. Build a loyal following.',
+  tagline: 'Create and sell audio courses and subscription programs. Build a loyal following.',
   logoImage: 'images/soundwiselogo_white.svg',
   backgroundImage: 'images/expert_bg2.jpg',
   gradient2: 'rgba(247,107,28,0.6)',
@@ -34,8 +33,7 @@ const bannerProps = {
   tagline:
     'We make it easy for audience to sign up for your training program and engage with your content.',
   subtitle1: 'Asynchronous Delivery',
-  description1:
-    'Audio training is flexible and can be taken anytime, anywhere.',
+  description1: 'Audio training is flexible and can be taken anytime, anywhere.',
   subtitle3: 'Easy Dissemination',
   description3:
     "Record and send audios of your educational content directly to your audience's phones",
@@ -53,8 +51,7 @@ const featureProps = {
   featureTitle1: 'Build / Upload',
   feature1: 'Create a sales page, upload your content and start selling.',
   featureTitle2: 'Update / Download',
-  feature2:
-    "Any new materials you upload are immediately available on your audience's phones.",
+  feature2: "Any new materials you upload are immediately available on your audience's phones.",
   featureTitle3: 'Listen / Engage',
   feature3:
     'Audience listen to your materials at a time convenient to them. You can engage with your audience via comments & group text messages',

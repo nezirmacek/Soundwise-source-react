@@ -55,9 +55,7 @@ async function runImport(links) {
         // LETTERS
         const letters = Array.from($('#selectedgenre > .list.alpha > li > a')); // 26 letters + '#'
         if (letters.length !== 27) {
-          console.log(
-            `Error: iTunesUrls.js wrong letters length ${letters.length}`
-          );
+          console.log(`Error: iTunesUrls.js wrong letters length ${letters.length}`);
           return process.exit();
         }
         for (const letter of letters) {
@@ -82,10 +80,7 @@ async function runImport(links) {
                 // have pagination
                 for (const page of pages) {
                   // page numbers
-                  if (
-                    page.children[0].data !== '1' &&
-                    page.children[0].data !== 'Next'
-                  ) {
+                  if (page.children[0].data !== '1' && page.children[0].data !== 'Next') {
                     process.stdout.write(',' + page.children[0].data);
                     const href = page.attribs.href;
                     await new Promise(resolve =>
@@ -137,8 +132,7 @@ async function runImport(links) {
                 metadata['itunes:owner']['itunes:email'] &&
                 metadata['itunes:owner']['itunes:email']['#'];
               const managingEmail =
-                metadata['rss:managingeditor'] &&
-                metadata['rss:managingeditor']['email'];
+                metadata['rss:managingeditor'] && metadata['rss:managingeditor']['email'];
               const publisherEmail = itunesEmail || managingEmail || null;
 
               const feedObj = {
@@ -179,8 +173,7 @@ async function runImport(links) {
               const res = {
                 send: msg => console.log(`iTunesUrls resObject ${msg}`),
                 status: status => ({
-                  send: msg =>
-                    console.log(`iTunesUrls resObject ${status} ${msg}`),
+                  send: msg => console.log(`iTunesUrls resObject ${status} ${msg}`),
                 }),
               };
 

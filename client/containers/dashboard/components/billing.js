@@ -5,10 +5,7 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -48,11 +45,7 @@ export default class Billing extends Component {
 
   checkAffiliateId() {
     const { userInfo } = this.props;
-    if (
-      !this.state.couponText &&
-      userInfo.publisher &&
-      userInfo.publisher.stripe_user_id
-    ) {
+    if (!this.state.couponText && userInfo.publisher && userInfo.publisher.stripe_user_id) {
       firebase
         .database()
         .ref(`coupons`)
@@ -146,11 +139,7 @@ export default class Billing extends Component {
       // TODO redirect/show card input form (example client/containers/checkout.js)
     } else {
       // if the publisher has a stripe_user_id already, an affiliate id should be generated (use this format: affiliate id = [publisher id]-[stripe_user_id] of the referrer)
-      this.createCoupon(
-        userInfo.publisher.name.replace(/[^A-Za-z]/g, ''),
-        stripe_user_id,
-        0
-      );
+      this.createCoupon(userInfo.publisher.name.replace(/[^A-Za-z]/g, ''), stripe_user_id, 0);
       await firebase
         .database()
         .ref(`publishers/${userInfo.publisherID}/affiliate`)
@@ -180,10 +169,7 @@ export default class Billing extends Component {
           <div className="padding-bottom-20px">
             <span className="title-medium ">Publisher</span>
             <Link to={`/publishers/${userInfo.publisherID}`}>
-              <span
-                className="text-medium"
-                style={{ marginLeft: 15, color: Colors.mainOrange }}
-              >
+              <span className="text-medium" style={{ marginLeft: 15, color: Colors.mainOrange }}>
                 <strong>View Publisher Page</strong>
               </span>
             </Link>
@@ -196,9 +182,7 @@ export default class Billing extends Component {
             </li>
             <li role="presentation">
               <Link to="/dashboard/publisher/transactions">
-                <span style={{ fontSize: 15, fontWeight: 600 }}>
-                  Transactions
-                </span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>Transactions</span>
               </Link>
             </li>
             <li role="presentation">
@@ -208,16 +192,11 @@ export default class Billing extends Component {
             </li>
             <li role="presentation">
               <Link to="/dashboard/publisher/promotions">
-                <span style={{ fontSize: 15, fontWeight: 600 }}>
-                  Promotions
-                </span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>Promotions</span>
               </Link>
             </li>
             <li role="presentation" className="active">
-              <Link
-                style={{ backgroundColor: 'transparent' }}
-                to="/dashboard/publisher/settings"
-              >
+              <Link style={{ backgroundColor: 'transparent' }} to="/dashboard/publisher/settings">
                 <span
                   style={{
                     fontSize: 15,
@@ -234,9 +213,7 @@ export default class Billing extends Component {
             <div className="row">
               <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div style={{ marginTop: 20 }}>
-                  <div style={{ ...styles.titleText, marginBottom: 25 }}>
-                    Subscription Plan
-                  </div>
+                  <div style={{ ...styles.titleText, marginBottom: 25 }}>Subscription Plan</div>
                   <div>
                     <span
                       style={{
@@ -292,9 +269,7 @@ export default class Billing extends Component {
                       </div>
                     )) ||
                     null}
-                  <div style={{ ...styles.titleText, marginTop: 20 }}>
-                    Affiliate Program
-                  </div>
+                  <div style={{ ...styles.titleText, marginTop: 20 }}>Affiliate Program</div>
                   <div>{`(50% lifetime commisions on your referrals)`}</div>
                   {(affiliate && (
                     <div>
@@ -303,17 +278,15 @@ export default class Billing extends Component {
                         <a
                           target="_blank"
                           style={{ color: Colors.mainOrange }}
-                          href={`https://mysoundwise.com/?a_id=${
-                            userInfo.publisherID
-                          }-${userInfo.publisher.stripe_user_id}`}
-                        >{`https://mysoundwise.com/?a_id=${
-                          userInfo.publisherID
-                        }-${userInfo.publisher.stripe_user_id}`}</a>
+                          href={`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${
+                            userInfo.publisher.stripe_user_id
+                          }`}
+                        >{`https://mysoundwise.com/?a_id=${userInfo.publisherID}-${
+                          userInfo.publisher.stripe_user_id
+                        }`}</a>
                       </div>
                       <div style={{ marginTop: 12 }}>
-                        <span style={styles.titleTextSmall}>
-                          Your affiliate promo code
-                        </span>
+                        <span style={styles.titleTextSmall}>Your affiliate promo code</span>
                         <span> (1 month free on any paid plans)</span>
                         <span style={styles.titleTextSmall}>: </span>
                         <a

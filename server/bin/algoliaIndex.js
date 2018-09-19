@@ -8,19 +8,11 @@ var algoliasearch = require('algoliasearch');
 var database = firebase.database();
 
 // configure algolia
-const algolia = algoliasearch(
-  algoliaConfig.ALGOLIA_APP_ID,
-  algoliaConfig.ALGOLIA_API_KEY
-);
+const algolia = algoliasearch(algoliaConfig.ALGOLIA_APP_ID, algoliaConfig.ALGOLIA_API_KEY);
 const index = algolia.initIndex(algoliaConfig.ALGOLIA_INDEX_NAME);
 index.setSettings(
   {
-    searchableAttributes: [
-      'title',
-      'hostName',
-      'publisherName',
-      'short_description',
-    ],
+    searchableAttributes: ['title', 'hostName', 'publisherName', 'short_description'],
   },
   function(err, content) {}
 );
@@ -36,13 +28,7 @@ function addOrUpdateIndexRecord(soundcast) {
   // Get Firebase object
   if (soundcast.val().published && soundcast.val().landingPage) {
     // Specify Algolia's objectID using the Firebase object key
-    const {
-      title,
-      hostName,
-      publisherName,
-      short_description,
-      imageURL,
-    } = soundcast.val();
+    const { title, hostName, publisherName, short_description, imageURL } = soundcast.val();
     const record = {
       title,
       short_description,

@@ -2,10 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Video = () => (
-  <section
-    className="bg-white builder-bg padding-50px-tb xs-padding-30px-tb"
-    id="video-section7"
-  >
+  <section className="bg-white builder-bg padding-50px-tb xs-padding-30px-tb" id="video-section7">
     <div className="container">
       <div className="row">
         <div className="col-lg-8 col-md-10 col-sm-12 col-xs-12 text-center center-col">
@@ -16,11 +13,7 @@ const Video = () => (
         <div className="col-lg-8 col-md-10 col-sm-12 col-xs-12 display-table center-col">
           <div className="display-table-cell-vertical-middle">
             <div className="video-overlay">
-              <iframe
-                width="560"
-                height="315"
-                src="https://www.youtube.com/embed/cjAw4AM4l0Y"
-              />
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/cjAw4AM4l0Y" />
             </div>
           </div>
         </div>

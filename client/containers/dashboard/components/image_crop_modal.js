@@ -12,8 +12,7 @@ import Colors from '../../../styles/colors';
 function dataURItoBlob(dataURI) {
   // convert base64/URLEncoded data component to raw binary data held in a string
   var byteString;
-  if (dataURI.split(',')[0].indexOf('base64') >= 0)
-    byteString = atob(dataURI.split(',')[1]);
+  if (dataURI.split(',')[0].indexOf('base64') >= 0) byteString = atob(dataURI.split(',')[1]);
   else byteString = unescape(dataURI.split(',')[1]);
 
   // separate out the mime component
@@ -107,11 +106,7 @@ export default class ImageCropModal extends Component {
     const { cropResult, width, height } = this.state;
     const actions = [
       <FlatButton label="Save" primary={true} onClick={() => that.upload()} />,
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.props.handleClose}
-      />,
+      <FlatButton label="Cancel" primary={true} onClick={this.props.handleClose} />,
     ];
     return (
       <MuiThemeProvider>
@@ -166,11 +161,7 @@ export default class ImageCropModal extends Component {
                   alt="cropped image"
                 />
               </div>
-              <RaisedButton
-                onClick={this.cancelCrop}
-                label="Cancel"
-                fullWidth={true}
-              />
+              <RaisedButton onClick={this.cancelCrop} label="Cancel" fullWidth={true} />
             </div>
           )}
         </Dialog>

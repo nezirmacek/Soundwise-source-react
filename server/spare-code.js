@@ -24,9 +24,7 @@ var processPublishers = async () => {
         publisherId = id;
         name = snapshot.val().name;
         paypalEmail = snapshot.val().email;
-        request(
-          `https://mysoundwise.com/api/publishers/${publisherId}/exists`
-        ).then(res => {
+        request(`https://mysoundwise.com/api/publishers/${publisherId}/exists`).then(res => {
           options = {
             uri: 'https://mysoundwise.com/api/publishers/replaceOrCreate',
             body: {
