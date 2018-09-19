@@ -139,6 +139,7 @@
     "video-react": "^0.9.4",
     "videojs": "^1.0.0",
     "videojs-record": "^2.1.2",
+    "videojs-wavesurfer": "^2.5.1",
     "whatwg-fetch": "^2.0.3",
     "when": ">= 0.0.1"
   },
