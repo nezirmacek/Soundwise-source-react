@@ -22,10 +22,7 @@ import { Editor } from 'react-draft-wysiwyg';
 import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import {
   OrangeSubmitButton,
   TransparentShortSubmitButton,
@@ -169,10 +166,7 @@ class _CreateEpisode extends Component {
   checkUserStatus(userInfo) {
     let proUser;
     if (userInfo.publisher && userInfo.publisher.plan) {
-      proUser =
-        userInfo.publisher.current_period_end > moment().format('X')
-          ? true
-          : false;
+      proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
     }
     if (userInfo.publisher && userInfo.publisher.beta) {
       proUser = true;
@@ -289,15 +283,11 @@ class _CreateEpisode extends Component {
 
         if (type == 'audio' && !uploadedAudio) {
           _self.setState({
-            recordedAudioUrl: `https://mysoundwise.com/tracks/${
-              _self.episodeId
-            }.${ext}`,
+            recordedAudioUrl: `https://mysoundwise.com/tracks/${_self.episodeId}.${ext}`,
           });
         } else if (type == 'audio' && uploadedAudio) {
           _self.setState({
-            uploadedAudioUrl: `https://mysoundwise.com/tracks/${
-              _self.episodeId
-            }.${ext}`,
+            uploadedAudioUrl: `https://mysoundwise.com/tracks/${_self.episodeId}.${ext}`,
           });
         } else if (type == 'notes' || type == 'coverart') {
           _self.setState({
@@ -323,7 +313,7 @@ class _CreateEpisode extends Component {
       });
       // console.log('duration of audio: ', duration);
     };
-    console.log('create_episode: setAudioDuration')
+    console.log('create_episode: setAudioDuration');
     audio.preload = 'auto';
     audio.src = URL.createObjectURL(file);
   }
@@ -343,10 +333,8 @@ class _CreateEpisode extends Component {
         ext = splittedFileName[splittedFileName.length - 1];
         if (
           (type == 'audio' && (ext == 'mp3' || ext == 'm4a')) ||
-          (type == 'notes' &&
-            (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) ||
-          (type == 'coverart' &&
-            (ext == 'jpg' || ext == 'png' || ext == 'jpeg'))
+          (type == 'notes' && (ext == 'pdf' || ext == 'jpg' || ext == 'png' || ext == 'jpeg')) ||
+          (type == 'coverart' && (ext == 'jpg' || ext == 'png' || ext == 'jpeg'))
         ) {
           this.setState({
             [`${type}Uploaded`]: true,
@@ -404,16 +392,9 @@ class _CreateEpisode extends Component {
       silentPeriod,
       overlayDuration,
     } = this.state;
-    const {
-      userInfo,
-      history,
-      content_saved,
-      handleContentSaving,
-    } = this.props;
+    const { userInfo, history, content_saved, handleContentSaving } = this.props;
     const audioProcessing =
-      audioNormalization || trimSilence || reduceSilence || addIntroOutro
-        ? true
-        : false;
+      audioNormalization || trimSilence || reduceSilence || addIntroOutro ? true : false;
 
     if (!content_saved[this.episodeId]) {
       // prevent unnecessary rerendering of component
@@ -431,227 +412,195 @@ class _CreateEpisode extends Component {
       if ((recordedAudioUrl || uploadedAudioUrl) && soundcast) {
         // check if soundcast in soundcasts_managed
 
-        this.firebaseListener = firebase
-          .auth()
-          .onAuthStateChanged(function(user) {
-            if (user && that.firebaseListener) {
-              const creatorID = user.uid;
-              const newEpisode = {
-                title,
-                description: description.getCurrentContent().hasText()
-                  ? draftToHtml(convertToRaw(description.getCurrentContent()))
-                  : null,
-                actionstep: actions.length > 0 ? actions : null,
-                date_created: Number(moment().format('X')),
-                creatorID,
-                publisherID: userInfo.publisherID,
-                url: recordedAudioUrl || uploadedAudioUrl,
-                duration:
-                  audioDuration > 0
-                    ? audioDuration
-                    : currentRecordingDuration / 1000, // duration is in seconds
-                notes: notesUrl,
-                publicEpisode,
-                soundcastID: that.currentSoundcastId,
-                isPublished,
-                coverArtUrl: coverArtUrl,
-                audioProcessing,
-              };
+        this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
+          if (user && that.firebaseListener) {
+            const creatorID = user.uid;
+            const newEpisode = {
+              title,
+              description: description.getCurrentContent().hasText()
+                ? draftToHtml(convertToRaw(description.getCurrentContent()))
+                : null,
+              actionstep: actions.length > 0 ? actions : null,
+              date_created: Number(moment().format('X')),
+              creatorID,
+              publisherID: userInfo.publisherID,
+              url: recordedAudioUrl || uploadedAudioUrl,
+              duration: audioDuration > 0 ? audioDuration : currentRecordingDuration / 1000, // duration is in seconds
+              notes: notesUrl,
+              publicEpisode,
+              soundcastID: that.currentSoundcastId,
+              isPublished,
+              coverArtUrl: coverArtUrl,
+              audioProcessing,
+            };
 
-              firebase
-                .database()
-                .ref(`soundcasts/${that.currentSoundcastId}`)
-                .once('value')
-                .then(snapshot => {
-                  // console.log('this.currentSoundcastId: ', that.currentSoundcastId);
-                  let index;
-                  if (snapshot.val().episodes) {
-                    index = Object.keys(snapshot.val().episodes).length + 1;
-                  } else {
-                    index = 1;
-                  }
-                  newEpisode.index = index;
-                  firebase
-                    .database()
-                    .ref(`episodes/${that.episodeId}`)
-                    .set(newEpisode)
-                    .then(
-                      res => {
-                        // console.log('success add episode: ', res);
-                      },
-                      err => {
-                        console.log('ERROR add episode: ', err);
+            firebase
+              .database()
+              .ref(`soundcasts/${that.currentSoundcastId}`)
+              .once('value')
+              .then(snapshot => {
+                // console.log('this.currentSoundcastId: ', that.currentSoundcastId);
+                let index;
+                if (snapshot.val().episodes) {
+                  index = Object.keys(snapshot.val().episodes).length + 1;
+                } else {
+                  index = 1;
+                }
+                newEpisode.index = index;
+                firebase
+                  .database()
+                  .ref(`episodes/${that.episodeId}`)
+                  .set(newEpisode)
+                  .then(
+                    res => {
+                      // console.log('success add episode: ', res);
+                    },
+                    err => {
+                      console.log('ERROR add episode: ', err);
+                    }
+                  );
+
+                firebase
+                  .database()
+                  .ref(`soundcasts/${that.currentSoundcastId}/last_update`)
+                  .set(newEpisode.date_created);
+                Axios.post('/api/soundcast', {
+                  soundcastId: that.currentSoundcastId,
+                  updateDate: newEpisode.date_created,
+                });
+
+                firebase
+                  .database()
+                  .ref(`soundcasts/${that.currentSoundcastId}/episodes/${that.episodeId}`)
+                  .set(true)
+                  .then(
+                    res => {},
+                    err => {
+                      console.log('ERROR add episodeID to soundcast: ', err);
+                    }
+                  );
+
+                Axios.post('/api/episode', {
+                  episodeId: that.episodeId,
+                  soundcastId: that.currentSoundcastId,
+                  publisherId: userInfo.publisherID,
+                  title,
+                  soundcastTitle: soundcast.title,
+                })
+                  .then(res => {
+                    if (audioNormalization || trimSilence || reduceSilence || addIntroOutro) {
+                      // if audio processing is requested
+                      if (Number(overlayDuration) < 0.1 && Number(overlayDuration) > 10) {
+                        alert('Overlap with main audio: Please enter a number >=0.1 and <= 10.');
+                        return;
                       }
-                    );
-
-                  firebase
-                    .database()
-                    .ref(`soundcasts/${that.currentSoundcastId}/last_update`)
-                    .set(newEpisode.date_created);
-                  Axios.post('/api/soundcast', {
-                    soundcastId: that.currentSoundcastId,
-                    updateDate: newEpisode.date_created,
-                  });
-
-                  firebase
-                    .database()
-                    .ref(
-                      `soundcasts/${that.currentSoundcastId}/episodes/${
-                        that.episodeId
-                      }`
-                    )
-                    .set(true)
-                    .then(
-                      res => {},
-                      err => {
-                        console.log('ERROR add episodeID to soundcast: ', err);
+                      if (Number(silentPeriod) < 0.1 && Number(silentPeriod) > 10) {
+                        alert('Remove excessive pauses: Please enter a number >=0.1 and <= 10.');
+                        return;
                       }
-                    );
-
-                  Axios.post('/api/episode', {
-                    episodeId: that.episodeId,
-                    soundcastId: that.currentSoundcastId,
-                    publisherId: userInfo.publisherID,
-                    title,
-                    soundcastTitle: soundcast.title,
-                  })
-                    .then(res => {
-                      if (
-                        audioNormalization ||
-                        trimSilence ||
-                        reduceSilence ||
-                        addIntroOutro
-                      ) {
-                        // if audio processing is requested
-                        if (
-                          Number(overlayDuration) < 0.1 &&
-                          Number(overlayDuration) > 10
-                        ) {
-                          alert(
-                            'Overlap with main audio: Please enter a number >=0.1 and <= 10.'
-                          );
-                          return;
-                        }
-                        if (
-                          Number(silentPeriod) < 0.1 &&
-                          Number(silentPeriod) > 10
-                        ) {
-                          alert(
-                            'Remove excessive pauses: Please enter a number >=0.1 and <= 10.'
-                          );
-                          return;
-                        }
-                        Axios.post('/api/audio_processing', {
-                          episodeId: that.episodeId,
-                          soundcastId: that.currentSoundcastId,
-                          publisherEmail: userInfo.publisher.email,
-                          publisherFirstName: userInfo.firstName,
-                          publisherName: userInfo.publisher.name,
-                          publisherImageUrl: userInfo.publisher.imageUrl,
-                          tagging: true,
-                          intro: (addIntroOutro && soundcast.intro) || null,
-                          outro: (addIntroOutro && soundcast.outro) || null,
-                          overlayDuration:
-                            (addIntroOutro &&
-                              (Number(overlayDuration) ||
-                                Number(soundcast.introOutroOverlay))) ||
-                            0,
-                          setVolume: audioNormalization,
-                          trim: trimSilence,
-                          removeSilence:
-                            (reduceSilence && Number(silentPeriod)) || 0,
-                          autoPublish: isPublished,
-                          emailListeners: that.state.sendEmails,
-                        })
-                          .then(res => {
-                            that.setState({
-                              startProcessingEpisode: false,
-                              doneProcessingEpisode: true,
-                            });
-                            if (isPublished) {
-                              alert(
-                                'Episode is submitted and will be published after audio processing is done.'
-                              );
-                            } else {
-                              alert(
-                                'Episode is saved. We will notify you by email when audio processing is done.'
-                              );
-                            }
-
-                            handleContentSaving(that.episodeId, true);
-                            history.goBack();
-                          })
-                          .catch(err => {
-                            that.setState({
-                              startProcessingEpisode: false,
-                              doneProcessingEpisode: true,
-                              podcastError: err.toString(),
-                            });
-                            console.log(err);
+                      Axios.post('/api/audio_processing', {
+                        episodeId: that.episodeId,
+                        soundcastId: that.currentSoundcastId,
+                        publisherEmail: userInfo.publisher.email,
+                        publisherFirstName: userInfo.firstName,
+                        publisherName: userInfo.publisher.name,
+                        publisherImageUrl: userInfo.publisher.imageUrl,
+                        tagging: true,
+                        intro: (addIntroOutro && soundcast.intro) || null,
+                        outro: (addIntroOutro && soundcast.outro) || null,
+                        overlayDuration:
+                          (addIntroOutro &&
+                            (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) ||
+                          0,
+                        setVolume: audioNormalization,
+                        trim: trimSilence,
+                        removeSilence: (reduceSilence && Number(silentPeriod)) || 0,
+                        autoPublish: isPublished,
+                        emailListeners: that.state.sendEmails,
+                      })
+                        .then(res => {
+                          that.setState({
+                            startProcessingEpisode: false,
+                            doneProcessingEpisode: true,
                           });
-                      } else {
-                        // if audio processing is not requested
-                        if (isPublished) {
-                          that.notifySubscribers();
-                          if (podcastFeedVersion) {
-                            Axios.post('/api/create_feed', {
-                              soundcastId: that.currentSoundcastId,
-                              itunesExplicit,
-                              itunesImage,
-                              itunesCategory,
-                              soundcastTitle:
-                                soundcast.itunesTitle || soundcast.title,
-                              soundcastHost:
-                                soundcast.itunesHost || soundcast.hostName,
-                              firstName: userInfo.firstName,
-                              email: userInfo.email[0],
-                            })
-                              .then(response => {
-                                that.setState({
-                                  startProcessingEpisode: false,
-                                  doneProcessingEpisode: true,
-                                });
-                                alert(
-                                  'Episode has been processed and published.'
-                                );
-                                handleContentSaving(that.episodeId, true);
-                                history.goBack();
-                              })
-                              .catch(err => {
-                                that.setState({
-                                  startProcessingEpisode: false,
-                                  doneProcessingEpisode: true,
-                                  podcastError: err.toString(),
-                                });
-                                console.log(err);
-                              });
+                          if (isPublished) {
+                            alert(
+                              'Episode is submitted and will be published after audio processing is done.'
+                            );
                           } else {
-                            that.setState({
-                              startProcessingEpisode: false,
-                              doneProcessingEpisode: true,
-                            });
-                            alert('Episode is published.');
-                            handleContentSaving(that.episodeId, true);
-                            history.goBack();
+                            alert(
+                              'Episode is saved. We will notify you by email when audio processing is done.'
+                            );
                           }
+
+                          handleContentSaving(that.episodeId, true);
+                          history.goBack();
+                        })
+                        .catch(err => {
+                          that.setState({
+                            startProcessingEpisode: false,
+                            doneProcessingEpisode: true,
+                            podcastError: err.toString(),
+                          });
+                          console.log(err);
+                        });
+                    } else {
+                      // if audio processing is not requested
+                      if (isPublished) {
+                        that.notifySubscribers();
+                        if (podcastFeedVersion) {
+                          Axios.post('/api/create_feed', {
+                            soundcastId: that.currentSoundcastId,
+                            itunesExplicit,
+                            itunesImage,
+                            itunesCategory,
+                            soundcastTitle: soundcast.itunesTitle || soundcast.title,
+                            soundcastHost: soundcast.itunesHost || soundcast.hostName,
+                            firstName: userInfo.firstName,
+                            email: userInfo.email[0],
+                          })
+                            .then(response => {
+                              that.setState({
+                                startProcessingEpisode: false,
+                                doneProcessingEpisode: true,
+                              });
+                              alert('Episode has been processed and published.');
+                              handleContentSaving(that.episodeId, true);
+                              history.goBack();
+                            })
+                            .catch(err => {
+                              that.setState({
+                                startProcessingEpisode: false,
+                                doneProcessingEpisode: true,
+                                podcastError: err.toString(),
+                              });
+                              console.log(err);
+                            });
                         } else {
-                          alert('Episode saved');
+                          that.setState({
+                            startProcessingEpisode: false,
+                            doneProcessingEpisode: true,
+                          });
+                          alert('Episode is published.');
+                          handleContentSaving(that.episodeId, true);
                           history.goBack();
                         }
+                      } else {
+                        alert('Episode saved');
+                        history.goBack();
                       }
-                    })
-                    .catch(err => {
-                      console.log('episode failed to save to db', err);
-                      alert(
-                        'Hmm...there is a problem saving the episode. please try again later.'
-                      );
-                    });
-                });
-            } else {
-              // alert('Episode saving failed. Please try again later.');
-              // Raven.captureMessage('episode saving failed!')
-            }
-          });
+                    }
+                  })
+                  .catch(err => {
+                    console.log('episode failed to save to db', err);
+                    alert('Hmm...there is a problem saving the episode. please try again later.');
+                  });
+              });
+          } else {
+            // alert('Episode saving failed. Please try again later.');
+            // Raven.captureMessage('episode saving failed!')
+          }
+        });
 
         this.firebaseListener && this.firebaseListener();
       }
@@ -719,17 +668,13 @@ class _CreateEpisode extends Component {
     let subscribers = [];
     const that = this;
     const { userInfo } = this.props;
-    const subject = `${this.state.title} was just published on ${
-      soundcast.title
-    }`;
+    const subject = `${this.state.title} was just published on ${soundcast.title}`;
     if (soundcast.subscribed) {
       // send notification email to subscribers
       const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${
         userInfo.publisher.name
       } just published <strong>${this.state.title}</strong> in <a href="${
-        soundcast.landingPage
-          ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
-          : ''
+        soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcast.id : ''
       }" target="_blank">${
         soundcast.title
       }</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
@@ -749,9 +694,7 @@ class _CreateEpisode extends Component {
       const content = `<p>Hi there!</p><p></p><p>${
         userInfo.publisher.name
       } just published <strong>${this.state.title}</strong> in <a href="${
-        soundcast.landingPage
-          ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
-          : ''
+        soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcast.id : ''
       }" target="_blank">${
         soundcast.title
       }</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${
@@ -854,10 +797,7 @@ class _CreateEpisode extends Component {
     } else {
       return (
         <div>
-          <div
-            style={styles.recordButton}
-            onClick={e => that.handleMicrophone(e)}
-          >
+          <div style={styles.recordButton} onClick={e => that.handleMicrophone(e)}>
             <span className="fa-layers  fa-4x">
               <FontAwesomeIcon icon={faCircle} color={Colors.mainOrange} />
               <FontAwesomeIcon
@@ -869,9 +809,7 @@ class _CreateEpisode extends Component {
             </span>
           </div>
           <div style={styles.micWrapper}>
-            <AudiojsRecordPlayer
-              setMediaObject={this.setMediaObject.bind(this)}
-            />
+            <AudiojsRecordPlayer setMediaObject={this.setMediaObject.bind(this)} />
           </div>
           <div style={styles.time}>
             <span>
@@ -906,24 +844,13 @@ class _CreateEpisode extends Component {
       return (
         <div>
           {(!isPlaying && (
-            <div
-              style={styles.playButtonWrapper}
-              onClick={this.play.bind(this)}
-            >
+            <div style={styles.playButtonWrapper} onClick={this.play.bind(this)}>
               {(!isLoading && (
-                <FontAwesomeIcon
-                  icon={faPlayCircle}
-                  color={Colors.mainOrange}
-                  size="4x"
-                />
+                <FontAwesomeIcon icon={faPlayCircle} color={Colors.mainOrange} size="4x" />
               )) || <Loader loaded={!isLoading} options={loaderOptions} />}
             </div>
           )) || (
-            <div
-              key="stopPlaying"
-              style={styles.playButtonWrapper}
-              onClick={this.pause.bind(this)}
-            >
+            <div key="stopPlaying" style={styles.playButtonWrapper} onClick={this.pause.bind(this)}>
               <FontAwesomeIcon
                 icon={faStopCircle}
                 color={(isRecorded && Colors.mainOrange) || Colors.fontGrey}
@@ -1011,9 +938,7 @@ class _CreateEpisode extends Component {
       audioUploading: false,
       audioUploaded: true,
       audioUploadProgress: 0,
-      uploadedAudioUrl: `https://mysoundwise.com/tracks/${
-        this.episodeId
-      }.${ext}`,
+      uploadedAudioUrl: `https://mysoundwise.com/tracks/${this.episodeId}.${ext}`,
     });
   }
 
@@ -1117,18 +1042,14 @@ class _CreateEpisode extends Component {
     const that = this;
     const _soundcasts_managed = [];
     for (let id in userInfo.soundcasts_managed) {
-      const _soundcast = JSON.parse(
-        JSON.stringify(userInfo.soundcasts_managed[id])
-      );
+      const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
       if (_soundcast.title) {
         _soundcast.id = id;
         _soundcasts_managed.push(_soundcast);
       }
     }
     this.currentSoundcastId =
-      this.currentSoundcastId ||
-      (_soundcasts_managed.length && _soundcasts_managed[0].id) ||
-      null;
+      this.currentSoundcastId || (_soundcasts_managed.length && _soundcasts_managed[0].id) || null;
 
     return (
       <div className="padding-30px-tb">
@@ -1158,15 +1079,12 @@ class _CreateEpisode extends Component {
               zIndex: 103,
             }}
           >
-            <div
-              className="title-medium"
-              style={{ margin: 25, fontWeight: 800 }}
-            >
+            <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
               Upgrade to access audio processing tools
             </div>
             <div className="title-small" style={{ margin: 25 }}>
-              Audio processing options are available on PLUS and PRO plans.
-              Please upgrade to access this feature.
+              Audio processing options are available on PLUS and PRO plans. Please upgrade to access
+              this feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
@@ -1180,10 +1098,7 @@ class _CreateEpisode extends Component {
         <div className="padding-bottom-20px">
           <span className="title-medium ">Add New Episode</span>
         </div>
-        <div
-          className="col-md-10 col-sm-12"
-          style={styles.soundcastSelectWrapper}
-        >
+        <div className="col-md-10 col-sm-12" style={styles.soundcastSelectWrapper}>
           <div style={{ ...styles.notesLabel, marginLeft: 10 }}>Publish in</div>
           <select
             value={this.currentSoundcastId || ''}
@@ -1213,9 +1128,7 @@ class _CreateEpisode extends Component {
           </div>
           <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <div style={styles.audioRecorder}>
-              <div style={{ ...styles.recordTitleText, paddingBottom: 0 }}>
-                Upload
-              </div>
+              <div style={{ ...styles.recordTitleText, paddingBottom: 0 }}>Upload</div>
               <div style={{ ...styles.inputFileWrapper, width: '100%' }}>
                 <input
                   type="file"
@@ -1257,17 +1170,12 @@ class _CreateEpisode extends Component {
                     >
                       {(audioUploadError && (
                         <div>
-                          <span style={{ color: 'red' }}>
-                            {audioUploadError}
-                          </span>
+                          <span style={{ color: 'red' }}>{audioUploadError}</span>
                         </div>
                       )) || (
                         <div>
                           <div style={{ textAlign: 'center', display: 'none' }}>
-                            <div
-                              className="title-small"
-                              style={{ marginBottom: 5 }}
-                            >
+                            <div className="title-small" style={{ marginBottom: 5 }}>
                               {`Uploading audio file`}
                             </div>
                             <div
@@ -1277,12 +1185,7 @@ class _CreateEpisode extends Component {
                                 alignItems: 'center',
                               }}
                             >
-                              <Dots
-                                style={{}}
-                                color="#727981"
-                                size={22}
-                                speed={1}
-                              />
+                              <Dots style={{}} color="#727981" size={22} speed={1} />
                             </div>
                           </div>
                           <div style={{ display: '' }}>
@@ -1293,12 +1196,8 @@ class _CreateEpisode extends Component {
                                 color={Colors.mainOrange}
                               />
                             </MuiThemeProvider>
-                            <div
-                              className="text-medium"
-                              style={{ textAlign: 'center' }}
-                            >
-                              <span
-                              >{`uploading ${audioUploadProgress} %`}</span>
+                            <div className="text-medium" style={{ textAlign: 'center' }}>
+                              <span>{`uploading ${audioUploadProgress} %`}</span>
                             </div>
                           </div>
                         </div>
@@ -1308,9 +1207,7 @@ class _CreateEpisode extends Component {
                   (uploadedAudioUrl &&
                     !isRecorded && (
                       <div style={{ textAlign: 'center' }}>
-                        <div className="text-medium">
-                          {`${audioName} saved`}
-                        </div>
+                        <div className="text-medium">{`${audioName} saved`}</div>
                         <div
                           style={styles.cancelImg}
                           onClick={() =>
@@ -1337,19 +1234,13 @@ class _CreateEpisode extends Component {
                             backgroundColor: Colors.mainOrange,
                           }}
                         >
-                          <span style={{ paddingLeft: 5, paddingRight: 5 }}>
-                            Upload Audio File
-                          </span>
+                          <span style={{ paddingLeft: 5, paddingRight: 5 }}>Upload Audio File</span>
                         </button>
                       </div>
                       <div>
-                        <div style={styles.fileTypesLabel}>
-                          ONLY .mp3 and .m4a files accepted
-                        </div>
+                        <div style={styles.fileTypesLabel}>ONLY .mp3 and .m4a files accepted</div>
                         {wrongFileTypeFor == 'audio' && (
-                          <div
-                            style={{ ...styles.fileTypesLabel, color: 'red' }}
-                          >
+                          <div style={{ ...styles.fileTypesLabel, color: 'red' }}>
                             Wrong file type. Please try again.
                           </div>
                         )}
@@ -1370,10 +1261,7 @@ class _CreateEpisode extends Component {
               this.setState({ title: e.target.value });
             }}
             value={this.state.title}
-            validators={[
-              minLengthValidator.bind(null, 1),
-              maxLengthValidator.bind(null, 80),
-            ]}
+            validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 80)]}
           />
           <span
             style={{
@@ -1402,9 +1290,7 @@ class _CreateEpisode extends Component {
             value={this.state.actions}
           />
           <div style={styles.notes}>
-            <div style={{ ...styles.recordTitleText, fontWeight: 800 }}>
-              Notes
-            </div>
+            <div style={{ ...styles.recordTitleText, fontWeight: 800 }}>Notes</div>
             <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
               <input
                 type="file"
@@ -1445,19 +1331,11 @@ class _CreateEpisode extends Component {
                   )) || (
                     <div style={{ marginTop: 15 }}>
                       <div style={{ textAlign: 'left', display: 'none' }}>
-                        <div
-                          className="title-small"
-                          style={{ marginBottom: 5 }}
-                        >
+                        <div className="title-small" style={{ marginBottom: 5 }}>
                           {`Uploading notes`}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <Dots
-                            style={{}}
-                            color="#727981"
-                            size={22}
-                            speed={1}
-                          />
+                          <Dots style={{}} color="#727981" size={22} speed={1} />
                         </div>
                       </div>
                       <div style={{ display: '' }}>
@@ -1468,10 +1346,7 @@ class _CreateEpisode extends Component {
                             color={Colors.mainOrange}
                           />
                         </MuiThemeProvider>
-                        <div
-                          className="text-medium"
-                          style={{ textAlign: 'center' }}
-                        >
+                        <div className="text-medium" style={{ textAlign: 'center' }}>
                           <span>{`uploading ${notesUploadProgress} %`}</span>
                         </div>
                       </div>
@@ -1484,9 +1359,7 @@ class _CreateEpisode extends Component {
                     <div className="text-medium">{`${notesName} saved`}</div>
                     <div
                       style={styles.cancelImg}
-                      onClick={() =>
-                        this.setState({ notesUploaded: false, notesUrl: '' })
-                      }
+                      onClick={() => this.setState({ notesUploaded: false, notesUrl: '' })}
                     >
                       Cancel
                     </div>
@@ -1505,15 +1378,11 @@ class _CreateEpisode extends Component {
                           backgroundColor: Colors.mainOrange,
                         }}
                       >
-                        <span style={{ paddingLeft: 5, paddingRight: 5 }}>
-                          Upload Notes{' '}
-                        </span>
+                        <span style={{ paddingLeft: 5, paddingRight: 5 }}>Upload Notes </span>
                       </button>
                     </div>
                     <div>
-                      <div style={styles.fileTypesLabel}>
-                        pdf, jpeg or png files accepted
-                      </div>
+                      <div style={styles.fileTypesLabel}>pdf, jpeg or png files accepted</div>
                       {wrongFileTypeFor == 'notes' && (
                         <div style={{ ...styles.fileTypesLabel, color: 'red' }}>
                           Wrong file type. Please try again.
@@ -1536,16 +1405,11 @@ class _CreateEpisode extends Component {
                 // trackSwitchedStyle={styles.trackSwitched}
                 // style={{fontSize: 20, width: '50%'}}
               />
-              <span
-                id="share-label"
-                style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
-              >
+              <span id="share-label" style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}>
                 Make this episode publicly shareable
               </span>
             </div>
-            <div
-              style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
-            >
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}>
               <Toggle
                 id="share-status"
                 aria-labelledby="share-label"
@@ -1556,20 +1420,14 @@ class _CreateEpisode extends Component {
                   that.setState({ sendEmails });
                 }}
               />
-              <span
-                id="share-label"
-                style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}
-              >
-                Send email notification to subscribers and invitees after
-                publishing
+              <span id="share-label" style={{ fontSize: 16, fontWeight: 800, marginLeft: '0.5em' }}>
+                Send email notification to subscribers and invitees after publishing
               </span>
             </div>
           </div>
           {(this.state.publicEpisode && (
             <div style={{ marginBottom: 25 }}>
-              <span style={{ fontSize: 16, fontWeight: 800 }}>
-                Episode link for sharing:{' '}
-              </span>
+              <span style={{ fontSize: 16, fontWeight: 800 }}>Episode link for sharing: </span>
               <span>
                 <a
                   style={{ color: Colors.mainOrange, fontSize: 18 }}
@@ -1586,9 +1444,7 @@ class _CreateEpisode extends Component {
                 </span>
               </div>
               {(this.state.coverArtUrl && (
-                <div
-                  style={{ ...styles.image, marginRight: 10, marginTop: 10 }}
-                >
+                <div style={{ ...styles.image, marginRight: 10, marginTop: 10 }}>
                   <img style={styles.image} src={this.state.coverArtUrl} />
                 </div>
               )) ||
@@ -1621,9 +1477,7 @@ class _CreateEpisode extends Component {
                             coverArtUploaded: false,
                             coverArtUrl: '',
                           });
-                          document.getElementById(
-                            'upload_hidden_cover3'
-                          ).value = null;
+                          document.getElementById('upload_hidden_cover3').value = null;
                         }}
                       >
                         Cancel
@@ -1634,9 +1488,7 @@ class _CreateEpisode extends Component {
                       <div>
                         <button
                           onClick={() => {
-                            document
-                              .getElementById('upload_hidden_cover3')
-                              .click();
+                            document.getElementById('upload_hidden_cover3').click();
                           }}
                           style={{
                             ...styles.uploadButton,
@@ -1645,9 +1497,7 @@ class _CreateEpisode extends Component {
                         >
                           Upload Cover Art
                         </button>
-                        <span style={styles.fileTypesLabel}>
-                          jpeg or png files accepted
-                        </span>
+                        <span style={styles.fileTypesLabel}>jpeg or png files accepted</span>
                       </div>
                     ))}
                 </div>
@@ -1688,10 +1538,7 @@ class _CreateEpisode extends Component {
                   aria-labelledby="audio-edit-1-label"
                   // label="Charge subscribers for this soundcast?"
                   checked={this.state.audioNormalization}
-                  onChange={this.setProcessingOption.bind(
-                    this,
-                    'audioNormalization'
-                  )}
+                  onChange={this.setProcessingOption.bind(this, 'audioNormalization')}
                 />
                 <span
                   id="audio-edit-1-label"
@@ -1700,14 +1547,11 @@ class _CreateEpisode extends Component {
                   Optimize volume
                 </span>
                 <span>
-                  (This is to make sure different parts of your audio have
-                  consistent volume, and adjust the volume to the most suitable
-                  level for mobile and web playing )
+                  (This is to make sure different parts of your audio have consistent volume, and
+                  adjust the volume to the most suitable level for mobile and web playing )
                 </span>
               </div>
-              <div
-                style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}>
                 <Toggle
                   className="toggle-green"
                   id="audio-edit-2"
@@ -1722,18 +1566,13 @@ class _CreateEpisode extends Component {
                   Trim silience at the beginning
                 </span>
               </div>
-              <div
-                style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}>
                 <Toggle
                   className="toggle-green"
                   id="audio-edit-3"
                   aria-labelledby="audio-edit-3-label"
                   checked={this.state.reduceSilence}
-                  onChange={this.setProcessingOption.bind(
-                    this,
-                    'reduceSilence'
-                  )}
+                  onChange={this.setProcessingOption.bind(this, 'reduceSilence')}
                 />
                 <span
                   id="audio-edit-3-label"
@@ -1742,10 +1581,9 @@ class _CreateEpisode extends Component {
                   Remove excessive silence/pauses throughout
                 </span>
                 <span>
-                  (This option will remove all silent periods in the recording
-                  that're longer than specified seconds. It's good for
-                  tightening up your recording. But don't use this if you have
-                  silent periods in your recording on purpose.)
+                  (This option will remove all silent periods in the recording that're longer than
+                  specified seconds. It's good for tightening up your recording. But don't use this
+                  if you have silent periods in your recording on purpose.)
                 </span>
               </div>
               {(this.state.reduceSilence && (
@@ -1761,15 +1599,11 @@ class _CreateEpisode extends Component {
                       that.setState({ silentPeriod: Number(e.target.value) });
                     }}
                   />
-                  <span style={{ paddingLeft: 10, fontSize: 14 }}>
-                    second(s)
-                  </span>
+                  <span style={{ paddingLeft: 10, fontSize: 14 }}>second(s)</span>
                 </div>
               )) ||
                 null}
-              <div
-                style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', marginTop: 15 }}>
                 <Toggle
                   className="toggle-green"
                   id="audio-edit-4"
@@ -1777,15 +1611,10 @@ class _CreateEpisode extends Component {
                   // label="Charge subscribers for this soundcast?"
                   checked={this.state.addIntroOutro}
                   onChange={() => {
-                    if (
-                      that.state.currentsoundcast.intro ||
-                      that.state.currentsoundcast.outro
-                    ) {
+                    if (that.state.currentsoundcast.intro || that.state.currentsoundcast.outro) {
                       that.setProcessingOption.bind(this, 'addIntroOutro')();
                     } else {
-                      alert(
-                        'Please upload intro/outro clip(s) to your soundcast first!'
-                      );
+                      alert('Please upload intro/outro clip(s) to your soundcast first!');
                     }
                   }}
                 />
@@ -1795,16 +1624,11 @@ class _CreateEpisode extends Component {
                 >
                   Attach intro and outro
                 </span>
-                <span>
-                  {' '}
-                  (Please upload an intro and/or outro for your soundcast first)
-                </span>
+                <span> (Please upload an intro and/or outro for your soundcast first)</span>
               </div>
               {(this.state.addIntroOutro && (
                 <div>
-                  <span style={{ fontSize: 14, marginRight: 5 }}>
-                    Overlap with main audio:
-                  </span>
+                  <span style={{ fontSize: 14, marginRight: 5 }}>Overlap with main audio:</span>
                   <input
                     style={{ width: 70, marginBottom: 0 }}
                     type="text"
@@ -1813,9 +1637,7 @@ class _CreateEpisode extends Component {
                       that.setState({ overlayDuration: e.target.value });
                     }}
                   />
-                  <span style={{ paddingLeft: 10, fontSize: 14 }}>
-                    second(s)
-                  </span>
+                  <span style={{ paddingLeft: 10, fontSize: 14 }}>second(s)</span>
                 </div>
               )) ||
                 null}
@@ -1824,10 +1646,7 @@ class _CreateEpisode extends Component {
         </div>
         <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
           {(startProcessingEpisode && (
-            <div
-              className="col-lg-12 col-md-12 col-sm-6 col-xs-6"
-              style={{ textAlign: 'center' }}
-            >
+            <div className="col-lg-12 col-md-12 col-sm-6 col-xs-6" style={{ textAlign: 'center' }}>
               <div className="" style={{ fontSize: 17, width: '100%' }}>
                 <span>Please wait...</span>
               </div>
@@ -1862,9 +1681,7 @@ class _CreateEpisode extends Component {
                 </div>
               </div>
               {(podcastError && (
-                <div style={{ fontSize: 16, marginTop: 10, color: 'red' }}>
-                  {podcastError}
-                </div>
+                <div style={{ fontSize: 16, marginTop: 10, color: 'red' }}>{podcastError}</div>
               )) ||
                 null}
             </div>

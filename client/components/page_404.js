@@ -13,10 +13,7 @@ const NotFound = () => (
     >
       <div className="container">
         <div className="row equalize xs-equalize-auto equalize-display-inherit">
-          <div
-            className="col-md-6 col-sm-5 col-xs-12 display-table"
-            style={{ height: '447px' }}
-          >
+          <div className="col-md-6 col-sm-5 col-xs-12 display-table" style={{ height: '447px' }}>
             <div className="text-center xs-text-center display-table-cell-vertical-middle">
               <img
                 className="xs-width-50"

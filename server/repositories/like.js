@@ -3,9 +3,7 @@
 const database = require('../../database');
 
 const get = likeId =>
-  database.Like.findOne({ where: { likeId } }).then(
-    data => (data ? data.dataValues : null)
-  );
+  database.Like.findOne({ where: { likeId } }).then(data => (data ? data.dataValues : null));
 
 const getPrevious = where =>
   database.Like.findAll({
@@ -20,11 +18,9 @@ const getPrevious = where =>
     }
   });
 
-const create = like =>
-  database.Like.create(like).then(data => (data ? data.dataValues : null));
+const create = like => database.Like.create(like).then(data => (data ? data.dataValues : null));
 
-const update = (like, likeId) =>
-  database.Like.update(like, { where: { likeId } });
+const update = (like, likeId) => database.Like.update(like, { where: { likeId } });
 
 const destroy = likeId => database.Like.destroy({ where: { likeId } });
 

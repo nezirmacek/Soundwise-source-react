@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
-  console.log('Running DEV mode');
+  console.log(`Running "${process.env.NODE_ENV}" mode`);
   window.firebase = firebase;
 }
 if (!window.localStorage) {
@@ -34,11 +34,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 import { config, awsConfig } from '../config';
-import {
-  loadCourses,
-  subscribeToCategories,
-  signinUser,
-} from './actions/index';
+import { loadCourses, subscribeToCategories, signinUser } from './actions/index';
 
 import Page from './components/page';
 import { HomePage } from './components/landingpage_main';
@@ -132,10 +128,7 @@ class _Routes extends Component {
           that.updateUserState({ ..._user, id: userId });
 
           let editSoundcastKey; // indicate empty history.state and requiring soundcast download
-          if (
-            !window.history.state &&
-            window.location.pathname.includes('/dashboard/edit/')
-          ) {
+          if (!window.history.state && window.location.pathname.includes('/dashboard/edit/')) {
             const key = window.location.pathname
               .split('/')[3]
               .split('#')[0]
@@ -153,9 +146,7 @@ class _Routes extends Component {
                 .ref(`publishers/${_user.publisherID}`)
                 .on('value', snapshot => {
                   if (snapshot.val()) {
-                    const _publisher = JSON.parse(
-                      JSON.stringify(snapshot.val())
-                    );
+                    const _publisher = JSON.parse(JSON.stringify(snapshot.val()));
                     _publisher.id = _user.publisherID;
                     _user.publisher = _publisher;
                     that.updateUserState(_user);
@@ -178,9 +169,7 @@ class _Routes extends Component {
                     'value',
                     snapshot => {
                       if (snapshot.val()) {
-                        const _soundcast = JSON.parse(
-                          JSON.stringify(snapshot.val())
-                        );
+                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
                         _user.soundcasts_managed[key] = _soundcast;
                         // to not watch the same soundcasts twice
                         // fixes problem with .off of managed soundcasts, that are subscribed too
@@ -207,9 +196,7 @@ class _Routes extends Component {
                               .ref(`episodes/${epkey}`)
                               .on('value', snapshot => {
                                 if (snapshot.val()) {
-                                  _user.soundcasts_managed[key].episodes[
-                                    epkey
-                                  ] = JSON.parse(
+                                  _user.soundcasts_managed[key].episodes[epkey] = JSON.parse(
                                     JSON.stringify(snapshot.val())
                                   );
                                   // console.log('compiled episodes');
@@ -251,9 +238,7 @@ class _Routes extends Component {
                     'value',
                     snapshot => {
                       if (snapshot.val()) {
-                        const _soundcast = JSON.parse(
-                          JSON.stringify(snapshot.val())
-                        );
+                        const _soundcast = JSON.parse(JSON.stringify(snapshot.val()));
                         _user.soundcasts[key] = _soundcast;
                         if (editSoundcastKey && editSoundcastKey === key) {
                           _user.loadEditSoundcast = {
@@ -274,9 +259,7 @@ class _Routes extends Component {
                               .ref(`episodes/${epkey}`)
                               .on('value', snapshot => {
                                 if (snapshot.val()) {
-                                  _user.soundcasts[key].episodes[
-                                    epkey
-                                  ] = JSON.parse(
+                                  _user.soundcasts[key].episodes[epkey] = JSON.parse(
                                     JSON.stringify(snapshot.val())
                                   );
                                   that.updateUserState(_user);
@@ -325,10 +308,7 @@ class _Routes extends Component {
                 property="og:image"
                 content="https://mysoundwise.com/images/soundwise-home.png"
               />
-              <title>
-                Soundwise: Grow An Engaged Podcast Audience & Sell On-Demand
-                Audios.
-              </title>
+              <title>Soundwise: Grow An Engaged Podcast Audience & Sell On-Demand Audios.</title>
               <meta
                 name="description"
                 content="Soundwise is the premium solution for entrepreneurial experts to grow an engaged podcast audience, convert listeners to customers, and sell on-demand audios."
@@ -363,21 +343,10 @@ class _Routes extends Component {
               <Route exact={true} path="/igp/:slug" component={IGPPost} />
               <Route exact={true} path="/knowledge" component={HelpDocs} />
               <Route path="/blog/p/:page" component={BlogList} />
-              <Route
-                exact={true}
-                path="/blog/post/:slug"
-                component={BlogPost}
-              />
-              <Route
-                path="/terms_free_content_May2017"
-                component={TermsFreeContent}
-              />
+              <Route exact={true} path="/blog/post/:slug" component={BlogPost} />
+              <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
               <Route exact path="/mysoundcasts" component={MySoundcasts} />
-              <Route
-                exact
-                path="/mysoundcasts/:soundcastId"
-                component={SoundcastPlayingPage}
-              />
+              <Route exact path="/mysoundcasts/:soundcastId" component={SoundcastPlayingPage} />
               <Route
                 exact
                 path="/mysoundcasts/:soundcastId/:episodeId"
@@ -387,11 +356,7 @@ class _Routes extends Component {
               <Route path="/cart" component={Cart} />
               <Route path="/confirmation" component={OrderConfirmation} />
               <Route path="/password_reset" component={PassRecovery} />
-              <Route
-                exact={true}
-                path="/dashboard/:tab"
-                component={Dashboard}
-              />
+              <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
               <Route path="/dashboard/:tab/:id" component={Dashboard} />
               <Route path="/soundcasts/:id" component={SoundcastPage} />
               <Route path="/publishers/:id" component={Publisher} />
@@ -405,9 +370,7 @@ class _Routes extends Component {
                 path="/tracks/:id"
                 component={props => {
                   const id = props.match.params.id;
-                  window.location.replace(
-                    `https://s3.amazonaws.com/soundwiseinc/soundcasts/${id}`
-                  );
+                  window.location.replace(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${id}`);
                 }}
               />
               <Route path="/notfound" component={NotFound} />
@@ -425,10 +388,7 @@ const mapStateToProps = state => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    { loadCourses, signinUser, subscribeToCategories },
-    dispatch
-  );
+  return bindActionCreators({ loadCourses, signinUser, subscribeToCategories }, dispatch);
 }
 
 export const Routes = connect(

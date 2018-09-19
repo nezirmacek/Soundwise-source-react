@@ -24,8 +24,7 @@ module.exports = function(Transaction) {
     switch (data.type) {
       case 'invoice.payment_succeeded':
         if (data.data.object.lines.data[0].period.end) {
-          const customer =
-            data.data.object.lines.data[0].metadata.platformCustomer; // need the platform customer id, not the connected account customer id
+          const customer = data.data.object.lines.data[0].metadata.platformCustomer; // need the platform customer id, not the connected account customer id
           const db = admin.database();
           const ref = db.ref('users');
           ref
@@ -46,9 +45,9 @@ module.exports = function(Transaction) {
                     soundcast = data.key;
                   });
 
-                  db.ref(
-                    `users/${userId}/soundcasts/${soundcast}/current_period_end`
-                  ).set(data.data.object.lines.data[0].period.end);
+                  db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`).set(
+                    data.data.object.lines.data[0].period.end
+                  );
 
                   const line = data.data.object.lines.data[0];
                   const _transactionData = line.plan.id.split('-');
@@ -60,9 +59,7 @@ module.exports = function(Transaction) {
                     type: 'charge',
                     amount: line.amount / 100,
                     description: line.description,
-                    date: moment(data.data.object.date * 1000).format(
-                      'YYYY-MM-DD'
-                    ),
+                    date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
                     publisherId: _transactionData[0],
                     soundcastId: _transactionData[1],
                     customer, // listener's stripe id, this is the platform customer, not the connected account customer
@@ -84,12 +81,7 @@ module.exports = function(Transaction) {
                     })
                   );
 
-                  createTransactions(
-                    Transaction,
-                    _transactionsPromises,
-                    _transactions,
-                    cb
-                  );
+                  createTransactions(Transaction, _transactionsPromises, _transactions, cb);
 
                   console.log('subscription renewed');
                 });
@@ -99,7 +91,7 @@ module.exports = function(Transaction) {
         break;
       case 'charge.refunded':
         data.data.object.refunds.data.forEach((refund, i) => {
-          Transaction.find({where: {chargeId: refund.charge}})
+          Transaction.find({ where: { chargeId: refund.charge } })
             .then(res => {
               const publisherId = (res.length && res[0].publisherId) || null;
               const soundcastId = (res.length && res[0].soundcastId) || null;
@@ -111,9 +103,7 @@ module.exports = function(Transaction) {
                 refundId: refund.id,
                 type: 'refund',
                 amount: refund.amount / 100,
-                date: moment(data.data.object.created * 1000).format(
-                  'YYYY-MM-DD'
-                ),
+                date: moment(data.data.object.created * 1000).format('YYYY-MM-DD'),
                 publisherId,
                 soundcastId,
                 customer: data.data.object.customer, // listener's stripe id
@@ -138,12 +128,7 @@ module.exports = function(Transaction) {
               );
             })
             .then(() => {
-              createTransactions(
-                Transaction,
-                _transactionsPromises,
-                _transactions,
-                cb
-              );
+              createTransactions(Transaction, _transactionsPromises, _transactions, cb);
             });
         });
 
@@ -175,10 +160,10 @@ module.exports = function(Transaction) {
     accepts: {
       arg: 'data',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
-    returns: {type: 'array', root: true},
+    returns: { type: 'array', root: true },
   });
 
   Transaction.handleOnetimeCharge = function(req, cb) {
@@ -198,7 +183,7 @@ module.exports = function(Transaction) {
     } else {
       // if customer id is in the reqest body, create a charge using the existing customer id
       console.log('customer: ', req.customer);
-      const data = Object.assign({}, req, {platformCustomer: req.customer});
+      const data = Object.assign({}, req, { platformCustomer: req.customer });
       createCharge(Transaction, data, cb);
     }
   };
@@ -215,24 +200,19 @@ module.exports = function(Transaction) {
     accepts: {
       arg: 'req',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
     returns: {
       arg: 'res',
       type: 'object',
-      http: {source: 'body'},
+      http: { source: 'body' },
       required: true,
     },
   });
 };
 
-function createTransactions(
-  Transaction,
-  transactionsPromises,
-  transactions,
-  cb
-) {
+function createTransactions(Transaction, transactionsPromises, transactions, cb) {
   Promise.all(transactionsPromises)
     .then(res => {
       // console.log('success create transactions: ', res);
@@ -284,14 +264,10 @@ async function createCharge(Transaction, data, cb) {
     .once('value');
   const publisher = publisherObj.val();
   let soundwiseFeePercent;
-  if (
-    publisher.plan == 'plus' &&
-    publisher.current_period_end > moment().format('X')
-  ) {
+  if (publisher.plan == 'plus' && publisher.current_period_end > moment().format('X')) {
     soundwiseFeePercent = 5;
   } else if (
-    (publisher.plan == 'pro' &&
-      publisher.current_period_end > moment().format('X')) ||
+    (publisher.plan == 'pro' && publisher.current_period_end > moment().format('X')) ||
     publisher.beta
   ) {
     soundwiseFeePercent = 0;
@@ -350,7 +326,7 @@ async function createCharge(Transaction, data, cb) {
 
           Transaction.create(_transaction)
             .then(() => {
-              return cb(null, Object.assign({}, charge, {platformCustomer}));
+              return cb(null, Object.assign({}, charge, { platformCustomer }));
             })
             .catch(err => {
               return cb(err);

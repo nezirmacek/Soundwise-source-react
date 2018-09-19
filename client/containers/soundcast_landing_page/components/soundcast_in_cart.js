@@ -38,17 +38,13 @@ export default class SoundcastInCart extends Component {
     });
     const { soundcast, checked, setTotalPrice } = this.props;
     const { promoCode, price } = this.state;
-    const validPromoCodes = soundcast.prices[checked].coupons.map(
-      coupon => coupon.code
-    );
+    const validPromoCodes = soundcast.prices[checked].coupons.map(coupon => coupon.code);
     if (validPromoCodes.indexOf(promoCode) > -1) {
       const index = validPromoCodes.indexOf(promoCode);
       const coupon = soundcast.prices[checked].coupons[index];
       if (moment().format('X') < coupon.expiration) {
         const isTrial =
-          coupon.couponType === 'trial_period'
-            ? coupon.trialLength.toString()
-            : false;
+          coupon.couponType === 'trial_period' ? coupon.trialLength.toString() : false;
         const total = isTrial
           ? 0
           : Math.round((price * (100 - coupon.percentOff)) / 100).toFixed(2);
@@ -82,9 +78,7 @@ export default class SoundcastInCart extends Component {
           <div className="col-md-12 col-sm-12 col-xs-12">
             <img src={soundcast.imageURL} alt="" style={styles.courseImage} />
             <div style={styles.courseText}>
-              <p style={{ ...styles.courseName, marginTop: 14 }}>
-                {soundcast.title}
-              </p>
+              <p style={{ ...styles.courseName, marginTop: 14 }}>{soundcast.title}</p>
             </div>
           </div>
         </div>
@@ -103,9 +97,7 @@ export default class SoundcastInCart extends Component {
                 <div style={styles.feeRow}>
                   <div className="" style={styles.priceWrapper}>
                     <span className="margin-five-bottom" style={styles.price}>
-                      {price == 'free'
-                        ? Number(0).toFixed(0)
-                        : `$${Number(price).toFixed(2)}`}
+                      {price == 'free' ? Number(0).toFixed(0) : `$${Number(price).toFixed(2)}`}
                     </span>
                   </div>
                 </div>
@@ -165,9 +157,7 @@ export default class SoundcastInCart extends Component {
                     Apply
                   </button>
                 )}
-                <div style={{ fontStyle: 'italic' }}>
-                  {this.state.promoCodeInfo}
-                </div>
+                <div style={{ fontStyle: 'italic' }}>{this.state.promoCodeInfo}</div>
                 <div style={{ color: 'red' }}>{this.state.promoCodeError}</div>
               </div>
             )}

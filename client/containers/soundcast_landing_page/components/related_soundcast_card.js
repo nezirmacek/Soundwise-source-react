@@ -42,10 +42,7 @@ export default class RelatedSoundcastCard extends Component {
         <MuiThemeProvider>
           <Card>
             <Link to={`/soundcasts/${soundcast.id}`}>
-              <div
-                className="float-left width-100 bottom-shadowed"
-                style={_style.bottomShadowed}
-              >
+              <div className="float-left width-100 bottom-shadowed" style={_style.bottomShadowed}>
                 <div
                   ref={image => (this.references.image = image)}
                   className="feature-box-image"
@@ -68,30 +65,15 @@ export default class RelatedSoundcastCard extends Component {
                   ref={content => (this.references.content = content)}
                   style={_style.cardContent}
                 >
-                  <div style={_style.title}>
-                    {soundcast.title.slice(0, 43) + '...'}
-                  </div>
+                  <div style={_style.title}>{soundcast.title.slice(0, 43) + '...'}</div>
                   <div style={_style.courseDescription}>
                     {soundcast.short_description.slice(0, 120) + '...'}
                   </div>
-                  <div
-                    style={_style.cardFooter}
-                    ref={footer => (this.references.footer = footer)}
-                  >
+                  <div style={_style.cardFooter} ref={footer => (this.references.footer = footer)}>
                     <div className="stars-wrapper" style={_style.starsWrapper}>
-                      {
-                        <ReactStars
-                          count={5}
-                          value={5}
-                          size={20}
-                          edit={false}
-                          color2={'#ffd700'}
-                        />
-                      }
+                      {<ReactStars count={5} value={5} size={20} edit={false} color2={'#ffd700'} />}
                     </div>
-                    <div style={_style.priceBlock}>
-                      {(!soundcast.forSale && 'Free') || null}
-                    </div>
+                    <div style={_style.priceBlock}>{(!soundcast.forSale && 'Free') || null}</div>
                   </div>
                 </div>
               </div>

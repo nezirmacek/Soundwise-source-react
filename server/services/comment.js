@@ -4,10 +4,7 @@ const sendMail = require('../scripts/sendEmails').sendMail;
 const sendNotification = require('../scripts/messaging').sendNotification;
 
 const { commentManager, userManager } = require('../managers');
-const {
-  commentRepository,
-  announcementRepository,
-} = require('../repositories');
+const { commentRepository, announcementRepository } = require('../repositories');
 
 // ADD_COMMENT
 const addComment = (req, res) => {
@@ -76,9 +73,7 @@ const deleteComment = (req, res) => {
 const updateCommentsCount = announcementId =>
   commentRepository
     .count({ announcementId })
-    .then(commentsCount =>
-      announcementRepository.update({ commentsCount }, announcementId)
-    );
+    .then(commentsCount => announcementRepository.update({ commentsCount }, announcementId));
 
 const notifyUsers = comment =>
   sendMail(comment)
@@ -96,9 +91,7 @@ const sendPush = comment => {
             sendNotification(t, {
               data: {
                 type: episodeId ? 'COMMENT_EPISODE' : 'COMMENT_MESSAGE',
-                [episodeId ? 'episodeId' : 'messageId']: episodeId
-                  ? episodeId
-                  : announcementId,
+                [episodeId ? 'episodeId' : 'messageId']: episodeId ? episodeId : announcementId,
                 soundcastId,
               },
               notification: {

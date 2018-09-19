@@ -47,10 +47,7 @@ export default class SoundcastBody extends Component {
       this.setState({
         soundcast: this.props.soundcast,
       });
-      this.retrieveRelatedSoundcasts(
-        this.props.soundcast,
-        this.props.soundcastID
-      );
+      this.retrieveRelatedSoundcasts(this.props.soundcast, this.props.soundcastID);
     }
   }
 
@@ -59,10 +56,7 @@ export default class SoundcastBody extends Component {
       this.setState({
         soundcast: nextProps.soundcast,
       });
-      this.retrieveRelatedSoundcasts(
-        nextProps.soundcast,
-        nextProps.soundcastID
-      );
+      this.retrieveRelatedSoundcasts(nextProps.soundcast, nextProps.soundcastID);
     }
     if (nextProps.isVisible && !this.props.isVisible) {
       // console.log("is showing!");
@@ -130,19 +124,12 @@ export default class SoundcastBody extends Component {
       var longDescriptionText = tag.textContent || tag.innerText || '';
       return (
         <div className="row ">
-          <div
-            className="col-md-12 col-sm-12 col-xs-12 bg-cream"
-            style={{ padding: '4%' }}
-          >
+          <div className="col-md-12 col-sm-12 col-xs-12 bg-cream" style={{ padding: '4%' }}>
             {(long_description &&
               longDescriptionText.length > 1 && (
-                <div className="container">
-                  {renderHTML(longDescriptionHTML)}
-                </div>
+                <div className="container">{renderHTML(longDescriptionHTML)}</div>
               )) || (
-              <div className="container text-extra-large">
-                {renderHTML(short_description)}
-              </div>
+              <div className="container text-extra-large">{renderHTML(short_description)}</div>
             )}
           </div>
         </div>
@@ -157,10 +144,7 @@ export default class SoundcastBody extends Component {
 
     if (features) {
       return (
-        <ul
-          className=" row"
-          style={{ paddingBottom: '1em', display: 'flex', flexWrap: 'wrap' }}
-        >
+        <ul className=" row" style={{ paddingBottom: '1em', display: 'flex', flexWrap: 'wrap' }}>
           {features.map((feature, i) => {
             return (
               <li
@@ -199,10 +183,7 @@ export default class SoundcastBody extends Component {
                     WHAT YOU WILL GET
                   </h2>
                 </div>
-                <div
-                  className="col-md-12 col-sm-12 col-xs-12 "
-                  style={{ paddingBottom: 30 }}
-                >
+                <div className="col-md-12 col-sm-12 col-xs-12 " style={{ paddingBottom: 30 }}>
                   {this.renderFeatures()}
                 </div>
               </div>
@@ -210,16 +191,10 @@ export default class SoundcastBody extends Component {
           {this.renderDescription()}
           {this.props.bundle
             ? soundcast.soundcastsIncluded && (
-                <BundleContent
-                  title="Content"
-                  soundcastsIds={soundcast.soundcastsIncluded}
-                />
+                <BundleContent title="Content" soundcastsIds={soundcast.soundcastsIncluded} />
               )
             : soundcast.episodes && (
-                <SoundcastContent
-                  soundcast={soundcast}
-                  openModal={this.props.openModal}
-                />
+                <SoundcastContent soundcast={soundcast} openModal={this.props.openModal} />
               )}
           {soundcast.hostName && <Instructor soundcast={soundcast} />}
           {relatedSoundcasts.length >= 1 && (
@@ -243,10 +218,7 @@ export default class SoundcastBody extends Component {
                   FREQUENTLY ASKED QUESTIONS
                 </h2>
               </div>
-              <div
-                className="col-md-12 col-sm-12 col-xs-12 container"
-                style={{}}
-              >
+              <div className="col-md-12 col-sm-12 col-xs-12 container" style={{}}>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   How long do I have access to the soundcast?
                 </h2>
@@ -254,10 +226,9 @@ export default class SoundcastBody extends Component {
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text"
                   style={{ lineHeight: '30px' }}
                 >
-                  It depends on the subscription plan you signed up for. You'll
-                  have access to a soundcast as long as your subscription is
-                  current. If the soundcast charges a one-time fee, you will
-                  have access as long as your instructor is still a member of
+                  It depends on the subscription plan you signed up for. You'll have access to a
+                  soundcast as long as your subscription is current. If the soundcast charges a
+                  one-time fee, you will have access as long as your instructor is still a member of
                   Soundwise.
                 </h5>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
@@ -267,12 +238,10 @@ export default class SoundcastBody extends Component {
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 xs-width-100 tz-text text-left"
                   style={{ lineHeight: '30px' }}
                 >
-                  Once you install the Soundwise mobile app on your phone and
-                  sign in, the soundcasts you subscribe to will be automatically
-                  loaded. Tap on the download icon next to each episode/section
-                  will download the audio to your phone. Simply download the
-                  files when you have wifi and you can access them anywhere you
-                  go.
+                  Once you install the Soundwise mobile app on your phone and sign in, the
+                  soundcasts you subscribe to will be automatically loaded. Tap on the download icon
+                  next to each episode/section will download the audio to your phone. Simply
+                  download the files when you have wifi and you can access them anywhere you go.
                 </h5>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   What should I do if I have technical issues?
@@ -282,10 +251,7 @@ export default class SoundcastBody extends Component {
                   style={{ lineHeight: '30px' }}
                 >
                   Shoot us an email at{' '}
-                  <a href="mailto:support@mysoundwise.com">
-                    support@mysoundwise.com
-                  </a>
-                  .
+                  <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a>.
                 </h5>
                 <h2 className="margin-lr-auto font-weight-300 width-70 sm-width-100 section-title-medium sm-title-medium xs-title-extra-large text-dark-gray padding-30px-tb tz-text">
                   What if I'm not happy with the soundcast?
@@ -294,15 +260,11 @@ export default class SoundcastBody extends Component {
                   className=" text-dark-gray text-extra-large  margin-lr-auto width-70 sm-width-100 tz-text"
                   style={{ lineHeight: '30px' }}
                 >
-                  We want you to be happy! If you've subscribed to a free
-                  soundcast, you can simply unsubscribe by going to Me -->
-                  Settings on the mobile app. If your soundcast is a paid one,
-                  let us know at{' '}
-                  <a href="mailto:support@mysoundwise.com">
-                    support@mysoundwise.com
-                  </a>{' '}
-                  within 14 days of your subscription and we will give you a
-                  full refund.
+                  We want you to be happy! If you've subscribed to a free soundcast, you can simply
+                  unsubscribe by going to Me --> Settings on the mobile app. If your soundcast is a
+                  paid one, let us know at{' '}
+                  <a href="mailto:support@mysoundwise.com">support@mysoundwise.com</a> within 14
+                  days of your subscription and we will give you a full refund.
                 </h5>
               </div>
             </div>

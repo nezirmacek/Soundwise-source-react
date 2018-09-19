@@ -146,10 +146,7 @@ export default class TermsFreeContent extends Component {
             boderBottom: '0px',
           }}
         >
-          <div
-            className="container text-dark-gray border-none"
-            style={{ fontSize: '18px' }}
-          >
+          <div className="container text-dark-gray border-none" style={{ fontSize: '18px' }}>
             <h3
               className="section-title-medium text-dark-gray font-weight-600 alt-font margin-three-bottom display-block sm-margin-nine-bottom xs-margin-five-bottom tz-text"
               style={{ textAlign: 'center' }}
@@ -167,73 +164,65 @@ export default class TermsFreeContent extends Component {
               <strong>
                 <u>Grant of License</u>:
               </strong>{' '}
-              Subject to the terms and conditions set forth in this agreement
-              (the “Terms”), You (“Content Creator”) grant Soundwise Inc.
-              (“Soundwise”) a non-exclusive, non-transferable, royalty-free, and
-              revocable, worldwide license to incorporate your submitted content
-              (each a “Property” and together the “Properties”) as part of the
-              resources made available to the general public, free of charge, on
-              Soundwise’s web and mobile applications (the “Apps”).
+              Subject to the terms and conditions set forth in this agreement (the “Terms”), You
+              (“Content Creator”) grant Soundwise Inc. (“Soundwise”) a non-exclusive,
+              non-transferable, royalty-free, and revocable, worldwide license to incorporate your
+              submitted content (each a “Property” and together the “Properties”) as part of the
+              resources made available to the general public, free of charge, on Soundwise’s web and
+              mobile applications (the “Apps”).
             </p>
             &nbsp;
             <p>
               <strong>
                 <u>Representations</u>:
               </strong>{' '}
-              You represent that You have the right to grant Soundwise all
-              rights provided hereunder, and Soundwise's use of the Properties
-              as permitted herein will not infringe on the rights of any third
-              party.
+              You represent that You have the right to grant Soundwise all rights provided
+              hereunder, and Soundwise's use of the Properties as permitted herein will not infringe
+              on the rights of any third party.
             </p>
             &nbsp;
             <p>
               <strong>
                 <u>Withdrawal</u>:
               </strong>{' '}
-              You have the right to withdraw a Property submitted to Soundwise.
-              You shall give Soundwise as much advance notice as practicable of
-              any such withdrawal. In the event of any notice of withdrawal,
-              Soundwise shall delete all copies of the withdrawn Property in its
-              possession or control, within ninety (90) days from the receipt of
-              such written notice, whether physical or electronic, and cease any
-              use of and require Soundwise Subscribers to cease continued use of
-              such Property.
+              You have the right to withdraw a Property submitted to Soundwise. You shall give
+              Soundwise as much advance notice as practicable of any such withdrawal. In the event
+              of any notice of withdrawal, Soundwise shall delete all copies of the withdrawn
+              Property in its possession or control, within ninety (90) days from the receipt of
+              such written notice, whether physical or electronic, and cease any use of and require
+              Soundwise Subscribers to cease continued use of such Property.
             </p>
             &nbsp;
             <p>
               <strong>
                 <u>Termination</u>:
               </strong>{' '}
-              Either party may terminate this agreement upon written notice in
-              the event of (i) the other party’s material breach of any of its
-              obligations under these Terms, provided that the breaching party
-              is provided with thirty (30) days after receiving written notice
-              from the non-breaching party to cure such breach; (ii) the other
-              party’s bankruptcy, dissolution, liquidation or reorganization.
+              Either party may terminate this agreement upon written notice in the event of (i) the
+              other party’s material breach of any of its obligations under these Terms, provided
+              that the breaching party is provided with thirty (30) days after receiving written
+              notice from the non-breaching party to cure such breach; (ii) the other party’s
+              bankruptcy, dissolution, liquidation or reorganization.
             </p>
             &nbsp;
             <p>
               <strong>
                 <u>Promotion/Use of name</u>:
               </strong>{' '}
-              Soundwise may market and promote the availability of the
-              Properties, and incorporate the Properties in electronic
-              communications related to the Apps that it creates and sends for
-              informational or educational purposes to the same extent that it
-              incorporates content from other providers in such communications,
-              as provided herein these Terms.
+              Soundwise may market and promote the availability of the Properties, and incorporate
+              the Properties in electronic communications related to the Apps that it creates and
+              sends for informational or educational purposes to the same extent that it
+              incorporates content from other providers in such communications, as provided herein
+              these Terms.
             </p>
             &nbsp;
             <p>
-              These Terms represent the entire agreement of the parties with
-              respect to the subject matter hereof. Soundwise reserves the right
-              to modify and/or make changes to these Terms. If Soundwise makes
-              material changes to these Terms, Soundwise shall notify You using
-              prominent means such as by email notice.  If You do not withdraw
-              Properties, after the effective date of any change, it will be
-              deemed an acceptance of and an agreement to follow and be bound by
-              the Terms as changed. The revised Terms supersedes all previous
-              Terms.
+              These Terms represent the entire agreement of the parties with respect to the subject
+              matter hereof. Soundwise reserves the right to modify and/or make changes to these
+              Terms. If Soundwise makes material changes to these Terms, Soundwise shall notify You
+              using prominent means such as by email notice.  If You do not withdraw Properties,
+              after the effective date of any change, it will be deemed an acceptance of and an
+              agreement to follow and be bound by the Terms as changed. The revised Terms supersedes
+              all previous Terms.
             </p>
           </div>
         </section>

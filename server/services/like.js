@@ -3,11 +3,7 @@
 const sendNotification = require('../scripts/messaging').sendNotification;
 const { userManager, likeManager } = require('../managers');
 const Op = require('sequelize').Op;
-const {
-  likeRepository,
-  commentRepository,
-  announcementRepository,
-} = require('../repositories');
+const { likeRepository, commentRepository, announcementRepository } = require('../repositories');
 
 // ADD_LIKE
 const addLike = (req, res) => {

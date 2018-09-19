@@ -20,11 +20,7 @@ import { CourseFooter } from '../components/course_footer';
 import SocialShare from '../components/socialshare';
 import { SoundwiseHeader } from '../components/soundwise_header';
 import { CourseSignup } from './course_signup';
-import {
-  setCurrentPlaylist,
-  setCurrentCourse,
-  loadCourses,
-} from '../actions/index';
+import { setCurrentPlaylist, setCurrentCourse, loadCourses } from '../actions/index';
 
 class _Staged_Course extends Component {
   constructor(props) {
@@ -114,10 +110,7 @@ class _Staged_Course extends Component {
       <div>
         <Helmet>
           <title>{`${_course.name} | Soundwise`}</title>
-          <meta
-            property="og:url"
-            content={`https://mysoundwise.com/staging/${_course.id}`}
-          />
+          <meta property="og:url" content={`https://mysoundwise.com/staging/${_course.id}`} />
           <meta property="fb:app_id" content="1726664310980105" />
           <meta property="og:title" content={_course.name} />
           <meta property="og:description" content={_course.description} />
@@ -145,10 +138,7 @@ class _Staged_Course extends Component {
 // <SocialShare />
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    { setCurrentPlaylist, setCurrentCourse, loadCourses },
-    dispatch
-  );
+  return bindActionCreators({ setCurrentPlaylist, setCurrentCourse, loadCourses }, dispatch);
 }
 
 const mapStateToProps = state => {

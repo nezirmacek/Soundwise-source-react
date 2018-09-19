@@ -91,10 +91,27 @@ npm run-script start
 
 ### Start the server.js and webpack bundle compiler in development mode (stripe testing)
 
-Comment out *new webpack.optimize.UglifyJsPlugin(),* line in *webpack.config.js*, run:
+Load development environment variables with:
 ```
-NODE_ENV=dev node --inspect server/server.js
-NODE_ENV=dev npm run-script start
+set -o allexport
+source api.env
+source db.env
+source client-development.env
+set +o allexport
+```
+
+Set **mode: 'development',** line and comment **devtool: 'source-map',** in **webpack.config.js**:
+```
+  mode: 'development',
+  // devtool: 'source-map',
+```
+To run server:
+```
+node --inspect server/server.js
+```
+To run client (in second terminal, with same environment imports):
+```
+npm run-script start
 ```
 
 ### Start loppback api
@@ -139,7 +156,20 @@ node .
 
 # Server update:
 
-Uncomment   *// new webpack.optimize.UglifyJsPlugin(),* in *webpack.config.js*
+Load production environment variables (both on the server and before bundle compiling) with:
+```
+set -o allexport
+source api.env
+source db.env
+source client-production.env
+set +o allexport
+```
+
+Set **mode: 'production',** line and uncomment **devtool: 'source-map',** in **webpack.config.js**:
+```
+  mode: 'production',
+  devtool: 'source-map',
+```
 
 Run webpack bundle compiler:
 
@@ -160,14 +190,14 @@ additional info: https://digitalocean.com/community/tutorials/how-to-set-up-auto
 Push to deployed server
 >git push live --force
 
-copy uglified *bundle.js/bundle.js.map* files to the server:
+copy uglified **bundle.js/bundle.js.map** files to the server:
 >scp /path/to/repo/client/bundle.js* USER@IP:/PATH/TO/RUN/REPO
 
 for example, if under root folder:
 > scp ./client/bundle.js* root@162.243.196.88:/var/www/mysoundwise.com/client/
 
 under root(!) on remote server run:
->pm2 restart soundwise
+>pm2 restart server
 
 
 # Issues:

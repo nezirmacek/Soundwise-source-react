@@ -32,9 +32,7 @@ export default class BlogList extends Component {
 
   componentWillMount() {
     let page =
-      this.props.match.params && this.props.match.params.page
-        ? this.props.match.params.page
-        : 1;
+      this.props.match.params && this.props.match.params.page ? this.props.match.params.page : 1;
     // console.log('this.props.params.page: ', this.props.params.page);
     this.fetchPosts(page);
   }
@@ -42,9 +40,7 @@ export default class BlogList extends Component {
   componentWillReceiveProps(nextProps) {
     this.setState({ loaded: false });
     let page =
-      nextProps.match.params && nextProps.match.params.page
-        ? nextProps.match.params.page
-        : 1;
+      nextProps.match.params && nextProps.match.params.page ? nextProps.match.params.page : 1;
 
     this.fetchPosts(page);
   }
@@ -102,12 +98,8 @@ export default class BlogList extends Component {
               </div>
               <br />
               <div>
-                {(previous_page && (
-                  <Link to={`/p/${previous_page}`}>Prev</Link>
-                )) ||
-                  null}
-                {(next_page && <Link to={`/p/${next_page}`}>Next</Link>) ||
-                  null}
+                {(previous_page && <Link to={`/p/${previous_page}`}>Prev</Link>) || null}
+                {(next_page && <Link to={`/p/${next_page}`}>Next</Link>) || null}
               </div>
             </div>
           </section>

@@ -45,9 +45,7 @@ export default class ValidatedInput extends Component {
           type={type}
           style={{
             ...styles,
-            ...((_validateResults.length &&
-              isTouched && { borderColor: Colors.mainRed }) ||
-              {}),
+            ...((_validateResults.length && isTouched && { borderColor: Colors.mainRed }) || {}),
           }}
           placeholder={placeholder}
           onChange={this.onChange.bind(this)}
@@ -56,10 +54,7 @@ export default class ValidatedInput extends Component {
         {(isTouched &&
           _validateResults.map((error, i) => {
             return (
-              <div
-                key={i}
-                style={{ ..._styles.errorText, ...(errorStyles || {}) }}
-              >
+              <div key={i} style={{ ..._styles.errorText, ...(errorStyles || {}) }}>
                 {error}
               </div>
             );

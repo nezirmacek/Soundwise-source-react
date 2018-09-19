@@ -100,17 +100,15 @@ class _UserProfile extends Component {
   retrieveCustomer(stripe_id) {
     const that = this;
     if (stripe_id) {
-      Axios.get('/api/retrieveCustomer', { params: { stripe_id } }).then(
-        response => {
-          const customer = response.data.customer;
-          that.setState({
-            exp_month: customer.sources.data[0].exp_month,
-            exp_year: customer.sources.data[0].exp_year,
-            last4: customer.sources.data[0].last4,
-            brand: customer.sources.data[0].brand,
-          });
-        }
-      );
+      Axios.get('/api/retrieveCustomer', { params: { stripe_id } }).then(response => {
+        const customer = response.data.customer;
+        that.setState({
+          exp_month: customer.sources.data[0].exp_month,
+          exp_year: customer.sources.data[0].exp_year,
+          last4: customer.sources.data[0].last4,
+          brand: customer.sources.data[0].brand,
+        });
+      });
     }
   }
 
@@ -121,8 +119,7 @@ class _UserProfile extends Component {
     const splittedFileName = file.type.split('/');
     const ext = splittedFileName[splittedFileName.length - 1];
     let fileName =
-      encodeURIComponent(`${firstName}-${lastName}`) +
-      `-${moment().format('X')}.${ext}`;
+      encodeURIComponent(`${firstName}-${lastName}`) + `-${moment().format('X')}.${ext}`;
 
     data.append('file', file, fileName);
     // axios.post('http://localhost:3000/upload/images', data) // - alternative address (need to uncomment on backend)
@@ -148,16 +145,9 @@ class _UserProfile extends Component {
     // console.log('this.fileInputRef.files: ', this.fileInputRef.files);
     if (this.profileImgInputRef.files[0]) {
       // this._uploadToAws(this.profileImgInputRef.files[0]);
-      const allowedFileTypes = [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        'image/gif',
-      ];
+      const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
       if (allowedFileTypes.indexOf(this.profileImgInputRef.files[0].type) < 0) {
-        alert(
-          'Only .png or .jpeg files are accepted. Please upload a new file.'
-        );
+        alert('Only .png or .jpeg files are accepted. Please upload a new file.');
         this.setState({ profileImgUploaded: false });
         return;
       }
@@ -175,8 +165,7 @@ class _UserProfile extends Component {
     const { email, password, newPassword, newPassword2 } = this.state;
     if (newPassword != newPassword2) {
       this.setState({
-        passwordError:
-          'Please make sure you enter the same new password twice.',
+        passwordError: 'Please make sure you enter the same new password twice.',
         newPassword: '',
         newPassword2: '',
       });
@@ -193,10 +182,7 @@ class _UserProfile extends Component {
         passwordPopUpOpen: false,
       });
     }
-    const credential = firebase.auth.EmailAuthProvider.credential(
-      email,
-      password
-    );
+    const credential = firebase.auth.EmailAuthProvider.credential(email, password);
     const user = firebase.auth().currentUser;
     if (user) {
       user
@@ -205,10 +191,7 @@ class _UserProfile extends Component {
           user
             .updatePassword(newPassword)
             .then(function() {
-              const newCredential = firebase.auth.EmailAuthProvider.credential(
-                email,
-                newPassword
-              );
+              const newCredential = firebase.auth.EmailAuthProvider.credential(email, newPassword);
               user.reauthenticateWithCredential(newCredential).then(() => {
                 alert('Password changed.');
                 that.setState({
@@ -315,9 +298,7 @@ class _UserProfile extends Component {
                 />
               </div>
               <div>
-                <span style={{ ...styles.inputTitle, color: 'red' }}>
-                  {passwordError}
-                </span>
+                <span style={{ ...styles.inputTitle, color: 'red' }}>{passwordError}</span>
               </div>
             </div>
           </Dialog>
@@ -383,10 +364,7 @@ class _UserProfile extends Component {
               })
             }
           >
-            <div
-              className="col-md-12"
-              style={{ ...styles.relativeBlock, paddingLeft: 0 }}
-            >
+            <div className="col-md-12" style={{ ...styles.relativeBlock, paddingLeft: 0 }}>
               <input
                 onChange={e => {
                   that.setState({ newCard: e.target.value });
@@ -408,10 +386,7 @@ class _UserProfile extends Component {
             </div>
 
             {/*Expiration*/}
-            <div
-              className="col-md-9 col-xs-12"
-              style={{ paddingLeft: 0, paddingRight: 0 }}
-            >
+            <div className="col-md-9 col-xs-12" style={{ paddingLeft: 0, paddingRight: 0 }}>
               {/*month*/}
               <div style={styles.selectBlock} className="border-radius-4">
                 <label style={styles.selectLabel}>Exp Month</label>
@@ -472,10 +447,7 @@ class _UserProfile extends Component {
                 Transactions are secure and encrypted.
               </div>
               <div style={styles.stripeImageWrapper}>
-                <img
-                  src="../../../images/powered_by_stripe.png"
-                  style={styles.stripeImage}
-                />
+                <img src="../../../images/powered_by_stripe.png" style={styles.stripeImage} />
               </div>
             </div>
           </Dialog>
@@ -669,10 +641,7 @@ class _UserProfile extends Component {
                     />
                   </div>
                 </div>
-                <div
-                  className="col-md-12 col-sm-12 col-xs-12"
-                  style={{ paddingTop: 30 }}
-                >
+                <div className="col-md-12 col-sm-12 col-xs-12" style={{ paddingTop: 30 }}>
                   <div style={{ marginBottom: 10 }}>
                     <span style={styles.titleText}>Profile Picture</span>
                   </div>
@@ -702,9 +671,7 @@ class _UserProfile extends Component {
                                 profileImgUploaded: false,
                                 pic_url: false,
                               });
-                              document.getElementById(
-                                'upload_hidden_cover_2'
-                              ).value = null;
+                              document.getElementById('upload_hidden_cover_2').value = null;
                             }}
                           >
                             Cancel
@@ -715,9 +682,7 @@ class _UserProfile extends Component {
                           <div>
                             <button
                               onClick={() => {
-                                document
-                                  .getElementById('upload_hidden_cover_2')
-                                  .click();
+                                document.getElementById('upload_hidden_cover_2').click();
                               }}
                               style={{
                                 ...styles.uploadButton,
@@ -726,18 +691,13 @@ class _UserProfile extends Component {
                             >
                               Upload
                             </button>
-                            <span style={styles.fileTypesLabel}>
-                              .jpg or .png files accepted
-                            </span>
+                            <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                           </div>
                         ))}
                     </div>
                   </div>
                 </div>
-                <div
-                  className="col-md-12 col-sm-12 col-xs-12"
-                  style={{ paddingTop: 30 }}
-                >
+                <div className="col-md-12 col-sm-12 col-xs-12" style={{ paddingTop: 30 }}>
                   <div
                     className="col-md-6 col-sm-12 col-xs-12"
                     style={{ marginBottom: 10, paddingLeft: 0 }}
@@ -800,9 +760,7 @@ class _UserProfile extends Component {
                           <span>{` **** ***** ${this.state.last4}`}</span>
                         </div>
                         <div style={styles.inputTitle}>
-                          {`Exp: ${this.state.exp_month}/${
-                            this.state.exp_year
-                          }`}
+                          {`Exp: ${this.state.exp_month}/${this.state.exp_year}`}
                         </div>
                         <div
                           onClick={() => {
@@ -844,9 +802,7 @@ class _UserProfile extends Component {
               style={{ paddingTop: 35 }}
             >
               {(profileSaved && (
-                <div style={{ fontSize: 16, color: Colors.mainOrange }}>
-                  Profile Saved
-                </div>
+                <div style={{ fontSize: 16, color: Colors.mainOrange }}>Profile Saved</div>
               )) || <OrangeSubmitButton label="Save" onClick={this.submit} />}
             </div>
           </div>

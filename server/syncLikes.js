@@ -21,9 +21,7 @@ const logInFile = text => {
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: `https://${
-    process.env.NODE_ENV === 'production'
-      ? 'soundwise-a8e6f'
-      : 'soundwise-testbase'
+    process.env.NODE_ENV === 'production' ? 'soundwise-a8e6f' : 'soundwise-testbase'
   }.firebaseio.com`,
 });
 
@@ -75,9 +73,7 @@ const syncEpisodesLikes = async () => {
           for (let userId of usersIds) {
             const likeId = `${userId}-${episodeId}`;
             const newTimestamp = getTimestamp(likes[userId]);
-            const createdAt = moment
-              .unix(newTimestamp)
-              .format('YYYY-MM-DD HH:mm:ss Z');
+            const createdAt = moment.unix(newTimestamp).format('YYYY-MM-DD HH:mm:ss Z');
             const like = {
               likeId,
               episodeId,
@@ -96,11 +92,7 @@ const syncEpisodesLikes = async () => {
           const lastLiked = likeObject
             ? await likeManager.getFullNameByUid(likeObject.userId)
             : 'Guest';
-          await likeManager.updateLikeInEpisode(
-            episodeId,
-            usersIds.length,
-            lastLiked
-          );
+          await likeManager.updateLikeInEpisode(episodeId, usersIds.length, lastLiked);
         }
       }
     }
@@ -112,9 +104,7 @@ const syncMessagesLikes = async () => {
   console.log('start sync messages likes');
   for (let soundcastId of soundcastsIds) {
     console.log(`process ${soundcastId} soundcast`);
-    const messagesBySoundcast = await messageManager.getMessagesBySoundcastId(
-      soundcastId
-    );
+    const messagesBySoundcast = await messageManager.getMessagesBySoundcastId(soundcastId);
     if (messagesBySoundcast) {
       const messagesIds = _.keys(messagesBySoundcast);
       console.log(`process ${messagesIds} messages`);
@@ -125,9 +115,7 @@ const syncMessagesLikes = async () => {
           for (let userId of usersIds) {
             const likeId = `${userId}-${messageId}`;
             const newTimestamp = getTimestamp(likes[userId]);
-            const createdAt = moment
-              .unix(newTimestamp)
-              .format('YYYY-MM-DD HH:mm:ss Z');
+            const createdAt = moment.unix(newTimestamp).format('YYYY-MM-DD HH:mm:ss Z');
             const like = {
               likeId,
               announcementId: messageId,

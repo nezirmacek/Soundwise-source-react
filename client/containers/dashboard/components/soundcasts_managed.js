@@ -28,6 +28,8 @@ export default class SoundcastsManaged extends Component {
       currentEpisode: null,
       userInfo: { soundcasts_managed: {} },
       newSoundcastModal: false,
+      upgradeModal: false,
+      upgradeModalTitle: '',
       showFeedInputs: false,
       emailNotFoundError: false,
       feedSubmitting: false,
@@ -46,6 +48,10 @@ export default class SoundcastsManaged extends Component {
     this.submitFeed = this.submitFeed.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.resend = this.resend.bind(this);
+    this.handleSoundcastSignup = this.handleSoundcastSignup.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.handleAddNewSoundcast = this.handleAddNewSoundcast.bind(this);
   }
 
   componentDidMount() {
@@ -88,6 +94,76 @@ export default class SoundcastsManaged extends Component {
     });
   }
 
+  handleSoundcastSignup(soundcast) {
+    if (this.isShownSoundcastSignup(soundcast)) {
+      this.props.history.push(`/signup/soundcast_user/${soundcast.id}`);
+    } else {
+      this.setState({
+        upgradeModal: true,
+        upgradeModalTitle:
+          'Signup forms for paid soundcasts are only available on PRO and PLATINUM plans.',
+      });
+    }
+  }
+
+  isShownSoundcastSignup(soundcast) {
+    const { userInfo } = this.props;
+    if (soundcast.published === true) {
+      if (!soundcast.forSale) {
+        return true;
+      }
+      if (
+        soundcast.forSale === true &&
+        !this.isFreeAccount() &&
+        (userInfo.publisher.plan === 'pro' || userInfo.publisher.plan === 'platinum')
+      ) {
+        return true;
+      }
+      if (userInfo.publisher && userInfo.publisher.id === '1531418940327p') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (
+      userInfo.publisher &&
+      userInfo.publisher.plan &&
+      userInfo.publisher.current_period_end > curTime
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  handleAddNewSoundcast(currentSoundcastCount) {
+    const { userInfo } = this.props;
+    if (userInfo.publisher) {
+      const is_free_account = this.isFreeAccount();
+      // if plus plan and has already 10 soundcast then limit
+      if (currentSoundcastCount >= 10 && !is_free_account && userInfo.publisher.plan === 'plus') {
+        this.setState({
+          upgradeModal: true,
+          upgradeModalTitle: 'Please upgrade to create more soundcasts',
+        });
+        return;
+      }
+      // if basic plan or end current plan then limit to 1 soundcast
+      if (currentSoundcastCount > 0 && is_free_account) {
+        this.setState({
+          upgradeModal: true,
+          upgradeModalTitle: 'Please upgrade to create more soundcasts',
+        });
+        return;
+      }
+      // allow
+      this.setState({ newSoundcastModal: true });
+    }
+  }
+
   handleModal(soundcast) {
     // console.log('handleModal called');
     if (!this.state.showModal) {
@@ -124,11 +200,7 @@ export default class SoundcastsManaged extends Component {
 
   deleteEpisode(episode) {
     const title = episode.title;
-    if (
-      confirm(
-        `Are you sure you want to delete ${title}? You won't be able to go back.`
-      )
-    ) {
+    if (confirm(`Are you sure you want to delete ${title}? You won't be able to go back.`)) {
       firebase
         .database()
         .ref(`soundcasts/${episode.soundcastID}/episodes/${episode.id}`)
@@ -143,8 +215,7 @@ export default class SoundcastsManaged extends Component {
   }
 
   async deleteSoundcast(soundcastId) {
-    const soundcastTitle = this.props.userInfo.soundcasts_managed[soundcastId]
-      .title;
+    const soundcastTitle = this.props.userInfo.soundcasts_managed[soundcastId].title;
     const confirmText = `Are you sure you want to delete ${soundcastTitle}? All information about this soundcast will be deleted, including subscribers' emails and audio files.`;
     if (confirm(confirmText)) {
       await firebase
@@ -177,6 +248,7 @@ export default class SoundcastsManaged extends Component {
     this.setState({
       feedSubmitting: false,
       newSoundcastModal: false,
+      upgradeModal: false,
       showFeedInputs: false,
       emailNotFoundError: false,
       podcastTitle: '',
@@ -206,12 +278,9 @@ export default class SoundcastsManaged extends Component {
         }
       })
       .catch(err => {
-        const errMsg =
-          (err && err.response && err.response.data) || err.toString();
+        const errMsg = (err && err.response && err.response.data) || err.toString();
         that.setState({ feedSubmitting: false });
-        if (
-          errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email"
-        ) {
+        if (errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email") {
           that.setState({ emailNotFoundError: true });
         } else if (
           errMsg.slice(0, 97) ===
@@ -221,9 +290,7 @@ export default class SoundcastsManaged extends Component {
             "Hmm...looks like this podcast has already been managed by an existing account on Soundwise. If you think you're the owner of this feed, please contact us at support@mysoundwise.com."
           );
         } else {
-          alert(
-            'Hmm...there is a problem parsing the feed. Please try again later.'
-          );
+          alert('Hmm...there is a problem parsing the feed. Please try again later.');
         }
       });
   }
@@ -231,8 +298,7 @@ export default class SoundcastsManaged extends Component {
   submitCode() {
     const { codeSign1, codeSign2, codeSign3, codeSign4 } = this.refs;
     const { feedUrl, publisherEmail, notClaimed } = this.state;
-    const submitCode =
-      codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
+    const submitCode = codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
     const that = this;
     this.setState({ feedSubmitting: true });
@@ -258,9 +324,7 @@ export default class SoundcastsManaged extends Component {
                 err,
                 err && err.response && err.response.data
               );
-              alert(
-                'Hmm...there is a problem importing feed. Please try again later.'
-              );
+              alert('Hmm...there is a problem importing feed. Please try again later.');
             });
         } else {
           that.setState({ feedSubmitting: false });
@@ -268,8 +332,7 @@ export default class SoundcastsManaged extends Component {
       })
       .catch(err => {
         that.setState({ feedSubmitting: false });
-        const errMsg =
-          (err && err.response && err.response.data) || err.toString();
+        const errMsg = (err && err.response && err.response.data) || err.toString();
         if (errMsg.slice(0, 33) === 'Error: incorrect verfication code') {
           alert('Code incorrect!');
         } else {
@@ -278,9 +341,7 @@ export default class SoundcastsManaged extends Component {
             err,
             err && err.response && err.response.data
           );
-          alert(
-            'Hmm...there is a problem sending verification code. Please try again later.'
-          );
+          alert('Hmm...there is a problem sending verification code. Please try again later.');
         }
       });
   }
@@ -307,14 +368,8 @@ export default class SoundcastsManaged extends Component {
         }
       })
       .catch(err => {
-        console.log(
-          'resend code request failed',
-          err,
-          err && err.response && err.response.data
-        );
-        alert(
-          'Hmm...there is a problem resending code. Please try again later.'
-        );
+        console.log('resend code request failed', err, err && err.response && err.response.data);
+        alert('Hmm...there is a problem resending code. Please try again later.');
       });
   }
 
@@ -324,9 +379,7 @@ export default class SoundcastsManaged extends Component {
     const that = this;
     const _soundcasts_managed = [];
     for (let id in userInfo.soundcasts_managed) {
-      const _soundcast = JSON.parse(
-        JSON.stringify(userInfo.soundcasts_managed[id])
-      );
+      const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
       if (!_soundcast.bundle) {
         // only renders on this page if not a bundle
         if (_soundcast.title) {
@@ -334,12 +387,8 @@ export default class SoundcastsManaged extends Component {
           if (_soundcast.episodes) {
             _soundcast.last_update = 0;
             for (let episodeId in _soundcast.episodes) {
-              if (
-                +_soundcast.episodes[episodeId].date_created >
-                _soundcast.last_update
-              ) {
-                _soundcast.last_update = +_soundcast.episodes[episodeId]
-                  .date_created;
+              if (+_soundcast.episodes[episodeId].date_created > _soundcast.last_update) {
+                _soundcast.last_update = +_soundcast.episodes[episodeId].date_created;
               }
             }
           }
@@ -359,18 +408,12 @@ export default class SoundcastsManaged extends Component {
             onClose={this.handleModal}
             userInfo={userInfo}
           />
-          <div
-            className="padding-bottom-20px"
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
+          <div className="padding-bottom-20px" style={{ display: 'flex', alignItems: 'center' }}>
             <span className="title-medium ">Soundcasts</span>
           </div>
           <ul className="nav nav-pills">
             <li role="presentation" className="active">
-              <Link
-                to="/dashboard/soundcasts"
-                style={{ backgroundColor: 'transparent' }}
-              >
+              <Link to="/dashboard/soundcasts" style={{ backgroundColor: 'transparent' }}>
                 <span
                   style={{
                     fontSize: 15,
@@ -383,38 +426,40 @@ export default class SoundcastsManaged extends Component {
               </Link>
             </li>
             <li role="presentation">
-              <Link to="/dashboard/soundcasts/bundles">
-                <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
-              </Link>
+              {this.isFreeAccount() ? (
+                <a
+                  onClick={() =>
+                    this.setState({
+                      upgradeModal: true,
+                      upgradeModalTitle: 'Please upgrade to create soundcast bundles',
+                    })
+                  }
+                >
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
+                </a>
+              ) : (
+                <Link to="/dashboard/soundcasts/bundles">
+                  <span style={{ fontSize: 15, fontWeight: 600 }}>Bundles</span>
+                </Link>
+              )}
             </li>
           </ul>
           {_soundcasts_managed.map((soundcast, i) => {
             return (
               <div className="row" key={i} style={{ ...styles.row }}>
-                <div
-                  className=" col-md-7 col-sm-12 col-xs-12"
-                  style={styles.soundcastInfo}
-                >
+                <div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                   <div className="row">
                     <div className="col-md-2 col-sm-2 col-xs-2">
-                      <img
-                        src={soundcast.imageURL}
-                        style={styles.soundcastImage}
-                      />
+                      <img src={soundcast.imageURL} style={styles.soundcastImage} />
                     </div>
                     <div
                       className="col-md-7 col-sm-6 col-xs-10"
                       style={styles.soundcastDescription}
                     >
-                      <span style={styles.soundcastTitle}>
-                        {soundcast.title}
-                      </span>
+                      <span style={styles.soundcastTitle}>{soundcast.title}</span>
                       {(soundcast.last_update && (
                         <div style={styles.soundcastUpdated}>
-                          Last updated:{' '}
-                          {moment(soundcast.last_update * 1000).format(
-                            'MMM DD YYYY'
-                          )}
+                          Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
                         </div>
                       )) ||
                         null}
@@ -424,8 +469,7 @@ export default class SoundcastsManaged extends Component {
                       style={{ ...styles.subscribers, textAlign: 'center' }}
                     >
                       <span style={styles.soundcastUpdated}>
-                        {`${(soundcast.subscribed &&
-                          Object.keys(soundcast.subscribed).length) ||
+                        {`${(soundcast.subscribed && Object.keys(soundcast.subscribed).length) ||
                           0} subscribed`}
                       </span>
                       <span
@@ -445,9 +489,7 @@ export default class SoundcastsManaged extends Component {
                         <div style={{ ...styles.soundcastUpdated }}>
                           <a
                             target="_blank"
-                            href={`https://mysoundwise.com/soundcasts/${
-                              soundcast.id
-                            }`}
+                            href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
                             style={{ cursor: 'pointer' }}
                           >
                             <span
@@ -461,10 +503,8 @@ export default class SoundcastsManaged extends Component {
                           </a>
                           <a
                             target="_blank"
-                            href={`https://mysoundwise.com/signup/soundcast_user/${
-                              soundcast.id
-                            }`}
                             style={{ paddingLeft: 15 }}
+                            onClick={() => that.handleSoundcastSignup(soundcast)}
                           >
                             <span
                               datatoggle="tooltip"
@@ -517,10 +557,7 @@ export default class SoundcastsManaged extends Component {
                     </div>
                   </div>
                 </div>
-                <div
-                  className="col-md-5 col-sm-12 col-xs-12"
-                  style={styles.soundcastInfo}
-                >
+                <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                   <div
                     className="col-md-4 col-sm-4 col-xs-12"
                     datatoggle="tooltip"
@@ -531,9 +568,7 @@ export default class SoundcastsManaged extends Component {
                       borderColor: Colors.link,
                       color: Colors.link,
                     }}
-                    onClick={() =>
-                      history.push(`/dashboard/soundcast/${soundcast.id}`)
-                    }
+                    onClick={() => history.push(`/dashboard/soundcast/${soundcast.id}`)}
                   >
                     <span>Episodes</span>
                   </div>
@@ -570,9 +605,7 @@ export default class SoundcastsManaged extends Component {
                       datatoggle="tooltip"
                       dataplacement="top"
                       title="edit soundcast"
-                      onClick={() =>
-                        this.editSoundcast(soundcast.id, soundcast)
-                      }
+                      onClick={() => this.editSoundcast(soundcast.id, soundcast)}
                     >
                       Edit
                     </span>
@@ -581,18 +614,11 @@ export default class SoundcastsManaged extends Component {
               </div>
             );
           })}
-          <div
-            className="row"
-            style={{ ...styles.row, backgroundColor: 'transparent' }}
-          >
+          <div className="row" style={{ ...styles.row, backgroundColor: 'transparent' }}>
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
                 label="Add New Soundcast"
-                onClick={() =>
-                  that.setState({
-                    newSoundcastModal: true,
-                  })
-                }
+                onClick={() => this.handleAddNewSoundcast(_soundcasts_managed.length)}
               />
             </div>
           </div>
@@ -656,10 +682,9 @@ export default class SoundcastsManaged extends Component {
                       }}
                       className="center-col text-center"
                     >
-                      We cannot find the podcast owner's email address in the
-                      feed you submitted. An email address is needed to confirm
-                      your ownership of the podcast. Please edit your feed to
-                      include an owner's email address and re-submit.
+                      We cannot find the podcast owner's email address in the feed you submitted. An
+                      email address is needed to confirm your ownership of the podcast. Please edit
+                      your feed to include an owner's email address and re-submit.
                     </div>
                     <div
                       style={{
@@ -670,19 +695,14 @@ export default class SoundcastsManaged extends Component {
                       }}
                       className="center-col text-center"
                     >
-                      If you think this is a mistake, please contact our support
-                      at <br />
-                      <span style={{ color: '#f76b1c' }}>
-                        support@mysoundwise.com
-                      </span>
+                      If you think this is a mistake, please contact our support at <br />
+                      <span style={{ color: '#f76b1c' }}>support@mysoundwise.com</span>
                     </div>
                   </div>
                 )) ||
                 (this.state.showFeedInputs && (
                   <div>
-                    <div style={{ ...styles.dialogTitle }}>
-                      Import your podcast feed
-                    </div>
+                    <div style={{ ...styles.dialogTitle }}>Import your podcast feed</div>
                     <div
                       style={styles.container}
                       className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
@@ -691,10 +711,7 @@ export default class SoundcastsManaged extends Component {
                       <input
                         type="text"
                         style={styles.input}
-                        onChange={this.handleFeedSubmission.bind(
-                          this,
-                          'podcastTitle'
-                        )}
+                        onChange={this.handleFeedSubmission.bind(this, 'podcastTitle')}
                         value={this.state.podcastTitle}
                       />
                     </div>
@@ -702,24 +719,16 @@ export default class SoundcastsManaged extends Component {
                       style={{ ...styles.container, paddingBottom: 20 }}
                       className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                     >
-                      <span style={styles.greyInputText}>
-                        Podcast RSS Feed URL
-                      </span>
+                      <span style={styles.greyInputText}>Podcast RSS Feed URL</span>
                       <input
                         type="text"
                         style={styles.input}
-                        onChange={this.handleFeedSubmission.bind(
-                          this,
-                          'feedUrl'
-                        )}
+                        onChange={this.handleFeedSubmission.bind(this, 'feedUrl')}
                         value={this.state.feedUrl}
                       />
                     </div>
                     {(!this.state.feedSubmitting && (
-                      <OrangeSubmitButton
-                        label="Submit"
-                        onClick={() => that.submitFeed()}
-                      />
+                      <OrangeSubmitButton label="Submit" onClick={() => that.submitFeed()} />
                     )) || (
                       <div style={{ textAlign: 'center', marginBottom: 30 }}>
                         <Dots color={Colors.mainOrange} size={32} speed={1} />
@@ -737,10 +746,7 @@ export default class SoundcastsManaged extends Component {
                       }}
                       className="container-confirmation dialog-confirmation"
                     >
-                      <img
-                        className="center-col"
-                        src={this.state.imageUrl}
-                      />
+                      <img className="center-col" src={this.state.imageUrl} />
                       <div
                         style={{
                           ...styles.container,
@@ -750,8 +756,8 @@ export default class SoundcastsManaged extends Component {
                         }}
                         className="center-col text-center"
                       >
-                        Almost there... to verify your ownership of the podcast,
-                        we sent a confirmation code to <br />
+                        Almost there... to verify your ownership of the podcast, we sent a
+                        confirmation code to <br />
                         <span style={{ color: Colors.mainOrange }}>
                           {this.state.publisherEmail}
                         </span>
@@ -766,25 +772,13 @@ export default class SoundcastsManaged extends Component {
                         Enter the confirmation code:
                       </div>
                       <div className="rss-submit-code">
-                        <input
-                          ref="codeSign1"
-                          onKeyDown={this.onKeyDown.bind(this, 2)}
-                        />
-                        <input
-                          ref="codeSign2"
-                          onKeyDown={this.onKeyDown.bind(this, 3)}
-                        />
-                        <input
-                          ref="codeSign3"
-                          onKeyDown={this.onKeyDown.bind(this, 4)}
-                        />
+                        <input ref="codeSign1" onKeyDown={this.onKeyDown.bind(this, 2)} />
+                        <input ref="codeSign2" onKeyDown={this.onKeyDown.bind(this, 3)} />
+                        <input ref="codeSign3" onKeyDown={this.onKeyDown.bind(this, 4)} />
                         <input ref="codeSign4" />
                       </div>
                       {(!this.state.feedSubmitting && (
-                        <OrangeSubmitButton
-                          label="Submit"
-                          onClick={() => this.submitCode()}
-                        />
+                        <OrangeSubmitButton label="Submit" onClick={() => this.submitCode()} />
                       )) || (
                         <div style={{ textAlign: 'center', marginBottom: 30 }}>
                           <Dots color={Colors.mainOrange} size={32} speed={1} />
@@ -798,6 +792,33 @@ export default class SoundcastsManaged extends Component {
                       </a>
                     </div>
                   ))}
+            </Dialog>
+
+            <Dialog modal={true} open={this.state.upgradeModal}>
+              <div
+                style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+                onClick={() => this.closeSubmitModal()}
+              >
+                &#10799; {/* Close button (X) */}
+              </div>
+
+              <div>
+                <div style={{ ...styles.dialogTitle }}>{this.state.upgradeModalTitle}</div>
+                <OrangeSubmitButton
+                  styles={{
+                    borderColor: Colors.link,
+                    backgroundColor: Colors.link,
+                    color: '#464646',
+                    width: 400,
+                  }}
+                  label="Change Plan"
+                  onClick={() =>
+                    that.props.history.push({
+                      pathname: '/pricing',
+                    })
+                  }
+                />
+              </div>
             </Dialog>
           </MuiThemeProvider>
         </div>
