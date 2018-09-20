@@ -27,7 +27,7 @@ class _Payment extends Component {
       exp_month: 0,
       exp_year: new Date().getFullYear(),
       totalPay: 0,
-      isFreeSoundcast: true,
+      isFreeSoundcast: false,
       paid: false,
       startPaymentSubmission: false,
       stripe_id: '',
@@ -69,9 +69,13 @@ class _Payment extends Component {
         props.soundcast.prices &&
         props.soundcast.prices.some(i => i.coupons)
       ) {
+        console.log('1. isFreeSoundcast: false')
+        this.setState({ isFreeSoundcast: false })
         return; // ignore if soundcast not free and have coupons
       }
       if (isFree && !props.isTrial) {
+        console.log('2. isFreeSoundcast: true')
+        this.setState({ isFreeSoundcast: true })
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
         // - prevent audocheckout if trial coupon used
@@ -80,6 +84,9 @@ class _Payment extends Component {
           props.userInfo,
           props.soundcastID || this.props.soundcastID
         );
+      } else {
+        console.log('3. isFreeSoundcast: false')
+        this.setState({ isFreeSoundcast: false })
       }
     }
   }
@@ -138,12 +145,6 @@ class _Payment extends Component {
         price,
         rentalPeriod,
       } = soundcast.prices[checked];
-
-      // in case of the paid soundcast
-      if ((sumTotal && sumTotal > 0) || (coupon && coupon !== "") || (totalPay !== 0 && totalPay !== 'free')) {
-        // console.log('paid soundcast: sumTotal = ', sumTotal, 'coupon = ', coupon, 'totalPay = ', totalPay)
-        this.setState({ isFreeSoundcast: false })
-      }
 
       let current_period_end = rentalPeriod
         ? moment()
