@@ -183,7 +183,7 @@ export default class Profile extends Component {
         })
           .then(res => {
             that.setState({
-              stripe_user_id: res.data.stripe_user_id,
+              stripe_user_id: res.stripe_user_id || res.data.stripe_user_id,
               authorized: true,
               creatingAccount: false,
             });
