@@ -179,6 +179,10 @@ or
 
 >npm run-script build
 
+*In case if you have **Allocation failed - JavaScript heap out of memory** error - you can try:
+
+>node --max_old_space_size=4096 node_modules/.bin/webpack 
+
 *you can check git configuration with *"git remote -v"* command,
 
 to add live remote run:
@@ -198,6 +202,8 @@ for example, if under root folder:
 
 under root(!) on remote server run:
 >pm2 restart server
+
+*Note - to update environment, run: *pm2 restart server --update-env*
 
 
 # Issues:
