@@ -25,6 +25,7 @@ class _SoundcastPlayingPage extends Component {
       noAccess: false,
       playlist: [],
       episodes: [],
+      likedEpisodes: [],
       currentEpisode: null,
       playing: false,
       paused: true,
@@ -48,6 +49,7 @@ class _SoundcastPlayingPage extends Component {
           that.setState({
             userInfo: that.props.userInfo,
           });
+
           that.loadSoundcast(that.props, user.uid);
         }
       } else {
@@ -58,6 +60,24 @@ class _SoundcastPlayingPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.loadSoundcast(nextProps, this.state.userID);
+  }
+
+  setLikedEpisodes(userId, soundcastId) {
+    const that = this;
+    console.log(`User ID ${userId}, SoundcastID ${soundcastId}`);
+    const response = Axios.get('/api/likes', {
+      filter: { where: { userId, soundcastId } },
+    })
+      .then(res => {
+        let likedEpisodes = res.data;
+        likedEpisodes = likedEpisodes.map((like, index) => {
+          return like.episodeId;
+        });
+        console.log('Response');
+        console.log(likedEpisodes);
+        that.setState({ likedEpisodes });
+      })
+      .catch(e => console.log('Failed to load episodes likes', e));
   }
 
   loadSoundcast(props, userID) {
@@ -108,6 +128,7 @@ class _SoundcastPlayingPage extends Component {
           }
         }
       });
+    this.setLikedEpisodes(userID, soundcastID);
   }
 
   setEpisodes(soundcast) {
@@ -244,7 +265,7 @@ class _SoundcastPlayingPage extends Component {
       });
     } else {
       this.audio.oncanplay = () => {
-        console.log('soundcast_playing_page: canplay callback')
+        console.log('soundcast_playing_page: canplay callback');
         that.audio.play();
         that.setState({
           playing: true,
@@ -285,6 +306,8 @@ class _SoundcastPlayingPage extends Component {
 
   render() {
     const that = this;
+    console.log('Render soundcast');
+    console.log(this.state);
     const {
       soundcast,
       soundcastID,
@@ -346,10 +369,20 @@ class _SoundcastPlayingPage extends Component {
                     <div className="list-group col-md-12">
                       {(episodes.length > 0 &&
                         episodes.map((episode, i) => {
+                          const liked = this.state.likedEpisodes.includes(
+                            episode.id
+                          );
+                          console.log(
+                            'Liked episodes',
+                            this.state.likedEpisodes
+                          );
+                          console.log('Episode id', episode.id);
+                          // console.log(`Episode ${episode.id} liked ${liked}`);
                           return (
                             <EpisodePreview
                               key={i}
                               episode={episode}
+                              liked={liked}
                               userInfo={this.state.userInfo}
                               userID={this.state.userID}
                               handlePlayClicked={this.handlePlayClicked}

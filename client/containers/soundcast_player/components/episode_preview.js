@@ -19,7 +19,7 @@ export default class EpisodePreview extends Component {
     super(props);
     this.state = {
       episode: { id: '' },
-      liked: false,
+      liked: props.liked,
       descriptionShown: false,
       notesShown: false,
       actionsShown: false,
@@ -28,8 +28,11 @@ export default class EpisodePreview extends Component {
 
   componentDidMount() {
     if (this.props.episode && this.props.episode.title) {
+      const { userID, episode, liked } = this.props;
+
       this.setState({
-        episode: this.props.episode,
+        episode,
+        liked,
       });
     }
   }
@@ -43,29 +46,31 @@ export default class EpisodePreview extends Component {
   }
 
   changeLike() {
-    const { liked, episode } = this.state;
-    const { userID } = this.props;
+    const { episode } = this.state;
+    const { userID, userInfo, liked } = this.props;
+    const likeId = `${userID}-${episode.id}`;
+    console.log(`Like id ${likeId}`);
+    console.log('Liked ', liked);
+    if (!liked) {
+      Axios.post('/api/likes', {
+        likeId,
+        userId: userID,
+        fullName: `${userInfo.firstName} ${userInfo.lastName}`,
+        episodeId: episode.id,
+        soundcastId: episode.soundcastID,
+        timeStamp: moment().format('X'),
+      })
+        .then(() => console.log('success set like'))
+        .catch(err => alert('ERROR: like save: ' + err.toString()));
+    } else {
+      Axios.delete(`/api/likes/${likeId}`)
+        .then(() => console.log('success delete like'))
+        .catch(err => alert('ERROR: like delete: ' + err.toString()));
+    }
+
     this.setState({
       liked: !liked,
     });
-
-    if (!liked) {
-      firebase
-        .database()
-        .ref(`episodes/${episode.id}/likes/${userID}`)
-        .set(moment().format('X'))
-        .then(() => {
-          // console.log('success set like');
-        })
-        .catch(err => {
-          alert('ERROR: like save: ' + err.toString());
-        });
-    } else {
-      firebase
-        .database()
-        .ref(`episodes/${episode.id}/likes/${userID}`)
-        .remove();
-    }
   }
 
   handlePlay(episode) {
@@ -88,15 +93,16 @@ export default class EpisodePreview extends Component {
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
+    console.log('Episode render', this.props);
+    const { episode, descriptionShown, notesShown, actionsShown } = this.state;
     const {
-      episode,
       liked,
-      descriptionShown,
-      notesShown,
-      actionsShown,
-    } = this.state;
-    const { handlePlayClicked, playing, paused, currentEpisode } = this.props;
-    const likes = (episode.likes && Object.keys(episode.likes).length) || 0;
+      handlePlayClicked,
+      playing,
+      paused,
+      currentEpisode,
+    } = this.props;
+    const likes = episode.likesCount ? episode.likesCount : 0;
     const listens = episode.totalListens || 0;
 
     if (currentEpisode && episode.id == currentEpisode.id) {

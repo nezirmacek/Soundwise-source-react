@@ -51,10 +51,10 @@ class _EpisodePage extends Component {
     this.fetchData = this.fetchData.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const that = this;
     const episodeID = this.props.match.params.id;
-    this.fetchData(episodeID);
+    await this.fetchData(episodeID);
   }
 
   async componentWillReceiveProps(nextProps) {
@@ -246,7 +246,7 @@ class _EpisodePage extends Component {
 
     if (!liked) {
       Axios.post('/api/likes', {
-        likeId: webID,
+        likeId: `${webID}-${episodeID}`,
         userId: webID,
         fullName: 'Guest',
         episodeId: episodeID,
@@ -256,7 +256,7 @@ class _EpisodePage extends Component {
         .then(() => console.log('success set like'))
         .catch(err => alert('ERROR: like save: ' + err.toString()));
     } else {
-      Axios.delete(`/api/likes/${webID}`)
+      Axios.delete(`/api/likes/${webID}-${episodeID}`)
         .then(() => console.log('success delete like'))
         .catch(err => alert('ERROR: like delete: ' + err.toString()));
     }
