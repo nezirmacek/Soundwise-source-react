@@ -59,16 +59,9 @@ export default class ImageS3Uploader extends Component {
   setFileName(e) {
     // this._uploadToAws(this.fileInputRef.files[0])
     if (this.fileInputRef.files[0]) {
-      const allowedFileTypes = [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        'image/gif',
-      ];
+      const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
       if (allowedFileTypes.indexOf(this.fileInputRef.files[0].type) < 0) {
-        alert(
-          'Only .png or .jpeg files are accepted. Please upload a new file.'
-        );
+        alert('Only .png or .jpeg files are accepted. Please upload a new file.');
         this.setState({ fileUploaded: false });
         return;
       }
@@ -122,9 +115,7 @@ export default class ImageS3Uploader extends Component {
             null}
         </div>
         <div style={_styles.loaderWrapper}>
-          <span style={{ ..._styles.titleText, marginLeft: 10 }}>
-            {this.props.title}
-          </span>
+          <span style={{ ..._styles.titleText, marginLeft: 10 }}>{this.props.title}</span>
           <div style={{ ..._styles.inputFileWrapper, marginTop: 0 }}>
             <input
               type="file"
@@ -140,9 +131,7 @@ export default class ImageS3Uploader extends Component {
                 <span>{this.fileInputRef.files[0].name}</span>
                 <span
                   style={_styles.cancelImg}
-                  onClick={() =>
-                    that.setState({ fileUploaded: false, imageURL: '' })
-                  }
+                  onClick={() => that.setState({ fileUploaded: false, imageURL: '' })}
                 >
                   Cancel
                 </span>
@@ -161,9 +150,7 @@ export default class ImageS3Uploader extends Component {
                   >
                     Upload
                   </button>
-                  <span style={_styles.fileTypesLabel}>
-                    .jpg or .png files accepted
-                  </span>
+                  <span style={_styles.fileTypesLabel}>.jpg or .png files accepted</span>
                 </div>
               ))}
           </div>

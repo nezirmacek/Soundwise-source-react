@@ -61,13 +61,7 @@ class _SoundwiseCheckout extends Component {
   }
 
   handlePaymentSuccess(charge) {
-    const {
-      plan,
-      frequency,
-      promoCodeError,
-      promoCode,
-      trialPeriod,
-    } = this.state;
+    const { plan, frequency, promoCodeError, promoCode, trialPeriod } = this.state;
     localStorage.setItem('soundwiseCheckoutPaid', Date.now());
     this.setState({
       success: true,
@@ -150,12 +144,7 @@ class _SoundwiseCheckout extends Component {
             marginTop: '1em',
           }}
         >
-          <Dots
-            style={{ display: 'flex' }}
-            color="#727981"
-            size={32}
-            speed={1}
-          />
+          <Dots style={{ display: 'flex' }} color="#727981" size={32} speed={1} />
         </div>
       );
     }
@@ -176,10 +165,7 @@ class _SoundwiseCheckout extends Component {
 
     if (couponInfo.val()) {
       if (couponInfo.val().expiration > moment().format('X')) {
-        if (
-          couponInfo.val().frequency == 'all' ||
-          couponInfo.val().frequency == frequency
-        ) {
+        if (couponInfo.val().frequency == 'all' || couponInfo.val().frequency == frequency) {
           this.setState({
             total: (total * (100 - couponInfo.val().percentOff)) / 100,
             promoApplied: true,
@@ -193,9 +179,7 @@ class _SoundwiseCheckout extends Component {
           }
         } else {
           this.setState({
-            promoCodeError: `This promo code only applies to ${
-              couponInfo.val().frequency
-            } plans!`,
+            promoCodeError: `This promo code only applies to ${couponInfo.val().frequency} plans!`,
           });
         }
       } else {
@@ -215,9 +199,7 @@ class _SoundwiseCheckout extends Component {
     if (this.state.startPaymentSubmission) {
       return;
     }
-    const lastSubmitDate = Number(
-      localStorage.getItem('soundwiseCheckoutPaid') || 0
-    );
+    const lastSubmitDate = Number(localStorage.getItem('soundwiseCheckoutPaid') || 0);
     if (Date.now() - lastSubmitDate < 10000) {
       // 10 seconds since last success call not passed
       return;
@@ -230,21 +212,12 @@ class _SoundwiseCheckout extends Component {
     const exp_month = Number(this.state.exp_month) + 1;
     const exp_year = Number(this.state.exp_year);
     this.setState({ submitted: true, paymentError: null });
-    Stripe.card.createToken(
-      { number, cvc, exp_month, exp_year },
-      this.stripeTokenHandler
-    );
+    Stripe.card.createToken({ number, cvc, exp_month, exp_year }, this.stripeTokenHandler);
   }
 
   stripeTokenHandler(status, response) {
     const amount = Number(this.state.total).toFixed(2) * 100; // in cents
-    const {
-      email,
-      stripe_id,
-      publisherID,
-      publisher,
-      referredBy,
-    } = this.props.userInfo;
+    const { email, stripe_id, publisherID, publisher, referredBy } = this.props.userInfo;
     const {
       plan,
       frequency,
@@ -255,10 +228,7 @@ class _SoundwiseCheckout extends Component {
       checkoutEmail,
     } = this.state;
     const that = this;
-    const coupon =
-      promoCode && !promoCodeError && percentOff && percentOff > 0
-        ? promoCode
-        : null; // code for free trials may have percentOff == 0
+    const coupon = promoCode && !promoCodeError && percentOff && percentOff > 0 ? promoCode : null; // code for free trials may have percentOff == 0
     const metaData = promoCode && !promoCodeError ? { promoCode } : null; // need to record the promoCode used, whether it's for discount or for free trial.
     if (response.error) {
       this.setState({
@@ -273,14 +243,12 @@ class _SoundwiseCheckout extends Component {
         currency: 'usd',
         receipt_email: email ? email[0] : checkoutEmail,
         customer: stripe_id,
-        subscriptionID:
-          publisher && publisher.subscriptionID
-            ? publisher.subscriptionID
-            : null,
+        subscriptionID: publisher && publisher.subscriptionID ? publisher.subscriptionID : null,
         coupon,
         metaData,
         trialPeriod,
         publisherID: publisherID,
+        publisherPlan: plan,
         referredBy,
         plan: `${plan}-${frequency}`,
         statement_descriptor: `Soundwise ${plan} plan: ${frequency}`,
@@ -304,8 +272,7 @@ class _SoundwiseCheckout extends Component {
     const that = this;
     const { plan, frequency, price } = this.props.history.location.state;
     const title = plan == 'pro' ? 'Pro Plan' : 'Plus Plan';
-    const interval =
-      frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
+    const interval = frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
     const { total, submitted, promoApplied, trialPeriod } = this.state;
     const displayedPrice = `$${price}/month`;
     const { userInfo, isLoggedIn } = this.props;
@@ -349,10 +316,7 @@ class _SoundwiseCheckout extends Component {
                               </div>
                               <div style={styles.feeRow}>
                                 <div className="" style={styles.priceWrapper}>
-                                  <span
-                                    className="margin-five-bottom"
-                                    style={styles.price}
-                                  >
+                                  <span className="margin-five-bottom" style={styles.price}>
                                     {displayedPrice}
                                   </span>
                                 </div>
@@ -366,10 +330,7 @@ class _SoundwiseCheckout extends Component {
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
                                 that.setState({ enterPromoCode: true });
-                                setTimeout(
-                                  () => that.refs.promoCodeInput.focus(),
-                                  250
-                                );
+                                setTimeout(() => that.refs.promoCodeInput.focus(), 250);
                               }}
                             >
                               Have a promo code?
@@ -417,9 +378,7 @@ class _SoundwiseCheckout extends Component {
                                   Apply
                                 </button>
                               )}
-                              <div style={{ color: 'red' }}>
-                                {this.state.promoCodeError}
-                              </div>
+                              <div style={{ color: 'red' }}>{this.state.promoCodeError}</div>
                               <div>{this.state.promoDescription}</div>
                             </div>
                           )}
@@ -428,24 +387,14 @@ class _SoundwiseCheckout extends Component {
                     </div>
                     <div className="row">
                       <div className="col-md-12 col-sm-12 col-xs-12">
-                        <section
-                          className="bg-white builder-bg"
-                          id="subscribe-section6"
-                        >
-                          <div
-                            className="container"
-                            style={{ paddingBottom: '70px' }}
-                          >
+                        <section className="bg-white builder-bg" id="subscribe-section6">
+                          <div className="container" style={{ paddingBottom: '70px' }}>
                             <div className="row equalize ">
                               <div className="col-md-6 center-col col-sm-12 ">
                                 <div style={styles.totalRow}>
                                   <div style={styles.totalWrapper}>
-                                    <div style={styles.totalText}>
-                                      Total today:
-                                    </div>
-                                    <div
-                                      style={styles.totalPriceText}
-                                    >{`$${totalDisplayed}`}</div>
+                                    <div style={styles.totalText}>Total today:</div>
+                                    <div style={styles.totalPriceText}>{`$${totalDisplayed}`}</div>
                                   </div>
                                 </div>
                                 <form
@@ -484,21 +433,13 @@ class _SoundwiseCheckout extends Component {
                                       placeholder="Card Number"
                                       style={styles.input}
                                     />
-                                    <img
-                                      src="../images/card_types.png"
-                                      style={styles.cardsImage}
-                                    />
+                                    <img src="../images/card_types.png" style={styles.cardsImage} />
                                   </div>
                                   {/*Expiration*/}
                                   <div className="">
                                     {/*month*/}
-                                    <div
-                                      style={styles.selectBlock}
-                                      className="border-radius-4"
-                                    >
-                                      <label style={styles.selectLabel}>
-                                        Exp Month
-                                      </label>
+                                    <div style={styles.selectBlock} className="border-radius-4">
+                                      <label style={styles.selectLabel}>Exp Month</label>
                                       <select
                                         onChange={this.handleChange}
                                         name="exp_month"
@@ -510,13 +451,8 @@ class _SoundwiseCheckout extends Component {
                                     </div>
 
                                     {/*year*/}
-                                    <div
-                                      style={styles.selectBlock}
-                                      className="border-radius-4"
-                                    >
-                                      <label style={styles.selectLabel}>
-                                        Exp Year
-                                      </label>
+                                    <div style={styles.selectBlock} className="border-radius-4">
+                                      <label style={styles.selectLabel}>Exp Year</label>
                                       <select
                                         onChange={this.handleChange}
                                         name="exp_year"
@@ -535,11 +471,7 @@ class _SoundwiseCheckout extends Component {
                                       type="password"
                                       name="cvc"
                                       placeholder="CVC"
-                                      style={Object.assign(
-                                        {},
-                                        styles.input,
-                                        styles.cvc
-                                      )}
+                                      style={Object.assign({}, styles.input, styles.cvc)}
                                     />
                                   </div>
 
@@ -559,10 +491,7 @@ class _SoundwiseCheckout extends Component {
                                       PAY NOW
                                     </button>
                                     <div style={styles.securedTextWrapper}>
-                                      <i
-                                        className="ti-lock"
-                                        style={styles.securedTextIcon}
-                                      />
+                                      <i className="ti-lock" style={styles.securedTextIcon} />
                                       Transactions are secure and encrypted.
                                     </div>
                                     <div style={styles.stripeImageWrapper}>

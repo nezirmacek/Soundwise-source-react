@@ -56,8 +56,7 @@ template += '            height: 100% !important;';
 template += '            width: 100% !important;';
 template += '        }';
 template += '';
-template +=
-  '        /* What it does: Stops email clients resizing small text. */';
+template += '        /* What it does: Stops email clients resizing small text. */';
 template += '        * {';
 template += '            -ms-text-size-adjust: 100%;';
 template += '            -webkit-text-size-adjust: 100%;';
@@ -68,8 +67,7 @@ template += '        div[style*="margin: 16px 0"] {';
 template += '            margin: 0 !important;';
 template += '        }';
 template += '';
-template +=
-  '        /* What it does: Stops Outlook from adding extra spacing to tables. */';
+template += '        /* What it does: Stops Outlook from adding extra spacing to tables. */';
 template += '        table,';
 template += '        td {';
 template += '            mso-table-lspace: 0pt !important;';
@@ -116,14 +114,12 @@ template += '        .a6S {';
 template += '            display: none !important;';
 template += '            opacity: 0.01 !important;';
 template += '        }';
-template +=
-  "        /* If the above doesn't work, add a .g-img class to any image in question. */";
+template += "        /* If the above doesn't work, add a .g-img class to any image in question. */";
 template += '        img.g-img + div {';
 template += '            display: none !important;';
 template += '        }';
 template += '';
-template +=
-  '        /* What it does: Prevents underlining the button text in Windows 10 */';
+template += '        /* What it does: Prevents underlining the button text in Windows 10 */';
 template += '        .button-link {';
 template += '            text-decoration: none !important;';
 template += '        }';
@@ -132,8 +128,7 @@ template +=
   '        /* What it does: Removes right gutter in Gmail iOS app: https://github.com/TedGoas/Cerberus/issues/89  */';
 template +=
   "        /* Create one of these media queries for each additional viewport size you'd like to fix */";
-template +=
-  '        /* Thanks to Eric Lepetit (@ericlepetitsf) for help troubleshooting */';
+template += '        /* Thanks to Eric Lepetit (@ericlepetitsf) for help troubleshooting */';
 template +=
   '        @media only screen and (min-device-width: 375px) and (max-device-width: 413px) { /* iPhone 6 and 6+ */';
 template += '            .email-container {';
@@ -142,8 +137,7 @@ template += '            }';
 template += '        }';
 template += '';
 template += '     @media screen and (max-width: 480px) {';
-template +=
-  '         /* What it does: Forces Gmail app to display email full width */';
+template += '         /* What it does: Forces Gmail app to display email full width */';
 template += '         u ~ div .email-container {';
 template += '           min-width: 100vw;';
 template += '         }';
@@ -169,8 +163,7 @@ template += '';
 template += '    /* Media Queries */';
 template += '    @media screen and (max-width: 600px) {';
 template += '';
-template +=
-  '        /* What it does: Adjust typography on small screens to improve readability */';
+template += '        /* What it does: Adjust typography on small screens to improve readability */';
 template += '        .email-container p {';
 template += '            font-size: 17px !important;';
 template += '        }';
@@ -194,8 +187,7 @@ template += '';
 template += '</head>';
 template +=
   '<body width="100%" bgcolor="#222222" style="margin: 0; mso-line-height-rule: exactly;">';
-template +=
-  '    <center style="width: 100%; background: #222222; text-align: left;">';
+template += '    <center style="width: 100%; background: #222222; text-align: left;">';
 template += '';
 template += '        <!-- Visually Hidden Preheader Text : BEGIN -->';
 template +=
@@ -209,11 +201,9 @@ template += '        <!--';
 template += '            Set the email width. Defined in two places:';
 template +=
   '            1. max-width for all clients except Desktop Windows Outlook, allowing the email to squish on narrow but never go wider than 600px.';
-template +=
-  '            2. MSO tags for Desktop Windows Outlook enforce a 600px width.';
+template += '            2. MSO tags for Desktop Windows Outlook enforce a 600px width.';
 template += '        -->';
-template +=
-  '        <div style="max-width: 600px; margin: auto;" class="email-container">';
+template += '        <div style="max-width: 600px; margin: auto;" class="email-container">';
 template += '            <!--[if mso]>';
 template +=
   '            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center">';
@@ -225,8 +215,7 @@ template += '            <!-- Email Header : BEGIN -->';
 template +=
   '            <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px;">';
 template += '                <tr>';
-template +=
-  '                    <td style="padding: 20px 0; text-align: center">';
+template += '                    <td style="padding: 20px 0; text-align: center">';
 template +=
   '                        <img src="http://placehold.it/200x50" width="200" height="50" alt="alt_text" border="0" style="height: auto; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555;">';
 template += '                    </td>';
@@ -302,8 +291,7 @@ template +=
 template +=
   '                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" width="100%" style="max-width:560px;">';
 template += '                            <tr>';
-template +=
-  '                                <td align="center" valign="top" width="50%">';
+template += '                                <td align="center" valign="top" width="50%">';
 template +=
   '                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 14px;text-align: left;">';
 template += '                                        <tr>';
@@ -322,8 +310,7 @@ template += '                                            </td>';
 template += '                                        </tr>';
 template += '                                    </table>';
 template += '                                </td>';
-template +=
-  '                                <td align="center" valign="top" width="50%">';
+template += '                                <td align="center" valign="top" width="50%">';
 template +=
   '                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 14px;text-align: left;">';
 template += '                                        <tr>';
@@ -441,11 +428,11 @@ template += '    </center>';
 template += '</body>';
 template += '</html>';
 
-var parameters = {apiKey: sendinBlueApiKey, timeout: 5000};
+var parameters = { apiKey: sendinBlueApiKey, timeout: 5000 };
 var sendinObj = new sendinblue(parameters);
 
 var input = {
-  to: {['natasha@mysoundwise.com']: ''},
+  to: { ['natasha@mysoundwise.com']: '' },
   from: ['support@mysoundwise.com', 'Soundwise'],
   subject: 'test email',
   html: template,

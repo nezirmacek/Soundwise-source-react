@@ -42,10 +42,7 @@ export default class BlogPost extends Component {
             <title>{post.seo_title}</title>
             <meta name="description" content={post.meta_description} />
             <meta name="og:image" content={post.featured_image} />
-            <meta
-              property="og:url"
-              content={`https://mysoundwise.com/blog/post/${post.slug}`}
-            />
+            <meta property="og:url" content={`https://mysoundwise.com/blog/post/${post.slug}`} />
             <meta property="fb:app_id" content="1726664310980105" />
             <meta property="og:title" content={post.seo_title} />
             <meta property="og:description" content={post.meta_description} />
@@ -62,10 +59,7 @@ export default class BlogPost extends Component {
             className="padding-70px-tb xs-padding-60px-tb blog-style1 blog-post-style bg-white builder-bg"
             id="blog-section1"
           >
-            <div
-              className="row"
-              style={{ paddingLeft: '10%', paddingRight: '10%' }}
-            >
+            <div className="row" style={{ paddingLeft: '10%', paddingRight: '10%' }}>
               <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
                 <img
                   style={{}}
@@ -116,9 +110,7 @@ export default class BlogPost extends Component {
                   className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center "
                   style={{}}
                 >
-                  <span className="margin-eight-right title-small sm-title-small">
-                    Share this:
-                  </span>
+                  <span className="margin-eight-right title-small sm-title-small">Share this:</span>
                   <a
                     target="_blank"
                     href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/blog/post/${
@@ -163,9 +155,7 @@ export default class BlogPost extends Component {
                   className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center "
                   style={{}}
                 >
-                  <span className="margin-eight-right title-small sm-title-small">
-                    Share this:
-                  </span>
+                  <span className="margin-eight-right title-small sm-title-small">Share this:</span>
                   <a
                     target="_blank"
                     href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/blog/post/${

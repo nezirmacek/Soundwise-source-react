@@ -156,9 +156,7 @@ class _SoundcastPlayingPage extends Component {
   sendToDatabase(event, currentEpisode) {
     const { soundcastID, soundcast, startPosition, userID } = this.state;
     const _date = moment().format('YYYY-MM-DD');
-    let totalListens = currentEpisode.totalListens
-      ? currentEpisode.totalListens
-      : 0;
+    let totalListens = currentEpisode.totalListens ? currentEpisode.totalListens : 0;
     firebase
       .database()
       .ref(`episodes/${currentEpisode.id}/totalListens`)
@@ -182,13 +180,9 @@ class _SoundcastPlayingPage extends Component {
       date: _date,
       startPosition: Math.floor(startPosition),
       endPosition: Math.floor(
-        this.state.endPosition >= startPosition
-          ? this.state.endPosition
-          : startPosition
+        this.state.endPosition >= startPosition ? this.state.endPosition : startPosition
       ),
-      percentCompleted: Math.round(
-        (this.state.endPosition / this.audio.duration) * 100 || 100
-      ),
+      percentCompleted: Math.round((this.state.endPosition / this.audio.duration) * 100 || 100),
       sessionDuration: this.state.endPosition - startPosition,
       createdAt: _date,
       updatedAt: _date,
@@ -196,10 +190,7 @@ class _SoundcastPlayingPage extends Component {
 
     if (this.state.endPosition - startPosition > 0) {
       // save only with positive duration
-      Axios.post(
-        'https://mysoundwise.com/api/listening_session',
-        listeningSession
-      )
+      Axios.post('https://mysoundwise.com/api/listening_session', listeningSession)
         .then(res => {
           // console.log('success save listeningSessions: ', res)
         })
@@ -211,8 +202,8 @@ class _SoundcastPlayingPage extends Component {
     if (seconds > 0) {
       const _hours = Math.floor(seconds / 3600);
       const _minutes = Math.floor((seconds - _hours * 3600) / 60);
-      return `${(_hours && `${_hours} hour`) || ''}${(_hours > 1 && 's') ||
-        ''} ${(_minutes < 10 && `0${_minutes} min`) ||
+      return `${(_hours && `${_hours} hour`) || ''}${(_hours > 1 && 's') || ''} ${(_minutes < 10 &&
+        `0${_minutes} min`) ||
         `${_minutes} min`}${(_minutes > 1 && 's') || ''}`;
     } else {
       return '0 mins';
@@ -232,8 +223,7 @@ class _SoundcastPlayingPage extends Component {
 
   handlePlayClicked(episode) {
     const that = this;
-    const iOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (this.state.playing) {
       this.audio.pause();
       this.setState({
@@ -345,11 +335,7 @@ class _SoundcastPlayingPage extends Component {
                     style={{ paddingBottom: 30, textAlign: 'center' }}
                   >
                     <div className="col-md-offset-2 col-md-2 col-sm-3 col-xs-12 margin-three-bottom">
-                      <img
-                        src={soundcast.imageURL}
-                        alt={soundcast.title}
-                        style={{}}
-                      />
+                      <img src={soundcast.imageURL} alt={soundcast.title} style={{}} />
                     </div>
                     <div className="col-md-6 col-sm-7 col-xs-12">
                       <h2 className="title-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray  tz-text">

@@ -88,8 +88,7 @@ export default class SoundcastsBundles extends Component {
   }
 
   async deleteSoundcast(soundcastId) {
-    const soundcastTitle = this.props.userInfo.soundcasts_managed[soundcastId]
-      .title;
+    const soundcastTitle = this.props.userInfo.soundcasts_managed[soundcastId].title;
     const confirmText = `Are you sure you want to delete ${soundcastTitle}? All information about this soundcast will be deleted, including subscribers' emails and audio files.`;
     if (confirm(confirmText)) {
       await firebase
@@ -118,9 +117,7 @@ export default class SoundcastsBundles extends Component {
     const that = this;
     const _bundles_managed = [];
     for (let id in userInfo.soundcasts_managed) {
-      const _soundcast = JSON.parse(
-        JSON.stringify(userInfo.soundcasts_managed[id])
-      );
+      const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
       if (_soundcast.title && _soundcast.bundle) {
         _soundcast.id = id;
         _bundles_managed.push(_soundcast);
@@ -135,10 +132,7 @@ export default class SoundcastsBundles extends Component {
           onClose={this.handleModal}
           userInfo={userInfo}
         />
-        <div
-          className="padding-bottom-20px"
-          style={{ display: 'flex', alignItems: 'center' }}
-        >
+        <div className="padding-bottom-20px" style={{ display: 'flex', alignItems: 'center' }}>
           <span className="title-medium ">Soundcasts</span>
         </div>
         <ul className="nav nav-pills">
@@ -148,10 +142,7 @@ export default class SoundcastsBundles extends Component {
             </Link>
           </li>
           <li role="presentation" className="active">
-            <Link
-              style={{ backgroundColor: 'transparent' }}
-              to="/dashboard/soundcasts/bundles"
-            >
+            <Link style={{ backgroundColor: 'transparent' }} to="/dashboard/soundcasts/bundles">
               <span
                 style={{
                   fontSize: 15,
@@ -167,28 +158,16 @@ export default class SoundcastsBundles extends Component {
         {_bundles_managed.map((soundcast, i) => {
           return (
             <div className="row" key={i} style={{ ...styles.row }}>
-              <div
-                className=" col-md-7 col-sm-12 col-xs-12"
-                style={styles.soundcastInfo}
-              >
+              <div className=" col-md-7 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                 <div className="row">
                   <div className="col-md-2 col-sm-2 col-xs-2">
-                    <img
-                      src={soundcast.imageURL}
-                      style={styles.soundcastImage}
-                    />
+                    <img src={soundcast.imageURL} style={styles.soundcastImage} />
                   </div>
-                  <div
-                    className="col-md-7 col-sm-6 col-xs-10"
-                    style={styles.soundcastDescription}
-                  >
+                  <div className="col-md-7 col-sm-6 col-xs-10" style={styles.soundcastDescription}>
                     <span style={styles.soundcastTitle}>{soundcast.title}</span>
                     {(soundcast.last_update && (
                       <div style={styles.soundcastUpdated}>
-                        Last updated:{' '}
-                        {moment(soundcast.last_update * 1000).format(
-                          'MMM DD YYYY'
-                        )}
+                        Last updated: {moment(soundcast.last_update * 1000).format('MMM DD YYYY')}
                       </div>
                     )) ||
                       null}
@@ -198,9 +177,7 @@ export default class SoundcastsBundles extends Component {
                     style={{ ...styles.subscribers, textAlign: 'center' }}
                   >
                     <span style={styles.soundcastUpdated}>
-                      {(soundcast.subscribed &&
-                        Object.keys(soundcast.subscribed).length) ||
-                        0}{' '}
+                      {(soundcast.subscribed && Object.keys(soundcast.subscribed).length) || 0}{' '}
                       subscribed
                     </span>
                     <span
@@ -220,9 +197,7 @@ export default class SoundcastsBundles extends Component {
                       <div style={{ ...styles.soundcastUpdated }}>
                         <a
                           target="_blank"
-                          href={`https://mysoundwise.com/soundcasts/${
-                            soundcast.id
-                          }`}
+                          href={`https://mysoundwise.com/soundcasts/${soundcast.id}`}
                           style={{ cursor: 'pointer' }}
                         >
                           <span
@@ -236,9 +211,7 @@ export default class SoundcastsBundles extends Component {
                         </a>
                         <a
                           target="_blank"
-                          href={`https://mysoundwise.com/signup/soundcast_user/${
-                            soundcast.id
-                          }`}
+                          href={`https://mysoundwise.com/signup/soundcast_user/${soundcast.id}`}
                           style={{ paddingLeft: 15 }}
                         >
                           <span
@@ -292,10 +265,7 @@ export default class SoundcastsBundles extends Component {
                   </div>
                 </div>
               </div>
-              <div
-                className="col-md-5 col-sm-12 col-xs-12"
-                style={styles.soundcastInfo}
-              >
+              <div className="col-md-5 col-sm-12 col-xs-12" style={styles.soundcastInfo}>
                 <div
                   className="col-md-2 col-sm-2 col-xs-12"
                   style={{
@@ -317,10 +287,7 @@ export default class SoundcastsBundles extends Component {
             </div>
           );
         })}
-        <div
-          className="row"
-          style={{ ...styles.row, backgroundColor: 'transparent' }}
-        >
+        <div className="row" style={{ ...styles.row, backgroundColor: 'transparent' }}>
           <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <OrangeSubmitButton
               label="Create New Bundle"
@@ -328,9 +295,7 @@ export default class SoundcastsBundles extends Component {
                 if (Object.keys(userInfo.soundcasts_managed).length > 1) {
                   history.push('/dashboard/create_bundle');
                 } else {
-                  alert(
-                    'You need at least 2 individual soundcasts before creating a bundle!'
-                  );
+                  alert('You need at least 2 individual soundcasts before creating a bundle!');
                 }
               }}
             />

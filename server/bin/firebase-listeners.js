@@ -279,14 +279,7 @@ function deleteUserRecord(user) {
 function addOrUpdateCommentRecord(comment) {
   // Get Firebase object
   if (comment.val()) {
-    const {
-      episodeID,
-      announcementID,
-      soundcastId,
-      userID,
-      content,
-      timestamp,
-    } = comment.val();
+    const { episodeID, announcementID, soundcastId, userID, content, timestamp } = comment.val();
     const commentId = comment.key;
     // const parsedIDs = commentId.split('-');
     // let parentId;
@@ -342,14 +335,7 @@ function deleteCommentRecord(comment) {
 function addOrUpdateLikeRecord(like) {
   // Get Firebase object
   if (like.val()) {
-    const {
-      episodeId,
-      announcementId,
-      commentId,
-      soundcastId,
-      userId,
-      timeStamp,
-    } = like.val();
+    const { episodeId, announcementId, commentId, soundcastId, userId, timeStamp } = like.val();
     const likeId = like.key;
     const likeObj = {
       likeId,
@@ -564,14 +550,7 @@ function removeEpisodeEvent(episode) {
 
 async function addLikeEvent(like) {
   if (like.val()) {
-    const {
-      userId,
-      episodeId,
-      soundcastId,
-      announcementId,
-      commentId,
-      commentUserId,
-    } = like.val();
+    const { userId, episodeId, soundcastId, announcementId, commentId, commentUserId } = like.val();
     const likeId = like.key;
     const user = await getFirebaseUserById(userId);
     const episode = await getEpisodeById(episodeId);
@@ -635,9 +614,7 @@ async function addCommentOrReplyEvent(comment) {
     const parentComment = await getParentComment(parentId);
     const story = episodeID
       ? `${user.firstName} ${user.lastName} commented on ${episode.title}`
-      : `${user.firstName} ${user.lastName} commented on ${
-          soundcast.title
-        }'s message`;
+      : `${user.firstName} ${user.lastName} commented on ${soundcast.title}'s message`;
     const eventObj = {
       type,
       story,

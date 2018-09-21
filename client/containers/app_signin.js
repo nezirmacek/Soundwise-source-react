@@ -219,10 +219,7 @@ class _AppSignin extends Component {
       return <Redirect to={from} />;
     }
     return (
-      <div
-        className="row"
-        style={{ ...styles.row, height: window.innerHeight, overflow: 'auto' }}
-      >
+      <div className="row" style={{ ...styles.row, height: window.innerHeight, overflow: 'auto' }}>
         {(soundcast && (
           <div className="col-lg-8 col-md-12 col-sm-12 col-xs-12 center-col">
             <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12  text-center">
@@ -233,10 +230,7 @@ class _AppSignin extends Component {
                 style={{ ...styles.logo, height: 120 }}
               />
               <div style={styles.containerWrapper}>
-                <div
-                  style={styles.container}
-                  className="center-col text-center"
-                >
+                <div style={styles.container} className="center-col text-center">
                   <div
                     style={{
                       ...styles.title,
@@ -260,10 +254,7 @@ class _AppSignin extends Component {
                   <hr />
                   <span style={styles.withEmailText}>or with email</span>
                 </div>
-                <div
-                  style={styles.container}
-                  className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                >
+                <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <GreyInput
                     type="email"
                     styles={{}}
@@ -283,9 +274,7 @@ class _AppSignin extends Component {
                     validators={[minLengthValidator.bind(null, 1)]}
                   />
                   <div>
-                    <span style={{ color: 'red', fontSize: 16 }}>
-                      {message}
-                    </span>
+                    <span style={{ color: 'red', fontSize: 16 }}>{message}</span>
                   </div>
                   <OrangeSubmitButton
                     styles={{ marginTop: 15, marginBottom: 15 }}
@@ -360,8 +349,7 @@ class _AppSignin extends Component {
             <div style={styles.containerWrapper}>
               <div style={styles.container} className="center-col text-center">
                 <div style={{ ...styles.title, lineHeight: 'normal' }}>
-                  {(history.location.state && history.location.state.text) ||
-                    'Hello!'}
+                  {(history.location.state && history.location.state.text) || 'Hello!'}
                 </div>
                 <button
                   onClick={() => this.handleFBAuth()}
@@ -377,10 +365,7 @@ class _AppSignin extends Component {
                 <hr />
                 <span style={styles.withEmailText}>or with email</span>
               </div>
-              <div
-                style={styles.container}
-                className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-              >
+              <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <GreyInput
                   type="email"
                   styles={{}}

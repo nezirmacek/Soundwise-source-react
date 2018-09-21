@@ -9,10 +9,11 @@ const sgMail = require('@sendgrid/mail');
 const sendGridApiKey = require('../../config').sendGridApiKey;
 sgMail.setApiKey(sendGridApiKey);
 const database = require('../../database/index');
+const updateStripeAccount = require('./updateStripeAccounts.js').updateStripeAccount;
 
 module.exports.createSubscription = async (req, res) => {
   const options = {
-    items: [{plan: req.body.plan}],
+    items: [{ plan: req.body.plan }],
     metadata: {
       publisherID: req.body.publisherID,
     },
@@ -43,13 +44,11 @@ module.exports.createSubscription = async (req, res) => {
           stripe.subscriptions
             .create(options)
             .then(subscription => {
+              console.log('1, subscription = ', subscription);
               res.send(subscription);
             })
             .catch(err => {
-              console.log(
-                'createSubscription error creating subscription',
-                err
-              );
+              console.log('createSubscription error creating subscription', err);
               res.status(500).send(err);
             });
         })
@@ -63,23 +62,34 @@ module.exports.createSubscription = async (req, res) => {
       stripe.subscriptions
         .create(options)
         .then(subscription => {
+          console.log('2, subscription = ', subscription);
           res.send(subscription);
         })
         .catch(err => {
-          console.log(
-            'createSubscription error creating subscription with customer',
-            err
-          );
+          console.log('createSubscription error creating subscription with customer', err);
           res.status(500).send(err);
         });
     }
   } else {
-    // if subscription exists, update existing subscription
+    // if subscription exists
+    const publisherId = req.body.publisherID;
+
+    // update publisher's payout interval to daily when plan is 'pro' or 'platinum'
+    const stripe_user_id = (await firebase
+      .database()
+      .ref(`publishers/${publisherId}/stripe_user_id`)
+      .once('value')).val();
+    updateStripeAccount(stripe_user_id, publisherId, req.body.publisherPlan);
+
+    // update existing subscription
     const subscription = await stripe.subscriptions.retrieve(req.body.subscriptionID);
+    console.log('publisherId = ', publisherId);
+    console.log('3, subscription = ', subscription);
     options.items[0].id = subscription.items.data[0].id;
     stripe.subscriptions
       .update(req.body.subscriptionID, options)
       .then(subscription => {
+        console.log('4, subscription = ', subscription);
         res.send(subscription);
       })
       .catch(err => {
@@ -117,25 +127,18 @@ module.exports.renewSubscription = (req, res) => {
     } else if (data.plan.product === 'prod_CIfHWeFWKcVKyh') {
       subscriptionPlanName = 'Soundwise Pro Annual Subscription';
     } else {
-      console.log(
-        `Error: renewSubscription unknown plan product ${data.plan.product}`
-      );
+      console.log(`Error: renewSubscription unknown plan product ${data.plan.product}`);
     }
 
     // check if there is referredBy property in the subscription's metadata
     if (data.metadata.referredBy) {
-      const [
-        affiliateId,
-        affiliateStripeAccountId,
-      ] = data.metadata.referredBy.split('-');
+      const [affiliateId, affiliateStripeAccountId] = data.metadata.referredBy.split('-');
       const transferAmount = Math.floor(
         (chargeAmount * 0.971 - 30) / 2 // half of (chargeAmount minus stripe fee: - 2.9% - $0.3)
       );
       if (transferAmount <= 0) {
         console.log(
-          `Error: renewSubscription wrong transferAmount ${JSON.stringify(
-            req.body.data
-          )}`
+          `Error: renewSubscription wrong transferAmount ${JSON.stringify(req.body.data)}`
         );
       } else {
         stripe.transfers.create(
@@ -147,9 +150,7 @@ module.exports.renewSubscription = (req, res) => {
           },
           (err, transfer) => {
             if (err) {
-              return console.log(
-                `Error: renewSubscription stripe.transfers.create ${err}`
-              );
+              return console.log(`Error: renewSubscription stripe.transfers.create ${err}`);
             }
             database.Transfers.create({
               affiliateId,
@@ -189,7 +190,7 @@ module.exports.renewSubscription = (req, res) => {
 };
 
 module.exports.cancelSubscription = (req, res) => {
-  const {subscriptionID} = req.body;
+  const { subscriptionID } = req.body;
   stripe.subscriptions
     .del(subscriptionID)
     .then(response => {

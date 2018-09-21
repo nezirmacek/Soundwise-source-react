@@ -31,8 +31,8 @@ export default class HowItWorks extends Component {
                 <div className="text-large text-dark-gray center-col tz-text">
                   {' '}
                   <p>
-                    You can always access the course from your account. Your
-                    course progress is saved. Come back to it whenever you want.
+                    You can always access the course from your account. Your course progress is
+                    saved. Come back to it whenever you want.
                   </p>
                 </div>
               </div>
@@ -46,9 +46,8 @@ export default class HowItWorks extends Component {
                 <div className="text-large center-col tz-text text-dark-gray">
                   {' '}
                   <p>
-                    Audio lessons are perfect for listening on your phone. You
-                    can also preload the lessons and access them offline,
-                    without using your data plan.
+                    Audio lessons are perfect for listening on your phone. You can also preload the
+                    lessons and access them offline, without using your data plan.
                   </p>
                 </div>
               </div>
@@ -61,8 +60,8 @@ export default class HowItWorks extends Component {
                 </h3>
                 <div className="text-large center-col tz-text text-dark-gray">
                   <p>
-                    The courses come with transcripts, notes, and/or additional
-                    resources to help you learn better.
+                    The courses come with transcripts, notes, and/or additional resources to help
+                    you learn better.
                   </p>
                 </div>
               </div>
@@ -76,8 +75,8 @@ export default class HowItWorks extends Component {
                 <div className="text-large center-col tz-text text-dark-gray">
                   {' '}
                   <p>
-                    Every course includes exercises and action steps to help you
-                    implement the ideas you learned.
+                    Every course includes exercises and action steps to help you implement the ideas
+                    you learned.
                   </p>
                 </div>
               </div>

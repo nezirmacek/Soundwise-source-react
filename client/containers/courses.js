@@ -46,16 +46,12 @@ class _Courses extends Component {
                   COURSES
                 </h2>
                 <div className="text-medium width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">
-                  Audio programs tailored to your active lifestyle and helping
-                  you achieve your highest potential wherever you go.
+                  Audio programs tailored to your active lifestyle and helping you achieve your
+                  highest potential wherever you go.
                 </div>
               </div>
               {courseArr.map(course => (
-                <CourseCard
-                  course={course}
-                  key={course.id}
-                  match={this.props.match}
-                />
+                <CourseCard course={course} key={course.id} match={this.props.match} />
               ))}
             </div>
           </div>

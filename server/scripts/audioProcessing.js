@@ -5,7 +5,7 @@ const awsConfig = require('../../config').awsConfig;
 const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
-const {uploader, logErr, setAudioTags, parseSilenceDetect} = require('./utils')(
+const { uploader, logErr, setAudioTags, parseSilenceDetect } = require('./utils')(
   'audioProcessing'
 );
 const firebase = require('firebase-admin');
@@ -90,23 +90,16 @@ module.exports.audioProcessing = async (req, res) => {
         encoding: null, // return body as a Buffer
       })
       .then(body => {
-        const savePath = `/tmp/audio_processing_${episodeId +
-          path.extname(episode.url)}`;
+        const savePath = `/tmp/audio_processing_${episodeId + path.extname(episode.url)}`;
         fs.writeFile(savePath, body, err => {
           if (err) {
-            return logErr(
-              `cannot write tmp audio file ${savePath}`,
-              null,
-              resolve
-            );
+            return logErr(`cannot write tmp audio file ${savePath}`, null, resolve);
           }
           filePath = savePath;
           resolve(); // success
         });
       })
-      .catch(err =>
-        logErr(`unable to get episode ${episode.url} ${err}`, null, resolve)
-      );
+      .catch(err => logErr(`unable to get episode ${episode.url} ${err}`, null, resolve));
   });
   if (!filePath) {
     return logErr(`empty filePath variable`);
@@ -145,10 +138,7 @@ module.exports.audioProcessing = async (req, res) => {
               file => {
                 file.addCommand('-af', `atrim=${start}:${end}`);
                 file.addCommand('-q:a', '3');
-                const trimmedPath = `${filePath.slice(
-                  0,
-                  -4
-                )}_trimmed${path.extname(filePath)}`;
+                const trimmedPath = `${filePath.slice(0, -4)}_trimmed${path.extname(filePath)}`;
                 file.save(trimmedPath, err => {
                   if (err) {
                     return logErr(`trimming fails ${filePath} ${err}`);
@@ -174,9 +164,7 @@ module.exports.audioProcessing = async (req, res) => {
             file.addCommand('-f', `null`);
             file.save('-', (err, fileName, stdout, stderr) => {
               if (err) {
-                return logErr(
-                  `removeSilence running silencedetect ${filePath} ${err}`
-                );
+                return logErr(`removeSilence running silencedetect ${filePath} ${err}`);
               }
               const output = parseSilenceDetect(stdout + '\n' + stderr);
               new ffmpeg(filePath).then(
@@ -184,6 +172,8 @@ module.exports.audioProcessing = async (req, res) => {
                   let chunksCount = 0;
                   let filterComplex = '"';
                   let filterComplexEnd = '';
+                  let atrim_start = 0;
+                  let atrim_end = 0;
                   if (output[0][0] === 'silence_start') {
                     // not starting with silence (trimmed)
                     chunksCount++;
@@ -193,14 +183,15 @@ module.exports.audioProcessing = async (req, res) => {
                     if (i[0] === 'silence_end') {
                       // not empty block
                       chunksCount++;
-                      filterComplex += `[0]atrim=start=${Number(i[1]).toFixed(
-                        3
-                      )}`;
+                      atrim_start = Number(i[1]).toFixed(3);
+                      filterComplex += `[0]atrim=start=${atrim_start}`;
                     }
                     if (i[0] === 'silence_start') {
-                      filterComplex += `:end=${Number(i[1]).toFixed(
-                        3
-                      )}[a${chunksCount}];`;
+                      atrim_end = Number(i[1]).toFixed(3);
+                      if (atrim_start >= atrim_end) {
+                        atrim_end = atrim_start + 0.001; // add microsecond
+                      }
+                      filterComplex += `:end=${atrim_end}[a${chunksCount}];`;
                       filterComplexEnd += `[a${chunksCount}]`;
                     }
                   });
@@ -210,8 +201,7 @@ module.exports.audioProcessing = async (req, res) => {
                   }
                   if (output[output.length - 1][0] === 'silence_duration') {
                     // not ending with silence
-                    filterComplex += `:end=${file.metadata.duration.seconds +
-                      1}[a${chunksCount}];`;
+                    filterComplex += `:end=${file.metadata.duration.seconds + 1}[a${chunksCount}];`;
                     filterComplexEnd += `[a${chunksCount}]`;
                   }
                   filterComplex += `${filterComplexEnd}concat=n=${chunksCount}:v=0:a=1"`;
@@ -224,9 +214,7 @@ module.exports.audioProcessing = async (req, res) => {
                   )}_silence_removed${path.extname(filePath)}`;
                   file.save(silenceRemovedPath, err => {
                     if (err) {
-                      return logErr(
-                        `removing silence fails ${filePath} ${err}`
-                      );
+                      return logErr(`removing silence fails ${filePath} ${err}`);
                     }
                     fs.unlink(filePath, err => 0); // remove original
                     introProcessing(silenceRemovedPath);
@@ -247,22 +235,17 @@ module.exports.audioProcessing = async (req, res) => {
     function introProcessing(filePath) {
       if (intro) {
         request
-          .get({url: intro, encoding: null})
+          .get({ url: intro, encoding: null })
           .then(body => {
-            const introPath = `${filePath.slice(0, -4)}_intro${path.extname(
-              intro
-            )}`;
+            const introPath = `${filePath.slice(0, -4)}_intro${path.extname(intro)}`;
             fs.writeFile(introPath, body, err => {
               if (err) {
                 return logErr(`intro write file ${introPath}`);
               }
               new ffmpeg(introPath).then(
                 file => {
-                  const milliseconds =
-                    file.metadata.duration.raw.split('.')[1] || 0;
-                  const introDuration = Number(
-                    file.metadata.duration.seconds + '.' + milliseconds
-                  );
+                  const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
+                  const introDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
                   const originalIntroPath = intro === outro ? introPath : '';
                   if (overlayDuration) {
                     // make fading
@@ -271,15 +254,11 @@ module.exports.audioProcessing = async (req, res) => {
                     // One thing to note is that if overlayDuration > 0, the intro fade out duration should be overlayDuration x 2
                     const fadeDuration = overlayDuration * 2;
                     const fadeStartPosition = introDuration - fadeDuration;
-                    file.addCommand(
-                      '-af',
-                      `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`
-                    );
+                    file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
                     file.addCommand('-q:a', '3');
-                    const introFadePath = `${introPath.slice(
-                      0,
-                      -4
-                    )}_fadeintro${path.extname(intro)}`;
+                    const introFadePath = `${introPath.slice(0, -4)}_fadeintro${path.extname(
+                      intro
+                    )}`;
                     file.save(introFadePath, err => {
                       if (err) {
                         return logErr(`intro fade fails ${introPath} ${err}`);
@@ -288,20 +267,10 @@ module.exports.audioProcessing = async (req, res) => {
                         // outro intro urls differ
                         fs.unlink(introPath, err => 0); // remove original intro
                       }
-                      outroProcessing(
-                        filePath,
-                        introFadePath,
-                        introDuration,
-                        originalIntroPath
-                      );
+                      outroProcessing(filePath, introFadePath, introDuration, originalIntroPath);
                     });
                   } else {
-                    outroProcessing(
-                      filePath,
-                      introPath,
-                      introDuration,
-                      originalIntroPath
-                    );
+                    outroProcessing(filePath, introPath, introDuration, originalIntroPath);
                   }
                 },
                 err => logErr(`ffmpeg intro ${introPath} ${err}`)
@@ -313,20 +282,13 @@ module.exports.audioProcessing = async (req, res) => {
         outroProcessing(filePath); // no intro
       }
     }
-    function outroProcessing(
-      filePath,
-      introPath,
-      introDuration,
-      originalIntroPath
-    ) {
+    function outroProcessing(filePath, introPath, introDuration, originalIntroPath) {
       if (outro) {
         if (!originalIntroPath) {
           request
-            .get({url: outro, encoding: null})
+            .get({ url: outro, encoding: null })
             .then(body => {
-              const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(
-                outro
-              )}`;
+              const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(outro)}`;
               fs.writeFile(outroPath, body, err => {
                 if (err) {
                   return logErr(`outro write file ${filePath}`);
@@ -346,20 +308,14 @@ module.exports.audioProcessing = async (req, res) => {
                 // a. fade in an outro clip
                 // ffmpeg -i outro.mp3 -af 'afade=t=in:ss=0:d=5,afade=out:st=885:d=5' outro-fadein.mp3
                 const fadein = `afade=t=in:st=0:d=${overlayDuration * 2}`;
-                const milliseconds =
-                  file.metadata.duration.raw.split('.')[1] || 0;
-                const outroDuration = Number(
-                  file.metadata.duration.seconds + '.' + milliseconds
-                );
+                const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
+                const outroDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
                 const fadeDuration = overlayDuration * 2;
                 const fadeStartPosition = outroDuration - fadeDuration;
                 const fadeout = `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`;
                 file.addCommand('-af', `${fadein},${fadeout}`);
                 file.addCommand('-q:a', '3');
-                const outroFadePath = `${outroPath.slice(
-                  0,
-                  -4
-                )}_fadeoutro${path.extname(outro)}`;
+                const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(outro)}`;
                 file.save(outroFadePath, err => {
                   if (err) {
                     return logErr(`outro fade fails ${outroFadePath} ${err}`);
@@ -383,9 +339,7 @@ module.exports.audioProcessing = async (req, res) => {
         new ffmpeg(filePath).then(
           file => {
             const milliseconds = file.metadata.duration.raw.split('.')[1] || 0;
-            const mainFileDuration = Number(
-              file.metadata.duration.seconds + '.' + milliseconds
-            );
+            const mainFileDuration = Number(file.metadata.duration.seconds + '.' + milliseconds);
             let adelay1, adelay2;
             if (introPath) {
               let introDelay = introDuration;
@@ -412,8 +366,7 @@ module.exports.audioProcessing = async (req, res) => {
               let outroDelay = introDuration + mainFileDuration; // includes intro duration
               if (overlayDuration) {
                 // have fading
-                outroDelay =
-                  introDuration + mainFileDuration - 2 * overlayDuration;
+                outroDelay = introDuration + mainFileDuration - 2 * overlayDuration;
               }
               outroDelay = Math.floor(outroDelay * 1000);
               adelay2 = outroDelay;
@@ -440,9 +393,7 @@ module.exports.audioProcessing = async (req, res) => {
             }
             file.addCommand('-filter_complex', `${filterComplex}`);
             file.addCommand('-q:a', '3');
-            const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(
-              filePath
-            )}`;
+            const concatPath = `${filePath.slice(0, -4)}_concat${path.extname(filePath)}`;
             file.save(concatPath, err => {
               if (err) {
                 return logErr(`concat save fails ${concatPath} ${err}`);
@@ -474,22 +425,16 @@ module.exports.audioProcessing = async (req, res) => {
             );
             file.addCommand('-ar', `44.1k`);
             file.addCommand('-q:a', '3');
-            const setVolumePath = `${filePath.slice(
-              0,
-              -4
-            )}_set_volume${path.extname(filePath)}`;
+            const setVolumePath = `${filePath.slice(0, -4)}_set_volume${path.extname(filePath)}`;
             file.save(setVolumePath, err => {
               if (err) {
-                return logErr(
-                  `volumeProccessing save fails ${setVolumePath} ${err}`
-                );
+                return logErr(`volumeProccessing save fails ${setVolumePath} ${err}`);
               }
               fs.unlink(filePath, err => 0); // remove original
               setMP3Codec(setVolumePath);
             });
           },
-          err =>
-            logErr(`volumeProccessing unable to parse file with ffmpeg ${err}`)
+          err => logErr(`volumeProccessing unable to parse file with ffmpeg ${err}`)
         );
       } else {
         setMP3Codec(filePath);
@@ -532,12 +477,10 @@ module.exports.audioProcessing = async (req, res) => {
             //    and use soundcast.imageURL as the cover art
             const url = episode.coverArtUrl || soundcast.imageURL;
             request
-              .get({url, encoding: null})
+              .get({ url, encoding: null })
               .then(body => {
-                const {height, width} = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
-                const coverPath = `/tmp/audio_processing_${episodeId}_cover${path.extname(
-                  url
-                )}`;
+                const { height, width } = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
+                const coverPath = `/tmp/audio_processing_${episodeId}_cover${path.extname(url)}`;
                 fs.writeFile(coverPath, body, err => {
                   // save cover image file
                   if (err) {
@@ -547,17 +490,12 @@ module.exports.audioProcessing = async (req, res) => {
                     // resizing
                     new ffmpeg(coverPath).then(
                       imageFile => {
-                        const resizedPath = `${coverPath.slice(
-                          0,
-                          -4
-                        )}_resized.png`;
+                        const resizedPath = `${coverPath.slice(0, -4)}_resized.png`;
                         // ffmpeg -i img.png -vf scale=300:300 img_updated.png
                         imageFile.addCommand('-vf', `scale=300:300`);
                         imageFile.save(resizedPath, err => {
                           if (err) {
-                            return logErr(
-                              `cannot save updated image ${coverPath} ${err}`
-                            );
+                            return logErr(`cannot save updated image ${coverPath} ${err}`);
                           }
                           fs.unlink(coverPath, err => 0); // removing original image file
                           setAudioTags(
@@ -567,27 +505,13 @@ module.exports.audioProcessing = async (req, res) => {
                             episode.index,
                             soundcast.hostName
                           );
-                          nextProcessing(
-                            filePath,
-                            soundcast,
-                            file,
-                            resizedPath
-                          );
+                          nextProcessing(filePath, soundcast, file, resizedPath);
                         });
                       },
-                      err =>
-                        logErr(
-                          `setTags unable to parse file with ffmpeg ${err}`
-                        )
+                      err => logErr(`setTags unable to parse file with ffmpeg ${err}`)
                     );
                   } else {
-                    setAudioTags(
-                      file,
-                      coverPath,
-                      episode.title,
-                      episode.index,
-                      soundcast.hostName
-                    );
+                    setAudioTags(file, coverPath, episode.title, episode.index, soundcast.hostName);
                     nextProcessing(filePath, soundcast, file, coverPath);
                   }
                 });
@@ -613,7 +537,7 @@ module.exports.audioProcessing = async (req, res) => {
         uploader.use(
           new S3Strategy({
             uploadPath: 'soundcasts',
-            headers: {'x-amz-acl': 'public-read'},
+            headers: { 'x-amz-acl': 'public-read' },
             options: {
               key: awsConfig.accessKeyId,
               secret: awsConfig.secretAccessKey,
@@ -648,7 +572,7 @@ module.exports.audioProcessing = async (req, res) => {
               //     step 1: save episode metadata in our sql database
               //             and then save data. The equivalent from front end:
               database.Episode.findOrCreate({
-                where: {episodeId},
+                where: { episodeId },
                 defaults: {
                   episodeId,
                   soundcastId,
@@ -676,7 +600,7 @@ module.exports.audioProcessing = async (req, res) => {
                     badge: '1',
                   },
                 };
-                const options = {priority: 'high'};
+                const options = { priority: 'high' };
                 // send push notificaiton
                 firebase
                   .messaging()
@@ -693,23 +617,17 @@ module.exports.audioProcessing = async (req, res) => {
                 const responseObject = {
                   status: status => ({
                     send: msg =>
-                      console.log(
-                        `audio processing sendMarketingEmails ${status} ${msg}`
-                      ),
+                      console.log(`audio processing sendMarketingEmails ${status} ${msg}`),
                   }),
                 };
                 // let subscribers = [];
-                const subject = `${episode.title} was just published on ${
-                  soundcast.title
-                }`;
+                const subject = `${episode.title} was just published on ${soundcast.title}`;
                 if (soundcast.subscribed) {
                   // send notification email to subscribers
                   const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${publisherName} just published <strong>${
                     episode.title
                   }</strong> in <a href="${
-                    soundcast.landingPage
-                      ? 'https://mysoundwise.com/soundcasts/' + soundcastId
-                      : ''
+                    soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcastId : ''
                   }" target="_blank">${
                     soundcast.title
                   }</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
@@ -735,9 +653,7 @@ module.exports.audioProcessing = async (req, res) => {
                   const content = `<p>Hi there!</p><p></p><p>${publisherName} just published <strong>${
                     episode.title
                   }</strong> in <a href="${
-                    soundcast.landingPage
-                      ? 'https://mysoundwise.com/soundcasts/' + soundcastId
-                      : ''
+                    soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcastId : ''
                   }" target="_blank">${
                     soundcast.title
                   }</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${
@@ -794,7 +710,7 @@ module.exports.audioProcessing = async (req, res) => {
                   {
                     // res mocking object
                     error: logErr,
-                    status: status => ({send: () => 0}),
+                    status: status => ({ send: () => 0 }),
                   }
                 );
               }
@@ -804,9 +720,7 @@ module.exports.audioProcessing = async (req, res) => {
               to: publisherEmail,
               from: 'support@mysoundwise.com',
               subject: 'Your episode has been processed!',
-              html: `<p>Hello ${publisherName},</p><p>${
-                episode.title
-              } has been processed${
+              html: `<p>Hello ${publisherName},</p><p>${episode.title} has been processed${
                 autoPublish ? ' and published' : ''
               }.</p><p>${
                 !autoPublish
@@ -824,7 +738,7 @@ module.exports.audioProcessing = async (req, res) => {
 }; // audioProcessing
 
 module.exports.audioProcessingReplace = async (req, res) => {
-  const {episodeId, soundcastId} = req.body;
+  const { episodeId, soundcastId } = req.body;
   const episodeObj = await firebase
     .database()
     .ref(`episodes/${episodeId}`)
@@ -835,7 +749,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
   }
   res.send('OK');
   request
-    .get({url: episode.editedUrl, encoding: null})
+    .get({ url: episode.editedUrl, encoding: null })
     .then(body => {
       const outputPath = `/tmp/audio_processing_replace_${episodeId +
         path.extname(episode.editedUrl)}`;
@@ -846,7 +760,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
         uploader.use(
           new S3Strategy({
             uploadPath: 'soundcasts',
-            headers: {'x-amz-acl': 'public-read'},
+            headers: { 'x-amz-acl': 'public-read' },
             options: {
               key: awsConfig.accessKeyId,
               secret: awsConfig.secretAccessKey,
@@ -857,7 +771,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
         console.log('CHECK: audio processing replace ', outputPath, episodeId);
         uploader.upload(
           's3', // saving to S3 db
-          {path: outputPath, name: `${episodeId}.mp3`}, // replace original file
+          { path: outputPath, name: `${episodeId}.mp3` }, // replace original file
           async (err, files) => {
             fs.unlink(outputPath, err => 0); // remove downloaded
             if (err) {
@@ -887,7 +801,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
               .once('value');
             const soundcast = soundcastObj.val();
             database.Episode.findOrCreate({
-              where: {episodeId},
+              where: { episodeId },
               defaults: {
                 episodeId,
                 soundcastId,
@@ -915,7 +829,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
                   badge: '1',
                 },
               };
-              const options = {priority: 'high'};
+              const options = { priority: 'high' };
               // send push notificaiton
               firebase
                 .messaging()

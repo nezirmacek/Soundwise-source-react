@@ -18,9 +18,7 @@ import { Routes } from './routes';
 
 import rootReducer from './reducers';
 
-Raven.config(
-  'https://3fbd789e281e40f4bb05c2374e87b9e2@sentry.io/256844'
-).install();
+Raven.config('https://3fbd789e281e40f4bb05c2374e87b9e2@sentry.io/256844').install();
 
 // let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
 // let store = createStoreWithMiddleware(rootReducer)

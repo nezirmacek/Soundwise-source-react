@@ -82,10 +82,7 @@ class _SoundcastHeader extends Component {
   render() {
     const { soundcast } = this.props;
     const soundcastName = soundcast.title.split(' ').join('%20');
-    const { originalPrice, displayedPrice, pre, post } = this.props.getPrice(
-      soundcast,
-      'per'
-    );
+    const { originalPrice, displayedPrice, pre, post } = this.props.getPrice(soundcast, 'per');
 
     return (
       <div>
@@ -180,12 +177,8 @@ class _SoundcastHeader extends Component {
                           >
                             <strong>
                               {originalPrice && (
-                                <span
-                                  style={{ color: 'red', paddingRight: 10 }}
-                                >
-                                  <s>{`\u00A0$${Number(originalPrice).toFixed(
-                                    2
-                                  )}\u00A0`}</s>
+                                <span style={{ color: 'red', paddingRight: 10 }}>
+                                  <s>{`\u00A0$${Number(originalPrice).toFixed(2)}\u00A0`}</s>
                                 </span>
                               )}
                               {`${pre}${displayedPrice}`}
@@ -205,9 +198,7 @@ class _SoundcastHeader extends Component {
                         </span>
                         {this.renderProgressBar()}
                       </a>
-                      <div style={{ color: 'red' }}>
-                        {this.state.paymentError}
-                      </div>
+                      <div style={{ color: 'red' }}>{this.state.paymentError}</div>
                     </div>
                   </div>
                 </div>

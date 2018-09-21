@@ -34,10 +34,7 @@ class Resources extends Component {
           >
             {' '}
             (
-            <a
-              style={{ textDecoration: 'underline', color: '#F76B1C' }}
-              href={resource.link}
-            >
+            <a style={{ textDecoration: 'underline', color: '#F76B1C' }} href={resource.link}>
               {' '}
               Link{' '}
             </a>

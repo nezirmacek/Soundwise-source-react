@@ -1,10 +1,15 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 
 const env =
-  dotenv.config({ path: path.resolve(process.cwd(), 'client.env') }) || {};
+  dotenv.config({
+    path: path.resolve(
+      process.cwd(),
+      process.env.NODE_ENV === 'dev' ? 'client-development.env' : 'client-production.env'
+    ),
+  }) || {};
 
 const envKeys = Object.keys(env).reduce(
   (prev, next) => ({
@@ -15,6 +20,10 @@ const envKeys = Object.keys(env).reduce(
 );
 
 module.exports = {
+  mode: 'development',
+  // mode: 'production',
+  // devtool: 'source-map',
+
   context: __dirname,
   node: {
     // console: 'empty',
@@ -62,9 +71,9 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimizer: [new UglifyJsPlugin()],
-  },
+  // optimization: {
+  //   minimizer: [new UglifyJsPlugin()],
+  // },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     alias: {
@@ -77,9 +86,9 @@ module.exports = {
     contentBase: './client',
   },
   plugins: [
-    new webpack.SourceMapDevToolPlugin({
-      filename: '[file].map',
-    }),
+    // new webpack.SourceMapDevToolPlugin({
+    //   filename: '[file].map',
+    // }),
     new webpack.ProvidePlugin({
       videojs: 'video.js/dist/video.cjs.js',
       'window.videojs': 'video.js/dist/video.cjs.js',

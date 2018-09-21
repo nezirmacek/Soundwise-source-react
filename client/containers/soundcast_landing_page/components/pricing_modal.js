@@ -51,9 +51,7 @@ class _PricingModal extends Component {
             const price =
               coupon.couponType === 'trial_period'
                 ? 0
-                : (Number(prices[checked].price) *
-                    (100 - Number(coupon.percentOff))) /
-                  100;
+                : (Number(prices[checked].price) * (100 - Number(coupon.percentOff))) / 100;
             sumTotal = `Total today: $${Number(Math.round(price)).toFixed(2)}`;
             return true;
           }
@@ -106,11 +104,7 @@ class _PricingModal extends Component {
         labelStyle={{ color: Colors.mainOrange }}
         onClick={this.handleCheckout.bind(this)}
       />,
-      <FlatButton
-        label="Cancel"
-        primary={false}
-        onClick={this.handleModalClose.bind(this)}
-      />,
+      <FlatButton label="Cancel" primary={false} onClick={this.handleModalClose.bind(this)} />,
     ];
 
     return (
@@ -139,9 +133,7 @@ class _PricingModal extends Component {
                   ) {
                     originalPrice = displayedPrice.toFixed(2);
                     displayedPrice =
-                      (Number(price.price) *
-                        (100 - Number(coupon.percentOff))) /
-                      100;
+                      (Number(price.price) * (100 - Number(coupon.percentOff))) / 100;
                     return true;
                   }
                 });
@@ -150,21 +142,17 @@ class _PricingModal extends Component {
               let billing = 'billed monthly';
               let paymentPlan = price.paymentPlan || 'Free Access';
               if (price.billingCycle == 'annual') {
-                currentPrice = `${(
-                  Math.floor((displayedPrice / 12) * 100) / 100
-                ).toFixed(2)} / month`;
-                originalPrice = (
-                  Math.ceil((originalPrice / 12) * 100) / 100
-                ).toFixed(2);
+                currentPrice = `${(Math.floor((displayedPrice / 12) * 100) / 100).toFixed(
+                  2
+                )} / month`;
+                originalPrice = (Math.ceil((originalPrice / 12) * 100) / 100).toFixed(2);
                 billing = 'billed annually';
                 paymentPlan = price.paymentPlan || 'Annual Subscription';
               } else if (price.billingCycle == 'quarterly') {
-                currentPrice = `${(
-                  Math.floor((displayedPrice / 3) * 100) / 100
-                ).toFixed(2)} / month`;
-                originalPrice = (
-                  Math.ceil((originalPrice / 3) * 100) / 100
-                ).toFixed(2);
+                currentPrice = `${(Math.floor((displayedPrice / 3) * 100) / 100).toFixed(
+                  2
+                )} / month`;
+                originalPrice = (Math.ceil((originalPrice / 3) * 100) / 100).toFixed(2);
                 billing = 'billed quarterly';
                 paymentPlan = price.paymentPlan || 'Annual Subscription';
               } else if (price.billingCycle == 'one time') {
@@ -174,8 +162,7 @@ class _PricingModal extends Component {
               } else if (price.billingCycle == 'rental') {
                 currentPrice = `${Number(displayedPrice).toFixed(2)}`;
                 billing = `one time charge (${price.rentalPeriod}-day access)`;
-                paymentPlan =
-                  price.paymentPlan || `${price.rentalPeriod}-Day Access`;
+                paymentPlan = price.paymentPlan || `${price.rentalPeriod}-Day Access`;
               }
 
               if (price.price == 'free') {
@@ -191,16 +178,12 @@ class _PricingModal extends Component {
                       </div>
                       <div>
                         <div style={styles.priceDiv}>
-                          {(price.price == 'free' && (
-                            <div style={styles.price}>Free</div>
-                          )) || (
+                          {(price.price == 'free' && <div style={styles.price}>Free</div>) || (
                             <div style={styles.price}>
                               USD{' '}
                               {(originalPrice &&
                                 !isNaN(originalPrice) && (
-                                  <s style={{ color: 'red' }}>
-                                    ${originalPrice}
-                                  </s>
+                                  <s style={{ color: 'red' }}>${originalPrice}</s>
                                 )) ||
                                 null}
                               {`$${currentPrice}`}

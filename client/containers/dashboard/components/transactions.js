@@ -5,10 +5,7 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -69,9 +66,7 @@ export default class Transactions extends Component {
         // console.log('transactions: ', res);
         const transactions = res.data;
         transactions.sort((a, b) => {
-          return (
-            moment(b.createdAt).format('X') - moment(a.createdAt).format('X')
-          );
+          return moment(b.createdAt).format('X') - moment(a.createdAt).format('X');
         });
         that.setState({
           transactions,
@@ -90,10 +85,7 @@ export default class Transactions extends Component {
         <div className="padding-bottom-20px">
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
-            <span
-              className="text-medium"
-              style={{ marginLeft: 15, color: Colors.mainOrange }}
-            >
+            <span className="text-medium" style={{ marginLeft: 15, color: Colors.mainOrange }}>
               <strong>View Publisher Page</strong>
             </span>
           </Link>
@@ -105,10 +97,7 @@ export default class Transactions extends Component {
             </Link>
           </li>
           <li role="presentation" className="active">
-            <Link
-              style={{ backgroundColor: 'transparent' }}
-              to="/dashboard/publisher/transactions"
-            >
+            <Link style={{ backgroundColor: 'transparent' }} to="/dashboard/publisher/transactions">
               <span
                 style={{
                   fontSize: 15,
@@ -153,8 +142,7 @@ export default class Transactions extends Component {
                 </thead>
                 <tbody>
                   {this.state.transactions.map((transaction, i) => {
-                    const type =
-                      transaction.type == 'charge' ? 'Sale' : 'Refund';
+                    const type = transaction.type == 'charge' ? 'Sale' : 'Refund';
                     const price = Number(transaction.amount).toFixed(2);
                     const creditCardCharge = (price * 0.029 + 0.3).toFixed(2); // Stripe charge
                     let soundwiseFee;
@@ -177,19 +165,13 @@ export default class Transactions extends Component {
                             : transaction.refund_date.slice(0, 10)}
                         </td>
                         <td style={{ ...styles.td }}>{type}</td>
-                        <td style={{ ...styles.td }}>
-                          {transaction.description}
-                        </td>
+                        <td style={{ ...styles.td }}>{transaction.description}</td>
                         <td style={{ ...styles.td }}>
                           <div style={{ fontWeight: 600 }}>
-                            {`${
-                              transaction.type == 'charge' ? '' : '-'
-                            }$${amount}`}
+                            {`${transaction.type == 'charge' ? '' : '-'}$${amount}`}
                           </div>
                           <div style={{ fontSize: 12, color: Colors.fontGrey }}>
-                            {`(Price: ${
-                              transaction.type == 'charge' ? '' : '-'
-                            }$${price}${
+                            {`(Price: ${transaction.type == 'charge' ? '' : '-'}$${price}${
                               transaction.type == 'charge' ? '' : ')'
                             }`}
                           </div>

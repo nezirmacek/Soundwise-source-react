@@ -28,10 +28,7 @@ export default class SoundcastFooter extends Component {
       >
         <div className="container">
           <div className="row equalize">
-            <div
-              className="col-md-12 col-sm-12 col-xs-12 text-center"
-              style={{ height: '46px' }}
-            >
+            <div className="col-md-12 col-sm-12 col-xs-12 text-center" style={{ height: '46px' }}>
               <div className="display-inline-block sm-display-block vertical-align-middle margin-five-right sm-no-margin-right sm-margin-ten-bottom tz-text alt-font text-white title-large sm-title-large xs-title-large">
                 <span className="tz-text">Get This Soundcast for</span>
                 <span>

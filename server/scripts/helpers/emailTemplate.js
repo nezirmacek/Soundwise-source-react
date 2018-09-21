@@ -6,8 +6,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell +=
     '<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">';
   emailShell += '<head>';
-  emailShell +=
-    '    <meta charset="utf-8"> <!-- utf-8 works for most cases -->';
+  emailShell += '    <meta charset="utf-8"> <!-- utf-8 works for most cases -->';
   emailShell +=
     '    <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn\'t be necessary -->';
   emailShell +=
@@ -55,8 +54,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '            width: 100% !important;';
   emailShell += '        }';
   emailShell += '';
-  emailShell +=
-    '        /* What it does: Stops email clients resizing small text. */';
+  emailShell += '        /* What it does: Stops email clients resizing small text. */';
   emailShell += '        * {';
   emailShell += '            -ms-text-size-adjust: 100%;';
   emailShell += '            -webkit-text-size-adjust: 100%;';
@@ -67,8 +65,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '            margin: 0 !important;';
   emailShell += '        }';
   emailShell += '';
-  emailShell +=
-    '        /* What it does: Stops Outlook from adding extra spacing to tables. */';
+  emailShell += '        /* What it does: Stops Outlook from adding extra spacing to tables. */';
   emailShell += '        table,';
   emailShell += '        td {';
   emailShell += '            mso-table-lspace: 0pt !important;';
@@ -138,8 +135,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '            display: none !important;';
   emailShell += '        }';
   emailShell += '';
-  emailShell +=
-    '        /* What it does: Prevents underlining the button text in Windows 10 */';
+  emailShell += '        /* What it does: Prevents underlining the button text in Windows 10 */';
   emailShell += '        .button-link {';
   emailShell += '            text-decoration: none !important;';
   emailShell += '        }';
@@ -148,8 +144,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
     '        /* What it does: Removes right gutter in Gmail iOS app: https://github.com/TedGoas/Cerberus/issues/89  */';
   emailShell +=
     "        /* Create one of these media queries for each additional viewport size you'd like to fix */";
-  emailShell +=
-    '        /* Thanks to Eric Lepetit (@ericlepetitsf) for help troubleshooting */';
+  emailShell += '        /* Thanks to Eric Lepetit (@ericlepetitsf) for help troubleshooting */';
   emailShell +=
     '        @media only screen and (min-device-width: 375px) and (max-device-width: 413px) { /* iPhone 6 and 6+ */';
   emailShell += '            .email-container {';
@@ -158,8 +153,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '        }';
   emailShell += '';
   emailShell += '     @media screen and (max-width: 480px) {';
-  emailShell +=
-    '         /* What it does: Forces Gmail app to display email full width */';
+  emailShell += '         /* What it does: Forces Gmail app to display email full width */';
   emailShell += '         u ~ div .email-container {';
   emailShell += '           min-width: 100vw;';
   emailShell += '         }';
@@ -210,18 +204,15 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '</head>';
   emailShell +=
     '<body width="100%" bgcolor="#FFF8E1" style="margin: 0; mso-line-height-rule: exactly;">';
-  emailShell +=
-    '    <center style="width: 100%; background: #FFF8E1; text-align: left;">';
+  emailShell += '    <center style="width: 100%; background: #FFF8E1; text-align: left;">';
   emailShell += '';
   emailShell += '        <!--';
   emailShell += '            Set the email width. Defined in two places:';
   emailShell +=
     '            1. max-width for all clients except Desktop Windows Outlook, allowing the email to squish on narrow but never go wider than 600px.';
-  emailShell +=
-    '            2. MSO tags for Desktop Windows Outlook enforce a 600px width.';
+  emailShell += '            2. MSO tags for Desktop Windows Outlook enforce a 600px width.';
   emailShell += '        -->';
-  emailShell +=
-    '        <div style="max-width: 600px; margin: auto;" class="email-container">';
+  emailShell += '        <div style="max-width: 600px; margin: auto;" class="email-container">';
   emailShell += '            <!--[if mso]>';
   emailShell +=
     '            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center">';
@@ -233,8 +224,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell +=
     '            <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px;">';
   emailShell += '                <tr>';
-  emailShell +=
-    '                    <td style="padding: 20px 0; text-align: center; ">';
+  emailShell += '                    <td style="padding: 20px 0; text-align: center; ">';
   emailShell += `                        <img src=\"${publisherImage}\" width=\"40\" height=\"40\" alt=\"alt_text\" border=\"0\" style=\"height: auto;  font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555; vertical-align:middle; border-radius: 50%; padding-bottom: 5px; padding-right: 3px;\">`;
   emailShell +=
     '                        <span style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 22px; line-height: 140%; color: #333333; font-weight: normal; vertical-align:middle;">';
@@ -293,8 +283,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell +=
     '                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" width="100%" style="max-width:560px;">';
   emailShell += '                            <tr>';
-  emailShell +=
-    '                                <td align="center" valign="top" width="50%">';
+  emailShell += '                                <td align="center" valign="top" width="50%">';
   emailShell +=
     '                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 14px;text-align: left;">';
   emailShell += '                                        <tr>';
@@ -309,8 +298,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '                                        </tr>';
   emailShell += '                                    </table>';
   emailShell += '                                </td>';
-  emailShell +=
-    '                                <td align="center" valign="top" width="50%">';
+  emailShell += '                                <td align="center" valign="top" width="50%">';
   emailShell +=
     '                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 14px;text-align: left;">';
   emailShell += '                                        <tr>';
@@ -345,8 +333,7 @@ module.exports.emailTemplate = (publisherName, publisherImage, emailBody) => {
   emailShell += '                        <br>Powered by<br>';
   emailShell +=
     '                        <img src="https://s3.amazonaws.com/soundwiseinc/SOUNDWISE+LOGO+BLACK.png" width="70" height="" alt="Soundwise" border="0" align="center" style="width: 100%; max-width: 125px;  font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555; padding-top: 5px; padding-bottom: 5px;">';
-  emailShell +=
-    '                        <br>2818 Connecticut Ave NW<br>Washington, DC, USA, 20008';
+  emailShell += '                        <br>2818 Connecticut Ave NW<br>Washington, DC, USA, 20008';
   emailShell += '                        <br><br>';
   // emailShell += "                        <a href=\"[UNSUBSCRIBE]\"><unsubscribe style=\"color: #888888; text-decoration: underline;\">unsubscribe<\/unsubscribe></a>";
   emailShell += '                    </td>';

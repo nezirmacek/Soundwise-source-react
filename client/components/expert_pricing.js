@@ -29,19 +29,14 @@ const ExpertPricing = () => (
             >
               $29
             </span>
-            <span className="text-large alt-font tz-text no-margin-bottom">
-              {' '}
-              PER MONTH +{' '}
-            </span>
+            <span className="text-large alt-font tz-text no-margin-bottom"> PER MONTH + </span>
             <span
               className="title-extra-large sm-title-extra-large alt-font  tz-text"
               style={{ color: '#61e1fb' }}
             >
               5%{' '}
             </span>
-            <span className="text-large alt-font tz-text no-margin-bottom">
-              PROCESSING FEE
-            </span>
+            <span className="text-large alt-font tz-text no-margin-bottom">PROCESSING FEE</span>
           </div>
         </div>
       </div>
@@ -62,9 +57,7 @@ const ExpertPricing = () => (
           <ul className="list-style-none ">
             <li className="position-relative padding-left-30px line-height-34 text-medium">
               <i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34" />
-              <span className="tz-text">
-                Customizable landing pages for all your programs
-              </span>
+              <span className="tz-text">Customizable landing pages for all your programs</span>
             </li>
             <li className="position-relative padding-left-30px line-height-34 text-medium">
               <i className="fa fa-star-o text-dark-gray tz-icon-color position-left position-absolute icon-extra-small line-height-34" />

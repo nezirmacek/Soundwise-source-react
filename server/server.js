@@ -42,22 +42,17 @@ const {
 const Emails = require('./scripts/sendEmails.js');
 
 const { createFeed, requestFeed } = require('./scripts/feed.js');
-const createAudioWaveVid = require('./scripts/soundwaveVideo')
-  .createAudioWaveVid;
+const createAudioWaveVid = require('./scripts/soundwaveVideo').createAudioWaveVid;
 
 const { sendInvite } = require('./scripts/invites');
-const {
-  audioProcessing,
-  audioProcessingReplace,
-} = require('./scripts/audioProcessing');
+const { audioProcessing, audioProcessingReplace } = require('./scripts/audioProcessing');
 
 const parseFeed = require('./scripts/parseFeed.js').parseFeed;
 const pushNotification = require('./scripts/messaging.js').pushNotification;
 // var subscriptionRenewal = require('./scripts/handleSubscriptions.js').subscriptionRenewal;
 const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 const subscribe = require('./scripts/handleSubscriptions.js').subscribe;
-const createStripeAccount = require('./scripts/createStripeAccounts.js')
-  .createStripeAccount;
+const createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
 const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
 var Raven = require('raven');
 var database = require('../database');
@@ -72,8 +67,7 @@ firebase.initializeApp({
 var algoliaIndex = require('./bin/algoliaIndex.js').algoliaIndex;
 var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
 var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
-var firebaseListeners = require('./bin/firebase-listeners.js')
-  .firebaseListeners;
+var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners;
 const { userService } = require('./services');
 // sync firebase with Algolia and postgres
 // algoliaIndex();
@@ -112,11 +106,7 @@ prerender.crawlerUserAgents.push('yandex');
 app.use(prerender);
 
 AWS.config.update(awsConfig);
-AWS.Request.prototype.forwardToExpress = function forwardToExpress(
-  req,
-  res,
-  next
-) {
+AWS.Request.prototype.forwardToExpress = function forwardToExpress(req, res, next) {
   this.on('httpHeaders', function(code, headers) {
     if (code < 300) {
       var total = headers['content-range'].split('/')[1];
@@ -156,10 +146,7 @@ AWS.Request.prototype.forwardToExpress = function forwardToExpress(
     .pipe(res);
 };
 
-AWS.Request.prototype.forwardToExpressNoStream = function forwardToExpressNoStream(
-  res,
-  next
-) {
+AWS.Request.prototype.forwardToExpressNoStream = function forwardToExpressNoStream(res, next) {
   this.on('httpHeaders', function(code, headers) {
     if (code < 300) {
       res.set('Content-Length', headers['content-length']);

@@ -19,12 +19,9 @@ coverage
 node_modules
 npm-debug.log
 
-
 /_.*
 _.*
 _*
-
-
 
 npm-debug.log
 .DS_Store
@@ -58,4 +55,6 @@ coverage
 docker-compose-dev.yml
 
 # Build outputs
+client/bundle.js
+client/bundle.js.map
 

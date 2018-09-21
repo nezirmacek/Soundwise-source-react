@@ -112,8 +112,8 @@ class _ReviewModal extends Component {
                 />
               </div>
               <div className="text-medium width-90 sm-width-100 center-col tz-text margin-thirteen-bottom xs-margin-nineteen-bottom">
-                Tell us what you think of the course. Your review will help
-                other people decide if this class is right for them. (Optional)
+                Tell us what you think of the course. Your review will help other people decide if
+                this class is right for them. (Optional)
               </div>
             </div>
             <div className="col-md-6 col-sm-12 col-xs-12 center-col text-center">

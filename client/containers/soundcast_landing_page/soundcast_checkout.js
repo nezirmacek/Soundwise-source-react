@@ -15,12 +15,7 @@ import { signinUser, signupUser } from '../../actions/index';
 import { GreyInput } from '../../components/inputs/greyInput';
 import { minLengthValidator } from '../../helpers/validators';
 import { OrangeSubmitButton } from '../../components/buttons/buttons';
-import {
-  signInPassword,
-  signInFacebook,
-  signupCommon,
-  facebookErrorCallback,
-} from '../commonAuth';
+import { signInPassword, signInFacebook, signupCommon, facebookErrorCallback } from '../commonAuth';
 
 const provider = new firebase.auth.FacebookAuthProvider();
 
@@ -53,22 +48,8 @@ class _SoundcastCheckout extends Component {
   async componentDidMount() {
     const { location } = this.props.history;
     if (location.state && location.state.soundcast) {
-      const {
-        soundcast,
-        soundcastID,
-        checked,
-        sumTotal,
-        userInfo,
-        soundcastUser,
-      } = location.state;
-      this.setSoundcastData(
-        soundcast,
-        soundcastID,
-        checked,
-        sumTotal,
-        userInfo,
-        soundcastUser
-      );
+      const { soundcast, soundcastID, checked, sumTotal, userInfo, soundcastUser } = location.state;
+      this.setSoundcastData(soundcast, soundcastID, checked, sumTotal, userInfo, soundcastUser);
     } else if (location.search.includes('?soundcast_id=')) {
       const params = new URLSearchParams(location.search);
       const soundcastID = params.get('soundcast_id');
@@ -82,9 +63,7 @@ class _SoundcastCheckout extends Component {
         const sumTotal =
           soundcast.prices[checked].price === 'free'
             ? ''
-            : `Total today: $${Number(soundcast.prices[checked].price).toFixed(
-                2
-              )}`;
+            : `Total today: $${Number(soundcast.prices[checked].price).toFixed(2)}`;
         this.setSoundcastData(soundcast, soundcastID, checked, sumTotal);
       } else {
         this.props.history.push('/notfound');
@@ -92,14 +71,7 @@ class _SoundcastCheckout extends Component {
     }
   }
 
-  setSoundcastData(
-    soundcast,
-    soundcastID,
-    checked,
-    sumTotal,
-    userInfo,
-    soundcastUser
-  ) {
+  setSoundcastData(soundcast, soundcastID, checked, sumTotal, userInfo, soundcastUser) {
     let totalPrice;
     if (soundcast.prices[checked].price == 'free') {
       totalPrice = 0;
@@ -184,9 +156,7 @@ class _SoundcastCheckout extends Component {
     const { runSignIn } = this.state;
     const { signinUser, history } = this.props;
     if (runSignIn) {
-      signInFacebook(this.signinCallback, error =>
-        this.setState({ message: error.toString() })
-      );
+      signInFacebook(this.signinCallback, error => this.setState({ message: error.toString() }));
     } else {
       // sign up
       firebase
@@ -227,16 +197,12 @@ class _SoundcastCheckout extends Component {
                     const { email, photoURL, displayName } = JSON.parse(
                       JSON.stringify(result.user)
                     );
-                    const name = displayName
-                      ? displayName.split(' ')
-                      : ['User', ''];
+                    const name = displayName ? displayName.split(' ') : ['User', ''];
                     const user = {
                       firstName: name[0],
                       lastName: name[1],
                       email,
-                      pic_url: photoURL
-                        ? photoURL
-                        : '../images/smiley_face.jpg',
+                      pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                     };
                     signupCommon(user, null, this.signupCallback);
                   }
@@ -326,12 +292,7 @@ class _SoundcastCheckout extends Component {
                     marginTop: '1em',
                   }}
                 >
-                  <Dots
-                    style={{ display: 'flex' }}
-                    color="#727981"
-                    size={32}
-                    speed={1}
-                  />
+                  <Dots style={{ display: 'flex' }} color="#727981" size={32} speed={1} />
                 </div>
               </div>
             </div>
@@ -353,10 +314,7 @@ class _SoundcastCheckout extends Component {
                         className="col-md-6 col-sm-12 center-col sm-no-margin"
                         style={{ textAlign: 'center' }}
                       >
-                        <SoundcastInCart
-                          lastStep={true}
-                          soundcast={soundcast}
-                        />
+                        <SoundcastInCart lastStep={true} soundcast={soundcast} />
                         <div
                           style={{
                             fontSize: 19,
@@ -378,9 +336,7 @@ class _SoundcastCheckout extends Component {
                               className="fab fa-facebook-f icon-extra-small margin-four-right tz-icon-color vertical-align-sub"
                               style={styles.fbIcon}
                             />
-                            <span className="tz-text">
-                              SIGN IN with FACEBOOK
-                            </span>
+                            <span className="tz-text">SIGN IN with FACEBOOK</span>
                           </button>
                         )}
                         <div
@@ -392,16 +348,12 @@ class _SoundcastCheckout extends Component {
                           {!this.state.runSignIn
                             ? 'or set a password'
                             : this.state.showPassword
-                              ? `${
-                                  this.state.showFacebook ? 'or e' : 'E'
-                                }nter your password`
+                              ? `${this.state.showFacebook ? 'or e' : 'E'}nter your password`
                               : ''}
                         </div>
                         {message && (
                           <div style={{ paddingBottom: 25 }}>
-                            <span style={{ color: 'red', fontSize: 16 }}>
-                              {message}
-                            </span>
+                            <span style={{ color: 'red', fontSize: 16 }}>{message}</span>
                           </div>
                         )}
                         {this.state.showPassword && (
@@ -410,10 +362,7 @@ class _SoundcastCheckout extends Component {
                               type="password"
                               styles={{ width: 270 }}
                               placeholder={'Password'}
-                              onChange={this.handleChange.bind(
-                                this,
-                                'password'
-                              )}
+                              onChange={this.handleChange.bind(this, 'password')}
                               value={this.state.password}
                               validators={[minLengthValidator.bind(null, 1)]}
                             />

@@ -1,14 +1,10 @@
 'use strict';
 const moment = require('moment');
-const {
-  publisherManager,
-  soundcastManager,
-  userManager,
-} = require('../managers');
-const {mailingService, subscriptionService} = require('../services');
+const { publisherManager, soundcastManager, userManager } = require('../managers');
+const { mailingService, subscriptionService } = require('../services');
 
 const unsubscribe = (req, res) => {
-  const {paymentId, userId, soundcastId, publisherId} = req.body;
+  const { paymentId, userId, soundcastId, publisherId } = req.body;
 
   userManager
     .getById(userId)
@@ -16,10 +12,7 @@ const unsubscribe = (req, res) => {
       soundcastManager
         .getById(soundcastId)
         .then(soundcast =>
-          mailingService.deleteFromMailingList(
-            user.email,
-            soundcast.subscriberEmailList
-          )
+          mailingService.deleteFromMailingList(user.email, soundcast.subscriberEmailList)
         )
     );
 
@@ -37,27 +30,25 @@ const unsubscribe = (req, res) => {
                     response =>
                       response
                         ? res.status(200).send(response)
-                        : res.status(500).send({error: response})
+                        : res.status(500).send({ error: response })
                   )
               : publisherManager
                   .removeFreeSubscriberCount(publisherId, userId, soundcastId)
                   .then(() =>
                     publisherManager
                       .decrementFreeSubscriberCount(publisherId)
-                      .then(() => res.send({response: 'OK'}))
+                      .then(() => res.send({ response: 'OK' }))
                   )
         )
     )
-    .catch(error =>
-      res.status(500).send({message: 'Failed free unsubscription', error})
-    );
+    .catch(error => res.status(500).send({ message: 'Failed free unsubscription', error }));
 };
 
 const subscribe = (req, res) => {
-  const {soundcastId, userId} = req.body;
+  const { soundcastId, userId } = req.body;
 
   addSoundcastToUser(userId, soundcastId)
-    .then(() => res.send({response: 'OK'}))
+    .then(() => res.send({ response: 'OK' }))
     .catch(error => res.status(500).send(error));
 };
 
@@ -78,12 +69,8 @@ const addSoundcastToUser = (userId, soundcastId) =>
         );
       }
 
-      return subscribeUserToSoundcast(
-        soundcastId,
-        userId,
-        soundcast.publisherId
-      );
+      return subscribeUserToSoundcast(soundcastId, userId, soundcast.publisherId);
     }
   });
 
-module.exports = {subscribe, unsubscribe};
+module.exports = { subscribe, unsubscribe };
