@@ -67,17 +67,8 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    // firebase.database().ref('invitations/xc22@georgetown(dot)edu')
-    // .once('value')
-    // .then(snapshot => {
-    //   if(snapshot.val()) {
-    //     console.log('invitation: ', snapshot.val());
-    //   } else {
-    //     console.log('not found');
-    //   }
-    // })
-    const reactVersion = React.version;
-    console.log('react: ', reactVersion);
+    // const reactVersion = React.version;
+    // console.log('react: ', reactVersion);
     // console.log(process.env.NODE_ENV);
   }
 
