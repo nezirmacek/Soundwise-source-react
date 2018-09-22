@@ -116,10 +116,7 @@ const Instructor = props => (
               >
                 <p />
               </div>
-              <div
-                className="text-dark-gray text-large tz-text"
-                id="tz-slider-text129"
-              >
+              <div className="text-dark-gray text-large tz-text" id="tz-slider-text129">
                 {renderBio(props.course.teachers[0].teacher_bio)}
               </div>
               <div className="row">

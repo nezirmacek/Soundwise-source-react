@@ -10,11 +10,7 @@ import Slider from 'material-ui/Slider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import {
-  setCurrentPlaySection,
-  changePlayStatus,
-  changeSpeed,
-} from '../actions/index';
+import { setCurrentPlaySection, changePlayStatus, changeSpeed } from '../actions/index';
 
 let player, source;
 
@@ -110,8 +106,7 @@ class _PlayerBar extends Component {
   }
 
   handleRewind() {
-    const previous =
-      this.props.currentPlaylist.indexOf(this.props.currentSection) - 1;
+    const previous = this.props.currentPlaylist.indexOf(this.props.currentSection) - 1;
     if (previous >= 0) {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[previous]);
       source.src = this.props.currentPlaylist[previous].section_url;
@@ -123,8 +118,7 @@ class _PlayerBar extends Component {
   }
 
   handleForward() {
-    const next =
-      this.props.currentPlaylist.indexOf(this.props.currentSection) + 1;
+    const next = this.props.currentPlaylist.indexOf(this.props.currentSection) + 1;
     if (next <= this.props.currentPlaylist.length - 1) {
       this.props.setCurrentPlaySection(this.props.currentPlaylist[next]);
       source.src = this.props.currentPlaylist[next].section_url;
@@ -181,8 +175,7 @@ class _PlayerBar extends Component {
       totalSec = Math.floor(this.props.currentDuration % 60);
     }
 
-    const currentPercent =
-      (this.props.currentTime / this.props.currentDuration) * 100;
+    const currentPercent = (this.props.currentTime / this.props.currentDuration) * 100;
     const displayed = this.props.playerLaunched ? '' : 'none';
 
     return (
@@ -205,10 +198,7 @@ class _PlayerBar extends Component {
         <div className="container" style={{}}>
           <div className="row " style={styles.flex}>
             <div className="col-md-2 col-sm-2 col-xs-2" style={styles.flex}>
-              <DropDownMenu
-                value={this.state.speed}
-                onChange={this.handleSpeedChange}
-              >
+              <DropDownMenu value={this.state.speed} onChange={this.handleSpeedChange}>
                 <MenuItem value={0.75} primaryText="0.75x" />
                 <MenuItem value={1} primaryText="1x" />
                 <MenuItem value={1.25} primaryText="1.25x" />
@@ -242,22 +232,14 @@ class _PlayerBar extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    { setCurrentPlaySection, changePlayStatus, changeSpeed },
-    dispatch
-  );
+  return bindActionCreators({ setCurrentPlaySection, changePlayStatus, changeSpeed }, dispatch);
 }
 
 const mapStateToProps = state => {
   const { isLoggedIn } = state.user;
   const { playerLaunched, speed } = state.setPlayer;
   const { playing, currentSection } = state.setCurrentSection;
-  const {
-    currentTime,
-    currentDuration,
-    currentPlaylist,
-    currentCourse,
-  } = state.setCourses;
+  const { currentTime, currentDuration, currentPlaylist, currentCourse } = state.setCourses;
   return {
     isLoggedIn,
     currentSection,

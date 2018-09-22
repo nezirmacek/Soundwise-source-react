@@ -12,9 +12,7 @@ const LOG_ERR = 'logErrsMessages.txt';
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: `https://${
-    process.env.NODE_ENV === 'production'
-      ? 'soundwise-a8e6f'
-      : 'soundwise-testbase'
+    process.env.NODE_ENV === 'production' ? 'soundwise-a8e6f' : 'soundwise-testbase'
   }.firebaseio.com`,
 });
 

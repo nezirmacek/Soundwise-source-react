@@ -2,10 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Sample_Courses = () => (
-  <section
-    className="bg-white builder-bg  xs-padding-30px-tb"
-    id="portfolios-section11"
-  >
+  <section className="bg-white builder-bg  xs-padding-30px-tb" id="portfolios-section11">
     <div className="container-fluid">
       <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 md-padding-50px-tb xs-padding-10px-tb text-center">
         <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-seven-bottom xs-margin-fifteen-bottom tz-text">

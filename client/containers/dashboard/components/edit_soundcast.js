@@ -24,10 +24,7 @@ import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
 import Dots from 'react-activity/lib/Dots';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import S3FileUploader from '../../../components/s3_file_uploader';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
@@ -57,9 +54,7 @@ const subscriptionConfirmEmailHtml = `<div style="font-size:18px;"><p>Hi [subscr
 </strong></p><p></p>
 <p>...and then sign in to the app with the same credential you used to subscribe to this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>
 </div>`;
-const subscriptionConfirmationEmail = convertFromHTML(
-  subscriptionConfirmEmailHtml
-);
+const subscriptionConfirmationEmail = convertFromHTML(subscriptionConfirmEmailHtml);
 const confirmationEmail = ContentState.createFromBlockArray(
   subscriptionConfirmationEmail.contentBlocks,
   subscriptionConfirmationEmail.entityMap
@@ -96,6 +91,8 @@ export default class EditSoundcast extends Component {
       showTimeStamps: false,
       showSubscriberCount: false,
       modalOpen: false,
+      upgradeModal: false,
+      upgradeModalTitle: '',
       confirmationEmail: EditorState.createWithContent(confirmationEmail),
       isPodcast: false,
       createPodcast: false,
@@ -121,6 +118,11 @@ export default class EditSoundcast extends Component {
     this.submit = this.submit.bind(this);
     this.onEditorStateChange = this.onEditorStateChange.bind(this);
     this.showIntroOutro = this.showIntroOutro.bind(this);
+    this.handleSoundcastSignup = this.handleSoundcastSignup.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.isAvailableCoupon100PercentOff = this.isAvailableCoupon100PercentOff.bind(this);
+    this.closeUpgradeModal = this.closeUpgradeModal.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -142,8 +144,7 @@ export default class EditSoundcast extends Component {
 
   componentDidMount() {
     const { history } = this.props;
-    const soundcast =
-      history.location.state && history.location.state.soundcast;
+    const soundcast = history.location.state && history.location.state.soundcast;
     if (!soundcast) {
       return;
     }
@@ -198,6 +199,7 @@ export default class EditSoundcast extends Component {
       itunesImage,
       podcastFeedVersion,
       autoSubmitPodcast,
+      published,
     } = soundcast;
     // const {title0, subscribed0, imageURL0, short_description0,
     //        long_description0, landingPage0,
@@ -251,14 +253,84 @@ export default class EditSoundcast extends Component {
       subscribed: subscribed || this.state.subscribed,
       features: features || this.state.features,
       prices: prices || this.state.prices,
+      published,
     });
     userInfo.publisher && this.checkUserStatus(userInfo);
   }
 
+  handleSoundcastSignup() {
+    if (this.isShownSoundcastSignup()) {
+      this.props.history.push(`/signup/soundcast_user/${this.props.id}`);
+    } else {
+      this.setState({
+        upgradeModal: true,
+        upgradeModalTitle:
+          'Signup forms for paid soundcasts are only available on PRO and PLATINUM plans.',
+      });
+    }
+  }
+
+  isShownSoundcastSignup() {
+    const { userInfo } = this.props;
+    if (this.state.published === true) {
+      if (!this.state.forSale) {
+        return true;
+      }
+      if (
+        this.state.forSale === true &&
+        !this.isFreeAccount() &&
+        (userInfo.publisher.plan === 'pro' || userInfo.publisher.plan === 'platinum')
+      ) {
+        return true;
+      }
+      if (userInfo.publisher && userInfo.publisher.id === '1531418940327p') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (
+      userInfo.publisher &&
+      userInfo.publisher.plan &&
+      userInfo.publisher.current_period_end > curTime
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  isAvailableCoupon100PercentOff(prices) {
+    if (!prices) {
+      return true;
+    }
+    const { userInfo } = this.props;
+    for (let i = 0; i < prices.length; i += 1) {
+      if (prices[i].coupons) {
+        for (let j = 0; j < prices[i].coupons.length; j += 1) {
+          if (prices[i].coupons[j].percentOff === '100') {
+            if (this.isFreeAccount() || userInfo.publisher.plan === 'plus') {
+              console.log("this account is free or plus, so you can't set coupon 100%");
+              return false;
+            }
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  closeUpgradeModal() {
+    this.setState({ upgradeModal: false });
+  }
+
   checkUserStatus(userInfo) {
     if (
-      (userInfo.publisher.plan &&
-        userInfo.publisher.current_period_end > moment().format('X')) ||
+      (userInfo.publisher.plan && userInfo.publisher.current_period_end > moment().format('X')) ||
       userInfo.publisher.beta
     ) {
       this.setState({ proUser: true });
@@ -317,11 +389,7 @@ export default class EditSoundcast extends Component {
                 .brightness(0.1)
                 .getBuffer(jimp.AUTO, (err, buffer) => {
                   if (!err) {
-                    blurredData.append(
-                      'file',
-                      new Blob([buffer]),
-                      `blurred-${fileName}`
-                    );
+                    blurredData.append('file', new Blob([buffer]), `blurred-${fileName}`);
 
                     Axios.post('/api/upload', blurredData)
                       .then(res => {
@@ -372,17 +440,10 @@ export default class EditSoundcast extends Component {
             imageType: 'host',
           });
         }
-        allowedFileTypes = [
-          'image/png',
-          'image/jpeg',
-          'image/jpg',
-          'image/gif',
-        ];
+        allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
         this.currentImageRef = this.hostImgInputRef.files[0];
         if (allowedFileTypes.indexOf(this.currentImageRef.type) < 0) {
-          alert(
-            'Only .png or .jpeg files are accepted. Please upload a new file.'
-          );
+          alert('Only .png or .jpeg files are accepted. Please upload a new file.');
           return;
         }
         that.handleModalOpen();
@@ -403,17 +464,10 @@ export default class EditSoundcast extends Component {
               itunesImgUploaded: true,
               imageType: 'itunes',
             });
-            allowedFileTypes = [
-              'image/png',
-              'image/jpeg',
-              'image/jpg',
-              'image/gif',
-            ];
+            allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
             that.currentImageRef = that.itunesInputRef.files[0];
             if (allowedFileTypes.indexOf(that.currentImageRef.type) < 0) {
-              alert(
-                'Only .png or .jpeg files are accepted. Please upload a new file.'
-              );
+              alert('Only .png or .jpeg files are accepted. Please upload a new file.');
               return;
             }
             that.handleModalOpen();
@@ -439,16 +493,9 @@ export default class EditSoundcast extends Component {
               imageType: 'cover',
             });
             that.currentImageRef = that.fileInputRef.files[0];
-            allowedFileTypes = [
-              'image/png',
-              'image/jpeg',
-              'image/jpg',
-              'image/gif',
-            ];
+            allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
             if (allowedFileTypes.indexOf(that.currentImageRef.type) < 0) {
-              alert(
-                'Only .png or .jpeg files are accepted. Please upload a new file.'
-              );
+              alert('Only .png or .jpeg files are accepted. Please upload a new file.');
               return;
             }
             that.handleModalOpen();
@@ -491,6 +538,14 @@ export default class EditSoundcast extends Component {
     const { userInfo, history } = this.props;
     const that = this;
 
+    if (!this.isAvailableCoupon100PercentOff(prices)) {
+      this.setState({
+        upgradeModal: true,
+        upgradeModalTitle: 'Please upgrade to create 100% off discounts',
+      });
+      return;
+    }
+
     this.firebaseListener = firebase.auth().onAuthStateChanged(function(user) {
       if (user && that.firebaseListener) {
         const creatorID = user.uid;
@@ -498,12 +553,8 @@ export default class EditSoundcast extends Component {
         const editedSoundcast = {
           title,
           short_description,
-          long_description: JSON.stringify(
-            convertToRaw(long_description.getCurrentContent())
-          ),
-          confirmationEmail: JSON.stringify(
-            convertToRaw(confirmationEmail.getCurrentContent())
-          ),
+          long_description: JSON.stringify(convertToRaw(long_description.getCurrentContent())),
+          confirmationEmail: JSON.stringify(convertToRaw(confirmationEmail.getCurrentContent())),
           imageURL,
           blurredImageURL,
           creatorID,
@@ -540,15 +591,9 @@ export default class EditSoundcast extends Component {
           .then(snapshot => {
             const couponsToRemove = [];
             (snapshot.val().prices || []).forEach(price => {
-              (price.coupons || []).forEach(coupon =>
-                couponsToRemove.push(coupon.code)
-              );
+              (price.coupons || []).forEach(coupon => couponsToRemove.push(coupon.code));
             });
-            const changedSoundcast = Object.assign(
-              {},
-              snapshot.val(),
-              editedSoundcast
-            );
+            const changedSoundcast = Object.assign({}, snapshot.val(), editedSoundcast);
             firebase
               .database()
               .ref(`soundcasts/${history.location.state.id}`)
@@ -566,10 +611,7 @@ export default class EditSoundcast extends Component {
                     category: selectedCategory.name,
                     publisherId: userInfo.publisherID,
                   }).then(() => {
-                    if (
-                      userInfo.publisher &&
-                      userInfo.publisher.stripe_user_id
-                    ) {
+                    if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
                       Axios.post('/api/createUpdatePlans', {
                         soundcastID: history.location.state.id,
                         publisherID: userInfo.publisherID,
@@ -736,12 +778,9 @@ export default class EditSoundcast extends Component {
     } = this.state;
     const that = this;
     const { userInfo, history } = this.props;
-    const soundcast =
-      history.location.state && history.location.state.soundcast;
+    const soundcast = history.location.state && history.location.state.soundcast;
     const id = window.history.state.state.id;
-    const isProOrPlus = ['pro', 'plus'].includes(
-      userInfo.publisher && userInfo.publisher.plan
-    );
+    const isProOrPlus = ['pro', 'plus'].includes(userInfo.publisher && userInfo.publisher.plan);
     const actions = [
       <FlatButton
         label="OK"
@@ -751,9 +790,7 @@ export default class EditSoundcast extends Component {
     ];
     return (
       <div style={{ marginTop: 25, marginBottom: 25 }}>
-        <span style={{ ...styles.titleText, marginBottom: 5 }}>
-          What Listeners Will Get
-        </span>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>What Listeners Will Get</span>
         <span>
           <i>{` (list the main benefits and features of this soundcast)`}</i>
         </span>
@@ -765,9 +802,7 @@ export default class EditSoundcast extends Component {
                 <input
                   type="text"
                   style={{ ...styles.inputTitle, width: '85%' }}
-                  placeholder={
-                    'e.g. Learn how to analyze financial statement with ease'
-                  }
+                  placeholder={'e.g. Learn how to analyze financial statement with ease'}
                   onChange={this.setFeatures.bind(this, i)}
                   value={this.state.features[i]}
                 />
@@ -786,9 +821,7 @@ export default class EditSoundcast extends Component {
             </span>
           </div>
         </div>
-        <span style={{ ...styles.titleText, marginBottom: 5 }}>
-          Long Description
-        </span>
+        <span style={{ ...styles.titleText, marginBottom: 5 }}>Long Description</span>
         <div>
           <Editor
             editorState={long_description}
@@ -828,9 +861,7 @@ export default class EditSoundcast extends Component {
         {/*Host/Instructor Profile Picture*/}
         <div style={{ height: 150, width: '100%' }}>
           <div style={{ marginBottom: 10 }}>
-            <span style={styles.titleText}>
-              Host/Instructor Profile Picture
-            </span>
+            <span style={styles.titleText}>Host/Instructor Profile Picture</span>
           </div>
           <div
             style={{
@@ -859,9 +890,7 @@ export default class EditSoundcast extends Component {
                         hostImgUploaded: false,
                         hostImageURL: '',
                       });
-                      document.getElementById(
-                        'upload_hidden_cover_2'
-                      ).value = null;
+                      document.getElementById('upload_hidden_cover_2').value = null;
                     }}
                   >
                     Cancel
@@ -872,9 +901,7 @@ export default class EditSoundcast extends Component {
                   <div>
                     <button
                       onClick={() => {
-                        document
-                          .getElementById('upload_hidden_cover_2')
-                          .click();
+                        document.getElementById('upload_hidden_cover_2').click();
                       }}
                       style={{
                         ...styles.uploadButton,
@@ -883,9 +910,7 @@ export default class EditSoundcast extends Component {
                     >
                       Upload
                     </button>
-                    <span style={styles.fileTypesLabel}>
-                      .jpg or .png files accepted
-                    </span>
+                    <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                   </div>
                 ))}
             </div>
@@ -905,8 +930,7 @@ export default class EditSoundcast extends Component {
             </div>
           )) ||
           null}
-        {((hostName2 || instructor2Input) && this.renderInstructor2Input()) ||
-          null}
+        {((hostName2 || instructor2Input) && this.renderInstructor2Input()) || null}
 
         {/*Upload outro/intro*/}
         {soundcast && (
@@ -922,9 +946,7 @@ export default class EditSoundcast extends Component {
                 }}
               >
                 <div style={{ display: 'inline-block', width: 15 }}>
-                  <FontAwesomeIcon
-                    icon={showIntroOutro ? faCaretDown : faCaretRight}
-                  />
+                  <FontAwesomeIcon icon={showIntroOutro ? faCaretDown : faCaretRight} />
                 </div>
                 <span>Intro And Outro</span>
                 {(!proUser && (
@@ -947,8 +969,7 @@ export default class EditSoundcast extends Component {
                   marginLeft: 10,
                 }}
               >
-                Automatically add intro/outro to episodes. mp3 or m4a files
-                accepted
+                Automatically add intro/outro to episodes. mp3 or m4a files accepted
               </div>
             </div>
             <div
@@ -966,17 +987,12 @@ export default class EditSoundcast extends Component {
               </span>
               <S3FileUploader
                 s3NewFileName={`${soundcast.id}_intro`}
-                showUploadedFile={
-                  soundcast.intro && soundcast.intro.split('/').pop()
-                }
+                showUploadedFile={soundcast.intro && soundcast.intro.split('/').pop()}
                 onUploadedCallback={ext => that.updateSoundcast('intro', ext)}
                 onRemoveCallback={() => that.updateSoundcast('intro')}
               />
             </div>
-            <div
-              className="col-md-6"
-              style={{ display: showIntroOutro ? '' : 'none' }}
-            >
+            <div className="col-md-6" style={{ display: showIntroOutro ? '' : 'none' }}>
               <span
                 style={{
                   ...styles.titleText,
@@ -988,9 +1004,7 @@ export default class EditSoundcast extends Component {
               </span>
               <S3FileUploader
                 s3NewFileName={`${soundcast.id}_outro`}
-                showUploadedFile={
-                  soundcast.outro && soundcast.outro.split('/').pop()
-                }
+                showUploadedFile={soundcast.outro && soundcast.outro.split('/').pop()}
                 onUploadedCallback={ext => that.updateSoundcast('outro', ext)}
                 onRemoveCallback={() => that.updateSoundcast('outro')}
               />
@@ -1026,9 +1040,7 @@ export default class EditSoundcast extends Component {
                 Charge for this soundcast
               </span>
               <Dialog
-                title={`Hold on, ${
-                  userInfo.firstName
-                }! Please set up payout first. `}
+                title={`Hold on, ${userInfo.firstName}! Please set up payout first. `}
                 actions={actions}
                 modal={true}
                 open={!!this.state.paypalModalOpen}
@@ -1036,10 +1048,9 @@ export default class EditSoundcast extends Component {
               >
                 <div style={{ fontSize: 17 }}>
                   <span>
-                    You need a payout account so that we could send you your
-                    sales proceeds. Please save this soundcast, and go to
-                    publisher setting to enter your payout method, before
-                    setting up soundcast pricing.
+                    You need a payout account so that we could send you your sales proceeds. Please
+                    save this soundcast, and go to publisher setting to enter your payout method,
+                    before setting up soundcast pricing.
                   </span>
                 </div>
               </Dialog>
@@ -1090,12 +1101,8 @@ export default class EditSoundcast extends Component {
                           >
                             <option value="one time">one time purchase</option>
                             <option value="rental">one time rental</option>
-                            <option value="monthly">
-                              monthly subscription
-                            </option>
-                            <option value="quarterly">
-                              quarterly subscription
-                            </option>
+                            <option value="monthly">monthly subscription</option>
+                            <option value="quarterly">quarterly subscription</option>
                             <option value="annual">annual subscription</option>
                           </select>
                         </div>
@@ -1127,14 +1134,8 @@ export default class EditSoundcast extends Component {
                         </span>
                       </div>
                       {(prices[i].billingCycle == 'rental' && (
-                        <div
-                          className="col-md-12"
-                          style={{ marginTop: 10, marginBottom: 15 }}
-                        >
-                          <div
-                            className="col-md-4 col-md-offset-6"
-                            style={{ marginRight: 10 }}
-                          >
+                        <div className="col-md-12" style={{ marginTop: 10, marginBottom: 15 }}>
+                          <div className="col-md-4 col-md-offset-6" style={{ marginRight: 10 }}>
                             <span>Rental period</span>
                             <div>
                               <input
@@ -1267,9 +1268,7 @@ export default class EditSoundcast extends Component {
         </div>
         <div style={{ height: 150, width: '100%' }}>
           <div style={{ marginBottom: 10 }}>
-            <span style={styles.titleText}>
-              Host/Instructor #2: Profile Picture
-            </span>
+            <span style={styles.titleText}>Host/Instructor #2: Profile Picture</span>
           </div>
           <div
             style={{
@@ -1298,9 +1297,7 @@ export default class EditSoundcast extends Component {
                         hostImgUploaded2: false,
                         hostImageURL2: '',
                       });
-                      document.getElementById(
-                        'upload_hidden_cover_3'
-                      ).value = null;
+                      document.getElementById('upload_hidden_cover_3').value = null;
                     }}
                   >
                     Cancel
@@ -1311,9 +1308,7 @@ export default class EditSoundcast extends Component {
                   <div>
                     <button
                       onClick={() => {
-                        document
-                          .getElementById('upload_hidden_cover_3')
-                          .click();
+                        document.getElementById('upload_hidden_cover_3').click();
                       }}
                       style={{
                         ...styles.uploadButton,
@@ -1322,9 +1317,7 @@ export default class EditSoundcast extends Component {
                     >
                       Upload
                     </button>
-                    <span style={styles.fileTypesLabel}>
-                      .jpg or .png files accepted
-                    </span>
+                    <span style={styles.fileTypesLabel}>.jpg or .png files accepted</span>
                   </div>
                 ))}
             </div>
@@ -1545,9 +1538,7 @@ export default class EditSoundcast extends Component {
         </div>
         {(!podcastFeedVersion && (
           <div style={{ marginBottom: 40 }}>
-            <div style={{ ...styles.titleText, paddingBottom: 15 }}>
-              Podcast submission{' '}
-            </div>
+            <div style={{ ...styles.titleText, paddingBottom: 15 }}>Podcast submission </div>
             <MuiThemeProvider>
               <RadioButtonGroup
                 name="podcast submission"
@@ -1636,12 +1627,9 @@ export default class EditSoundcast extends Component {
             <img src={itunesImage} />
           </div>
           <div style={styles.loaderWrapper}>
-            <div style={{ ...styles.titleText, marginLeft: 10 }}>
-              iTunes/Google Play cover art
-            </div>
+            <div style={{ ...styles.titleText, marginLeft: 10 }}>iTunes/Google Play cover art</div>
             <div style={{ ...styles.fileTypesLabel, marginLeft: 10 }}>
-              At least 1400 x 1400 pixels in .jpg or .png format. Must not
-              exceed 3000 x 3000 pixels
+              At least 1400 x 1400 pixels in .jpg or .png format. Must not exceed 3000 x 3000 pixels
             </div>
             <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
               <input
@@ -1660,9 +1648,7 @@ export default class EditSoundcast extends Component {
                     style={styles.cancelImg}
                     onClick={() => {
                       that.setState({ itunesUploaded: false, itunesImage: '' });
-                      document.getElementById(
-                        'upload_hidden_iTunes'
-                      ).value = null;
+                      document.getElementById('upload_hidden_iTunes').value = null;
                     }}
                   >
                     Cancel
@@ -1693,9 +1679,7 @@ export default class EditSoundcast extends Component {
             <span style={{ color: 'red' }}>*</span>
           </div>
           <select
-            value={
-              (itunesCategory && itunesCategory[0] && itunesCategory[0]) || ''
-            }
+            value={(itunesCategory && itunesCategory[0] && itunesCategory[0]) || ''}
             style={styles.soundcastSelect}
             onChange={e => {
               const itunesCategory = this.state.itunesCategory || [];
@@ -1717,9 +1701,7 @@ export default class EditSoundcast extends Component {
             <span>iTunes Category 2</span>
           </div>
           <select
-            value={
-              (itunesCategory && itunesCategory[1] && itunesCategory[1]) || ''
-            }
+            value={(itunesCategory && itunesCategory[1] && itunesCategory[1]) || ''}
             style={styles.soundcastSelect}
             onChange={e => {
               const itunesCategory = this.state.itunesCategory;
@@ -1741,9 +1723,7 @@ export default class EditSoundcast extends Component {
             <span>iTunes Category 3</span>
           </div>
           <select
-            value={
-              (itunesCategory && itunesCategory[2] && itunesCategory[2]) || ''
-            }
+            value={(itunesCategory && itunesCategory[2] && itunesCategory[2]) || ''}
             style={styles.soundcastSelect}
             onChange={e => {
               const itunesCategory = this.state.itunesCategory;
@@ -1819,10 +1799,7 @@ export default class EditSoundcast extends Component {
                 zIndex: 103,
               }}
             >
-              <div
-                className="title-medium"
-                style={{ margin: 25, fontWeight: 800 }}
-              >
+              <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
                 {showPricingModal && showPricingModal[0]}
               </div>
               <div className="title-small" style={{ margin: 25 }}>
@@ -1865,10 +1842,7 @@ export default class EditSoundcast extends Component {
               checked={this.state.landingPage}
               onChange={this.handleCheck.bind(this)}
             />
-            <span
-              id="landing-label"
-              style={{ fontSize: 20, fontWeight: 800, marginLeft: '0.5em' }}
-            >
+            <span id="landing-label" style={{ fontSize: 20, fontWeight: 800, marginLeft: '0.5em' }}>
               This is a public soundcast
             </span>
             {(landingPage && (
@@ -1891,10 +1865,7 @@ export default class EditSoundcast extends Component {
                   </a>
                 </li>
                 <li role="presentation">
-                  <a
-                    target="_blank"
-                    href={`https://mysoundwise.com/signup/soundcast_user/${id}`}
-                  >
+                  <a target="_blank" onClick={() => that.handleSoundcastSignup()}>
                     <span
                       style={{
                         fontSize: 18,
@@ -1928,15 +1899,10 @@ export default class EditSoundcast extends Component {
                   this.setState({ title: e.target.value });
                 }}
                 value={this.state.title}
-                validators={[
-                  minLengthValidator.bind(null, 1),
-                  maxLengthValidator.bind(null, 60),
-                ]}
+                validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 60)]}
               />
               <div style={{ marginTop: 20 }}>
-                <span style={{ ...styles.titleText, marginTop: 20 }}>
-                  Short Description
-                </span>
+                <span style={{ ...styles.titleText, marginTop: 20 }}>Short Description</span>
                 <span style={{ ...styles.titleText, color: 'red' }}>*</span>
                 <span style={{ fontSize: 17 }}>
                   <i> (300 characters max)</i>
@@ -1946,9 +1912,7 @@ export default class EditSoundcast extends Component {
                 <textarea
                   type="text"
                   style={styles.inputDescription}
-                  placeholder={
-                    'A short description of this soundcast (300 characters max)'
-                  }
+                  placeholder={'A short description of this soundcast (300 characters max)'}
                   onChange={e => {
                     this.setState({ short_description: e.target.value });
                   }}
@@ -1966,27 +1930,16 @@ export default class EditSoundcast extends Component {
                   data-toggle="dropdown"
                 >
                   <div style={styles.dropdownTitle}>
-                    <span>
-                      {(selectedCategory && selectedCategory.name) ||
-                        'Choose category'}
-                    </span>
-                    <span
-                      style={{ position: 'absolute', right: 10, top: 40 }}
-                      className="caret"
-                    />
+                    <span>{(selectedCategory && selectedCategory.name) || 'Choose category'}</span>
+                    <span style={{ position: 'absolute', right: 10, top: 40 }} className="caret" />
                   </div>
                 </div>
                 <ul style={{ padding: 0 }} className="dropdown-menu">
                   {categories.map((category, i) => (
-                    <li
-                      style={{ fontSize: '16px' }}
-                      key={`category_option${i}`}
-                    >
+                    <li style={{ fontSize: '16px' }} key={`category_option${i}`}>
                       <button
                         style={styles.categoryButton}
-                        onClick={() =>
-                          this.setState({ selectedCategory: category })
-                        }
+                        onClick={() => this.setState({ selectedCategory: category })}
                       >
                         {category.name}
                       </button>
@@ -2000,12 +1953,10 @@ export default class EditSoundcast extends Component {
                   <img src={imageURL} />
                 </div>
                 <div style={styles.loaderWrapper}>
-                  <div style={{ ...styles.titleText, marginLeft: 10 }}>
-                    Soundcast cover art
-                  </div>
+                  <div style={{ ...styles.titleText, marginLeft: 10 }}>Soundcast cover art</div>
                   <div style={{ ...styles.fileTypesLabel, marginLeft: 10 }}>
-                    (Required: square image between 1400 x 1400 pixels and 3000
-                    x 3000 pixels, in .jpeg or .png format)
+                    (Required: square image between 1400 x 1400 pixels and 3000 x 3000 pixels, in
+                    .jpeg or .png format)
                   </div>
                   <div style={{ ...styles.inputFileWrapper, marginTop: 0 }}>
                     <input
@@ -2028,9 +1979,7 @@ export default class EditSoundcast extends Component {
                               imageURL: '',
                               blurredImageURL: null,
                             });
-                            document.getElementById(
-                              'upload_hidden_cover'
-                            ).value = null;
+                            document.getElementById('upload_hidden_cover').value = null;
                           }}
                         >
                           Cancel
@@ -2041,9 +1990,7 @@ export default class EditSoundcast extends Component {
                         <div>
                           <button
                             onClick={() => {
-                              document
-                                .getElementById('upload_hidden_cover')
-                                .click();
+                              document.getElementById('upload_hidden_cover').click();
                             }}
                             style={{
                               ...styles.uploadButton,
@@ -2059,9 +2006,7 @@ export default class EditSoundcast extends Component {
               </div>
               {this.renderAdditionalInputs()}
               <div style={{ paddingTop: 20, paddingBottom: 25 }}>
-                <span style={{ ...styles.titleText, marginTop: 20 }}>
-                  Other Settings
-                </span>
+                <span style={{ ...styles.titleText, marginTop: 20 }}>Other Settings</span>
                 <div
                   style={{
                     marginTop: 15,
@@ -2108,8 +2053,7 @@ export default class EditSoundcast extends Component {
                     // label="Charge subscribers for this soundcast?"
                     checked={this.state.showSubscriberCount}
                     onChange={() => {
-                      const showSubscriberCount = !that.state
-                        .showSubscriberCount;
+                      const showSubscriberCount = !that.state.showSubscriberCount;
                       that.setState({ showSubscriberCount });
                     }}
                   />
@@ -2183,22 +2127,11 @@ export default class EditSoundcast extends Component {
                               marginBottom: 25,
                             }}
                           >
-                            <div
-                              className=""
-                              style={{ fontSize: 18, width: '100%' }}
-                            >
+                            <div className="" style={{ fontSize: 18, width: '100%' }}>
                               <span>Submitting feed information...</span>
                             </div>
-                            <div
-                              className="col-md-12"
-                              style={{ marginTop: 10 }}
-                            >
-                              <Dots
-                                style={{}}
-                                color="#727981"
-                                size={32}
-                                speed={1}
-                              />
+                            <div className="col-md-12" style={{ marginTop: 10 }}>
+                              <Dots style={{}} color="#727981" size={32} speed={1} />
                             </div>
                           </div>
                         )) || (
@@ -2206,8 +2139,7 @@ export default class EditSoundcast extends Component {
                           <OrangeSubmitButton
                             styles={{ width: '100%' }}
                             label={
-                              (podcastFeedVersion &&
-                                'Save Edited Podcast Feed') ||
+                              (podcastFeedVersion && 'Save Edited Podcast Feed') ||
                               'Create Podcast Feed'
                             }
                             onClick={this.createPodcast.bind(this)}
@@ -2261,8 +2193,7 @@ export default class EditSoundcast extends Component {
                   </div>
                 )) ||
                   null}
-                {(isPodcast && editPodcast && this.renderPodcastInput()) ||
-                  null}
+                {(isPodcast && editPodcast && this.renderPodcastInput()) || null}
               </div>
               {/*Invitations*/}
               <div
@@ -2274,16 +2205,12 @@ export default class EditSoundcast extends Component {
                 }}
               >
                 <div>
-                  <span style={styles.titleText}>
-                    Subsciption Confirmation Message
-                  </span>
+                  <span style={styles.titleText}>Subsciption Confirmation Message</span>
                   <Editor
                     editorState={this.state.confirmationEmail}
                     editorStyle={styles.editorStyle}
                     wrapperStyle={styles.wrapperStyle}
-                    onEditorStateChange={this.onConfirmationStateChange.bind(
-                      this
-                    )}
+                    onEditorStateChange={this.onConfirmationStateChange.bind(this)}
                   />
                 </div>
               </div>
@@ -2299,10 +2226,7 @@ export default class EditSoundcast extends Component {
                   />
                 </div>
                 <div className="col-lg-4 col-md-6 col-sm-12 col-xs-12">
-                  <OrangeSubmitButton
-                    label="Publish"
-                    onClick={() => that.submit(true, false)}
-                  />
+                  <OrangeSubmitButton label="Publish" onClick={() => that.submit(true, false)} />
                 </div>
                 <div className="col-lg-4 col-md-12 col-sm-12 col-xs-12">
                   <TransparentShortSubmitButton
@@ -2317,6 +2241,33 @@ export default class EditSoundcast extends Component {
             </div>
           </div>
         </div>
+
+        <Dialog modal={true} open={this.state.upgradeModal}>
+          <div
+            style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+            onClick={() => this.closeUpgradeModal()}
+          >
+            &#10799; {/* Close button (X) */}
+          </div>
+
+          <div>
+            <div style={{ ...styles.dialogTitle }}>{this.state.upgradeModalTitle}</div>
+            <OrangeSubmitButton
+              styles={{
+                borderColor: Colors.link,
+                backgroundColor: Colors.link,
+                color: '#464646',
+                width: 400,
+              }}
+              label="Change Plan"
+              onClick={() =>
+                that.props.history.push({
+                  pathname: '/pricing',
+                })
+              }
+            />
+          </div>
+        </Dialog>
       </MuiThemeProvider>
     );
   }
@@ -2432,5 +2383,11 @@ const styles = {
     marginRight: 10,
     marginTop: 5,
     fontSize: 16,
+  },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
   },
 };

@@ -21,14 +21,12 @@ const bannerProps = {
   title: 'A Better Way for Real Estate Agent Training',
   tagline: 'Let your agents take the training wherever they go. ',
   subtitle1: 'Asynchronous training',
-  description1:
-    'Audio training is flexible and can be consumed anytime, anywhere.',
+  description1: 'Audio training is flexible and can be consumed anytime, anywhere.',
   subtitle2: 'Easy Dissemination',
   description2:
     "Easily record and send audios of your sales meetings and training classes and compliance updates to agents' phone.",
   subtitle3: 'Reference & Repeat',
-  description3:
-    'Audio files are organized and searchable for easy reference and re-listening.',
+  description3: 'Audio files are organized and searchable for easy reference and re-listening.',
   subtitle4: 'Tracking & Analytics',
   description4: "Track who's listened to what and review listening statistics.",
   image: 'images/section_img_2.png',

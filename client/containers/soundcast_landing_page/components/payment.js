@@ -64,11 +64,7 @@ class _Payment extends Component {
     });
     if (props.soundcast && props.userInfo && props.userInfo.email) {
       const isFree = props.totalPrice === 0 || props.totalPrice == 'free';
-      if (
-        !isFree &&
-        props.soundcast.prices &&
-        props.soundcast.prices.some(i => i.coupons)
-      ) {
+      if (!isFree && props.soundcast.prices && props.soundcast.prices.some(i => i.coupons)) {
         console.log('1. isFreeSoundcast: false')
         this.setState({ isFreeSoundcast: false })
         return; // ignore if soundcast not free and have coupons
@@ -79,11 +75,7 @@ class _Payment extends Component {
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
         // - prevent audocheckout if trial coupon used
-        this.addSoundcastToUser(
-          null,
-          props.userInfo,
-          props.soundcastID || this.props.soundcastID
-        );
+        this.addSoundcastToUser(null, props.userInfo, props.soundcastID || this.props.soundcastID);
       } else {
         console.log('3. isFreeSoundcast: false')
         this.setState({ isFreeSoundcast: false })
@@ -139,13 +131,7 @@ class _Payment extends Component {
       const { totalPay } = this.state;
       const _email = userInfo.email[0].replace(/\./g, '(dot)');
 
-      const {
-        billingCycle,
-        paymentPlan,
-        price,
-        rentalPeriod,
-      } = soundcast.prices[checked];
-
+      const { billingCycle, paymentPlan, price, rentalPeriod } = soundcast.prices[checked];
       let current_period_end = rentalPeriod
         ? moment()
             .add(Number(rentalPeriod), 'days')
@@ -155,27 +141,18 @@ class _Payment extends Component {
       const paymentID = (charge && charge.id) || null;
       const planID = (charge && charge.plan && charge.plan.id) || null;
       current_period_end =
-        charge && charge.current_period_end
-          ? charge.current_period_end
-          : current_period_end; //if it's not a recurring billing ('one time' or 'rental'), set the end period to 2117/1/1 or rental expiration date.
+        charge && charge.current_period_end ? charge.current_period_end : current_period_end; //if it's not a recurring billing ('one time' or 'rental'), set the end period to 2117/1/1 or rental expiration date.
 
       // send email invitations to subscribers
-      const subject = `${
-        userInfo.firstName
-      }, here's how to access your soundcast`;
+      const subject = `${userInfo.firstName}, here's how to access your soundcast`;
       let content;
       if (confirmationEmail) {
         const editorState = JSON.parse(confirmationEmail);
         const confirmEmailHTML = draftToHtml(editorState);
-        content = confirmEmailHTML.replace(
-          '[subscriber first name]',
-          userInfo.firstName
-        );
+        content = confirmEmailHTML.replace('[subscriber first name]', userInfo.firstName);
         content = content.replace('[soundcast title]', soundcast.title);
       } else {
-        content = `<p>Hi ${
-          userInfo.firstName
-        }!</p><p></p><p>Thanks for signing up for ${
+        content = `<p>Hi ${userInfo.firstName}!</p><p></p><p>Thanks for signing up for ${
           soundcast.title
         }. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to sign up for this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
       }
@@ -183,14 +160,9 @@ class _Payment extends Component {
       firebase.auth().onAuthStateChanged(async user => {
         if (user) {
           const userId = user.uid;
-          const connectedCustomer =
-            (charge && charge.connectedCustomer) || null;
-          const platformCustomer = charge
-            ? charge.platformCustomer || charge.stripe_id
-            : null;
-          const soundcastsIds = soundcast.bundle
-            ? soundcast.soundcastsIncluded
-            : [soundcastID];
+          const connectedCustomer = (charge && charge.connectedCustomer) || null;
+          const platformCustomer = charge ? charge.platformCustomer || charge.stripe_id : null;
+          const soundcastsIds = soundcast.bundle ? soundcast.soundcastsIncluded : [soundcastID];
           if (soundcast.bundle) {
             // add user to bundle
             await firebase
@@ -242,32 +214,20 @@ class _Payment extends Component {
               // TODO review block
               await firebase
                 .database()
-                .ref(
-                  `publishers/${
-                    soundcast.publisherID
-                  }/freeSubscribers/${userId}/${soundcastID}`
-                )
+                .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}/${soundcastID}`)
                 .set(true);
               const snapshot = await firebase
                 .database()
-                .ref(
-                  `publishers/${
-                    soundcast.publisherID
-                  }/freeSubscribers/${userId}`
-                )
+                .ref(`publishers/${soundcast.publisherID}/freeSubscribers/${userId}`)
                 .once('value');
               if (!snapshot.val()) {
                 const snapshot = await firebase
                   .database()
-                  .ref(
-                    `publishers/${soundcast.publisherID}/freeSubscriberCount`
-                  )
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
                   .once('value');
                 await firebase
                   .database()
-                  .ref(
-                    `publishers/${soundcast.publisherID}/freeSubscriberCount`
-                  )
+                  .ref(`publishers/${soundcast.publisherID}/freeSubscriberCount`)
                   .set(snapshot.val() ? snapshot.val() + 1 : 1); // increment or set 1
               }
             }
@@ -292,12 +252,9 @@ class _Payment extends Component {
             .ref(`publishers/${soundcast.publisherID}`)
             .once('value', async snapshot => {
               if (!snapshot.val()) {
-                return console.log(
-                  'Error payment addSoundcastToUser empty publisher'
-                );
+                return console.log('Error payment addSoundcastToUser empty publisher');
               }
-              const publisherEmail =
-                snapshot.val().email || snapshot.val().paypalEmail;
+              const publisherEmail = snapshot.val().email || snapshot.val().paypalEmail;
               await addToEmailList(
                 soundcastID,
                 [
@@ -354,9 +311,7 @@ class _Payment extends Component {
     if (this.state.startPaymentSubmission) {
       return;
     }
-    const lastSubmitDate = Number(
-      localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0
-    );
+    const lastSubmitDate = Number(localStorage.getItem('paymentPaidBilCycleOneTimeRental') || 0);
     if (Date.now() - lastSubmitDate < 10000) {
       // 10 seconds since last success call not passed
       return;
@@ -380,19 +335,11 @@ class _Payment extends Component {
   }
 
   stripeTokenHandler(status, response) {
-    const amount =
-      Number(this.state.totalPay || this.props.totalPrice).toFixed(2) * 100; // in cents
+    const amount = Number(this.state.totalPay || this.props.totalPrice).toFixed(2) * 100; // in cents
     const userInfo = this.props.userInfo;
     const { email, stripe_id } = userInfo;
     const receipt_email = (email && email[0]) || this.state.email;
-    const {
-      soundcast,
-      checked,
-      soundcastID,
-      handleStripeId,
-      coupon,
-      isTrial,
-    } = this.props;
+    const { soundcast, checked, soundcastID, handleStripeId, coupon, isTrial } = this.props;
     const { billingCycle, paymentPlan, price } = soundcast.prices[checked];
     const that = this;
 
@@ -426,29 +373,21 @@ class _Payment extends Component {
                 stripe_user_id,
                 soundcastID,
                 planID,
-                description: `${soundcast.title}: ${paymentPlan ||
-                  billingCycle}`,
+                description: `${soundcast.title}: ${paymentPlan || billingCycle}`,
                 statement_descriptor: `${soundcast.title}: ${paymentPlan}`,
               })
                 .then(response => {
                   const paid = response.data.res.paid; //boolean
                   if (paid) {
                     // if payment made, push course to user data, and redirect to a thank you page
-                    localStorage.setItem(
-                      'paymentPaidBilCycleOneTimeRental',
-                      Date.now()
-                    );
+                    localStorage.setItem('paymentPaidBilCycleOneTimeRental', Date.now());
                     that.setState({
                       paid,
                       startPaymentSubmission: false,
                     });
                     if (userInfo && userInfo.email) {
                       // logged in
-                      that.addSoundcastToUser(
-                        response.data.res,
-                        null,
-                        soundcastID
-                      );
+                      that.addSoundcastToUser(response.data.res, null, soundcastID);
                     } else {
                       handleStripeId(response.data.res, that.state);
                     }
@@ -568,9 +507,7 @@ class _Payment extends Component {
                 <div style={styles.totalRow}>
                   <div style={styles.totalWrapper}>
                     <div style={styles.totalText}>Total:</div>
-                    <div style={styles.totalPriceText}>
-                      {`$${Number(totalPrice).toFixed(2)}`}
-                    </div>
+                    <div style={styles.totalPriceText}>{`$${Number(totalPrice).toFixed(2)}`}</div>
                   </div>
                 </div>
                 <form onSubmit={this.onSubmit}>
@@ -627,10 +564,7 @@ class _Payment extends Component {
                       />
                     )}
                     {!hideCardInputs && (
-                      <img
-                        src="../../../images/card_types.png"
-                        style={styles.cardsImage}
-                      />
+                      <img src="../../../images/card_types.png" style={styles.cardsImage} />
                     )}
                   </div>
 
@@ -638,10 +572,7 @@ class _Payment extends Component {
                   {!hideCardInputs && (
                     <div className="">
                       {/*month*/}
-                      <div
-                        style={styles.selectBlock}
-                        className="border-radius-4"
-                      >
+                      <div style={styles.selectBlock} className="border-radius-4">
                         <label style={styles.selectLabel}>Exp Month</label>
                         <select
                           onChange={this.handleChange}
@@ -654,16 +585,9 @@ class _Payment extends Component {
                       </div>
 
                       {/*year*/}
-                      <div
-                        style={styles.selectBlock}
-                        className="border-radius-4"
-                      >
+                      <div style={styles.selectBlock} className="border-radius-4">
                         <label style={styles.selectLabel}>Exp Year</label>
-                        <select
-                          onChange={this.handleChange}
-                          name="exp_year"
-                          style={styles.select}
-                        >
+                        <select onChange={this.handleChange} name="exp_year" style={styles.select}>
                           {yearOptions.map(item => item)}
                         </select>
                       </div>
@@ -697,9 +621,7 @@ class _Payment extends Component {
                   )) || (
                     <div style={styles.buttonWrapper}>
                       {this.state.paymentError && (
-                        <span style={{ color: 'red' }}>
-                          {this.state.paymentError}
-                        </span>
+                        <span style={{ color: 'red' }}>{this.state.paymentError}</span>
                       )}
                       <button
                         className="contact-submit btn propClone btn-3d text-white width-100 builder-bg tz-text"

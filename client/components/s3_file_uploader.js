@@ -95,10 +95,7 @@ export default class S3FileUploader extends Component {
             scrubFilename={filename => {
               const original = filename.split('.');
               const ext = original[original.length - 1];
-              return filename.replace(
-                filename.slice(0),
-                `${this.props.s3NewFileName}.${ext}`
-              );
+              return filename.replace(filename.slice(0), `${this.props.s3NewFileName}.${ext}`);
             }}
             inputRef={cmp => (this.uploadFileInput = cmp)}
             autoUpload={true}

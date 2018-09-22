@@ -78,18 +78,12 @@ class _EpisodePage extends Component {
             date_created: snapshot.val().date_created,
             description: snapshot.val().description,
             duration: snapshot.val().duration,
-            likes: snapshot.val().likes
-              ? Object.keys(snapshot.val().likes).length
-              : 0,
-            listens: snapshot.val().totalListens
-              ? snapshot.val().totalListens
-              : 0,
+            likes: snapshot.val().likes ? Object.keys(snapshot.val().likes).length : 0,
+            listens: snapshot.val().totalListens ? snapshot.val().totalListens : 0,
             publicEpisode: snapshot.val().publicEpisode ? true : false,
             soundcastID: snapshot.val().soundcastID,
             publisherID: snapshot.val().publisherID,
-            coverArtUrl: snapshot.val().coverArtUrl
-              ? snapshot.val().coverArtUrl
-              : '',
+            coverArtUrl: snapshot.val().coverArtUrl ? snapshot.val().coverArtUrl : '',
           });
 
           firebase
@@ -132,8 +126,8 @@ class _EpisodePage extends Component {
     if (seconds > 0) {
       const _hours = Math.floor(seconds / 3600);
       const _minutes = Math.floor((seconds - _hours * 3600) / 60);
-      return `${(_hours && `${_hours} hour`) || ''}${(_hours > 1 && 's') ||
-        ''} ${(_minutes < 10 && `0${_minutes} min`) ||
+      return `${(_hours && `${_hours} hour`) || ''}${(_hours > 1 && 's') || ''} ${(_minutes < 10 &&
+        `0${_minutes} min`) ||
         `${_minutes} min`}${(_minutes > 1 && 's') || ''}`;
     } else {
       return '0 mins';
@@ -169,14 +163,7 @@ class _EpisodePage extends Component {
   }
 
   sendToDatabase(event) {
-    const {
-      soundcastID,
-      publisherID,
-      episodeID,
-      startPosition,
-      listens,
-      modalShown,
-    } = this.state;
+    const { soundcastID, publisherID, episodeID, startPosition, listens, modalShown } = this.state;
     const _date = moment().format('YYYY-MM-DD');
 
     firebase
@@ -210,13 +197,9 @@ class _EpisodePage extends Component {
       date: _date,
       startPosition: Math.floor(startPosition),
       endPosition: Math.floor(
-        this.state.endPosition >= startPosition
-          ? this.state.endPosition
-          : startPosition
+        this.state.endPosition >= startPosition ? this.state.endPosition : startPosition
       ),
-      percentCompleted: Math.round(
-        (this.state.endPosition / this.audio.duration) * 100 || 100
-      ),
+      percentCompleted: Math.round((this.state.endPosition / this.audio.duration) * 100 || 100),
       sessionDuration: this.state.endPosition - startPosition,
       createdAt: _date,
       updatedAt: _date,
@@ -332,28 +315,16 @@ class _EpisodePage extends Component {
       <div>
         <Helmet>
           <title>{`${title} | Soundwise`}</title>
-          <meta
-            property="og:url"
-            content={`https://mysoundwise.com/episodes/${episodeID}`}
-          />
+          <meta property="og:url" content={`https://mysoundwise.com/episodes/${episodeID}`} />
           <meta property="fb:app_id" content="1726664310980105" />
           <meta property="og:title" content={`${title} - ${soundcastTitle}`} />
           <meta property="og:description" content={description} />
-          <meta
-            property="og:image"
-            content={coverArtUrl || soundcastImageURL}
-          />
+          <meta property="og:image" content={coverArtUrl || soundcastImageURL} />
           <meta name="description" content={description} />
           <meta name="twitter:title" content={`${title} - ${soundcastTitle}`} />
           <meta name="twitter:description" content={description} />
-          <meta
-            name="twitter:image"
-            content={coverArtUrl || soundcastImageURL}
-          />
-          <meta
-            name="twitter:card"
-            content={coverArtUrl || soundcastImageURL}
-          />
+          <meta name="twitter:image" content={coverArtUrl || soundcastImageURL} />
+          <meta name="twitter:card" content={coverArtUrl || soundcastImageURL} />
         </Helmet>
         <MuiThemeProvider>
           <div>
@@ -369,26 +340,18 @@ class _EpisodePage extends Component {
                 onClose={this.onCloseModal}
                 styles={{ modal: { maxWidth: '100%' } }}
               >
-                <div
-                  className="padding-five xs-padding-six"
-                  style={{ padding: '3em' }}
-                >
+                <div className="padding-five xs-padding-six" style={{ padding: '3em' }}>
                   <div className="col-md-6 col-xs-12">
                     <img src={soundcastImageURL} style={{ width: '100%' }} />
                   </div>
                   <div className="col-md-6 col-xs-12">
                     <div style={{ marginBottom: '2em', marginTop: '2em' }}>
-                      <span
-                        className="title-large xs-title-large"
-                        style={{ fontWeight: 800 }}
-                      >
+                      <span className="title-large xs-title-large" style={{ fontWeight: 800 }}>
                         {soundcastTitle}
                       </span>
                     </div>
                     <div style={{ marginBottom: '2em' }}>
-                      <span className="text-large xc-text-large">
-                        {soundcastDescription}
-                      </span>
+                      <span className="text-large xc-text-large">{soundcastDescription}</span>
                     </div>
                     {(soundcastFeatures && (
                       <div
@@ -491,10 +454,7 @@ class _EpisodePage extends Component {
                     </div>
                   </div>
                   <div className="row">
-                    <div
-                      className="col-md-3 col-sm-5 col-xs-12 text-center center-col"
-                      style={{}}
-                    >
+                    <div className="col-md-3 col-sm-5 col-xs-12 text-center center-col" style={{}}>
                       <a
                         target="_blank"
                         href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`}
@@ -565,9 +525,7 @@ class _EpisodePage extends Component {
                         {(showTimeStamps &&
                           `${moment(date_created * 1000).format(
                             'MMM DD YYYY'
-                          )} ${String.fromCharCode(
-                            183
-                          )} ${this.getTime_hoursMins(duration)}`) ||
+                          )} ${String.fromCharCode(183)} ${this.getTime_hoursMins(duration)}`) ||
                           `${this.getTime_hoursMins(duration)}`}
                       </h2>
                     </div>
@@ -592,17 +550,13 @@ class _EpisodePage extends Component {
                             aria-hidden="true"
                             style={{ color: liked ? 'red' : 'black' }}
                           />
-                          {` ${likes || 0} ${
-                            likes && likes > 1 ? 'likes' : 'like'
-                          }`}
+                          {` ${likes || 0} ${likes && likes > 1 ? 'likes' : 'like'}`}
                         </span>
                       }
                       {
                         <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
                           <i className="fa fa-headphones" aria-hidden="true" />
-                          {` ${listens || 0} ${
-                            listens && listens > 1 ? 'listens' : 'listen'
-                          }`}
+                          {` ${listens || 0} ${listens && listens > 1 ? 'listens' : 'listen'}`}
                         </span>
                       }
                     </div>

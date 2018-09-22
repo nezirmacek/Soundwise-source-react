@@ -21,23 +21,19 @@ export default class IGPList extends Component {
   }
 
   fetchPosts(page) {
-    butter.post
-      .list({ category_slug: 'igp', page: 1, page_size: 60 })
-      .then(resp => {
-        const posts = resp.data.data;
-        this.setState({
-          loaded: true,
-          posts: posts,
-          resp: resp.data,
-        });
+    butter.post.list({ category_slug: 'igp', page: 1, page_size: 60 }).then(resp => {
+      const posts = resp.data.data;
+      this.setState({
+        loaded: true,
+        posts: posts,
+        resp: resp.data,
       });
+    });
   }
 
   componentWillMount() {
     let page =
-      this.props.match.params && this.props.match.params.page
-        ? this.props.match.params.page
-        : 1;
+      this.props.match.params && this.props.match.params.page ? this.props.match.params.page : 1;
     // console.log('this.props.params.page: ', this.props.params.page);
     this.fetchPosts(page);
   }
@@ -45,9 +41,7 @@ export default class IGPList extends Component {
   componentWillReceiveProps(nextProps) {
     this.setState({ loaded: false });
     let page =
-      nextProps.match.params && nextProps.match.params.page
-        ? nextProps.match.params.page
-        : 1;
+      nextProps.match.params && nextProps.match.params.page ? nextProps.match.params.page : 1;
 
     this.fetchPosts(page);
   }
@@ -61,34 +55,21 @@ export default class IGPList extends Component {
             <title>{'Inner Game of Podcasting | Soundwise'}</title>
             <meta property="og:url" content="https://mysoundwise.com/igp" />
             <meta property="fb:app_id" content="1726664310980105" />
-            <meta
-              property="og:title"
-              content="Inner Game of Podcasting | Soundwise"
-            />
+            <meta property="og:title" content="Inner Game of Podcasting | Soundwise" />
             <meta
               property="og:description"
-              content={
-                'Celebrating extraordinary audio creators and their stories.'
-              }
+              content={'Celebrating extraordinary audio creators and their stories.'}
             />
-            <meta
-              property="og:image"
-              content="https://mysoundwise.com/images/soundwise-home.png"
-            />
+            <meta property="og:image" content="https://mysoundwise.com/images/soundwise-home.png" />
             <meta
               name="description"
-              content={
-                'Celebrating extraordinary audio creators and their stories.'
-              }
+              content={'Celebrating extraordinary audio creators and their stories.'}
             />
             <meta
               name="keywords"
               content="soundwise, training, online education, education software, subscription, soundwise inc, real estate, real estate broker, real estate agents, real estate brokerage, real estate training, audio publishing, content management system, audio, mobile application, learning, online learning, online course, podcast, mobile app"
             />
-            <meta
-              name="twitter:title"
-              content="Inner Game of Podcasting | Soundwise"
-            />
+            <meta name="twitter:title" content="Inner Game of Podcasting | Soundwise" />
             <meta
               name="twitter:description"
               content="Celebrating extraordinary audio creators and their stories."
@@ -97,10 +78,7 @@ export default class IGPList extends Component {
               name="twitter:image"
               content="https://mysoundwise.com/images/soundwise-home.png"
             />
-            <meta
-              name="twitter:card"
-              content="https://mysoundwise.com/images/soundwise-home.png"
-            />
+            <meta name="twitter:card" content="https://mysoundwise.com/images/soundwise-home.png" />
           </Helmet>
           <SoundwiseHeader2 />
           <section
@@ -138,10 +116,7 @@ export default class IGPList extends Component {
                               data-img-size="(W)800px X (H)507px"
                             />
                           </div>
-                          <div
-                            style={{ padding: 20 }}
-                            className=" bg-gray tz-background-color"
-                          >
+                          <div style={{ padding: 20 }} className=" bg-gray tz-background-color">
                             <div className="text-extra-large sm-text-large xs-text-large text-dark-gray tz-text">
                               {post.summary.length > 300
                                 ? `${post.summary.slice(0, 300)}...`

@@ -88,13 +88,7 @@ export default class EpisodePreview extends Component {
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
-    const {
-      episode,
-      liked,
-      descriptionShown,
-      notesShown,
-      actionsShown,
-    } = this.state;
+    const { episode, liked, descriptionShown, notesShown, actionsShown } = this.state;
     const { handlePlayClicked, playing, paused, currentEpisode } = this.props;
     const likes = (episode.likes && Object.keys(episode.likes).length) || 0;
     const listens = episode.totalListens || 0;
@@ -113,10 +107,7 @@ export default class EpisodePreview extends Component {
             episode.id == currentEpisode.id && (
               <Levels color="#F76B1C" size={mobile ? 13 : 16} speed={1} />
             )) || (
-            <div
-              onClick={this.handlePlay.bind(this, episode)}
-              style={{ cursor: 'pointer' }}
-            >
+            <div onClick={this.handlePlay.bind(this, episode)} style={{ cursor: 'pointer' }}>
               <i
                 className="material-icons"
                 aria-hidden="true"
@@ -180,9 +171,7 @@ export default class EpisodePreview extends Component {
                   label="Description"
                   labelPosition="before"
                   icon={
-                    (descriptionShown && (
-                      <i className="fa fa-chevron-up" aria-hidden="true" />
-                    )) || (
+                    (descriptionShown && <i className="fa fa-chevron-up" aria-hidden="true" />) || (
                       <i className="fa fa-chevron-down" aria-hidden="true" />
                     )
                   }
@@ -195,9 +184,7 @@ export default class EpisodePreview extends Component {
                   label="Notes"
                   labelPosition="before"
                   icon={
-                    (notesShown && (
-                      <i className="fa fa-chevron-up" aria-hidden="true" />
-                    )) || (
+                    (notesShown && <i className="fa fa-chevron-up" aria-hidden="true" />) || (
                       <i className="fa fa-chevron-down" aria-hidden="true" />
                     )
                   }
@@ -210,9 +197,7 @@ export default class EpisodePreview extends Component {
                   label="Actions"
                   labelPosition="before"
                   icon={
-                    (actionsShown && (
-                      <i className="fa fa-chevron-up" aria-hidden="true" />
-                    )) || (
+                    (actionsShown && <i className="fa fa-chevron-up" aria-hidden="true" />) || (
                       <i className="fa fa-chevron-down" aria-hidden="true" />
                     )
                   }
@@ -222,10 +207,7 @@ export default class EpisodePreview extends Component {
                 null}
             </div>
           </div>
-          <div
-            className="col-md-12 margin-three-top margin-three-bottom"
-            style={{}}
-          >
+          <div className="col-md-12 margin-three-top margin-three-bottom" style={{}}>
             {(descriptionShown && (
               <div
                 className="text-large text-dark-gray sm-text-large xs-text-large"
@@ -260,9 +242,7 @@ export default class EpisodePreview extends Component {
           style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}
         >
           {(episode.duration && (
-            <span style={{ fontSize: 16 }}>
-              {getTime_mmss(episode.duration.toFixed())}
-            </span>
+            <span style={{ fontSize: 16 }}>{getTime_mmss(episode.duration.toFixed())}</span>
           )) ||
             null}
         </div>

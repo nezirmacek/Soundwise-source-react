@@ -36,17 +36,16 @@ export default class PodcasterBlock extends Component {
                     <strong>Unlimited hosting</strong> of your podcast for FREE
                   </li>
                   <li>
-                    <strong>Best of both worlds</strong>: one-click iTunes and
-                    Google Play publishing for exposure; direct listener signup
-                    on Soundwise for <strong>capturing email leads</strong>
+                    <strong>Best of both worlds</strong>: one-click iTunes and Google Play
+                    publishing for exposure; direct listener signup on Soundwise for{' '}
+                    <strong>capturing email leads</strong>
                   </li>
                   <li>
-                    <strong>Grow a community</strong> around your podcast with
-                    the Soundwise app's social features
+                    <strong>Grow a community</strong> around your podcast with the Soundwise app's
+                    social features
                   </li>
                   <li>
-                    Create <strong>paid audio series</strong> and turn fans into
-                    paying students
+                    Create <strong>paid audio series</strong> and turn fans into paying students
                   </li>
                 </ul>
                 <Link

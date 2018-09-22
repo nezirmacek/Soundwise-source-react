@@ -71,9 +71,7 @@ const signInFacebook = (sucessCallback, errCallback) => {
                 sucessCallback(snapshot.val());
               });
           } else {
-            errCallback(
-              'signInFacebook error: User saving failed. Please try again later.'
-            );
+            errCallback('signInFacebook error: User saving failed. Please try again later.');
           }
         });
       });
@@ -186,14 +184,11 @@ const compileUser = async (_user, signinUser) => {
 };
 
 const signupCommon = (_user, isAdmin, successCallback) => {
-  const firstName =
-    _user.firstName || localStorage.getItem('soundwiseSignupFName');
-  const lastName =
-    _user.lastName || localStorage.getItem('soundwiseSignupLName');
+  const firstName = _user.firstName || localStorage.getItem('soundwiseSignupFName');
+  const lastName = _user.lastName || localStorage.getItem('soundwiseSignupLName');
   const email = _user.email || localStorage.getItem('soundwiseSignupEmail');
   const picture =
-    _user.pic_url ||
-    'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
+    _user.pic_url || 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png';
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       const userId = user.uid;
@@ -244,10 +239,4 @@ const signupCommon = (_user, isAdmin, successCallback) => {
   });
 };
 
-export {
-  signInPassword,
-  signInFacebook,
-  facebookErrorCallback,
-  compileUser,
-  signupCommon,
-};
+export { signInPassword, signInFacebook, facebookErrorCallback, compileUser, signupCommon };
