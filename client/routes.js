@@ -83,6 +83,7 @@ import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
 import { WaveVideoInputs } from './containers/wave_video_inputs';
+import { VideoDemo } from './containers/video_demo.js'
 
 class _Routes extends Component {
   constructor(props) {
@@ -320,31 +321,22 @@ class _Routes extends Component {
             </Helmet>
             <Switch>
               <Route exact path="/" component={HomePage} />
-              <Route exact path="/podcast" component={LandingPagePodcast} />
-              <Route exact path="/selling" component={LandingPageSelling} />
               <Route path="/about" component={About} />
-              <Route path="/conversion" component={PodcastingCourse} />
-              <Route path="/realestate" component={PageRealEstate} />
-              <Route path="/experts" component={PageExperts} />
-              <Route exact={true} path="/signup/:mode" component={AppSignup} />
-              <Route path="/signup_options" component={SignupOptions} />
-              <Route path="/signup/:mode/:id" component={AppSignup} />
-              <Route path="/signin/:mode/:id" component={AppSignin} />
-              <Route exact={true} path="/signin" component={AppSignin} />
-              <Route path="/trial_request" component={TrialRequest} />
-              <Route path="/gift" component={Referral} />
-              <Route path="/notice" component={Notice} />
-              <Route path="/creator_terms" component={CreatorTerms} />
-              <Route path="/privacy" component={Privacy} />
-              <Route path="/terms" component={Terms} />
-              <Route path="/wave_video" component={WaveVideoInputs} />
               <Route exact={true} path="/blog" component={BlogList} />
+              <Route path="/blog/p/:page" component={BlogList} />
+              <Route exact={true} path="/blog/post/:slug" component={BlogPost} />
+              <Route path="/buy" component={SoundwiseCheckout} />
+              <Route path="/content_download" component={ContentDownload} />
+              <Route path="/confirmation" component={OrderConfirmation} />
+              <Route path="/conversion" component={PodcastingCourse} />
+              <Route path="/creator_terms" component={CreatorTerms} />
+              <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
+              <Route path="/dashboard/:tab/:id" component={Dashboard} />
+              <Route path="/episodes/:id" component={EpisodePage} />
+              <Route path="/experts" component={PageExperts} />
               <Route exact={true} path="/igp" component={IGPList} />
               <Route exact={true} path="/igp/:slug" component={IGPPost} />
               <Route exact={true} path="/knowledge" component={HelpDocs} />
-              <Route path="/blog/p/:page" component={BlogList} />
-              <Route exact={true} path="/blog/post/:slug" component={BlogPost} />
-              <Route path="/terms_free_content_May2017" component={TermsFreeContent} />
               <Route exact path="/mysoundcasts" component={MySoundcasts} />
               <Route exact path="/mysoundcasts/:soundcastId" component={SoundcastPlayingPage} />
               <Route
@@ -353,18 +345,23 @@ class _Routes extends Component {
                 component={SoundcastPlayingPage}
               />
               <Route exact path="/myprofile" component={UserProfile} />
-              <Route path="/cart" component={Cart} />
-              <Route path="/confirmation" component={OrderConfirmation} />
+              <Route path="/notice" component={Notice} />
+              <Route path="/notfound" component={NotFound} />
               <Route path="/password_reset" component={PassRecovery} />
-              <Route exact={true} path="/dashboard/:tab" component={Dashboard} />
-              <Route path="/dashboard/:tab/:id" component={Dashboard} />
-              <Route path="/soundcasts/:id" component={SoundcastPage} />
-              <Route path="/publishers/:id" component={Publisher} />
-              <Route path="/episodes/:id" component={EpisodePage} />
-              <Route path="/soundcast_checkout" component={SoundcastCheckout} />
+              <Route exact path="/podcast" component={LandingPagePodcast} />
+              <Route path="/privacy" component={Privacy} />
               <Route path="/pricing" component={PricingPage} />
-              <Route path="/buy" component={SoundwiseCheckout} />
-              <Route path="/content_download" component={ContentDownload} />
+              <Route path="/publishers/:id" component={Publisher} />
+              <Route exact path="/selling" component={LandingPageSelling} />
+              <Route exact={true} path="/signup/:mode" component={AppSignup} />
+              <Route path="/signup_options" component={SignupOptions} />
+              <Route path="/signup/:mode/:id" component={AppSignup} />
+              <Route path="/signin/:mode/:id" component={AppSignin} />
+              <Route exact={true} path="/signin" component={AppSignin} />
+              <Route path="/soundcasts/:id" component={SoundcastPage} />
+              <Route path="/soundcast_checkout" component={SoundcastCheckout} />
+              <Route path="/trial_request" component={TrialRequest} />
+              <Route path="/terms" component={Terms} />
               <Route
                 exact={true}
                 path="/tracks/:id"
@@ -373,7 +370,8 @@ class _Routes extends Component {
                   window.location.replace(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${id}`);
                 }}
               />
-              <Route path="/notfound" component={NotFound} />
+              <Route path='/video_demo' component={VideoDemo} />
+              <Route path="/wave_video" component={WaveVideoInputs} />
               <Route component={NotFound} />
             </Switch>
           </div>

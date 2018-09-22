@@ -60,7 +60,7 @@ var database = require('../database');
 Raven.config(
   'https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847'
 ).install();
-console.log(serviceAccount);
+
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: 'https://soundwise-a8e6f.firebaseio.com',
@@ -70,11 +70,6 @@ var transferLikes = require('./bin/firebase-listeners.js').transferLikes;
 var transferMessages = require('./bin/firebase-listeners.js').transferMessages;
 var firebaseListeners = require('./bin/firebase-listeners.js').firebaseListeners;
 const { userService } = require('./services');
-// sync firebase with Algolia and postgres
-// algoliaIndex();
-// transferLikes();
-// transferMessages();
-// firebaseListeners();
 
 var app = (module.exports = loopback());
 app.start = function() {
@@ -91,8 +86,8 @@ app.start = function() {
   // server.timeout = 10*60*1000; // 10 minutes
 };
 
-console.log('key:', awsConfig.accessKeyId);
-console.log('secret:', awsConfig.secretAccessKey);
+// console.log('key:', awsConfig.accessKeyId);
+// console.log('secret:', awsConfig.secretAccessKey);
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -232,7 +227,6 @@ app.use(
 );
 
 app.get('/api/custom_token', (req, res) => {
-  // console.log(req);
   firebase
     .auth()
     .createCustomToken(req.query.uid)
@@ -271,18 +265,6 @@ boot(app, __dirname, function(err) {
   }
 });
 
-// app.use(express.static('./client'));
-
-// app.use(/^\/(?!api|explorer|tracks)/, function(request, response) {
-//   // var domain = String(request.query.domain);
-//   var host = request.get('host');
-//   console.log("here")
-//   response.set('X-Frame-Options', "ALLOW-FROM "+ request.hostname);
-//   // response.set('Content-Security-Policy', 'frame-src ' + String(host));
-//   // next();
-// 	response.sendFile(path.resolve('./client/index.html'));
-// });
-
 app.use(express.static('./client'));
 
 app.all(/^\/(?!api|explorer|tracks)/, function(request, response) {
@@ -307,78 +289,6 @@ app.use(function(err, req, res, next) {
   }
   res.end();
 });
-
-// var sgMail = require('@sendgrid/mail');
-var sendGridApiKey = require('../config').sendGridApiKey;
-// var emailTemplate = require('./scripts/helpers/emailTemplate').emailTemplate;
-// var content = emailTemplate('Soundwise', '', '<p>Hi Natasha. This is a test.</p>');
-
-// sgMail.setApiKey(sendGridApiKey);
-//     var msg = {
-//       to: 'natasha@natashache.com',
-//       from: 'support@mysoundwise.com',
-//       subject: 'Hello, Natasha!',
-//       html: content,
-//     };
-//     sgMail.send(msg)
-//     .then(res => console.log(res.toString()))
-//     .catch(err => {
-//       // Promise.reject(err);
-//       console.log(err.toString());
-//       Raven.captureException(err.toString());
-//     });
-
-// var stripe_key =  require('../config').stripe_key;
-// var stripe = require('stripe')(stripe_key);
-
-// stripe.transfers.create({
-//   amount: 59,
-//   currency: "usd",
-//   destination: "acct_1Bdla1BEkT8zqJaI",
-// }, function(err, transfer) {
-//   // asynchronously called
-//   if(err) console.log(err.toString());
-//   console.log(transfer);
-// });
-
-const client = require('@sendgrid/client');
-client.setApiKey(sendGridApiKey);
-// let listId;
-// const data1 = {
-//   method: 'POST',
-//   url: '/v3/contactdb/lists',
-//   body: {'name': 'platform-listeners'},
-// };
-// // console.log('data1: ', data1);
-// client.request(data1)
-// .then(([response, body]) => {
-//   listId = body.id;
-//   console.log(listId);
-// });
-// const options = {
-//   method: 'POST',
-//   url: '/v3/contactdb/recipients',
-//   body: [
-//     {email: 'natasha@natashache.com'},
-//   ],
-// };
-// client.request(options)
-// .then(([response, body]) => {
-//   console.log(response.statusCode);
-//   console.log(response.body);
-// });
-
-// const changeUrl = async () => {
-//   const episodes = await firebase.database().ref('soundcasts/1508293913676s/episodes').once('value');
-//   const episodesArr = Object.keys(episodes.val());
-//   for(var i = 0; i < episodesArr.length; i++) {
-//     // await firebase.database().ref(`episodes/${episodesArr[i]}/url`).set(`https://mysoundwise.com/tracks/${episodesArr[i]}.mp3`);
-//     // console.log('episode: ', episodesArr[i], ' url changed');
-//     await firebase.database().ref(`episodes/${episodesArr[i]}/id3Tagged`).set(false);
-//     console.log('episode: ', episodesArr[i], ' untagged')
-//   }
-// }
-// changeUrl();
 
 app.post('/api/complete_sign_up', (req, res) => {
   userService
