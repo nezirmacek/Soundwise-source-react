@@ -386,7 +386,7 @@ export default class EditSoundcast extends Component {
               f
                 .resize(600, jimp.AUTO)
                 .blur(30)
-                .brightness(0.1)
+                .brightness(0.6)
                 .getBuffer(jimp.AUTO, (err, buffer) => {
                   if (!err) {
                     blurredData.append('file', new Blob([buffer]), `blurred-${fileName}`);
@@ -403,6 +403,10 @@ export default class EditSoundcast extends Component {
                         }
 
                         _self.setState({ blurredImageURL: url });
+                        firebase
+                        .database()
+                        .ref(`soundcasts/${history.location.state.id}/blurredImageURL`)
+                        .set(url);
                       })
                       .catch(function(err) {
                         // POST failed...
