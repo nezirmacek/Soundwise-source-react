@@ -1239,6 +1239,27 @@ class _LandingPagePodcast extends Component {
           </section>
         </div>
         <FAQs />
+        <section className="padding-110px-tb xs-padding-60px-tb  builder-bg border-none" id="demo_request" data-selector=".builder-bg" style={{backgroundColor: Colors.link}}>
+            <div className="container">
+                <div className="row equalize xs-equalize-auto">
+                    <div className="col-md-7 col-sm-6 col-xs-12 xs-margin-thirteen-bottom display-table" style={{height: 200}}>
+                        <div className="display-table-cell-vertical-middle">
+                            <h1 className="title-extra-large-2 alt-font sm-title-extra-large xs-title-extra-large text-white font-weight-700 margin-five-bottom tz-text width-80 sm-width-100"  data-selector=".tz-text"><p>WATCH SOUNDWISE DEMO VIDEO</p></h1>
+                            <div className="text-extra-large xs-text-extra-large width-80 sm-width-100 tz-text text-white"  data-selector=".tz-text">Sell more audios. Build an engaged audience. Turn more listeners into customers.</div>
+                        </div>
+                    </div>
+                    <div className="col-md-5 col-sm-6 col-xs-12 display-table" style={{height: 200}}>
+                        <div className="display-table-cell-vertical-middle">
+                            <form>
+                                <input type="text" name="name" id="name" data-email="required" placeholder="*First Name" className="big-input border-radius-4"/>
+                                <input type="text" name="email" id="email" data-email="required" placeholder="*Email" className="big-input border-radius-4"/>
+                                <button type="submit" className="contact-submit btn btn-large propClone  text-white builder-bg tz-text" data-selector=".tz-text" style={{backgroundColor: Colors.mainOrange}}><p>REQUEST DEMO</p></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         <section
           className="call-to-action4 padding-90px-tb builder-bg offer bg-gray border-none xs-padding-60px-tb"
           id="callto-action4"
