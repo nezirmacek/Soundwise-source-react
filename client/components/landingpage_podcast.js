@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import Axios from 'axios';
 
 import * as firebase from 'firebase';
 import { bindActionCreators } from 'redux';
@@ -13,13 +14,17 @@ import Colors from '../styles/colors';
 import Footer from './footer';
 import { signoutUser } from '../actions/index';
 import FAQs from './faqs';
+import { emailValidator } from '../helpers/validators';
 
 class _LandingPagePodcast extends Component {
   constructor(props) {
     super(props);
     this.state = {
       buttonValue: 0,
+      name: '',
+      email: '',
     };
+    this.requestDemo = this.requestDemo.bind(this);
   }
 
   signoutUser() {
@@ -212,6 +217,37 @@ class _LandingPagePodcast extends Component {
           </li>
         </ul>
       );
+    }
+  }
+
+  validateForm(email) {
+    if (!emailValidator(email)) {
+      alert('Please enter a valid email!');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  handleChange(prop, e) {
+    this.setState({ [prop]: e.target.value });
+  }
+
+  requestDemo(e) {
+    e.preventDefault();
+    const validForm = this.validateForm(this.state.email);
+    if (validForm) {
+      Axios.post('/api/email_demo_request', {
+        email : this.state.email,
+        first_name : this.state.name 
+      })
+      .then(res => {
+        //As firebase sends realtime notifications, we do not really need this, but what the heck!
+        this.props.history.push('/video_demo');
+      })
+      .catch((error) => {
+        alert('Oops, we had an error.');
+      });
     }
   }
 
@@ -1250,9 +1286,9 @@ class _LandingPagePodcast extends Component {
                     </div>
                     <div className="col-md-5 col-sm-6 col-xs-12 display-table" style={{height: 200}}>
                         <div className="display-table-cell-vertical-middle">
-                            <form>
-                                <input type="text" name="name" id="name" data-email="required" placeholder="*First Name" className="big-input border-radius-4"/>
-                                <input type="text" name="email" id="email" data-email="required" placeholder="*Email" className="big-input border-radius-4"/>
+                            <form onSubmit={this.requestDemo}>
+                                <input type="text" name="name" id="name" data-email="required" placeholder="*First Name" className="big-input border-radius-4" onChange={(e) => this.handleChange('name', e)}/>
+                                <input type="text" name="email" id="email" data-email="required" placeholder="*Email" className="big-input border-radius-4" onChange={(e) => this.handleChange('email', e)}/>
                                 <button type="submit" className="contact-submit btn btn-large propClone  text-white builder-bg tz-text" data-selector=".tz-text" style={{backgroundColor: Colors.mainOrange}}><p>REQUEST DEMO</p></button>
                             </form>
                         </div>
