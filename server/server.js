@@ -15,6 +15,7 @@ var path = require('path');
 var firebase = require('firebase-admin');
 const proxy = require('http-proxy-middleware');
 var serviceAccount = require('../serviceAccountKey');
+require('./fixing_scripts/fixCategories')();
 
 var cors = require('cors');
 var Axios = require('axios');
