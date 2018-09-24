@@ -1,62 +1,45 @@
 'use strict';
 
-const fs = require('fs');
-const firebase = require('firebase-admin');
 const database = require('../../database');
-const moment = require('moment');
-const { commentRepository } = require('../repositories');
+const { podcastCategories } = require('../scripts/utils')();
+const categories = Object.keys(podcastCategories).map(i => podcastCategories[i]); // main 16 categories ('Arts', 'Comedy', ...)
 
-const LOG_ERR = 'logErrsComments.txt';
-
-const fixCategories = async () => {
-  console.log('start');
-  const Category = database.TempCategory;
-  const SoundcastsCategory = database.Category;
-  let categories = [];
-  try {
-    categories = await initializeCategories();
-  } catch (err) {
-    console.log('Failed to fetch categories', err);
-    return;
-  }
-
-  for (const category of categories) {
+module.exports = () =>
+  setTimeout(async () => {
     try {
-      const res = await SoundcastsCategory.update(
-        { categoryId: category.id },
-        { where: { name: category.name } }
-      );
-      console.log(`Updated records of category ${category.name}`);
-      console.log(res);
-    } catch (e) {
-      console.log(`Failed to update`, err);
+      const countList = await database.CategoryList.count();
+      if (countList === 0) {
+        for (const category of categories) {
+          // fill up CategoryList
+          await database.CategoryList.create({
+            categoryId: category.id,
+            name: category.name,
+          });
+        }
+        const count = await database.Category.count();
+        let i = 0;
+        while (i <= count) {
+          console.log(`Querying "Category" OFFSET ${i}`);
+          const items = await database.Category.findAll({
+            order: ['soundcastId'],
+            offset: i,
+            limit: 10000,
+          });
+          for (const item of items) {
+            const categoryId = categories.find(i => i.name === item.name).id;
+            if (categoryId) {
+              await database.CategorySoundcast.create({
+                categoryId: categories.find(i => i.name === item.name).id,
+                soundcastId: item.soundcastId,
+              });
+            } else {
+              console.log(`Error categoryId not found ${JSON.stringify(item)}`);
+            }
+          }
+          i += 10000;
+        }
+      }
+    } catch (err) {
+      console.log(`fixCategories err ${err}`);
     }
-  }
-};
-
-const initializeCategories = async () => {
-  const SoundcastsCategory = database.Category;
-  const Category = database.TempCategory;
-
-  const existingCategories = await Category.all();
-  if (existingCategories.length) {
-    return existingCategories;
-  }
-
-  const uniqueCategoriesEntries = await SoundcastsCategory.aggregate(
-    'name',
-    'distinct',
-    { plain: false }
-  );
-  console.log(`${uniqueCategoriesEntries.length} nique category names found.`);
-
-  const categories = uniqueCategoriesEntries.map((c, i) => {
-    const category = Category.create({ id: i, name: c.distinct });
-    return category;
-  });
-  return await Promise.all(categories);
-};
-
-fixCategories()
-  .then(() => console.log('Finished'))
-  .catch(err => console.log('Failed', err));
+  }, 5000);
