@@ -19,6 +19,7 @@ import {
 import InviteSubscribersModal from './invite_subscribers_modal';
 import Subscriber from './subscriber';
 import PendingInviteModal from './pending_invite_modal';
+import EmailListModal from './email_list_modal';
 
 export default class Subscribers extends Component {
   constructor(props) {
@@ -33,6 +34,7 @@ export default class Subscribers extends Component {
       toBeUnsubscribed: [],
       showModal: false,
       showPendingInvite: false,
+      showEmailList: false,
       modalOpen: false,
     };
 
@@ -43,6 +45,7 @@ export default class Subscribers extends Component {
     this.deleteSubscriber = this.deleteSubscriber.bind(this);
     this.handleModal = this.handleModal.bind(this);
     this.handlePendingInvite = this.handlePendingInvite.bind(this);
+    this.handleEmailList = this.handleEmailList.bind(this);
   }
 
   componentDidMount() {
@@ -229,6 +232,19 @@ export default class Subscribers extends Component {
     }
   }
 
+  handleEmailList() {
+    if (!this.state.showEmailList) {
+      this.setState({
+        showEmailList: true,
+      });
+    } else {
+      this.setState({
+        showEmailList: false,
+      });
+    }
+  }
+
+
   retrieveSubscriberInfo(userId) {
     const that = this;
     const { currentSoundcastID } = this.state;
@@ -264,7 +280,7 @@ export default class Subscribers extends Component {
     for (let userId in currentSoundcast.subscribed) {
       promises.push(this.retrieveSubscriberInfo(userId));
     }
-
+    
     Promise.all(promises).then(
       res => {
         res.sort((a, b) => {
@@ -317,6 +333,12 @@ export default class Subscribers extends Component {
     const { currentSoundcastID, currentSoundcast, subscribers } = this.state;
     const { userInfo } = this.props;
     const publisherID = userInfo.publisherID;
+    if (this.state.toBeUnsubscribed.length === 0) {
+      confirm(
+        `Please select the listeners to unsubscribe`
+      )
+      return;
+    } 
 
     this.subscribers = subscribers.slice(0);
     if (
@@ -476,6 +498,14 @@ export default class Subscribers extends Component {
           userInfo={this.props.userInfo}
           onClose={this.handlePendingInvite}
         />
+        <EmailListModal
+          isShown={this.state.showEmailList}
+          soundcast={this.state.currentSoundcast}
+          userInfo={this.props.userInfo}
+          onClose={this.handleEmailList}
+          soundcasts={soundcasts_managed}
+        />
+
         <div
           style={{
             display: modalOpen ? '' : 'none',
@@ -560,7 +590,7 @@ export default class Subscribers extends Component {
             </div>
           </row>
           <row style={{ marginBottom: 25 }}>
-            <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
               <span
                 style={{ color: Colors.mainOrange }}
                 onClick={this.handleModal}
@@ -568,7 +598,7 @@ export default class Subscribers extends Component {
                 Invite Subscribers
               </span>
             </div>
-            <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
               <span
                 style={{ color: Colors.link }}
                 onClick={this.handlePendingInvite}
@@ -576,7 +606,7 @@ export default class Subscribers extends Component {
                 See Pending Invites
               </span>
             </div>
-            <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
               <CSVLink
                 data={csvData}
                 filename={`${currentSoundcast.title} subscribers.csv`}
@@ -584,16 +614,21 @@ export default class Subscribers extends Component {
                 <span>Download Subscribers</span>
               </CSVLink>
             </div>
-            <div className="col-md-3 col-sm-6 col-xs-12">
-              {(this.state.toBeUnsubscribed.length > 0 && (
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
+              <span
+                style={{ color: Colors.link }}
+                onClick={this.handleEmailList}
+              >
+                Connect Email List
+              </span>
+            </div>
+            <div className="col-md-2 col-sm-6 col-xs-12">
                 <div
-                  style={{ ...styles.button, color: 'red' }}
+                  style={{ ...styles.button, color: this.state.toBeUnsubscribed.length > 0 ? 'red' : Colors.fontDarkGrey }}
                   onClick={this.deleteSubscriber}
                 >
                   Unsubscribe
                 </div>
-              )) ||
-                null}
             </div>
           </row>
           <row>

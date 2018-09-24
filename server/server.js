@@ -61,7 +61,8 @@ const createStripeAccount = require('./scripts/createStripeAccounts.js')
 const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
 var Raven = require('raven');
 var database = require('../database');
-const { updateMailChimp } = require('./scripts/updateMailChimp.js')
+const { getMailChimpLists } = require('./scripts/getMailChimpLists.js')
+const { updateMailChimpSubscribers } = require('./scripts/updateMailChimpSubscribers.js')
 
 Raven.config(
   'https://3e599757be764afba4a6b4e1a77650c4:689753473d22444f97fa1603139ce946@sentry.io/256847'
@@ -260,7 +261,8 @@ app.get('/api/custom_token', (req, res) => {
     });
 });
 
-app.post('/api/mail_manage', updateMailChimp);
+app.post('/api/mail_manage', getMailChimpLists);
+app.post('/api/mail_manage_updateSubscribers', updateMailChimpSubscribers);
 
 app.use(
   '/tracks/:id',

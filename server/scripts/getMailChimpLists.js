@@ -2,7 +2,7 @@
 var Mailchimp = require('mailchimp-api-v3')
 var firebase = require('firebase-admin');
 
-module.exports.updateMailChimp = (req, res) => {
+module.exports.getMailChimpLists = (req, res) => {
   if(req.body.apiKey != '') {
     var mailchimp = new Mailchimp(req.body.apiKey);
     mailchimp.get('/lists')
