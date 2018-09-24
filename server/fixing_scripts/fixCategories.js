@@ -2,14 +2,14 @@
 
 const database = require('../../database');
 const { podcastCategories } = require('../scripts/utils')();
-const categories = Object.keys(podcastCategories).map(i => podcastCategories[i]); // main 16 categories ('Arts', 'Comedy', ...)
+const categoriesIds = Object.keys(podcastCategories).map(i => podcastCategories[i]); // main 16 categories ('Arts', 'Comedy', ...)
 
 module.exports = () =>
   setTimeout(async () => {
     try {
       const countList = await database.CategoryList.count();
       if (countList === 0) {
-        for (const category of categories) {
+        for (const category of categoriesIds) {
           // fill up CategoryList
           await database.CategoryList.create({
             categoryId: category.id,
@@ -26,10 +26,10 @@ module.exports = () =>
             limit: 10000,
           });
           for (const item of items) {
-            const categoryId = categories.find(i => i.name === item.name).id;
+            const categoryId = categoriesIds.find(i => i.name === item.name).id;
             if (categoryId) {
               await database.CategorySoundcast.create({
-                categoryId: categories.find(i => i.name === item.name).id,
+                categoryId,
                 soundcastId: item.soundcastId,
               });
             } else {

@@ -33,6 +33,7 @@ const fileType = require('file-type');
 const entities = new Entities();
 const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 const categoriesNames = Object.keys(podcastCategories).map(i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
+const categoriesIds = Object.keys(podcastCategories).map(i => podcastCategories[i]);
 
 // // Test the getFeed function:
 // setTimeout(() =>
@@ -176,11 +177,16 @@ async function parseFeed(req, res) {
               if (publisherEmail) {
                 let category = null;
                 try {
-                  const row = await database.Category.findOne({
+                  const row = await database.CategorySoundcast.findOne({
                     where: { soundcastId },
                   });
-                  if (row && row.name) {
-                    category = row.name;
+                  if (row) {
+                    const categoryRow = await database.CategoryList.findOne({
+                      where: { categoryId: row.categoryId },
+                    });
+                    if (categoryRow && categoryRow.name) {
+                      category = categoryRow.name;
+                    }
                   }
                 } catch (err) {
                   logErr(`Category.findOne ${err}`);
@@ -566,9 +572,12 @@ async function runFeedImport(
             category = name;
           }
           try {
-            await database.Category.create({ name, soundcastId });
+            await database.CategorySoundcast.create({
+              categoryId: categoriesIds.find(i => i.name === name).id,
+              soundcastId,
+            });
           } catch (err) {
-            logErr(`Category create ${err}`);
+            logErr(`CategorySoundcast create ${err}`);
           }
         }
       }
