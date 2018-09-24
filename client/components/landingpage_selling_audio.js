@@ -7,17 +7,22 @@ import { bindActionCreators } from 'redux';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
-import Colors from '../styles/colors';
+import Axios from 'axios';
 
+import Colors from '../styles/colors';
 import Footer from './footer';
 import { signoutUser } from '../actions/index';
+import { emailValidator } from '../helpers/validators';
 
 class _LandingPageSelling extends Component {
   constructor(props) {
     super(props);
     this.state = {
       buttonValue: 0,
+      name: '',
+      email: '',
     };
+    this.requestDemo = this.requestDemo.bind(this);
   }
 
   signoutUser() {
@@ -45,6 +50,37 @@ class _LandingPageSelling extends Component {
     });
     if (Number(value) == 1) {
       this.signoutUser();
+    }
+  }
+
+  validateForm(email) {
+    if (!emailValidator(email)) {
+      alert('Please enter a valid email!');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  handleChange(prop, e) {
+    this.setState({ [prop]: e.target.value });
+  }
+
+  requestDemo(e) {
+    e.preventDefault();
+    const validForm = this.validateForm(this.state.email);
+    if (validForm) {
+      Axios.post('/api/email_demo_request', {
+        email : this.state.email,
+        first_name : this.state.name 
+      })
+      .then(res => {
+        //As firebase sends realtime notifications, we do not really need this, but what the heck!
+        this.props.history.push('/video_demo');
+      })
+      .catch((error) => {
+        alert('Oops, we had an error.');
+      });
     }
   }
 
@@ -1256,7 +1292,7 @@ class _LandingPageSelling extends Component {
                   className="padding-ten border-radius-8 bg-white border-light builder-bg"
                   data-selector=".builder-bg"
                 >
-                  <div className="title-extra-large-5 text-sky-blue margin-fifteen-top">
+                  <div className="title-extra-large-5 margin-fifteen-top" style={{color: Colors.link}}>
                     <i
                       className="fas fa-upload tz-icon-color"
                       aria-hidden="true"
@@ -1287,7 +1323,7 @@ class _LandingPageSelling extends Component {
                   className="padding-ten border-radius-8 bg-white border-light builder-bg"
                   data-selector=".builder-bg"
                 >
-                  <div className="title-extra-large-5 text-sky-blue margin-fifteen-top">
+                  <div className="title-extra-large-5 margin-fifteen-top" style={{color: Colors.link}}>
                     <i
                       className="far fa-file-alt tz-icon-color"
                       aria-hidden="true"
@@ -1318,7 +1354,7 @@ class _LandingPageSelling extends Component {
                   className="padding-ten border-radius-8 bg-white border-light builder-bg"
                   data-selector=".builder-bg"
                 >
-                  <div className="title-extra-large-5 text-sky-blue margin-fifteen-top">
+                  <div className="title-extra-large-5 margin-fifteen-top" style={{color: Colors.link}}>
                     <i
                       className="fas fa-dollar-sign tz-icon-color"
                       aria-hidden="true"
@@ -1349,7 +1385,7 @@ class _LandingPageSelling extends Component {
                   className="padding-ten border-radius-8 bg-white border-light builder-bg"
                   data-selector=".builder-bg"
                 >
-                  <div className="title-extra-large-5 text-sky-blue margin-fifteen-top">
+                  <div className="title-extra-large-5 margin-fifteen-top" style={{color: Colors.link}}>
                     <i
                       className="far fa-credit-card tz-icon-color"
                       aria-hidden="true"
@@ -1377,6 +1413,27 @@ class _LandingPageSelling extends Component {
               </div>
             </div>
           </div>
+        </section>
+        <section className="padding-110px-tb xs-padding-60px-tb  builder-bg border-none" id="demo_request" data-selector=".builder-bg" style={{backgroundColor: Colors.link}}>
+            <div className="container">
+                <div className="row equalize xs-equalize-auto">
+                    <div className="col-md-7 col-sm-6 col-xs-12 xs-margin-thirteen-bottom display-table" style={{height: 200}}>
+                        <div className="display-table-cell-vertical-middle">
+                            <h1 className="title-extra-large-2 alt-font sm-title-extra-large xs-title-extra-large text-white font-weight-700 margin-five-bottom tz-text width-80 sm-width-100"  data-selector=".tz-text"><p>WATCH SOUNDWISE DEMO VIDEO</p></h1>
+                            <div className="text-extra-large xs-text-extra-large width-80 sm-width-100 tz-text text-white"  data-selector=".tz-text">Sell more audios. Build an engaged audience. Turn more listeners into customers.</div>
+                        </div>
+                    </div>
+                    <div className="col-md-5 col-sm-6 col-xs-12 display-table" style={{height: 200}}>
+                        <div className="display-table-cell-vertical-middle">
+                            <form onSubmit={this.requestDemo}>
+                                <input type="text" name="name" id="name" data-email="required" placeholder="*First Name" className="big-input border-radius-4" onChange={(e) => this.handleChange('name', e)}/>
+                                <input type="text" name="email" id="email" data-email="required" placeholder="*Email" className="big-input border-radius-4" onChange={(e) => this.handleChange('email', e)}/>
+                                <button type="submit" className="contact-submit btn btn-large propClone  text-white builder-bg tz-text" data-selector=".tz-text" style={{backgroundColor: Colors.mainOrange}}><p>REQUEST DEMO</p></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
         <section
           className="call-to-action4 padding-90px-tb builder-bg offer bg-gray border-none xs-padding-60px-tb"

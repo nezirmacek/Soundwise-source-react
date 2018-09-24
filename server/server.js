@@ -54,6 +54,9 @@ const unsubscribe = require('./scripts/handleSubscriptions.js').unsubscribe;
 const subscribe = require('./scripts/handleSubscriptions.js').subscribe;
 const createStripeAccount = require('./scripts/createStripeAccounts.js').createStripeAccount;
 const requestStripeDashboard = require('./scripts/requestStripeDashboard.js');
+const { emailFromDemoRequest } = require('./scripts/emailFromDemoRequest.js');
+
+
 var Raven = require('raven');
 var database = require('../database');
 
@@ -211,6 +214,8 @@ app.post('/api/audiowave', multipart(), createAudioWaveVid);
 app.post('/api/audio_processing', audioProcessing);
 app.post('/api/audio_processing_replace', audioProcessingReplace);
 app.post('/api/invite', sendInvite);
+
+app.post('/api/email_demo_request', emailFromDemoRequest);
 
 app.use(
   '/s3',
