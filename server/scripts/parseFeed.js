@@ -12,8 +12,7 @@
 // 6. server checks the feed url every hour to see if there are new episodes. If so, update the soundcast with new episodes.
 
 const request = require('request');
-// const requestPromise = require('request-promise');
-const path = require('path');
+const requestPromise = require('request-promise');
 const fs = require('fs');
 // const ffmpeg = require('./ffmpeg');
 const FeedParser = require('feedparser');
@@ -23,6 +22,14 @@ const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 const nodeUrl = require('url');
 const Entities = require('html-entities').AllHtmlEntities;
+const jimp = require('jimp');
+const S3Strategy = require('express-fileuploader-s3');
+const awsConfig = require('../../config').awsConfig;
+const AWS = require('aws-sdk');
+AWS.config.update(awsConfig);
+const s3 = new AWS.S3();
+const uploader1 = require('express-fileuploader');
+const fileType = require('file-type');
 const entities = new Entities();
 const { logErr, podcastCategories } = require('./utils')('parseFeed.js');
 const categoriesNames = Object.keys(podcastCategories).map(i => podcastCategories[i].name); // main 16 categories ('Arts', 'Comedy', ...)
@@ -437,10 +444,72 @@ async function runFeedImport(
     }
     last_update = moment(last_update).format('X');
 
+    if (!soundcastId) {
+      soundcastId = `${moment().format('x')}s`;
+    }
+
     // 1. create a new soundcast from the feed
     const { description, author, image } = metadata;
+    let blurredImageURL = '';
     if (!image.url) {
       image.url = '';
+    } else {
+      try {
+        await new Promise((resolve, reject) => {
+          requestPromise
+            .get({ url: image.url, encoding: null })
+            .then(body => {
+              jimp.read(body).then(f => {
+                f.resize(600, jimp.AUTO)
+                  .blur(30)
+                  .brightness(0.6)
+                  .getBuffer(jimp.AUTO, (err, buffer) => {
+                    if (err) {
+                      return reject(`jimp_error ${err}`);
+                    }
+                    const uid = Math.random()
+                      .toString()
+                      .slice(2); // unique id
+                    const filePath = `/tmp/${soundcastId + uid}.${fileType(body).ext}`;
+                    fs.writeFile(filePath, buffer, err => {
+                      if (err) {
+                        return reject(`jimp_fs_writeFile ${err}`);
+                      }
+                      uploader1.use(
+                        new S3Strategy({
+                          uploadPath: `soundcasts/`,
+                          headers: { 'x-amz-acl': 'public-read' },
+                          options: {
+                            key: awsConfig.accessKeyId,
+                            secret: awsConfig.secretAccessKey,
+                            bucket: 'soundwiseinc',
+                          },
+                        })
+                      );
+                      uploader1.upload(
+                        's3',
+                        {
+                          path: filePath,
+                          name: `blurred-${soundcastId}.${fileType(body).ext}`,
+                        },
+                        (err, files) => {
+                          fs.unlink(filePath, err => 0);
+                          if (err) {
+                            return reject(`uploading ${image.url} ${filePath} to S3 ${err}`);
+                          }
+                          blurredImageURL = files.length && files[0].url;
+                          resolve();
+                        }
+                      );
+                    });
+                  });
+              });
+            })
+            .catch(err => reject(err));
+        });
+      } catch (err) {
+        logErr(`Blurred image create ${err}`);
+      }
     }
     const title = entities.decode(metadata.title);
     const hostName = entities.decode(
@@ -454,6 +523,7 @@ async function runFeedImport(
       publisherName,
       short_description: entities.decode(description),
       imageURL: image.url,
+      blurredImageURL,
       hostName,
       last_update,
       fromParsedFeed: true, // this soundcast is imported from a RSS feed
@@ -467,12 +537,6 @@ async function runFeedImport(
       hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
       episodes: {},
     };
-
-    // 2. add the new soundcast to firebase and postgreSQL
-    // add to firebase
-    if (!soundcastId) {
-      soundcastId = `${moment().format('x')}s`;
-    }
 
     // save the podcast's iTunes category under the importedFeeds node and under the soundcast node
     // This should be similar to the upload setup on the /dashboard/add_episode page
@@ -624,27 +688,27 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     }
 
     /* // obtain duration by loading original file with ffmpeg - skip by now
-  await new Promise(resolve => {
-    const url = enclosures[0].url;
-    requestPromise.get({ encoding: null, url }).then(async body => {
-      const filePath = `/tmp/parse_feed_${Math.random().toString().slice(2) + path.extname(url)}`;
-      fs.writeFile(filePath, body, err => {
-        if (err) {
-          return logErr(`Error: cannot write tmp audio file ${url} ${filePath}`, null, resolve);
-        }
-        (new ffmpeg(filePath)).then(file => { // resize itunes image
-          if (file && file.metadata && file.metadata.duration) {
-            duration = file.metadata.duration.seconds;
-          } else {
-            logErr(`empty file.metadata ${url}`);
+    await new Promise(resolve => {
+      const url = enclosures[0].url;
+      requestPromise.get({ encoding: null, url }).then(async body => {
+        const filePath = `/tmp/parse_feed_${Math.random().toString().slice(2)}.${fileType(body).ext}`;
+        fs.writeFile(filePath, body, err => {
+          if (err) {
+            return logErr(`Error: cannot write tmp audio file ${url} ${filePath}`, null, resolve);
           }
-          fs.unlink(filePath, err => 0); // remove file
-          resolve();
-        }, err => logErr(`ffmpeg unable to parse file ${url} ${filePath} ${err}`, null, resolve));
-      });
-    }).catch(err => logErr(`unable to obtain image ${err}`, null, resolve));
-  });
-  */
+          (new ffmpeg(filePath)).then(file => { // resize itunes image
+            if (file && file.metadata && file.metadata.duration) {
+              duration = file.metadata.duration.seconds;
+            } else {
+              logErr(`empty file.metadata ${url}`);
+            }
+            fs.unlink(filePath, err => 0); // remove file
+            resolve();
+          }, err => logErr(`ffmpeg unable to parse file ${url} ${filePath} ${err}`, null, resolve));
+        });
+      }).catch(err => logErr(`unable to obtain image ${err}`, null, resolve));
+    });
+    */
 
     const date_created = moment(date || metadata.date).format('X');
     const episode = {

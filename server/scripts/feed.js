@@ -1,6 +1,5 @@
 'use strict';
-const path = require('path');
-const util = require('util');
+const fileType = require('file-type');
 const S3Strategy = require('express-fileuploader-s3');
 const awsConfig = require('../../config').awsConfig;
 const { uploader, logErr, setAudioTags } = require('./utils')('feed.js');
@@ -154,7 +153,7 @@ module.exports.createFeed = async (req, res) => {
       const uid = Math.random()
         .toString()
         .slice(2); // unique id
-      itunesImagePath = `/tmp/${soundcastId + uid + path.extname(itunesImage)}`;
+      itunesImagePath = `/tmp/${soundcastId + uid}.${fileType(imageBody).ext}`;
       fs.writeFile(itunesImagePath, imageBody, err => {
         // save itunes image
         if (err) {
@@ -166,10 +165,10 @@ module.exports.createFeed = async (req, res) => {
             const resizedPath = `${itunesImagePath.slice(0, -4)}_resized.png`;
             file.addCommand('-vf', `scale=300:300`);
             file.save(resizedPath, err => {
+              fs.unlink(itunesImagePath, err => 0); // remove original file
               if (err) {
                 logErr(`ffmpeg cannot save updated image ${itunesImagePath} ${err}`, res);
               } else {
-                fs.unlink(itunesImagePath, err => 0); // remove original file
                 itunesImagePath = resizedPath;
               }
               resolve();
@@ -190,7 +189,7 @@ module.exports.createFeed = async (req, res) => {
             .get({ encoding: null, url: episode.url })
             .then(body => {
               const id = episode.id;
-              const filePath = `/tmp/${id + path.extname(episode.url)}`;
+              const filePath = `/tmp/${id}.${fileType(body).ext}`;
               fs.writeFile(filePath, body, async err => {
                 if (err) {
                   return reject(`Error: cannot write tmp audio file ${filePath}`);
@@ -207,10 +206,10 @@ module.exports.createFeed = async (req, res) => {
                         file.setAudioCodec('mp3').setAudioBitRate(64); // convert to mp3
                         mp3codecPath = `${filePath.slice(0, -4)}_mp3codec.mp3}`;
                         file.save(mp3codecPath, err => {
+                          fs.unlink(filePath, err => 0); // remove original
                           if (err) {
                             return reject(`feed.js setMP3Codec save fails ${mp3codecPath} ${err}`);
                           }
-                          fs.unlink(filePath, err => 0); // remove original
                           resolve();
                         });
                       },
@@ -226,7 +225,7 @@ module.exports.createFeed = async (req, res) => {
                         .get({ url: episode.coverArtUrl, encoding: null })
                         .then(body => {
                           const { height, width } = sizeOf(body);
-                          coverPath = `/tmp/${id}_cover${path.extname(episode.coverArtUrl)}`;
+                          coverPath = `/tmp/${id}_cover.${fileType(body).ext}`;
                           fs.writeFile(coverPath, body, err => {
                             if (err) {
                               reject(`Error: feed.js unable to save coverArtUrl ${err}`);

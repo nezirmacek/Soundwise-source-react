@@ -18,6 +18,7 @@ const ffmpeg = require('./ffmpeg');
 const sizeOf = require('image-size');
 const sendMarketingEmails = require('./sendEmails').sendMarketingEmails;
 const createFeed = require('./feed').createFeed;
+const fileType = require('file-type');
 
 module.exports.audioProcessing = async (req, res) => {
   // 1. Client make post request to /api/audio_processing, with episode ID and processing options
@@ -90,7 +91,7 @@ module.exports.audioProcessing = async (req, res) => {
         encoding: null, // return body as a Buffer
       })
       .then(body => {
-        const savePath = `/tmp/audio_processing_${episodeId + path.extname(episode.url)}`;
+        const savePath = `/tmp/audio_processing_${episodeId}.${fileType(body).ext}`;
         fs.writeFile(savePath, body, err => {
           if (err) {
             return logErr(`cannot write tmp audio file ${savePath}`, null, resolve);
@@ -237,7 +238,7 @@ module.exports.audioProcessing = async (req, res) => {
         request
           .get({ url: intro, encoding: null })
           .then(body => {
-            const introPath = `${filePath.slice(0, -4)}_intro${path.extname(intro)}`;
+            const introPath = `${filePath.slice(0, -4)}_intro.${fileType(body).ext}`;
             fs.writeFile(introPath, body, err => {
               if (err) {
                 return logErr(`intro write file ${introPath}`);
@@ -257,7 +258,7 @@ module.exports.audioProcessing = async (req, res) => {
                     file.addCommand('-af', `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`);
                     file.addCommand('-q:a', '3');
                     const introFadePath = `${introPath.slice(0, -4)}_fadeintro${path.extname(
-                      intro
+                      introPath
                     )}`;
                     file.save(introFadePath, err => {
                       if (err) {
@@ -288,7 +289,7 @@ module.exports.audioProcessing = async (req, res) => {
           request
             .get({ url: outro, encoding: null })
             .then(body => {
-              const outroPath = `${filePath.slice(0, -4)}_outro${path.extname(outro)}`;
+              const outroPath = `${filePath.slice(0, -4)}_outro.${fileType(body).ext}`;
               fs.writeFile(outroPath, body, err => {
                 if (err) {
                   return logErr(`outro write file ${filePath}`);
@@ -315,7 +316,9 @@ module.exports.audioProcessing = async (req, res) => {
                 const fadeout = `afade=t=out:st=${fadeStartPosition}:d=${fadeDuration}`;
                 file.addCommand('-af', `${fadein},${fadeout}`);
                 file.addCommand('-q:a', '3');
-                const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(outro)}`;
+                const outroFadePath = `${outroPath.slice(0, -4)}_fadeoutro${path.extname(
+                  outroPath
+                )}`;
                 file.save(outroFadePath, err => {
                   if (err) {
                     return logErr(`outro fade fails ${outroFadePath} ${err}`);
@@ -480,7 +483,7 @@ module.exports.audioProcessing = async (req, res) => {
               .get({ url, encoding: null })
               .then(body => {
                 const { height, width } = sizeOf(body); // {height: 200, width: 300, type: "jpg"}
-                const coverPath = `/tmp/audio_processing_${episodeId}_cover${path.extname(url)}`;
+                const coverPath = `/tmp/audio_processing_${episodeId}_cover.${fileType(body).ext}`;
                 fs.writeFile(coverPath, body, err => {
                   // save cover image file
                   if (err) {
@@ -751,8 +754,7 @@ module.exports.audioProcessingReplace = async (req, res) => {
   request
     .get({ url: episode.editedUrl, encoding: null })
     .then(body => {
-      const outputPath = `/tmp/audio_processing_replace_${episodeId +
-        path.extname(episode.editedUrl)}`;
+      const outputPath = `/tmp/audio_processing_replace_${episodeId}.${fileType(body).ext}`;
       fs.writeFile(outputPath, body, err => {
         if (err) {
           return logErr(`cannot write tmp audio file ${outputPath}`);
