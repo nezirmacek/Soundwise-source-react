@@ -6,10 +6,10 @@ import { CSVLink } from 'react-csv';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/core/styles';
+import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
 import deburr from 'lodash/deburr';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
 // Need to start migrating to latest material ui, for now new components can co-exist with older.
@@ -585,26 +585,28 @@ class Subscribers extends Component {
               className="col-md-4 col-sm-12 col-xs-12"
               style={styles.searchWrap}
             >
-              <Autosuggest
-                {...autosuggestProps}
-                inputProps={{
-                  classes,
-                  value: this.state.value,
-                  onChange: this.handleChange('value'),
-                  placeholder: "Search subscribers"            
-                }}
-                theme={{
-                  container: classes.container,
-                  suggestionsContainerOpen: classes.suggestionsContainerOpen,
-                  suggestionsList: classes.suggestionsList,
-                  suggestion: classes.suggestion,
-                }}
-                renderSuggestionsContainer={options => (
-                  <Paper {...options.containerProps} square>
-                    {options.children}
-                  </Paper>
-                )}
-              />
+              <MuiThemeProvider>
+                <Autosuggest
+                  {...autosuggestProps}
+                  inputProps={{
+                    classes,
+                    value: this.state.value,
+                    onChange: this.handleChange('value'),
+                    placeholder: "Search subscribers"            
+                  }}
+                  theme={{
+                    container: styles.container,
+                    suggestionsContainerOpen: styles.suggestionsContainerOpen,
+                    suggestionsList: styles.suggestionsList,
+                    suggestion: styles.suggestion,
+                  }}
+                  renderSuggestionsContainer={options => (
+                    <Paper {...options.containerProps} square>
+                      {options.children}
+                    </Paper>
+                  )}
+                />
+              </MuiThemeProvider>
             </div>
           </row>
           <row style={{ marginBottom: 25 }}>
@@ -899,9 +901,6 @@ const styles = {
     textAlign: 'center',
     verticalAlign: 'middle',
   },
-};
-
-const autosuggestStyles = theme => ({
   root: {
     height: 250,
     flexGrow: 1,
@@ -930,6 +929,6 @@ const autosuggestStyles = theme => ({
   divider: {
     height: 8 * 2,
   },
-});
+};
 
-export default withStyles(autosuggestStyles)(Subscribers);
+export default Subscribers;
