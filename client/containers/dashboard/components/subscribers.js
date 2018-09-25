@@ -514,6 +514,7 @@ export default class Subscribers extends Component {
               </select>
             </div>
             <div className="col-md-4 col-sm-12 col-xs-12" style={styles.searchWrap}>
+              {/*
               <MuiThemeProvider>
                 <Autosuggest
                   {...autosuggestProps}
@@ -536,6 +537,7 @@ export default class Subscribers extends Component {
                   )}
                 />
               </MuiThemeProvider>
+             */}
             </div>
           </row>
           <row style={{ marginBottom: 25 }}>
