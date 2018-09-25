@@ -3,6 +3,10 @@ var stripe_key = require('../../config').stripe_key;
 var stripe = require('stripe')(stripe_key);
 
 module.exports.updateStripeAccount = (stripe_user_id, publisherId, publisherPlan) => {
+  if (!stripe_user_id) {
+    console.log('stripe_user_id is null');
+    return;
+  }
   let payout_schedule;
   if (publisherPlan === 'pro' || publisherPlan === 'platinum') {
     payout_schedule = {

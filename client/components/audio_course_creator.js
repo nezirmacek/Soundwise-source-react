@@ -26,24 +26,22 @@ export default class AudioCourseCreator extends Component {
                   </div>
                   <ul className="text-large sm-text-large margin-nine-bottom  tz-text">
                     <li>
-                      Sell your audio content as{' '}
-                      <strong>individual series or bundles</strong>
+                      Sell your audio content as <strong>individual series or bundles</strong>
                     </li>
                     <li>
-                      Charge <strong>subscription fee</strong>, one-time fee, or
-                      limited-time access fee
+                      Charge <strong>subscription fee</strong>, one-time fee, or limited-time access
+                      fee
                     </li>
                     <li>
                       Easily publish free series to iTunes and Google Play for{' '}
                       <strong>lead generation</strong>
                     </li>
                     <li>
-                      Deliver <strong>supplementary materials</strong> (e.g. pdf
-                      worksheets) along with your audios
+                      Deliver <strong>supplementary materials</strong> (e.g. pdf worksheets) along
+                      with your audios
                     </li>
                     <li>
-                      Comprehensive <strong>analytics</strong> to track content
-                      engagement
+                      Comprehensive <strong>analytics</strong> to track content engagement
                     </li>
                   </ul>
                   <Link

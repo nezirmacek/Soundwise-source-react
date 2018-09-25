@@ -1,34 +1,15 @@
 export const itunesCategories = {
   '1': {
     name: 'Arts',
-    sub: [
-      'Design',
-      'Fashion & Beauty',
-      'Food',
-      'Literature',
-      'Performing Arts',
-      'Visual Arts',
-    ],
+    sub: ['Design', 'Fashion & Beauty', 'Food', 'Literature', 'Performing Arts', 'Visual Arts'],
   },
   '2': {
     name: 'Business',
-    sub: [
-      'Business News',
-      'Careers',
-      'Investing',
-      'Management & Marketing',
-      'Shopping',
-    ],
+    sub: ['Business News', 'Careers', 'Investing', 'Management & Marketing', 'Shopping'],
   },
   '3': {
     name: 'Education',
-    sub: [
-      'Educational Technology',
-      'Higher Education',
-      'K-12',
-      'Language Courses',
-      'Training',
-    ],
+    sub: ['Educational Technology', 'Higher Education', 'K-12', 'Language Courses', 'Training'],
   },
   '4': {
     name: 'Games & Hobbies',
@@ -40,12 +21,7 @@ export const itunesCategories = {
   },
   '6': {
     name: 'Health',
-    sub: [
-      'Alternative Health',
-      'Fitness & Nutrition',
-      'Self-Help',
-      'Sexuality',
-    ],
+    sub: ['Alternative Health', 'Fitness & Nutrition', 'Self-Help', 'Sexuality'],
   },
   '7': {
     name: 'Kids & Family',
@@ -61,15 +37,7 @@ export const itunesCategories = {
   },
   '10': {
     name: 'Religion & Spirituality',
-    sub: [
-      'Buddhism',
-      'Christianity',
-      'Hinduism',
-      'Islam',
-      'Judaism',
-      'Other',
-      'Spirituality',
-    ],
+    sub: ['Buddhism', 'Christianity', 'Hinduism', 'Islam', 'Judaism', 'Other', 'Spirituality'],
   },
   '11': {
     name: 'Science & Medicine',

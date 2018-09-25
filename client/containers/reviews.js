@@ -4,14 +4,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
-import {
-  Card,
-  CardActions,
-  CardHeader,
-  CardMedia,
-  CardTitle,
-  CardText,
-} from 'material-ui/Card';
+import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
 import ReactStars from 'react-stars';
 import PropTypes from 'prop-types';
 
@@ -44,19 +37,9 @@ class _Reviews extends Component {
   renderRow(review, i) {
     return (
       <Card key={i}>
-        <CardHeader
-          title={review.reviewer}
-          subtitle={review.date}
-          avatar={review.pic}
-        />
+        <CardHeader title={review.reviewer} subtitle={review.date} avatar={review.pic} />
         <CardText>
-          <ReactStars
-            count={5}
-            value={review.rating}
-            size={15}
-            edit={false}
-            color2={'#ffd700'}
-          />
+          <ReactStars count={5} value={review.rating} size={15} edit={false} color2={'#ffd700'} />
           <div>{review.review}</div>
         </CardText>
       </Card>

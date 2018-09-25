@@ -12,9 +12,7 @@ const LOG_ERR = 'logErrsMessages.txt';
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: `https://${
-    process.env.NODE_ENV === 'production'
-      ? 'soundwise-a8e6f'
-      : 'soundwise-testbase'
+    process.env.NODE_ENV === 'production' ? 'soundwise-a8e6f' : 'soundwise-testbase'
   }.firebaseio.com`,
 });
 
@@ -111,10 +109,7 @@ const syncCommentsCount = async () => {
         if (!!isExist) {
           try {
             console.log(`update message with id: ${key}`);
-            const data = await announcementRepository.update(
-              { commentsCount },
-              key
-            );
+            const data = await announcementRepository.update({ commentsCount }, key);
             console.log(data);
           } catch (e) {
             console.log(e);
@@ -128,14 +123,7 @@ const syncCommentsCount = async () => {
 };
 
 const getMessageForPsql = (key, fbMessage) => {
-  const {
-    content,
-    creatorID,
-    publisherID,
-    soundcastID,
-    isPublished,
-    date_created,
-  } = fbMessage;
+  const { content, creatorID, publisherID, soundcastID, isPublished, date_created } = fbMessage;
   const message = {
     announcementId: key,
     content: content,

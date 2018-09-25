@@ -95,9 +95,7 @@ class _PublisherHeader extends Component {
                   style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div style={{}}>
-                    {`Hello, ${this.capFirstLetter(
-                      this.props.userInfo.firstName
-                    )} `}
+                    {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                     <span className="caret" />
                   </div>
                 </div>
@@ -152,9 +150,7 @@ class _PublisherHeader extends Component {
             )}
             <li className="propClone sm-no-border">
               <a className="dropdown-toggle" data-toggle="dropdown">
-                {`Hello, ${this.capFirstLetter(
-                  this.props.userInfo.firstName
-                )} `}
+                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                 <span className="caret" />
               </a>
               <ul className="dropdown-menu">
@@ -208,9 +204,7 @@ class _PublisherHeader extends Component {
                     <div
                       style={{
                         ...styles.profileImage,
-                        backgroundImage: `url(${
-                          publisherImg ? publisherImg : ''
-                        })`,
+                        backgroundImage: `url(${publisherImg ? publisherImg : ''})`,
                       }}
                     />
                     <div

@@ -38,10 +38,7 @@ export default class Promotions extends Component {
         <div className="padding-bottom-20px">
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
-            <span
-              className="text-medium"
-              style={{ marginLeft: 15, color: Colors.mainOrange }}
-            >
+            <span className="text-medium" style={{ marginLeft: 15, color: Colors.mainOrange }}>
               <strong>View Publisher Page</strong>
             </span>
           </Link>
@@ -54,9 +51,7 @@ export default class Promotions extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/transactions">
-              <span style={{ fontSize: 15, fontWeight: 600 }}>
-                Transactions
-              </span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Transactions</span>
             </Link>
           </li>
           <li role="presentation">
@@ -65,10 +60,7 @@ export default class Promotions extends Component {
             </Link>
           </li>
           <li role="presentation" className="active">
-            <Link
-              style={{ backgroundColor: 'transparent' }}
-              to="/dashboard/publisher/promotions"
-            >
+            <Link style={{ backgroundColor: 'transparent' }} to="/dashboard/publisher/promotions">
               <span
                 style={{
                   fontSize: 15,
@@ -110,14 +102,10 @@ export default class Promotions extends Component {
                     return (
                       <tr key={i} style={styles.tr}>
                         <td style={{ ...styles.td }}>
-                          {moment
-                            .unix(Number(coupon.timeStamp))
-                            .format('YYYY-MM-DD')}
+                          {moment.unix(Number(coupon.timeStamp)).format('YYYY-MM-DD')}
                         </td>
                         <td style={{ ...styles.td }}>{coupon.coupon}</td>
-                        <td style={{ ...styles.td }}>{`${
-                          coupon.soundcastTitle
-                        }`}</td>
+                        <td style={{ ...styles.td }}>{`${coupon.soundcastTitle}`}</td>
                       </tr>
                     );
                   })}

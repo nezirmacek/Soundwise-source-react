@@ -59,8 +59,7 @@ export default class PodcastingCourse extends Component {
         })
         .catch(err => {
           that.setState({
-            error:
-              'Hmm...something went wrong. Please refresh the page and try again.',
+            error: 'Hmm...something went wrong. Please refresh the page and try again.',
           });
         });
     }
@@ -112,14 +111,13 @@ export default class PodcastingCourse extends Component {
                   <ul className="nav navbar-nav">
                     <li className="propClone">
                       <Link
-                        to="/convertion#whatyouwilllearn"
+                        to="/conversion#whatyouwilllearn"
                         className="inner-link"
                         data-selector="nav a"
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -138,8 +136,7 @@ export default class PodcastingCourse extends Component {
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -158,8 +155,7 @@ export default class PodcastingCourse extends Component {
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -178,8 +174,7 @@ export default class PodcastingCourse extends Component {
                         style={{
                           color: 'rgb(255, 255, 255)',
                           backgroundColor: 'rgba(0, 0, 0, 0)',
-                          borderColor:
-                            'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                          borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                           fontFamily: 'Montserrat, sans-serif',
                           textTransform: 'none',
                           fontSize: '16px',
@@ -216,17 +211,15 @@ export default class PodcastingCourse extends Component {
                           className="title-extra-large-4 line-height-65 font-weight-800 sm-title-extra-large-4 xs-title-extra-large-2 text-white alt-font margin-eight-bottom tz-text"
                           data-selector=".tz-text"
                         >
-                          Create A Profitable Podcast That Radically Increases
-                          Your Sales, Conversions, And Customer Loyalty In 8
-                          Weeks
+                          Create A Profitable Podcast That Radically Increases Your Sales,
+                          Conversions, And Customer Loyalty In 8 Weeks
                         </h1>
                         <div
                           className="text-light-gray title-small xs-text-extra-large width-100 md-width-100 margin-twelve-bottom tz-text margin-lr-auto"
                           data-selector=".tz-text"
                         >
-                          Without the overwhelms, tech headaches, and
-                          uncomfortable sales pitches. Even if you are not a
-                          “good speaker” and know nothing about podcasting.
+                          Without the overwhelms, tech headaches, and uncomfortable sales pitches.
+                          Even if you are not a “good speaker” and know nothing about podcasting.
                         </div>
                         <div className="btn-dual" />
                       </div>
@@ -260,25 +253,22 @@ export default class PodcastingCourse extends Component {
                     className="text-large tz-text width-90 sm-width-100 margin-seven-bottom sm-margin-ten-bottom"
                     data-selector=".tz-text"
                   >
-                    If you are a coach, consultant, service provider, or online
-                    entrepreneur, you know how hard it is to get your message
-                    out there these days. It’s a noisy world we live in. Most
-                    hardworking business owners struggle because they spend so
-                    much time working on things that have a low return-- feeding
-                    their social media accounts with low-conversion content and
-                    calling it “marketing”, or cold calling prospects and
-                    running after individual leads that don’t amount to must
-                    most of the time.{' '}
+                    If you are a coach, consultant, service provider, or online entrepreneur, you
+                    know how hard it is to get your message out there these days. It’s a noisy world
+                    we live in. Most hardworking business owners struggle because they spend so much
+                    time working on things that have a low return-- feeding their social media
+                    accounts with low-conversion content and calling it “marketing”, or cold calling
+                    prospects and running after individual leads that don’t amount to must most of
+                    the time.{' '}
                   </div>
                   <div
                     className="text-large tz-text width-90 sm-width-100 margin-fifteen-bottom sm-margin-ten-bottom"
                     data-selector=".tz-text"
                   >
-                    You may have had the sad realization that the endless social
-                    media treadmill-running hardly moves the needle for your
-                    business. And trying to hunt down individual prospects and
-                    prove yourself to each and every one of them is absolutely
-                    exhausting.{' '}
+                    You may have had the sad realization that the endless social media
+                    treadmill-running hardly moves the needle for your business. And trying to hunt
+                    down individual prospects and prove yourself to each and every one of them is
+                    absolutely exhausting.{' '}
                   </div>
                 </div>
               </div>
@@ -310,10 +300,9 @@ export default class PodcastingCourse extends Component {
                   className="section-title-large sm-section-title-medium text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  What if you can have a reliable way to spread your message
-                  that regularly brings in additional revenue every month…while
-                  establishing yourself as an industry leader and subject-matter
-                  expert?
+                  What if you can have a reliable way to spread your message that regularly brings
+                  in additional revenue every month…while establishing yourself as an industry
+                  leader and subject-matter expert?
                 </h2>
               </div>
             </div>
@@ -348,20 +337,18 @@ export default class PodcastingCourse extends Component {
                     className="text-extra-large tz-text width-90 sm-width-100 margin-five-bottom sm-margin-ten-bottom"
                     data-selector=".tz-text"
                   >
-                    In case you’ve been living under a rock for the past three
-                    years, podcasting has been growing by leaps and bounds. The
-                    number of podcast listeners in the US is increasing at about
-                    40% a year. There are now more podcast listeners in the
+                    In case you’ve been living under a rock for the past three years, podcasting has
+                    been growing by leaps and bounds. The number of podcast listeners in the US is
+                    increasing at about 40% a year. There are now more podcast listeners in the
                     country than Twitter users.{' '}
                   </div>
                   <div
                     className="text-extra-large tz-text width-90 sm-width-100 margin-ten-bottom sm-margin-ten-bottom xs-margin-twenty-bottom"
                     data-selector=".tz-text"
                   >
-                    Businesses of all sizes and industries, from your local
-                    hardware store to large enterprises like Goldman Sachs and
-                    McKinsey &amp; Company, are starting their own podcast to
-                    generate new leads, market their brand, and convert more
+                    Businesses of all sizes and industries, from your local hardware store to large
+                    enterprises like Goldman Sachs and McKinsey &amp; Company, are starting their
+                    own podcast to generate new leads, market their brand, and convert more
                     customers.
                   </div>
                   <br />
@@ -394,8 +381,8 @@ export default class PodcastingCourse extends Component {
                   className="title-small width-60 margin-lr-auto md-width-70 sm-width-100 tz-text"
                   data-selector=".tz-text"
                 >
-                  Even if you’ve had your own blog/vlog or been able to get
-                  press coverage, having your own podcast can help you:
+                  Even if you’ve had your own blog/vlog or been able to get press coverage, having
+                  your own podcast can help you:
                 </div>
               </div>
             </div>
@@ -416,10 +403,9 @@ export default class PodcastingCourse extends Component {
                   Get more customers to buy from you
                 </h5>
                 <div className="text-large tz-text" data-selector=".tz-text">
-                  Your podcast is an amazing tool for showcasing your expertise,
-                  building your brand recognition, and creating an ongoing,
-                  trusting relationship with existing and potential
-                  customers.&nbsp;
+                  Your podcast is an amazing tool for showcasing your expertise, building your brand
+                  recognition, and creating an ongoing, trusting relationship with existing and
+                  potential customers.&nbsp;
                 </div>
               </div>
               <div className="col-md-3 col-sm-6 col-xs-12 sm-margin-ten-bottom xs-margin-twenty-three-bottom">
@@ -430,11 +416,10 @@ export default class PodcastingCourse extends Component {
                   Stand out from your competition
                 </h5>
                 <div className="text-large tz-text" data-selector=".tz-text">
-                  Your podcast is the stage for you to claim the rock star
-                  status in your industry. It creates an intimate opportunity
-                  for your existing and potential buyers to get to know the
-                  unique you and what you offer, without you un-scalably trying
-                  to chase them down individually.&nbsp;
+                  Your podcast is the stage for you to claim the rock star status in your industry.
+                  It creates an intimate opportunity for your existing and potential buyers to get
+                  to know the unique you and what you offer, without you un-scalably trying to chase
+                  them down individually.&nbsp;
                 </div>
               </div>
               <div className="col-md-3 col-sm-6 col-xs-12 xs-margin-twenty-three-bottom">
@@ -445,10 +430,9 @@ export default class PodcastingCourse extends Component {
                   Boost your industry authority status
                 </h5>
                 <div className="text-large tz-text" data-selector=".tz-text">
-                  Your podcast is your speaking podium without time limit. It
-                  helps you attract other speaking, writing and media exposure
-                  opportunities. Depending on the format of your podcast, it
-                  also helps you build relationship with other top players in
+                  Your podcast is your speaking podium without time limit. It helps you attract
+                  other speaking, writing and media exposure opportunities. Depending on the format
+                  of your podcast, it also helps you build relationship with other top players in
                   your industry and further solidity your authority status.
                 </div>
               </div>
@@ -463,12 +447,11 @@ export default class PodcastingCourse extends Component {
                   className="text-large tz-text margin-fifteen-bottom xs-margin-eleven-bottom"
                   data-selector=".tz-text"
                 >
-                  Your podcast, if executed right, becomes a powerful, evergreen
-                  customer acquisition funnel. It gives customers the
-                  opportunity to come to you and get to know the unique value
-                  you provide. It helps you build customer relationships in a
-                  scalable manner. So that you can grow your business faster and
-                  make a bigger impact.
+                  Your podcast, if executed right, becomes a powerful, evergreen customer
+                  acquisition funnel. It gives customers the opportunity to come to you and get to
+                  know the unique value you provide. It helps you build customer relationships in a
+                  scalable manner. So that you can grow your business faster and make a bigger
+                  impact.
                 </div>
               </div>
             </div>
@@ -492,35 +475,25 @@ export default class PodcastingCourse extends Component {
                   className="title-extra-large-2 ex-title-extra-large width-90 sm-width-100 display-block tz-text"
                   data-selector=".tz-text"
                 >
-                  You can still have the early mover advantage in podcasting.
-                  That’s why you should start now
+                  You can still have the early mover advantage in podcasting. That’s why you should
+                  start now
                 </div>
               </div>
               <div className="col-md-6 col-sm-12 col-xs-12 text-large">
-                <div
-                  className="tz-text margin-five-bottom"
-                  data-selector=".tz-text"
-                >
-                  If you’ve had the foresight to start a YouTube channel back in
-                  2005, or start an Instagram account in 2010, your business
-                  would have been so much more successful than where it is now.
-                  Alas, you missed those opportunities. Once EVERYBODY has
-                  jumped on the vlogging and social media bandwaggen, it’s too
-                  late. Getting yourself seen and heard through those channels
-                  is now insanely difficult.
+                <div className="tz-text margin-five-bottom" data-selector=".tz-text">
+                  If you’ve had the foresight to start a YouTube channel back in 2005, or start an
+                  Instagram account in 2010, your business would have been so much more successful
+                  than where it is now. Alas, you missed those opportunities. Once EVERYBODY has
+                  jumped on the vlogging and social media bandwaggen, it’s too late. Getting
+                  yourself seen and heard through those channels is now insanely difficult.
                 </div>
                 <br />
-                <div
-                  className="tz-text margin-five-bottom"
-                  data-selector=".tz-text"
-                >
-                  Although podcasting as a medium has been around for a while,
-                  its takeoff is still a recent event. Here’s a comparison to
-                  put things in perspective. There’re currently around 500k
-                  active podcasts. If that seems like a large number, consider
-                  this-- Youtube has 50 million channels and there’re 350
-                  million blogs on Tumblr alone. (Is there any wonder that only
-                  five people read your blog?)
+                <div className="tz-text margin-five-bottom" data-selector=".tz-text">
+                  Although podcasting as a medium has been around for a while, its takeoff is still
+                  a recent event. Here’s a comparison to put things in perspective. There’re
+                  currently around 500k active podcasts. If that seems like a large number, consider
+                  this-- Youtube has 50 million channels and there’re 350 million blogs on Tumblr
+                  alone. (Is there any wonder that only five people read your blog?)
                 </div>
               </div>
             </div>
@@ -543,14 +516,12 @@ export default class PodcastingCourse extends Component {
                     style={{ lineHeight: 'normal' }}
                     data-selector=".tz-text"
                   >
-                    Right now is the perfect time to ride the surging wave of
-                    podcasting, before the huge crowd catches on. Because today,
-                    if you do podcasting right (meaning: with the right content
-                    and right strategy), you still have the opportunity to
-                    capture a substantial audience base that has the potential
-                    to become your biggest business asset, with relatively small
-                    effort. One year or two years from now, I wouldn’t be able
-                    to tell you the same.{' '}
+                    Right now is the perfect time to ride the surging wave of podcasting, before the
+                    huge crowd catches on. Because today, if you do podcasting right (meaning: with
+                    the right content and right strategy), you still have the opportunity to capture
+                    a substantial audience base that has the potential to become your biggest
+                    business asset, with relatively small effort. One year or two years from now, I
+                    wouldn’t be able to tell you the same.{' '}
                   </div>
                 </div>
               </div>
@@ -585,9 +556,8 @@ export default class PodcastingCourse extends Component {
                   className="title-extra-large margin-lr-auto  sm-width-100 tz-text"
                   data-selector=".tz-text"
                 >
-                  STARTING YOUR PODCAST WITH THE RIGHT PROCESS MAKES THE
-                  DIFFERENCE BETWEEN BUSINESS ACQUISITION HEAVEN AND CONTENT
-                  TREADMILL HELL
+                  STARTING YOUR PODCAST WITH THE RIGHT PROCESS MAKES THE DIFFERENCE BETWEEN BUSINESS
+                  ACQUISITION HEAVEN AND CONTENT TREADMILL HELL
                 </h2>
               </div>
             </div>
@@ -606,27 +576,23 @@ export default class PodcastingCourse extends Component {
                   data-selector=".tz-text"
                 >
                   <p>
-                    As a three-time podcast host, I have built a successful
-                    personal development teaching and coaching business around
-                    my top-of-iTunes podcast. As the founder of Soundwise, I’ve
-                    had the honor to help podcast hosts design, create, and grow
+                    As a three-time podcast host, I have built a successful personal development
+                    teaching and coaching business around my top-of-iTunes podcast. As the founder
+                    of Soundwise, I’ve had the honor to help podcast hosts design, create, and grow
                     their podcasts almost every day.
                   </p>
                   <p>
-                    Over time I realized something interesting-- I could pretty
-                    much tell whether a podcast was going to succeed or not,
-                    just by looking at how the host planned for and ran the
-                    podcast. When a podcast fails to get traction, it’s usually
-                    not because of a lack of talent, charisma, or expertise
-                    about the subject matter on the host’s part. And it’s
-                    certainly not because creating a podcast is all that
+                    Over time I realized something interesting-- I could pretty much tell whether a
+                    podcast was going to succeed or not, just by looking at how the host planned for
+                    and ran the podcast. When a podcast fails to get traction, it’s usually not
+                    because of a lack of talent, charisma, or expertise about the subject matter on
+                    the host’s part. And it’s certainly not because creating a podcast is all that
                     difficult.
                   </p>
                   <p>
-                    It’s usually because the host does not have the right
-                    content strategy and audience building system in place to
-                    make their podcast stand out from the crowd and convert
-                    listeners into customers.
+                    It’s usually because the host does not have the right content strategy and
+                    audience building system in place to make their podcast stand out from the crowd
+                    and convert listeners into customers.
                   </p>
                 </h2>
               </div>
@@ -645,8 +611,7 @@ export default class PodcastingCourse extends Component {
                   className="section-title-large sm-section-title-medium text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text text-center"
                   data-selector=".tz-text"
                 >
-                  Here are some of the most common mistakes that cause new
-                  podcasts to fail:
+                  Here are some of the most common mistakes that cause new podcasts to fail:
                 </h2>
               </div>
             </div>
@@ -677,10 +642,9 @@ export default class PodcastingCourse extends Component {
                   className="text-large text-dark-gray margin-six-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  Many new hosts start their podcast blindly following the
-                  successful podcasts they’ve listened to. The result is a large
-                  number of “me too” podcasts that merely create noise in the
-                  podcasting space and not benefit the host in any tangible
+                  Many new hosts start their podcast blindly following the successful podcasts
+                  they’ve listened to. The result is a large number of “me too” podcasts that merely
+                  create noise in the podcasting space and not benefit the host in any tangible
                   way.&nbsp;
                 </div>
                 <br />
@@ -688,10 +652,9 @@ export default class PodcastingCourse extends Component {
                   className="text-large text-dark-gray margin-six-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  If you want your podcast to go places, treat it like a product
-                  you create for your potential customers. Thinking through what
-                  problem your podcast is solving for your listeners and what
-                  are the unique benefits your podcast offers is the basic
+                  If you want your podcast to go places, treat it like a product you create for your
+                  potential customers. Thinking through what problem your podcast is solving for
+                  your listeners and what are the unique benefits your podcast offers is the basic
                   foundation for your podcasting success.
                 </div>
               </div>
@@ -713,23 +676,20 @@ export default class PodcastingCourse extends Component {
                   className="text-large text-dark-gray margin-six-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  Amateur podcast hosts often have no idea where their podcast
-                  is located on their customer’s journey. If you ask them, “Why
-                  are you doing a podcast?” They tell you things like “to build
-                  my brand”, “to spread my message”. While those are legit
-                  goals, they are much too vague to provide any guidance in
-                  terms of how to best structure your podcast and what type of
-                  content you should create.
+                  Amateur podcast hosts often have no idea where their podcast is located on their
+                  customer’s journey. If you ask them, “Why are you doing a podcast?” They tell you
+                  things like “to build my brand”, “to spread my message”. While those are legit
+                  goals, they are much too vague to provide any guidance in terms of how to best
+                  structure your podcast and what type of content you should create.
                 </div>
                 <br />
                 <div
                   className="text-large text-dark-gray margin-six-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  Not thinking through the relationship between your podcast and
-                  your other products/services is the surefire way to waste a
-                  bunch of time and money running in circles with your
-                  podcast.&nbsp;
+                  Not thinking through the relationship between your podcast and your other
+                  products/services is the surefire way to waste a bunch of time and money running
+                  in circles with your podcast.&nbsp;
                 </div>
               </div>
               <div className="col-md-3 col-sm-6 col-xs-12 padding-six no-padding-tb sm-margin-nine-bottom xs-margin-fifteen-bottom">
@@ -751,22 +711,19 @@ export default class PodcastingCourse extends Component {
                   data-selector=".tz-text"
                 >
                   <div>
-                    When I coach new podcast hosts, their first question is
-                    often times “How do I get more listeners?” I totally
-                    understand the desire for more exposure. But here’s the
-                    counter-intuitive truth: when you start a new podcast,
-                    getting more listeners should be the least of your
-                    concerns!&nbsp;
+                    When I coach new podcast hosts, their first question is often times “How do I
+                    get more listeners?” I totally understand the desire for more exposure. But
+                    here’s the counter-intuitive truth: when you start a new podcast, getting more
+                    listeners should be the least of your concerns!&nbsp;
                   </div>
                   <br />
                   <div>
-                    Your limited time and energy should be focused on optimizing
-                    your podcast first-- learning what you need to say and how
-                    you should say it on air, to create a memorable impression
-                    in your listeners’ mind and heart. If you don’t have a
-                    high-converting podcast in the first place, you’d just be
-                    wasting the listener traffic you work hard to obtain, and
-                    not getting much business benefit in the end.&nbsp;
+                    Your limited time and energy should be focused on optimizing your podcast
+                    first-- learning what you need to say and how you should say it on air, to
+                    create a memorable impression in your listeners’ mind and heart. If you don’t
+                    have a high-converting podcast in the first place, you’d just be wasting the
+                    listener traffic you work hard to obtain, and not getting much business benefit
+                    in the end.&nbsp;
                   </div>
                 </div>
               </div>
@@ -789,20 +746,18 @@ export default class PodcastingCourse extends Component {
                   data-selector=".tz-text"
                 >
                   <div>
-                    Podcasting today is easier than ever. Still, there’re a lot
-                    of different logistical components to a successful podcast,
-                    e.g. planning your episodes, choosing the right recording
-                    and editing setup, creating descriptions and other
-                    supplementary materials… And if you host an interview
-                    podcast, there’s another layer of logistics involving guest
-                    booking, onboarding, recording and promotion.&nbsp;
+                    Podcasting today is easier than ever. Still, there’re a lot of different
+                    logistical components to a successful podcast, e.g. planning your episodes,
+                    choosing the right recording and editing setup, creating descriptions and other
+                    supplementary materials… And if you host an interview podcast, there’s another
+                    layer of logistics involving guest booking, onboarding, recording and
+                    promotion.&nbsp;
                   </div>
                   <br />
                   <div>
-                    Without having an organized, efficient work process, what
-                    you will find is there are stumbling blocks everywhere and
-                    you spend an ungodly amount of time and energy fixing
-                    problems instead of creating high-converting content.&nbsp;
+                    Without having an organized, efficient work process, what you will find is there
+                    are stumbling blocks everywhere and you spend an ungodly amount of time and
+                    energy fixing problems instead of creating high-converting content.&nbsp;
                   </div>
                 </div>
               </div>
@@ -837,30 +792,26 @@ export default class PodcastingCourse extends Component {
                     data-selector=".tz-text"
                   >
                     <div>
-                      If you’re going to create a podcast, don’t do it
-                      haphazardly. Treat it like a serious project and follow an
-                      effective system to plan, create, and grow your podcast.
+                      If you’re going to create a podcast, don’t do it haphazardly. Treat it like a
+                      serious project and follow an effective system to plan, create, and grow your
+                      podcast.
                     </div>
                     <br />
                     <div>
-                      I’m passionate about helping experts, coaches and
-                      entrepreneurs spread their message. Because by helping you
-                      make a difference in your audience’s life, I’m also
-                      indirectly creating a bigger impact in the world. I firmly
-                      believe that podcasting can become your biggest business
-                      asset-- getting you more customers and cash flow while
-                      changing more lives-- if you do it right.
+                      I’m passionate about helping experts, coaches and entrepreneurs spread their
+                      message. Because by helping you make a difference in your audience’s life, I’m
+                      also indirectly creating a bigger impact in the world. I firmly believe that
+                      podcasting can become your biggest business asset-- getting you more customers
+                      and cash flow while changing more lives-- if you do it right.
                     </div>
                     <br />
                     <div>
-                      That’s why I gathered my personal knowledge in creating
-                      and growing multiple successful podcasts, and my
-                      experience working with hundreds of podcast hosts and
-                      audio course creators, to bring to you the Podcast
-                      Conversion Master Course-- a step by step system to create
-                      and grow a highly profitable podcast that helps you
-                      effectively capture an audience and turn your audience
-                      into real fans and customers.&nbsp;
+                      That’s why I gathered my personal knowledge in creating and growing multiple
+                      successful podcasts, and my experience working with hundreds of podcast hosts
+                      and audio course creators, to bring to you the Podcast Conversion Master
+                      Course-- a step by step system to create and grow a highly profitable podcast
+                      that helps you effectively capture an audience and turn your audience into
+                      real fans and customers.&nbsp;
                     </div>
                   </div>
                 </div>
@@ -904,9 +855,9 @@ export default class PodcastingCourse extends Component {
                   className="tz-text title-small  sm-width-90 text-center center-col"
                   data-selector=".tz-text"
                 >
-                  Everything you need to create a steller podcast that helps you
-                  drastically increase your sales conversion, elevate your
-                  expert status, and get more paying customers
+                  Everything you need to create a steller podcast that helps you drastically
+                  increase your sales conversion, elevate your expert status, and get more paying
+                  customers
                 </div>
                 <br />
                 <div
@@ -914,13 +865,12 @@ export default class PodcastingCourse extends Component {
                   style={{ lineHeight: 'normal' }}
                   data-selector=".tz-text"
                 >
-                  The Podcast Conversion Master Course is the only podcasting
-                  course that not only gives you the logistical step-by-steps of
-                  creating your own podcast, but teaches you the powerful audio
-                  content strategies that help you convert more listeners into
-                  customers, while being naturally you, without sounding salesy
-                  or pushy. You will also learn how to build an engaged listener
-                  community that increases customer loyalty and lifetime value.
+                  The Podcast Conversion Master Course is the only podcasting course that not only
+                  gives you the logistical step-by-steps of creating your own podcast, but teaches
+                  you the powerful audio content strategies that help you convert more listeners
+                  into customers, while being naturally you, without sounding salesy or pushy. You
+                  will also learn how to build an engaged listener community that increases customer
+                  loyalty and lifetime value.
                 </div>
               </div>
             </div>
@@ -944,8 +894,8 @@ export default class PodcastingCourse extends Component {
                   className="text-large width-80 margin-lr-auto md-width-80 sm-width-100 tz-text"
                   data-selector=".tz-text"
                 >
-                  (All of the course content are immediately available via
-                  Soundwise web and mobile apps after enrollment)
+                  (All of the course content are immediately available via Soundwise web and mobile
+                  apps after enrollment)
                 </div>
               </div>
             </div>
@@ -1078,16 +1028,15 @@ export default class PodcastingCourse extends Component {
                         className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
                         data-selector=".tz-text"
                       >
-                        Module 1: Positioning, Positioning, Positioning… a.k.a.
-                        Set the Foundation for A High Converting Podcast
+                        Module 1: Positioning, Positioning, Positioning… a.k.a. Set the Foundation
+                        for A High Converting Podcast
                       </h2>
                       <span
                         className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
                         data-selector=".tz-text"
                       >
-                        Before you create any content, you need to get clear on
-                        a few big-picture elements that set your podcast up for
-                        success. By end of Module 1, you will:
+                        Before you create any content, you need to get clear on a few big-picture
+                        elements that set your podcast up for success. By end of Module 1, you will:
                       </span>
                     </div>
                   </div>
@@ -1100,9 +1049,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Have perfect clarity on the specific ways your
-                            podcast will contribute to the customer journey for
-                            your business
+                            Have perfect clarity on the specific ways your podcast will contribute
+                            to the customer journey for your business
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1111,8 +1059,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Identify exactly who you’re creating your podcast
-                            for and what make them tick&nbsp;
+                            Identify exactly who you’re creating your podcast for and what make them
+                            tick&nbsp;
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1121,8 +1069,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn the secret to create your audio charisma on
-                            demand, while being authentically you
+                            Learn the secret to create your audio charisma on demand, while being
+                            authentically you
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1131,8 +1079,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Lay the foundation to set your podcast apart from
-                            the competitions and get loyal listeners
+                            Lay the foundation to set your podcast apart from the competitions and
+                            get loyal listeners
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1141,8 +1089,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn a highly effective framework to help position
-                            your podcast that quickly grabs your listeners
+                            Learn a highly effective framework to help position your podcast that
+                            quickly grabs your listeners
                           </span>
                         </li>
                       </ul>
@@ -1184,17 +1132,16 @@ export default class PodcastingCourse extends Component {
                         className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
                         data-selector=".tz-text"
                       >
-                        Module 2: Design your essential podcasting assets to
-                        immediately impresses and hooks listeners
+                        Module 2: Design your essential podcasting assets to immediately impresses
+                        and hooks listeners
                       </h2>
                       <span
                         className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
                         data-selector=".tz-text"
                       >
-                        Your podcast needs a unique “store front” to hook
-                        listeners and then viable content strategies to produce
-                        great episodes and make your listeners come back for
-                        more. By end of Module 2, you will:
+                        Your podcast needs a unique “store front” to hook listeners and then viable
+                        content strategies to produce great episodes and make your listeners come
+                        back for more. By end of Module 2, you will:
                       </span>
                     </div>
                   </div>
@@ -1207,9 +1154,9 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Understand the pros and cons of different podcast
-                            formats, and determine the format for your podcast
-                            that will be most beneficial to your business
+                            Understand the pros and cons of different podcast formats, and determine
+                            the format for your podcast that will be most beneficial to your
+                            business
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1218,8 +1165,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Have a high converting podcast title, tagline, and
-                            description to stand out from the crowd
+                            Have a high converting podcast title, tagline, and description to stand
+                            out from the crowd
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1228,8 +1175,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Create a podcast cover art that conveys who you are
-                            and speaks to your ideal customers
+                            Create a podcast cover art that conveys who you are and speaks to your
+                            ideal customers
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1238,9 +1185,9 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn the different types of episode topics and how
-                            they contribute to your customer conversion.
-                            Determine the right mix of your podcast topics.
+                            Learn the different types of episode topics and how they contribute to
+                            your customer conversion. Determine the right mix of your podcast
+                            topics.
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1249,8 +1196,7 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn the secret to never run out of high-converting
-                            episode topic ideas
+                            Learn the secret to never run out of high-converting episode topic ideas
                           </span>
                         </li>
                       </ul>
@@ -1292,17 +1238,15 @@ export default class PodcastingCourse extends Component {
                         className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
                         data-selector=".tz-text"
                       >
-                        Module 3: How to craft high-converting podcast episodes
-                        from start to finish
+                        Module 3: How to craft high-converting podcast episodes from start to finish
                       </h2>
                       <span
                         className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
                         data-selector=".tz-text"
                       >
-                        Once you turn on the mic, what do you need to say to get
-                        listeners hooked and come back? This module teaches you
-                        the nitty gritty of creating high-converting episodes.
-                        By end of Module 3, you will:
+                        Once you turn on the mic, what do you need to say to get listeners hooked
+                        and come back? This module teaches you the nitty gritty of creating
+                        high-converting episodes. By end of Module 3, you will:
                       </span>
                     </div>
                   </div>
@@ -1315,8 +1259,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Craft a concise and compelling episode intro that
-                            clearly speaks to your ideal listeners
+                            Craft a concise and compelling episode intro that clearly speaks to your
+                            ideal listeners
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1325,8 +1269,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn a 5-part high converting episode formula that
-                            makes your audience want to buy from you
+                            Learn a 5-part high converting episode formula that makes your audience
+                            want to buy from you
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1335,9 +1279,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Get the secrets to create a powerful “audio
-                            presence” that makes listening to you a mesmerizing
-                            experience{' '}
+                            Get the secrets to create a powerful “audio presence” that makes
+                            listening to you a mesmerizing experience{' '}
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1346,9 +1289,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Discover what stories you need to tell and how to
-                            tell them in your episodes that move your audience
-                            to take actions
+                            Discover what stories you need to tell and how to tell them in your
+                            episodes that move your audience to take actions
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1357,9 +1299,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Find out how to conduct high converting guest
-                            interviews that create win-win for you and your
-                            guests
+                            Find out how to conduct high converting guest interviews that create
+                            win-win for you and your guests
                           </span>
                         </li>
                       </ul>
@@ -1401,17 +1342,16 @@ export default class PodcastingCourse extends Component {
                         className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
                         data-selector=".tz-text"
                       >
-                        Module 4: Build your audience tribe like a pro to
-                        inspire die-hard fans and repeat customers
+                        Module 4: Build your audience tribe like a pro to inspire die-hard fans and
+                        repeat customers
                       </h2>
                       <span
                         className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
                         data-selector=".tz-text"
                       >
-                        The best customers are repeat customers. And building a
-                        trusting relationship with your listeners on air and off
-                        air is crucial for a sustaining business. By end of
-                        Module 4, you will:
+                        The best customers are repeat customers. And building a trusting
+                        relationship with your listeners on air and off air is crucial for a
+                        sustaining business. By end of Module 4, you will:
                       </span>
                     </div>
                   </div>
@@ -1424,9 +1364,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Understand why having an audience community is a
-                            powerful conversion tool and how to get your first
-                            100 real fans
+                            Understand why having an audience community is a powerful conversion
+                            tool and how to get your first 100 real fans
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1435,8 +1374,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn effective tactics to get your audience more
-                            engaged and invested in your community
+                            Learn effective tactics to get your audience more engaged and invested
+                            in your community
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1445,8 +1384,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Discover the top strategies to get your audience to
-                            start talking to you and to each other
+                            Discover the top strategies to get your audience to start talking to you
+                            and to each other
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1455,8 +1394,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn simple, reliable ways to continue improving
-                            your podcast with the help of your tribe
+                            Learn simple, reliable ways to continue improving your podcast with the
+                            help of your tribe
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1465,9 +1404,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Find out how to leverage your listener feedback to
-                            create amazing new products/services that
-                            practically sell themselves
+                            Find out how to leverage your listener feedback to create amazing new
+                            products/services that practically sell themselves
                           </span>
                         </li>
                       </ul>
@@ -1509,16 +1447,15 @@ export default class PodcastingCourse extends Component {
                         className="title-extra-large alt-font sm-section-title-medium xs-title-extra-large text-dark-gray margin-five-bottom xs-margin-ten-bottom tz-text"
                         data-selector=".tz-text"
                       >
-                        Module 5: The most powerful strategies to expand your
-                        podcast’s reach and get more listeners
+                        Module 5: The most powerful strategies to expand your podcast’s reach and
+                        get more listeners
                       </h2>
                       <span
                         className="text-extra-large sm-text-extra-large font-weight-300 margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text"
                         data-selector=".tz-text"
                       >
-                        You’ve built a top notch, high-converting podcast. Now
-                        it’s time to promote it and get more ears on your
-                        podcast. By end of Module 5, you’ll:
+                        You’ve built a top notch, high-converting podcast. Now it’s time to promote
+                        it and get more ears on your podcast. By end of Module 5, you’ll:
                       </span>
                     </div>
                   </div>
@@ -1531,9 +1468,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn how to turn your existing listeners and your
-                            guests into a highly effective (and free) marketing
-                            team
+                            Learn how to turn your existing listeners and your guests into a highly
+                            effective (and free) marketing team
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1542,9 +1478,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Discover an effective content repurpose strategy
-                            that easily increases the reach of every episode by
-                            tenfold
+                            Discover an effective content repurpose strategy that easily increases
+                            the reach of every episode by tenfold
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1553,8 +1488,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Learn the top strategies to get more traffic to your
-                            podcast without spending a lot of money
+                            Learn the top strategies to get more traffic to your podcast without
+                            spending a lot of money
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1563,8 +1498,8 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Find out how to leverage your show notes and
-                            descriptions to build your email list
+                            Find out how to leverage your show notes and descriptions to build your
+                            email list
                           </span>
                         </li>
                         <li className="position-relative padding-left-30px line-height-34 text-large">
@@ -1573,8 +1508,7 @@ export default class PodcastingCourse extends Component {
                             data-selector=".tz-icon-color"
                           />
                           <span className="tz-text" data-selector=".tz-text">
-                            Get a fail-proof roadmap to consistently and
-                            reliably grow your podcast
+                            Get a fail-proof roadmap to consistently and reliably grow your podcast
                           </span>
                         </li>
                       </ul>
@@ -1608,35 +1542,29 @@ export default class PodcastingCourse extends Component {
                     id="tz-bg-color-7"
                     style={{ backgroundColor: '#ffffff', padding: 85 }}
                   >
-                    <div
-                      className="text-dark-gray text-large tz-text"
-                      id="tz-slider-text129"
-                    >
+                    <div className="text-dark-gray text-large tz-text" id="tz-slider-text129">
                       <div>
-                        Natasha Che is a tech entrepreneur and the founder of
-                        Soundwise, the #1 mobile-focused audio publishing
-                        platform for experts, influencers and solo entrepreneurs
-                        to sell on-demand audios and to leverage their podcast
-                        to grow their email list and build an audience tribe.
+                        Natasha Che is a tech entrepreneur and the founder of Soundwise, the #1
+                        mobile-focused audio publishing platform for experts, influencers and solo
+                        entrepreneurs to sell on-demand audios and to leverage their podcast to grow
+                        their email list and build an audience tribe.
                       </div>
                       <br />
                       <div>
-                        She is also a personal growth teacher and an
-                        award-winning podcast host. She currently hosts the
-                        top-of-iTunes podcast, The School of Intuition.&nbsp;
+                        She is also a personal growth teacher and an award-winning podcast host. She
+                        currently hosts the top-of-iTunes podcast, The School of Intuition.&nbsp;
                       </div>
                       <br />
                       <div>
-                        Natasha has coached over 200 experts and entrepreneurs
-                        on how to use podcasting to grow their business. She has
-                        been featured on Huffington Post, Entrepreneur, Thrive
-                        Global, YourTango, Elephant Journal, Sivana East, among
+                        Natasha has coached over 200 experts and entrepreneurs on how to use
+                        podcasting to grow their business. She has been featured on Huffington Post,
+                        Entrepreneur, Thrive Global, YourTango, Elephant Journal, Sivana East, among
                         others.&nbsp;
                       </div>
                       <br />
                       <div>
-                        Natasha holds a PhD in Economics from Georgetown
-                        University and lives in Washington DC.
+                        Natasha holds a PhD in Economics from Georgetown University and lives in
+                        Washington DC.
                       </div>
                     </div>
                   </div>
@@ -1666,8 +1594,8 @@ export default class PodcastingCourse extends Component {
                   className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-five-bottom xs-margin-fifteen-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  If you put in the effort and do the homeworks, here’s what you
-                  can expect from taking the Podcast Conversion Master Course…
+                  If you put in the effort and do the homeworks, here’s what you can expect from
+                  taking the Podcast Conversion Master Course…
                 </h2>
               </div>
             </div>
@@ -1693,9 +1621,8 @@ export default class PodcastingCourse extends Component {
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      In 8 weeks you will have created a kickass podcast that
-                      becomes one of your most profitable assets in business,
-                      for years to come
+                      In 8 weeks you will have created a kickass podcast that becomes one of your
+                      most profitable assets in business, for years to come
                     </div>
                   </div>
                 </div>
@@ -1721,11 +1648,9 @@ export default class PodcastingCourse extends Component {
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      You will be in possession of a most powerful marketing
-                      tool, which opens doors for you that you didn’t know
-                      existed, allowing you to earn more, make a bigger
-                      difference, and achieve more freedom in your life and
-                      business&nbsp;
+                      You will be in possession of a most powerful marketing tool, which opens doors
+                      for you that you didn’t know existed, allowing you to earn more, make a bigger
+                      difference, and achieve more freedom in your life and business&nbsp;
                     </div>
                   </div>
                 </div>
@@ -1751,9 +1676,8 @@ export default class PodcastingCourse extends Component {
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      You will have the absolute confidence in your ability to
-                      create amazing audio content that get your listeners
-                      hooked and get you more customers
+                      You will have the absolute confidence in your ability to create amazing audio
+                      content that get your listeners hooked and get you more customers
                     </div>
                   </div>
                 </div>
@@ -1779,10 +1703,9 @@ export default class PodcastingCourse extends Component {
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      You will have crystal clarity about how to consistently
-                      grow your podcast to get more listeners, what you need to
-                      say and how you need to say it on air to turn listeners
-                      into subscribers and loyal customers
+                      You will have crystal clarity about how to consistently grow your podcast to
+                      get more listeners, what you need to say and how you need to say it on air to
+                      turn listeners into subscribers and loyal customers
                     </div>
                   </div>
                 </div>
@@ -1853,8 +1776,8 @@ export default class PodcastingCourse extends Component {
                   className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-seven-bottom xs-margin-fifteen-bottom tz-text"
                   data-selector=".tz-text"
                 >
-                  Enroll in The Podcast Conversion Master Course to get over
-                  $1000 of bonuses. FOR FREE
+                  Enroll in The Podcast Conversion Master Course to get over $1000 of bonuses. FOR
+                  FREE
                 </h2>
               </div>
             </div>
@@ -1878,10 +1801,7 @@ export default class PodcastingCourse extends Component {
                       className="post-author tz-background-color bg-dark-gray margin-thirteen-bottom md-margin-eleven-bottom xs-margin-eight-bottom"
                       data-selector=".tz-background-color"
                     >
-                      <span
-                        className="tz-text text-white blog-name"
-                        data-selector=".tz-text"
-                      >
+                      <span className="tz-text text-white blog-name" data-selector=".tz-text">
                         BONUS #1
                       </span>{' '}
                     </div>
@@ -1896,13 +1816,11 @@ export default class PodcastingCourse extends Component {
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      Soundwise is the indispensable tool to help you leverage
-                      your podcast to build your email list, grow an engaged
-                      listener community, and sell on-demand audio programs. you
-                      can also use Soundwise to host an unlimited number of
-                      podcasts and audio programs. You will get access to
-                      Soundwise’s higher-tier paid plan for an entire year, free
-                      of charge.
+                      Soundwise is the indispensable tool to help you leverage your podcast to build
+                      your email list, grow an engaged listener community, and sell on-demand audio
+                      programs. you can also use Soundwise to host an unlimited number of podcasts
+                      and audio programs. You will get access to Soundwise’s higher-tier paid plan
+                      for an entire year, free of charge.
                     </div>
                   </div>
                 </div>
@@ -1926,10 +1844,7 @@ export default class PodcastingCourse extends Component {
                       className="post-author tz-background-color bg-dark-gray margin-thirteen-bottom md-margin-eleven-bottom xs-margin-eight-bottom"
                       data-selector=".tz-background-color"
                     >
-                      <span
-                        className="tz-text text-white blog-name"
-                        data-selector=".tz-text"
-                      >
+                      <span className="tz-text text-white blog-name" data-selector=".tz-text">
                         BONUS #2
                       </span>{' '}
                     </div>
@@ -1937,17 +1852,15 @@ export default class PodcastingCourse extends Component {
                       className="tz-text text-dark-gray blog-post-title text-large font-weight-600 margin-five-bottom display-inline-block md-margin-five-bottom"
                       data-selector=".tz-text"
                     >
-                      111 media outlets to submit your repurposed podcasting
-                      content ($250 value)
+                      111 media outlets to submit your repurposed podcasting content ($250 value)
                     </span>
                     <div
                       className="text-large tz-text"
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      Leverage the power of proper content repurpose to
-                      supercharge the reach of your podcast. The bonus
-                      complements the training in Module 5 to increase the
+                      Leverage the power of proper content repurpose to supercharge the reach of
+                      your podcast. The bonus complements the training in Module 5 to increase the
                       exposure of your podcast and reach new audience.
                     </div>
                   </div>
@@ -1972,10 +1885,7 @@ export default class PodcastingCourse extends Component {
                       className="post-author tz-background-color bg-dark-gray margin-thirteen-bottom md-margin-eleven-bottom xs-margin-eight-bottom"
                       data-selector=".tz-background-color"
                     >
-                      <span
-                        className="tz-text text-white blog-name"
-                        data-selector=".tz-text"
-                      >
+                      <span className="tz-text text-white blog-name" data-selector=".tz-text">
                         BONUS #3
                       </span>{' '}
                     </div>
@@ -1983,18 +1893,17 @@ export default class PodcastingCourse extends Component {
                       className="tz-text text-dark-gray blog-post-title text-large font-weight-600 margin-five-bottom display-inline-block md-margin-five-bottom"
                       data-selector=".tz-text"
                     >
-                      The only tech guide you need to start a quality podcast,
-                      even if you have no idea what to do ($100 value)
+                      The only tech guide you need to start a quality podcast, even if you have no
+                      idea what to do ($100 value)
                     </span>
                     <div
                       className="text-large tz-text"
                       data-selector=".tz-text"
                       style={{ textAlign: 'left' }}
                     >
-                      With this bonus module, you’ll get a checklist of tools
-                      you need and a simple workflow set up that result in a
-                      great sounding podcast produced in a streamlined manner.
-                      No more overwhelm and confusion about podcasting
+                      With this bonus module, you’ll get a checklist of tools you need and a simple
+                      workflow set up that result in a great sounding podcast produced in a
+                      streamlined manner. No more overwhelm and confusion about podcasting
                       tech.&nbsp;
                     </div>
                   </div>
@@ -2029,15 +1938,13 @@ export default class PodcastingCourse extends Component {
                 >
                   <div className="no-margin-bottom">
                     •<span style={{ whiteSpace: 'pre' }}> </span>
-                    You’re a coach, consultant, entrepreneur or professional
-                    service provider who want to get more customers and get your
-                    existing customers to buy more from you
+                    You’re a coach, consultant, entrepreneur or professional service provider who
+                    want to get more customers and get your existing customers to buy more from you
                   </div>
                   <div className="no-margin-bottom">
                     •<span style={{ whiteSpace: 'pre' }}> </span>
-                    You know that your business will grow and you will make a
-                    bigger impact in the world if you can get your message and
-                    your knowledge out to more people
+                    You know that your business will grow and you will make a bigger impact in the
+                    world if you can get your message and your knowledge out to more people
                   </div>
                   <div className="no-margin-bottom">
                     •<span style={{ whiteSpace: 'pre' }}> </span>
@@ -2045,17 +1952,15 @@ export default class PodcastingCourse extends Component {
                   </div>
                   <div className="no-margin-bottom">
                     •<span style={{ whiteSpace: 'pre' }}> </span>
-                    You know having a podcast can significantly benefit your
-                    brand and your business. And you want to do it the right way
-                    to save you time, headache and get the business results you
-                    deserve
+                    You know having a podcast can significantly benefit your brand and your
+                    business. And you want to do it the right way to save you time, headache and get
+                    the business results you deserve
                   </div>
                   <div className="no-margin-bottom">
                     •<span style={{ whiteSpace: 'pre' }}> </span>
-                    Or maybe you’ve done podcasting before. But you didn’t have
-                    a reliable strategy to actually get business benefit from
-                    your podcast. And you’re committed to up your podcast
-                    conversion game to grow more customers and revenues.
+                    Or maybe you’ve done podcasting before. But you didn’t have a reliable strategy
+                    to actually get business benefit from your podcast. And you’re committed to up
+                    your podcast conversion game to grow more customers and revenues.
                   </div>
                 </div>
               </div>
@@ -2092,21 +1997,17 @@ export default class PodcastingCourse extends Component {
                     data-selector=".tz-text"
                   >
                     <p>
-                      I truly want you to get the benefit of having an amazing
-                      podcast that will help you convert and keep more
-                      customers. And I have built this course to help you
-                      accomplish just that. If you sincerely put in the effort
-                      to do the work recommended in the course curriculum, I
-                      promise you that your effort will be rewarded. That being
-                      said, if you don’t feel like it worked for you after doing
-                      the full course work, simply submit the work you’ve done
-                      (including the worksheets, checklists, and the podcast
-                      you’ve created), within 30 days of purchase, I will refund
-                      your course fee in full. This is only for people who have
-                      really put in the effort to do the work. So if you’d like
-                      a refund, make sure you submit proof that you’ve completed
-                      all the assignments and action steps in the course with
-                      your best effort.
+                      I truly want you to get the benefit of having an amazing podcast that will
+                      help you convert and keep more customers. And I have built this course to help
+                      you accomplish just that. If you sincerely put in the effort to do the work
+                      recommended in the course curriculum, I promise you that your effort will be
+                      rewarded. That being said, if you don’t feel like it worked for you after
+                      doing the full course work, simply submit the work you’ve done (including the
+                      worksheets, checklists, and the podcast you’ve created), within 30 days of
+                      purchase, I will refund your course fee in full. This is only for people who
+                      have really put in the effort to do the work. So if you’d like a refund, make
+                      sure you submit proof that you’ve completed all the assignments and action
+                      steps in the course with your best effort.
                     </p>
                   </div>
                 </div>
@@ -2148,10 +2049,7 @@ export default class PodcastingCourse extends Component {
                   </h1>
                 </div>
               </div>
-              <div
-                className="col-md-5 col-sm-6 col-xs-12 display-table"
-                style={{ height: 245 }}
-              >
+              <div className="col-md-5 col-sm-6 col-xs-12 display-table" style={{ height: 245 }}>
                 <div className="display-table-cell-vertical-middle">
                   <input
                     onChange={this.handleChange}

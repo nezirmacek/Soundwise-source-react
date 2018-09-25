@@ -85,17 +85,14 @@ class _SoundwiseHeader extends Component {
                     className="text-dark-gray"
                     style={{
                       backgroundColor: 'rgba(0, 0, 0, 0)',
-                      borderColor:
-                        'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                      borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                       fontFamily: 'Montserrat, sans-serif',
                       textTransform: 'none',
                       fontSize: '16px',
                       fontWeight: 700,
                     }}
                   >
-                    {`Hello, ${this.capFirstLetter(
-                      this.props.userInfo.firstName
-                    )} `}
+                    {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                     <span className="caret" />
                   </div>
                 </div>
@@ -109,10 +106,7 @@ class _SoundwiseHeader extends Component {
                   )}
                   {this.props.userInfo.admin && (
                     <li>
-                      <Link
-                        to="/dashboard/soundcasts"
-                        style={{ color: 'black' }}
-                      >
+                      <Link to="/dashboard/soundcasts" style={{ color: 'black' }}>
                         Admin Dashboard
                       </Link>
                     </li>
@@ -161,9 +155,7 @@ class _SoundwiseHeader extends Component {
             )}
             <li className="propClone sm-no-border">
               <a className="dropdown-toggle" data-toggle="dropdown">
-                {`Hello, ${this.capFirstLetter(
-                  this.props.userInfo.firstName
-                )} `}
+                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                 <span className="caret" />
               </a>
               <ul className="dropdown-menu">
@@ -200,8 +192,7 @@ class _SoundwiseHeader extends Component {
               data-selector="nav a"
               style={{
                 backgroundColor: 'rgba(0, 0, 0, 0)',
-                borderColor:
-                  'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                 fontFamily: 'Montserrat, sans-serif',
                 textTransform: 'none',
                 fontSize: '16px',
@@ -287,8 +278,7 @@ class _SoundwiseHeader extends Component {
                       data-selector="nav a"
                       style={{
                         backgroundColor: 'rgba(0, 0, 0, 0)',
-                        borderColor:
-                          'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                        borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                         fontFamily: 'Montserrat, sans-serif',
                         textTransform: 'none',
                         fontSize: '16px',
@@ -306,8 +296,7 @@ class _SoundwiseHeader extends Component {
                       data-selector="nav a"
                       style={{
                         backgroundColor: 'rgba(0, 0, 0, 0)',
-                        borderColor:
-                          'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                        borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                         fontFamily: 'Montserrat, sans-serif',
                         textTransform: 'none',
                         fontSize: '16px',
@@ -325,8 +314,7 @@ class _SoundwiseHeader extends Component {
                       data-selector="nav a"
                       style={{
                         backgroundColor: 'rgba(0, 0, 0, 0)',
-                        borderColor:
-                          'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
+                        borderColor: 'rgb(255, 255, 255) rgb(255, 255, 255) rgba(0, 0, 0, 0)',
                         fontFamily: 'Montserrat, sans-serif',
                         textTransform: 'none',
                         fontSize: '16px',

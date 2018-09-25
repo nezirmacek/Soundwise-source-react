@@ -25,10 +25,9 @@ const HowItWorks = props => (
             <div className="text-large text-dark-gray center-col tz-text">
               {' '}
               <p>
-                Once you subscribe, you can access your soundcast from the
-                Soundwise mobile app anytime. Download the audios and listen
-                when driving, exercising, running errands...Learning doesn't
-                have to take up extra time.
+                Once you subscribe, you can access your soundcast from the Soundwise mobile app
+                anytime. Download the audios and listen when driving, exercising, running
+                errands...Learning doesn't have to take up extra time.
               </p>
             </div>
           </div>
@@ -42,10 +41,9 @@ const HowItWorks = props => (
             <div className="text-large center-col tz-text text-dark-gray">
               {' '}
               <p>
-                If the soundcast you subscribe to is being regularly updated,
-                you will automatically receive the new materials on your phone.
-                Enable push notification for the Soundwise app and you'll know
-                when your instructor publishes new content in real time.
+                If the soundcast you subscribe to is being regularly updated, you will automatically
+                receive the new materials on your phone. Enable push notification for the Soundwise
+                app and you'll know when your instructor publishes new content in real time.
               </p>
             </div>
           </div>
@@ -58,10 +56,9 @@ const HowItWorks = props => (
             </h3>
             <div className="text-large center-col tz-text text-dark-gray">
               <p>
-                With the Soundwise app you can ask the instructor questions and
-                interact with other subscribers through comments on the audio
-                materials. You can also interact with the instructor by replying
-                to his/her broadcast messages.
+                With the Soundwise app you can ask the instructor questions and interact with other
+                subscribers through comments on the audio materials. You can also interact with the
+                instructor by replying to his/her broadcast messages.
               </p>
             </div>
           </div>
@@ -75,9 +72,8 @@ const HowItWorks = props => (
             <div className="text-large center-col tz-text text-dark-gray">
               {' '}
               <p>
-                Many soundcasts have accompanying notes, worksheets,
-                assignments/action steps. You can view them directly within the
-                Soundwise app and track your learning progress.
+                Many soundcasts have accompanying notes, worksheets, assignments/action steps. You
+                can view them directly within the Soundwise app and track your learning progress.
               </p>
             </div>
           </div>

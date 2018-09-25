@@ -7,11 +7,7 @@ import firebase from 'firebase';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Checkbox from 'material-ui/Checkbox';
 // import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import {
-  RadioGroup,
-  RadioButton,
-  ReversedRadioButton,
-} from 'react-radio-buttons';
+import { RadioGroup, RadioButton, ReversedRadioButton } from 'react-radio-buttons';
 import Dropzone from 'react-dropzone';
 import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
@@ -20,30 +16,20 @@ import Cropper from 'react-cropper';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import {
-  Player,
-  PosterImage,
-  ControlBar,
-  PlayToggle,
-  BigPlayButton,
-} from 'video-react';
+import { Player, PosterImage, ControlBar, PlayToggle, BigPlayButton } from 'video-react';
 import { CirclePicker, CompactPicker } from 'react-color';
 
 import Colors from '../styles/colors';
 import commonStyles from '../styles/commonStyles';
 import { emailValidator } from '../helpers/validators';
-import {
-  OrangeSubmitButton,
-  TransparentShortSubmitButton,
-} from '../components/buttons/buttons';
+import { OrangeSubmitButton, TransparentShortSubmitButton } from '../components/buttons/buttons';
 import { SoundwiseHeader } from '../components/soundwise_header';
 import Footer from '../components/footer';
 
 function dataURItoBlob(dataURI) {
   // convert base64/URLEncoded data component to raw binary data held in a string
   var byteString;
-  if (dataURI.split(',')[0].indexOf('base64') >= 0)
-    byteString = atob(dataURI.split(',')[1]);
+  if (dataURI.split(',')[0].indexOf('base64') >= 0) byteString = atob(dataURI.split(',')[1]);
   else byteString = unescape(dataURI.split(',')[1]);
 
   // separate out the mime component
@@ -102,11 +88,7 @@ class _WaveVideoInputs extends Component {
       },
       false
     );
-    if (
-      this.props.isLoggedIn &&
-      this.props.userInfo &&
-      this.props.userInfo.email
-    ) {
+    if (this.props.isLoggedIn && this.props.userInfo && this.props.userInfo.email) {
       this.setState({
         email: this.props.userInfo.email[0],
       });
@@ -114,11 +96,7 @@ class _WaveVideoInputs extends Component {
   }
 
   componenetWillReceiveProps(nextProps) {
-    if (
-      nextProps.isLoggedIn &&
-      nextProps.userInfo &&
-      nextProps.userInfo.email
-    ) {
+    if (nextProps.isLoggedIn && nextProps.userInfo && nextProps.userInfo.email) {
       this.setState({
         email: nextProps.userInfo.email[0],
       });
@@ -195,16 +173,8 @@ class _WaveVideoInputs extends Component {
     const that = this;
     const { cropResult, width, height, imageShape, imageFile } = this.state;
     const actions = [
-      <FlatButton
-        label="Save"
-        primary={true}
-        onClick={() => that.handleCroppedSaving()}
-      />,
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={() => that.handleModalClose()}
-      />,
+      <FlatButton label="Save" primary={true} onClick={() => that.handleCroppedSaving()} />,
+      <FlatButton label="Cancel" primary={true} onClick={() => that.handleModalClose()} />,
     ];
     return (
       <MuiThemeProvider>
@@ -234,9 +204,7 @@ class _WaveVideoInputs extends Component {
                   style={{ height: 300, width: (width / height) * 300 }}
                   // crop={this.cropImage}
                   // ratio={1 / 1}
-                  src={
-                    this.state.imageFile ? this.state.imageFile[0].preview : ''
-                  }
+                  src={this.state.imageFile ? this.state.imageFile[0].preview : ''}
                   // ref={ref => this.image = ref }
                   ref="cropper"
                   aspectRatio={imageShape == 'square' ? 1 / 1 : 16 / 9}
@@ -265,11 +233,7 @@ class _WaveVideoInputs extends Component {
                   alt="cropped image"
                 />
               </div>
-              <RaisedButton
-                onClick={this.cancelCrop}
-                label="Cancel"
-                fullWidth={true}
-              />
+              <RaisedButton onClick={this.cancelCrop} label="Cancel" fullWidth={true} />
             </div>
           )}
         </Dialog>
@@ -281,14 +245,7 @@ class _WaveVideoInputs extends Component {
     this.setState({
       submitting: true,
     });
-    const {
-      audioFile,
-      imageFile,
-      imageShape,
-      wavePosition,
-      waveColor,
-      email,
-    } = this.state;
+    const { audioFile, imageFile, imageShape, wavePosition, waveColor, email } = this.state;
     if (!audioFile) {
       alert('Please upload an audio clip before submitting!');
       return;
@@ -366,12 +323,8 @@ class _WaveVideoInputs extends Component {
     return (
       <div>
         <Helmet>
-          <title
-          >{`Free Soundwave Video Maker - Turning Audio Clip into Video | Soundwise`}</title>
-          <meta
-            property="og:url"
-            content={`https://mysoundwise.com/wave_video`}
-          />
+          <title>{`Free Soundwave Video Maker - Turning Audio Clip into Video | Soundwise`}</title>
+          <meta property="og:url" content={`https://mysoundwise.com/wave_video`} />
           <meta property="fb:app_id" content="1726664310980105" />
           <meta
             property="og:title"
@@ -381,10 +334,7 @@ class _WaveVideoInputs extends Component {
             property="og:description"
             content={`Spice up social media sharing of your audio course and podcast with a soundwave video clip generated from your audio recording.`}
           />
-          <meta
-            property="og:image"
-            content="https://mysoundwise.com/images/vid-maker.png"
-          />
+          <meta property="og:image" content="https://mysoundwise.com/images/vid-maker.png" />
           <meta
             name="description"
             content={`Spice up social media sharing of your audio course and podcast with a soundwave video clip generated from your audio recording.`}
@@ -401,14 +351,8 @@ class _WaveVideoInputs extends Component {
             name="twitter:description"
             content={`Spice up social media sharing of your audio course and podcast with a soundwave video clip generated from your audio recording.`}
           />
-          <meta
-            name="twitter:image"
-            content="https://mysoundwise.com/images/vid-maker.png"
-          />
-          <meta
-            name="twitter:card"
-            content="https://mysoundwise.com/images/vid-maker.png"
-          />
+          <meta name="twitter:image" content="https://mysoundwise.com/images/vid-maker.png" />
+          <meta name="twitter:card" content="https://mysoundwise.com/images/vid-maker.png" />
         </Helmet>
         <SoundwiseHeader showIcon={true} />
         <section
@@ -432,9 +376,8 @@ class _WaveVideoInputs extends Component {
                       </h1>
                       <div className="text-white title-medium  xs-text-extra-large width-80 xs-width-90 margin-lr-auto tz-text">
                         <div>
-                          Spice up social media sharing of your audio course and
-                          podcast with a soundwave video clip generated from
-                          your audio recording.
+                          Spice up social media sharing of your audio course and podcast with a
+                          soundwave video clip generated from your audio recording.
                         </div>
                       </div>
                     </div>
@@ -455,20 +398,10 @@ class _WaveVideoInputs extends Component {
                 style={{}}
               >
                 <div className="display-table-cell-vertical-middle" style={{}}>
-                  <div
-                    className="col-xs-12 col-sm-12 col-md-10"
-                    style={{ paddingTop: 0 }}
-                  >
-                    <Player
-                      ref="player"
-                      poster="/images/vid-demo.png"
-                      aspectRatio="1:1"
-                    >
+                  <div className="col-xs-12 col-sm-12 col-md-10" style={{ paddingTop: 0 }}>
+                    <Player ref="player" poster="/images/vid-demo.png" aspectRatio="1:1">
                       <source src="https://s3.amazonaws.com/soundwiseinc/demo/demo-clip.mp4" />
-                      {(!this.state.playing && (
-                        <BigPlayButton position="center" />
-                      )) ||
-                        null}
+                      {(!this.state.playing && <BigPlayButton position="center" />) || null}
                       <ControlBar autoHide={true} disableDefaultControls={true}>
                         <PlayToggle />
                       </ControlBar>
@@ -483,14 +416,12 @@ class _WaveVideoInputs extends Component {
               >
                 <div className="display-table-cell-vertical-middle">
                   <h2 className="text-dark-gray title-extra-large alt-font font-weight-600 line-height-40 sm-title-large xs-title-large margin-seven-bottom sm-margin-ten-bottom tz-text">
-                    Audio snippet + branded image = Eye catching soundwave
-                    video.
+                    Audio snippet + branded image = Eye catching soundwave video.
                   </h2>
                   <div className="title-small sm-title-medium xs-title-medium width-90 sm-width-100 font-weight-300 margin-fourteen-bottom sm-margin-twelve-bottom tz-text">
-                    Attract more listeners with a soundwave video that shows off
-                    your branding and audio content. Share it on Facebook,
-                    Twitter, Instagram, LinkedIn, etc, along with your audio url
-                    link.
+                    Attract more listeners with a soundwave video that shows off your branding and
+                    audio content. Share it on Facebook, Twitter, Instagram, LinkedIn, etc, along
+                    with your audio url link.
                   </div>
                 </div>
               </div>
@@ -553,10 +484,7 @@ class _WaveVideoInputs extends Component {
           </div>
         </section>
 
-        <section
-          className=" xs-padding-60px-tb bg-white builder-bg"
-          id="content-section36"
-        >
+        <section className=" xs-padding-60px-tb bg-white builder-bg" id="content-section36">
           <div className="container-fluid">
             <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text text-center ">
               How It Works
@@ -570,8 +498,8 @@ class _WaveVideoInputs extends Component {
                   01.
                 </div>
                 <h3 className="text-dark-gray text-extra-large alt-font display-block tz-text">
-                  Upload an audio snippet from your audio course section or
-                  podcast episode (under 60 seconds)
+                  Upload an audio snippet from your audio course section or podcast episode (under
+                  60 seconds)
                 </h3>
                 <div
                   className="separator-line2  margin-twenty-top tz-background-color"
@@ -586,9 +514,8 @@ class _WaveVideoInputs extends Component {
                   02.
                 </div>
                 <h3 className="text-dark-gray text-extra-large alt-font display-block tz-text">
-                  Upload an image with information about your audio content
-                  (1080px by 1080 px or 1280px by 720px). You can create A
-                  pretty one easily using{' '}
+                  Upload an image with information about your audio content (1080px by 1080 px or
+                  1280px by 720px). You can create A pretty one easily using{' '}
                   <a
                     target="_blank"
                     style={{ color: Colors.mainGreen }}
@@ -611,8 +538,7 @@ class _WaveVideoInputs extends Component {
                   03.
                 </div>
                 <h3 className="text-dark-gray text-extra-large alt-font display-block tz-text">
-                  Pick a color and a position (top, middle, bottom) for the
-                  soundwave.
+                  Pick a color and a position (top, middle, bottom) for the soundwave.
                 </h3>
                 <div
                   className="separator-line2 margin-twenty-top tz-background-color"
@@ -627,8 +553,8 @@ class _WaveVideoInputs extends Component {
                   04.
                 </div>
                 <h3 className="text-dark-gray text-extra-large alt-font display-block tz-text">
-                  We'll create the video snippet, and when it's ready, email you
-                  a link to download your video.
+                  We'll create the video snippet, and when it's ready, email you a link to download
+                  your video.
                 </h3>
                 <div
                   className="separator-line2 margin-twenty-top tz-background-color"
@@ -687,15 +613,11 @@ class _WaveVideoInputs extends Component {
                   >
                     <div>
                       <div className="text-center">
-                        <i
-                          className="fas fa-5x fa-volume-up"
-                          style={{ cursor: 'pointer' }}
-                        />
+                        <i className="fas fa-5x fa-volume-up" style={{ cursor: 'pointer' }} />
                       </div>
                       <div style={{ fontSize: 18, cursor: 'pointer' }}>
-                        Drag your audio clip here or click to upload. (Audio
-                        clip should be under 60 seconds. mp3 and m4a files
-                        accepted.)
+                        Drag your audio clip here or click to upload. (Audio clip should be under 60
+                        seconds. mp3 and m4a files accepted.)
                       </div>
                     </div>
                   </Dropzone>
@@ -789,10 +711,7 @@ class _WaveVideoInputs extends Component {
                   >
                     <div>
                       <div className="text-center">
-                        <i
-                          className="fas fa-5x fa-image"
-                          style={{ cursor: 'pointer' }}
-                        />
+                        <i className="fas fa-5x fa-image" style={{ cursor: 'pointer' }} />
                       </div>
                       <div style={{ fontSize: 18, cursor: 'pointer' }}>
                         Drag your image here or click to upload.
@@ -870,8 +789,7 @@ class _WaveVideoInputs extends Component {
                     Your email address
                   </div>
                   <div className="text-large margin-three-top margin-three-bottom ">
-                    We'll notify you by email when your video is ready for
-                    download.
+                    We'll notify you by email when your video is ready for download.
                   </div>
                   <div
                     style={{
@@ -913,25 +831,17 @@ class _WaveVideoInputs extends Component {
                         <div>
                           <div className="title-large">
                             <strong>
-                              Your video inputs are submitted 🎉 We'll start
-                              working on it immediately!{' '}
+                              Your video inputs are submitted 🎉 We'll start working on it
+                              immediately!{' '}
                             </strong>
                           </div>
-                          <div
-                            className="title-small"
-                            style={{ marginTop: 15 }}
-                          >
-                            p.s. If you don't see an email from us in half an
-                            hour, please check your spam folder.
+                          <div className="title-small" style={{ marginTop: 15 }}>
+                            p.s. If you don't see an email from us in half an hour, please check
+                            your spam folder.
                           </div>
                         </div>
                       </div>
-                    )) || (
-                    <OrangeSubmitButton
-                      label="Submit"
-                      onClick={this.submit.bind(this)}
-                    />
-                  )}
+                    )) || <OrangeSubmitButton label="Submit" onClick={this.submit.bind(this)} />}
               </div>
             </div>
           </div>

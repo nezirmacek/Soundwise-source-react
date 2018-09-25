@@ -12,19 +12,8 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import Slider from 'material-ui/Slider';
 import Subheader from 'material-ui/Subheader';
-import {
-  Toolbar,
-  ToolbarGroup,
-  ToolbarSeparator,
-  ToolbarTitle,
-} from 'material-ui/Toolbar';
-import {
-  orange50,
-  greenA200,
-  blue500,
-  grey500,
-  orange500,
-} from 'material-ui/styles/colors';
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
+import { orange50, greenA200, blue500, grey500, orange500 } from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Levels from 'react-activity/lib/Levels';
@@ -34,11 +23,7 @@ import ProgressLabel from 'react-progress-label';
 import PDF from 'react-pdf-js';
 import { IoChevronLeft, IoChevronRight } from 'react-icons/lib/io';
 
-import {
-  setCurrentPlaySection,
-  changePlayStatus,
-  launchPlayer,
-} from '../actions/index';
+import { setCurrentPlaySection, changePlayStatus, launchPlayer } from '../actions/index';
 
 let player = {
   currentTime: 0,
@@ -174,8 +159,7 @@ class _CourseSection extends Component {
   handleTap() {
     if (
       !this.props.playing ||
-      (this.props.playing &&
-        this.props.currentSection.section_id !== this.props.section.section_id)
+      (this.props.playing && this.props.currentSection.section_id !== this.props.section.section_id)
     ) {
       this.playFile();
     }
@@ -213,8 +197,8 @@ class _CourseSection extends Component {
         if (player.readyState === 4) {
           console.log('data loaded');
           player.currentTime =
-            that.props.course.sectionProgress[that.props.section.section_id]
-              .playProgress * player.duration; //jump to the position previously left off
+            that.props.course.sectionProgress[that.props.section.section_id].playProgress *
+            player.duration; //jump to the position previously left off
 
           player.playbackRate = this.props.speed;
 
@@ -244,8 +228,7 @@ class _CourseSection extends Component {
         player.pause();
 
         const sectionId = this.props.currentSection.section_id;
-        const playProgress =
-          this.props.currentTime / this.props.currentDuration;
+        const playProgress = this.props.currentTime / this.props.currentDuration;
 
         let updates = {};
 
@@ -283,8 +266,8 @@ class _CourseSection extends Component {
         if (player.readyState === 4) {
           console.log('data loaded');
           player.currentTime =
-            that.props.course.sectionProgress[that.props.section.section_id]
-              .playProgress * player.duration; //jump to the position previously left off
+            that.props.course.sectionProgress[that.props.section.section_id].playProgress *
+            player.duration; //jump to the position previously left off
 
           player.playbackRate = this.props.speed;
 
@@ -370,10 +353,7 @@ class _CourseSection extends Component {
       // headers.append('access-control-allow-origin', '*')
       headers.append('access-control-allow-methods', 'GET');
       headers.append('access-control-allow-headers', 'content-type, accept');
-      headers.append(
-        'Content-Type',
-        'audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml'
-      );
+      headers.append('Content-Type', 'audio/mpeg3;audio/x-mpeg-3;video/mpeg;video/x-mpeg;text/xml');
 
       var myInit = {
         method: 'GET',
@@ -491,10 +471,7 @@ class _CourseSection extends Component {
     if (this.props.section.transcript_url) {
       return (
         <a href={this.props.section.transcript_url} target="_blank">
-          <RaisedButton
-            label="Transcript"
-            style={{ marginTop: '0.5em', marginBottom: '0.5em' }}
-          />
+          <RaisedButton label="Transcript" style={{ marginTop: '0.5em', marginBottom: '0.5em' }} />
         </a>
       );
     }
@@ -616,19 +593,11 @@ class _CourseSection extends Component {
             justifyContent: 'center',
           }}
         >
-          <a
-            href={this.props.section.notes_url}
-            target="_blank"
-            className="notesWrapper"
-          >
-            {((this.state.mimeType === 'application/pdf' ||
-              _extension === 'pdf') && (
+          <a href={this.props.section.notes_url} target="_blank" className="notesWrapper">
+            {((this.state.mimeType === 'application/pdf' || _extension === 'pdf') && (
               <div style={{ position: 'relative' }}>
                 {(this.state.pages > 1 && (
-                  <IoChevronLeft
-                    style={styles.navIcon}
-                    onClick={this.handlePrevious.bind(this)}
-                  />
+                  <IoChevronLeft style={styles.navIcon} onClick={this.handlePrevious.bind(this)} />
                 )) ||
                   null}
                 <PDF
@@ -651,19 +620,13 @@ class _CourseSection extends Component {
       );
     } else if (this.state.expandedItem == 'resources') {
       return (
-        <Paper
-          style={{ padding: '1em', paddingTop: '2em', paddingBottom: '2em' }}
-        >
+        <Paper style={{ padding: '1em', paddingTop: '2em', paddingBottom: '2em' }}>
           <ul>
             {this.props.section.resources.map(resource => {
               return (
                 <li style={{ fontSize: '18px', padding: '1em' }}>
                   {`${resource.description}: `}
-                  <a
-                    style={{ color: '#61E1FB' }}
-                    href={resource.link}
-                    target="_blank"
-                  >
+                  <a style={{ color: '#61E1FB' }} href={resource.link} target="_blank">
                     {resource.link_text}
                   </a>
                 </li>
@@ -679,8 +642,7 @@ class _CourseSection extends Component {
     // const sectionNumber = this.props.currentPlaylist.indexOf(this.props.section) + 1
     const completed =
       this.props.course.sectionProgress &&
-      this.props.course.sectionProgress[this.props.section.section_id]
-        .completed;
+      this.props.course.sectionProgress[this.props.section.section_id].completed;
 
     const run_time = this.props.section.run_time.split(':');
 
@@ -691,8 +653,7 @@ class _CourseSection extends Component {
       progress = 0;
     } else {
       progress = Math.floor(
-        this.props.course.sectionProgress[this.props.section.section_id]
-          .playProgress * 100
+        this.props.course.sectionProgress[this.props.section.section_id].playProgress * 100
       );
     }
 
@@ -702,10 +663,7 @@ class _CourseSection extends Component {
       <div>
         <Card expanded={this.state.expanded}>
           <CardText>
-            <div
-              className="row"
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
+            <div className="row" style={{ display: 'flex', alignItems: 'center' }}>
               <div
                 className=""
                 style={{
@@ -751,23 +709,16 @@ class _CourseSection extends Component {
                 <div className="col-md-11, col-sm-10 col-xs-9">
                   <a onClick={this.handleTap} style={{ padding: '0em' }}>
                     <div style={{ fontSize: '16px' }}>
-                      {`Lesson ${this.props.section.section_number} (${
-                        run_time[0]
-                      }m ${run_time[1]}s)`}
+                      {`Lesson ${this.props.section.section_number} (${run_time[0]}m ${
+                        run_time[1]
+                      }s)`}
                     </div>
-                    <div style={{ fontSize: '20px' }}>
-                      {this.props.section.title}
-                    </div>
+                    <div style={{ fontSize: '20px' }}>{this.props.section.title}</div>
                   </a>
                 </div>
               </div>
-              <div
-                style={{ display: displayDownload, alignItems: 'center' }}
-                className=""
-              >
-                <a onClick={this.handleCacheAudio}>
-                  {this.renderCacheButton()}
-                </a>
+              <div style={{ display: displayDownload, alignItems: 'center' }} className="">
+                <a onClick={this.handleCacheAudio}>{this.renderCacheButton()}</a>
               </div>
             </div>
           </CardText>
@@ -802,10 +753,7 @@ class _CourseSection extends Component {
 //   onCheck={this.handleTap}
 // />
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    { setCurrentPlaySection, changePlayStatus, launchPlayer },
-    dispatch
-  );
+  return bindActionCreators({ setCurrentPlaySection, changePlayStatus, launchPlayer }, dispatch);
 }
 
 const mapStateToProps = state => {

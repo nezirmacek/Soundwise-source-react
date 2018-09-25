@@ -8,21 +8,14 @@ import 'url-search-params-polyfill';
 import Dots from 'react-activity/lib/Dots';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 // import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import {
-  RadioGroup,
-  RadioButton,
-  ReversedRadioButton,
-} from 'react-radio-buttons';
+import { RadioGroup, RadioButton, ReversedRadioButton } from 'react-radio-buttons';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 
 import { inviteListeners } from '../helpers/invite_listeners';
 import Colors from '../styles/colors';
 import commonStyles from '../styles/commonStyles';
-import {
-  OrangeSubmitButton,
-  TransparentShortSubmitButton,
-} from '../components/buttons/buttons';
+import { OrangeSubmitButton, TransparentShortSubmitButton } from '../components/buttons/buttons';
 import { SoundwiseHeader } from '../components/soundwise_header';
 import Footer from '../components/footer';
 import { TextInputs } from '../helpers/texts';
@@ -70,19 +63,8 @@ export default class ContentDownload extends Component {
         const subject = `Download link for ${content.title}`;
         const body = `<p>Hi ${firstName},</p><p>Please click <a href="${
           content.link
-        }">here</a> to download your ${
-          content.title
-        }. Thanks.</p><p>Folks at Soundwise</p>`;
-        inviteListeners(
-          [email],
-          subject,
-          body,
-          null,
-          null,
-          null,
-          true,
-          'support@mysoundwise.com'
-        );
+        }">here</a> to download your ${content.title}. Thanks.</p><p>Folks at Soundwise</p>`;
+        inviteListeners([email], subject, body, null, null, null, true, 'support@mysoundwise.com');
       })
       .catch(err => {
         console.log('error: ', err);
@@ -109,10 +91,7 @@ export default class ContentDownload extends Component {
                   className="col-md-12 center-col"
                   style={{ display: 'flex', justifyContent: 'center' }}
                 >
-                  <img
-                    src={`images/${image}`}
-                    style={{ height: '60%', width: '60%' }}
-                  />
+                  <img src={`images/${image}`} style={{ height: '60%', width: '60%' }} />
                 </div>
               </div>
               <div
@@ -133,10 +112,7 @@ export default class ContentDownload extends Component {
               </div>
             </div>
             <div className="row">
-              <div
-                className="col-md-10 col-sm-12 col-xs-12 center-col"
-                style={{}}
-              >
+              <div className="col-md-10 col-sm-12 col-xs-12 center-col" style={{}}>
                 <div className="col-md-4 col-sm-4 col-xs-12">
                   <span style={styles.titleText}>First Name</span>
                   <input
@@ -178,10 +154,7 @@ export default class ContentDownload extends Component {
             <div className="row">
               {(!this.state.submitted &&
                 !this.state.submitting && (
-                  <div
-                    className="col-md-6 col-sm-6 col-xs-12 center-col"
-                    style={{ marginTop: 25 }}
-                  >
+                  <div className="col-md-6 col-sm-6 col-xs-12 center-col" style={{ marginTop: 25 }}>
                     <OrangeSubmitButton
                       label="Submit"
                       onClick={(!submitted && this.submit.bind(this)) || null}
@@ -195,10 +168,7 @@ export default class ContentDownload extends Component {
                       style={{ marginTop: 25 }}
                     >
                       <div className="text-dark-gray tz-text title-large text-center">
-                        <span>
-                          Thanks! We just sent you an email with the download
-                          link 😊
-                        </span>
+                        <span>Thanks! We just sent you an email with the download link 😊</span>
                       </div>
                     </div>
                   )) ||

@@ -48,22 +48,20 @@ export default class IGPPost extends Component {
   }
 
   fetchPosts(page) {
-    butter.post
-      .list({ category_slug: 'igp', page: 1, page_size: 60 })
-      .then(resp => {
-        const posts = resp.data.data;
-        const currentPost = this.state.post;
-        const filteredPosts = [];
-        posts.forEach(post => {
-          if (post.slug !== currentPost.slug) {
-            filteredPosts.push(post);
-          }
-        });
-        this.setState({
-          loadedPosts: true,
-          posts: filteredPosts,
-        });
+    butter.post.list({ category_slug: 'igp', page: 1, page_size: 60 }).then(resp => {
+      const posts = resp.data.data;
+      const currentPost = this.state.post;
+      const filteredPosts = [];
+      posts.forEach(post => {
+        if (post.slug !== currentPost.slug) {
+          filteredPosts.push(post);
+        }
       });
+      this.setState({
+        loadedPosts: true,
+        posts: filteredPosts,
+      });
+    });
   }
 
   render() {
@@ -77,10 +75,7 @@ export default class IGPPost extends Component {
             <title>{post.seo_title}</title>
             <meta name="description" content={post.meta_description} />
             <meta name="og:image" content={post.featured_image} />
-            <meta
-              property="og:url"
-              content={`https://mysoundwise.com/blog/post/${post.slug}`}
-            />
+            <meta property="og:url" content={`https://mysoundwise.com/blog/post/${post.slug}`} />
             <meta property="fb:app_id" content="1726664310980105" />
             <meta property="og:title" content={post.seo_title} />
             <meta property="og:description" content={post.meta_description} />
@@ -105,9 +100,7 @@ export default class IGPPost extends Component {
                   className="social social-icon-color text-extra-large sm-text-extra-large  margin-ten-bottom xs-margin-fifteen-bottom display-block tz-text col-md-12 col-sm-12 col-xs-12 text-center "
                   style={{}}
                 >
-                  <span className="margin-eight-right title-small sm-title-small">
-                    Share this:
-                  </span>
+                  <span className="margin-eight-right title-small sm-title-small">Share this:</span>
                   <a
                     target="_blank"
                     href={`http://www.facebook.com/sharer/sharer.php?u=https://mysoundwise.com/igp/${
@@ -149,10 +142,7 @@ export default class IGPPost extends Component {
             </div>
           </section>
           {(this.state.loadedPosts && (
-            <section
-              className="padding-30px-tb xs-padding-60px-tb  bg-white builder-bg"
-              id=""
-            >
+            <section className="padding-30px-tb xs-padding-60px-tb  bg-white builder-bg" id="">
               <div className="container">
                 <div className="row">
                   <div className="col-md-12 col-sm-12 col-xs-12 text-center ">
@@ -187,10 +177,7 @@ export default class IGPPost extends Component {
                                 data-img-size="(W)800px X (H)507px"
                               />
                             </div>
-                            <div
-                              style={{ padding: 20 }}
-                              className=" bg-gray tz-background-color"
-                            >
+                            <div style={{ padding: 20 }} className=" bg-gray tz-background-color">
                               <div className="text-extra-large sm-text-large xs-text-large text-dark-gray tz-text">
                                 {post.summary.length > 300
                                   ? `${post.summary.slice(0, 300)}...`

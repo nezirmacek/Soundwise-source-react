@@ -4,13 +4,7 @@ import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
 import { Editor } from 'react-draft-wysiwyg';
-import {
-  convertFromHTML,
-  convertToRaw,
-  convertFromRaw,
-  EditorState,
-  ContentState,
-} from 'draft-js';
+import { convertFromHTML, convertToRaw, convertFromRaw, EditorState, ContentState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import Dots from 'react-activity/lib/Dots';
 import Toggle from 'react-toggle';
@@ -20,10 +14,7 @@ import faStopCircle from '@fortawesome/fontawesome-free-solid/faStopCircle';
 import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight';
 import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import AudiojsRecordPlayer from '../../../components/audiojs_record_player';
 import Colors from '../../../styles/colors';
@@ -94,9 +85,7 @@ export default class EditEpisode extends Component {
       editedUrl,
       audioProcessing,
     } = episode;
-    const { contentBlocks, entityMap } = convertFromHTML(
-      description || this.state.description
-    );
+    const { contentBlocks, entityMap } = convertFromHTML(description || this.state.description);
     this.setState({
       id,
       title,
@@ -136,10 +125,7 @@ export default class EditEpisode extends Component {
   checkUserStatus(userInfo) {
     let proUser;
     if (userInfo.publisher && userInfo.publisher.plan) {
-      proUser =
-        userInfo.publisher.current_period_end > moment().format('X')
-          ? true
-          : false;
+      proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
     }
     if (userInfo.publisher && userInfo.publisher.beta) {
       proUser = true;
@@ -161,9 +147,7 @@ export default class EditEpisode extends Component {
     const splittedFileName = file.name.split('.');
     const ext = splittedFileName[splittedFileName.length - 1];
     if (ext !== 'png' && ext !== 'jpg' && ext !== 'jpeg' && ext !== 'pdf') {
-      alert(
-        'Only png, jpg, or pdf files are accepted. please upload a new file.'
-      );
+      alert('Only png, jpg, or pdf files are accepted. please upload a new file.');
       return;
     }
     data.append('file', file, `${id}.${ext}`);
@@ -242,12 +226,7 @@ export default class EditEpisode extends Component {
     } = this.state;
     const { userInfo, history } = this.props;
     const soundcast = userInfo.soundcasts_managed[soundcastID];
-    const {
-      itunesCategory,
-      itunesExplicit,
-      itunesImage,
-      podcastFeedVersion,
-    } = soundcast; // only available if the soundcast has been submitted as a podcast;
+    const { itunesCategory, itunesExplicit, itunesImage, podcastFeedVersion } = soundcast; // only available if the soundcast has been submitted as a podcast;
     const { id } = history.location.state;
     const that = this;
     if (toPublish || isPublished) {
@@ -311,9 +290,7 @@ export default class EditEpisode extends Component {
                     })
                       .then(response => {
                         that.checkToPublish(toPublish, changedEpisode, () => {
-                          alert(
-                            "Request submitted. We'll email you when processing is done."
-                          );
+                          alert("Request submitted. We'll email you when processing is done.");
                         });
                       })
                       .catch(err => that.catchError(err));
@@ -417,9 +394,7 @@ export default class EditEpisode extends Component {
       intro: (addIntroOutro && soundcast.intro) || null,
       outro: (addIntroOutro && soundcast.outro) || null,
       overlayDuration:
-        (addIntroOutro &&
-          (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) ||
-        0,
+        (addIntroOutro && (Number(overlayDuration) || Number(soundcast.introOutroOverlay))) || 0,
       setVolume: audioNormalization,
       trim: trimSilence,
       removeSilence: (reduceSilence && Number(silentPeriod)) || 0,
@@ -427,9 +402,7 @@ export default class EditEpisode extends Component {
       emailListeners: this.state.sendEmails,
     })
       .then(res => {
-        alert(
-          `Processing request is submitted. We'll email you when processing is complete.`
-        );
+        alert(`Processing request is submitted. We'll email you when processing is complete.`);
         this.setState({
           startProcessingEpisode: false,
           doneProcessingEpisode: true,
@@ -490,17 +463,13 @@ export default class EditEpisode extends Component {
     let subscribers = [];
     const that = this;
     const { userInfo } = this.props;
-    const subject = `${this.state.title} was just published on ${
-      soundcast.title
-    }`;
+    const subject = `${this.state.title} was just published on ${soundcast.title}`;
     if (soundcast.subscribed) {
       // send notification email to subscribers
       const content = `<p>Hi <span>[%first_name | Default Value%]</span>!</p><p></p><p>${
         userInfo.publisher.name
       } just published <strong>${this.state.title}</strong> in <a href="${
-        soundcast.landingPage
-          ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
-          : ''
+        soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcast.id : ''
       }" target="_blank">${
         soundcast.title
       }</a>. </p><p></p><p>Go check it out on the Soundwise app!</p>`;
@@ -520,9 +489,7 @@ export default class EditEpisode extends Component {
       const content = `<p>Hi there!</p><p></p><p>${
         userInfo.publisher.name
       } just published <strong>${this.state.title}</strong> in <a href="${
-        soundcast.landingPage
-          ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
-          : ''
+        soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcast.id : ''
       }" target="_blank">${
         soundcast.title
       }</a>. </p><p></p><p>To listen to the episode, simply accept your invitation to subscribe to <i>${
@@ -563,9 +530,7 @@ export default class EditEpisode extends Component {
         }
       }, 1000);
     }, 1000);
-    mediaObject.on('deviceReady', () =>
-      console.log(`mediaObject${type} ready`)
-    );
+    mediaObject.on('deviceReady', () => console.log(`mediaObject${type} ready`));
     mediaObject.on('deviceError', () => {
       // error handling
       console.log('device error:', mediaObject.deviceErrorCode);
@@ -581,9 +546,7 @@ export default class EditEpisode extends Component {
 
   updateTimer(type) {
     const newState = {};
-    newState[`timer${type}`] = Math.floor(
-      this[`wavesurfer${type}`].getCurrentTime() * 1000
-    );
+    newState[`timer${type}`] = Math.floor(this[`wavesurfer${type}`].getCurrentTime() * 1000);
     this.setState(newState);
   }
 
@@ -636,14 +599,11 @@ export default class EditEpisode extends Component {
       doReprocess,
     } = this.state;
     const { history, userInfo } = this.props;
-    const soundcast =
-      userInfo.soundcasts_managed && userInfo.soundcasts_managed[soundcastID];
+    const soundcast = userInfo.soundcasts_managed && userInfo.soundcasts_managed[soundcastID];
     const { id } = history.location.state;
     const _soundcasts_managed = [];
     for (let id in userInfo.soundcasts_managed) {
-      const _soundcast = JSON.parse(
-        JSON.stringify(userInfo.soundcasts_managed[id])
-      );
+      const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
       if (_soundcast.title) {
         _soundcast.id = id;
         _soundcasts_managed.push(_soundcast);
@@ -680,15 +640,12 @@ export default class EditEpisode extends Component {
               zIndex: 103,
             }}
           >
-            <div
-              className="title-medium"
-              style={{ margin: 25, fontWeight: 800 }}
-            >
+            <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
               Upgrade to access audio processing tools
             </div>
             <div className="title-small" style={{ margin: 25 }}>
-              Audio processing options are available on PLUS and PRO plans.
-              Please upgrade to access this feature.
+              Audio processing options are available on PLUS and PRO plans. Please upgrade to access
+              this feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
@@ -709,8 +666,8 @@ export default class EditEpisode extends Component {
               verticalAlign: 'middle',
             }}
           >
-            (You can only edit the metadata of existing episodes. If you want to
-            upload a new audio file, please create a new episode.)
+            (You can only edit the metadata of existing episodes. If you want to upload a new audio
+            file, please create a new episode.)
           </span>
         </div>
         <div className="row">
@@ -730,15 +687,10 @@ export default class EditEpisode extends Component {
                 this.setState({ title: e.target.value });
               }}
               value={this.state.title}
-              validators={[
-                minLengthValidator.bind(null, 1),
-                maxLengthValidator.bind(null, 70),
-              ]}
+              validators={[minLengthValidator.bind(null, 1), maxLengthValidator.bind(null, 70)]}
             />
             <div style={{ marginTop: 20 }}>
-              <span style={{ ...styles.titleText, marginTop: 20 }}>
-                Description
-              </span>
+              <span style={{ ...styles.titleText, marginTop: 20 }}>Description</span>
             </div>
             <div style={styles.inputTitleWrapper}>
               <Editor
@@ -749,9 +701,7 @@ export default class EditEpisode extends Component {
               />
             </div>
             <div style={{ marginTop: 20 }}>
-              <span style={{ ...styles.titleText, marginTop: 20 }}>
-                Action Step
-              </span>
+              <span style={{ ...styles.titleText, marginTop: 20 }}>Action Step</span>
             </div>
             <div style={styles.inputTitleWrapper}>
               <textarea
@@ -792,14 +742,10 @@ export default class EditEpisode extends Component {
                   (notes &&
                     notesUploaded && (
                       <div style={{}}>
-                        <div className="text-medium">
-                          {`${notesName} saved`}
-                        </div>
+                        <div className="text-medium">{`${notesName} saved`}</div>
                         <div
                           style={styles.cancelImg}
-                          onClick={() =>
-                            this.setState({ notesUploaded: false, notes: '' })
-                          }
+                          onClick={() => this.setState({ notesUploaded: false, notes: '' })}
                         >
                           Cancel
                         </div>
@@ -810,24 +756,18 @@ export default class EditEpisode extends Component {
                       <div>
                         <button
                           onClick={() => {
-                            document
-                              .getElementById('upload_hidden_notes')
-                              .click();
+                            document.getElementById('upload_hidden_notes').click();
                           }}
                           style={{
                             ...styles.uploadButton,
                             backgroundColor: Colors.mainOrange,
                           }}
                         >
-                          <span style={{ paddingLeft: 5, paddingRight: 5 }}>
-                            Upload Notes{' '}
-                          </span>
+                          <span style={{ paddingLeft: 5, paddingRight: 5 }}>Upload Notes </span>
                         </button>
                       </div>
                       <div>
-                        <div style={styles.fileTypesLabel}>
-                          .pdf, .jpg or .png files accepted
-                        </div>
+                        <div style={styles.fileTypesLabel}>.pdf, .jpg or .png files accepted</div>
                       </div>
                     </div>
                   ))}
@@ -876,9 +816,7 @@ export default class EditEpisode extends Component {
             </div>
             {(this.state.publicEpisode && (
               <div style={{ marginBottom: 25 }}>
-                <span style={{ fontSize: 20, fontWeight: 800 }}>
-                  Episode link for sharing:{' '}
-                </span>
+                <span style={{ fontSize: 20, fontWeight: 800 }}>Episode link for sharing: </span>
                 <span>
                   <a
                     style={{ color: Colors.mainOrange, fontSize: 18 }}
@@ -895,9 +833,7 @@ export default class EditEpisode extends Component {
                   </span>
                 </div>
                 {(this.state.coverArtUrl && (
-                  <div
-                    style={{ ...styles.image, marginRight: 10, marginTop: 10 }}
-                  >
+                  <div style={{ ...styles.image, marginRight: 10, marginTop: 10 }}>
                     <img style={styles.image} src={this.state.coverArtUrl} />
                   </div>
                 )) ||
@@ -923,9 +859,7 @@ export default class EditEpisode extends Component {
                               coverArtUploaded: false,
                               coverArtUrl: '',
                             });
-                            document.getElementById(
-                              'upload_hidden_cover3'
-                            ).value = null;
+                            document.getElementById('upload_hidden_cover3').value = null;
                           }}
                         >
                           Cancel
@@ -936,9 +870,7 @@ export default class EditEpisode extends Component {
                         <div>
                           <button
                             onClick={() => {
-                              document
-                                .getElementById('upload_hidden_cover3')
-                                .click();
+                              document.getElementById('upload_hidden_cover3').click();
                             }}
                             style={{
                               ...styles.uploadButton,
@@ -947,9 +879,7 @@ export default class EditEpisode extends Component {
                           >
                             Upload Cover Art
                           </button>
-                          <span style={styles.fileTypesLabel}>
-                            jpeg or png files accepted
-                          </span>
+                          <span style={styles.fileTypesLabel}>jpeg or png files accepted</span>
                         </div>
                       ))}
                   </div>
@@ -960,16 +890,11 @@ export default class EditEpisode extends Component {
             <div style={{}}>
               <div style={{ marginTop: 20 }}>
                 <span style={{ ...styles.titleText, marginTop: 20 }}>
-                  {`${
-                    this.state.audioProcessing ? 'Original' : 'Episode'
-                  } audio file`}
+                  {`${this.state.audioProcessing ? 'Original' : 'Episode'} audio file`}
                 </span>
               </div>
               <div style={{ height: 34 }}>
-                <div
-                  style={styles.playPauseBtn}
-                  onClick={this.playOrPause.bind(this, 'Original')}
-                >
+                <div style={styles.playPauseBtn} onClick={this.playOrPause.bind(this, 'Original')}>
                   <span className="fa-layers">
                     <FontAwesomeIcon
                       color={Colors.mainOrange}
@@ -984,17 +909,13 @@ export default class EditEpisode extends Component {
                   />
                 </div>
                 <div style={{ fontSize: 16, padding: 13, float: 'left' }}>
-                  {isLoadingOriginal
-                    ? 'Loading'
-                    : moment.utc(timerOriginal).format('HH:mm:ss')}
+                  {isLoadingOriginal ? 'Loading' : moment.utc(timerOriginal).format('HH:mm:ss')}
                 </div>
               </div>
               {this.state.audioProcessing && (
                 <div>
                   <div style={{ marginTop: 20 }}>
-                    <span style={{ ...styles.titleText, marginTop: 20 }}>
-                      Processed audio file
-                    </span>
+                    <span style={{ ...styles.titleText, marginTop: 20 }}>Processed audio file</span>
                   </div>
                   <div style={{ height: 44 }}>
                     <div
@@ -1005,18 +926,13 @@ export default class EditEpisode extends Component {
                         <FontAwesomeIcon
                           color={Colors.mainOrange}
                           size="1x"
-                          icon={
-                            isPlayingProcessed ? faStopCircle : faPlayCircle
-                          }
+                          icon={isPlayingProcessed ? faStopCircle : faPlayCircle}
                         />
                       </span>
                     </div>
                     <div style={styles.micWrapper}>
                       <AudiojsRecordPlayer
-                        setMediaObject={this.setMediaObject.bind(
-                          this,
-                          'Processed'
-                        )}
+                        setMediaObject={this.setMediaObject.bind(this, 'Processed')}
                       />
                     </div>
                     <div style={{ fontSize: 16, padding: 13, float: 'left' }}>
@@ -1048,9 +964,7 @@ export default class EditEpisode extends Component {
                   }}
                 >
                   <div style={{ display: 'inline-block', width: 15 }}>
-                    <FontAwesomeIcon
-                      icon={that.state.doReprocess ? faCaretDown : faCaretRight}
-                    />
+                    <FontAwesomeIcon icon={that.state.doReprocess ? faCaretDown : faCaretRight} />
                   </div>
                   <span>Audio Processing</span>
                   {(!proUser && (
@@ -1067,10 +981,7 @@ export default class EditEpisode extends Component {
                   )) || <span />}
                 </div>
               </div>
-              <div
-                className="col-md-12"
-                style={{ display: doReprocess ? '' : 'none' }}
-              >
+              <div className="col-md-12" style={{ display: doReprocess ? '' : 'none' }}>
                 <div
                   style={{
                     display: 'flex',
@@ -1100,13 +1011,9 @@ export default class EditEpisode extends Component {
                   <Toggle
                     className="toggle-green"
                     checked={this.state.trimSilence}
-                    onChange={() =>
-                      that.setState({ trimSilence: !that.state.trimSilence })
-                    }
+                    onChange={() => that.setState({ trimSilence: !that.state.trimSilence })}
                   />
-                  <span style={styles.toggleLabel}>
-                    Trim silence at begining and end
-                  </span>
+                  <span style={styles.toggleLabel}>Trim silence at begining and end</span>
                 </div>
                 <div
                   style={{
@@ -1124,9 +1031,7 @@ export default class EditEpisode extends Component {
                       })
                     }
                   />
-                  <span style={styles.toggleLabel}>
-                    Remove excessive pauses
-                  </span>
+                  <span style={styles.toggleLabel}>Remove excessive pauses</span>
                 </div>
                 {(this.state.reduceSilence && (
                   <div>
@@ -1141,9 +1046,7 @@ export default class EditEpisode extends Component {
                         that.setState({ silentPeriod: e.target.value });
                       }}
                     />
-                    <span style={{ paddingLeft: 10, fontSize: 14 }}>
-                      second(s)
-                    </span>
+                    <span style={{ paddingLeft: 10, fontSize: 14 }}>second(s)</span>
                   </div>
                 )) ||
                   null}
@@ -1159,16 +1062,13 @@ export default class EditEpisode extends Component {
                     checked={this.state.addIntroOutro}
                     onChange={() => {
                       if (
-                        ((soundcast.intro || soundcast.outro) &&
-                          !that.state.addIntroOutro) ||
+                        ((soundcast.intro || soundcast.outro) && !that.state.addIntroOutro) ||
                         that.state.addIntroOutro
                       ) {
                         const addIntroOutro = !that.state.addIntroOutro;
                         that.setState({ addIntroOutro });
                       } else {
-                        alert(
-                          'Please upload intro/outro clip(s) to your soundcast first!'
-                        );
+                        alert('Please upload intro/outro clip(s) to your soundcast first!');
                       }
                     }}
                   />
@@ -1176,9 +1076,7 @@ export default class EditEpisode extends Component {
                 </div>
                 {(this.state.addIntroOutro && (
                   <div>
-                    <span style={{ fontSize: 14, marginRight: 5 }}>
-                      Overlap with main audio:
-                    </span>
+                    <span style={{ fontSize: 14, marginRight: 5 }}>Overlap with main audio:</span>
                     <input
                       style={{ width: 70, marginBottom: 0 }}
                       type="text"
@@ -1187,18 +1085,14 @@ export default class EditEpisode extends Component {
                         that.setState({ overlayDuration: e.target.value });
                       }}
                     />
-                    <span style={{ paddingLeft: 10, fontSize: 14 }}>
-                      second(s)
-                    </span>
+                    <span style={{ paddingLeft: 10, fontSize: 14 }}>second(s)</span>
                   </div>
                 )) ||
                   null}
               </div>
             </div>
             <div style={styles.soundcastSelectWrapper}>
-              <div style={{ ...styles.notesLabel, marginLeft: 10 }}>
-                Publish in
-              </div>
+              <div style={{ ...styles.notesLabel, marginLeft: 10 }}>Publish in</div>
               <select
                 value={soundcastID}
                 style={styles.soundcastSelect}
@@ -1224,12 +1118,7 @@ export default class EditEpisode extends Component {
                   <span>Processing episode...</span>
                 </div>
                 <div className="" style={{ marginTop: 10, width: '100%' }}>
-                  <Dots
-                    style={{}}
-                    color={Colors.mainOrange}
-                    size={32}
-                    speed={1}
-                  />
+                  <Dots style={{}} color={Colors.mainOrange} size={32} speed={1} />
                 </div>
               </div>
             )) || (
@@ -1270,10 +1159,7 @@ export default class EditEpisode extends Component {
                   />
                 </div>
                 {(podcastError && (
-                  <div
-                    className="col-md-12"
-                    style={{ fontSize: 16, marginTop: 10, color: 'red' }}
-                  >
+                  <div className="col-md-12" style={{ fontSize: 16, marginTop: 10, color: 'red' }}>
                     {podcastError}
                   </div>
                 )) ||

@@ -99,8 +99,7 @@ export default class TrialRequest extends Component {
               <div className="row">
                 <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                   <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font tz-text margin-ten-bottom xs-margin-fifteen-bottom">
-                    Thanks for submitting your free trial request. We'll be in
-                    touch shortly.
+                    Thanks for submitting your free trial request. We'll be in touch shortly.
                   </h2>
                 </div>
               </div>
@@ -222,10 +221,7 @@ export default class TrialRequest extends Component {
             </div>
 
             <div className="col-md-12 col-sm-12 center-col contact-form-style2 ">
-              <div
-                className="row col-md-12 text-center"
-                style={{ color: 'red' }}
-              >
+              <div className="row col-md-12 text-center" style={{ color: 'red' }}>
                 {this.state.error}
               </div>
               <div className="col-md-12 center-col text-center">
