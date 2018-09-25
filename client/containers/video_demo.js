@@ -10,7 +10,7 @@ import Footer from '../components/footer';
 
 class _VideoDemo extends Component {
   constructor(props) {
-    super(props)
+    super(props);
   }
 
   signoutUser() {
@@ -301,39 +301,91 @@ class _VideoDemo extends Component {
             </nav>
           </header>
         </div>
-        <section className="bg-white builder-bg padding-50px-tb xs-padding-60px-tb" id="video-section7" data-selector=".builder-bg" >
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center center-col">
-                        <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-six-bottom xs-margin-fifteen-bottom tz-text" data-selector=".tz-text" >THE BEST WAY TO SELL AND DELIVER YOUR ON-DEMAND AUDIOS</h2>
-                        <div className="text-extra-large width-90 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom" data-selector=".tz-text" ><p>Coaches, experts and entrepreneurs use Soundwise to sell more of their high-value audio courses and programs, build a engaged audience, and turn audience into loyal customers.</p><p>See how easy it is to create, sell, and deliver on-demand audios with Soundwise's state-of-art platform in this overview video!</p></div>
-                    </div>
-                    <div className="col-lg-10 col-md-10 col-sm-12 col-xs-12 display-table center-col">
-                        <div className="display-table-cell-vertical-middle">
-                            <div className="video-overlay">
-                                <iframe src="https://player.vimeo.com/video/291301465?title=0&amp;amp;byline=0&amp;amp;portrait=0" width="600"  frameborder="0" allowfullscreen=''></iframe>
-                            </div>
-                        </div>
-                    </div>
+        <section
+          className="bg-white builder-bg padding-50px-tb xs-padding-60px-tb"
+          id="video-section7"
+          data-selector=".builder-bg"
+        >
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center center-col">
+                <h2
+                  className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-700 alt-font margin-six-bottom xs-margin-fifteen-bottom tz-text"
+                  data-selector=".tz-text"
+                >
+                  THE BEST WAY TO SELL AND DELIVER YOUR ON-DEMAND AUDIOS
+                </h2>
+                <div
+                  className="text-extra-large width-90 margin-lr-auto md-width-70 sm-width-100 tz-text margin-thirteen-bottom xs-margin-nineteen-bottom"
+                  data-selector=".tz-text"
+                >
+                  <p>
+                    Coaches, experts and entrepreneurs use Soundwise to sell more of their
+                    high-value audio courses and programs, build a engaged audience, and turn
+                    audience into loyal customers.
+                  </p>
+                  <p>
+                    See how easy it is to create, sell, and deliver on-demand audios with
+                    Soundwise's state-of-art platform in this overview video!
+                  </p>
                 </div>
-            </div>
-        </section>
-        <section className="padding-50px-tb xs-padding-60px-tb bg-white builder-bg border-none" id="title-section1" data-selector=".builder-bg" >
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-12 col-sm-12 col-xs-12 text-center">
-                        <h2 className="section-title-large sm-section-title-medium text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text" data-selector=".tz-text" style={{marginTop: 0}}>SELL 20% MORE AUDIOS WITH NO ADDITIONAL WORK. BUILD A RAVING AUDIENCE. GET LOYAL CUSTOMERS.</h2>
-                        <div className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text"  data-selector=".tz-text">Plans start at $39 / month. 30 day money back guarantee.&nbsp;</div>
-                    </div>
-                    <div className="col-md-6 col-sm-10 col-xs-12 display-table center-col margin-fifteen-top text-center" style={{paddingTop: 45, paddingBottom: 60}}>
-                        <Link to='/pricing' className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text" style={{backgroundColor: Colors.mainOrange}}>GET STARTED</Link>
-                    </div>
+              </div>
+              <div className="col-lg-10 col-md-10 col-sm-12 col-xs-12 display-table center-col">
+                <div className="display-table-cell-vertical-middle">
+                  <div className="video-overlay">
+                    <iframe
+                      src="https://player.vimeo.com/video/291301465?title=0&amp;amp;byline=0&amp;amp;portrait=0"
+                      width="600"
+                      frameborder="0"
+                      allowfullscreen=""
+                    />
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </section>
-        <Footer showPricing={true}/>
+        <section
+          className="padding-50px-tb xs-padding-60px-tb bg-white builder-bg border-none"
+          id="title-section1"
+          data-selector=".builder-bg"
+        >
+          <div className="container">
+            <div className="row">
+              <div className="col-md-12 col-sm-12 col-xs-12 text-center">
+                <h2
+                  className="section-title-large sm-section-title-medium text-dark-gray font-weight-700 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text"
+                  data-selector=".tz-text"
+                  style={{ marginTop: 0 }}
+                >
+                  SELL 20% MORE AUDIOS WITH NO ADDITIONAL WORK. BUILD A RAVING AUDIENCE. GET LOYAL
+                  CUSTOMERS.
+                </h2>
+                <div
+                  className="text-extra-large width-60 margin-lr-auto md-width-70 sm-width-100 tz-text"
+                  data-selector=".tz-text"
+                >
+                  Plans start at $39 / month. 30 day money back guarantee.&nbsp;
+                </div>
+              </div>
+              <div
+                className="col-md-6 col-sm-10 col-xs-12 display-table center-col margin-fifteen-top text-center"
+                style={{ paddingTop: 45, paddingBottom: 60 }}
+              >
+                <Link
+                  to="/pricing"
+                  className="contact-submit btn btn-extra-large2 propClone btn-3d text-white width-100 builder-bg tz-text"
+                  style={{ backgroundColor: Colors.mainOrange }}
+                >
+                  GET STARTED
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+        <Footer showPricing={true} />
       </div>
-    )
+    );
   }
 }
 

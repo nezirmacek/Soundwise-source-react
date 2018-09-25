@@ -404,9 +404,9 @@ export default class EditSoundcast extends Component {
 
                         _self.setState({ blurredImageURL: url });
                         firebase
-                        .database()
-                        .ref(`soundcasts/${history.location.state.id}/blurredImageURL`)
-                        .set(url);
+                          .database()
+                          .ref(`soundcasts/${history.location.state.id}/blurredImageURL`)
+                          .set(url);
                       })
                       .catch(function(err) {
                         // POST failed...

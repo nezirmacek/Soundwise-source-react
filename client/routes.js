@@ -83,7 +83,7 @@ import NotFound from './components/page_404';
 import PassRecovery from './components/pass_recovery';
 import ScrollToTop from './components/scroll_to_top';
 import { WaveVideoInputs } from './containers/wave_video_inputs';
-import { VideoDemo } from './containers/video_demo.js'
+import { VideoDemo } from './containers/video_demo.js';
 
 class _Routes extends Component {
   constructor(props) {
@@ -370,7 +370,7 @@ class _Routes extends Component {
                   window.location.replace(`https://s3.amazonaws.com/soundwiseinc/soundcasts/${id}`);
                 }}
               />
-              <Route path='/video_demo' component={VideoDemo} />
+              <Route path="/video_demo" component={VideoDemo} />
               <Route path="/wave_video" component={WaveVideoInputs} />
               <Route component={NotFound} />
             </Switch>

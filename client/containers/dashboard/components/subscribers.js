@@ -12,10 +12,7 @@ import Paper from 'material-ui/Paper';
 import deburr from 'lodash/deburr';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import Colors from '../../../styles/colors';
 import commonStyles from '../../../styles/commonStyles';
@@ -58,31 +55,22 @@ export default class Subscribers extends Component {
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
         });
       }
     }
-    if (
-      this.props.userInfo.soundcasts_managed &&
-      this.props.userInfo.publisher
-    ) {
-      if (
-        typeof Object.values(this.props.userInfo.soundcasts_managed)[0] ==
-        'object'
-      ) {
+    if (this.props.userInfo.soundcasts_managed && this.props.userInfo.publisher) {
+      if (typeof Object.values(this.props.userInfo.soundcasts_managed)[0] == 'object') {
         const that = this;
         const { userInfo } = this.props;
         const _subscribers = [];
         const _soundcasts_managed = [];
 
         for (let id in userInfo.soundcasts_managed) {
-          const _soundcast = JSON.parse(
-            JSON.stringify(userInfo.soundcasts_managed[id])
-          );
+          const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
           if (_soundcast.title) {
             _soundcast.id = id;
             _soundcasts_managed.push(_soundcast);
@@ -140,8 +128,7 @@ export default class Subscribers extends Component {
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
@@ -149,19 +136,14 @@ export default class Subscribers extends Component {
       }
     }
     if (nextProps.userInfo.soundcasts_managed && nextProps.userInfo.publisher) {
-      if (
-        typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] ==
-        'object'
-      ) {
+      if (typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
         const that = this;
         const { userInfo } = nextProps;
         const _subscribers = [];
         const _soundcasts_managed = [];
 
         for (let id in userInfo.soundcasts_managed) {
-          const _soundcast = JSON.parse(
-            JSON.stringify(userInfo.soundcasts_managed[id])
-          );
+          const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
           if (_soundcast.title) {
             _soundcast.id = id;
             _soundcasts_managed.push(_soundcast);
@@ -337,22 +319,13 @@ export default class Subscribers extends Component {
       this.state.toBeUnsubscribed.forEach(listenerID => {
         firebase
           .database()
-          .ref(
-            'soundcasts/' +
-              this.state.currentSoundcastID +
-              '/subscribed/' +
-              listenerID
-          )
+          .ref('soundcasts/' + this.state.currentSoundcastID + '/subscribed/' + listenerID)
           .remove();
 
         firebase
           .database()
           .ref(
-            'users/' +
-              listenerID +
-              '/soundcasts/' +
-              this.state.currentSoundcastID +
-              '/subscribed'
+            'users/' + listenerID + '/soundcasts/' + this.state.currentSoundcastID + '/subscribed'
           )
           .set(false);
 
@@ -461,11 +434,7 @@ export default class Subscribers extends Component {
 
     subscribers.forEach(subscriber => {
       if (subscriber.email && subscriber.email[0]) {
-        csvData.push([
-          subscriber.firstName,
-          subscriber.lastName,
-          subscriber.email[0],
-        ]);
+        csvData.push([subscriber.firstName, subscriber.lastName, subscriber.email[0]]);
       }
     });
 
@@ -506,22 +475,17 @@ export default class Subscribers extends Component {
               zIndex: 103,
             }}
           >
-            <div
-              className="title-medium"
-              style={{ margin: 25, fontWeight: 800 }}
-            >
+            <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
               Upgrade to view subscribers
             </div>
             <div className="title-small" style={{ margin: 25 }}>
-              Subscriber data is available on PLUS and PRO plans. Please upgrade
-              to access the feature.
+              Subscriber data is available on PLUS and PRO plans. Please upgrade to access the
+              feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() =>
-                  that.props.history.push({ pathname: '/pricing' })
-                }
+                onClick={() => that.props.history.push({ pathname: '/pricing' })}
                 styles={{ width: '60%' }}
               />
             </div>
@@ -532,10 +496,7 @@ export default class Subscribers extends Component {
             <div className="col-md-2 col-sm-4 col-xs-12">
               <span className="title-medium ">Subscribers</span>
             </div>
-            <div
-              className="col-md-6 col-sm-8 col-xs-12"
-              style={styles.soundcastSelectWrapper}
-            >
+            <div className="col-md-6 col-sm-8 col-xs-12" style={styles.soundcastSelectWrapper}>
               <select
                 style={styles.soundcastSelect}
                 value={currentSoundcastID}
@@ -552,10 +513,7 @@ export default class Subscribers extends Component {
                 })}
               </select>
             </div>
-            <div
-              className="col-md-4 col-sm-12 col-xs-12"
-              style={styles.searchWrap}
-            >
+            <div className="col-md-4 col-sm-12 col-xs-12" style={styles.searchWrap}>
               <MuiThemeProvider>
                 <Autosuggest
                   {...autosuggestProps}
@@ -563,7 +521,7 @@ export default class Subscribers extends Component {
                     classes,
                     value: this.state.value,
                     onChange: this.handleChange('value'),
-                    placeholder: "Search subscribers"            
+                    placeholder: 'Search subscribers',
                   }}
                   theme={{
                     container: styles.container,
@@ -582,35 +540,23 @@ export default class Subscribers extends Component {
           </row>
           <row style={{ marginBottom: 25 }}>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
-              <span
-                style={{ color: Colors.mainOrange }}
-                onClick={this.handleModal}
-              >
+              <span style={{ color: Colors.mainOrange }} onClick={this.handleModal}>
                 Invite Subscribers
               </span>
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
-              <span
-                style={{ color: Colors.link }}
-                onClick={this.handlePendingInvite}
-              >
+              <span style={{ color: Colors.link }} onClick={this.handlePendingInvite}>
                 See Pending Invites
               </span>
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
-              <CSVLink
-                data={csvData}
-                filename={`${currentSoundcast.title} subscribers.csv`}
-              >
+              <CSVLink data={csvData} filename={`${currentSoundcast.title} subscribers.csv`}>
                 <span>Download Subscribers</span>
               </CSVLink>
             </div>
             <div className="col-md-3 col-sm-6 col-xs-12">
               {(this.state.toBeUnsubscribed.length > 0 && (
-                <div
-                  style={{ ...styles.button, color: 'red' }}
-                  onClick={this.deleteSubscriber}
-                >
+                <div style={{ ...styles.button, color: 'red' }} onClick={this.deleteSubscriber}>
                   Unsubscribe
                 </div>
               )) ||
@@ -639,9 +585,9 @@ export default class Subscribers extends Component {
                       return (
                         <tr key={i} style={styles.tr}>
                           <td style={{ ...styles.td }} />
-                          <td style={{ ...styles.td }}>{`${
-                            subscriber.firstName
-                          } ${subscriber.lastName}`}</td>
+                          <td style={{ ...styles.td }}>{`${subscriber.firstName} ${
+                            subscriber.lastName
+                          }`}</td>
                           <td style={{ ...styles.td }}>
                             <a
                               style={{
@@ -656,11 +602,9 @@ export default class Subscribers extends Component {
                           <td style={{ ...styles.td }}>
                             {(subscriber.soundcasts &&
                               subscriber.soundcasts[currentSoundcastID] &&
-                              subscriber.soundcasts[currentSoundcastID]
-                                .date_subscribed &&
+                              subscriber.soundcasts[currentSoundcastID].date_subscribed &&
                               moment(
-                                subscriber.soundcasts[currentSoundcastID]
-                                  .date_subscribed * 1000
+                                subscriber.soundcasts[currentSoundcastID].date_subscribed * 1000
                               ).format('YYYY-MM-DD')) ||
                               '__'}
                           </td>
@@ -668,9 +612,7 @@ export default class Subscribers extends Component {
                             <span
                               onClick={() => {
                                 history.push({
-                                  pathname: `/dashboard/subscriber/${
-                                    subscriber.id
-                                  }`,
+                                  pathname: `/dashboard/subscriber/${subscriber.id}`,
                                   state: {
                                     subscriber,
                                     soundcast: currentSoundcast,
@@ -678,10 +620,7 @@ export default class Subscribers extends Component {
                                 });
                               }}
                             >
-                              <i
-                                className="far fa-chart-bar"
-                                style={styles.itemChartIcon}
-                              />
+                              <i className="far fa-chart-bar" style={styles.itemChartIcon} />
                             </span>
                           </td>
                           <td style={{ ...styles.td }}>
@@ -902,5 +841,3 @@ const styles = {
     height: 8 * 2,
   },
 };
-
-export default Subscribers;
