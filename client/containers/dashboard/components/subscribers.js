@@ -500,7 +500,7 @@ export default class Subscribers extends Component {
         />
         <EmailListModal
           isShown={this.state.showEmailList}
-          soundcast={this.state.currentSoundcast}
+          currentSoundcastID={this.state.currentSoundcastID}
           userInfo={this.props.userInfo}
           onClose={this.handleEmailList}
           soundcasts={soundcasts_managed}

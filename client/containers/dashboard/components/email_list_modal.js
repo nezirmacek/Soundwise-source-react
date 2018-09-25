@@ -8,6 +8,7 @@ import commonStyles from '../../../styles/commonStyles';
 import {
   OrangeSubmitButton,
 } from '../../../components/buttons/buttons';
+import Spinner from 'react-activity/lib/Spinner';
 
 class SoundCastsDropDown extends Component {
 
@@ -140,14 +141,17 @@ export default class EmailListModal extends Component {
     this.setStateCurrentSoundCastID = this.setStateCurrentSoundCastID.bind(this);
     this.retrieveMailChimpKey = this.retrieveMailChimpKey.bind(this);
     this.handleSelectList = this.handleSelectList.bind(this);
+    this.renderProgressBar = this.renderProgressBar.bind(this);
 
     //Have to intialize the id to the first soundcast. In componentDidMount &
     //componentDidUpdate
     this.state = {
       currentSoundcastID : null,
+      currentSoundcast : {},
       selectedListId: '',
       list: [],
       apiKey: '',
+      updatingList: false,
     }
 
   }
@@ -171,23 +175,35 @@ export default class EmailListModal extends Component {
       } 
     } 
     //For the case on a reload when the prevProps.userInfo.id cannot be tested.
-    
-    if (this.state.currentSoundcastID === null && this.props.userInfo.id) {
+    if (this.state.currentSoundcastID === null && this.props.currentSoundcastID) {
       this.setStateCurrentSoundCastID(this.props.userInfo)
       this.retrieveMailChimpKey(this.props.userInfo)
     }
-    
+
+    //For the case when the user updates the soundcast on the subscriber screen
+    //So we start the modal with the appropriate soundcast.
+    if (prevProps.currentSoundcastID != this.props.currentSoundcastID) {
+      this.setStateCurrentSoundCastID(this.props.userInfo)
+      this.retrieveMailChimpKey(this.props.userInfo)
+    }
   }
 
   setStateCurrentSoundCastID(userInfo) {
     if (userInfo.soundcasts_managed && 
       typeof Object.values(userInfo.soundcasts_managed)[0] == 'object') {
 
-        let soundcastIds = Object.keys(userInfo.soundcasts_managed);
-        
-        this.setState({
-          currentSoundcastID: soundcastIds[0]
-        })  
+        if (this.props.currentSoundcastID != null) {
+          //Now lets get the mailChimpID if it exists.
+
+          let currentSc = userInfo.soundcasts_managed[this.props.currentSoundcastID];
+          let mailChimpId = currentSc.mailChimpId ? currentSc.mailChimpId : '';
+
+          this.setState({
+            currentSoundcastID: this.props.currentSoundcastID,
+            selectedListId: mailChimpId
+          })  
+        } 
+
     }
   }
 
@@ -204,6 +220,7 @@ export default class EmailListModal extends Component {
   saveSubscribersToMailChimp(){
     if (this.state.currentSoundcastID != null && this.state.selectedListId != ''
       && this.state.apiKey != '') {
+      this.setState({ updatingList: true })
       const { soundcasts_managed } = this.props.userInfo;
       const { currentSoundcastID } = this.state;
       Axios.post('/api/mail_manage_updateSubscribers', {
@@ -213,11 +230,22 @@ export default class EmailListModal extends Component {
         soundcastId : this.state.currentSoundcastID,
       })
       .then(res => {
-        //As firebase sends realtime notifications, we do not really need this, but what the heck!
-        alert('Subscribers updated to your list.');
+        this.setState({ updatingList: false }, () => {
+          //We need a 300ms delay, so the dom re-renders before alert is shown.
+            setTimeout(function() {
+              alert('Subscribers updated to your list.')
+            }, 300);
+          }
+        )        
       })
       .catch((error) => {
-        alert('There was an error updating the list: ',);
+        this.setState({ updatingList: false }, () => {
+          //We need a 300ms delay, so the dom re-renders before alert is shown.
+            setTimeout(function() {
+              alert('There was an error updating the list: ',);
+            }, 300);
+          }
+        )        
         if(error.response.status === 404) {
           console.log("404 error", error)
         }
@@ -229,9 +257,14 @@ export default class EmailListModal extends Component {
 
   changeSoundcastId(e) {
     const currentSoundcastID = e.target.value;
+
+    let currentSc = this.props.userInfo.soundcasts_managed[currentSoundcastID];
+    let mailChimpId = currentSc.mailChimpId ? currentSc.mailChimpId : '';
+
     this.setState({
-      currentSoundcastID,
-    });
+      currentSoundcastID: currentSoundcastID,
+      selectedListId: mailChimpId
+    })  
   }
 
   retrieveMailChimpKey(userInfo) {
@@ -265,6 +298,20 @@ export default class EmailListModal extends Component {
   handleSelectList(value) {
     this.setState({ selectedListId: value });
   }
+
+  renderProgressBar() {
+    if (this.state.updatingList) {
+      return (
+        <Spinner
+          size={16}
+          speed={1}
+        />
+      );
+    } else {
+      return <span> Save </span>
+    } 
+  }
+
 
   render() {
     if (!this.props.isShown) {
@@ -311,14 +358,14 @@ export default class EmailListModal extends Component {
               </div>
               <div className="row">
                 <OrangeSubmitButton
-                  label="Save"
-                  onClick={this.exportSubscribers}
-                  styles={{
-                    margin: 'auto',
-                    backgroundColor: Colors.link,
-                    borderWidth: '0px',
-                  }}
-                />
+                    label={this.renderProgressBar()}
+                    onClick={this.exportSubscribers}
+                    styles={{
+                      margin: 'auto',
+                      backgroundColor: Colors.link,
+                      borderWidth: '0px',
+                    }}
+                  />  
               </div>
             </div>
           </div>
