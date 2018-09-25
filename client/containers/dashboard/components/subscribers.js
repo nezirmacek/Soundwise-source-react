@@ -4,6 +4,13 @@ import moment from 'moment';
 import Axios from 'axios';
 import firebase from 'firebase';
 import { CSVLink, CSVDownload } from 'react-csv';
+import Autosuggest from 'react-autosuggest';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
+import deburr from 'lodash/deburr';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {
   minLengthValidator,
@@ -549,14 +556,28 @@ export default class Subscribers extends Component {
               className="col-md-4 col-sm-12 col-xs-12"
               style={styles.searchWrap}
             >
-              <input
-                type="text"
-                style={styles.searchTerm}
-                placeholder="Search subscribers"
-              />
-              <button type="submit" style={styles.searchButton}>
-                <i className="fa fa-search" />
-              </button>
+              <MuiThemeProvider>
+                <Autosuggest
+                  {...autosuggestProps}
+                  inputProps={{
+                    classes,
+                    value: this.state.value,
+                    onChange: this.handleChange('value'),
+                    placeholder: "Search subscribers"            
+                  }}
+                  theme={{
+                    container: styles.container,
+                    suggestionsContainerOpen: styles.suggestionsContainerOpen,
+                    suggestionsList: styles.suggestionsList,
+                    suggestion: styles.suggestion,
+                  }}
+                  renderSuggestionsContainer={options => (
+                    <Paper {...options.containerProps} square>
+                      {options.children}
+                    </Paper>
+                  )}
+                />
+              </MuiThemeProvider>
             </div>
           </row>
           <row style={{ marginBottom: 25 }}>
@@ -852,4 +873,34 @@ const styles = {
     textAlign: 'center',
     verticalAlign: 'middle',
   },
+  root: {
+    height: 250,
+    flexGrow: 1,
+  },
+  container: {
+    position: 'relative',
+    float: 'left',
+    width: '100%',
+    marginBottom: '20px',
+  },
+  suggestionsContainerOpen: {
+    position: 'absolute',
+    zIndex: 1,
+    marginTop: '8px',
+    left: 0,
+    right: 0,
+  },
+  suggestion: {
+    display: 'block',
+  },
+  suggestionsList: {
+    margin: 0,
+    padding: 0,
+    listStyleType: 'none',
+  },
+  divider: {
+    height: 8 * 2,
+  },
 };
+
+export default Subscribers;
