@@ -52,11 +52,7 @@ export default class Publisher extends Component {
           .database()
           .ref(`soundcasts/${soundcastsArr[i]}`)
           .once('value');
-        if (
-          soundcast.val() &&
-          soundcast.val().landingPage &&
-          soundcast.val().published
-        ) {
+        if (soundcast.val() && soundcast.val().landingPage && soundcast.val().published) {
           soundcasts.push({ ...soundcast.val(), id: soundcastsArr[i] });
         }
       }
@@ -90,10 +86,7 @@ export default class Publisher extends Component {
                     style={{ backgroundImage: `url(${publisher.imageUrl})` }}
                   />
                 </div>
-                <div
-                  className="col-md-8 col-sm-6 col-xs-12"
-                  style={{ textAlign: 'center' }}
-                >
+                <div className="col-md-8 col-sm-6 col-xs-12" style={{ textAlign: 'center' }}>
                   <div className="col-md-12 section-title-medium sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
                     {this.state.publisher.name}
                   </div>
@@ -186,12 +179,7 @@ export default class Publisher extends Component {
                   marginTop: '1em',
                 }}
               >
-                <Dots
-                  style={{ display: 'flex' }}
-                  color="#727981"
-                  size={32}
-                  speed={1}
-                />
+                <Dots style={{ display: 'flex' }} color="#727981" size={32} speed={1} />
               </div>
             )) ||
               null}
@@ -227,11 +215,7 @@ export default class Publisher extends Component {
                     <Link to={`/soundcasts/${soundcast.id}`}>
                       <div className="blog-post">
                         <div className="blog-image margin-twenty-bottom sm-margin-ten-bottom">
-                          <img
-                            className="img100"
-                            alt=""
-                            src={soundcast.imageURL}
-                          />
+                          <img className="img100" alt="" src={soundcast.imageURL} />
                         </div>
                         <div className="post-details">
                           <div className="tz-text text-dark-gray  title-large sm-title-large font-weight-800 display-block margin-ten-bottom xs-margin-five-bottom">
@@ -241,9 +225,7 @@ export default class Publisher extends Component {
                             className="tz-text text-dark-gray title-medium sm-title-medium  display-block margin-ten-bottom xs-margin-five-bottom"
                             style={{ fontWeight: 800 }}
                           >
-                            {`${pre}${
-                              price == 'Free' ? '' : '$'
-                            }${price}${post}`}
+                            {`${pre}${price == 'Free' ? '' : '$'}${price}${post}`}
                           </div>
                           <div className="text-medium tz-text">
                             <p>{soundcast.short_description}</p>

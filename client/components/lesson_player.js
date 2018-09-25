@@ -77,10 +77,8 @@ export default class LessonPlayer extends Component {
     const { section, showDialogCb } = this.props;
     const { duration, currentTime, isPlaying } = this.state;
     const remainingTime = duration - currentTime;
-    let remainingMin =
-      remainingTime > 0 ? Math.floor(remainingTime / 60) : '00';
-    let remaingingSec =
-      remainingTime > 0 ? Math.floor(remainingTime % 60) : '00';
+    let remainingMin = remainingTime > 0 ? Math.floor(remainingTime / 60) : '00';
+    let remaingingSec = remainingTime > 0 ? Math.floor(remainingTime % 60) : '00';
     remainingMin = moment()
       .minutes(remainingMin)
       .format('mm');
@@ -100,9 +98,7 @@ export default class LessonPlayer extends Component {
 
     return (
       <div
-        onClick={
-          (section.preview && this.handlePlayOrPause.bind(this)) || showDialogCb
-        }
+        onClick={(section.preview && this.handlePlayOrPause.bind(this)) || showDialogCb}
         style={styles.wrapper}
       >
         <audio preload="auto" ref={audio => (this.references.audio = audio)}>
@@ -129,9 +125,7 @@ export default class LessonPlayer extends Component {
             {(isPlaying && (
               <div style={styles.timer}>
                 <Levels color="#F76B1C" size={12} speed={1} />
-                <span style={{ paddingLeft: '0.5em' }}>
-                  {`${remainingMin}:${remaingingSec}`}
-                </span>
+                <span style={{ paddingLeft: '0.5em' }}>{`${remainingMin}:${remaingingSec}`}</span>
               </div>
             )) || (
               <div style={styles.timer}>

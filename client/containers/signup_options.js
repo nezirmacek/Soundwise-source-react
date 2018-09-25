@@ -6,12 +6,7 @@ import Dots from 'react-activity/lib/Dots';
 import Axios from 'axios';
 import 'url-search-params-polyfill';
 import { orange500, blue500 } from 'material-ui/styles/colors';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import moment from 'moment';
 
@@ -61,12 +56,9 @@ class _SignupOptions extends Component {
         res.data && that.setState({ ...res.data, feedSubmitting: false });
       })
       .catch(err => {
-        const errMsg =
-          (err && err.response && err.response.data) || err.toString();
+        const errMsg = (err && err.response && err.response.data) || err.toString();
         that.setState({ feedSubmitting: false });
-        if (
-          errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email"
-        ) {
+        if (errMsg.slice(0, 40) === "Error: Cannot find podcast owner's email") {
           that.setState({ emailNotFoundError: true });
         } else if (
           errMsg.slice(0, 97) ===
@@ -76,9 +68,7 @@ class _SignupOptions extends Component {
             "Hmm...looks like this podcast has already been managed by an existing account on Soundwise. If you think you're the owner of this feed, please contact us at support@mysoundwise.com."
           );
         } else {
-          alert(
-            'Hmm...there is a problem parsing the feed. Please try again later.'
-          );
+          alert('Hmm...there is a problem parsing the feed. Please try again later.');
         }
       });
   }
@@ -86,8 +76,7 @@ class _SignupOptions extends Component {
   submitCode() {
     const { codeSign1, codeSign2, codeSign3, codeSign4 } = this.refs;
     const { feedUrl, publisherEmail, notClaimed } = this.state;
-    const submitCode =
-      codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
+    const submitCode = codeSign1.value + codeSign2.value + codeSign3.value + codeSign4.value;
     codeSign1.value = codeSign2.value = codeSign3.value = codeSign4.value = '';
     Axios.post('/api/parse_feed', { feedUrl, submitCode, notClaimed })
       .then(res => {
@@ -97,8 +86,7 @@ class _SignupOptions extends Component {
         }
       })
       .catch(err => {
-        const errMsg =
-          (err && err.response && err.response.data) || err.toString();
+        const errMsg = (err && err.response && err.response.data) || err.toString();
         if (errMsg.slice(0, 33) === 'Error: incorrect verfication code') {
           alert('Code incorrect!');
         } else {
@@ -107,9 +95,7 @@ class _SignupOptions extends Component {
             err,
             err && err.response && err.response.data
           );
-          alert(
-            'Hmm...there is a problem sending verification code. Please try again later.'
-          );
+          alert('Hmm...there is a problem sending verification code. Please try again later.');
         }
       });
   }
@@ -136,14 +122,8 @@ class _SignupOptions extends Component {
         }
       })
       .catch(err => {
-        console.log(
-          'resend code request failed',
-          err,
-          err && err.response && err.response.data
-        );
-        alert(
-          'Hmm...there is a problem resending code. Please try again later.'
-        );
+        console.log('resend code request failed', err, err && err.response && err.response.data);
+        alert('Hmm...there is a problem resending code. Please try again later.');
       });
   }
 
@@ -180,10 +160,7 @@ class _SignupOptions extends Component {
                   style={{ ...styles.containerWrapper, padding: 20 }}
                   className="container-confirmation"
                 >
-                  <img
-                    className="center-col"
-                    src={imageUrl}
-                  />
+                  <img className="center-col" src={imageUrl} />
                   <div
                     style={{
                       ...styles.container,
@@ -193,32 +170,18 @@ class _SignupOptions extends Component {
                     }}
                     className="center-col text-center"
                   >
-                    Almost there... to verify your ownership of the podcast, we
-                    sent a confirmation code to <br />
-                    <span style={{ color: Colors.mainOrange }}>
-                      {publisherEmail}
-                    </span>
+                    Almost there... to verify your ownership of the podcast, we sent a confirmation
+                    code to <br />
+                    <span style={{ color: Colors.mainOrange }}>{publisherEmail}</span>
                   </div>
-                  <div
-                    style={styles.container}
-                    className="center-col text-center"
-                  >
+                  <div style={styles.container} className="center-col text-center">
                     <div style={{ paddingBottom: 18, fontSize: 21 }}>
                       Enter the confirmation code:
                     </div>
                     <div>
-                      <input
-                        ref="codeSign1"
-                        onKeyDown={this.onKeyDown.bind(this, 2)}
-                      />
-                      <input
-                        ref="codeSign2"
-                        onKeyDown={this.onKeyDown.bind(this, 3)}
-                      />
-                      <input
-                        ref="codeSign3"
-                        onKeyDown={this.onKeyDown.bind(this, 4)}
-                      />
+                      <input ref="codeSign1" onKeyDown={this.onKeyDown.bind(this, 2)} />
+                      <input ref="codeSign2" onKeyDown={this.onKeyDown.bind(this, 3)} />
+                      <input ref="codeSign3" onKeyDown={this.onKeyDown.bind(this, 4)} />
                       <input ref="codeSign4" />
                     </div>
                   </div>
@@ -262,10 +225,9 @@ class _SignupOptions extends Component {
                     }}
                     className="center-col text-center"
                   >
-                    We cannot find the podcast owner's email address in the feed
-                    you submitted. An email address is needed to confirm your
-                    ownership of the podcast. Please edit your feed to include
-                    an owner's email address and re-submit.
+                    We cannot find the podcast owner's email address in the feed you submitted. An
+                    email address is needed to confirm your ownership of the podcast. Please edit
+                    your feed to include an owner's email address and re-submit.
                   </div>
                   <div
                     style={{
@@ -276,11 +238,8 @@ class _SignupOptions extends Component {
                     }}
                     className="center-col text-center"
                   >
-                    If you think this is a mistake, please contact our support
-                    at <br />
-                    <span style={{ color: '#f76b1c' }}>
-                      support@mysoundwise.com
-                    </span>
+                    If you think this is a mistake, please contact our support at <br />
+                    <span style={{ color: '#f76b1c' }}>support@mysoundwise.com</span>
                   </div>
                 </div>
               )) || (
@@ -291,28 +250,17 @@ class _SignupOptions extends Component {
                   >
                     <div style={styles.title}>Submit your podcast feed</div>
                   </div>
-                  <div
-                    style={styles.container}
-                    className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                  >
+                  <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <span style={styles.greyInputText}>Podcast Title</span>
                     <input
                       type="text"
                       style={styles.input}
-                      onChange={this.handleFeedSubmission.bind(
-                        this,
-                        'podcastTitle'
-                      )}
+                      onChange={this.handleFeedSubmission.bind(this, 'podcastTitle')}
                       value={podcastTitle}
                     />
                   </div>
-                  <div
-                    style={styles.container}
-                    className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                  >
-                    <span style={styles.greyInputText}>
-                      Podcast RSS Feed URL
-                    </span>
+                  <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <span style={styles.greyInputText}>Podcast RSS Feed URL</span>
                     <input
                       type="text"
                       style={styles.input}
@@ -340,15 +288,8 @@ class _SignupOptions extends Component {
                       }}
                       className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                     >
-                      <span style={{ fontSize: 18, paddingRight: 15 }}>
-                        Processing
-                      </span>
-                      <Dots
-                        style={{}}
-                        color={Colors.mainOrange}
-                        size={32}
-                        speed={1}
-                      />
+                      <span style={{ fontSize: 18, paddingRight: 15 }}>Processing</span>
+                      <Dots style={{}} color={Colors.mainOrange} size={32} speed={1} />
                     </div>
                   )}
                 </div>
@@ -357,10 +298,7 @@ class _SignupOptions extends Component {
               <div style={styles.container} className="center-col text-center">
                 <div style={styles.title}>Choose your adventure</div>
               </div>
-              <div
-                style={styles.container}
-                className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-              >
+              <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <OrangeSubmitButton
                   styles={{
                     width: '100%',
@@ -383,16 +321,9 @@ class _SignupOptions extends Component {
                   justifyContent: 'center',
                 }}
               >
-                <span
-                  style={{ fontSize: 20, fontWeight: 600, fontStyle: 'italic' }}
-                >
-                  or
-                </span>
+                <span style={{ fontSize: 20, fontWeight: 600, fontStyle: 'italic' }}>or</span>
               </div>
-              <div
-                style={styles.container}
-                className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-              >
+              <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <Link to="/signup/admin">
                   <OrangeSubmitButton
                     styles={{
@@ -406,13 +337,8 @@ class _SignupOptions extends Component {
                   />
                 </Link>
               </div>
-              <div
-                style={{ marginTop: 20 }}
-                className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-              >
-                <span style={styles.italicText}>
-                  Already have a publisher account ?{' '}
-                </span>
+              <div style={{ marginTop: 20 }} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <span style={styles.italicText}>Already have a publisher account ? </span>
                 <Link
                   to="/signin"
                   style={{

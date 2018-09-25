@@ -22,9 +22,7 @@ export default class SoundcastCard extends Component {
 
     // recalculate card height
     setTimeout(() => {
-      let _cardHeight =
-        this.references.image.clientWidth +
-        this.references.content.clientHeight;
+      let _cardHeight = this.references.image.clientWidth + this.references.content.clientHeight;
       if (!cardHeight || cardHeight < _cardHeight) {
         cb(_cardHeight);
       }
@@ -48,10 +46,7 @@ export default class SoundcastCard extends Component {
             to={`/soundcasts/${soundcast.id}`}
           />
         )}
-        <div
-          className="float-left width-100 bottom-shadowed"
-          style={{ height: cardHeight }}
-        >
+        <div className="float-left width-100 bottom-shadowed" style={{ height: cardHeight }}>
           <div
             ref={image => (this.references.image = image)}
             className="feature-box-image"
@@ -70,9 +65,7 @@ export default class SoundcastCard extends Component {
             </CardMedia>
           </div>
           <div ref={content => (this.references.content = content)}>
-            <div style={style.title}>
-              {soundcast.title.slice(0, 43) + '...'}
-            </div>
+            <div style={style.title}>{soundcast.title.slice(0, 43) + '...'}</div>
             <div style={style.courseDescription}>
               {soundcast.short_description.slice(0, 120) + '...'}
             </div>

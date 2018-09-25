@@ -267,20 +267,8 @@ const getContentPush = entity => {
           'text'
         )
       : entity.episodeId
-        ? createContentPush(
-            'LIKE_EPISODE',
-            entity.episodeId,
-            soundcastId,
-            'Like episode',
-            'text'
-          )
-        : createContentPush(
-            'LIKE_COMMENT',
-            entity.commentId,
-            soundcastId,
-            'Like comment',
-            'text'
-          );
+        ? createContentPush('LIKE_EPISODE', entity.episodeId, soundcastId, 'Like episode', 'text')
+        : createContentPush('LIKE_COMMENT', entity.commentId, soundcastId, 'Like comment', 'text');
   }
 };
 

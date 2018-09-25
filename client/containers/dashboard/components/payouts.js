@@ -5,10 +5,7 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
@@ -66,9 +63,7 @@ export default class Payouts extends Component {
       .then(res => {
         const payouts = res.data;
         payouts.sort((a, b) => {
-          return (
-            moment(b.createdAt).format('X') - moment(a.createdAt).format('X')
-          );
+          return moment(b.createdAt).format('X') - moment(a.createdAt).format('X');
         });
         that.setState({
           payouts,
@@ -86,10 +81,7 @@ export default class Payouts extends Component {
         <div className="padding-bottom-20px">
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
-            <span
-              className="text-medium"
-              style={{ marginLeft: 15, color: Colors.mainOrange }}
-            >
+            <span className="text-medium" style={{ marginLeft: 15, color: Colors.mainOrange }}>
               <strong>View Publisher Page</strong>
             </span>
           </Link>
@@ -102,16 +94,11 @@ export default class Payouts extends Component {
           </li>
           <li role="presentation">
             <Link to="/dashboard/publisher/transactions">
-              <span style={{ fontSize: 15, fontWeight: 600 }}>
-                Transactions
-              </span>
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Transactions</span>
             </Link>
           </li>
           <li role="presentation" className="active">
-            <Link
-              style={{ backgroundColor: 'transparent' }}
-              to="/dashboard/publisher/payouts"
-            >
+            <Link style={{ backgroundColor: 'transparent' }} to="/dashboard/publisher/payouts">
               <span
                 style={{
                   fontSize: 15,
@@ -156,11 +143,8 @@ export default class Payouts extends Component {
                   {this.state.payouts.map((payout, i) => {
                     return (
                       <tr key={i} style={styles.tr}>
-                        <td style={{ ...styles.td }}>
-                          {payout.createdAt.slice(0, 10)}
-                        </td>
-                        <td style={{ ...styles.td }}>{`$${payout.amount /
-                          100}`}</td>
+                        <td style={{ ...styles.td }}>{payout.createdAt.slice(0, 10)}</td>
+                        <td style={{ ...styles.td }}>{`$${payout.amount / 100}`}</td>
                       </tr>
                     );
                   })}

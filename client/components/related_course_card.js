@@ -41,14 +41,8 @@ export default class RelatedCourseCard extends Component {
         <MuiThemeProvider>
           <Card>
             <Link to={`/courses/${course.id}`}>
-              <div
-                className="float-left width-100 bottom-shadowed"
-                style={_style.bottomShadowed}
-              >
-                <div
-                  ref={image => (this.references.image = image)}
-                  className="feature-box-image"
-                >
+              <div className="float-left width-100 bottom-shadowed" style={_style.bottomShadowed}>
+                <div ref={image => (this.references.image = image)} className="feature-box-image">
                   <CardMedia>
                     <img
                       alt=""
@@ -70,32 +64,19 @@ export default class RelatedCourseCard extends Component {
                       style={_style.authorThumbNail}
                     />
                     <div>
-                      <div style={_style.teacherName}>
-                        {course.teachers[0].teacher}
-                      </div>
-                      <div
-                        className="one-line"
-                        style={_style.teacherRrofession}
-                      >
+                      <div style={_style.teacherName}>{course.teachers[0].teacher}</div>
+                      <div className="one-line" style={_style.teacherRrofession}>
                         {course.teachers[0].teacher_profession}
                       </div>
                     </div>
                   </div>
-                  <div style={_style.courseDescription}>
-                    {course.description}
-                  </div>
-                  <div
-                    style={_style.cardFooter}
-                    ref={footer => (this.references.footer = footer)}
-                  >
+                  <div style={_style.courseDescription}>{course.description}</div>
+                  <div style={_style.cardFooter} ref={footer => (this.references.footer = footer)}>
                     <div className="stars-wrapper" style={_style.starsWrapper}>
                       {course.reviews && (
                         <ReactStars
                           count={5}
-                          value={_.meanBy(
-                            _.values(course.reviews),
-                            review => review.rating
-                          )}
+                          value={_.meanBy(_.values(course.reviews), review => review.rating)}
                           size={30}
                           edit={false}
                           color2={'#ffd700'}

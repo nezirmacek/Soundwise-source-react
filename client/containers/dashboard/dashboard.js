@@ -20,11 +20,7 @@ import EditSoundcast from './components/edit_soundcast';
 import Publisher from './components/publisher';
 import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
-import {
-  handleContentSaving,
-  setFeedVerified,
-  setChargeState,
-} from '../../actions/index';
+import { handleContentSaving, setFeedVerified, setChargeState } from '../../actions/index';
 import Colors from '../../styles/colors';
 
 const verticalMenuItems = [
@@ -171,14 +167,8 @@ class _Dashboard extends Component {
           // }
         })
         .catch(err => {
-          console.log(
-            'import feed request failed',
-            err,
-            err && err.response && err.response.data
-          );
-          alert(
-            'Hmm...there is a problem importing feed. Please try again later.'
-          );
+          console.log('import feed request failed', err, err && err.response && err.response.data);
+          alert('Hmm...there is a problem importing feed. Please try again later.');
           that.props.setFeedVerified(false);
         });
     }
@@ -186,14 +176,7 @@ class _Dashboard extends Component {
       console.log('runningChargeStateRequest');
       // set already paid data (same block from soundwise_checkout.js:handlePaymentSuccess)
       this.runningChargeStateRequest = true;
-      const {
-        plan,
-        frequency,
-        promoCodeError,
-        promoCode,
-        trialPeriod,
-        charge,
-      } = chargeState;
+      const { plan, frequency, promoCodeError, promoCode, trialPeriod, charge } = chargeState;
       firebase
         .database()
         .ref(`publishers/${publisherID}/plan`)
@@ -254,10 +237,7 @@ class _Dashboard extends Component {
     let plan, proUser;
     if (userInfo.publisher && userInfo.publisher.plan) {
       plan = userInfo.publisher.plan;
-      proUser =
-        userInfo.publisher.current_period_end > moment().format('X')
-          ? true
-          : false;
+      proUser = userInfo.publisher.current_period_end > moment().format('X') ? true : false;
     }
     if (userInfo.publisher && userInfo.publisher.beta) {
       proUser = true;
@@ -277,39 +257,28 @@ class _Dashboard extends Component {
           </div>
         )}
         <div className="" style={{ minHeight: '100%', width: '100%' }}>
-          <div
-            className="col-lg-2 col-md-3 col-sm-3 col-xs-3"
-            style={styles.verticalMenu}
-          >
+          <div className="col-lg-2 col-md-3 col-sm-3 col-xs-3" style={styles.verticalMenu}>
             {verticalMenuItems.map((item, i) => {
               if (item.isMenuItemVisible) {
                 return (
                   <div
                     className="col-md-12"
                     style={
-                      (match.params.tab === item.path &&
-                        styles.activeVerticalMenuItem) ||
+                      (match.params.tab === item.path && styles.activeVerticalMenuItem) ||
                       styles.verticalMenuItem
                     }
                     key={i}
                     onClick={() =>
-                      match.params.tab !== item.path &&
-                      history.push(`/dashboard/${item.path}`)
+                      match.params.tab !== item.path && history.push(`/dashboard/${item.path}`)
                     }
                   >
                     <div className="col-md-1 col-sm-2 col-xs-12">
                       {(match.params.tab === item.path && (
-                        <i
-                          className="material-icons"
-                          style={styles.activeVerticalMenuItemIcon}
-                        >
+                        <i className="material-icons" style={styles.activeVerticalMenuItemIcon}>
                           {item.iconClass}
                         </i>
                       )) || (
-                        <i
-                          className="material-icons"
-                          style={styles.verticalMenuItemIcon}
-                        >
+                        <i className="material-icons" style={styles.verticalMenuItemIcon}>
                           {item.iconClass}
                         </i>
                       )}
@@ -337,10 +306,7 @@ class _Dashboard extends Component {
               }
             })}
           </div>
-          <div
-            className="col-lg-10 col-md-9 col-sm-9 col-xs-9"
-            style={styles.contentWrapper}
-          >
+          <div className="col-lg-10 col-md-9 col-sm-9 col-xs-9" style={styles.contentWrapper}>
             {(currentTab && (
               <currentTab.Component
                 {...this.props}
@@ -420,10 +386,7 @@ const mapStateToProps = state => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    { handleContentSaving, setFeedVerified, setChargeState },
-    dispatch
-  );
+  return bindActionCreators({ handleContentSaving, setFeedVerified, setChargeState }, dispatch);
 }
 
 export const Dashboard = connect(

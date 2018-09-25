@@ -82,9 +82,7 @@ class _SoundwiseHeader extends Component {
                   style={{ height: 37, justifyContent: 'center' }}
                 >
                   <div style={{}}>
-                    {`Hello, ${this.capFirstLetter(
-                      this.props.userInfo.firstName
-                    )} `}
+                    {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                     <span className="caret" />
                   </div>
                 </div>
@@ -139,9 +137,7 @@ class _SoundwiseHeader extends Component {
             )}
             <li className="propClone sm-no-border">
               <a className="dropdown-toggle" data-toggle="dropdown">
-                {`Hello, ${this.capFirstLetter(
-                  this.props.userInfo.firstName
-                )} `}
+                {`Hello, ${this.capFirstLetter(this.props.userInfo.firstName)} `}
                 <span className="caret" />
               </a>
               <ul className="dropdown-menu">
@@ -187,11 +183,7 @@ class _SoundwiseHeader extends Component {
             this.props.match.path == '/content_download' ||
             this.props.match.path == '/pricing') && (
             <li className="propClone">
-              <Link
-                className="inner-link"
-                to="/wave_video"
-                style={styles.navlink}
-              >
+              <Link className="inner-link" to="/wave_video" style={styles.navlink}>
                 Soundwave Video Maker
               </Link>
             </li>

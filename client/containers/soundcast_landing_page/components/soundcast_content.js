@@ -89,10 +89,7 @@ export default class SoundcastContent extends Component {
             ref={audioSource => (this.references.audioSource = audioSource)}
           />
         </audio>
-        <section
-          className=" feature-style4 bg-white builder-bg  border-none"
-          id="feature-section6"
-        >
+        <section className=" feature-style4 bg-white builder-bg  border-none" id="feature-section6">
           <div
             className="container padding-30px-tb xs-padding-30px-tb"
             style={{ borderBottom: '0.5px solid lightgrey' }}

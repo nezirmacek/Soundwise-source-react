@@ -2,9 +2,7 @@ var Sequelize = require('sequelize');
 var db;
 
 if (process.env.DATABASE_URL) {
-  var match = process.env.DATABASE_URL.match(
-    /postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/
-  );
+  var match = process.env.DATABASE_URL.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
   db = new Sequelize(match[5], match[1], match[2], {
     dialect: 'postgres',
     protocol: 'postgres',
@@ -20,9 +18,7 @@ if (process.env.DATABASE_URL) {
     dialect: 'postgres',
     port: 5432,
     logging: false,
-    dialectOptions: {
-      ssl: false,
-    },
+    dialectOptions: { ssl: false },
   });
 }
 
@@ -213,11 +209,7 @@ var ImportedFeed = db.define(
     itunesId: { type: Sequelize.STRING, allowNull: true },
   },
   {
-    indexes: [
-      { fields: ['soundcastId'] },
-      { fields: ['publisherId'] },
-      { fields: ['feedUrl'] },
-    ],
+    indexes: [{ fields: ['soundcastId'] }, { fields: ['publisherId'] }, { fields: ['feedUrl'] }],
   }
 );
 
@@ -231,6 +223,28 @@ var Category = db.define(
   },
   {
     indexes: [{ fields: ['name'] }, { fields: ['soundcastId'] }],
+  }
+);
+
+var CategoryList = db.define(
+  'CategoryList',
+  {
+    categoryId: { type: Sequelize.INTEGER, allowNull: false },
+    name: { type: Sequelize.STRING, allowNull: false },
+  },
+  {
+    indexes: [{ fields: ['categoryId'] }, { fields: ['name'] }],
+  }
+);
+
+var CategorySoundcast = db.define(
+  'CategorySoundcast',
+  {
+    categoryId: { type: Sequelize.STRING, allowNull: false },
+    soundcastId: { type: Sequelize.STRING, allowNull: false },
+  },
+  {
+    indexes: [{ fields: ['categoryId'] }, { fields: ['soundcastId'] }],
   }
 );
 
@@ -264,23 +278,23 @@ var Coupon = db.define('Coupon', {
   timeStamp: Sequelize.BIGINT,
 });
 
-Comment.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
-Episode.hasMany(Comment, {foreignKey: 'episodeId', as: 'Comments'});
+Comment.belongsTo(Episode, { foreignKey: 'episodeId', onDelete: 'cascade' });
+Episode.hasMany(Comment, { foreignKey: 'episodeId', as: 'Comments' });
 
-Comment.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
-Announcement.hasMany(Comment, {foreignKey: 'announcementId', as: 'Comments'});
+Comment.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
+Announcement.hasMany(Comment, { foreignKey: 'announcementId', as: 'Comments' });
 
-Like.belongsTo(Comment, {foreignKey: 'commentId', onDelete: 'cascade'});
-Comment.hasMany(Like, {foreignKey: 'commentId', as: 'Likes'});
+Like.belongsTo(Comment, { foreignKey: 'commentId', onDelete: 'cascade' });
+Comment.hasMany(Like, { foreignKey: 'commentId', as: 'Likes' });
 
-Like.belongsTo(Episode, {foreignKey: 'episodeId', onDelete: 'cascade'});
-Episode.hasMany(Like, {foreignKey: 'episodeId', as: 'Likes'});
+Like.belongsTo(Episode, { foreignKey: 'episodeId', onDelete: 'cascade' });
+Episode.hasMany(Like, { foreignKey: 'episodeId', as: 'Likes' });
 
-Like.belongsTo(Announcement, {foreignKey: 'announcementId', onDelete: 'cascade'});
-Announcement.hasMany(Like, {foreignKey: 'announcementId', as: 'Likes'});
+Like.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
+Announcement.hasMany(Like, { foreignKey: 'announcementId', as: 'Likes' });
 
-Announcement.belongsTo(Soundcast, {foreignKey: 'soundcastId', onDelete: 'cascade'});
-Soundcast.hasMany(Announcement, {foreignKey: 'soundcastId', as: 'Announcements'});
+Announcement.belongsTo(Soundcast, { foreignKey: 'soundcastId', onDelete: 'cascade' });
+Soundcast.hasMany(Announcement, { foreignKey: 'soundcastId', as: 'Announcements' });
 
 // Comment.belongsTo(User, {foreignKey: 'userId'});
 // User.hasMany(Comment, {as: 'Comments'});
@@ -343,6 +357,8 @@ Transfers.sync({ force: false, alter: true });
 Event.sync({ force: false, alter: true });
 ImportedFeed.sync({ force: false, alter: true });
 Category.sync({ force: false, alter: true });
+CategoryList.sync({ force: false, alter: true });
+CategorySoundcast.sync({ force: false, alter: true });
 PodcasterEmail.sync({ force: false, alter: true });
 
 module.exports = {
@@ -363,5 +379,7 @@ module.exports = {
   Event,
   db,
   Category,
+  CategoryList,
+  CategorySoundcast,
   PodcasterEmail,
 };

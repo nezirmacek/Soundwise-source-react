@@ -15,9 +15,7 @@ const PAGE_SIZE = 100;
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: `https://${
-    process.env.NODE_ENV === 'production'
-      ? 'soundwise-a8e6f'
-      : 'soundwise-testbase'
+    process.env.NODE_ENV === 'production' ? 'soundwise-a8e6f' : 'soundwise-testbase'
   }.firebaseio.com`,
 });
 
@@ -175,8 +173,7 @@ const createPublisher = async () => {
       .ref(`publishers/${importedPublisherId}`)
       .set({
         email: 'random@mail.coi',
-        imageUrl:
-          'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+        imageUrl: 'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
         name: 'Online Imported Podcast',
         unAssigned: true,
       });

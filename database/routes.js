@@ -66,6 +66,10 @@ module.exports = app => {
   });
 
   app.post('/api/soundcast', (req, res) => {
+    if (req.body && req.body.imageURL) {
+      req.body.imageUrl = req.body.imageURL;
+      delete req.body.imageURL;
+    }
     soundcastService
       .createOrUpdate(req.body)
       .then(data => res.send(data))

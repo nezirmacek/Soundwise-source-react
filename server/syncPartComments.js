@@ -6,20 +6,14 @@ const moment = require('moment');
 const _ = require('lodash');
 const serviceAccount = require('../serviceAccountKey');
 const { commentRepository } = require('./repositories');
-const {
-  commentManager,
-  soundcastManager,
-  messageManager,
-} = require('./managers');
+const { commentManager, soundcastManager, messageManager } = require('./managers');
 
 const LOG_ERR = 'logErrsComments.txt';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
   databaseURL: `https://${
-    process.env.NODE_ENV === 'production'
-      ? 'soundwise-a8e6f'
-      : 'soundwise-testbase'
+    process.env.NODE_ENV === 'production' ? 'soundwise-a8e6f' : 'soundwise-testbase'
   }.firebaseio.com`,
 });
 const ids = [
@@ -73,9 +67,7 @@ const syncEpisodesCommets = async () => {
               const comment = getCommentForPsql(commentId, fbComment);
               await createOrUpdate(comment, commentId);
             } else {
-              logInFile(
-                `episodeId: ${episodeId}\ndelete comment: ${commentId}\n`
-              );
+              logInFile(`episodeId: ${episodeId}\ndelete comment: ${commentId}\n`);
               firebase
                 .database()
                 .ref(`episodes/${episodeId}/comments/${commentId}`)
@@ -105,14 +97,10 @@ const syncAnnouncementsCommets = async () => {
               const comment = getCommentForPsql(commentId, fbComment);
               await createOrUpdate(comment, commentId);
             } else {
-              logInFile(
-                `episodeId: ${announcementsId}\ndelete comment: ${commentId}\n`
-              );
+              logInFile(`episodeId: ${announcementsId}\ndelete comment: ${commentId}\n`);
               firebase
                 .database()
-                .ref(
-                  `soundcasts/${id}/${announcementsId}/comments/${commentId}`
-                )
+                .ref(`soundcasts/${id}/${announcementsId}/comments/${commentId}`)
                 .remove();
             }
           }
@@ -150,9 +138,7 @@ const createOrUpdate = async (comment, key) => {
 };
 
 const getCommentForPsql = (key, fbComment) => {
-  const createdAt = moment
-    .unix(getTimestamp(fbComment.timestamp))
-    .format('YYYY-MM-DD HH:mm:ss Z');
+  const createdAt = moment.unix(getTimestamp(fbComment.timestamp)).format('YYYY-MM-DD HH:mm:ss Z');
   const parentId = key.split('-');
   parentId.shift();
   const comment = {
@@ -162,8 +148,7 @@ const getCommentForPsql = (key, fbComment) => {
     parentId: parentId.length >= 2 ? parentId.join('-') : null,
     episodeId: fbComment.episodeID || null,
     soundcastId: fbComment.soundcastId || fbComment.soundcastID || null,
-    announcementId:
-      fbComment.announcementId || fbComment.announcementID || null,
+    announcementId: fbComment.announcementId || fbComment.announcementID || null,
     timeStamp: fbComment.timestamp || fbComment.timeStamp || null,
     createdAt,
     updatedAt: createdAt,

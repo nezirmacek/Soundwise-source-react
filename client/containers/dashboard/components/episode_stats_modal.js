@@ -9,10 +9,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Link } from 'react-router-dom';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 import { getDateArray } from '../../../helpers/get_date_array';
 
@@ -174,10 +171,7 @@ export default class EpisodeStatsModal extends Component {
               {`Listener Stats: ${this.props.episode.title}`}
             </div>
             <div style={styles.closeButtonWrap}>
-              <div
-                style={{ cursor: 'pointer' }}
-                onClick={this.closeModal.bind(this)}
-              >
+              <div style={{ cursor: 'pointer' }} onClick={this.closeModal.bind(this)}>
                 <i className="fa fa-times fa-2x" style={{ color: 'red' }} />
               </div>
             </div>

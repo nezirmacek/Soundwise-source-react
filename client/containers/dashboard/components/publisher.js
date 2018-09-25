@@ -5,10 +5,7 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 import Profile from './settings';
 import Transactions from './transactions';
@@ -68,21 +65,9 @@ export default class Publisher extends Component {
         />
       );
     } else if (this.props.match.params.id == 'payouts') {
-      return (
-        <Payouts
-          {...this.props}
-          userInfo={userInfo}
-          id={this.props.match.params.id}
-        />
-      );
+      return <Payouts {...this.props} userInfo={userInfo} id={this.props.match.params.id} />;
     } else if (this.props.match.params.id == 'settings') {
-      return (
-        <Billing
-          {...this.props}
-          userInfo={userInfo}
-          id={this.props.match.params.id}
-        />
-      );
+      return <Billing {...this.props} userInfo={userInfo} id={this.props.match.params.id} />;
     } else if (this.props.match.params.id == 'promotions') {
       return (
         <Promotions

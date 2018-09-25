@@ -35,9 +35,7 @@ class _Cart extends Component {
     _shoppingCart.map(course => {
       let _oldCourse = _.find(this.state.shoppingCart, { id: course.id });
       course.discountedPrice =
-        (_oldCourse && _oldCourse.discountedPrice) ||
-        (_oldCourse && _oldCourse.price) ||
-        0;
+        (_oldCourse && _oldCourse.discountedPrice) || (_oldCourse && _oldCourse.price) || 0;
     });
     this.setState({ shoppingCart: _shoppingCart });
   }
@@ -138,14 +136,10 @@ class _Cart extends Component {
                             <CourseInCart
                               course={course}
                               key={i}
-                              setDiscountedPrise={this.setCourseDiscountedPrice.bind(
-                                this
-                              )}
+                              setDiscountedPrise={this.setCourseDiscountedPrice.bind(this)}
                               addCourseToUser={this.addCourseToUser.bind(this)}
                               userInfo={this.props.userInfo}
-                              deleteCourseFromCart={
-                                this.props.deleteCourseFromCart
-                              }
+                              deleteCourseFromCart={this.props.deleteCourseFromCart}
                             />
                           );
                         })}

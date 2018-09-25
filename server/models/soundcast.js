@@ -5,8 +5,8 @@ module.exports = function(Soundcast) {
     if (process.env.NODE_SC === 'onlyFree') {
       const filter = context.args.filter;
       filter
-        ? Object.assign(filter.where, {forSale: false})
-        : Object.assign(context.args, {filter: {where: {forSale: false}}});
+        ? Object.assign(filter.where, { forSale: false })
+        : Object.assign(context.args, { filter: { where: { forSale: false } } });
     }
     next();
   });

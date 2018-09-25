@@ -33,20 +33,17 @@ export default class TeamTrainingBlock extends Component {
                 </div>
                 <ul className="text-large text-white sm-text-large margin-fifteen-bottom tz-text">
                   <li>
-                    <strong>Record</strong> your training sessions directly from
-                    the browser
+                    <strong>Record</strong> your training sessions directly from the browser
                   </li>
                   <li>
-                    <strong>Send recordings</strong> to your team’s phones with
-                    one click
+                    <strong>Send recordings</strong> to your team’s phones with one click
                   </li>
                   <li>
-                    <strong>Track</strong> who has listened to what down to each
-                    team member
+                    <strong>Track</strong> who has listened to what down to each team member
                   </li>
                   <li>
-                    Send group text messages to further <strong>engage</strong>{' '}
-                    your team in training
+                    Send group text messages to further <strong>engage</strong> your team in
+                    training
                   </li>
                 </ul>
                 <Link

@@ -14,10 +14,7 @@ const _Notice = props => (
       className="padding-110px-tb bg-white builder-bg xs-padding-60px-tb"
       id="subscribe-section6"
     >
-      <div
-        className="container  text-dark-gray border-none"
-        style={{ fontSize: '18px' }}
-      >
+      <div className="container  text-dark-gray border-none" style={{ fontSize: '18px' }}>
         <div className="row">
           <div className="col-md-9 center-col col-sm-12 ">
             {(props.location.state.soundcastTitle && (
@@ -43,10 +40,7 @@ const _Notice = props => (
                   </span>
                 </div>
                 <div className="col-md-8 col-sm-9 col-xs-12 center-col text-center">
-                  <div
-                    className="section-title-small"
-                    style={{ marginBottom: 15 }}
-                  >
+                  <div className="section-title-small" style={{ marginBottom: 15 }}>
                     <span>
                       <strong>Mobile</strong>
                     </span>
@@ -87,9 +81,7 @@ const _Notice = props => (
                     <span>
                       <strong>Step 2: </strong>
                     </span>
-                    <span>
-                      Sign in to the app with your Soundwise account credentials
-                    </span>
+                    <span>Sign in to the app with your Soundwise account credentials</span>
                   </div>
                   <div className="text-large">
                     <span>
@@ -98,19 +90,13 @@ const _Notice = props => (
                     <span>Enjoy your soundcast!</span>
                   </div>
                 </div>
-                <div
-                  className="section-title-small"
-                  style={{ textAlign: 'center', marginTop: 20 }}
-                >
+                <div className="section-title-small" style={{ textAlign: 'center', marginTop: 20 }}>
                   <div style={{ marginBottom: 10 }}>
                     <strong>Desktop</strong>
                   </div>
                   <MuiThemeProvider>
                     <Link to="/mysoundcasts">
-                      <FlatButton
-                        label="Access your soundcast"
-                        style={{ color: '#f76b1c' }}
-                      />
+                      <FlatButton label="Access your soundcast" style={{ color: '#f76b1c' }} />
                     </Link>
                   </MuiThemeProvider>
                 </div>
