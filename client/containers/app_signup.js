@@ -6,15 +6,11 @@ import Axios from 'axios';
 import PropTypes from 'prop-types';
 import 'url-search-params-polyfill';
 import { orange500, blue500 } from 'material-ui/styles/colors';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
+import Dots from 'react-activity/lib/Dots';
 
 import { SoundwiseHeader } from '../components/soundwise_header';
 import { signupUser, signinUser, addDefaultSoundcast } from '../actions/index';
@@ -40,16 +36,13 @@ class _AppSignup extends Component {
       password: '',
       message: '',
       publisher_name: '',
-      pic_url:
-        'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
+      pic_url: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
       publisherImage: null,
       redirectToReferrer: false,
       isPublisherFormShown: false,
       isFBauth: false,
-      soundcast:
-        props.match.params.mode == 'soundcast_user' && props.match.params.id
-          ? {}
-          : null,
+      soundcast: props.match.params.mode == 'soundcast_user' && props.match.params.id ? {} : null,
+      loading: true,
     };
 
     this.publisherID = moment().format('x') + 'p';
@@ -58,29 +51,32 @@ class _AppSignup extends Component {
     this.addDefaultSoundcast = this.addDefaultSoundcast.bind(this);
     this.signupCallback = this.signupCallback.bind(this);
     this.sendWelcomeEmail = this.sendWelcomeEmail.bind(this);
+    this.isShownSoundcastSignup = this.isShownSoundcastSignup.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
   }
 
   componentWillMount() {
     const that = this;
     const params = new URLSearchParams(this.props.location.search);
     const checked = params.get('checked');
-    if (
-      this.props.match.params.mode == 'soundcast_user' &&
-      this.props.match.params.id
-    ) {
+    if (this.props.match.params.mode == 'soundcast_user' && this.props.match.params.id) {
       firebase
         .database()
         .ref(`soundcasts/${this.props.match.params.id}`)
         .once('value')
         .then(snapshot => {
-          if (snapshot.val()) {
+          const soundcast = snapshot.val();
+          if (!this.isShownSoundcastSignup(soundcast)) {
+            this.props.history.push('/notfound');
+            return;
+          }
+          if (soundcast) {
             that.setState({
-              soundcast: snapshot.val(),
+              loading: false,
+              soundcast,
               soundcastID: that.props.match.params.id,
               checked: checked ? checked : 0,
-              sumTotal: checked
-                ? snapshot.val().prices[checked].price
-                : snapshot.val().prices[0].price,
+              sumTotal: checked ? soundcast.prices[checked].price : soundcast.prices[0].price,
             });
           }
         });
@@ -95,12 +91,7 @@ class _AppSignup extends Component {
       this.publisherID = this.props.match.params.id;
     }
     if (this.props.history.location.state) {
-      const {
-        soundcast,
-        soundcastID,
-        checked,
-        sumTotal,
-      } = this.props.history.location.state;
+      const { soundcast, soundcastID, checked, sumTotal } = this.props.history.location.state;
       this.setState({
         soundcast,
         soundcastID,
@@ -113,6 +104,55 @@ class _AppSignup extends Component {
   componentWillUnmount() {
     this.firebaseListener = null;
     this.firebaseListener2 = null;
+  }
+
+  isShownSoundcastSignup(soundcast) {
+    const { userInfo } = this.props;
+    if (soundcast.published === true) {
+      if (!soundcast.forSale) {
+        return true;
+      }
+      if (
+        soundcast.forSale === true &&
+        !this.isFreeAccount() &&
+        (userInfo.publisher.plan === 'pro' || userInfo.publisher.plan === 'platinum')
+      ) {
+        return true;
+      }
+      if (userInfo.publisher && userInfo.publisher.id === '1531418940327p') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  renderProgressBar() {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: '1em',
+        }}
+      >
+        <Dots style={{ display: 'flex' }} color="#727981" size={32} speed={1} />
+      </div>
+    );
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (
+      userInfo.publisher &&
+      userInfo.publisher.plan &&
+      userInfo.publisher.current_period_end > curTime
+    ) {
+      return false;
+    }
+    return true;
   }
 
   setStatePromise(that, newState) {
@@ -274,8 +314,7 @@ class _AppSignup extends Component {
       alert('Please enter a publisher name!');
       return;
     }
-    if (!this._validateForm(firstName, lastName, email, password, isFBauth))
-      return;
+    if (!this._validateForm(firstName, lastName, email, password, isFBauth)) return;
 
     this._signUp().then(res => {
       if (this.props.match.params.mode === 'admin') {
@@ -358,125 +397,119 @@ class _AppSignup extends Component {
     const that = this;
     const params = new URLSearchParams(this.props.location.search);
     if (!defaultSoundcastAdded) {
-      this.firebaseListener2 = firebase
-        .auth()
-        .onAuthStateChanged(function(user) {
-          if (user && that.firebaseListener2) {
-            const creatorID = user.uid;
-            const {
-              firstName,
-              lastName,
-              email,
-              password,
-              pic_url,
-              publisher_name,
-              publisherImage,
-              isFBauth,
-            } = that.state;
-            const subscribed = {};
-            const _email = email.replace(/\./g, '(dot)');
-            subscribed[creatorID] = moment().format('X');
+      this.firebaseListener2 = firebase.auth().onAuthStateChanged(function(user) {
+        if (user && that.firebaseListener2) {
+          const creatorID = user.uid;
+          const {
+            firstName,
+            lastName,
+            email,
+            password,
+            pic_url,
+            publisher_name,
+            publisherImage,
+            isFBauth,
+          } = that.state;
+          const subscribed = {};
+          const _email = email.replace(/\./g, '(dot)');
+          subscribed[creatorID] = moment().format('X');
 
-            const soundcastId = `${moment().format('x')}s`;
+          const soundcastId = `${moment().format('x')}s`;
 
-            const newSoundcast = {
-              title: 'Default Soundcast',
-              imageURL:
-                'https://s3.amazonaws.com/soundwiseinc/default+image.jpg',
-              hostImageURL:
-                'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
-              short_description: 'First soundcast',
-              creatorID,
-              publisherID: that.publisherID,
-              prices: [{ price: 'free', billingCycle: 'free' }],
-              forSale: false,
-              published: false,
-              landingPage: false,
-            };
+          const imageURL = 'https://s3.amazonaws.com/soundwiseinc/default+image.jpg';
+          const newSoundcast = {
+            title: 'Default Soundcast',
+            imageURL,
+            hostImageURL: 'https://s3.amazonaws.com/soundwiseinc/user_profile_pic_placeholder.png',
+            short_description: 'First soundcast',
+            creatorID,
+            publisherID: that.publisherID,
+            prices: [{ price: 'free', billingCycle: 'free' }],
+            forSale: false,
+            published: false,
+            landingPage: false,
+          };
 
-            let _promises = [
-              // add soundcast to soundcasts node
-              firebase
-                .database()
-                .ref(`soundcasts/${soundcastId}`)
-                .set(newSoundcast)
-                .then(
-                  res => {
-                    console.log('success add soundcast: ', res);
-                    return res;
-                  },
-                  err => {
-                    console.log('ERROR add soundcast: ', err);
-                    Promise.reject(err);
-                  }
-                ),
-              // add soundcast to publisher
-              firebase
-                .database()
-                .ref(`publishers/${that.publisherID}/soundcasts/${soundcastId}`)
-                .set(true)
-                .then(
-                  res => {
-                    console.log('success add soundcast to publisher: ', res);
-                    return res;
-                  },
-                  err => {
-                    console.log('ERROR add soundcast to publisher: ', err);
-                    Promise.reject(err);
-                  }
-                ),
-              // add soundcast to admin
-              firebase
-                .database()
-                .ref(`users/${creatorID}/soundcasts_managed/${soundcastId}`)
-                .set(true)
-                .then(
-                  res => {
-                    console.log(
-                      'success add soundcast to admin.soundcasts_managed: ',
-                      res
-                    );
-                    return res;
-                  },
-                  err => {
-                    console.log(
-                      'ERROR add soundcast to admin.soundcasts_managed: ',
-                      err
-                    );
-                    Promise.reject(err);
-                  }
-                ),
-              Axios.post('/api/soundcast', {
-                soundcastId: soundcastId,
-                publisherId: that.publisherID,
-                title: newSoundcast.title,
-              })
-                .then(res => {
-                  return res;
-                })
-                .catch(err => {
-                  console.log('ERROR API post soundcast: ', err);
-                  Promise.reject(err);
-                }),
-            ];
-
-            Promise.all(_promises)
+          let _promises = [
+            // add soundcast to soundcasts node
+            firebase
+              .database()
+              .ref(`soundcasts/${soundcastId}`)
+              .set(newSoundcast)
               .then(
                 res => {
-                  console.log('completed adding soundcast');
-                  that.firebaseListener = null;
-                  addDefaultSoundcast();
-                  that.compileUser();
+                  console.log('success add soundcast: ', res);
+                  return res;
                 },
                 err => {
-                  console.log('failed to complete adding soundcast');
+                  console.log('ERROR add soundcast: ', err);
+                  Promise.reject(err);
                 }
-              )
-              .then(() => sendWelcomeEmail());
-          } else {
-            // Raven.captureMessage('Default soundcast saving failed!')
-          }
-        });
+              ),
+            // add soundcast to publisher
+            firebase
+              .database()
+              .ref(`publishers/${that.publisherID}/soundcasts/${soundcastId}`)
+              .set(true)
+              .then(
+                res => {
+                  console.log('success add soundcast to publisher: ', res);
+                  return res;
+                },
+                err => {
+                  console.log('ERROR add soundcast to publisher: ', err);
+                  Promise.reject(err);
+                }
+              ),
+            // add soundcast to admin
+            firebase
+              .database()
+              .ref(`users/${creatorID}/soundcasts_managed/${soundcastId}`)
+              .set(true)
+              .then(
+                res => {
+                  console.log('success add soundcast to admin.soundcasts_managed: ', res);
+                  return res;
+                },
+                err => {
+                  console.log('ERROR add soundcast to admin.soundcasts_managed: ', err);
+                  Promise.reject(err);
+                }
+              ),
+            Axios.post('/api/soundcast', {
+              soundcastId: soundcastId,
+              publisherId: that.publisherID,
+              title: newSoundcast.title,
+              imageURL,
+              published: false,
+              landingPage: false,
+            })
+              .then(res => {
+                return res;
+              })
+              .catch(err => {
+                console.log('ERROR API post soundcast: ', err);
+                Promise.reject(err);
+              }),
+          ];
+
+          Promise.all(_promises)
+            .then(
+              res => {
+                console.log('completed adding soundcast');
+                that.firebaseListener = null;
+                addDefaultSoundcast();
+                that.compileUser();
+              },
+              err => {
+                console.log('failed to complete adding soundcast');
+              }
+            )
+            .then(() => sendWelcomeEmail());
+        } else {
+          // Raven.captureMessage('Default soundcast saving failed!')
+        }
+      });
       this.firebaseListener2 && this.firebaseListener2();
     }
   }
@@ -492,8 +525,7 @@ class _AppSignup extends Component {
 
     inviteListeners(
       [{ firstName, lastName, email }],
-      `What are you creating, ${firstName.slice(0, 1).toUpperCase() +
-        firstName.slice(1)}?`,
+      `What are you creating, ${firstName.slice(0, 1).toUpperCase() + firstName.slice(1)}?`,
       content,
       'Natasha Che',
       null,
@@ -568,6 +600,18 @@ class _AppSignup extends Component {
   }
 
   handleChange(prop, e) {
+    if (e.target.value) {
+      // cache values (bug #58)
+      if (prop === 'firstName') {
+        localStorage.setItem('soundwiseSignupFName', e.target.value);
+      }
+      if (prop === 'lastName') {
+        localStorage.setItem('soundwiseSignupLName', e.target.value);
+      }
+      if (prop === 'email') {
+        localStorage.setItem('soundwiseSignupEmail', e.target.value);
+      }
+    }
     this.setState({ [prop]: e.target.value });
   }
 
@@ -590,16 +634,11 @@ class _AppSignup extends Component {
               .ref('users/' + userId)
               .once('value')
               .then(snapshot => {
-                if (
-                  snapshot.val() &&
-                  typeof snapshot.val().firstName !== 'undefined'
-                ) {
+                if (snapshot.val() && typeof snapshot.val().firstName !== 'undefined') {
                   // if user already exists
                   console.log('user already exists');
                   let updates = {};
-                  updates[
-                    '/users/' + userId + '/pic_url/'
-                  ] = snapshot.val().pic_url;
+                  updates['/users/' + userId + '/pic_url/'] = snapshot.val().pic_url;
                   firebase
                     .database()
                     .ref()
@@ -628,12 +667,8 @@ class _AppSignup extends Component {
                   }
                 } else {
                   //if it's a new user
-                  const { email, photoURL, displayName } = JSON.parse(
-                    JSON.stringify(result.user)
-                  );
-                  const name = displayName
-                    ? displayName.split(' ')
-                    : ['User', ''];
+                  const { email, photoURL, displayName } = JSON.parse(JSON.stringify(result.user));
+                  const name = displayName ? displayName.split(' ') : ['User', ''];
                   const user = {
                     firstName: name[0],
                     lastName: name[1],
@@ -645,16 +680,13 @@ class _AppSignup extends Component {
                       firstName: name[0],
                       lastName: name[1],
                       email,
-                      pic_url: photoURL
-                        ? photoURL
-                        : '../images/smiley_face.jpg',
+                      pic_url: photoURL ? photoURL : '../images/smiley_face.jpg',
                       isPublisherFormShown: true,
                     });
                   } else if (match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    const isAdmin =
-                      match.params.mode === 'admin' ? that.publisherID : null;
+                    const isAdmin = match.params.mode === 'admin' ? that.publisherID : null;
                     signupCommon(user, isAdmin, that.signupCallback);
                   }
                 }
@@ -676,12 +708,7 @@ class _AppSignup extends Component {
                 .ref('users/' + userId)
                 .once('value')
                 .then(snapshot => {
-                  const {
-                    firstName,
-                    lastName,
-                    email,
-                    pic_url,
-                  } = snapshot.val();
+                  const { firstName, lastName, email, pic_url } = snapshot.val();
                   const user = { firstName, lastName, email, pic_url };
                   that.setState({ firstName, lastName, email, pic_url });
                   if (match.params.mode === 'admin' && !match.params.id) {
@@ -689,8 +716,7 @@ class _AppSignup extends Component {
                   } else if (match.params.mode == 'admin' && match.params.id) {
                     that.signUpInvitedAdmin(user);
                   } else {
-                    const isAdmin =
-                      match.params.mode === 'admin' ? that.publisherID : null;
+                    const isAdmin = match.params.mode === 'admin' ? that.publisherID : null;
                     signupCommon(user, isAdmin, that.signupCallback);
                   }
                 });
@@ -707,14 +733,10 @@ class _AppSignup extends Component {
     const { signupUser, match, history } = this.props;
     signupUser(user);
     // for user -> goTo myPrograms, for admin need to register publisher first
-    if (
-      match.params.mode !== 'admin' &&
-      match.params.mode !== 'soundcast_user'
-    ) {
+    if (match.params.mode !== 'admin' && match.params.mode !== 'soundcast_user') {
       history.push('/myprograms');
     } else if (match.params.mode == 'soundcast_user') {
-      const { soundcast, soundcastID, checked, sumTotal } =
-        history.location.state || this.state;
+      const { soundcast, soundcastID, checked, sumTotal } = history.location.state || this.state;
       history.push('/soundcast_checkout', {
         soundcastID,
         soundcast,
@@ -739,6 +761,7 @@ class _AppSignup extends Component {
       soundcast,
       checked,
       soundcastID,
+      loading,
     } = this.state;
     const { from } = this.props.location.state || {
       from: { pathname: '/courses' },
@@ -746,6 +769,10 @@ class _AppSignup extends Component {
 
     if (redirectToReferrer) {
       return <Redirect to={from} />;
+    }
+
+    if (loading) {
+      return this.renderProgressBar();
     }
 
     return (
@@ -770,10 +797,7 @@ class _AppSignup extends Component {
                 style={{ ...styles.logo, height: 120 }}
               />
               <div style={styles.containerWrapper}>
-                <div
-                  style={styles.container}
-                  className="center-col text-center"
-                >
+                <div style={styles.container} className="center-col text-center">
                   <button
                     onClick={() => this.handleFBAuth()}
                     className="text-white btn btn-medium propClone btn-3d width-60 builder-bg tz-text bg-blue tz-background-color"
@@ -788,10 +812,7 @@ class _AppSignup extends Component {
                   <hr />
                   <span style={styles.withEmailText}>or with email</span>
                 </div>
-                <div
-                  style={styles.container}
-                  className="col-lg-6 col-md-6 col-sm-12 col-xs-12"
-                >
+                <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <GreyInput
                     type="text"
                     styles={{}}
@@ -802,10 +823,7 @@ class _AppSignup extends Component {
                     validators={[minLengthValidator.bind(null, 1)]}
                   />
                 </div>
-                <div
-                  style={styles.container}
-                  className="col-lg-6 col-md-6 col-sm-12 col-xs-12"
-                >
+                <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <GreyInput
                     type="text"
                     styles={{}}
@@ -816,10 +834,7 @@ class _AppSignup extends Component {
                     validators={[minLengthValidator.bind(null, 1)]}
                   />
                 </div>
-                <div
-                  style={styles.container}
-                  className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                >
+                <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <GreyInput
                     type="email"
                     styles={{}}
@@ -859,9 +874,7 @@ class _AppSignup extends Component {
                   }
 
                   <div style={{ marginBottom: 15 }}>
-                    <span style={styles.italicText}>
-                      Already have an account?{' '}
-                    </span>
+                    <span style={styles.italicText}>Already have an account? </span>
                     {
                       <Link
                         to={{
@@ -870,8 +883,7 @@ class _AppSignup extends Component {
                             soundcast,
                             soundcastID,
                             checked,
-                            soundcastUser:
-                              match.params.mode === 'soundcast_user',
+                            soundcastUser: match.params.mode === 'soundcast_user',
                             sumTotal,
                           },
                         }}
@@ -945,10 +957,7 @@ class _AppSignup extends Component {
                   style={styles.logo}
                 />
                 <div style={styles.containerWrapper}>
-                  <div
-                    style={styles.container}
-                    className="center-col text-center"
-                  >
+                  <div style={styles.container} className="center-col text-center">
                     <div style={styles.title}>Let's get started!</div>
                     <button
                       onClick={() => this.handleFBAuth()}
@@ -964,10 +973,7 @@ class _AppSignup extends Component {
                     <hr />
                     <span style={styles.withEmailText}>or with email</span>
                   </div>
-                  <div
-                    style={styles.container}
-                    className="col-lg-6 col-md-6 col-sm-12 col-xs-12"
-                  >
+                  <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                     <GreyInput
                       type="text"
                       styles={{}}
@@ -978,10 +984,7 @@ class _AppSignup extends Component {
                       validators={[minLengthValidator.bind(null, 1)]}
                     />
                   </div>
-                  <div
-                    style={styles.container}
-                    className="col-lg-6 col-md-6 col-sm-12 col-xs-12"
-                  >
+                  <div style={styles.container} className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                     <GreyInput
                       type="text"
                       styles={{}}
@@ -992,10 +995,7 @@ class _AppSignup extends Component {
                       validators={[minLengthValidator.bind(null, 1)]}
                     />
                   </div>
-                  <div
-                    style={styles.container}
-                    className="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                  >
+                  <div style={styles.container} className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <GreyInput
                       type="email"
                       styles={{}}
@@ -1003,10 +1003,7 @@ class _AppSignup extends Component {
                       placeholder={'Email'}
                       onChange={this.handleChange.bind(this, 'email')}
                       value={email}
-                      validators={[
-                        minLengthValidator.bind(null, 1),
-                        emailValidator,
-                      ]}
+                      validators={[minLengthValidator.bind(null, 1), emailValidator]}
                     />
                     <GreyInput
                       type="password"
@@ -1039,9 +1036,7 @@ class _AppSignup extends Component {
                     )}
 
                     <div style={{ marginBottom: 15 }}>
-                      <span style={styles.italicText}>
-                        Already have an account?{' '}
-                      </span>
+                      <span style={styles.italicText}>Already have an account? </span>
                       {(!history.location.state && (
                         <Link
                           to="/signin"
@@ -1090,10 +1085,7 @@ class _AppSignup extends Component {
                 />
               </div>
               <div style={{ ...styles.containerWrapper, padding: 15 }}>
-                <div
-                  style={styles.container}
-                  className="center-col text-center"
-                >
+                <div style={styles.container} className="center-col text-center">
                   <div style={{ ...styles.title, marginBottom: 10 }}>
                     Create Your Publisher Account
                   </div>
@@ -1118,8 +1110,8 @@ class _AppSignup extends Component {
                       height: 36,
                     }}
                   >
-                    (this can be the name of your business, brand, team. You can
-                    always change it later.)
+                    (this can be the name of your business, brand, team. You can always change it
+                    later.)
                   </div>
                   <GreyInput
                     type="email"
@@ -1228,10 +1220,7 @@ const styles = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    { signupUser, signinUser, addDefaultSoundcast },
-    dispatch
-  );
+  return bindActionCreators({ signupUser, signinUser, addDefaultSoundcast }, dispatch);
 }
 
 const mapStateToProps = state => {

@@ -6,15 +6,7 @@ import commonStyles from '../../styles/commonStyles';
 import ValidatedInput from '../../components/inputs/validatedInput';
 
 export const GreyInput = props => {
-  const {
-    validators,
-    styles,
-    type,
-    placeholder,
-    onChange,
-    value,
-    wrapperStyles,
-  } = props;
+  const { validators, styles, type, placeholder, onChange, value, wrapperStyles } = props;
 
   return (
     <ValidatedInput

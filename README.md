@@ -2,6 +2,15 @@
 
 Mobile-focused audio publishing platform for coaches, consultants, and entrepreneurial experts to sell and deliver on-demand audio programs, and leverage their podcast to build their email list and an engaged audience.
 
+## Synchronizing files with soundwise-worker1 repository
+
+Files expected to be updated after changes in _soundwise-worker1_ repository:
+```
+database/index.js
+server/scripts/parseFeed.js
+server/scripts/utils.js
+```
+
 ## Development
 
 ### Installing Dependencies
@@ -105,10 +114,13 @@ Set **mode: 'development',** line and comment **devtool: 'source-map',** in **we
   mode: 'development',
   // devtool: 'source-map',
 ```
-then run:
+To run server:
 ```
-NODE_ENV=dev node --inspect server/server.js
-NODE_ENV=dev npm run-script start
+node --inspect server/server.js
+```
+To run client (in second terminal, with same environment imports):
+```
+npm run-script start
 ```
 
 ### Start loppback api
@@ -176,6 +188,10 @@ or
 
 >npm run-script build
 
+*In case if you have **Allocation failed - JavaScript heap out of memory** error - you can try:
+
+>node --max_old_space_size=4096 node_modules/.bin/webpack 
+
 *you can check git configuration with *"git remote -v"* command,
 
 to add live remote run:
@@ -196,11 +212,13 @@ for example, if under root folder:
 under root(!) on remote server run:
 >pm2 restart server
 
+*Note - to update environment, run: *pm2 restart server --update-env*
+
 
 # Issues:
 
 #### - express-fileuploader module changes files names when upload to aws s3:
-api/node_modules/express-fileuploader/lib/index.js:91-93
+./node_modules/express-fileuploader/lib/index.js:91-93
 ```
 var uid = uuid.v1(),
     ext = path.extname(file.name);

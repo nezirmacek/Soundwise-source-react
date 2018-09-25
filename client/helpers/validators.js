@@ -5,25 +5,15 @@ export function minLengthValidator(limit, value) {
 }
 
 export function maxLengthValidator(limit, value) {
-  return (
-    (value.length > limit && `Maximal length is ${limit} characters`) || ''
-  );
+  return (value.length > limit && `Maximal length is ${limit} characters`) || '';
 }
 
 export function minValidator(limit, value) {
-  return (
-    numberValidator(value) ||
-    (+value < limit && `Minimal value is ${limit}`) ||
-    ''
-  );
+  return numberValidator(value) || (+value < limit && `Minimal value is ${limit}`) || '';
 }
 
 export function maxValidator(limit, value) {
-  return (
-    numberValidator(value) ||
-    (+value > limit && `Maximal value is ${limit}`) ||
-    ''
-  );
+  return numberValidator(value) || (+value > limit && `Maximal value is ${limit}`) || '';
 }
 
 // type validators

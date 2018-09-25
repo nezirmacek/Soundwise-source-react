@@ -9,8 +9,7 @@ var moment = require('moment');
 // var parameters = {'apiKey': sendinBlueApiKey, 'timeout': 5000};
 // var sendinObj = new sendinblue(parameters);
 var emailTemplate = require('./helpers/emailTemplate').emailTemplate;
-var marketingEmailTemplate = require('./helpers/marketingEmailTemplate')
-  .marketingEmailTemplate;
+var marketingEmailTemplate = require('./helpers/marketingEmailTemplate').marketingEmailTemplate;
 
 var sgMail = require('@sendgrid/mail');
 var sendGridApiKey = require('../../config').sendGridApiKey;
@@ -21,14 +20,8 @@ client.setApiKey(sendGridApiKey);
 const sendTransactionalEmails = (req, res) => {
   var content = req.body.plainEmail
     ? req.body.content
-    : emailTemplate(
-        req.body.publisherName,
-        req.body.publisherImage,
-        req.body.content
-      );
-  var email = req.body.publisherEmail
-    ? req.body.publisherEmail
-    : 'support@mysoundwise.com';
+    : emailTemplate(req.body.publisherName, req.body.publisherImage, req.body.content);
+  var email = req.body.publisherEmail ? req.body.publisherEmail : 'support@mysoundwise.com';
   var name = req.body.publisherName ? req.body.publisherName : 'Soundwise';
   // console.log('req.body.content: ', req.body.content);
   // console.log('compiled content: ', content);
@@ -79,7 +72,7 @@ const sendMail = async comment => {
     timestamp: comment.timeStamp,
   };
   fbComment = _.pickBy(fbComment, _.identity);
-  const {userID, soundcastID, announcementID, episodeID, timestamp} = fbComment;
+  const { userID, soundcastID, announcementID, episodeID, timestamp } = fbComment;
   const publisherID = await firebase
     .database()
     .ref(`soundcasts/${soundcastID}/publisherID`)
@@ -95,9 +88,7 @@ const sendMail = async comment => {
       .database()
       .ref(`users/${userID}`)
       .once('value');
-    const commentorName = `${commentor.val().firstName} ${
-      commentor.val().lastName
-    }`;
+    const commentorName = `${commentor.val().firstName} ${commentor.val().lastName}`;
     let adminsEmails = [];
     for (var i = 0; i < adminsArr.length; i++) {
       const email = await firebase
@@ -119,9 +110,7 @@ const sendMail = async comment => {
     if (announcementID) {
       announcementDate = moment.unix(timestamp).format('MMM DD YYYY');
     }
-    const subject = episodeTitle
-      ? episodeTitle
-      : `your announcement made on ${announcementDate}`;
+    const subject = episodeTitle ? episodeTitle : `your announcement made on ${announcementDate}`;
     const msg = {
       to: adminsEmails,
       from: 'support@mysoundwise.com',
@@ -190,16 +179,11 @@ const addToEmailList = (req, res) => {
             try {
               message = err.response.body.errors[0].message;
             } catch (err) {}
-            if (
-              message ===
-              'This list name is already in use. Please choose a new, unique name.'
-            ) {
+            if (message === 'This list name is already in use. Please choose a new, unique name.') {
               client
                 .request({ method: 'GET', url: '/v3/contactdb/lists' })
                 .then(([response, body]) => {
-                  const list = body.lists.find(
-                    i => i.name === `${soundcastId}-${listName}`
-                  );
+                  const list = body.lists.find(i => i.name === `${soundcastId}-${listName}`);
                   if (list) {
                     addRecipients(list.id);
                   } else {
@@ -295,11 +279,7 @@ const sendMarketingEmails = (req, res) => {
     unsubscribeGroup,
   } = req.body;
   const email = publisherEmail ? publisherEmail : 'support@mysoundwise.com';
-  const html_content = marketingEmailTemplate(
-    publisherName,
-    publisherImage,
-    content
-  );
+  const html_content = marketingEmailTemplate(publisherName, publisherImage, content);
 
   const requestBody = {
     title: subject.slice(0, 100),

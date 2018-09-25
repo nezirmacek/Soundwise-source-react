@@ -5,10 +5,7 @@ import Axios from 'axios';
 import firebase from 'firebase';
 import Toggle from 'react-toggle';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import { sendNotifications } from '../../../helpers/send_notifications';
 import Colors from '../../../styles/colors';
@@ -45,8 +42,7 @@ export default class Announcements extends Component {
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
@@ -66,8 +62,7 @@ export default class Announcements extends Component {
     if (userInfo.publisher) {
       if (
         (!userInfo.publisher.plan && !userInfo.publisher.beta) ||
-        (userInfo.publisher.plan &&
-          userInfo.publisher.current_period_end < moment().format('X'))
+        (userInfo.publisher.plan && userInfo.publisher.current_period_end < moment().format('X'))
       ) {
         this.setState({
           modalOpen: true,
@@ -75,16 +70,9 @@ export default class Announcements extends Component {
       }
     }
     if (nextProps.userInfo.soundcasts_managed) {
-      if (
-        typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] ==
-        'object'
-      ) {
+      if (typeof Object.values(nextProps.userInfo.soundcasts_managed)[0] == 'object') {
         const { userInfo } = nextProps;
-        this.loadUser(
-          userInfo,
-          this.state.currentSoundcast,
-          this.state.currentSoundcastID
-        );
+        this.loadUser(userInfo, this.state.currentSoundcast, this.state.currentSoundcastID);
       }
     }
   }
@@ -94,9 +82,7 @@ export default class Announcements extends Component {
     const _soundcasts_managed = [];
 
     for (let id in userInfo.soundcasts_managed) {
-      const _soundcast = JSON.parse(
-        JSON.stringify(userInfo.soundcasts_managed[id])
-      );
+      const _soundcast = JSON.parse(JSON.stringify(userInfo.soundcasts_managed[id]));
       if (_soundcast.title) {
         _soundcast.id = id;
         _soundcasts_managed.push(_soundcast);
@@ -295,22 +281,17 @@ export default class Announcements extends Component {
               zIndex: 103,
             }}
           >
-            <div
-              className="title-medium"
-              style={{ margin: 25, fontWeight: 800 }}
-            >
+            <div className="title-medium" style={{ margin: 25, fontWeight: 800 }}>
               Upgrade to send messages
             </div>
             <div className="title-small" style={{ margin: 25 }}>
-              Message sending to subscribers is available on PLUS and PRO plans.
-              Please upgrade to access the feature.
+              Message sending to subscribers is available on PLUS and PRO plans. Please upgrade to
+              access the feature.
             </div>
             <div className="center-col">
               <OrangeSubmitButton
                 label="Upgrade"
-                onClick={() =>
-                  that.props.history.push({ pathname: '/pricing' })
-                }
+                onClick={() => that.props.history.push({ pathname: '/pricing' })}
                 styles={{ width: '60%' }}
               />
             </div>
@@ -357,10 +338,7 @@ export default class Announcements extends Component {
                   that.setState({ sendEmails });
                 }}
               />
-              <span
-                id="share-label"
-                style={{ fontSize: 20, fontWeight: 800, marginLeft: '0.5em' }}
-              >
+              <span id="share-label" style={{ fontSize: 20, fontWeight: 800, marginLeft: '0.5em' }}>
                 Email the message to subscribers and invitees
               </span>
             </div>
@@ -383,9 +361,7 @@ export default class Announcements extends Component {
                 <div style={styles.existingAnnouncement} key={i}>
                   <div style={styles.announcementContainer}>
                     <div style={styles.date}>
-                      {moment(announcement.updatedAt).format(
-                        'dddd, MMMM Do YYYY, h:mm a'
-                      )}
+                      {moment(announcement.updatedAt).format('dddd, MMMM Do YYYY, h:mm a')}
                     </div>
                     <div
                       style={{ ...styles.content, whiteSpace: 'pre-wrap' }}
@@ -395,9 +371,7 @@ export default class Announcements extends Component {
                     </div>
                     <div style={styles.likes}>{`${likes} ${
                       likes > 1 ? 'likes' : 'like'
-                    }  ${comments} ${
-                      comments > 1 ? 'comments' : 'comment'
-                    }`}</div>
+                    }  ${comments} ${comments > 1 ? 'comments' : 'comment'}`}</div>
                   </div>
                 </div>
               );

@@ -93,9 +93,7 @@ export function changePlayStatus(status) {
 
 export function openSignupbox(open) {
   return {
-    type:
-      (open === true && types.OPEN_SIGNUPBOX) ||
-      (open === false && types.CLOSE_SIGNUPBOX),
+    type: (open === true && types.OPEN_SIGNUPBOX) || (open === false && types.CLOSE_SIGNUPBOX),
   };
 }
 

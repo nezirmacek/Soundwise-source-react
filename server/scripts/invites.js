@@ -34,11 +34,7 @@ const addInvitations = (soundcastId, email, res) => {
     .once('value')
     .then(snapshot => {
       if (snapshot.val()) {
-        const update = Object.assign(
-          {},
-          { [soundcastId]: true },
-          snapshot.val()
-        );
+        const update = Object.assign({}, { [soundcastId]: true }, snapshot.val());
         firebase
           .database()
           .ref(`invitations/${email}`)

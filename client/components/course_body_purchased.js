@@ -1,13 +1,7 @@
 import React from 'react';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
-import {
-  cyanA200,
-  lime50,
-  orange50,
-  deepOrange800,
-  grey50,
-} from 'material-ui/styles/colors';
+import { cyanA200, lime50, orange50, deepOrange800, grey50 } from 'material-ui/styles/colors';
 
 import Instructor from './instructor';
 import { Curriculum } from './curriculum';

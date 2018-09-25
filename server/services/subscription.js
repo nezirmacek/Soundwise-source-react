@@ -2,11 +2,7 @@
 
 var stripeKey = require('../../config').stripe_key;
 
-const {
-  publisherManager,
-  soundcastManager,
-  userManager,
-} = require('../managers');
+const { publisherManager, soundcastManager, userManager } = require('../managers');
 const recurringPayment = require('../scripts/payment').recurringPayment;
 var stripe = require('stripe')(stripeKey);
 
@@ -15,7 +11,7 @@ const delStripeSubscriptions = paymentID => {
     if (paymentID.slice(0, 3) == 'sub') {
       stripe.subscriptions.del(
         paymentID,
-        {stripe_account: publisher},
+        { stripe_account: publisher },
         (err, confirmation) => (err ? false : confirmation)
       );
     } else {
@@ -41,4 +37,4 @@ const addStripe = (userId, soundcastId, publisherID) => {
   );
 };
 
-module.exports = {delStripeSubscriptions, addStripe};
+module.exports = { delStripeSubscriptions, addStripe };

@@ -86,10 +86,7 @@ class _Checkout extends Component {
     const exp_month = Number(this.state.exp_month) + 1;
     const exp_year = Number(this.state.exp_year);
     this.setState({ submitDisabled: true, paymentError: null });
-    Stripe.card.createToken(
-      { number, cvc, exp_month, exp_year },
-      this.stripeTokenHandler
-    );
+    Stripe.card.createToken({ number, cvc, exp_month, exp_year }, this.stripeTokenHandler);
   }
 
   stripeTokenHandler(status, response) {
@@ -130,8 +127,7 @@ class _Checkout extends Component {
         .catch(function(error) {
           console.log('error from stripe: ', error);
           that.setState({
-            paymentError:
-              'Your payment is declined :( Please check your credit card information.',
+            paymentError: 'Your payment is declined :( Please check your credit card information.',
             startPaymentSubmission: false,
           });
         });
@@ -197,12 +193,7 @@ class _Checkout extends Component {
             marginTop: '1em',
           }}
         >
-          <Dots
-            style={{ display: 'flex' }}
-            color="#727981"
-            size={32}
-            speed={1}
-          />
+          <Dots style={{ display: 'flex' }} color="#727981" size={32} speed={1} />
         </div>
       );
     }
@@ -257,10 +248,7 @@ class _Checkout extends Component {
                       placeholder="Card Number"
                       style={styles.input}
                     />
-                    <img
-                      src="../images/card_types.png"
-                      style={styles.cardsImage}
-                    />
+                    <img src="../images/card_types.png" style={styles.cardsImage} />
                   </div>
 
                   {/*Expiration*/}
@@ -281,11 +269,7 @@ class _Checkout extends Component {
                     {/*year*/}
                     <div style={styles.selectBlock} className="border-radius-4">
                       <label style={styles.selectLabel}>Exp Year</label>
-                      <select
-                        onChange={this.handleChange}
-                        name="exp_year"
-                        style={styles.select}
-                      >
+                      <select onChange={this.handleChange} name="exp_year" style={styles.select}>
                         {yearOptions.map(item => item)}
                       </select>
                     </div>
@@ -306,9 +290,7 @@ class _Checkout extends Component {
                   {/*button*/}
                   <div style={styles.buttonWrapper}>
                     {this.state.paymentError && (
-                      <span style={{ color: 'red' }}>
-                        {this.state.paymentError}
-                      </span>
+                      <span style={{ color: 'red' }}>{this.state.paymentError}</span>
                     )}
                     <button
                       className="contact-submit btn propClone btn-3d text-white width-100 builder-bg tz-text"
@@ -322,10 +304,7 @@ class _Checkout extends Component {
                       Transactions are secure and encrypted.
                     </div>
                     <div style={styles.stripeImageWrapper}>
-                      <img
-                        src="../images/powered_by_stripe.png"
-                        style={styles.stripeImage}
-                      />
+                      <img src="../images/powered_by_stripe.png" style={styles.stripeImage} />
                     </div>
                     {this.renderProgressBar()}
                   </div>

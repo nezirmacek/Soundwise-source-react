@@ -52,8 +52,7 @@ export default class ConversionCourse extends Component {
         })
         .catch(err => {
           that.setState({
-            error:
-              'Hmm...something went wrong. Please refresh the page and try again.',
+            error: 'Hmm...something went wrong. Please refresh the page and try again.',
           });
         });
     }
@@ -72,8 +71,7 @@ export default class ConversionCourse extends Component {
               <div className="row">
                 <div className="col-md-12 col-sm-12 col-xs-12 text-center">
                   <h2 className="section-title-large sm-section-title-medium xs-section-title-large text-dark-gray font-weight-600 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
-                    Success! We'll let you know when the course enrollment
-                    opens!
+                    Success! We'll let you know when the course enrollment opens!
                   </h2>
                 </div>
               </div>
@@ -100,8 +98,8 @@ export default class ConversionCourse extends Component {
                     THE PODCAST CONVERSION MASTER COURSE
                   </h2>
                   <div className="title-large sm-title-extra-large  width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text">
-                    Learn how to turn more of your podcast listeners into
-                    customers...without being pushy.
+                    Learn how to turn more of your podcast listeners into customers...without being
+                    pushy.
                   </div>
                 </div>
                 <div className="col-md-8 center-col col-sm-12 text-center">
@@ -109,8 +107,7 @@ export default class ConversionCourse extends Component {
                     style={{ color: Colors.mainGreen }}
                     className="title-extra-large sm-title-extra-large-2 XS-title-extra-large font-weight-600 width-80 xs-width-100 center-col margin-twelve-bottom xs-margin-nineteen-bottom tz-text"
                   >
-                    Get on the waitlist and be notified when the course
-                    enrollment opens:
+                    Get on the waitlist and be notified when the course enrollment opens:
                   </div>
                   <input
                     onChange={this.handleChange}

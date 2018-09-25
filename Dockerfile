@@ -1,7 +1,7 @@
 FROM keymetrics/pm2:8-alpine
 
 # create app folder and copy source files
-RUN mkdir -p /usr/sounwise
+RUN mkdir -p /usr/soundwise
 COPY . /usr/soundwise
 
 # update npm

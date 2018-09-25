@@ -118,10 +118,8 @@ export default class EpisodePlayer extends Component {
     const { episode, showDialogCb } = this.props;
     const { duration, currentTime, isPlaying } = this.state;
     const remainingTime = duration - currentTime;
-    let remainingMin =
-      remainingTime > 0 ? Math.floor(remainingTime / 60) : '00';
-    let remaingingSec =
-      remainingTime > 0 ? Math.floor(remainingTime % 60) : '00';
+    let remainingMin = remainingTime > 0 ? Math.floor(remainingTime / 60) : '00';
+    let remaingingSec = remainingTime > 0 ? Math.floor(remainingTime % 60) : '00';
     remainingMin = moment()
       .minutes(remainingMin)
       .format('mm');

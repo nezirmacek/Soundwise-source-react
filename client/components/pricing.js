@@ -19,8 +19,8 @@ const Pricing = props => (
               START SPREADING YOUR KNOWLEDGE WITH AUDIO
             </h2>
             <div className="title-small width-60 margin-lr-auto md-width-70 sm-width-100 tz-text margin-five-bottom xs-margin-eleven-bottom">
-              Build an engaged audience and make money from your knowledge using
-              the fastest growing media format on the planet.
+              Build an engaged audience and make money from your knowledge using the fastest growing
+              media format on the planet.
             </div>
           </div>
         </div>
@@ -58,10 +58,7 @@ const Pricing = props => (
             >
               Annual
             </span>
-            <span
-              className="title-medium xs-title-medium "
-              style={{ marginLeft: '0.2em' }}
-            >
+            <span className="title-medium xs-title-medium " style={{ marginLeft: '0.2em' }}>
               (save 20%)
             </span>
           </div>
@@ -69,10 +66,7 @@ const Pricing = props => (
         <div className="row">
           <div className="col-xs-12 col-sm-4 col-md-4 xs-margin-bottom-20px sm-margin-bottom-20px">
             <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
-              <li
-                className="tz-background-color"
-                style={{ backgroundColor: Colors.link }}
-              >
+              <li className="tz-background-color" style={{ backgroundColor: Colors.link }}>
                 <h5
                   className="text-white title-large font-weight-600 tz-text alt-font"
                   style={{ marginTop: 0, marginBottom: 0 }}
@@ -108,9 +102,7 @@ const Pricing = props => (
                   </span>
                 </div>
                 {(props.frequency == 'annual' && (
-                  <div className="tz-text alt-font">{`SAVE $${(props.prices[
-                    'monthly'
-                  ]['plus'] -
+                  <div className="tz-text alt-font">{`SAVE $${(props.prices['monthly']['plus'] -
                     props.prices['annual']['plus']) *
                     12} A YEAR`}</div>
                 )) || <div className="tz-text alt-font">&nbsp;</div>}
@@ -118,8 +110,7 @@ const Pricing = props => (
                   {(props.isLoggedIn &&
                     props.userInfo.publisher &&
                     (props.userInfo.publisher.plan == 'plus' &&
-                      props.userInfo.publisher.current_period_end >
-                        moment().format('X')) && (
+                      props.userInfo.publisher.current_period_end > moment().format('X')) && (
                       <div
                         className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
                         style={{ backgroundColor: 'transparent', width: '80%' }}
@@ -130,8 +121,7 @@ const Pricing = props => (
                     (props.isLoggedIn &&
                       props.userInfo.publisher &&
                       ((props.userInfo.publisher.plan == 'plus' &&
-                        props.userInfo.publisher.current_period_end <
-                          moment().format('X')) ||
+                        props.userInfo.publisher.current_period_end < moment().format('X')) ||
                         props.userInfo.publisher.plan == 'pro' ||
                         props.userInfo.publisher.plan == 'platinum' ||
                         !props.userInfo.publisher.plan) && (
@@ -170,14 +160,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-star"
-                  style={{ color: Colors.link, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-star" style={{ color: Colors.link, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>5% transaction fee</strong> on soundcast sales
                 </span>
               </li>
@@ -185,14 +169,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.link, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.link, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Up to <strong>10 soundcasts</strong> hosted
                 </span>
               </li>
@@ -200,14 +178,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Unlimited listener signup
                 </span>
               </li>
@@ -215,30 +187,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Unlimited uploading of companion materials (PDFs, texts,
-                  images){' '}
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Unlimited uploading of companion materials (PDFs, texts, images){' '}
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Audio recording from dashboard
                 </span>
               </li>
@@ -246,14 +205,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   One-click RSS feed generation
                 </span>
               </li>
@@ -261,30 +214,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  One-click deployment of free soundcasts to iTunes and Google
-                  Play
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  One-click deployment of free soundcasts to iTunes and Google Play
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Automatic audio file metadata tagging (e.g. ID3 tags for mp3s)
                 </span>
               </li>
@@ -292,30 +232,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Optimized soundcast landing page and publisher “store front”
-                  page
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Optimized soundcast landing page and publisher “store front” page
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Private soundcasts
                 </span>
               </li>
@@ -323,14 +250,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.link, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.link, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Listener access to mobile and web apps
                 </span>
               </li>
@@ -338,14 +259,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Audience interaction on mobile app (e.g. likes, comments, group messages)
                 </span>
               </li>
@@ -353,30 +268,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Selling soundcasts as one-time purchase, rental,
-                  or subscription
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Selling soundcasts as one-time purchase, rental, or subscription
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Creating coupons and promotional sales pages
                 </span>
               </li>
@@ -384,14 +286,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Payment processing
                 </span>
               </li>
@@ -399,14 +295,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.link, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.link, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>Monthly payouts</strong> to bank account or debit card
                 </span>
               </li>
@@ -414,14 +304,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-star"
-                  style={{ color: Colors.link, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-star" style={{ color: Colors.link, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Service support
                 </span>
               </li>
@@ -429,14 +313,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Complete analytics for each listener on Soundwise
                 </span>
               </li>
@@ -444,14 +322,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Automatic audio editing
                 </span>
               </li>
@@ -459,8 +331,7 @@ const Pricing = props => (
                 {(props.isLoggedIn &&
                   props.userInfo.publisher &&
                   (props.userInfo.publisher.plan == 'plus' &&
-                    props.userInfo.publisher.current_period_end >
-                      moment().format('X')) && (
+                    props.userInfo.publisher.current_period_end > moment().format('X')) && (
                     <div
                       className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
                       style={{ backgroundColor: 'transparent', width: '80%' }}
@@ -471,8 +342,7 @@ const Pricing = props => (
                   (props.isLoggedIn &&
                     props.userInfo.publisher &&
                     ((props.userInfo.publisher.plan == 'plus' &&
-                      props.userInfo.publisher.current_period_end <
-                        moment().format('X')) ||
+                      props.userInfo.publisher.current_period_end < moment().format('X')) ||
                       props.userInfo.publisher.plan == 'pro' ||
                       props.userInfo.publisher.plan == 'platinum' ||
                       !props.userInfo.publisher.plan) && (
@@ -510,10 +380,7 @@ const Pricing = props => (
           </div>
           <div className="col-xs-12 col-sm-4 col-md-4 xs-margin-bottom-20px sm-margin-bottom-20px">
             <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
-              <li
-                className="tz-background-color"
-                style={{ backgroundColor: Colors.mainOrange }}
-              >
+              <li className="tz-background-color" style={{ backgroundColor: Colors.mainOrange }}>
                 <h5
                   className="text-white font-weight-600 title-large tz-text alt-font"
                   style={{ marginTop: 0, marginBottom: 0 }}
@@ -525,13 +392,12 @@ const Pricing = props => (
                   style={{ fontSize: 15 }}
                 >
                   {' '}
-                  <span className="no-margin-bottom">
-                    {' '}
-                    Make it a career
-                  </span>{' '}
+                  <span className="no-margin-bottom"> Make it a career</span>{' '}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center' }} >
-                <div className="popular position-absolute bg-yellow border-radius-2 text-black alt-font text-large builder-bg tz-text">MOST POPULAR</div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <div className="popular position-absolute bg-yellow border-radius-2 text-black alt-font text-large builder-bg tz-text">
+                    MOST POPULAR
+                  </div>
                 </div>
               </li>
               <li className="tz-border">
@@ -556,9 +422,7 @@ const Pricing = props => (
                   </span>
                 </div>
                 {(props.frequency == 'annual' && (
-                  <div className="tz-text alt-font">{`SAVE $${(props.prices[
-                    'monthly'
-                  ]['pro'] -
+                  <div className="tz-text alt-font">{`SAVE $${(props.prices['monthly']['pro'] -
                     props.prices['annual']['pro']) *
                     12} A YEAR`}</div>
                 )) || <div className="tz-text alt-font">&nbsp;</div>}
@@ -566,8 +430,7 @@ const Pricing = props => (
                   {(props.isLoggedIn &&
                     props.userInfo.publisher &&
                     (props.userInfo.publisher.plan == 'pro' &&
-                      props.userInfo.publisher.current_period_end >
-                        moment().format('X')) && (
+                      props.userInfo.publisher.current_period_end > moment().format('X')) && (
                       <div
                         className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
                         style={{ backgroundColor: 'transparent', width: '80%' }}
@@ -578,8 +441,7 @@ const Pricing = props => (
                     (props.isLoggedIn &&
                       props.userInfo.publisher &&
                       ((props.userInfo.publisher.plan == 'pro' &&
-                        props.userInfo.publisher.current_period_end <
-                          moment().format('X')) ||
+                        props.userInfo.publisher.current_period_end < moment().format('X')) ||
                         props.userInfo.publisher.plan == 'plus' ||
                         props.userInfo.publisher.plan == 'platinum' ||
                         !props.userInfo.publisher.plan) && (
@@ -624,14 +486,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-star"
-                  style={{ color: Colors.mainOrange, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-star" style={{ color: Colors.mainOrange, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>No transaction fee</strong> on soundcast sales
                 </span>
               </li>
@@ -639,14 +495,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.mainOrange, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.mainOrange, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>Unlimited</strong> audio storage and hosting
                 </span>
               </li>
@@ -654,14 +504,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Unlimited listener signup
                 </span>
               </li>
@@ -669,30 +513,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Unlimited uploading of companion materials (PDFs, texts,
-                  images){' '}
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Unlimited uploading of companion materials (PDFs, texts, images){' '}
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Audio recording from dashboard
                 </span>
               </li>
@@ -700,14 +531,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   One-click RSS feed generation
                 </span>
               </li>
@@ -715,30 +540,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  One-click deployment of free soundcasts to iTunes and Google
-                  Play
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  One-click deployment of free soundcasts to iTunes and Google Play
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Automatic audio file metadata tagging (e.g. ID3 tags for mp3s)
                 </span>
               </li>
@@ -746,30 +558,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Optimized soundcast landing page and publisher “store front”
-                  page
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Optimized soundcast landing page and publisher “store front” page
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Private soundcasts
                 </span>
               </li>
@@ -777,14 +576,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.mainOrange, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.mainOrange, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Listener access to mobile and web apps
                 </span>
               </li>
@@ -792,14 +585,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Audience interaction on mobile app (e.g. likes, comments, group messages)
                 </span>
               </li>
@@ -807,30 +594,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Selling soundcasts as one-time purchase rental,
-                  or subscription
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Selling soundcasts as one-time purchase rental, or subscription
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Creating coupons and promotional sales pages
                 </span>
               </li>
@@ -838,14 +612,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Payment processing
                 </span>
               </li>
@@ -853,14 +621,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.mainOrange, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.mainOrange, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>Instant payouts</strong> to bank account or debit card
                 </span>
               </li>
@@ -868,30 +630,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-star"
-                  style={{ color: Colors.mainOrange, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  <strong>Priority</strong> service support and{' '}
-                  <strong>onboarding call</strong>
+                <i className="far fa-star" style={{ color: Colors.mainOrange, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  <strong>Priority</strong> service support and <strong>onboarding call</strong>
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Complete analytics for each listener on Soundwise
                 </span>
               </li>
@@ -899,14 +648,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Automatic audio editing
                 </span>
               </li>
@@ -914,8 +657,7 @@ const Pricing = props => (
                 {(props.isLoggedIn &&
                   props.userInfo.publisher &&
                   (props.userInfo.publisher.plan == 'pro' &&
-                    props.userInfo.publisher.current_period_end >
-                      moment().format('X')) && (
+                    props.userInfo.publisher.current_period_end > moment().format('X')) && (
                     <div
                       className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
                       style={{ backgroundColor: 'transparent', width: '80%' }}
@@ -926,8 +668,7 @@ const Pricing = props => (
                   (props.isLoggedIn &&
                     props.userInfo.publisher &&
                     ((props.userInfo.publisher.plan == 'pro' &&
-                      props.userInfo.publisher.current_period_end <
-                        moment().format('X')) ||
+                      props.userInfo.publisher.current_period_end < moment().format('X')) ||
                       props.userInfo.publisher.plan == 'plus' ||
                       props.userInfo.publisher.plan == 'platinum' ||
                       !props.userInfo.publisher.plan) && (
@@ -971,10 +712,7 @@ const Pricing = props => (
           </div>
           <div className="col-xs-12 col-sm-4 col-md-4 xs-margin-bottom-20px sm-margin-bottom-20px">
             <ul className="pricing-box-style5 text-center bg-white builder-bg list-style-none">
-              <li
-                className="tz-background-color"
-                style={{ backgroundColor: Colors.mainGreen }}
-              >
+              <li className="tz-background-color" style={{ backgroundColor: Colors.mainGreen }}>
                 <h5
                   className="text-white font-weight-600 title-large tz-text alt-font"
                   style={{ marginTop: 0, marginBottom: 0 }}
@@ -986,10 +724,7 @@ const Pricing = props => (
                   style={{ fontSize: 15 }}
                 >
                   {' '}
-                  <span className="no-margin-bottom">
-                    {' '}
-                    Get your own app
-                  </span>{' '}
+                  <span className="no-margin-bottom"> Get your own app</span>{' '}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center' }} />
               </li>
@@ -1015,9 +750,7 @@ const Pricing = props => (
                   </span>
                 </div>
                 {(props.frequency == 'annual' && (
-                  <div className="tz-text alt-font">{`SAVE $${(props.prices[
-                    'monthly'
-                  ]['platinum'] -
+                  <div className="tz-text alt-font">{`SAVE $${(props.prices['monthly']['platinum'] -
                     props.prices['annual']['platinum']) *
                     12} A YEAR`}</div>
                 )) || <div className="tz-text alt-font">&nbsp;</div>}
@@ -1025,8 +758,7 @@ const Pricing = props => (
                   {(props.isLoggedIn &&
                     props.userInfo.publisher &&
                     (props.userInfo.publisher.plan == 'platinum' &&
-                      props.userInfo.publisher.current_period_end >
-                        moment().format('X')) && (
+                      props.userInfo.publisher.current_period_end > moment().format('X')) && (
                       <div
                         className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
                         style={{ backgroundColor: 'transparent', width: '80%' }}
@@ -1037,9 +769,9 @@ const Pricing = props => (
                     (props.isLoggedIn &&
                       props.userInfo.publisher &&
                       ((props.userInfo.publisher.plan == 'platinum' &&
-                        props.userInfo.publisher.current_period_end <
-                          moment().format('X')) ||
-                        props.userInfo.publisher.plan == 'plus' || props.userInfo.publisher.plan == 'pro' ||
+                        props.userInfo.publisher.current_period_end < moment().format('X')) ||
+                        props.userInfo.publisher.plan == 'plus' ||
+                        props.userInfo.publisher.plan == 'pro' ||
                         !props.userInfo.publisher.plan) && (
                         <div
                           className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
@@ -1082,14 +814,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-star"
-                  style={{ color: Colors.mainGreen, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-star" style={{ color: Colors.mainGreen, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>No transaction fee</strong> on soundcast sales
                 </span>
               </li>
@@ -1097,14 +823,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.mainGreen, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.mainGreen, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>Unlimited</strong> audio storage and hosting
                 </span>
               </li>
@@ -1112,14 +832,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Unlimited listener signup
                 </span>
               </li>
@@ -1127,30 +841,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Unlimited uploading of companion materials (PDFs, texts,
-                  images){' '}
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Unlimited uploading of companion materials (PDFs, texts, images){' '}
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Audio recording from dashboard
                 </span>
               </li>
@@ -1158,14 +859,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   One-click RSS feed generation
                 </span>
               </li>
@@ -1173,30 +868,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  One-click deployment of free soundcasts to iTunes and Google
-                  Play
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  One-click deployment of free soundcasts to iTunes and Google Play
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Automatic audio file metadata tagging (e.g. ID3 tags for mp3s)
                 </span>
               </li>
@@ -1204,30 +886,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Optimized soundcast landing page and publisher “store front”
-                  page
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Optimized soundcast landing page and publisher “store front” page
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Private soundcasts
                 </span>
               </li>
@@ -1235,14 +904,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.mainGreen, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.mainGreen, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Listener access to <strong>branded native mobile apps</strong> (iOS and Android)
                 </span>
               </li>
@@ -1250,14 +913,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Audience interaction on mobile app (e.g. likes, comments, group messages)
                 </span>
               </li>
@@ -1265,30 +922,17 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  Selling soundcasts as one-time purchase rental,
-                  or subscription
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  Selling soundcasts as one-time purchase rental, or subscription
                 </span>
               </li>
               <li
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Creating coupons and promotional sales pages
                 </span>
               </li>
@@ -1296,14 +940,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Payment processing
                 </span>
               </li>
@@ -1311,14 +949,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far  fa-star"
-                  style={{ color: Colors.mainGreen, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far  fa-star" style={{ color: Colors.mainGreen, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   <strong>Instant payouts</strong> to bank account or debit card
                 </span>
               </li>
@@ -1326,15 +958,9 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-star"
-                  style={{ color: Colors.mainGreen, fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
-                  <strong>Priority</strong> service support, {' '}
+                <i className="far fa-star" style={{ color: Colors.mainGreen, fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
+                  <strong>Priority</strong> service support,{' '}
                   <strong>complete onboarding and migration handling</strong>
                 </span>
               </li>
@@ -1342,14 +968,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Complete analytics for each listener on Soundwise
                 </span>
               </li>
@@ -1357,14 +977,8 @@ const Pricing = props => (
                 className="tz-border"
                 style={{ textAlign: 'left', paddingLeft: 15, paddingRight: 5 }}
               >
-                <i
-                  className="far fa-check-circle"
-                  style={{ color: 'green', fontSize: 16 }}
-                />
-                <span
-                  style={{ paddingLeft: 5 }}
-                  className="text-large text-dark-gray"
-                >
+                <i className="far fa-check-circle" style={{ color: 'green', fontSize: 16 }} />
+                <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
                   Automatic audio editing
                 </span>
               </li>
@@ -1372,8 +986,7 @@ const Pricing = props => (
                 {(props.isLoggedIn &&
                   props.userInfo.publisher &&
                   (props.userInfo.publisher.plan == 'platinum' &&
-                    props.userInfo.publisher.current_period_end >
-                      moment().format('X')) && (
+                    props.userInfo.publisher.current_period_end > moment().format('X')) && (
                     <div
                       className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"
                       style={{ backgroundColor: 'transparent', width: '80%' }}
@@ -1384,9 +997,9 @@ const Pricing = props => (
                   (props.isLoggedIn &&
                     props.userInfo.publisher &&
                     ((props.userInfo.publisher.plan == 'platinum' &&
-                      props.userInfo.publisher.current_period_end <
-                        moment().format('X')) ||
-                      props.userInfo.publisher.plan == 'plus' || props.userInfo.publisher.plan == 'pro' ||
+                      props.userInfo.publisher.current_period_end < moment().format('X')) ||
+                      props.userInfo.publisher.plan == 'plus' ||
+                      props.userInfo.publisher.plan == 'pro' ||
                       !props.userInfo.publisher.plan) && (
                       <div
                         className="col-md-6 center-col btn-extra-large btn  bg-white text-dark-gray no-letter-spacing"

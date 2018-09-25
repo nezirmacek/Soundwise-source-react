@@ -18,9 +18,7 @@ import { Routes } from './routes';
 
 import rootReducer from './reducers';
 
-Raven.config(
-  'https://3fbd789e281e40f4bb05c2374e87b9e2@sentry.io/256844'
-).install();
+Raven.config('https://3fbd789e281e40f4bb05c2374e87b9e2@sentry.io/256844').install();
 
 // let createStoreWithMiddleware = applyMiddleware(thunkMiddleware)(createStore)
 // let store = createStoreWithMiddleware(rootReducer)
@@ -69,17 +67,9 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    // firebase.database().ref('invitations/xc22@georgetown(dot)edu')
-    // .once('value')
-    // .then(snapshot => {
-    //   if(snapshot.val()) {
-    //     console.log('invitation: ', snapshot.val());
-    //   } else {
-    //     console.log('not found');
-    //   }
-    // })
     // const reactVersion = React.version;
-    // console.log('reactVersion: ', reactVersion);
+    // console.log('react: ', reactVersion);
+    // console.log(process.env.NODE_ENV);
   }
 
   render() {

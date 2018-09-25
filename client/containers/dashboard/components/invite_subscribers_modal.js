@@ -8,18 +8,9 @@ import draftToHtml from 'draftjs-to-html';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Papa from 'papaparse';
 import { Editor } from 'react-draft-wysiwyg';
-import {
-  convertFromRaw,
-  convertToRaw,
-  EditorState,
-  convertFromHTML,
-  ContentState,
-} from 'draft-js';
+import { convertFromRaw, convertToRaw, EditorState, convertFromHTML, ContentState } from 'draft-js';
 
-import {
-  minLengthValidator,
-  maxLengthValidator,
-} from '../../../helpers/validators';
+import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import { inviteListeners } from '../../../helpers/invite_listeners';
 import { addToEmailList } from '../../../helpers/addToEmailList';
 import { sendMarketingEmails } from '../../../helpers/sendMarketingEmails';
@@ -50,17 +41,13 @@ export default class InviteSubscribersModal extends Component {
     let editorState;
     if (userInfo.publisher && soundcast && nextProps != this.props) {
       if (soundcast.invitationEmail) {
-        let contentState = convertFromRaw(
-          JSON.parse(soundcast.invitationEmail)
-        );
+        let contentState = convertFromRaw(JSON.parse(soundcast.invitationEmail));
         editorState = EditorState.createWithContent(contentState);
       } else {
         const content = `<p>Hi there!</p><p></p><p>${
           userInfo.publisher.name
         } has invited you to subscribe to <a href="${
-          soundcast.landingPage
-            ? 'https://mysoundwise.com/soundcasts/' + soundcast.id
-            : ''
+          soundcast.landingPage ? 'https://mysoundwise.com/soundcasts/' + soundcast.id : ''
         }" target="_blank">${
           soundcast.title
         }</a> on Soundwise.</p><p>You can access it <a href="https://mysoundwise.com/signup/soundcast_user/${
@@ -91,25 +78,20 @@ export default class InviteSubscribersModal extends Component {
     }
     const content = draftToHtml(convertToRaw(invitation.getCurrentContent()));
     // send email invitations to invited listeners
-    const subject = `${userInfo.publisher.name} invites you to subscribe to ${
-      soundcast.title
-    }`;
+    const subject = `${userInfo.publisher.name} invites you to subscribe to ${soundcast.title}`;
 
-    addToEmailList(
-      soundcast.id,
-      inviteeArr,
-      'inviteeEmailList',
-      soundcast.inviteeEmailList
-    ).then(() => {
-      inviteListeners(
-        inviteeArr,
-        subject,
-        content,
-        userInfo.publisher.name,
-        userInfo.publisher.imageUrl,
-        userInfo.publisher.email
-      ); // use transactional email for this
-    });
+    addToEmailList(soundcast.id, inviteeArr, 'inviteeEmailList', soundcast.inviteeEmailList).then(
+      () => {
+        inviteListeners(
+          inviteeArr,
+          subject,
+          content,
+          userInfo.publisher.name,
+          userInfo.publisher.imageUrl,
+          userInfo.publisher.email
+        ); // use transactional email for this
+      }
+    );
 
     Axios.post('/api/invite', {
       soundcastId: soundcast.id,
@@ -153,10 +135,7 @@ export default class InviteSubscribersModal extends Component {
               let targetCol = prompt(
                 'Which column is the emails stored in? (Enter the column number)'
               );
-              if (
-                Number.isInteger(Number(targetCol)) &&
-                Number(targetCol) > 0
-              ) {
+              if (Number.isInteger(Number(targetCol)) && Number(targetCol) > 0) {
                 results.data.forEach(row => {
                   let email = row[targetCol - 1] ? row[targetCol - 1] : '';
                   if (email.indexOf('@') > 0) {
@@ -190,11 +169,7 @@ export default class InviteSubscribersModal extends Component {
       <FlatButton label="Cancel" onClick={this.closeModal} />,
     ];
     const actionsSubmitted = [
-      <FlatButton
-        label="OK"
-        labelStyle={{ color: Colors.link }}
-        onClick={this.closeModal}
-      />,
+      <FlatButton label="OK" labelStyle={{ color: Colors.link }} onClick={this.closeModal} />,
     ];
     if (!this.props.isShown) {
       return null;
@@ -236,9 +211,7 @@ export default class InviteSubscribersModal extends Component {
             <div className="col-md-12" style={{ height: 100 }}>
               <textarea
                 style={styles.inputDescription}
-                placeholder={
-                  'Enter listener email addresses, separated by commas'
-                }
+                placeholder={'Enter listener email addresses, separated by commas'}
                 onChange={e => {
                   this.setState({ inviteeList: e.target.value });
                 }}
@@ -272,10 +245,7 @@ export default class InviteSubscribersModal extends Component {
               </div>
             </div>
             {/*Confirmation email*/}
-            <div
-              className="col-md-12"
-              style={{ paddingTop: 25, paddingBottom: 25 }}
-            >
+            <div className="col-md-12" style={{ paddingTop: 25, paddingBottom: 25 }}>
               <div>
                 <span style={styles.titleText}>Invitation Message</span>
                 <Editor

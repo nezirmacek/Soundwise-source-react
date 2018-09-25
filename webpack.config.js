@@ -7,9 +7,7 @@ const env =
   dotenv.config({
     path: path.resolve(
       process.cwd(),
-      `client-${
-        process.env.NODE_ENV === 'dev' ? 'development' : 'production'
-      }.env`
+      process.env.NODE_ENV === 'dev' ? 'client-development.env' : 'client-production.env'
     ),
   }) || {};
 
@@ -23,7 +21,9 @@ const envKeys = Object.keys(env).reduce(
 
 module.exports = {
   mode: 'development',
-  // devtool: 'source-map',
+  // mode: 'production',
+  devtool: 'source-map',
+
   context: __dirname,
   node: {
     // console: 'empty',

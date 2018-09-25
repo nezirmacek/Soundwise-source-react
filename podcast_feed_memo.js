@@ -48,8 +48,7 @@ const podcastObj = {
     { 'googleplay:author': 'Natasha Che' },
     { 'googleplay:explicit': false },
     {
-      'googleplay:image':
-        'https://s3.amazonaws.com/soundwiseinc/demo/1508293913676s.jpg',
+      'googleplay:image': 'https://s3.amazonaws.com/soundwiseinc/demo/1508293913676s.jpg',
     }, // need to be between 1400x1400 px and 3000x3000 px
   ],
 };
