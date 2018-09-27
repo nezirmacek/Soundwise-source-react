@@ -73,6 +73,7 @@ class _LandingPageSelling extends Component {
       Axios.post('/api/email_demo_request', {
         email: this.state.email,
         first_name: this.state.name,
+        source: "demo_request",
       })
         .then(res => {
           //As firebase sends realtime notifications, we do not really need this, but what the heck!
