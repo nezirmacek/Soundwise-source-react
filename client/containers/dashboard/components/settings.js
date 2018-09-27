@@ -87,11 +87,14 @@ export default class Profile extends Component {
               .ref(`users/${adminId}`)
               .once('value')
               .then(snapshot => {
-                admins.push({
-                  firstName: snapshot.val().firstName,
-                  lastName: snapshot.val().lastName,
-                  email: snapshot.val().email[0],
-                });
+                let snapshotVal = snapshot.val();
+                if (snapshotVal != null) {
+                  admins.push({
+                    firstName: snapshotVal.firstName,
+                    lastName: snapshotVal.lastName,
+                    email: snapshotVal.email[0],
+                  });
+                }
               })
               .then(res => res, err => console.log(err));
           });
@@ -134,11 +137,14 @@ export default class Profile extends Component {
               .ref(`users/${adminId}`)
               .once('value')
               .then(snapshot => {
-                admins.push({
-                  firstName: snapshot.val().firstName,
-                  lastName: snapshot.val().lastName,
-                  email: snapshot.val().email[0],
-                });
+                let snapshotVal = snapshot.val();
+                if (snapshotVal != null) {
+                  admins.push({
+                    firstName: snapshotVal.firstName,
+                    lastName: snapshotVal.lastName,
+                    email: snapshotVal.email[0],
+                  });
+                }
               })
               .then(res => res, err => console.log(err));
           });

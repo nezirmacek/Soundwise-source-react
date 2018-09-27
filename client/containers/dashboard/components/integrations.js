@@ -55,8 +55,13 @@ export default class Integrations extends Component {
   }
 
   saveIntegration() {
+
     if (this.state.integrationSelected != '' && 
-        this.state.integrationSelected != '' &&
+        this.state.apiKey === '') {
+          alert('Please enter the API key')
+    }
+
+    if (this.state.integrationSelected != '' && 
         this.state.apiKey != this.apiKey) {
       Axios.post('/api/mail_manage', {
         publisherId : this.props.userInfo.publisherID,
@@ -187,6 +192,8 @@ export default class Integrations extends Component {
                   </ul>
                 </div>
               </div>
+              { integrationSelected === '' ? null :
+              <div>
               <div style={{ ...styles.inputTitleWrapper, display: 'flex'}}>
                 <span style={{ 
                         ...styles.titleText, 
@@ -253,6 +260,8 @@ export default class Integrations extends Component {
                   }}
                 />
               </div>
+              </div>
+              }
             </div>
           </div>
         </div>

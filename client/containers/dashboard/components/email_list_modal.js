@@ -118,7 +118,7 @@ class MailChimpLists extends Component {
                       style={{ width: 50 }}
                       value={item.id}
                     />
-                    {item.name}
+                    {`${item.name} (${item.id})`}
                   </label>
                 )
               })
@@ -233,7 +233,7 @@ export default class EmailListModal extends Component {
         this.setState({ updatingList: false }, () => {
           //We need a 300ms delay, so the dom re-renders before alert is shown.
             setTimeout(function() {
-              alert('Subscribers updated to your list.')
+              alert('Subscribers exported to your email list.')
             }, 300);
           }
         )        
@@ -356,7 +356,7 @@ export default class EmailListModal extends Component {
                   selectedListId={this.state.selectedListId}
                   handleSelectList={this.handleSelectList}/>
               </div>
-              <div className="row">
+              <div className="row" style={{ marginTop: '10px' }}>
                 <OrangeSubmitButton
                     label={this.renderProgressBar()}
                     onClick={this.exportSubscribers}
