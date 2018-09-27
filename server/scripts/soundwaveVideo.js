@@ -7,8 +7,6 @@ const AWS = require('aws-sdk');
 AWS.config.update(awsConfig);
 const s3 = new AWS.S3();
 const uploader1 = require('express-fileuploader');
-// const firebase = require('firebase-admin');
-const request = require('request-promise');
 const moment = require('moment');
 const sgMail = require('@sendgrid/mail');
 const sendGridApiKey = require('../../config').sendGridApiKey;

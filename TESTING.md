@@ -48,7 +48,7 @@ Uncomment/set test *publisherEmail* (if needed) in **parseFeed.js:getPublisherEm
 #### To delete all feed related data
 ```
 cd ./server/scripts
-SET_TEST_FEED=delete NODE_ENV=dev       node iTunesUrls-local-sql.js
+SET_TEST_FEED=delete NODE_ENV=dev node setTestFeed.js
 ```
 
 #### To import feed
@@ -64,7 +64,7 @@ SET_TEST_FEED=delete NODE_ENV=dev       node iTunesUrls-local-sql.js
 #### To reset all feed data
 ```
 cd ./server/scripts
-SET_TEST_FEED=reset NODE_ENV=dev       node iTunesUrls-local-sql.js
+SET_TEST_FEED=reset NODE_ENV=dev node setTestFeed.js
 ```
 
 \- this should bring rows to original (not claimed) state (for this particular feed)

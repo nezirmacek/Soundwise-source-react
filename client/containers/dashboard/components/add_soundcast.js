@@ -198,7 +198,7 @@ export default class AddSoundcast extends Component {
               f
                 .resize(600, jimp.AUTO)
                 .blur(30)
-                .brightness(0.1)
+                .brightness(0.6)
                 .getBuffer(jimp.AUTO, (err, buffer) => {
                   if (!err) {
                     blurredData.append('file', new Blob([buffer]), `blurred-${fileName}`);
