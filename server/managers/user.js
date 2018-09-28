@@ -32,6 +32,13 @@ const update = (id, data) =>
     .ref(`users/${id}`)
     .update(data);
 
+const updateLastEvent = id => {
+  firebase
+    .database()
+    .ref(`users/${id}/lastEvent`)
+    .set(moment().format('X'));
+};
+
 const updateSubscribe = (id, soundcastId, data) =>
   firebase
     .database()
@@ -55,6 +62,7 @@ const unsubscribe = (userId, soundcastId) => {
     current_period_end: moment().format('X'),
   });
 };
+
 const getId = email =>
   getByEmail(email)
     .then(userRecord => userRecord.toJSON().uid)
@@ -68,4 +76,5 @@ module.exports = {
   update,
   subscribe,
   unsubscribe,
+  updateLastEvent,
 };

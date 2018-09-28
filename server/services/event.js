@@ -1,6 +1,8 @@
 'use strict';
 
 const Op = require('sequelize').Op;
+
+const { userManager, soundcastManager } = require('../managers');
 const {
   eventRepository,
   userRepository,
@@ -23,7 +25,66 @@ const handleEvent = async (type, data) => {
     event = await eventRepository.create(event);
     console.log(`Event ${type} created`);
   } catch (err) {
-    console.log('Failed to save event to the database');
+    console.log('Failed to save event to the database', err);
+    return;
+  }
+
+  const eventReceivers = await fetchEventReceivers(event);
+  console.log(
+    `${eventReceivers.length} users will receive notification about this event`
+  );
+  await notify(eventReceivers);
+};
+
+const fetchEventReceivers = async event => {
+  const subscribersEvents = [
+    EventTypes.NEW_EPISODE_PUBLISHED,
+    EventTypes.NEW_MESSAGE_POSTED,
+    EventTypes.MESSAGE_COMMENTED,
+    EventTypes.EPISODE_COMMENTED,
+    EventTypes.EPISODE_LIKED,
+    EventTypes.MESSAGE_LIKED,
+  ];
+
+  const commentAuthorEvents = [
+    EventTypes.MSG_COMMENT_REPLIED,
+    EventTypes.EP_COMMENT_REPLIED,
+    EventTypes.MSG_COMMENT_LIKED,
+    EventTypes.EP_COMMENT_LIKED,
+  ];
+  const eventReceivers = [];
+
+  if (subscribersEvents.includes(event.type)) {
+    const subscribersSnapshot = await soundcastManager.getSubscribers(
+      event.soundcastId
+    );
+
+    if (!subscribersSnapshot.val()) {
+      return [];
+    }
+    const subscribersIds = subscribersSnapshot.val();
+
+    for (const key in subscribersIds) {
+      let user = await userManager.getById(key);
+      if (user) {
+        user = Object.assign({}, { id: key }, user);
+        eventReceivers.push(user);
+      }
+    }
+  } else if (commentAuthorEvents.includes(event.type)) {
+    let user = await userManager.getById(event.commentUserId);
+    if (user) {
+      user = Object.assign({}, { id: event.commentUserId }, user);
+      eventReceivers.push(user);
+    }
+  }
+
+  return eventReceivers;
+};
+
+const notify = async users => {
+  for (const user of users) {
+    await userManager.updateLastEvent(user.id);
   }
 };
 
@@ -56,7 +117,7 @@ eventCreators[EventTypes.NEW_EPISODE_PUBLISHED] = async episode => {
 eventCreators[EventTypes.NEW_MESSAGE_POSTED] = async announcement => {
   const { soundcastId, announcementId, creatorId, publisherId } = announcement;
   const hostUser = await userRepository.findById(creatorId);
-  const soundast = await soundcastRepository.findById(soundcastId);
+  const soundcast = await soundcastRepository.findById(soundcastId);
   const event = {
     type: EventTypes.NEW_MESSAGE_POSTED,
     announcementId,
@@ -124,6 +185,9 @@ eventCreators[EventTypes.EP_COMMENT_LIKED] = async ep_comment_like => {
 
   const user = await User.findOne({ where: { userId } });
   const episode = await Episode.findOne({ where: { episodeId } });
+  const comment = await Comment.findOne({ where: { commentId } });
+
+  const commentUserId = comment.userId;
 
   const event = {
     type: EventTypes.EP_COMMENT_LIKED,
@@ -132,6 +196,7 @@ eventCreators[EventTypes.EP_COMMENT_LIKED] = async ep_comment_like => {
     episodeId,
     soundcastId,
     userId,
+    commentUserId,
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -154,6 +219,9 @@ eventCreators[EventTypes.MSG_COMMENT_LIKED] = async msg_comment_like => {
 
   const user = await User.findOne({ where: { userId } });
   const soundcast = await Soundcast.findOne({ where: { soundcastId } });
+  const comment = await Comment.findOne({ where: { commentId } });
+
+  const commentUserId = comment.userId;
 
   const event = {
     type: EventTypes.MSG_COMMENT_LIKED,
@@ -162,6 +230,7 @@ eventCreators[EventTypes.MSG_COMMENT_LIKED] = async msg_comment_like => {
     announcementId,
     soundcastId,
     userId,
+    commentUserId,
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -185,6 +254,7 @@ eventCreators[EventTypes.EPISODE_COMMENTED] = async episode_comment => {
     episodeId,
     soundcastId,
     userId,
+    commentUserId: userId,
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -215,6 +285,7 @@ eventCreators[EventTypes.EP_COMMENT_REPLIED] = async ep_comment_reply => {
     episodeId,
     soundcastId,
     userId,
+    commentUserId: userId,
     parentUserId: parentComment.userId,
     avatarUrl: user.picURL,
     firstName: user.firstName,
@@ -239,6 +310,7 @@ eventCreators[EventTypes.MESSAGE_COMMENTED] = async message_comment => {
     announcementId,
     soundcastId,
     userId,
+    commentUserId: userId,
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -271,6 +343,7 @@ eventCreators[EventTypes.MSG_COMMENT_REPLIED] = async msg_comment_reply => {
     announcementId,
     soundcastId,
     userId,
+    commentUserId: userId,
     parentUserId: parentComment.userId,
     parentId,
     avatarUrl: user.picURL,

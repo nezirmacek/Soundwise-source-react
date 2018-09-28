@@ -18,4 +18,5 @@ module.exports = {
   get,
   create,
   update,
+  findById,
 };
