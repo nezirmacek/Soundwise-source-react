@@ -111,7 +111,7 @@ export default class PodcastingCourse extends Component {
                   <ul className="nav navbar-nav">
                     <li className="propClone">
                       <Link
-                        to="/convertion#whatyouwilllearn"
+                        to="/conversion#whatyouwilllearn"
                         className="inner-link"
                         data-selector="nav a"
                         style={{

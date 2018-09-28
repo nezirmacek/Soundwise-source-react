@@ -27,6 +27,7 @@ class _Payment extends Component {
       exp_month: 0,
       exp_year: new Date().getFullYear(),
       totalPay: 0,
+      isFreeSoundcast: false,
       paid: false,
       startPaymentSubmission: false,
       stripe_id: '',
@@ -64,13 +65,20 @@ class _Payment extends Component {
     if (props.soundcast && props.userInfo && props.userInfo.email) {
       const isFree = props.totalPrice === 0 || props.totalPrice == 'free';
       if (!isFree && props.soundcast.prices && props.soundcast.prices.some(i => i.coupons)) {
+        console.log('1. isFreeSoundcast: false')
+        this.setState({ isFreeSoundcast: false })
         return; // ignore if soundcast not free and have coupons
       }
       if (isFree && !props.isTrial) {
+        console.log('2. isFreeSoundcast: true')
+        this.setState({ isFreeSoundcast: true })
         // if it's free course, then no need for credit card info.
         // add soundcast to user and then redirect
         // - prevent audocheckout if trial coupon used
         this.addSoundcastToUser(null, props.userInfo, props.soundcastID || this.props.soundcastID);
+      } else {
+        console.log('3. isFreeSoundcast: false')
+        this.setState({ isFreeSoundcast: false })
       }
     }
   }
@@ -445,24 +453,31 @@ class _Payment extends Component {
   }
 
   renderProgressBar() {
-    if (this.state.startPaymentSubmission) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: '1em',
-          }}
-        >
-          <Dots style={{ display: 'flex' }} color="#727981" size={32} speed={1} />
-        </div>
-      );
-    }
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: '1em',
+        }}
+      >
+        <Dots
+          style={{ display: 'flex' }}
+          color="#727981"
+          size={32}
+          speed={1}
+        />
+      </div>
+    );
   }
 
   render() {
+    if (this.state.isFreeSoundcast) {
+      return this.renderProgressBar();
+    }
+
     const { totalPrice, hideCardInputs } = this.props;
     const showInputs = !(this.props.userInfo && this.props.userInfo.firstName);
 
@@ -625,7 +640,7 @@ class _Payment extends Component {
                           style={styles.stripeImage}
                         />
                       </div>
-                      {this.renderProgressBar()}
+                      {this.state.startPaymentSubmission && this.renderProgressBar()}
                     </div>
                   )}
                 </form>

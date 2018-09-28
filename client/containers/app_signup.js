@@ -56,27 +56,27 @@ class _AppSignup extends Component {
   }
 
   componentWillMount() {
-    const that = this;
     const params = new URLSearchParams(this.props.location.search);
-    const checked = params.get('checked');
-    if (this.props.match.params.mode == 'soundcast_user' && this.props.match.params.id) {
+    const locationState = this.props.history.location.state || {};
+    const checked = params.get('checked') || locationState.checked || 0;
+    const soundcastID = this.props.match.params.id || locationState.soundcastID;
+    if (this.props.match.params.mode == 'soundcast_user' && soundcastID) {
       firebase
         .database()
-        .ref(`soundcasts/${this.props.match.params.id}`)
+        .ref(`soundcasts/${soundcastID}`)
         .once('value')
         .then(snapshot => {
           const soundcast = snapshot.val();
           if (!this.isShownSoundcastSignup(soundcast)) {
-            this.props.history.push('/notfound');
-            return;
+            return this.props.history.push('/notfound');
           }
           if (soundcast) {
-            that.setState({
+            this.setState({
               loading: false,
               soundcast,
-              soundcastID: that.props.match.params.id,
-              checked: checked ? checked : 0,
-              sumTotal: checked ? soundcast.prices[checked].price : soundcast.prices[0].price,
+              soundcastID,
+              checked,
+              sumTotal: locationState.sumTotal,
             });
           }
         });
@@ -84,9 +84,9 @@ class _AppSignup extends Component {
   }
 
   componentDidMount() {
-    const that = this;
     const params = new URLSearchParams(this.props.location.search);
-    const checked = params.get('checked');
+    const locationState = this.props.history.location.state || {};
+    const checked = params.get('checked') || locationState.checked || 0;
     if (this.props.match.params.mode == 'admin' && this.props.match.params.id) {
       this.publisherID = this.props.match.params.id;
     }

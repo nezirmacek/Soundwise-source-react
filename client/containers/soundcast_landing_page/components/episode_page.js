@@ -51,83 +51,97 @@ class _EpisodePage extends Component {
     this.fetchData = this.fetchData.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const that = this;
     const episodeID = this.props.match.params.id;
-    // console.log('soundcastID: ', soundcastID);
-    this.fetchData(episodeID);
+    await this.fetchData(episodeID);
   }
 
-  componentWillReceiveProps(nextProps) {
+  async componentWillReceiveProps(nextProps) {
     if (!this.state.publisherName) {
-      this.fetchData(episodeID);
+      await this.fetchData(episodeID);
     }
   }
 
-  fetchData(episodeID) {
+  fetchData = async episodeID => {
     const that = this;
-    firebase
+    await firebase
       .database()
       .ref('episodes/' + episodeID)
-      .on('value', snapshot => {
-        if (snapshot.val()) {
-          that.setState({
+      .on('value', async episodeSnapshot => {
+        if (episodeSnapshot.val()) {
+          await this.episodeUpdatedHandler(
+            episodeSnapshot.val(),
             episodeID,
-            title: snapshot.val().title,
-            url: snapshot.val().url,
-            date_created: snapshot.val().date_created,
-            description: snapshot.val().description,
-            duration: snapshot.val().duration,
-            likes: snapshot.val().likes ? Object.keys(snapshot.val().likes).length : 0,
-            listens: snapshot.val().totalListens ? snapshot.val().totalListens : 0,
-            publicEpisode: snapshot.val().publicEpisode ? true : false,
-            soundcastID: snapshot.val().soundcastID,
-            publisherID: snapshot.val().publisherID,
-            coverArtUrl: snapshot.val().coverArtUrl ? snapshot.val().coverArtUrl : '',
-          });
-
-          firebase
-            .database()
-            .ref('publishers/' + that.state.publisherID)
-            .once('value')
-            .then(snapshot => {
-              if (snapshot.val()) {
-                that.setState({
-                  publisherName: snapshot.val().name,
-                  publisherImageURL: snapshot.val().imageUrl,
-                });
-              }
-            })
-            .then(() => {
-              firebase
-                .database()
-                .ref('soundcasts/' + that.state.soundcastID)
-                .once('value')
-                .then(snapshot => {
-                  if (snapshot.val()) {
-                    that.setState({
-                      subscribable: snapshot.val().landingPage,
-                      soundcastTitle: snapshot.val().title,
-                      soundcastDescription: snapshot.val().short_description,
-                      soundcastFeatures: snapshot.val().features || null,
-                      soundcastImageURL: snapshot.val().imageURL,
-                      showTimeStamps: snapshot.val().showTimeStamps
-                        ? snapshot.val().showTimeStamps
-                        : false,
-                    });
-                  }
-                });
-            });
+            that
+          );
         }
       });
+  };
+
+  async episodeUpdatedHandler(episode, episodeID, context) {
+    context.setState({
+      episodeID,
+      title: episode.title,
+      url: episode.url,
+      date_created: episode.date_created,
+      description: episode.description,
+      duration: episode.duration,
+      likes: episode.likesCount ? episode.likesCount : 0,
+      listens: episode.totalListens ? episode.totalListens : 0,
+      publicEpisode: episode.publicEpisode ? true : false,
+      soundcastID: episode.soundcastID,
+      publisherID: episode.publisherID,
+      coverArtUrl: episode.coverArtUrl ? episode.coverArtUrl : '',
+    });
+
+    try {
+      const publisherSnapshot = await firebase
+        .database()
+        .ref('publishers/' + context.state.publisherID)
+        .once('value');
+      if (publisherSnapshot.val()) {
+        context.setState({
+          publisherName: publisherSnapshot.val().name,
+          publisherImageURL: publisherSnapshot.val().imageUrl,
+        });
+      }
+    } catch (e) {
+      console.log('Failed to retrieve publisher', e);
+    }
+
+    try {
+      const soundcastSnapshot = await firebase
+        .database()
+        .ref('soundcasts/' + context.state.soundcastID)
+        .once('value');
+      console.log('');
+      if (!soundcastSnapshot.val()) {
+        return;
+      }
+
+      const soundcast = soundcastSnapshot.val();
+      context.setState({
+        subscribable: soundcast.landingPage,
+        soundcastTitle: soundcast.title,
+        soundcastDescription: soundcast.short_description,
+        soundcastFeatures: soundcast.features || null,
+        soundcastImageURL: soundcast.imageURL,
+        showTimeStamps: soundcast.showTimeStamps
+          ? soundcast.showTimeStamps
+          : false,
+      });
+    } catch (e) {
+      console.log('Failed to retrieve soundcasts');
+    }
   }
 
   getTime_hoursMins(seconds) {
     if (seconds > 0) {
       const _hours = Math.floor(seconds / 3600);
       const _minutes = Math.floor((seconds - _hours * 3600) / 60);
-      return `${(_hours && `${_hours} hour`) || ''}${(_hours > 1 && 's') || ''} ${(_minutes < 10 &&
-        `0${_minutes} min`) ||
+      return `${(_hours && `${_hours} hour`) || ''}${(_hours > 1 && 's') ||
+        ''} ${(_minutes < 10 && `0${_minutes} min`) ||
         `${_minutes} min`}${(_minutes > 1 && 's') || ''}`;
     } else {
       return '0 mins';
@@ -163,7 +177,14 @@ class _EpisodePage extends Component {
   }
 
   sendToDatabase(event) {
-    const { soundcastID, publisherID, episodeID, startPosition, listens, modalShown } = this.state;
+    const {
+      soundcastID,
+      publisherID,
+      episodeID,
+      startPosition,
+      listens,
+      modalShown,
+    } = this.state;
     const _date = moment().format('YYYY-MM-DD');
 
     firebase
@@ -197,9 +218,13 @@ class _EpisodePage extends Component {
       date: _date,
       startPosition: Math.floor(startPosition),
       endPosition: Math.floor(
-        this.state.endPosition >= startPosition ? this.state.endPosition : startPosition
+        this.state.endPosition >= startPosition
+          ? this.state.endPosition
+          : startPosition
       ),
-      percentCompleted: Math.round((this.state.endPosition / this.audio.duration) * 100 || 100),
+      percentCompleted: Math.round(
+        (this.state.endPosition / this.audio.duration) * 100 || 100
+      ),
       sessionDuration: this.state.endPosition - startPosition,
       createdAt: _date,
       updatedAt: _date,
@@ -217,24 +242,23 @@ class _EpisodePage extends Component {
 
   changeLike() {
     console.log('changeLike called');
-    const { episodeID, likes, webID, liked } = this.state;
+    const { episodeID, likes, webID, liked, soundcastID } = this.state;
 
     if (!liked) {
-      firebase
-        .database()
-        .ref(`episodes/${episodeID}/likes/${webID}`)
-        .set(moment().format('X'))
-        .then(() => {
-          console.log('success set like');
-        })
-        .catch(err => {
-          alert('ERROR: like save: ' + err.toString());
-        });
+      Axios.post('/api/likes', {
+        likeId: `${webID}-${episodeID}`,
+        userId: webID,
+        fullName: 'Guest',
+        episodeId: episodeID,
+        soundcastId: soundcastID,
+        timeStamp: moment().format('X'),
+      })
+        .then(() => console.log('success set like'))
+        .catch(err => alert('ERROR: like save: ' + err.toString()));
     } else {
-      firebase
-        .database()
-        .ref(`episodes/${episodeID}/likes/${webID}`)
-        .remove();
+      Axios.delete(`/api/likes/${webID}-${episodeID}`)
+        .then(() => console.log('success delete like'))
+        .catch(err => alert('ERROR: like delete: ' + err.toString()));
     }
     this.setState({
       liked: !liked,
@@ -315,16 +339,28 @@ class _EpisodePage extends Component {
       <div>
         <Helmet>
           <title>{`${title} | Soundwise`}</title>
-          <meta property="og:url" content={`https://mysoundwise.com/episodes/${episodeID}`} />
+          <meta
+            property="og:url"
+            content={`https://mysoundwise.com/episodes/${episodeID}`}
+          />
           <meta property="fb:app_id" content="1726664310980105" />
           <meta property="og:title" content={`${title} - ${soundcastTitle}`} />
           <meta property="og:description" content={description} />
-          <meta property="og:image" content={coverArtUrl || soundcastImageURL} />
+          <meta
+            property="og:image"
+            content={coverArtUrl || soundcastImageURL}
+          />
           <meta name="description" content={description} />
           <meta name="twitter:title" content={`${title} - ${soundcastTitle}`} />
           <meta name="twitter:description" content={description} />
-          <meta name="twitter:image" content={coverArtUrl || soundcastImageURL} />
-          <meta name="twitter:card" content={coverArtUrl || soundcastImageURL} />
+          <meta
+            name="twitter:image"
+            content={coverArtUrl || soundcastImageURL}
+          />
+          <meta
+            name="twitter:card"
+            content={coverArtUrl || soundcastImageURL}
+          />
         </Helmet>
         <MuiThemeProvider>
           <div>
@@ -340,18 +376,26 @@ class _EpisodePage extends Component {
                 onClose={this.onCloseModal}
                 styles={{ modal: { maxWidth: '100%' } }}
               >
-                <div className="padding-five xs-padding-six" style={{ padding: '3em' }}>
+                <div
+                  className="padding-five xs-padding-six"
+                  style={{ padding: '3em' }}
+                >
                   <div className="col-md-6 col-xs-12">
                     <img src={soundcastImageURL} style={{ width: '100%' }} />
                   </div>
                   <div className="col-md-6 col-xs-12">
                     <div style={{ marginBottom: '2em', marginTop: '2em' }}>
-                      <span className="title-large xs-title-large" style={{ fontWeight: 800 }}>
+                      <span
+                        className="title-large xs-title-large"
+                        style={{ fontWeight: 800 }}
+                      >
                         {soundcastTitle}
                       </span>
                     </div>
                     <div style={{ marginBottom: '2em' }}>
-                      <span className="text-large xc-text-large">{soundcastDescription}</span>
+                      <span className="text-large xc-text-large">
+                        {soundcastDescription}
+                      </span>
                     </div>
                     {(soundcastFeatures && (
                       <div
@@ -454,7 +498,10 @@ class _EpisodePage extends Component {
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-md-3 col-sm-5 col-xs-12 text-center center-col" style={{}}>
+                    <div
+                      className="col-md-3 col-sm-5 col-xs-12 text-center center-col"
+                      style={{}}
+                    >
                       <a
                         target="_blank"
                         href={`https://mysoundwise.com/signup/soundcast_user/${soundcastID}`}
@@ -525,7 +572,9 @@ class _EpisodePage extends Component {
                         {(showTimeStamps &&
                           `${moment(date_created * 1000).format(
                             'MMM DD YYYY'
-                          )} ${String.fromCharCode(183)} ${this.getTime_hoursMins(duration)}`) ||
+                          )} ${String.fromCharCode(
+                            183
+                          )} ${this.getTime_hoursMins(duration)}`) ||
                           `${this.getTime_hoursMins(duration)}`}
                       </h2>
                     </div>
@@ -550,13 +599,17 @@ class _EpisodePage extends Component {
                             aria-hidden="true"
                             style={{ color: liked ? 'red' : 'black' }}
                           />
-                          {` ${likes || 0} ${likes && likes > 1 ? 'likes' : 'like'}`}
+                          {` ${likes || 0} ${
+                            likes && likes > 1 ? 'likes' : 'like'
+                          }`}
                         </span>
                       }
                       {
                         <span className="section-title-small sm-section-title-small xs-section-title-medium text-dark-gray font-weight-400 alt-font margin-three-bottom xs-margin-fifteen-bottom tz-text">
                           <i className="fa fa-headphones" aria-hidden="true" />
-                          {` ${listens || 0} ${listens && listens > 1 ? 'listens' : 'listen'}`}
+                          {` ${listens || 0} ${
+                            listens && listens > 1 ? 'listens' : 'listen'
+                          }`}
                         </span>
                       }
                     </div>
