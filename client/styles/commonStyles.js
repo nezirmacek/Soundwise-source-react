@@ -85,7 +85,7 @@ const commonStyles = {
   categoryButton: {
     width: 370,
     borderBottomWidth: 1,
-    borderBottomColor: 'gray',
+    borderBottomColor: '#ececec',
     backgroundColor: 'white',
     padding: 10,
   },
