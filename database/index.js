@@ -52,7 +52,7 @@ if (process.env.DATABASE_URL) {
 } else {
   db = new Sequelize('soundwise', 'root', '111', {
     dialect: 'postgres',
-    port: 5433,
+    port: 5432,
     logging: false,
     operatorsAliases,
     dialectOptions: { ssl: false },
