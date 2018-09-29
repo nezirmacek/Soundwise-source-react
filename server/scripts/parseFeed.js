@@ -750,7 +750,7 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
       .ref(`soundcasts/${soundcastId}/episodes/${episodeId}`)
       .set(true);
     // add to postgres
-    database.Episode.findOrCreate({
+    await database.Episode.findOrCreate({
       where: { episodeId },
       defaults: {
         episodeId,
@@ -759,11 +759,7 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
         title: episode.title,
         soundcastTitle: soundcast.title,
       },
-    })
-      .then(data => {
-        // console.log('parseFeed.js findOrCreate then');
-      })
-      .catch(err => logErr(`Episode.findOrCreate ${err}`));
+    });
     return episodeId;
   } catch (err) {
     logErr(`addFeedEpisode catch ${err} ${err.stack}`);
@@ -786,9 +782,6 @@ async function feedUpdateInterval() {
         await new Promise(resolve => {
           // 2. for each item, if it's published, parse the feedUrl again,
           //    and find feed items that are created after the last time feed was parsed
-          if (!item.published) {
-            return resolve();
-          }
           getFeed(item.originalUrl, async (err, results) => {
             if (err) {
               logErr(`feedUpdateInterval getFeed ${err}`);
@@ -843,7 +836,7 @@ async function feedUpdateInterval() {
     // to around 500,000. Will it be a problem for the server?)
     // - see /server/boot/cron-jobs-v2.js
   } catch (err) {
-    logErr(`feedUpdateInterval catch ${err} ${err.stack}`);
+    logErr(`feedUpdateInterval catch ${err} ${err && err.stack}`);
   }
 }
 
