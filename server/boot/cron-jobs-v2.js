@@ -18,13 +18,13 @@ module.exports = function(app) {
     return; // prevent running in dev mode
   }
 
-  // feed interval - 03 hour each day
-  schedule.scheduleJob('0 0 3 * * *', async () => {
+  // feed interval - 14:00 each day
+  schedule.scheduleJob('0 0 14 * * *', async () => {
     console.log(`CRON_RUN feedUpdateInterval`);
     feedUpdateInterval();
   });
 
-  // rankSoundcasts - 01 hour each Monday
+  // rankSoundcasts - 01:00 each Monday
   schedule.scheduleJob('0 0 1 * * 1', async () => {
     console.log('CRON_RUN rankSoundcasts');
     const currentDate = moment().format('x');
@@ -57,7 +57,7 @@ module.exports = function(app) {
     }
   });
 
-  // detectSubscriptionsExpiration - 23 hour each day
+  // detectSubscriptionsExpiration - 23:00 each day
   schedule.scheduleJob('0 0 23 * * *', async () => {
     console.log('CRON_RUN detectSubscriptionsExpiration');
     const currentDate = moment().format('X');

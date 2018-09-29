@@ -766,17 +766,18 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
   }
 }
 
-// Need to update all the published soundcasts from imported feeds every hour
+// Update all the published soundcasts from imported feeds
 async function feedUpdateInterval() {
   try {
     // 1. go through every row under 'ImportedFeed' table
     const imported_f_count = await database.ImportedFeed.count();
     let offset = 0;
     while (offset <= imported_f_count) {
+      console.log(`feedUpdateInterval findAll ${offset}`);
       const podcasts = await database.ImportedFeed.findAll({
         order: [['soundcastId', 'ASC']],
         offset,
-        limit: 3000, // step
+        limit: 10000, // step
       });
       for (const item of podcasts) {
         await new Promise(resolve => {
@@ -829,7 +830,7 @@ async function feedUpdateInterval() {
           });
         });
       }
-      offset += 3000; // step
+      offset += 10000; // step
     }
     // 4. repeat the update checking every day (what's the best way to do this?
     // Assuming the number of feeds that need to be updated will eventually get
