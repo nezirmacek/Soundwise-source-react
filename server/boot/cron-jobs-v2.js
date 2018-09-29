@@ -11,18 +11,10 @@ const firebase = require('firebase-admin');
 const moment = require('moment');
 const database = require('../../database/index');
 
-const { feedUpdateInterval } = require('../scripts/parseFeed');
-
 module.exports = function(app) {
   if (process.env.NODE_ENV === 'dev') {
     return; // prevent running in dev mode
   }
-
-  // feed interval - 14:00 each day
-  schedule.scheduleJob('0 0 14 * * *', async () => {
-    console.log(`CRON_RUN feedUpdateInterval`);
-    feedUpdateInterval();
-  });
 
   // rankSoundcasts - 01:00 each Monday
   schedule.scheduleJob('0 0 1 * * 1', async () => {
