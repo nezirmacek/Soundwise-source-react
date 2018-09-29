@@ -21,6 +21,7 @@ import {
 } from '../../../components/buttons/buttons';
 import InviteSubscribersModal from './invite_subscribers_modal';
 import PendingInviteModal from './pending_invite_modal';
+import EmailListModal from './email_list_modal';
 
 
 function matchEmail(emails, inputLength, inputValue) {
@@ -117,6 +118,7 @@ class Subscribers extends Component {
       toBeUnsubscribed: [],
       showModal: false,
       showPendingInvite: false,
+      showEmailList: false,
       modalOpen: false,
       suggestions: [],
       value: '',
@@ -135,6 +137,7 @@ class Subscribers extends Component {
     this.handleSuggestionSelected = this.handleSuggestionSelected.bind(this);
     this.onMountOrReceiveProps = this.onMountOrReceiveProps.bind(this);
     this.retrieveSubscribers = this.retrieveSubscribers.bind(this);
+    this.handleEmailList = this.handleEmailList.bind(this);
   }
 
   componentDidMount() {
@@ -245,6 +248,19 @@ class Subscribers extends Component {
     );
   }
 
+  handleEmailList() {
+    if (!this.state.showEmailList) {
+      this.setState({
+        showEmailList: true,
+      });
+    } else {
+      this.setState({
+        showEmailList: false,
+      });
+    }
+  }
+
+
   retrieveSubscriberInfo(userId) {
     return firebase
       .database()
@@ -299,6 +315,12 @@ class Subscribers extends Component {
     const { currentSoundcastID, currentSoundcast } = this.state;
     const { userInfo } = this.props;
     const publisherID = userInfo.publisherID;
+    if (this.state.toBeUnsubscribed.length === 0) {
+      confirm(
+        `Please select the listeners to unsubscribe`
+      )
+      return;
+    } 
 
     this.subscribers = this.allSubscribers.slice(0);
     if (
@@ -510,6 +532,14 @@ class Subscribers extends Component {
           userInfo={this.props.userInfo}
           onClose={this.handlePendingInvite}
         />
+        <EmailListModal
+          isShown={this.state.showEmailList}
+          currentSoundcastID={this.state.currentSoundcastID}
+          userInfo={this.props.userInfo}
+          onClose={this.handleEmailList}
+          soundcasts={soundcasts_managed}
+        />
+
         <div
           style={{
             display: modalOpen ? '' : 'none',
@@ -607,7 +637,7 @@ class Subscribers extends Component {
             </div>
           </row>
           <row style={{ marginBottom: 25 }}>
-            <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
               <span
                 style={{ color: Colors.mainOrange }}
                 onClick={this.handleModal}
@@ -615,7 +645,7 @@ class Subscribers extends Component {
                 Invite Subscribers
               </span>
             </div>
-            <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
               <span
                 style={{ color: Colors.link }}
                 onClick={this.handlePendingInvite}
@@ -623,7 +653,7 @@ class Subscribers extends Component {
                 See Pending Invites
               </span>
             </div>
-            <div className="col-md-3 col-sm-6 col-xs-12" style={styles.button}>
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
               <CSVLink
                 data={csvData}
                 filename={`${currentSoundcast.title} subscribers.csv`}
@@ -631,16 +661,21 @@ class Subscribers extends Component {
                 <span>Download Subscribers</span>
               </CSVLink>
             </div>
-            <div className="col-md-3 col-sm-6 col-xs-12">
-              {(this.state.toBeUnsubscribed.length > 0 && (
+            <div className="col-md-2 col-sm-6 col-xs-12" style={styles.button}>
+              <span
+                style={{ color: Colors.link }}
+                onClick={this.handleEmailList}
+              >
+                Connect Email List
+              </span>
+            </div>
+            <div className="col-md-2 col-sm-6 col-xs-12">
                 <div
-                  style={{ ...styles.button, color: 'red' }}
+                  style={{ ...styles.button, color: this.state.toBeUnsubscribed.length > 0 ? 'red' : Colors.fontDarkGrey }}
                   onClick={this.deleteSubscriber}
                 >
                   Unsubscribe
                 </div>
-              )) ||
-                null}
             </div>
           </row>
           <row>

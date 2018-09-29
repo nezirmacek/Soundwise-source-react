@@ -208,6 +208,11 @@ export default class Billing extends Component {
                 </span>
               </Link>
             </li>
+            <li role="presentation">
+              <Link to="/dashboard/publisher/integrations">
+                <span style={{ fontSize: 15, fontWeight: 600 }}>Integration</span>
+              </Link>
+            </li>
           </ul>
           <div className="container" style={{ minHeight: 700 }}>
             <div className="row">
