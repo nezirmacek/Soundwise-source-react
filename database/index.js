@@ -276,11 +276,11 @@ var Coupon = db.define('Coupon', {
   timeStamp: Sequelize.BIGINT,
 });
 
-Comment.belongsTo(Episode, { foreignKey: 'episodeId', onDelete: 'cascade' });
-Episode.hasMany(Comment, { foreignKey: 'episodeId', as: 'Comments' });
+// Comment.belongsTo(Episode, { foreignKey: 'episodeId', onDelete: 'cascade' });
+// Episode.hasMany(Comment, { foreignKey: 'episodeId', as: 'Comments' });
 
-Comment.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
-Announcement.hasMany(Comment, { foreignKey: 'announcementId', as: 'Comments' });
+// Comment.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
+// Announcement.hasMany(Comment, { foreignKey: 'announcementId', as: 'Comments' });
 
 Like.belongsTo(Comment, { foreignKey: 'commentId', onDelete: 'cascade' });
 Comment.hasMany(Like, { foreignKey: 'commentId', as: 'Likes' });
