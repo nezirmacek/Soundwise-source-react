@@ -771,7 +771,7 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
 }
 
 // Need to update all the published soundcasts from imported feeds every hour
-async function feedInterval() {
+async function feedUpdateInterval() {
   try {
     // 1. go through every row under 'ImportedFeed' table
     const imported_f_count = await database.ImportedFeed.count();
@@ -791,7 +791,7 @@ async function feedInterval() {
           }
           getFeed(item.originalUrl, async (err, results) => {
             if (err) {
-              logErr(`feedInterval getFeed ${err}`);
+              logErr(`feedUpdateInterval getFeed ${err}`);
               return resolve();
             }
             const soundcastObj = await firebase
@@ -843,8 +843,8 @@ async function feedInterval() {
     // to around 500,000. Will it be a problem for the server?)
     // - see /server/boot/cron-jobs-v2.js
   } catch (err) {
-    logErr(`feedInterval catch ${err} ${err.stack}`);
+    logErr(`feedUpdateInterval catch ${err} ${err.stack}`);
   }
 }
 
-module.exports = { getFeed, parseFeed, runFeedImport, feedInterval };
+module.exports = { getFeed, parseFeed, runFeedImport, feedUpdateInterval };

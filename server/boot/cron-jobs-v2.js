@@ -17,7 +17,7 @@ const db = new Sequelize('soundwise', 'root', '111', {
   logging: false,
 });
 
-const { feedInterval } = require('../scripts/parseFeed');
+const { feedUpdateInterval } = require('../scripts/parseFeed');
 
 module.exports = function(app) {
   if (process.env.NODE_ENV === 'dev') {
@@ -26,8 +26,8 @@ module.exports = function(app) {
 
   // feed interval - 03 hour each day
   schedule.scheduleJob('0 0 3 * * *', async () => {
-    console.log(`CRON_RUN feedInterval`);
-    feedInterval();
+    console.log(`CRON_RUN feedUpdateInterval`);
+    feedUpdateInterval();
   });
 
   // rankSoundcasts - 01 hour each Monday
