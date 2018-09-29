@@ -9,16 +9,14 @@ if (process.env.DATABASE_URL) {
     port: match[4],
     host: match[3],
     logging: false,
-    dialectOptions: {
-      ssl: false,
-    },
+    dialectOptions: { ssl: true },
   });
 } else {
   db = new Sequelize('soundwise', 'root', '111', {
     dialect: 'postgres',
     port: 5432,
     logging: false,
-    dialectOptions: { ssl: false },
+    dialectOptions: { ssl: true },
   });
 }
 
