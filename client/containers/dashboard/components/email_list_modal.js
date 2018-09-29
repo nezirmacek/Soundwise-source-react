@@ -152,6 +152,7 @@ export default class EmailListModal extends Component {
       list: [],
       apiKey: '',
       updatingList: false,
+      exportInProgress : false,
     }
 
   }
@@ -214,10 +215,13 @@ export default class EmailListModal extends Component {
   exportSubscribers() {
      //Send request to firebase to update the list id in the soundcast
      //Send request to server to export the users and update mail chimp list
-     this.saveSubscribersToMailChimp();
+    if (!this.state.exportInProgress) {
+      this.setState({exportInProgress : true}, this.saveSubscribersToMailChimp)
+    }
   }
 
   saveSubscribersToMailChimp(){
+    console.log("saveSubscribersToMailChimp called")
     if (this.state.currentSoundcastID != null && this.state.selectedListId != ''
       && this.state.apiKey != '') {
       this.setState({ updatingList: true })
@@ -230,7 +234,7 @@ export default class EmailListModal extends Component {
         soundcastId : this.state.currentSoundcastID,
       })
       .then(res => {
-        this.setState({ updatingList: false }, () => {
+        this.setState({ updatingList: false, exportInProgress : false }, () => {
           //We need a 300ms delay, so the dom re-renders before alert is shown.
             setTimeout(function() {
               alert('Subscribers exported to your email list.')
@@ -239,7 +243,7 @@ export default class EmailListModal extends Component {
         )        
       })
       .catch((error) => {
-        this.setState({ updatingList: false }, () => {
+        this.setState({ updatingList: false, exportInProgress : false }, () => {
           //We need a 300ms delay, so the dom re-renders before alert is shown.
             setTimeout(function() {
               alert('There was an error updating the list: ',);
@@ -251,6 +255,7 @@ export default class EmailListModal extends Component {
         }
       });  
     } else {
+      this.setState({exportInProgress : false});
       alert('Please select an email list');
     }  
   }
