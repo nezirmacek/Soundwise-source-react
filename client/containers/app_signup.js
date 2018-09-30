@@ -80,6 +80,8 @@ class _AppSignup extends Component {
             });
           }
         });
+    } else {
+      this.setState({ loading: false });
     }
   }
 
