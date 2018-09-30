@@ -3,10 +3,18 @@
 const sendNotification = require('../scripts/messaging').sendNotification;
 const { userManager, likeManager } = require('../managers');
 const Op = require('sequelize').Op;
-const { likeRepository, commentRepository, announcementRepository } = require('../repositories');
+const {
+  likeRepository,
+  commentRepository,
+  announcementRepository,
+} = require('../repositories');
+const { handleEvent } = require('./event');
+const { EventTypes } = require('../scripts/utils')();
 
 // ADD_LIKE
 const addLike = (req, res) => {
+  console.log('Like add');
+  console.log(req.body);
   const like = req.body;
   const lastLiked = like.fullName;
   if (!like.fullName) {
@@ -17,26 +25,15 @@ const addLike = (req, res) => {
     .create(like)
     .then(like => {
       const { episodeId, announcementId, commentId } = like;
-      if (episodeId) {
-        // LIKE EPISODE
-        likeRepository.count({ episodeId }).then(count =>
-          likeManager
-            .updateLikeInEpisode(episodeId, count, lastLiked)
-            .then(() => res.send(like))
-            .catch(error => sendError(error, res))
-        );
-      } else if (announcementId) {
-        // LIKE MESSAGE
-        likeRepository
-          .count({ announcementId })
-          .then(likesCount =>
-            announcementRepository
-              .update({ lastLiked, likesCount }, announcementId)
-              .then(() => res.send(like))
-              .catch(error => sendError(error, res))
-          )
-          .catch(error => sendError(error, res));
-      } else if (commentId) {
+      if (commentId) {
+        const eventType = like.episodeId
+          ? EventTypes.EP_COMMENT_LIKED
+          : EventTypes.MSG_COMMENT_LIKED;
+        handleEvent(eventType, like)
+          .then(() => console.log(`${eventType} event recorded`))
+          .catch(err =>
+            console.log(`Failed to record ${eventType} event`, err)
+          );
         // LIKE COMMENT
         likeRepository
           .count({ commentId })
@@ -54,6 +51,45 @@ const addLike = (req, res) => {
               )
               .catch(error => sendError(error, res))
           )
+          .catch(error => sendError(error, res));
+      } else if (episodeId) {
+        handleEvent(EventTypes.EPISODE_LIKED, like)
+          .then(() => console.log(`${EventTypes.EPISODE_LIKED} event recorded`))
+          .catch(err =>
+            console.log(
+              `Failed to record ${EventTypes.EPISODE_LIKED} event`,
+              err
+            )
+          );
+        // LIKE EPISODE
+        likeRepository.count({ episodeId }).then(count =>
+          likeManager
+            .updateLikeInEpisode(episodeId, count, lastLiked)
+            .then(() => res.send(like))
+            .catch(error => sendError(error, res))
+        );
+      } else if (announcementId) {
+        // LIKE MESSAGE
+        likeRepository
+          .count({ announcementId })
+          .then(likesCount => {
+            handleEvent(EventTypes.MESSAGE_LIKED, like)
+              .then(() =>
+                console.log(
+                  `${EventTypes.MESSAGE_LIKED} Message liked event recorded`
+                )
+              )
+              .catch(err =>
+                console.log(
+                  `Failed to record ${EventTypes.MESSAGE_LIKED} event`,
+                  err
+                )
+              );
+            announcementRepository
+              .update({ lastLiked, likesCount }, announcementId)
+              .then(() => res.send(like))
+              .catch(error => sendError(error, res));
+          })
           .catch(error => sendError(error, res));
       }
     })

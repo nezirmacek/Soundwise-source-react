@@ -8,6 +8,9 @@ const {
   userService,
 } = require('../server/services');
 
+const { handleEvent } = require('../server/services/event');
+const { EventTypes } = require('../server/scripts/utils')();
+
 module.exports = app => {
   app.post('/api/user', (req, res) => {
     database.User.findOrCreate({
@@ -61,8 +64,16 @@ module.exports = app => {
       where: { episodeId: req.body.episodeId },
       defaults: req.body,
     })
-      .then(data => res.send(data))
-      .catch(err => res.status(500).send(err));
+      .then(data => {
+        handleEvent(EventTypes.NEW_EPISODE_PUBLISHED, data[0])
+          .then((res) => console.log('Event created'))
+          .catch((err) => console.log('Failed to create event', err));
+        res.send(data);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).send(err)
+      });
   });
 
   app.post('/api/soundcast', (req, res) => {
@@ -79,6 +90,9 @@ module.exports = app => {
   app.post('/api/announcements', (req, res) => {
     database.Announcement.create(req.body)
       .then(data => {
+        handleEvent(EventTypes.NEW_MESSAGE_POSTED, data)
+          .then((res) => console.log('Event created'))
+          .catch((err) => console.log('Failed to create event', err));
         res.send(data);
       })
       .catch(err => {
