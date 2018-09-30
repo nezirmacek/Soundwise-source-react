@@ -104,9 +104,6 @@ function getFeed(urlfeed, cb) {
 const emptyEmailMsg =
   "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!";
 function getPublisherEmail(metadata) {
-  if (process.env.NODE_ENV === 'dev') {
-    // return 'TEST@EMAIL.COM'; // set test publisher email
-  }
   const itunesEmail =
     metadata['itunes:owner'] &&
     metadata['itunes:owner']['itunes:email'] &&
@@ -126,15 +123,7 @@ const feedUrlsImported = {}; // not claimed imported feeds
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 async function parseFeed(req, res) {
   try {
-    const {
-      feedUrl,
-      submitCode,
-      resend,
-      importFeedUrl,
-      publisherId,
-      userId,
-      notClaimed,
-    } = req.body;
+    const { feedUrl, submitCode, resend, importFeedUrl, publisherId, userId } = req.body;
     if (!feedUrl) {
       return res.status(400).send(`Error: empty feedUrl field`);
     }
@@ -223,7 +212,7 @@ async function parseFeed(req, res) {
         return res.json({
           imageUrl: podcast.imageURL,
           publisherEmail,
-          notClaimed: true,
+          notClaimed: true, // req.body.notClaimed
         });
       }
 
@@ -271,9 +260,7 @@ async function parseFeed(req, res) {
           .ref(`soundcasts/${soundcastId}/verified`)
           .set(true);
 
-        const episodes = await database.Episode.findAll({
-          where: { soundcastId },
-        });
+        const episodes = await database.Episode.findAll({ where: { soundcastId } });
         if (episodes.length) {
           await database.Episode.update({ publisherId }, { where: { soundcastId } });
           for (const episode of episodes) {
@@ -601,78 +588,57 @@ async function runFeedImport(
     const importedFeedObj = {
       soundcastId,
       published: isPublished,
-      title,
-      feedUrl: url,
-      originalUrl,
-      imageURL: image.url,
+      title: title.length > 255 ? title.slice(0, 255) : title,
+      feedUrl: url.length > 255 ? url.slice(0, 255) : url,
+      originalUrl: originalUrl.length > 255 ? originalUrl.slice(0, 255) : originalUrl,
+      imageURL: image.url.length > 255 ? image.url.slice(0, 255) : image.url,
       updated: Number(moment().unix()),
       publisherId,
       userId,
-      // category, // TODO
       claimed: isClaimed, // when 'claimed == true', this imported soundcast is managed by the RSS feed owner
     };
-
     const postgresSoundcast = {
       soundcastId,
       publisherId,
-      title,
+      title: title.length > 255 ? title.slice(0, 255) : title,
     };
-
     if (itunesId) {
       importedFeedObj.itunesId = itunesId; // store the iTunesID under the importedFeed node
       postgresSoundcast.itunesId = itunesId;
     }
-    if (title.length > 255) {
-      importedFeedObj.title = title.slice(0, 255);
-    }
-    if (url.length > 255) {
-      importedFeedObj.feedUrl = url.slice(0, 255);
-    }
-    if (image.url.length > 255) {
-      importedFeedObj.imageURL = image.url.slice(0, 255);
-    }
-    if (originalUrl.length > 255) {
-      importedFeedObj.originalUrl = originalUrl.slice(0, 255);
-    }
-    await database.ImportedFeed.create(importedFeedObj);
 
     // 2-c. add to postgres
-    database.Soundcast.findOrCreate({
-      where: { soundcastId },
-      defaults: postgresSoundcast,
-    })
-      .then(async data => {
-        // console.log('DB response: ', data);
-        // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
-        let i = 0;
-        for (const item of feedItems) {
-          const episodeId = await addFeedEpisode(
-            item,
-            userId,
-            publisherId,
-            soundcastId,
-            soundcast,
-            metadata,
-            i
-          );
-          soundcast.episodes[episodeId] = true;
-          i++;
-        }
-        await firebase
-          .database()
-          .ref(`soundcasts/${soundcastId}`)
-          .set(soundcast);
-        await firebase
-          .database()
-          .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
-          .set(true);
-        await firebase
-          .database()
-          .ref(`publishers/${publisherId}/administrators/${userId}`)
-          .set(true);
-        callback && callback();
-      })
-      .catch(err => logErr(`Soundcast.findOrCreate ${err}`, res));
+    await database.ImportedFeed.create(importedFeedObj);
+    await database.Soundcast.findOrCreate({ where: { soundcastId }, defaults: postgresSoundcast });
+
+    // 3. create new episodes from feedItems and add episodes to firebase and postgreSQL
+    let i = 0;
+    for (const item of feedItems) {
+      const episodeId = await addFeedEpisode(
+        item,
+        userId,
+        publisherId,
+        soundcastId,
+        soundcast,
+        metadata,
+        i
+      );
+      soundcast.episodes[episodeId] = true;
+      i++;
+    }
+    await firebase
+      .database()
+      .ref(`soundcasts/${soundcastId}`)
+      .set(soundcast);
+    await firebase
+      .database()
+      .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
+      .set(true);
+    await firebase
+      .database()
+      .ref(`publishers/${publisherId}/administrators/${userId}`)
+      .set(true);
+    callback && callback();
   } catch (err) {
     logErr(`runFeedImport catch ${err}`, res);
     console.log(err.stack);
@@ -756,8 +722,9 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
         episodeId,
         soundcastId,
         publisherId,
-        title: episode.title,
-        soundcastTitle: soundcast.title,
+        title: episode.title.length > 255 ? episode.title.slice(0, 255) : episode.title,
+        soundcastTitle:
+          soundcast.title.length > 255 ? soundcast.title.slice(0, 255) : soundcast.title,
       },
     });
     return episodeId;
@@ -793,6 +760,10 @@ async function feedUpdateInterval() {
               .ref(`soundcasts/${item.soundcastId}`)
               .once('value');
             const soundcastVal = soundcastObj.val();
+            if (!soundcastVal || !soundcastVal.episodes) {
+              console.log(`Error: empty soundcastVal ${item.soundcastId}`);
+              return resolve();
+            }
             let i = Object.keys(soundcastVal.episodes).length; // episodes count
             const { metadata } = results;
 
