@@ -87,12 +87,20 @@ function retrieveSubscriberInfo(userId) {
     .then(snapshot => {
       return { ...JSON.parse(JSON.stringify(snapshot.val())), id: userId };
     })
-    .then(res => res, err => console.log(err));
+    .catch(function (err) {
+      //We send a 404 if the firebase request failed.
+      console.log("Error retrieveSubscriberInfo", err)
+      res.sendStatus(404);
+    })
 }
 
 function updateFirebaseSoundcastWihtListId(req, res) {
   return firebase
   .database()
   .ref(`soundcasts/${req.body.soundcastId}`)
-  .update({mailChimpId: req.body.listId});
+  .update({mailChimpId: req.body.listId})
+  .catch(function (err) {
+    //We send a 404 if the firebase request failed.
+    res.sendStatus(404);
+  })  
 }

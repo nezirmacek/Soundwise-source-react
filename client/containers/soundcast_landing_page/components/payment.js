@@ -114,6 +114,7 @@ class _Payment extends Component {
   }
 
   addUserToMailChimp() {
+
     if (this.newUser) {
       // set newUser to false, it gets resetted to true in the 
       // constructor or if new props are received with new user.
@@ -122,11 +123,12 @@ class _Payment extends Component {
       const { soundcast, userInfo } = this.props;
 
       if (typeof soundcast.mailChimpId != 'undefined') {
-        //There shold be a apiKey, but lets still check for it.
-        if (typeof userInfo.publisher.mailChimp != 'undefined') {
 
-          const { apiKey } = userInfo.publisher.mailChimp;
+        //There shold be a publisherID, but lets still check for it.
+        if (typeof soundcast.publisherID != 'undefined') {
+
           const listId = soundcast.mailChimpId;
+          const publisherId = soundcast.publisherID;
 
           let user = {
             firstName : userInfo.firstName,
@@ -135,7 +137,7 @@ class _Payment extends Component {
           }
 
           Axios.post('/api/mail_manage_addsubscriber', {
-            apiKey : apiKey,
+            publisherId : publisherId,
             listId : listId,
             user : user
           })
@@ -144,9 +146,6 @@ class _Payment extends Component {
           })
           .catch((error) => {
             console.log("Received error", error)
-            if(error.response.status === 404) {
-              console.log("404 error", error)
-            }
           });  
         }
       }

@@ -1,5 +1,7 @@
 'use strict';
 var Mailchimp = require('mailchimp-api-v3')
+var firebase = require('firebase-admin');
+
 
 module.exports.addSubscriberMailChimp = (req, res) => {
 
@@ -9,24 +11,45 @@ module.exports.addSubscriberMailChimp = (req, res) => {
   let lastName = req.body.user.lastName ? req.body.user.lastName : '';
   let email = req.body.user.email;
 
-  if(req.body.apiKey != '') {
-    var mailchimp = new Mailchimp(req.body.apiKey);
-
-    mailchimp.post(`/lists/${req.body.listId}/members`, {
-      email_address : email,
-      status : 'subscribed',
-      merge_fields : {
-        FNAME: firstName,
-        LNAME: lastName
+  //Lets get the mailChimp API key using the publisherID from firebase.
+  firebase
+    .database()
+    .ref('publishers/' + req.body.publisherId + '/mailChimp')
+    .once('value')
+    .then(snapshot => {
+      
+      let mailChimpData = snapshot.val()
+      if (mailChimpData == null) {
+        //No API ket, just return quietly
+        res.sendStatus(200);
+      } else {
+        let apiKey = mailChimpData.apiKey;
+        if(apiKey != '') {
+          var mailchimp = new Mailchimp(apiKey);
+          mailchimp.post(`/lists/${req.body.listId}/members`, {
+            email_address : email,
+            status : 'subscribed',
+            merge_fields : {
+              FNAME: firstName,
+              LNAME: lastName
+            }
+          })
+          .then(function(results) {
+            res.sendStatus(200);
+          })
+          .catch(function (err) {
+            //We send a 200 if the user is already in the list, nothing to be alarmed of.
+            console.log("user already exists")
+            res.sendStatus(200);
+          })
+        } else {
+          //We send a 404 if the apiKey is not found.
+          res.sendStatus(404);
+        }    
       }
     })
-    .then(function(results) {
-      res.sendStatus(200);
-    })
     .catch(function (err) {
+      //We send a 404 if the firebase request failed.
       res.sendStatus(404);
-    })
-  } else {
-    res.sendStatus(404);
-  }
+    })  
 };
