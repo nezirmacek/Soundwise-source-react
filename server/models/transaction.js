@@ -39,6 +39,13 @@ module.exports = Transaction => {
             .equalTo(data.data.object.lines.data[0].plan.id)
             .once('value');
           const soundcastId = Object.keys(userSoundcastSnapshot.val())[0];
+
+          // update current_period_end for main soundcast
+          await firebase
+            .database()
+            .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+            .set(data.data.object.lines.data[0].period.end);
+
           const soundcastSnapshot = await firebase
             .database()
             .ref(`soundcasts/${soundcastId}`)
@@ -49,16 +56,10 @@ module.exports = Transaction => {
               // update current_period_end for included soundcasts
               await firebase
                 .database()
-                .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+                .ref(`users/${userId}/soundcasts/${id}/current_period_end`)
                 .set(data.data.object.lines.data[0].period.end);
             }
           }
-
-          // update current_period_end for main soundcast
-          await firebase
-            .database()
-            .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
-            .set(data.data.object.lines.data[0].period.end);
 
           const line = data.data.object.lines.data[0];
           const _transactionData = line.plan.id.split('-');
