@@ -5,7 +5,10 @@ import axios from 'axios';
 import firebase from 'firebase';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Dialog from 'material-ui/Dialog';
 
+import { OrangeSubmitButton } from '../../../components/buttons/buttons';
 import EpisodeStatsModal from './episode_stats_modal';
 import Colors from '../../../styles/colors';
 
@@ -49,10 +52,15 @@ export default class Soundcast extends Component {
       userInfo: { soundcasts_managed: {} },
       episodes: [],
       soundcast: {},
+      upgradeModal: false,
+      upgradeModalTitle: '',
     };
     this.handleStatsModal = this.handleStatsModal.bind(this);
     this.loadEpisodes = this.loadEpisodes.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.closeUpgradeModal = this.closeUpgradeModal.bind(this);
+    this.handleAddNewEpisode = this.handleAddNewEpisode.bind(this);
   }
 
   componentDidMount() {
@@ -72,6 +80,62 @@ export default class Soundcast extends Component {
         userInfo,
       });
       this.loadEpisodes(userInfo);
+    }
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (
+      userInfo.publisher &&
+      userInfo.publisher.plan &&
+      userInfo.publisher.current_period_end > curTime
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  closeUpgradeModal() {
+    this.setState({ upgradeModal: false })
+  }
+
+  handleAddNewEpisode() {
+    const { userInfo, id, history } = this.props;
+    if (userInfo.publisher) {
+      const is_free_account = this.isFreeAccount();
+      // if plus plan and has already 10 soundcast then limit
+      let currentSoundcastCount = 0
+      let currentEpisodeCount = 0
+      Object.keys(userInfo.soundcasts_managed).forEach(soundcastId => {
+        if (userInfo.soundcasts_managed[soundcastId].title) {
+          currentSoundcastCount += 1
+          if (userInfo.soundcasts_managed[soundcastId].episodes) {
+            currentEpisodeCount += Object.keys(userInfo.soundcasts_managed[soundcastId].episodes).length
+          }
+        }
+      })
+
+      if (currentSoundcastCount >= 10 && currentEpisodeCount >= 500 && !is_free_account && userInfo.publisher.plan === 'plus') {
+        this.setState({
+          upgradeModal: true,
+          upgradeModalTitle: 'Please upgrade to create more episodes',
+        });
+        return;
+      }
+      // if basic plan or end current plan then limit to 1 soundcast
+      if (currentSoundcastCount >= 1 && currentEpisodeCount >= 1 && is_free_account) {
+        this.setState({
+          upgradeModal: true,
+          upgradeModalTitle: 'Please upgrade to create more episodes',
+        });
+        return;
+      }
+      // allow
+      history.push({
+        pathname: '/dashboard/add_episode',
+        state: { soundcastID: id },
+      })
     }
   }
 
@@ -218,12 +282,7 @@ export default class Soundcast extends Component {
           <div
             className="col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center"
             style={{ ...styles.button }}
-            onClick={() =>
-              history.push({
-                pathname: '/dashboard/add_episode',
-                state: { soundcastID: id },
-              })
-            }
+            onClick={this.handleAddNewEpisode}
           >
             Add episode
           </div>
@@ -387,6 +446,35 @@ export default class Soundcast extends Component {
             </Droppable>
           </DragDropContext>
         </div>
+
+        <MuiThemeProvider>
+          <Dialog modal={true} open={this.state.upgradeModal}>
+            <div
+              style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+              onClick={() => this.closeUpgradeModal()}
+            >
+              &#10799; {/* Close button (X) */}
+            </div>
+
+            <div>
+              <div style={{ ...styles.dialogTitle }}>{this.state.upgradeModalTitle}</div>
+              <OrangeSubmitButton
+                styles={{
+                  borderColor: Colors.link,
+                  backgroundColor: Colors.link,
+                  color: '#464646',
+                  width: 400,
+                }}
+                label="Change Plan"
+                onClick={() =>
+                  that.props.history.push({
+                    pathname: '/pricing',
+                  })
+                }
+              />
+            </div>
+          </Dialog>
+        </MuiThemeProvider>
       </div>
     );
   }
@@ -547,5 +635,11 @@ const styles = {
     // fontSize: 12,
     color: Colors.fontBlack,
     cursor: 'pointer',
+  },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
   },
 };
