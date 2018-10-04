@@ -10,72 +10,50 @@ const schedule = require('node-schedule');
 const firebase = require('firebase-admin');
 const moment = require('moment');
 const database = require('../../database/index');
-const Sequelize = require('sequelize');
-const db = new Sequelize('soundwise', 'root', '111', {
-  dialect: 'postgres',
-  port: 5432,
-  logging: false,
-});
-
-const { feedInterval } = require('../scripts/parseFeed');
 
 module.exports = function(app) {
   if (process.env.NODE_ENV === 'dev') {
     return; // prevent running in dev mode
   }
 
-  // feed interval - 03 hour each day
-  schedule.scheduleJob('0 0 3 * * *', async () => {
-    console.log(`CRON_RUN feedInterval`);
-    feedInterval();
-  });
-
-  // rankSoundcasts - 01 hour each Monday
+  // rankSoundcasts - 01:00 each Monday
   schedule.scheduleJob('0 0 1 * * 1', async () => {
     console.log('CRON_RUN rankSoundcasts');
     const currentDate = moment().format('x');
     const soundcastsListens = [];
-    const soundcastsCount = (await db.query(
-      'SELECT COUNT(*) FROM "Soundcasts"'
-    ))[0][0].count;
-    const maxListnes = (await db.query(
+    const count = (await database.db.query('SELECT COUNT(*) FROM "Soundcasts"'))[0][0].count;
+    const maxListnes = (await database.db.query(
       'SELECT "soundcastId", COUNT("sessionId") FROM "ListeningSessions" GROUP BY "soundcastId" ORDER BY "count" DESC;'
     ))[0][0].count;
     let i = 0;
-    while (i <= soundcastsCount) {
-      const soundcasts = (await db.query(
+    while (i <= count) {
+      const soundcasts = (await database.db.query(
         `SELECT * FROM "Soundcasts" ORDER BY "soundcastId" OFFSET ${i} LIMIT 10000`
       ))[0];
       for (const soundcast of soundcasts) {
-        const countListnes = await database.ListeningSession.count({
-          where: { soundcastId: soundcast.soundcastId },
-        });
-        const updateDate =
-          soundcast.updateDate || new Date(soundcast.updatedAt).getTime();
+        const { soundcastId } = soundcast;
+        const countList = await database.ListeningSession.count({ where: { soundcastId } });
+        const updateDate = soundcast.updateDate || new Date(soundcast.updatedAt).getTime();
         const rank =
-          (countListnes / maxListnes > 0.1
-            ? countListnes / maxListnes - 0.1
-            : 0) +
+          (countList / maxListnes > 0.1 ? countList / maxListnes - 0.1 : 0) +
           (updateDate / currentDate) * 0.1;
         await firebase
           .database()
-          .ref(`soundcasts/${soundcast.soundcastId}/rank`)
+          .ref(`soundcasts/${soundcastId}/rank`)
           .set(rank.toFixed(5));
-        await db.query(
-          `UPDATE "Soundcasts" SET "rank"=${rank} WHERE "soundcastId"='${
-            soundcast.soundcastId
-          }'`
+        await database.db.query(
+          `UPDATE "Soundcasts" SET "rank"=${rank} WHERE "soundcastId"='${soundcastId}'`
         );
       }
       i += 10000;
     }
   });
 
-  // detectSubscriptionsExpiration - 23 hour each day
+  // detectSubscriptionsExpiration - 23:00 each day
   schedule.scheduleJob('0 0 23 * * *', async () => {
     console.log('CRON_RUN detectSubscriptionsExpiration');
     const currentDate = moment().format('X');
-    const listeningSessions = (await db.query(
+    const listeningSessions = (await database.db.query(
       // `SELECT "userId", "soundcastId" FROM "ListeningSessions" GROUP BY "soundcastId", "userId";`
       `SELECT "userId", "soundcastId" FROM "ListeningSessions" WHERE "createdAt" >= (select TIMESTAMP 'yesterday') GROUP BY "soundcastId", "userId";`
     ))[0];
@@ -87,23 +65,16 @@ module.exports = function(app) {
       const soundcast = snapshot.val();
       if (
         soundcast.current_period_end &&
-        (soundcast.billingCycle !== 'free' ||
-          soundcast.billingCycle !== 'one time')
+        (soundcast.billingCycle !== 'free' || soundcast.billingCycle !== 'one time')
       ) {
         if (!!soundcast && soundcast.current_period_end < currentDate) {
           await firebase
             .database()
-            .ref(
-              `users/${session.userId}/soundcasts/${
-                session.soundcastId
-              }/subscribed`
-            )
+            .ref(`users/${session.userId}/soundcasts/${session.soundcastId}/subscribed`)
             .set(false);
           await firebase
             .database()
-            .ref(
-              `soundcasts/${session.soundcastId}/subscribed/${session.userId}`
-            )
+            .ref(`soundcasts/${session.soundcastId}/subscribed/${session.userId}`)
             .remove();
         } else {
           console.log('soundcastId: ', snapshot.key);

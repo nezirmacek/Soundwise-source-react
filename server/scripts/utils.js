@@ -272,24 +272,22 @@ const getContentPush = entity => {
   }
 };
 
-const getEvent = (type, entity) => {
-  let event = {
-    type,
-    // story: 'string',
-    userId: entity.userId,
-    episodeId: entity.episodeId,
-    likeId: entity.likeId,
-    soundcastId: entity.soundcastId,
-    announcementId: entity.announcementId,
-    commentId: entity.commentId,
-    parentId: entity.commentId,
-  };
-  event = _.pickBy(event, _.identity);
-  return event;
-};
+const EventTypes = Object.freeze({
+  EPISODE_LIKED: 'episode_liked',
+  MESSAGE_LIKED: 'message_liked',
+  EP_COMMENT_LIKED: 'episode_comment_liked',
+  MSG_COMMENT_LIKED: 'message_comment_liked',
+  COMMENT_LIKED: 'comment_liked',
+  EPISODE_COMMENTED: 'episode_commented',
+  MESSAGE_COMMENTED: 'message_commented',
+  EP_COMMENT_REPLIED: 'ep_comment_replied',
+  MSG_COMMENT_REPLIED: 'msg_comment_replied',
+  NEW_EPISODE_PUBLISHED: 'new_episode_published',
+  NEW_MESSAGE_POSTED: 'new_message_posted',
+});
 
 module.exports = prefix => ({
-  getEvent,
+  EventTypes,
   getContentPush,
   uploader,
   setAudioTags,

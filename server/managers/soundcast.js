@@ -33,10 +33,17 @@ const removeSubscribedUser = (id, userId) =>
     .ref(`soundcasts/${id}/subscribed/${userId}`)
     .remove();
 
+const getSubscribers = id =>
+  firebase
+    .database()
+    .ref(`soundcasts/${id}/subscribed`)
+    .once('value');
+
 module.exports = {
   getById,
   update,
   setMailingListName,
   addSubscribedUser,
   removeSubscribedUser,
+  getSubscribers,
 };

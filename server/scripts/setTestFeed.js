@@ -48,7 +48,7 @@ const setTestFeed = async () => {
         .remove();
     }
     await database.Episode.destroy({ where: { soundcastId } });
-    await database.Category.destroy({ where: { soundcastId } });
+    await database.CategorySoundcast.destroy({ where: { soundcastId } });
     await database.Soundcast.destroy({ where: { soundcastId } });
   }
 

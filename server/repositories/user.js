@@ -16,4 +16,6 @@ const create = ({ userId, firstName, lastName, picUrl }) =>
 
 const update = (user, userId) => database.User.update(user, { where: { userId } });
 
-module.exports = { create, update };
+const findById = userId => database.User.findById(userId);
+
+module.exports = { create, update, findById };

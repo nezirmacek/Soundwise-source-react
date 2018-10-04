@@ -1,8 +1,8 @@
 'use strict';
 const moment = require('moment');
-var stripe_key = require('../../config').stripe_key;
-var stripe = require('stripe')(stripe_key);
-var admin = require('firebase-admin');
+const stripe_key = require('../../config').stripe_key;
+const stripe = require('stripe')(stripe_key);
+const firebase = require('firebase-admin');
 // const sendinblue = require('sendinblue-api');
 // const sendinBlueApiKey = require('../../config').sendinBlueApiKey;
 const sgMail = require('@sendgrid/mail');
@@ -11,8 +11,8 @@ sgMail.setApiKey(sendGridApiKey);
 const stripeFeeFixed = 30; // 30 cents fixed fee
 const stripeFeePercent = 2.9 + 0.5; // 2.9% transaction fee, 0.5% fee on payout volume
 
-module.exports = function(Transaction) {
-  Transaction.handleStripeWebhookEvent = function(data, cb) {
+module.exports = Transaction => {
+  Transaction.handleStripeWebhookEvent = async (data, cb) => {
     // When recording to database, the soundcast id and publisher id come from the 'plan id' data returned from stripe.
     // because the format of 'plan id' is publisherID-soundcastID-soundcast title-billingCycle-price.
     console.log('handleStripeWebhookEvent post request body: ', data);
@@ -25,67 +25,76 @@ module.exports = function(Transaction) {
       case 'invoice.payment_succeeded':
         if (data.data.object.lines.data[0].period.end) {
           const customer = data.data.object.lines.data[0].metadata.platformCustomer; // need the platform customer id, not the connected account customer id
-          const db = admin.database();
-          const ref = db.ref('users');
-          ref
+          const userSnapshot = await firebase
+            .database()
+            .ref('users')
             .orderByChild('stripe_id')
             .equalTo(customer)
-            .once('value', snapshot => {
-              let userId;
-              snapshot.forEach(data => {
-                userId = data.key;
-              });
+            .once('value');
+          const userId = Object.keys(userSnapshot.val())[0];
+          const userSoundcastSnapshot = await firebase
+            .database()
+            .ref(`users/${userId}/soundcasts`)
+            .orderByChild('planID')
+            .equalTo(data.data.object.lines.data[0].plan.id)
+            .once('value');
+          const soundcastId = Object.keys(userSoundcastSnapshot.val())[0];
 
-              db.ref(`users/${userId}/soundcasts`)
-                .orderByChild('planID')
-                .equalTo(data.data.object.lines.data[0].plan.id)
-                .once('value', snapshot => {
-                  let soundcast;
-                  snapshot.forEach(data => {
-                    soundcast = data.key;
-                  });
+          // update current_period_end for main soundcast
+          await firebase
+            .database()
+            .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+            .set(data.data.object.lines.data[0].period.end);
 
-                  db.ref(`users/${userId}/soundcasts/${soundcast}/current_period_end`).set(
-                    data.data.object.lines.data[0].period.end
-                  );
+          const soundcastSnapshot = await firebase
+            .database()
+            .ref(`soundcasts/${soundcastId}`)
+            .once('value');
+          const soundcast = soundcastSnapshot.val();
+          if (soundcast.bundle) {
+            for (const id of soundcast.soundcastsIncluded) {
+              // update current_period_end for included soundcasts
+              await firebase
+                .database()
+                .ref(`users/${userId}/soundcasts/${id}/current_period_end`)
+                .set(data.data.object.lines.data[0].period.end);
+            }
+          }
 
-                  const line = data.data.object.lines.data[0];
-                  const _transactionData = line.plan.id.split('-');
+          const line = data.data.object.lines.data[0];
+          const _transactionData = line.plan.id.split('-');
 
-                  const _transaction = {
-                    transactionId: data.id,
-                    invoiceId: data.data.object.id,
-                    chargeId: data.data.object.charge,
-                    type: 'charge',
-                    amount: line.amount / 100,
-                    description: line.description,
-                    date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
-                    publisherId: _transactionData[0],
-                    soundcastId: _transactionData[1],
-                    customer, // listener's stripe id, this is the platform customer, not the connected account customer
-                    paymentId: line.plan.id, // id for the subscription plan, only present if it's a subscription
-                    createdAt: moment()
-                      .utc()
-                      .format(),
-                    updatedAt: moment()
-                      .utc()
-                      .format(),
-                  };
+          const _transaction = {
+            transactionId: data.id,
+            invoiceId: data.data.object.id,
+            chargeId: data.data.object.charge,
+            type: 'charge',
+            amount: line.amount / 100,
+            description: line.description,
+            date: moment(data.data.object.date * 1000).format('YYYY-MM-DD'),
+            publisherId: _transactionData[0],
+            soundcastId: _transactionData[1],
+            customer, // listener's stripe id, this is the platform customer, not the connected account customer
+            paymentId: line.plan.id, // id for the subscription plan, only present if it's a subscription
+            createdAt: moment()
+              .utc()
+              .format(),
+            updatedAt: moment()
+              .utc()
+              .format(),
+          };
 
-                  console.log('Try to create transaction: ', _transaction);
-                  _transactions.push(_transaction);
-                  _transactionsPromises.push(
-                    Transaction.create(_transaction).catch(err => {
-                      _errors.push(_transaction);
-                      Promise.reject(err);
-                    })
-                  );
+          console.log('Try to create transaction: ', _transaction);
+          _transactions.push(_transaction);
+          _transactionsPromises.push(
+            Transaction.create(_transaction).catch(err => {
+              _errors.push(_transaction);
+              Promise.reject(err);
+            })
+          );
 
-                  createTransactions(Transaction, _transactionsPromises, _transactions, cb);
-
-                  console.log('subscription renewed');
-                });
-            });
+          createTransactions(Transaction, _transactionsPromises, _transactions, cb);
+          console.log('subscription renewed');
         }
 
         break;

@@ -1,4 +1,41 @@
-var Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+const operatorsAliases = {
+  $eq: Op.eq,
+  $ne: Op.ne,
+  $gte: Op.gte,
+  $gt: Op.gt,
+  $lte: Op.lte,
+  $lt: Op.lt,
+  $not: Op.not,
+  $in: Op.in,
+  $notIn: Op.notIn,
+  $is: Op.is,
+  $like: Op.like,
+  $notLike: Op.notLike,
+  $iLike: Op.iLike,
+  $notILike: Op.notILike,
+  $regexp: Op.regexp,
+  $notRegexp: Op.notRegexp,
+  $iRegexp: Op.iRegexp,
+  $notIRegexp: Op.notIRegexp,
+  $between: Op.between,
+  $notBetween: Op.notBetween,
+  $overlap: Op.overlap,
+  $contains: Op.contains,
+  $contained: Op.contained,
+  $adjacent: Op.adjacent,
+  $strictLeft: Op.strictLeft,
+  $strictRight: Op.strictRight,
+  $noExtendRight: Op.noExtendRight,
+  $noExtendLeft: Op.noExtendLeft,
+  $and: Op.and,
+  $or: Op.or,
+  $any: Op.any,
+  $all: Op.all,
+  $values: Op.values,
+  $col: Op.col,
+};
 var db;
 
 if (process.env.DATABASE_URL) {
@@ -9,15 +46,15 @@ if (process.env.DATABASE_URL) {
     port: match[4],
     host: match[3],
     logging: false,
-    dialectOptions: {
-      ssl: false,
-    },
+    operatorsAliases,
+    dialectOptions: { ssl: false },
   });
 } else {
   db = new Sequelize('soundwise', 'root', '111', {
     dialect: 'postgres',
     port: 5432,
     logging: false,
+    operatorsAliases,
     dialectOptions: { ssl: false },
   });
 }
@@ -278,11 +315,11 @@ var Coupon = db.define('Coupon', {
   timeStamp: Sequelize.BIGINT,
 });
 
-Comment.belongsTo(Episode, { foreignKey: 'episodeId', onDelete: 'cascade' });
-Episode.hasMany(Comment, { foreignKey: 'episodeId', as: 'Comments' });
+// Comment.belongsTo(Episode, { foreignKey: 'episodeId', onDelete: 'cascade' });
+// Episode.hasMany(Comment, { foreignKey: 'episodeId', as: 'Comments' });
 
-Comment.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
-Announcement.hasMany(Comment, { foreignKey: 'announcementId', as: 'Comments' });
+// Comment.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
+// Announcement.hasMany(Comment, { foreignKey: 'announcementId', as: 'Comments' });
 
 Like.belongsTo(Comment, { foreignKey: 'commentId', onDelete: 'cascade' });
 Comment.hasMany(Like, { foreignKey: 'commentId', as: 'Likes' });

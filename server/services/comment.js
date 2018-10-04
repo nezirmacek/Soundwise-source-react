@@ -4,7 +4,12 @@ const sendMail = require('../scripts/sendEmails').sendMail;
 const sendNotification = require('../scripts/messaging').sendNotification;
 
 const { commentManager, userManager } = require('../managers');
-const { commentRepository, announcementRepository } = require('../repositories');
+const {
+  commentRepository,
+  announcementRepository,
+} = require('../repositories');
+const { handleEvent } = require('./event');
+const { EventTypes } = require('../scripts/utils')();
 
 // ADD_COMMENT
 const addComment = (req, res) => {
@@ -20,6 +25,14 @@ const addComment = (req, res) => {
       const { announcementId, episodeId, commentId } = comment;
 
       if (announcementId) {
+        const eventType = comment.parentId
+          ? EventTypes.MSG_COMMENT_REPLIED
+          : EventTypes.MESSAGE_COMMENTED;
+        handleEvent(eventType, comment)
+          .then(() => console.log(`${eventType} event recorded`))
+          .catch(err =>
+            console.log(`Failed to record ${eventType} event`, err)
+          );
         updateCommentsCount(announcementId)
           .then(() => {
             notifyUsers(comment);
@@ -27,6 +40,14 @@ const addComment = (req, res) => {
           })
           .catch(error => sendError(error, res));
       } else if (episodeId) {
+        const eventType = comment.parentId
+          ? EventTypes.EP_COMMENT_REPLIED
+          : EventTypes.EPISODE_COMMENTED;
+        handleEvent(eventType, comment)
+          .then(() => console.log(`${eventType} event recorded`))
+          .catch(err =>
+            console.log(`Failed to record ${eventType} event`, err)
+          );
         commentManager.addCommentToEpisode(commentId, episodeId).then(() => {
           notifyUsers(comment);
           res.send(comment);
@@ -73,7 +94,9 @@ const deleteComment = (req, res) => {
 const updateCommentsCount = announcementId =>
   commentRepository
     .count({ announcementId })
-    .then(commentsCount => announcementRepository.update({ commentsCount }, announcementId));
+    .then(commentsCount =>
+      announcementRepository.update({ commentsCount }, announcementId)
+    );
 
 const notifyUsers = comment =>
   sendMail(comment)
@@ -91,7 +114,9 @@ const sendPush = comment => {
             sendNotification(t, {
               data: {
                 type: episodeId ? 'COMMENT_EPISODE' : 'COMMENT_MESSAGE',
-                [episodeId ? 'episodeId' : 'messageId']: episodeId ? episodeId : announcementId,
+                [episodeId ? 'episodeId' : 'messageId']: episodeId
+                  ? episodeId
+                  : announcementId,
                 soundcastId,
               },
               notification: {

@@ -19,7 +19,7 @@ export default class EpisodePreview extends Component {
     super(props);
     this.state = {
       episode: { id: '' },
-      liked: false,
+      liked: props.liked,
       descriptionShown: false,
       notesShown: false,
       actionsShown: false,
@@ -28,8 +28,11 @@ export default class EpisodePreview extends Component {
 
   componentDidMount() {
     if (this.props.episode && this.props.episode.title) {
+      const { userID, episode, liked } = this.props;
+
       this.setState({
-        episode: this.props.episode,
+        episode,
+        liked,
       });
     }
   }
@@ -43,29 +46,31 @@ export default class EpisodePreview extends Component {
   }
 
   changeLike() {
-    const { liked, episode } = this.state;
-    const { userID } = this.props;
+    const { episode } = this.state;
+    const { userID, userInfo, liked } = this.props;
+    const likeId = `${userID}-${episode.id}`;
+    console.log(`Like id ${likeId}`);
+    console.log('Liked ', liked);
+    if (!liked) {
+      Axios.post('/api/likes', {
+        likeId,
+        userId: userID,
+        fullName: `${userInfo.firstName} ${userInfo.lastName}`,
+        episodeId: episode.id,
+        soundcastId: episode.soundcastID,
+        timeStamp: moment().format('X'),
+      })
+        .then(() => console.log('success set like'))
+        .catch(err => alert('ERROR: like save: ' + err.toString()));
+    } else {
+      Axios.delete(`/api/likes/${likeId}`)
+        .then(() => console.log('success delete like'))
+        .catch(err => alert('ERROR: like delete: ' + err.toString()));
+    }
+
     this.setState({
       liked: !liked,
     });
-
-    if (!liked) {
-      firebase
-        .database()
-        .ref(`episodes/${episode.id}/likes/${userID}`)
-        .set(moment().format('X'))
-        .then(() => {
-          // console.log('success set like');
-        })
-        .catch(err => {
-          alert('ERROR: like save: ' + err.toString());
-        });
-    } else {
-      firebase
-        .database()
-        .ref(`episodes/${episode.id}/likes/${userID}`)
-        .remove();
-    }
   }
 
   handlePlay(episode) {
@@ -88,9 +93,16 @@ export default class EpisodePreview extends Component {
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
-    const { episode, liked, descriptionShown, notesShown, actionsShown } = this.state;
-    const { handlePlayClicked, playing, paused, currentEpisode } = this.props;
-    const likes = (episode.likes && Object.keys(episode.likes).length) || 0;
+    console.log('Episode render', this.props);
+    const { episode, descriptionShown, notesShown, actionsShown } = this.state;
+    const {
+      liked,
+      handlePlayClicked,
+      playing,
+      paused,
+      currentEpisode,
+    } = this.props;
+    const likes = episode.likesCount ? episode.likesCount : 0;
     const listens = episode.totalListens || 0;
 
     if (currentEpisode && episode.id == currentEpisode.id) {
@@ -107,7 +119,10 @@ export default class EpisodePreview extends Component {
             episode.id == currentEpisode.id && (
               <Levels color="#F76B1C" size={mobile ? 13 : 16} speed={1} />
             )) || (
-            <div onClick={this.handlePlay.bind(this, episode)} style={{ cursor: 'pointer' }}>
+            <div
+              onClick={this.handlePlay.bind(this, episode)}
+              style={{ cursor: 'pointer' }}
+            >
               <i
                 className="material-icons"
                 aria-hidden="true"
@@ -171,7 +186,9 @@ export default class EpisodePreview extends Component {
                   label="Description"
                   labelPosition="before"
                   icon={
-                    (descriptionShown && <i className="fa fa-chevron-up" aria-hidden="true" />) || (
+                    (descriptionShown && (
+                      <i className="fa fa-chevron-up" aria-hidden="true" />
+                    )) || (
                       <i className="fa fa-chevron-down" aria-hidden="true" />
                     )
                   }
@@ -184,7 +201,9 @@ export default class EpisodePreview extends Component {
                   label="Notes"
                   labelPosition="before"
                   icon={
-                    (notesShown && <i className="fa fa-chevron-up" aria-hidden="true" />) || (
+                    (notesShown && (
+                      <i className="fa fa-chevron-up" aria-hidden="true" />
+                    )) || (
                       <i className="fa fa-chevron-down" aria-hidden="true" />
                     )
                   }
@@ -197,7 +216,9 @@ export default class EpisodePreview extends Component {
                   label="Actions"
                   labelPosition="before"
                   icon={
-                    (actionsShown && <i className="fa fa-chevron-up" aria-hidden="true" />) || (
+                    (actionsShown && (
+                      <i className="fa fa-chevron-up" aria-hidden="true" />
+                    )) || (
                       <i className="fa fa-chevron-down" aria-hidden="true" />
                     )
                   }
@@ -207,7 +228,10 @@ export default class EpisodePreview extends Component {
                 null}
             </div>
           </div>
-          <div className="col-md-12 margin-three-top margin-three-bottom" style={{}}>
+          <div
+            className="col-md-12 margin-three-top margin-three-bottom"
+            style={{}}
+          >
             {(descriptionShown && (
               <div
                 className="text-large text-dark-gray sm-text-large xs-text-large"
@@ -242,7 +266,9 @@ export default class EpisodePreview extends Component {
           style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}
         >
           {(episode.duration && (
-            <span style={{ fontSize: 16 }}>{getTime_mmss(episode.duration.toFixed())}</span>
+            <span style={{ fontSize: 16 }}>
+              {getTime_mmss(episode.duration.toFixed())}
+            </span>
           )) ||
             null}
         </div>

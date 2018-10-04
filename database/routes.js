@@ -8,6 +8,10 @@ const {
   userService,
 } = require('../server/services');
 
+const { handleEvent } = require('../server/services/event');
+const { EventTypes, podcastCategories } = require('../server/scripts/utils')();
+const categoriesIds = Object.keys(podcastCategories).map(i => podcastCategories[i]);
+
 module.exports = app => {
   app.post('/api/user', (req, res) => {
     database.User.findOrCreate({
@@ -31,12 +35,8 @@ module.exports = app => {
     database.Coupon.findAll({
       where: { publisherId: publisherId },
     })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send(err);
-      });
+      .then(data => res.send(data))
+      .catch(err => res.status(500).send(err));
   });
 
   app.get('/api/announcements', (req, res) => {
@@ -61,14 +61,31 @@ module.exports = app => {
       where: { episodeId: req.body.episodeId },
       defaults: req.body,
     })
-      .then(data => res.send(data))
-      .catch(err => res.status(500).send(err));
+      .then(data => {
+        handleEvent(EventTypes.NEW_EPISODE_PUBLISHED, data[0])
+          .then(res => console.log('Event created'))
+          .catch(err => console.log('Failed to create event', err));
+        res.send(data);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).send(err);
+      });
   });
 
-  app.post('/api/soundcast', (req, res) => {
+  app.post('/api/soundcast', async (req, res) => {
     if (req.body && req.body.imageURL) {
       req.body.imageUrl = req.body.imageURL;
       delete req.body.imageURL;
+    }
+    if (req.body && req.body.category) {
+      const categoryId = (categoriesIds.find(i => i.name === req.body.category) || {}).id;
+      if (!categoryId) {
+        console.log(`Error: routes unknown category ${req.body.category} ${req.body.soundcastId}`);
+      } else {
+        await database.CategorySoundcast.destroy({ where: { soundcastId: req.body.soundcastId } });
+        await database.CategorySoundcast.create({ categoryId, soundcastId: req.body.soundcastId });
+      }
     }
     soundcastService
       .createOrUpdate(req.body)
@@ -79,6 +96,9 @@ module.exports = app => {
   app.post('/api/announcements', (req, res) => {
     database.Announcement.create(req.body)
       .then(data => {
+        handleEvent(EventTypes.NEW_MESSAGE_POSTED, data)
+          .then(res => console.log('Event created'))
+          .catch(err => console.log('Failed to create event', err));
         res.send(data);
       })
       .catch(err => {
