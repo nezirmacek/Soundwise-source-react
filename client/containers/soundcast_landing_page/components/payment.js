@@ -43,7 +43,6 @@ class _Payment extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.updateProps = this.updateProps.bind(this);
     this.addUserToMailChimp = this.addUserToMailChimp.bind(this);
-    this.newUser = true;
   }
 
   componentDidMount() {
@@ -88,13 +87,8 @@ class _Payment extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
 
-    //Set newUser if emails aren't same, will be used to update mailchimp.
-    if (!_.isEqual(this.props.userInfo.email, nextProps.userInfo.email)) {
-      this.newUser = true;
-    } 
-
     //Comparing arrays below is incorrect and should be corrected. 
-    //This is probably leading to multiple updates.
+    //This is probably leading to multiple updates, should use !_.isEqual
     if (
       this.props.isEmailSent != nextProps.isEmailSent ||
       this.props.totalPrice != nextProps.totalPrice ||
@@ -113,16 +107,11 @@ class _Payment extends Component {
     // console.log('payment component will unmount');
   }
 
-  addUserToMailChimp() {
+  addUserToMailChimp(userInfo) {
 
-    if (this.newUser) {
-      // set newUser to false, it gets resetted to true in the 
-      // constructor or if new props are received with new user.
+      const { soundcast } = this.props;
 
-      this.newUser = false;
-      const { soundcast, userInfo } = this.props;
-
-      if (typeof soundcast.mailChimpId != 'undefined') {
+      if (typeof soundcast.mailChimpId != 'undefined' && typeof userInfo.email != 'undefined') {
 
         //There shold be a publisherID, but lets still check for it.
         if (typeof soundcast.publisherID != 'undefined') {
@@ -149,7 +138,7 @@ class _Payment extends Component {
           });  
         }
       }
-    }
+    // }
   }
   
 
@@ -174,6 +163,7 @@ class _Payment extends Component {
   addSoundcastToUser(charge, userInfoFromProp, soundcastID) {
     // console.log(`soundcastID: ${soundcastID} userInfo: ${userInfo} charge: ${charge}`);
     const userInfo = userInfoFromProp || this.props.userInfo;
+
     if (userInfo && userInfo.email) {
       // if logged in
       const that = this;
@@ -208,7 +198,7 @@ class _Payment extends Component {
         }. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to sign up for this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
       }
 
-      this.addUserToMailChimp();
+      this.addUserToMailChimp(userInfo);
 
 
       firebase.auth().onAuthStateChanged(async user => {
