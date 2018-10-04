@@ -114,8 +114,67 @@ class _Dashboard extends Component {
     super(props);
     this.state = {
       userInfo: {},
+      upgradeModal: false,
+      upgradeModalTitle: '',
     };
     this.checkProps = this.checkProps.bind(this);
+
+    this.isFreeAccount = this.isFreeAccount.bind(this);
+    this.closeUpgradeModal = this.closeUpgradeModal.bind(this);
+    this.handleAddNewEpisode = this.handleAddNewEpisode.bind(this);
+  }
+
+  isFreeAccount() {
+    const { userInfo } = this.props;
+    const curTime = moment().format('X');
+    if (
+      userInfo.publisher &&
+      userInfo.publisher.plan &&
+      userInfo.publisher.current_period_end > curTime
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  closeUpgradeModal() {
+    this.setState({ upgradeModal: false })
+  }
+
+  handleAddNewEpisode() {
+    const { userInfo } = this.props;
+    if (userInfo.soundcasts_managed && userInfo.publisher) {
+      const is_free_account = this.isFreeAccount();
+      // if plus plan and has already 10 soundcast then limit
+      let currentSoundcastCount = 0
+      let currentEpisodeCount = 0
+      Object.keys(userInfo.soundcasts_managed).forEach(soundcastId => {
+        if (userInfo.soundcasts_managed[soundcastId].title) {
+          currentSoundcastCount += 1
+          if (userInfo.soundcasts_managed[soundcastId].episodes) {
+            currentEpisodeCount += Object.keys(userInfo.soundcasts_managed[soundcastId].episodes).length
+          }
+        }
+      })
+      
+      if (currentSoundcastCount >= 10 && currentEpisodeCount >= 500 && !is_free_account && userInfo.publisher.plan === 'plus') {
+        this.setState({
+          upgradeModal: true,
+          upgradeModalTitle: 'Please upgrade to create more episodes',
+        });
+        return;
+      }
+      // if basic plan or end current plan then limit to 1 soundcast
+      if (currentSoundcastCount >= 1 && currentEpisodeCount >= 1 && is_free_account) {
+        this.setState({
+          upgradeModal: true,
+          upgradeModalTitle: 'Please upgrade to create more episodes',
+        });
+        return;
+      }
+      // allow
+      this.setState({ isAllowedCreate: true })
+    }
   }
 
   componentDidMount() {
@@ -320,6 +379,35 @@ class _Dashboard extends Component {
               null}
           </div>
         </div>
+
+        <MuiThemeProvider>
+          <Dialog modal={true} open={this.state.upgradeModal}>
+            <div
+              style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
+              onClick={() => this.closeUpgradeModal()}
+            >
+              &#10799; {/* Close button (X) */}
+            </div>
+
+            <div>
+              <div style={{ ...styles.dialogTitle }}>{this.state.upgradeModalTitle}</div>
+              <OrangeSubmitButton
+                styles={{
+                  borderColor: Colors.link,
+                  backgroundColor: Colors.link,
+                  color: '#464646',
+                  width: 400,
+                }}
+                label="Change Plan"
+                onClick={() =>
+                  that.props.history.push({
+                    pathname: '/pricing',
+                  })
+                }
+              />
+            </div>
+          </Dialog>
+        </MuiThemeProvider>
       </div>
     );
   }
