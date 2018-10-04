@@ -121,7 +121,7 @@ class _AppSignup extends Component {
       ) {
         return true;
       }
-      if (userInfo.publisher && userInfo.publisher.id === '1531418940327p') {
+      if (soundcast.publisherID === '1531418940327p') {
         return true;
       }
     }
