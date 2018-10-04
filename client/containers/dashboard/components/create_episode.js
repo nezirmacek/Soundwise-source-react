@@ -21,7 +21,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-import Dialog from 'material-ui/Dialog';
 
 import { minLengthValidator, maxLengthValidator } from '../../../helpers/validators';
 import {
@@ -1947,12 +1946,6 @@ const styles = {
     borderWidth: 1,
     boxSizing: 'border-box',
     marginLeft: 10,
-  },
-  dialogTitle: {
-    marginTop: 47,
-    marginBottom: 49,
-    textAlign: 'center',
-    fontSize: 22,
   },
 };
 

@@ -631,6 +631,7 @@ export default class SoundcastsManaged extends Component {
             </div>
           </div>
           <MuiThemeProvider>
+          <div>
             <Dialog modal={true} open={this.state.newSoundcastModal}>
               <div
                 style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
@@ -828,6 +829,7 @@ export default class SoundcastsManaged extends Component {
                 />
               </div>
             </Dialog>
+          </div>
           </MuiThemeProvider>
         </div>
       );

@@ -6,6 +6,8 @@ import firebase from 'firebase';
 import moment from 'moment';
 import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Dialog from 'material-ui/Dialog';
 
 import { SoundwiseHeader } from '../../components/soundwise_header';
 import CreateEpisode from './components/create_episode';
@@ -22,6 +24,7 @@ import EditEpisode from './components/edit_episode';
 import Soundcast from './components/soundcast';
 import { handleContentSaving, setFeedVerified, setChargeState } from '../../actions/index';
 import Colors from '../../styles/colors';
+import { OrangeSubmitButton } from '../../components/buttons/buttons'
 
 const verticalMenuItems = [
   {
@@ -141,7 +144,7 @@ class _Dashboard extends Component {
     this.setState({ upgradeModal: false })
   }
 
-  handleAddNewEpisode() {
+  handleAddNewEpisode(path) {
     const { userInfo } = this.props;
     if (userInfo.soundcasts_managed && userInfo.publisher) {
       const is_free_account = this.isFreeAccount();
@@ -173,7 +176,7 @@ class _Dashboard extends Component {
         return;
       }
       // allow
-      this.setState({ isAllowedCreate: true })
+      this.props.history.push(path)
     }
   }
 
@@ -327,9 +330,15 @@ class _Dashboard extends Component {
                       styles.verticalMenuItem
                     }
                     key={i}
-                    onClick={() =>
-                      match.params.tab !== item.path && history.push(`/dashboard/${item.path}`)
-                    }
+                    onClick={() => {
+                      if (match.params.tab !== item.path) {
+                        if (item.path === 'add_episode') {
+                          this.handleAddNewEpisode(`/dashboard/${item.path}`)
+                        } else {
+                          history.push(`/dashboard/${item.path}`)
+                        }
+                      }
+                    }}
                   >
                     <div className="col-md-1 col-sm-2 col-xs-12">
                       {(match.params.tab === item.path && (
@@ -400,7 +409,7 @@ class _Dashboard extends Component {
                 }}
                 label="Change Plan"
                 onClick={() =>
-                  that.props.history.push({
+                  this.props.history.push({
                     pathname: '/pricing',
                   })
                 }
@@ -459,6 +468,12 @@ const styles = {
     paddingBottom: 10,
     paddingLeft: 20,
     marginBottom: 0,
+  },
+  dialogTitle: {
+    marginTop: 47,
+    marginBottom: 49,
+    textAlign: 'center',
+    fontSize: 22,
   },
 };
 
