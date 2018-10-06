@@ -19,11 +19,7 @@ const envKeys = Object.keys(env).reduce(
   {}
 );
 
-module.exports = {
-  mode: 'development',
-  // mode: 'production',
-  // devtool: 'source-map',
-
+const webpackConfig = {
   context: __dirname,
   node: {
     // console: 'empty',
@@ -100,3 +96,13 @@ module.exports = {
     }),
   ],
 };
+
+console.log(`Webpack env ${process.env.NODE_ENV}`);
+if (process.env.NODE_ENV === 'production') {
+  webpackConfig.mode = 'production';
+  webpackConfig.devtool = 'source-map';
+} else {
+  webpackConfig.mode = 'development';
+}
+
+module.exports = webpackConfig;

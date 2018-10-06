@@ -104,6 +104,7 @@ function getFeed(urlfeed, cb) {
 const emptyEmailMsg =
   "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!";
 function getPublisherEmail(metadata) {
+  // return 'YOUR_TEST@EMAIL.COM'; // set test publisher email
   const itunesEmail =
     metadata['itunes:owner'] &&
     metadata['itunes:owner']['itunes:email'] &&

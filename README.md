@@ -109,11 +109,6 @@ source client-development.env
 set +o allexport
 ```
 
-Set **mode: 'development',** line and comment **devtool: 'source-map',** in **webpack.config.js**:
-```
-  mode: 'development',
-  // devtool: 'source-map',
-```
 To run server:
 ```
 node --inspect server/server.js
@@ -174,17 +169,7 @@ source client-production.env
 set +o allexport
 ```
 
-Set **mode: 'production',** line and uncomment **devtool: 'source-map',** in **webpack.config.js**:
-```
-  mode: 'production',
-  devtool: 'source-map',
-```
-
 Run webpack bundle compiler:
-
-> webpack
-
-or
 
 >npm run-script build
 
