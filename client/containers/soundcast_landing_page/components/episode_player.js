@@ -171,7 +171,7 @@ export default class EpisodePlayer extends Component {
               </span>
             )) || (
             <span style={{ paddingLeft: '0.5em', fontSize: 16 }}>
-              {getTime_mmss(episode.duration.toFixed())}
+              {getTime_mmss(episode.duration)}
             </span>
           )}
         </td>
