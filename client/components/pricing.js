@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Toggle from 'react-toggle';
 import moment from 'moment';
-
+import ReactTooltip from 'react-tooltip';
 import Colors from '../styles/colors';
 
 const Pricing = props => (
@@ -171,8 +171,11 @@ const Pricing = props => (
               >
                 <i className="far  fa-star" style={{ color: Colors.link, fontSize: 16 }} />
                 <span style={{ paddingLeft: 5 }} className="text-large text-dark-gray">
-                  Up to <strong>10 soundcasts</strong> hosted
-                </span>
+                  Up to <strong>10 soundcasts and 500 episodes</strong> hosted
+                </span><a data-for='main' data-tip='The less stringent limit applies. <br/>
+                  e.g. You can have more than 10 soundcasts <br/>as long as the total number of episodes <br/>is under 500.' ><i className="far  fa-question-circle" style={{ marginLeft: 5, marginBottom: 3, color: Colors.link, fontSize: 12 }} /></a>
+                  <ReactTooltip id='main' place='right' type='dark'  multiline={true}/>
+
               </li>
               <li
                 className="tz-border"
