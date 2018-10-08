@@ -70,7 +70,6 @@ module.exports.createAudioWaveVid = async (req, res) => {
               }
               fs.unlink(audioPath, err => 0); // remove original
               new ffmpeg(audioTrimmedPath, { timeout: 10 * 60 * 1000 }).then(audioTrimmedFile => {
-                fs.unlink(audioTrimmedPath, err => 0);
                 if (doResize.length) {
                   // resizing
                   new ffmpeg(imagePath).then(imageFile => {
@@ -82,16 +81,16 @@ module.exports.createAudioWaveVid = async (req, res) => {
                         return sendError(res, `cannot save updated image ${imagePath} ${err}`);
                       }
                       fs.unlink(imagePath, err => 0); // removing original image file
-                      resolve([updatedImagePath, audioTrimmedFile]);
+                      resolve([updatedImagePath, audioTrimmedPath, audioTrimmedFile]);
                     });
                   });
                 } else {
-                  resolve([imagePath, audioTrimmedFile]);
+                  resolve([imagePath, audioTrimmedPath, audioTrimmedFile]);
                 }
               });
             });
           })
-            .then(([imagePath, audioFile]) => {
+            .then(([imagePath, audioTrimmedPath, audioFile]) => {
               // resized image and audio
               // **** step 1c: If audio and image are good, store image and audio in temp file and return 200 ok to front end.
               res.end('OK');
@@ -129,6 +128,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
               audioFile.addCommand('-b:a', '192k');
               const videoPath = `${audioPath.slice(0, -4)}.mp4`; // path without '_trimmed' postfix
               audioFile.save(videoPath, err => {
+                fs.unlink(audioTrimmedPath, err => 0);
                 fs.unlink(imagePath, err => 0);
                 if (err) {
                   if (err.killed === true && err.signal === 'SIGTERM') {
