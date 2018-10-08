@@ -370,13 +370,16 @@ const fetchEventsForUser = async (req, res) => {
         },
       },
     });
-    console.log(soundcasts);
   }
-
-  const events = await eventRepository.getRecent({
+  const statement = {
     where: whereCondition,
     order: [['createdAt', 'DESC']],
-  });
+  };
+  if (req.query.pageSize && req.query.page) {
+    statement['limit'] = req.query.pageSize;
+    statement['offset'] = req.query.page * req.query.pageSize;
+  }
+  const events = await eventRepository.getRecent(statement);
   res.status(200).send(events);
 };
 
