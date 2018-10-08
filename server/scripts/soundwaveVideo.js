@@ -70,6 +70,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
               }
               fs.unlink(audioPath, err => 0); // remove original
               new ffmpeg(audioTrimmedPath, { timeout: 10 * 60 * 1000 }).then(audioTrimmedFile => {
+                fs.unlink(audioTrimmedPath, err => 0);
                 if (doResize.length) {
                   // resizing
                   new ffmpeg(imagePath).then(imageFile => {
@@ -81,16 +82,16 @@ module.exports.createAudioWaveVid = async (req, res) => {
                         return sendError(res, `cannot save updated image ${imagePath} ${err}`);
                       }
                       fs.unlink(imagePath, err => 0); // removing original image file
-                      resolve([updatedImagePath, audioTrimmedPath, audioTrimmedFile]);
+                      resolve([updatedImagePath, audioTrimmedFile]);
                     });
                   });
                 } else {
-                  resolve([imagePath, audioTrimmedPath, audioTrimmedFile]);
+                  resolve([imagePath, audioTrimmedFile]);
                 }
               });
             });
           })
-            .then(([imagePath, audioTrimmedPath, audioFile]) => {
+            .then(([imagePath, audioFile]) => {
               // resized image and audio
               // **** step 1c: If audio and image are good, store image and audio in temp file and return 200 ok to front end.
               res.end('OK');
@@ -128,6 +129,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
               audioFile.addCommand('-b:a', '192k');
               const videoPath = `${audioPath.slice(0, -4)}.mp4`; // path without '_trimmed' postfix
               audioFile.save(videoPath, err => {
+                fs.unlink(imagePath, err => 0);
                 if (err) {
                   if (err.killed === true && err.signal === 'SIGTERM') {
                     // killed by timeout
@@ -168,6 +170,7 @@ module.exports.createAudioWaveVid = async (req, res) => {
                     name: `${videoPath.replace('/tmp/', '')}`,
                   },
                   (err, files) => {
+                    fs.unlink(videoPath, err => 0);
                     if (err) {
                       return console.log(`Error: uploading wavevideo ${videoPath} to S3 ${err}`);
                     }
@@ -198,18 +201,10 @@ module.exports.createAudioWaveVid = async (req, res) => {
                       )
                       .then(([response, body]) => {
                         console.log(`Sendgrid Success: ${body}`);
-
-                        // **** step 6: delete the image, audio and video files from temp folder.
-                        fs.unlink(audioTrimmedPath, err => 0);
-                        fs.unlink(imagePath, err => 0);
-                        fs.unlink(videoPath, err => 0);
                       })
                       .catch(err => {
-                        console.log(
-                          'Error: soundwaveVideo sendgrid recipients request: ',
-                          err,
-                          err.message
-                        );
+                        const errMsg = 'Error: soundwaveVideo sendgrid recipients request: ';
+                        console.log(errMsg, err, err && err.message);
                         res.status(400).send(err.message);
                       });
                   }

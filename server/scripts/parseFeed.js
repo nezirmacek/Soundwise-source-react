@@ -104,6 +104,7 @@ function getFeed(urlfeed, cb) {
 const emptyEmailMsg =
   "Error: Cannot find podcast owner's email in the feed. Please update your podcast feed to include an owner email and submit again!";
 function getPublisherEmail(metadata) {
+  // return 'YOUR_TEST@EMAIL.COM'; // set test publisher email
   const itunesEmail =
     metadata['itunes:owner'] &&
     metadata['itunes:owner']['itunes:email'] &&
@@ -452,51 +453,54 @@ async function runFeedImport(
           requestPromise
             .get({ url: image.url, encoding: null })
             .then(body => {
-              jimp.read(body).then(f => {
-                f.resize(600, jimp.AUTO)
-                  .blur(30)
-                  .brightness(0.6)
-                  .getBuffer(jimp.AUTO, (err, buffer) => {
-                    if (err) {
-                      return reject(`jimp_error ${err}`);
-                    }
-                    const uid = Math.random()
-                      .toString()
-                      .slice(2); // unique id
-                    const filePath = `/tmp/${soundcastId + uid}.${fileType(body).ext}`;
-                    fs.writeFile(filePath, buffer, err => {
+              jimp
+                .read(body)
+                .then(f => {
+                  f.resize(600, jimp.AUTO)
+                    .blur(30)
+                    .brightness(0.6)
+                    .getBuffer(jimp.AUTO, (err, buffer) => {
                       if (err) {
-                        return reject(`jimp_fs_writeFile ${err}`);
+                        return reject(`jimp_error ${err}`);
                       }
-                      uploader1.use(
-                        new S3Strategy({
-                          uploadPath: `soundcasts/`,
-                          headers: { 'x-amz-acl': 'public-read' },
-                          options: {
-                            key: awsConfig.accessKeyId,
-                            secret: awsConfig.secretAccessKey,
-                            bucket: 'soundwiseinc',
-                          },
-                        })
-                      );
-                      uploader1.upload(
-                        's3',
-                        {
-                          path: filePath,
-                          name: `blurred-${soundcastId}.${fileType(body).ext}`,
-                        },
-                        (err, files) => {
-                          fs.unlink(filePath, err => 0);
-                          if (err) {
-                            return reject(`uploading ${image.url} ${filePath} to S3 ${err}`);
-                          }
-                          blurredImageURL = files.length && files[0].url;
-                          resolve();
+                      const uid = Math.random()
+                        .toString()
+                        .slice(2); // unique id
+                      const filePath = `/tmp/${soundcastId + uid}.${fileType(body).ext}`;
+                      fs.writeFile(filePath, buffer, err => {
+                        if (err) {
+                          return reject(`jimp_fs_writeFile ${err}`);
                         }
-                      );
+                        uploader1.use(
+                          new S3Strategy({
+                            uploadPath: `soundcasts/`,
+                            headers: { 'x-amz-acl': 'public-read' },
+                            options: {
+                              key: awsConfig.accessKeyId,
+                              secret: awsConfig.secretAccessKey,
+                              bucket: 'soundwiseinc',
+                            },
+                          })
+                        );
+                        uploader1.upload(
+                          's3',
+                          {
+                            path: filePath,
+                            name: `blurred-${soundcastId}.${fileType(body).ext}`,
+                          },
+                          (err, files) => {
+                            fs.unlink(filePath, err => 0);
+                            if (err) {
+                              return reject(`uploading ${image.url} ${filePath} to S3 ${err}`);
+                            }
+                            blurredImageURL = files.length && files[0].url;
+                            resolve();
+                          }
+                        );
+                      });
                     });
-                  });
-              });
+                })
+                .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });

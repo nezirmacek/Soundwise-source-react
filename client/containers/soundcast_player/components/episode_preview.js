@@ -267,7 +267,7 @@ export default class EpisodePreview extends Component {
         >
           {(episode.duration && (
             <span style={{ fontSize: 16 }}>
-              {getTime_mmss(episode.duration.toFixed())}
+              {getTime_mmss(episode.duration)}
             </span>
           )) ||
             null}

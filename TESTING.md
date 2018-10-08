@@ -8,14 +8,6 @@ If you sign up for new account, please use a REAL email address
 
 If you create new soundcasts for testing, please set published = false in firebase
 
-## Running in test mode
-
-Comment *new webpack.optimize.UglifyJsPlugin(),* line in *webpack.config.js* and run:
-```
-NODE_ENV=dev node --inspect server/server.js
-NODE_ENV=dev npm run-script start
-```
-
 ## Account
 
 To obtain user's id run (in browser console):
@@ -41,8 +33,7 @@ http://localhost:3000/soundcasts/1519180882673s - bundle
 
 Uncomment/set test *publisherEmail* (if needed) in **parseFeed.js:getPublisherEmail** function, example:
 ```
-- // return 'TEST@EMAIL.COM'; // set test publisher email
-+ return 'ivan.malyshev.376@gmail.com'; // set test publisher email
+  // return 'YOUR_TEST@EMAIL.COM'; // set test publisher email
 ```
 
 #### To delete all feed related data
@@ -82,11 +73,6 @@ Original (not claimed) feeds should have:
 - **userId**: 'Soundcast_userId_iTunesUrls' (string)
 
 ## Stripe
-
-Set up test *stripe_key* in *config.js*:
-```
-module.exports.stripe_key = 'sk_test_1H5f9Kkve63WNpxgaGVYekT4';
-```
 
 You can test new user checkout with a test credit card number 4242424242424242.
 

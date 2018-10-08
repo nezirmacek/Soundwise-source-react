@@ -139,12 +139,20 @@ export default class SoundcastsManaged extends Component {
     return true;
   }
 
-  handleAddNewSoundcast(currentSoundcastCount) {
+  handleAddNewSoundcast(soundcasts_managed: Object[]) {
     const { userInfo } = this.props;
     if (userInfo.publisher) {
       const is_free_account = this.isFreeAccount();
       // if plus plan and has already 10 soundcast then limit
-      if (currentSoundcastCount >= 10 && !is_free_account && userInfo.publisher.plan === 'plus') {
+      let currentSoundcastCount = soundcasts_managed.length
+      let currentEpisodeCount = 0
+      soundcasts_managed.forEach(s => {
+        if (s.episodes) {
+          currentEpisodeCount += Object.keys(s.episodes).length
+        }
+      })
+
+      if (currentSoundcastCount >= 10 && currentEpisodeCount >= 500 && !is_free_account && userInfo.publisher.plan === 'plus') {
         this.setState({
           upgradeModal: true,
           upgradeModalTitle: 'Please upgrade to create more soundcasts',
@@ -152,7 +160,7 @@ export default class SoundcastsManaged extends Component {
         return;
       }
       // if basic plan or end current plan then limit to 1 soundcast
-      if (currentSoundcastCount > 0 && is_free_account) {
+      if (currentSoundcastCount >= 1 && currentEpisodeCount >= 1 && is_free_account) {
         this.setState({
           upgradeModal: true,
           upgradeModalTitle: 'Please upgrade to create more soundcasts',
@@ -618,11 +626,12 @@ export default class SoundcastsManaged extends Component {
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <OrangeSubmitButton
                 label="Add New Soundcast"
-                onClick={() => this.handleAddNewSoundcast(_soundcasts_managed.length)}
+                onClick={() => this.handleAddNewSoundcast(_soundcasts_managed)}
               />
             </div>
           </div>
           <MuiThemeProvider>
+          <div>
             <Dialog modal={true} open={this.state.newSoundcastModal}>
               <div
                 style={{ cursor: 'pointer', float: 'right', fontSize: 29 }}
@@ -820,6 +829,7 @@ export default class SoundcastsManaged extends Component {
                 />
               </div>
             </Dialog>
+          </div>
           </MuiThemeProvider>
         </div>
       );

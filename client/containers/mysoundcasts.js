@@ -16,17 +16,13 @@ class _MySoundcasts extends Component {
     super(props);
 
     this.state = {
-      cardHeight: 0,
       userSoundcasts: [],
       userId: '',
-      paymentError: '',
       currentSoundcast: '',
-      paymentProcessing: false,
     };
 
     this.handleSubscription = this.handleSubscription.bind(this);
     this.retrieveSoundcasts = this.retrieveSoundcasts.bind(this);
-    this.addSoundcastToUser = this.addSoundcastToUser.bind(this);
   }
 
   componentDidMount() {
@@ -132,24 +128,11 @@ class _MySoundcasts extends Component {
           });
 
           Promise.all(promises).then(
-            res => {
-              that.setState({
-                userSoundcasts,
-                userId,
-              });
-            },
-            err => {
-              console.log('promise error: ', err);
-            }
+            res => that.setState({ userSoundcasts, userId }),
+            err => console.log('promise error: ', err)
           );
         }
       });
-  }
-
-  alignCardsHeights(height) {
-    if (this.state.cardHeight < height) {
-      this.setState({ cardHeight: height });
-    }
   }
 
   handleSubscription(soundcast) {
@@ -157,162 +140,83 @@ class _MySoundcasts extends Component {
     const { userId } = this.state;
     const { soundcastId, paymentID, subscribed, publisherID } = soundcast;
 
-    this.setState({
-      currentSoundcast: soundcastId,
-    });
+    this.setState({ currentSoundcast: soundcastId });
 
-    //if subsubscribed == true, unsubscribe; if subscribed == false, re-subscribe
-    if (subscribed) {
-      const confirmUnsubscribe = confirm('Are you sure you want to unsubscribe this soundcast?');
-      if (confirmUnsubscribe) {
-        firebase
-          .database()
-          .ref(`users/${userId}/soundcasts/${soundcastId}/subscribed`)
-          .set(false);
-        firebase
-          .database()
-          .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
-          .set(moment().format('X'));
-        firebase
-          .database()
-          .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
-          .remove();
+    // unsubscribe
+    const confirmUnsubscribe = confirm('Are you sure you want to unsubscribe this soundcast?');
+    if (confirmUnsubscribe) {
+      firebase
+        .database()
+        .ref(`users/${userId}/soundcasts/${soundcastId}/subscribed`)
+        .set(false);
+      firebase
+        .database()
+        .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+        .set(moment().format('X'));
+      firebase
+        .database()
+        .ref(`soundcasts/${soundcastId}/subscribed/${userId}`)
+        .remove();
 
-        Axios.post('/api/delete_emails', {
-          emails: [that.props.userInfo.email[0]],
-          emailListId: soundcast.subscriberEmailList,
-        }).then(() => {
-          if (paymentID) {
-            firebase
-              .database()
-              .ref(`publishers/${publisherID}`)
-              .once('value', snapshot => {
-                Axios.post('/api/unsubscribe', {
-                  paymentID,
-                  publisher: snapshot.val().stripe_user_id,
+      Axios.post('/api/delete_emails', {
+        emails: [that.props.userInfo.email[0]],
+        emailListId: soundcast.subscriberEmailList,
+      }).then(() => {
+        if (paymentID) {
+          firebase
+            .database()
+            .ref(`publishers/${publisherID}`)
+            .once('value', snapshot => {
+              Axios.post('/api/unsubscribe', {
+                paymentID,
+                publisher: snapshot.val().stripe_user_id,
+              })
+                .then(response => {
+                  that.retrieveSoundcasts(userId);
+                  alert('You have been successfully unsubscribed.');
                 })
-                  .then(response => {
-                    that.retrieveSoundcasts(userId);
-                    alert('You have been successfully unsubscribed.');
-                  })
-                  .catch(error => {
-                    console.log(error);
-                  });
-              });
-          } else {
-            // if it's a free soundcast, end the current subscription period immediately
-            firebase
-              .database()
-              .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
-              .set(moment().format('X'));
-
-            firebase
-              .database()
-              .ref(`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`)
-              .remove();
-
-            firebase
-              .database()
-              .ref(`publishers/${publisherID}/freeSubscribers/${userId}`)
-              .once('value')
-              .then(snapshot => {
-                if (!snapshot.val()) {
-                  firebase
-                    .database()
-                    .ref(`publishers/${publisherID}/freeSubscriberCount`)
-                    .once('value')
-                    .then(snapshot => {
-                      if (snapshot.val()) {
-                        const count = snapshot.val();
-                        // console.log('free subscriber count: ', count);
-                        firebase
-                          .database()
-                          .ref(`publishers/${publisherID}/freeSubscriberCount`)
-                          .set(count - 1);
-                      }
-                    });
-                }
-                that.retrieveSoundcasts(userId);
-              });
-          }
-        });
-      }
-    } else {
-      if (soundcast.planID) {
-        //if it's a paid soundcast
-        this.setState({
-          paymentProcessing: true,
-        });
-
-        Axios.post('/api/recurring_charge', {
-          currency: 'usd',
-          receipt_email: that.props.userInfo.email[0],
-          customer: that.props.userInfo.stripe_id,
-          billingCycle: soundcast.billingCycle,
-          planID: soundcast.planID,
-          publisherID,
-          description: `${soundcast.title}: ${soundcast.planID}`,
-          statement_descriptor: `${soundcast.title}: ${soundcast.planID}`,
-        })
-          .then(response => {
-            const subscription = response.data; //boolean
-            const customer = response.data.customer;
-
-            if (subscription.plan) {
-              // if payment made, push course to user data
-              that.setState({
-                paid: true,
-              });
-
-              that.addSoundcastToUser(subscription, soundcast); //add soundcast to user database
-              that.retrieveSoundcasts(userId);
-            }
-          })
-          .catch(error => {
-            console.log('error from stripe: ', error);
-            that.setState({
-              paymentError:
-                'Your payment is declined :( Please check your credit card information.',
+                .catch(error => {
+                  console.log(error);
+                });
             });
-          });
-      } else {
-        //if it's a free soundcast
-        that.addSoundcastToUser({}, soundcast);
-      }
-    }
-  }
+        } else {
+          // if it's a free soundcast, end the current subscription period immediately
+          firebase
+            .database()
+            .ref(`users/${userId}/soundcasts/${soundcastId}/current_period_end`)
+            .set(moment().format('X'));
 
-  addSoundcastToUser(charge, soundcast) {
-    const paymentID = charge.id ? charge.id : null;
-    const planID = charge.plan ? charge.plan.id : null;
-    const billingCycle = soundcast.billingCycle ? soundcast.billingCycle : null;
-    const current_period_end = charge.current_period_end ? charge.current_period_end : 4638902400; //if it's not a recurring billing ('one time'), set the end period to 2117/1/1.
+          firebase
+            .database()
+            .ref(`publishers/${publisherID}/freeSubscribers/${userId}/${soundcastId}`)
+            .remove();
 
-    const userId = this.state.userId;
-    // add soundcast to user
-    firebase
-      .database()
-      .ref(`users/${userId}/soundcasts/${soundcast.soundcastId}`)
-      .set({
-        subscribed: true,
-        paymentID,
-        date_subscribed: moment().format('X'),
-        current_period_end, //this will be null if one time payment
-        billingCycle,
-        planID,
+          firebase
+            .database()
+            .ref(`publishers/${publisherID}/freeSubscribers/${userId}`)
+            .once('value')
+            .then(snapshot => {
+              if (!snapshot.val()) {
+                firebase
+                  .database()
+                  .ref(`publishers/${publisherID}/freeSubscriberCount`)
+                  .once('value')
+                  .then(snapshot => {
+                    if (snapshot.val()) {
+                      const count = snapshot.val();
+                      // console.log('free subscriber count: ', count);
+                      firebase
+                        .database()
+                        .ref(`publishers/${publisherID}/freeSubscriberCount`)
+                        .set(count - 1);
+                    }
+                  });
+              }
+              that.retrieveSoundcasts(userId);
+            });
+        }
       });
-
-    //add user to soundcast
-    firebase
-      .database()
-      .ref(`soundcasts/${soundcast.soundcastId}/subscribed/${userId}`)
-      .set(moment().format('X'));
-
-    this.setState({
-      paymentProcessing: false,
-    });
-
-    alert("You're re-subscribed to this soundcast.");
+    }
   }
 
   render() {
@@ -431,10 +335,6 @@ class _MySoundcasts extends Component {
                           </div>
                         </Link>
                       )}
-                      <div style={{ color: 'red' }}>
-                        {this.state.currentSoundcast == soundcast.soundcastId &&
-                          this.state.paymentError}
-                      </div>
                     </div>
                   </div>
                 ))}
