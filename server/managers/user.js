@@ -63,6 +63,13 @@ const unsubscribe = (userId, soundcastId) => {
   });
 };
 
+const getSubscriptions = userId => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/soundcasts`)
+    .once('value');
+};
+
 const getId = email =>
   getByEmail(email)
     .then(userRecord => userRecord.toJSON().uid)
@@ -77,4 +84,5 @@ module.exports = {
   subscribe,
   unsubscribe,
   updateLastEvent,
+  getSubscriptions,
 };
