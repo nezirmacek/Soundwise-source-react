@@ -3,11 +3,7 @@
 const sendNotification = require('../scripts/messaging').sendNotification;
 const { userManager, likeManager } = require('../managers');
 const Op = require('sequelize').Op;
-const {
-  likeRepository,
-  commentRepository,
-  announcementRepository,
-} = require('../repositories');
+const { likeRepository, commentRepository, announcementRepository } = require('../repositories');
 const { handleEvent } = require('./event');
 const { EventTypes } = require('../scripts/utils')();
 
@@ -31,9 +27,7 @@ const addLike = (req, res) => {
           : EventTypes.MSG_COMMENT_LIKED;
         handleEvent(eventType, like)
           .then(() => console.log(`${eventType} event recorded`))
-          .catch(err =>
-            console.log(`Failed to record ${eventType} event`, err)
-          );
+          .catch(err => console.log(`Failed to record ${eventType} event`, err));
         // LIKE COMMENT
         likeRepository
           .count({ commentId })
@@ -55,12 +49,7 @@ const addLike = (req, res) => {
       } else if (episodeId) {
         handleEvent(EventTypes.EPISODE_LIKED, like)
           .then(() => console.log(`${EventTypes.EPISODE_LIKED} event recorded`))
-          .catch(err =>
-            console.log(
-              `Failed to record ${EventTypes.EPISODE_LIKED} event`,
-              err
-            )
-          );
+          .catch(err => console.log(`Failed to record ${EventTypes.EPISODE_LIKED} event`, err));
         // LIKE EPISODE
         likeRepository.count({ episodeId }).then(count =>
           likeManager
@@ -74,17 +63,8 @@ const addLike = (req, res) => {
           .count({ announcementId })
           .then(likesCount => {
             handleEvent(EventTypes.MESSAGE_LIKED, like)
-              .then(() =>
-                console.log(
-                  `${EventTypes.MESSAGE_LIKED} Message liked event recorded`
-                )
-              )
-              .catch(err =>
-                console.log(
-                  `Failed to record ${EventTypes.MESSAGE_LIKED} event`,
-                  err
-                )
-              );
+              .then(() => console.log(`${EventTypes.MESSAGE_LIKED} Message liked event recorded`))
+              .catch(err => console.log(`Failed to record ${EventTypes.MESSAGE_LIKED} event`, err));
             announcementRepository
               .update({ lastLiked, likesCount }, announcementId)
               .then(() => res.send(like))
@@ -117,7 +97,7 @@ const deleteLike = (req, res) => {
             })
               .then(lastLiked =>
                 likeRepository
-                  .count({ commentId })
+                  .count({ announcementId })
                   .then(likesCount =>
                     announcementRepository
                       .update({ likesCount, lastLiked }, announcementId)
