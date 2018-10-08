@@ -89,17 +89,13 @@ class _WaveVideoInputs extends Component {
       false
     );
     if (this.props.isLoggedIn && this.props.userInfo && this.props.userInfo.email) {
-      this.setState({
-        email: this.props.userInfo.email[0],
-      });
+      this.setState({ email: this.props.userInfo.email[0] });
     }
   }
 
-  componenetWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.isLoggedIn && nextProps.userInfo && nextProps.userInfo.email) {
-      this.setState({
-        email: nextProps.userInfo.email[0],
-      });
+      this.setState({ email: nextProps.userInfo.email[0] });
     }
   }
 
@@ -242,25 +238,19 @@ class _WaveVideoInputs extends Component {
   }
 
   submit() {
-    this.setState({
-      submitting: true,
-    });
     const { audioFile, imageFile, imageShape, wavePosition, waveColor, email } = this.state;
     if (!audioFile) {
-      alert('Please upload an audio clip before submitting!');
-      return;
+      return alert('Please upload an audio clip before submitting!');
     }
     if (!imageFile) {
-      alert('Please upload an image before submitting!');
-      return;
+      return alert('Please upload an image before submitting!');
     }
     const confirmIsEmail = emailValidator(email);
     // console.log('confirmIsEmail: ', confirmIsEmail);
     if (!confirmIsEmail) {
-      alert('Please enter a valid email!');
-      return;
+      return alert('Please enter a valid email!');
     }
-    const that = this;
+    this.setState({ submitting: true });
     let data = new FormData();
     data.append('audio', audioFile[0], audioFile[0].name);
     data.append('image', imageFile[0], imageFile[0].name);
@@ -269,7 +259,7 @@ class _WaveVideoInputs extends Component {
     data.append('email', email);
     Axios.post('/api/audiowave', data)
       .then(res => {
-        that.setState({
+        this.setState({
           audioName: null,
           imageName: null,
           audioFile: null,
@@ -286,7 +276,7 @@ class _WaveVideoInputs extends Component {
       })
       .catch(err => {
         console.log('error: ', err.response.data.error);
-        that.setState({
+        this.setState({
           audioName: null,
           imageName: null,
           audioFile: null,

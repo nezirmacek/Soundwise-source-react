@@ -43,7 +43,7 @@ export default class ContentDownload extends Component {
     });
   }
 
-  componenetWillReceiveProps(nextProps) {}
+  componentWillReceiveProps(nextProps) {}
 
   submit() {
     this.setState({
