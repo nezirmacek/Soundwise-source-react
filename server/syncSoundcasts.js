@@ -163,7 +163,7 @@ const createPublisher = async () => {
   const importedPublisher = {
     publisherId: importedPublisherId,
     name: 'Online Imported Podcast',
-    imageUrl: 'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+    imageUrl: 'https://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
   };
 
   try {
@@ -173,7 +173,7 @@ const createPublisher = async () => {
       .ref(`publishers/${importedPublisherId}`)
       .set({
         email: 'random@mail.coi',
-        imageUrl: 'http://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
+        imageUrl: 'https://s3.amazonaws.com/soundwiseinc/demo/1502463665971p.png',
         name: 'Online Imported Podcast',
         unAssigned: true,
       });
