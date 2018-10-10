@@ -43,6 +43,7 @@ class _Payment extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.updateProps = this.updateProps.bind(this);
     this.addUserToMailChimp = this.addUserToMailChimp.bind(this);
+    this.newUser = true;
   }
 
   componentDidMount() {
@@ -87,6 +88,11 @@ class _Payment extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
 
+    //Set newUser if emails aren't same, will be used to update mailchimp.
+    if (!_.isEqual(this.props.userInfo.email, nextProps.userInfo.email)) {
+      this.newUser = true;
+    } 
+    
     //Comparing arrays below is incorrect and should be corrected. 
     //This is probably leading to multiple updates, should use !_.isEqual
     if (
@@ -109,6 +115,8 @@ class _Payment extends Component {
 
   addUserToMailChimp(userInfo) {
 
+    if (this.newUser) {
+
       const { soundcast } = this.props;
 
       if (typeof soundcast.mailChimpId != 'undefined' && typeof userInfo.email != 'undefined') {
@@ -116,6 +124,7 @@ class _Payment extends Component {
         //There shold be a publisherID, but lets still check for it.
         if (typeof soundcast.publisherID != 'undefined') {
 
+          this.newUser = false;
           const listId = soundcast.mailChimpId;
           const publisherId = soundcast.publisherID;
 
@@ -124,7 +133,6 @@ class _Payment extends Component {
             lastName : userInfo.lastName, 
             email : userInfo.email[0]
           }
-
           Axios.post('/api/mail_manage_addsubscriber', {
             publisherId : publisherId,
             listId : listId,
@@ -138,7 +146,7 @@ class _Payment extends Component {
           });  
         }
       }
-    // }
+   }
   }
   
 
