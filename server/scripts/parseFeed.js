@@ -124,6 +124,7 @@ const feedUrlsImported = {}; // not claimed imported feeds
 // client gives a feed url. Server needs to create a new soundcast from it and populate the soundcast and its episodes with information from the feed
 async function parseFeed(req, res) {
   try {
+    const fb = firebase.database();
     const { feedUrl, submitCode, resend, importFeedUrl, publisherId, userId } = req.body;
     if (!feedUrl) {
       return res.status(400).send(`Error: empty feedUrl field`);
@@ -150,10 +151,7 @@ async function parseFeed(req, res) {
       }
 
       const { soundcastId, originalUrl } = podcast;
-      const snapshot = await firebase
-        .database()
-        .ref(`soundcasts/${soundcastId}`)
-        .once(`value`);
+      const snapshot = await fb.ref(`soundcasts/${soundcastId}`).once(`value`);
       let { title, publisherEmail, last_update, hostName } = snapshot.val();
       if (!publisherEmail || publisherEmail === 'null') {
         // checking if feed was updated
@@ -188,10 +186,7 @@ async function parseFeed(req, res) {
                   hostName,
                   category,
                 });
-                await firebase
-                  .database()
-                  .ref(`soundcasts/${soundcastId}/publisherEmail`)
-                  .set(publisherEmail);
+                await fb.ref(`soundcasts/${soundcastId}/publisherEmail`).set(publisherEmail);
               }
             }
             resolve();
@@ -235,44 +230,23 @@ async function parseFeed(req, res) {
       // then we don't need to call the runFeedImport function after user signs up.
       // We just need to assign the feed's soundcast id and its publisher id to the user.
       if (importFeedUrl) {
-        await firebase
-          .database()
-          .ref(`publishers/${publisherId}/soundcasts/${soundcastId}`)
-          .set(true);
-        await firebase
-          .database()
-          .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
-          .set(true);
+        await fb.ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
+        await fb.ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
         await database.ImportedFeed.update(
           { claimed: true, userId, publisherId },
           { where: { soundcastId } }
         );
         await database.Soundcast.update({ publisherId }, { where: { soundcastId } });
-        await firebase
-          .database()
-          .ref(`soundcasts/${soundcastId}/publisherID`)
-          .set(publisherId);
-        await firebase
-          .database()
-          .ref(`soundcasts/${soundcastId}/creatorID`)
-          .set(userId);
-        await firebase
-          .database()
-          .ref(`soundcasts/${soundcastId}/verified`)
-          .set(true);
+        await fb.ref(`soundcasts/${soundcastId}/publisherID`).set(publisherId);
+        await fb.ref(`soundcasts/${soundcastId}/creatorID`).set(userId);
+        await fb.ref(`soundcasts/${soundcastId}/verified`).set(true);
 
         const episodes = await database.Episode.findAll({ where: { soundcastId } });
         if (episodes.length) {
           await database.Episode.update({ publisherId }, { where: { soundcastId } });
           for (const episode of episodes) {
-            await firebase
-              .database()
-              .ref(`episodes/${episode.episodeId}/publisherID`)
-              .set(publisherId);
-            await firebase
-              .database()
-              .ref(`episodes/${episode.episodeId}/creatorID`)
-              .set(userId);
+            await fb.ref(`episodes/${episode.episodeId}/publisherID`).set(publisherId);
+            await fb.ref(`episodes/${episode.episodeId}/creatorID`).set(userId);
           }
         }
         delete feedUrlsImported[url];
@@ -382,6 +356,7 @@ async function runFeedImport(
   soundcastId
 ) {
   try {
+    const fb = firebase.database();
     const { metadata, publisherEmail, verified, originalUrl } = feedObj;
     const { publisherId, userId } = req.body;
 
@@ -393,10 +368,7 @@ async function runFeedImport(
     let publisherName = req.body.publisherName;
     if (!publisherName) {
       // trying to obtain publisherName from fb
-      const snapshot = await firebase
-        .database()
-        .ref(`publishers/${publisherId}/name`)
-        .once('value');
+      const snapshot = await fb.ref(`publishers/${publisherId}/name`).once('value');
       publisherName = snapshot.val();
     }
 
@@ -413,7 +385,7 @@ async function runFeedImport(
     });
 
     if (!feedItems.length) {
-      return logErr(`empty feedItems array ${originalUrl}`);
+      return logErr(`empty feedItems array ${originalUrl}`, null, callback);
     }
 
     feedItems.sort((a, b) => {
@@ -434,7 +406,7 @@ async function runFeedImport(
     }
     if (!last_update || moment(last_update).format('X') === 'Invalid date') {
       // If all three properties are missing, the program should flag an error and it should not be imported. And we need to check the feed manually to see what's happening.
-      return logErr(`can't obtain last_update ${originalUrl}`);
+      return logErr(`can't obtain last_update ${originalUrl}`, null, callback);
     }
     last_update = moment(last_update).format('X');
 
@@ -453,6 +425,12 @@ async function runFeedImport(
           requestPromise
             .get({ url: image.url, encoding: null })
             .then(body => {
+              if (!body) {
+                return reject(`empty body`);
+              }
+              if (body.length > 15*1024*1024) {
+                return reject(`max 15MB size exceed`);
+              }
               jimp
                 .read(body)
                 .then(f => {
@@ -505,7 +483,7 @@ async function runFeedImport(
             .catch(err => reject(err));
         });
       } catch (err) {
-        logErr(`Blurred image create ${err}`);
+        logErr(`Blurred image create ${image.url} ${err} ${err && err.stack}`);
       }
     }
     const title = entities.decode(metadata.title);
@@ -583,10 +561,7 @@ async function runFeedImport(
     });
 
     // 2-a. add to publisher node in firebase
-    await firebase
-      .database()
-      .ref(`publishers/${publisherId}/soundcasts/${soundcastId}`)
-      .set(true);
+    await fb.ref(`publishers/${publisherId}/soundcasts/${soundcastId}`).set(true);
 
     // 2-b. add to importedFeeds node in firebase
     const importedFeedObj = {
@@ -630,22 +605,12 @@ async function runFeedImport(
       soundcast.episodes[episodeId] = true;
       i++;
     }
-    await firebase
-      .database()
-      .ref(`soundcasts/${soundcastId}`)
-      .set(soundcast);
-    await firebase
-      .database()
-      .ref(`users/${userId}/soundcasts_managed/${soundcastId}`)
-      .set(true);
-    await firebase
-      .database()
-      .ref(`publishers/${publisherId}/administrators/${userId}`)
-      .set(true);
+    await fb.ref(`soundcasts/${soundcastId}`).set(soundcast);
+    await fb.ref(`users/${userId}/soundcasts_managed/${soundcastId}`).set(true);
+    await fb.ref(`publishers/${publisherId}/administrators/${userId}`).set(true);
     callback && callback();
   } catch (err) {
-    logErr(`runFeedImport catch ${err}`, res);
-    console.log(err.stack);
+    logErr(`runFeedImport catch ${err} ${err && err.stack}`, res, callback);
   }
 } // runFeedImport
 
@@ -709,16 +674,11 @@ async function addFeedEpisode(item, userId, publisherId, soundcastId, soundcast,
     };
 
     const episodeId = `${moment().format('x')}e`;
+    const fb = firebase.database();
     // add to episodes node in firebase
-    await firebase
-      .database()
-      .ref(`episodes/${episodeId}`)
-      .set(episode);
+    await fb.ref(`episodes/${episodeId}`).set(episode);
     // add to the soundcast
-    await firebase
-      .database()
-      .ref(`soundcasts/${soundcastId}/episodes/${episodeId}`)
-      .set(true);
+    await fb.ref(`soundcasts/${soundcastId}/episodes/${episodeId}`).set(true);
     // add to postgres
     await database.Episode.findOrCreate({
       where: { episodeId },
