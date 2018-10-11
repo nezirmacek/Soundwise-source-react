@@ -14,7 +14,7 @@ const getRecommendations = async (req, res) => {
     const soundcasts = await database.db.query(`
       SELECT * FROM "Soundcasts" as "s" 
       LEFT JOIN "CategorySoundcasts" as "cs" ON "cs"."soundcastId"="s"."soundcastId" 
-      WHERE "cs"."categoryId"='${category.categoryId}' AND "s"."forSale"
+      WHERE "cs"."categoryId"='${category.categoryId}' AND "s"."published" AND "s"."landingPage"
       ORDER BY "s"."rank" DESC LIMIT 10
     `);
 
@@ -30,7 +30,7 @@ const getSoundcastsFromCategory = async (req, res) => {
   const soundcasts = await database.db.query(`
       SELECT * FROM "Soundcasts" as "s" 
       LEFT JOIN "CategorySoundcasts" as "cs" ON "cs"."soundcastId"="s"."soundcastId" 
-      WHERE "cs"."categoryId"='${req.params.categoryId}' AND "s"."forSale"
+      WHERE "cs"."categoryId"='${req.params.categoryId}' AND "s"."published" AND "s"."landingPage"
       ORDER BY "s"."rank" DESC LIMIT 100
     `);
   res.status(200).send(soundcasts[0]);
