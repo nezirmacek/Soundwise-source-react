@@ -204,6 +204,8 @@ module.exports = app => {
       .catch(err => res.status(500).send(err));
   });
 
+  app.get('/api/soundcasts/recommendations', soundcastService.getRecommendations);
+
   app.post('/api/comments', commentService.addComment);
 
   app.delete('/api/comments/:id', commentService.deleteComment);

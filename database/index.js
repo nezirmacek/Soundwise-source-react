@@ -266,7 +266,7 @@ var Category = db.define(
 var CategoryList = db.define(
   'CategoryList',
   {
-    categoryId: { type: Sequelize.INTEGER, allowNull: false },
+    categoryId: { type: Sequelize.STRING, allowNull: false },
     name: { type: Sequelize.STRING, allowNull: false },
   },
   {
@@ -320,6 +320,10 @@ var Coupon = db.define('Coupon', {
 
 // Comment.belongsTo(Announcement, { foreignKey: 'announcementId', onDelete: 'cascade' });
 // Announcement.hasMany(Comment, { foreignKey: 'announcementId', as: 'Comments' });
+
+Soundcast.hasMany(CategorySoundcast, {foreignKey: 'soundcastId'});
+// CategoryList.belongsToMany(Soundcast, {through: 'CategorySoundcast'});
+CategorySoundcast.belongsTo(Soundcast, { foreignKey: 'soundcastId', onDelete: 'cascade'});
 
 Like.belongsTo(Comment, { foreignKey: 'commentId', onDelete: 'cascade' });
 Comment.hasMany(Like, { foreignKey: 'commentId', as: 'Likes' });
