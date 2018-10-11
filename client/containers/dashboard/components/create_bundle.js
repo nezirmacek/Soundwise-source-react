@@ -160,25 +160,19 @@ export default class CreateBundle extends Component {
   }
 
   async fetchSoundcasts(publisherID) {
-    let soundcasts = [],
-      soundcast;
-    const soundcastsObj = await firebase
-      .database()
-      .ref(`publishers/${publisherID}/soundcasts`)
-      .once('value');
+    const fb = firebase.database();
+    const soundcasts = [];
+    const soundcastsObj = await fb.ref(`publishers/${publisherID}/soundcasts`).once('value');
     const soundcastsArr = Object.keys(soundcastsObj.val());
     for (var i = 0; i < soundcastsArr.length; i++) {
-      soundcast = await firebase
-        .database()
-        .ref(`soundcasts/${soundcastsArr[i]}`)
-        .once('value');
+      const soundcast = await fb.ref(`soundcasts/${soundcastsArr[i]}`).once('value');
       if (soundcast.val() && soundcast.val().published && !soundcast.val().bundle) {
         // only add the soundcasts that are not bundles
         soundcasts.push({ title: soundcast.val().title, id: soundcastsArr[i] });
       }
     }
-    let selectedSoundcasts = [];
-    if (this.state.selectedSoundcastsArr) {
+    const selectedSoundcasts = [];
+    if (this.state.selectedSoundcastsArr && this.state.selectedSoundcastsArr.length) {
       soundcasts.forEach(soundcast => {
         if (this.state.selectedSoundcastsArr.indexOf(soundcast.id) > -1) {
           selectedSoundcasts.push(soundcast);
@@ -192,9 +186,7 @@ export default class CreateBundle extends Component {
   }
 
   selectSoundcasts(selectedSoundcasts) {
-    this.setState({
-      selectedSoundcasts,
-    });
+    this.setState({ selectedSoundcasts });
   }
 
   _uploadToAws(file, hostImg) {
@@ -295,6 +287,7 @@ export default class CreateBundle extends Component {
       confirmationEmail,
       selectedCategory,
     } = this.state;
+    const fb = firebase.database();
     const imageURL =
       this.state.imageURL ||
       `https://dummyimage.com/300.png/${this.getRandomColor()}/ffffff&text=${encodeURIComponent(
@@ -304,8 +297,7 @@ export default class CreateBundle extends Component {
       return alert('Please enter a bundle title before saving.');
     }
     if (short_description == 0) {
-      alert('Please enter a short description for the bundle before saving.');
-      return;
+      return alert('Please enter a short description for the bundle before saving.');
     }
     if (selectedSoundcasts.length < 2) {
       return alert('Please select at least two soundcasts to form the bundle.');
@@ -321,14 +313,12 @@ export default class CreateBundle extends Component {
     const { userInfo, history } = this.props;
     // const host = [{hostName, hostBio, hostImageURL}];
     const that = this;
-    this.setState({
-      submitted: true,
-    });
-    this.firebaseListener = firebase.auth().onAuthStateChanged(user => {
+    this.setState({ submitted: true });
+    this.firebaseListener = firebase.auth().onAuthStateChanged(async user => {
       if (user && that.firebaseListener) {
         const creatorID = user.uid;
         const last_update = Number(moment().format('X'));
-        const newSoundcast = {
+        const editedSoundcast = {
           title,
           bundle: true,
           creatorID,
@@ -348,10 +338,13 @@ export default class CreateBundle extends Component {
           category: selectedCategory.name,
         };
 
+        const bundleSnapshot = await fb.ref(`soundcasts/${that.soundcastId}`).once('value');
+        const bundleOld = bundleSnapshot.val();
+        const newSoundcast = Object.assign({}, bundleOld || {}, editedSoundcast);
+
         let _promises_1 = [
           // add soundcast
-          firebase
-            .database()
+          fb
             .ref(`soundcasts/${that.soundcastId}`)
             .set(newSoundcast)
             .then(
@@ -365,8 +358,7 @@ export default class CreateBundle extends Component {
               }
             ),
           // add soundcast to publisher
-          firebase
-            .database()
+          fb
             .ref(`publishers/${userInfo.publisherID}/soundcasts/${that.soundcastId}`)
             .set(true)
             .then(
@@ -392,10 +384,7 @@ export default class CreateBundle extends Component {
           })
             .then(async res => {
               if (userInfo.publisher && userInfo.publisher.stripe_user_id) {
-                const snapshot = await firebase
-                  .database()
-                  .ref(`soundcasts/${that.soundcastId}`)
-                  .once('value');
+                const snapshot = await fb.ref(`soundcasts/${that.soundcastId}`).once('value');
                 const couponsToRemove = [];
                 (snapshot.val().prices || []).forEach(price => {
                   (price.coupons || []).forEach(coupon => couponsToRemove.push(coupon.code));
@@ -421,8 +410,7 @@ export default class CreateBundle extends Component {
         let adminArr = Object.keys(userInfo.publisher.administrators);
 
         let _promises_2 = adminArr.map(adminId => {
-          return firebase
-            .database()
+          return fb
             .ref(`users/${adminId}/soundcasts_managed/${that.soundcastId}`)
             .set(true)
             .then(
@@ -468,17 +456,13 @@ export default class CreateBundle extends Component {
   }
 
   handleCheck() {
-    this.setState({
-      landingPage: !this.state.landingPage,
-    });
+    this.setState({ landingPage: !this.state.landingPage });
   }
 
   setFeatures(i, event) {
     const features = [...this.state.features];
     features[i] = event.target.value;
-    this.setState({
-      features,
-    });
+    this.setState({ features });
   }
 
   deleteFeature(i, event) {
@@ -488,17 +472,13 @@ export default class CreateBundle extends Component {
     } else {
       features[0] = '';
     }
-    this.setState({
-      features,
-    });
+    this.setState({ features });
   }
 
   addFeature() {
     const features = [...this.state.features];
     features.push('');
-    this.setState({
-      features,
-    });
+    this.setState({ features });
   }
 
   handleChargeOption() {
