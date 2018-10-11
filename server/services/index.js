@@ -7,6 +7,7 @@ const commentService = require('./comment');
 const likeService = require('./like');
 const soundcastService = require('./soundcast');
 const userService = require('./user');
+const eventService = require('./event');
 
 module.exports = {
   invititaionService,
@@ -16,4 +17,5 @@ module.exports = {
   mailingService,
   soundcastService,
   userService,
+  eventService,
 };

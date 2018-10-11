@@ -6,6 +6,7 @@ const {
   likeService,
   soundcastService,
   userService,
+  eventService
 } = require('../server/services');
 
 const { handleEvent } = require('../server/services/event');
@@ -221,4 +222,6 @@ module.exports = app => {
   app.delete('/api/likes/:id', likeService.deleteLike);
 
   app.patch('/api/listeners/:id', userService.editUserInfo);
+
+  app.get('/api/events', eventService.fetchEventsForUser);
 };

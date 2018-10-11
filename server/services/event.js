@@ -1,21 +1,28 @@
 'use strict';
 
 const Op = require('sequelize').Op;
+const moment = require('moment');
 
 const { userManager, soundcastManager } = require('../managers');
-const {
-  eventRepository,
-  userRepository,
-  soundcastRepository,
-} = require('../repositories');
+const { eventRepository, userRepository, soundcastRepository } = require('../repositories');
 const { EventTypes } = require('../scripts/utils')();
-const {
-  User,
-  Episode,
-  Announcement,
-  Soundcast,
-  Comment,
-} = require('../../database');
+const { User, Episode, Announcement, Soundcast, Comment } = require('../../database');
+
+const subscribersEvents = [
+  EventTypes.NEW_EPISODE_PUBLISHED,
+  EventTypes.NEW_MESSAGE_POSTED,
+  EventTypes.MESSAGE_COMMENTED,
+  EventTypes.EPISODE_COMMENTED,
+  EventTypes.EPISODE_LIKED,
+  EventTypes.MESSAGE_LIKED,
+];
+
+const commentAuthorEvents = [
+  EventTypes.MSG_COMMENT_REPLIED,
+  EventTypes.EP_COMMENT_REPLIED,
+  EventTypes.MSG_COMMENT_LIKED,
+  EventTypes.EP_COMMENT_LIKED,
+];
 
 const eventCreators = {};
 
@@ -30,34 +37,15 @@ const handleEvent = async (type, data) => {
   }
 
   const eventReceivers = await fetchEventReceivers(event);
-  console.log(
-    `${eventReceivers.length} users will receive notification about this event`
-  );
+  console.log(`${eventReceivers.length} users will receive notification about this event`);
   await notify(eventReceivers);
 };
 
 const fetchEventReceivers = async event => {
-  const subscribersEvents = [
-    EventTypes.NEW_EPISODE_PUBLISHED,
-    EventTypes.NEW_MESSAGE_POSTED,
-    EventTypes.MESSAGE_COMMENTED,
-    EventTypes.EPISODE_COMMENTED,
-    EventTypes.EPISODE_LIKED,
-    EventTypes.MESSAGE_LIKED,
-  ];
-
-  const commentAuthorEvents = [
-    EventTypes.MSG_COMMENT_REPLIED,
-    EventTypes.EP_COMMENT_REPLIED,
-    EventTypes.MSG_COMMENT_LIKED,
-    EventTypes.EP_COMMENT_LIKED,
-  ];
   const eventReceivers = [];
 
   if (subscribersEvents.includes(event.type)) {
-    const subscribersSnapshot = await soundcastManager.getSubscribers(
-      event.soundcastId
-    );
+    const subscribersSnapshot = await soundcastManager.getSubscribers(event.soundcastId);
 
     if (!subscribersSnapshot.val()) {
       return [];
@@ -172,9 +160,9 @@ eventCreators[EventTypes.MESSAGE_LIKED] = async announcement_like => {
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
-    story: `${hostUser.firstName} ${hostUser.lastName} liked ${
-      hostUser.firstName
-    } ${hostUser.lastName}'s message`,
+    story: `${hostUser.firstName} ${hostUser.lastName} liked ${hostUser.firstName} ${
+      hostUser.lastName
+    }'s message`,
   };
 
   return event;
@@ -200,22 +188,14 @@ eventCreators[EventTypes.EP_COMMENT_LIKED] = async ep_comment_like => {
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
-    story: `${user.firstName} ${user.lastName} liked your comment on ${
-      episode.title
-    }`,
+    story: `${user.firstName} ${user.lastName} liked your comment on ${episode.title}`,
   };
 
   return event;
 };
 
 eventCreators[EventTypes.MSG_COMMENT_LIKED] = async msg_comment_like => {
-  const {
-    announcementId,
-    soundcastId,
-    userId,
-    likeId,
-    commentId,
-  } = msg_comment_like;
+  const { announcementId, soundcastId, userId, likeId, commentId } = msg_comment_like;
 
   const user = await User.findOne({ where: { userId } });
   const soundcast = await Soundcast.findOne({ where: { soundcastId } });
@@ -234,9 +214,9 @@ eventCreators[EventTypes.MSG_COMMENT_LIKED] = async msg_comment_like => {
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
-    story: `${user.firstName} ${
-      user.lastName
-    } liked your comment on a message from ${soundcast.title}`,
+    story: `${user.firstName} ${user.lastName} liked your comment on a message from ${
+      soundcast.title
+    }`,
   };
 
   return event;
@@ -265,13 +245,7 @@ eventCreators[EventTypes.EPISODE_COMMENTED] = async episode_comment => {
 };
 
 eventCreators[EventTypes.EP_COMMENT_REPLIED] = async ep_comment_reply => {
-  const {
-    episodeId,
-    soundcastId,
-    userId,
-    commentId,
-    parentId,
-  } = ep_comment_reply;
+  const { episodeId, soundcastId, userId, commentId, parentId } = ep_comment_reply;
 
   const user = await User.findOne({ where: { userId } });
   const episode = await Episode.findOne({ where: { episodeId } });
@@ -290,9 +264,7 @@ eventCreators[EventTypes.EP_COMMENT_REPLIED] = async ep_comment_reply => {
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
-    story: `${user.firstName} ${user.lastName} replied to your comment on ${
-      episode.title
-    }`,
+    story: `${user.firstName} ${user.lastName} replied to your comment on ${episode.title}`,
   };
 
   return event;
@@ -314,22 +286,14 @@ eventCreators[EventTypes.MESSAGE_COMMENTED] = async message_comment => {
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
-    story: `${user.firstName} ${user.lastName} commented on a message from ${
-      soundcast.title
-    }`,
+    story: `${user.firstName} ${user.lastName} commented on a message from ${soundcast.title}`,
   };
 
   return event;
 };
 
 eventCreators[EventTypes.MSG_COMMENT_REPLIED] = async msg_comment_reply => {
-  const {
-    announcementId,
-    soundcastId,
-    userId,
-    commentId,
-    parentId,
-  } = msg_comment_reply;
+  const { announcementId, soundcastId, userId, commentId, parentId } = msg_comment_reply;
 
   const user = await User.findOne({ where: { userId } });
   const soundcast = await Soundcast.findOne({ where: { soundcastId } });
@@ -349,12 +313,74 @@ eventCreators[EventTypes.MSG_COMMENT_REPLIED] = async msg_comment_reply => {
     avatarUrl: user.picURL,
     firstName: user.firstName,
     lastName: user.lastName,
-    story: `${user.firstName} ${
-      user.lastName
-    } replied to your comment on a message from ${soundcast.title}`,
+    story: `${user.firstName} ${user.lastName} replied to your comment on a message from ${
+      soundcast.title
+    }`,
   };
 
   return event;
+};
+
+const fetchEventsForUser = async (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) {
+    res.status(400).send({ error_msg: 'BadRequest. userId is missing in query params.' });
+  }
+
+  const subscriptionsSnapshot = await userManager.getSubscriptions(req.query.userId);
+  const whereCondition = {
+    [Op.or]: [
+      {
+        [Op.and]: {
+          commentUserId: userId,
+          type: {
+            [Op.in]: [EventTypes.MSG_COMMENT_LIKED, EventTypes.EP_COMMENT_LIKED],
+          },
+        },
+      },
+      {
+        [Op.and]: {
+          parentUserId: userId,
+          type: {
+            [Op.in]: [EventTypes.MSG_COMMENT_REPLIED, EventTypes.EP_COMMENT_REPLIED],
+          },
+        },
+      },
+    ],
+  };
+
+  if (req.query.fromDate) {
+    const fromDate = moment(req.query.fromDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    whereCondition['createdAt'] = {
+      [Op.gt]: fromDate,
+    };
+  }
+
+  if (subscriptionsSnapshot.val()) {
+    const soundcasts = Object.keys(subscriptionsSnapshot.val()).filter(
+      val => !['undefined', 'null'].includes(val)
+    );
+    whereCondition[Op.or].push({
+      [Op.and]: {
+        soundcastId: {
+          [Op.in]: soundcasts,
+        },
+        type: {
+          [Op.in]: subscribersEvents,
+        },
+      },
+    });
+  }
+  const statement = {
+    where: whereCondition,
+    order: [['createdAt', 'DESC']],
+  };
+  if (req.query.pageSize && req.query.page) {
+    statement['limit'] = req.query.pageSize;
+    statement['offset'] = req.query.page * req.query.pageSize;
+  }
+  const events = await eventRepository.getRecent(statement);
+  res.status(200).send(events);
 };
 
 const sendError = (err, res) => {
@@ -362,4 +388,4 @@ const sendError = (err, res) => {
   res.status(500).send(err);
 };
 
-module.exports = { handleEvent };
+module.exports = { handleEvent, fetchEventsForUser };
