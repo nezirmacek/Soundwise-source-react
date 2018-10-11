@@ -205,6 +205,8 @@ module.exports = app => {
   });
 
   app.get('/api/soundcasts/recommendations', soundcastService.getRecommendations);
+  
+  app.get('/api/soundcasts/recommendations/:categoryId', soundcastService.getSoundcastsFromCategory);
 
   app.post('/api/comments', commentService.addComment);
 
