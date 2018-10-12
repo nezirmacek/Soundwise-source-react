@@ -14,7 +14,7 @@
 const request = require('request');
 const requestPromise = require('request-promise');
 const fs = require('fs');
-// const ffmpeg = require('./ffmpeg');
+const ffmpeg = require('./ffmpeg');
 const FeedParser = require('feedparser');
 const firebase = require('firebase-admin');
 const database = require('../../database/index');
@@ -424,30 +424,43 @@ async function runFeedImport(
         await new Promise((resolve, reject) => {
           requestPromise
             .get({ url: image.url, encoding: null })
-            .then(body => {
+            .then(async body => {
               if (!body) {
                 return reject(`empty body`);
               }
-              if (body.length > 15*1024*1024) {
-                return reject(`max 15MB size exceed`);
-              }
+              const imagePath = `/tmp/${soundcastId}_original.${fileType(body).ext}`;
+              const updatedImagePath = `/tmp/${soundcastId}_updated.${fileType(body).ext}`;
+              await new Promise(resolve2 => {
+                fs.writeFile(imagePath, body, err => {
+                  if (err) {
+                    return reject(`fs_writeFile imagePath ${imagePath} ${err}`);
+                  }
+                  new ffmpeg(imagePath).then(imageFile => {
+                    imageFile.addCommand('-vf', `scale=600:-1`);
+                    imageFile.save(updatedImagePath, err => {
+                      if (err) {
+                        return reject(`cannot save updated image ${updatedImagePath} ${err}`);
+                      }
+                      fs.unlink(imagePath, err => 0); // remove original image file
+                      resolve2();
+                    });
+                  });
+                });
+              });
               jimp
-                .read(body)
+                .read(updatedImagePath)
                 .then(f => {
-                  f.resize(600, jimp.AUTO)
-                    .blur(30)
+                  f.blur(30)
                     .brightness(0.6)
                     .getBuffer(jimp.AUTO, (err, buffer) => {
                       if (err) {
                         return reject(`jimp_error ${err}`);
                       }
-                      const uid = Math.random()
-                        .toString()
-                        .slice(2); // unique id
-                      const filePath = `/tmp/${soundcastId + uid}.${fileType(body).ext}`;
+                      const filePath = `/tmp/${soundcastId}_blurred.${fileType(body).ext}`;
                       fs.writeFile(filePath, buffer, err => {
+                        fs.unlink(updatedImagePath, err => 0); // remove updated image file
                         if (err) {
-                          return reject(`jimp_fs_writeFile ${err}`);
+                          return reject(`jimp_fs_writeFile ${filePath} ${err}`);
                         }
                         uploader1.use(
                           new S3Strategy({
