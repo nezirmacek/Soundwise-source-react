@@ -43,7 +43,7 @@ class _Payment extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.updateProps = this.updateProps.bind(this);
     this.addUserToMailChimp = this.addUserToMailChimp.bind(this);
-    this.newUser = true;
+    this.newUserOrSoundcast = true;
   }
 
   componentDidMount() {
@@ -88,10 +88,15 @@ class _Payment extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
 
-    //Set newUser if emails aren't same, will be used to update mailchimp.
+    //Set newUserOrSoundcast if emails aren't same, will be used to update mailchimp.
     if (!_.isEqual(this.props.userInfo.email, nextProps.userInfo.email)) {
-      this.newUser = true;
+      this.newUserOrSoundcast = true;
     } 
+
+    //Same user but new soundcast, so we set it to true, so mailchimp is updated.
+    if (this.props.soundcastID != nextProps.soundcastID) {
+      this.newUserOrSoundcast = true;
+    }
     
     //Comparing arrays below is incorrect and should be corrected. 
     //This is probably leading to multiple updates, should use !_.isEqual
@@ -114,19 +119,16 @@ class _Payment extends Component {
   }
 
   addUserToMailChimp(userInfo) {
-
-    if (this.newUser) {
+    if (this.newUserOrSoundcast) {
 
       const { soundcast } = this.props;
 
-      if (typeof soundcast.mailChimpId != 'undefined' && typeof userInfo.email != 'undefined') {
+      if (typeof soundcast.mailChimp != 'undefined' && typeof userInfo.email != 'undefined') {
 
         //There shold be a publisherID, but lets still check for it.
         if (typeof soundcast.publisherID != 'undefined') {
 
-          this.newUser = false;
-          const listId = soundcast.mailChimpId;
-          const publisherId = soundcast.publisherID;
+          this.newUserOrSoundcast = false;
 
           let user = {
             firstName : userInfo.firstName,
@@ -134,8 +136,8 @@ class _Payment extends Component {
             email : userInfo.email[0]
           }
           Axios.post('/api/mail_manage_addsubscriber', {
-            publisherId : publisherId,
-            listId : listId,
+            publisherId : soundcast.publisherID,
+            mailChimpInfo : soundcast.mailChimp,
             user : user
           })
           .then(res => {

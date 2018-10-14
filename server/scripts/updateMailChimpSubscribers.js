@@ -20,14 +20,14 @@ module.exports.updateMailChimpSubscribers = (req, res) => {
 
 function getSubscribersInfo(req, res) {
   let promises = [];
-  let exportFirsName = true, exportLastName = true;
+  let exportFirstName = true, exportLastName = true;
 
   let firstNameTag = req.body.mergeFields.firstNameTag;
   let lastNameTag = req.body.mergeFields.lastNameTag;
 
     //Lets create the object for mergefields
   if (firstNameTag === "No Export") {
-    exportFirsName = false;
+    exportFirstName = false;
   } 
  
   if (lastNameTag === "No Export") {
@@ -51,7 +51,7 @@ function getSubscribersInfo(req, res) {
             let sub = {};
             sub.email_address = subscriber.email[0];
             sub.status = 'subscribed';
-            if (exportFirsName) {
+            if (exportFirstName) {
               sub.merge_fields = {};
               sub.merge_fields[firstNameTag] = subscriber.firstName
             }
