@@ -39,17 +39,19 @@ module.exports.addSubscriberMailChimp = (req, res) => {
           })
           .catch(function (err) {
             //We send a 200 if the user is already in the list, nothing to be alarmed of.
-            console.log("user already exists")
+            console.log("Error adding user: ", error)
             res.sendStatus(200);
           })
         } else {
           //We send a 404 if the apiKey is not found.
+          console.log("Api key not found. ")
           res.sendStatus(404);
         }    
       }
     })
     .catch(function (err) {
       //We send a 404 if the firebase request failed.
+      console.log("Firebase request failed. ")
       res.sendStatus(404);
     })  
 };

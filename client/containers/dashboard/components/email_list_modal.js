@@ -88,21 +88,27 @@ class EmailListDropDown extends Component {
 class MailChimpLists extends Component {
 
   render() {
+    const { selectedListId, 
+            handleSelectList, 
+            lastNameTag, 
+            firstNameTag } = this.props;
+        
     return (
       <div>
         <div>
           Email List to subscribe to:
         </div>
-        <div style={{margin: '10px 20px 20px 20px'}}>
+        <div style={{ margin: '10px 20px 20px 20px' }}>
           <div>
             <strong>
               List Name (ID)
             </strong>
           </div>
+
           <RadioGroup
             name="soundcasts"
-            selectedValue={this.props.selectedListId}
-            onChange={this.props.handleSelectList}
+            selectedValue={selectedListId}
+            onChange={handleSelectList}
           >
             {
               this.props.list.map(item => {
@@ -110,15 +116,115 @@ class MailChimpLists extends Component {
                   <label
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      fontWeight: 'normal',
+                      flexDirection: 'column',
+                      // alignContent:'center',
+                      fontWeight: 'normal'
                     }}
                   >
-                    <Radio
-                      style={{ width: 50 }}
-                      value={item.id}
-                    />
-                    {`${item.name} (${item.id})`}
+
+                    <div>
+                      <Radio
+                        style={{ width: 50 }}
+                        value={item.id}
+                      />
+                      <span>{`${item.name} (${item.id})`}</span>
+                    </div>
+
+                    <div style={{display: selectedListId==item.id ? 'block' : 'none'}}>
+                      <div 
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <strong>Merge Field Tag</strong>
+                      </div>
+
+
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <span style={{
+                          padding: '5px 0px 5px 52px',
+                          width: '100px',
+                          marginRight: '16',
+                          flex: '1'
+                        }}
+                        >
+                          First Name
+                        </span>
+                        <div className="dropdown" 
+                          style={{
+                            flex: '2'
+                          }}
+                        >
+                          <select
+                            style={{
+                              ...styles.soundcastSelect,
+                              marginLeft: 0,
+                              height: '30px',
+                              paddingTop: '4px',
+                              fontSize: '13px'
+                            }}
+                            value={firstNameTag}
+                            onChange={e => {
+                              this.props.setFirstNameTag(e);
+                            }}          
+                          >
+                            <option style={styles.option} value={"No Export"}>
+                              Do not export
+                            </option>
+                            {item.merge_fields.map((mf, i) => {
+                              return (
+                                <option style={styles.option} value={mf.tags} key={i}>
+                                  {mf.tags}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <span style={{
+                          padding: '5px 0px 5px 52px',
+                          width: '100px',
+                          marginRight: '16',
+                          flex: '1'
+                        }}
+                        >
+                          Last Name
+                        </span>
+                        <div className="dropdown" style={{
+                          background: 'white',
+                          flex: '2'
+                        }}
+                        >
+                          <select
+                            style={{
+                              ...styles.soundcastSelect,
+                              marginLeft: 0,
+                              height: '30px',
+                              paddingTop: '4px',
+                              fontSize: '13px'
+                            }}
+                            value={lastNameTag}
+                            onChange={e => {
+                              this.props.setLastNameTag(e);
+                            }}          
+                          >
+                            <option style={styles.option} value={"No Export"}>
+                              Do not export
+                            </option>
+                            {item.merge_fields.map((mf, i) => {
+                              return (
+                                <option style={styles.option} value={mf.tags} key={i}>
+                                  {mf.tags}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
                   </label>
                 )
               })
@@ -142,6 +248,8 @@ export default class EmailListModal extends Component {
     this.retrieveMailChimpKey = this.retrieveMailChimpKey.bind(this);
     this.handleSelectList = this.handleSelectList.bind(this);
     this.renderProgressBar = this.renderProgressBar.bind(this);
+    this.setFirstNameTag = this.setFirstNameTag.bind(this);
+    this.setLastNameTag = this.setLastNameTag.bind(this);
 
     //Have to intialize the id to the first soundcast. In componentDidMount &
     //componentDidUpdate
@@ -153,8 +261,9 @@ export default class EmailListModal extends Component {
       apiKey: '',
       updatingList: false,
       exportInProgress : false,
+      firstNameTag : 'No Export',
+      lastNameTag : 'No Export',
     }
-
   }
 
   componentDidMount() {
@@ -194,17 +303,52 @@ export default class EmailListModal extends Component {
       typeof Object.values(userInfo.soundcasts_managed)[0] == 'object') {
 
         if (this.props.currentSoundcastID != null) {
-          //Now lets get the mailChimpID if it exists.
 
           let currentSc = userInfo.soundcasts_managed[this.props.currentSoundcastID];
-          let mailChimpId = currentSc.mailChimpId ? currentSc.mailChimpId : '';
+          let mailChimpId = '';
+          let firstNameTag = 'No Export';
+          let lastNameTag = 'No Export';
+
+          if (typeof currentSc.mailChimp != 'undefined') {
+             mailChimpId = currentSc.mailChimp.mailChimpId;
+             firstNameTag = currentSc.mailChimp.mergeFields.firstNameTag;
+             lastNameTag = currentSc.mailChimp.mergeFields.lastNameTag;
+          } 
 
           this.setState({
             currentSoundcastID: this.props.currentSoundcastID,
-            selectedListId: mailChimpId
+            selectedListId: mailChimpId,
+            firstNameTag: firstNameTag,
+            lastNameTag: lastNameTag,
           })  
         } 
 
+    }
+  }
+
+  retrieveMailChimpKey(userInfo) {
+    if (userInfo && userInfo.publisher) {
+      const publisherId = userInfo.publisherID;
+      firebase
+        .database()
+        .ref(`publishers/${publisherId}/mailChimp`)
+        .on('value', snapshot => {
+          const mailChimp = snapshot.val();
+          if (mailChimp != null) {
+            this.setState({ list : mailChimp.list,
+              apiKey : mailChimp.apiKey})
+            //Lets now update the list.
+
+            Axios.post('/api/mail_manage', {
+              publisherId : publisherId,
+              apiKey: mailChimp.apiKey,
+            })
+            .catch((error) => {
+                console.log(error)
+            });  
+
+          }
+        });
     }
   }
 
@@ -231,6 +375,10 @@ export default class EmailListModal extends Component {
         listId : this.state.selectedListId,
         apiKey: this.state.apiKey,
         soundcastId : this.state.currentSoundcastID,
+        mergeFields : { 
+                        firstNameTag : this.state.firstNameTag, 
+                        lastNameTag : this.state.lastNameTag
+                      }
       })
       .then(res => {
         this.setState({ updatingList: false, exportInProgress : false }, () => {
@@ -249,9 +397,7 @@ export default class EmailListModal extends Component {
             }, 300);
           }
         )        
-        if(error.response.status === 404) {
-          console.log("404 error", error)
-        }
+        console.log("404 error", error)
       });  
     } else {
       this.setState({exportInProgress : false});
@@ -263,7 +409,11 @@ export default class EmailListModal extends Component {
     const currentSoundcastID = e.target.value;
 
     let currentSc = this.props.userInfo.soundcasts_managed[currentSoundcastID];
-    let mailChimpId = currentSc.mailChimpId ? currentSc.mailChimpId : '';
+    let mailChimpId = '';
+
+    if (typeof currentSc.mailChimp != 'undefined') {
+       mailChimpId = currentSc.mailChimp.mailChimpId;
+    } 
 
     this.setState({
       currentSoundcastID: currentSoundcastID,
@@ -271,36 +421,26 @@ export default class EmailListModal extends Component {
     })  
   }
 
-  retrieveMailChimpKey(userInfo) {
-    if (userInfo && userInfo.publisher) {
-      const publisherId = userInfo.publisherID;
-      firebase
-        .database()
-        .ref(`publishers/${publisherId}/mailChimp`)
-        .on('value', snapshot => {
-          const mailChimp = snapshot.val();
-          if (mailChimp != null) {
-            this.setState({ list : mailChimp.list,
-              apiKey : mailChimp.apiKey})
-            //Lets now update the list.
-
-            Axios.post('/api/mail_manage', {
-              publisherId : publisherId,
-              apiKey: mailChimp.apiKey,
-            })
-            .catch((error) => {
-              if(error.response.status === 404) {
-                console.log(error)
-              }
-            });  
-
-          }
-        });
-    }
+  setFirstNameTag(e) {
+    this.setState({
+      firstNameTag : e.target.value
+    })
   }
 
+  setLastNameTag(e) {
+    this.setState({
+      lastNameTag : e.target.value
+    })
+  }
+
+
   handleSelectList(value) {
-    this.setState({ selectedListId: value });
+    //Reset the tags, when a new list id is selected.
+    this.setState({ 
+          firstNameTag : 'No Export',
+          lastNameTag : "No Export",
+          selectedListId: value
+      })  
   }
 
   renderProgressBar() {
@@ -358,7 +498,12 @@ export default class EmailListModal extends Component {
                   userInfo={this.props.userInfo}
                   list={this.state.list}
                   selectedListId={this.state.selectedListId}
-                  handleSelectList={this.handleSelectList}/>
+                  handleSelectList={this.handleSelectList}
+                  setFirstNameTag={this.setFirstNameTag} 
+                  setLastNameTag={this.setLastNameTag} 
+                  firstNameTag={this.state.firstNameTag}
+                  lastNameTag={this.state.lastNameTag}
+                />
               </div>
               <div className="row" style={{ marginTop: '10px' }}>
                 <OrangeSubmitButton

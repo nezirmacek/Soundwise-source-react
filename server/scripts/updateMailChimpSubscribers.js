@@ -20,6 +20,21 @@ module.exports.updateMailChimpSubscribers = (req, res) => {
 
 function getSubscribersInfo(req, res) {
   let promises = [];
+  let exportFirsName = true, exportLastName = true;
+
+  let firstNameTag = req.body.mergeFields.firstNameTag;
+  let lastNameTag = req.body.mergeFields.lastNameTag;
+
+    //Lets create the object for mergefields
+  if (firstNameTag === "No Export") {
+    exportFirsName = false;
+  } 
+ 
+  if (lastNameTag === "No Export") {
+    exportLastName = false;
+  } 
+ 
+
   for (let userId in req.body.subscribers) {
     promises.push(retrieveSubscriberInfo(userId));
   }
@@ -30,16 +45,23 @@ function getSubscribersInfo(req, res) {
       //Next we set the list id in the Soundcasts.
       let subscribersMailChimp;
       if (result != null) {
+        //Filter the subscribers who do not have an email address.
         subscribersMailChimp = result.map(subscriber => {
           if (subscriber != null && subscriber.email && subscriber.email.length > 0) {
             let sub = {};
             sub.email_address = subscriber.email[0];
             sub.status = 'subscribed';
-            sub.merge_fields = {
-              FNAME: subscriber.firstName,
-              LNAME: subscriber.lastName,
-             }
-             return sub;
+            if (exportFirsName) {
+              sub.merge_fields = {};
+              sub.merge_fields[firstNameTag] = subscriber.firstName
+            }
+            if (exportLastName) {
+              if (typeof sub.merge_fields == 'undefined') {
+                sub.merge_fields = {}
+              }
+              sub.merge_fields[lastNameTag] = subscriber.lastName
+            }
+            return sub;
           }
           return false; 
         })
@@ -64,11 +86,11 @@ function getSubscribersInfo(req, res) {
 
         mailchimp.post(`/lists/${req.body.listId}`,mailChimpObjectWithSubscribers)
         .then(function(results) {
-          console.log(`Success adding subscriber to ${req.body.listId} `);
+          console.log(`Success adding subscribers to ${req.body.listId} `, results);
           res.sendStatus(200);
         })
         .catch(function (err) {
-          console.log(`Failure adding subscriber to ${req.body.listId} `, err);
+          console.log(`Failure adding subscribers to ${req.body.listId} `, err);
         })
       } 
     },
@@ -95,10 +117,16 @@ function retrieveSubscriberInfo(userId) {
 }
 
 function updateFirebaseSoundcastWihtListId(req, res) {
+
+  let mailChimp = { mailChimp : {
+      mailChimpId : req.body.listId,
+      mergeFields : req.body.mergeFields
+    }
+  }
   return firebase
   .database()
   .ref(`soundcasts/${req.body.soundcastId}`)
-  .update({mailChimpId: req.body.listId})
+  .update(mailChimp)
   .catch(function (err) {
     //We send a 404 if the firebase request failed.
     res.sendStatus(404);
