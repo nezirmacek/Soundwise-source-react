@@ -5,6 +5,7 @@ import Axios from 'axios';
 import Dots from 'react-activity/lib/Dots';
 import draftToHtml from 'draftjs-to-html';
 import * as firebase from 'firebase';
+import * as _ from 'lodash';
 import moment from 'moment';
 
 import { sendEmail, signinUser } from '../../../actions/index';
@@ -41,6 +42,8 @@ class _Payment extends Component {
     this.renderProgressBar = this.renderProgressBar.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.updateProps = this.updateProps.bind(this);
+    this.addUserToMailChimp = this.addUserToMailChimp.bind(this);
+    this.newUserOrSoundcast = true;
   }
 
   componentDidMount() {
@@ -84,6 +87,19 @@ class _Payment extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+
+    //Set newUserOrSoundcast if emails aren't same, will be used to update mailchimp.
+    if (!_.isEqual(this.props.userInfo.email, nextProps.userInfo.email)) {
+      this.newUserOrSoundcast = true;
+    } 
+
+    //Same user but new soundcast, so we set it to true, so mailchimp is updated.
+    if (this.props.soundcastID != nextProps.soundcastID) {
+      this.newUserOrSoundcast = true;
+    }
+    
+    //Comparing arrays below is incorrect and should be corrected. 
+    //This is probably leading to multiple updates, should use !_.isEqual
     if (
       this.props.isEmailSent != nextProps.isEmailSent ||
       this.props.totalPrice != nextProps.totalPrice ||
@@ -101,6 +117,40 @@ class _Payment extends Component {
   componentWillUnmount() {
     // console.log('payment component will unmount');
   }
+
+  addUserToMailChimp(userInfo) {
+    if (this.newUserOrSoundcast) {
+
+      const { soundcast } = this.props;
+
+      if (typeof soundcast.mailChimp != 'undefined' && typeof userInfo.email != 'undefined') {
+
+        //There shold be a publisherID, but lets still check for it.
+        if (typeof soundcast.publisherID != 'undefined') {
+
+          this.newUserOrSoundcast = false;
+
+          let user = {
+            firstName : userInfo.firstName,
+            lastName : userInfo.lastName, 
+            email : userInfo.email[0]
+          }
+          Axios.post('/api/mail_manage_addsubscriber', {
+            publisherId : soundcast.publisherID,
+            mailChimpInfo : soundcast.mailChimp,
+            user : user
+          })
+          .then(res => {
+             //Nothing to be done, as it is opaque to user.
+          })
+          .catch((error) => {
+            console.log("Received error", error)
+          });  
+        }
+      }
+   }
+  }
+  
 
   handleChange(e) {
     if (e.target.value) {
@@ -123,6 +173,7 @@ class _Payment extends Component {
   addSoundcastToUser(charge, userInfoFromProp, soundcastID) {
     // console.log(`soundcastID: ${soundcastID} userInfo: ${userInfo} charge: ${charge}`);
     const userInfo = userInfoFromProp || this.props.userInfo;
+
     if (userInfo && userInfo.email) {
       // if logged in
       const that = this;
@@ -156,6 +207,9 @@ class _Payment extends Component {
           soundcast.title
         }. If you don't have the Soundwise mobile app installed on your phone, please access your soundcast by downloading the app first--</p><p><strong>iPhone user: </strong>Download the app <a href="https://itunes.apple.com/us/app/soundwise-learn-on-the-go/id1290299134?ls=1&mt=8">here</a>.</p><p><strong>Android user: </strong>Download the app <a href="https://play.google.com/store/apps/details?id=com.soundwisecms_mobile_android">here</a>.</p><p></p><p>...and then sign in to the app with the same credential you used to sign up for this soundcast.</p><p></p><p>If you've already installed the app, your new soundcast should be loaded automatically.</p>`;
       }
+
+      this.addUserToMailChimp(userInfo);
+
 
       firebase.auth().onAuthStateChanged(async user => {
         if (user) {

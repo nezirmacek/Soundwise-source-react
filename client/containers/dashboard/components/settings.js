@@ -87,11 +87,14 @@ export default class Profile extends Component {
               .ref(`users/${adminId}`)
               .once('value')
               .then(snapshot => {
-                admins.push({
-                  firstName: snapshot.val().firstName,
-                  lastName: snapshot.val().lastName,
-                  email: snapshot.val().email[0],
-                });
+                let snapshotVal = snapshot.val();
+                if (snapshotVal != null) {
+                  admins.push({
+                    firstName: snapshotVal.firstName,
+                    lastName: snapshotVal.lastName,
+                    email: snapshotVal.email[0],
+                  });
+                }
               })
               .then(res => res, err => console.log(err));
           });
@@ -134,11 +137,14 @@ export default class Profile extends Component {
               .ref(`users/${adminId}`)
               .once('value')
               .then(snapshot => {
-                admins.push({
-                  firstName: snapshot.val().firstName,
-                  lastName: snapshot.val().lastName,
-                  email: snapshot.val().email[0],
-                });
+                let snapshotVal = snapshot.val();
+                if (snapshotVal != null) {
+                  admins.push({
+                    firstName: snapshotVal.firstName,
+                    lastName: snapshotVal.lastName,
+                    email: snapshotVal.email[0],
+                  });
+                }
               })
               .then(res => res, err => console.log(err));
           });
@@ -412,7 +418,9 @@ export default class Profile extends Component {
 
     return (
       <div className="padding-30px-tb">
-        <div className="padding-bottom-20px" style={{ display: 'flex', alignItems: 'center' }}>
+        <div
+          className="padding-bottom-20px"
+        >
           <span className="title-medium ">Publisher</span>
           <Link to={`/publishers/${userInfo.publisherID}`}>
             <span className="text-medium" style={{ marginLeft: 15, color: Colors.mainOrange }}>
@@ -452,6 +460,11 @@ export default class Profile extends Component {
           <li role="presentation">
             <Link to="/dashboard/publisher/settings">
               <span style={{ fontSize: 15, fontWeight: 600 }}>Settings</span>
+            </Link>
+          </li>
+          <li role="presentation">
+            <Link to="/dashboard/publisher/integrations">
+              <span style={{ fontSize: 15, fontWeight: 600 }}>Integration</span>
             </Link>
           </li>
         </ul>

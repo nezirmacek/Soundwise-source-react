@@ -12,6 +12,7 @@ import Transactions from './transactions';
 import Payouts from './payouts';
 import Billing from './billing';
 import Promotions from './Promotions';
+import Integrations from './integrations';
 
 import ValidatedInput from '../../../components/inputs/validatedInput';
 import {
@@ -68,7 +69,21 @@ export default class Publisher extends Component {
     } else if (this.props.match.params.id == 'settings') {
       return <Billing {...this.props} userInfo={userInfo} id={this.props.match.params.id} />;
     } else if (this.props.match.params.id == 'promotions') {
-      return <Promotions {...this.props} userInfo={userInfo} id={this.props.match.params.id} />;
+      return (
+        <Promotions
+          {...this.props}
+          userInfo={userInfo}
+          id={this.props.match.params.id}
+        />
+      );
+    } else if (this.props.match.params.id == 'integrations') {
+      return (
+        <Integrations
+          {...this.props}
+          userInfo={userInfo}
+          id={this.props.match.params.id}
+        />
+      );
     } else {
       return (
         <Profile
