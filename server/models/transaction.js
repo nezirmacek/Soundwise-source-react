@@ -267,7 +267,7 @@ async function createCharge(Transaction, data, cb) {
     statement_descriptor = data.statement_descriptor;
   }
 
-  const publisherObj = await admin
+  const publisherObj = await firebase
     .database()
     .ref(`publishers/${publisherID}`)
     .once('value');
