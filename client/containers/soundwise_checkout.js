@@ -19,6 +19,7 @@ class _SoundwiseCheckout extends Component {
     this.state = {
       success: false,
       enterPromoCode: false,
+      plan: '',
       promoCode: '',
       promoCodeError: null,
       trialPeriod: null,
@@ -271,7 +272,7 @@ class _SoundwiseCheckout extends Component {
   render() {
     const that = this;
     const { plan, frequency, price } = this.props.history.location.state;
-    const title = plan == 'pro' ? 'Pro Plan' : 'Plus Plan';
+    const title = `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`;
     const interval = frequency == 'annual' ? 'Billed annually' : 'Billed monthly';
     const { total, submitted, promoApplied, trialPeriod } = this.state;
     const displayedPrice = `$${price}/month`;

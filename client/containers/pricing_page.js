@@ -25,11 +25,13 @@ class _PricingPage extends Component {
       priceChosen: null,
       prices: {
         annual: {
+          basic: 15,
           pro: 79,
           plus: 39,
           platinum: 239,
         },
         monthly: {
+          basic: 19,
           pro: 99,
           plus: 49,
           platinum: 299,
