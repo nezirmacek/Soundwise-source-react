@@ -104,7 +104,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 const prerender = require('prerender-node')
   .set('prerenderToken', 'XJx822Y4hyTUV1mn6z9k')
-  .set('protocol', 'https');
+  .set('protocol', 'https')
+  .blacklisted('/rss/');
 prerender.crawlerUserAgents.push('googlebot');
 prerender.crawlerUserAgents.push('bingbot');
 prerender.crawlerUserAgents.push('yandex');
