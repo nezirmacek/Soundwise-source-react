@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import firebase from 'firebase';
-if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV == 'staging') {
+if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'staging') {
   console.log(`Running "${process.env.NODE_ENV}" mode`);
   window.firebase = firebase;
 }

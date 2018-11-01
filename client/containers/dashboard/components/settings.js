@@ -36,6 +36,7 @@ var parseQueryString = function(queryString) {
   return params;
 };
 
+// TODO handle  NODE_ENV === 'staging' condition
 const redirectURI =
   process.env.NODE_ENV === 'dev'
     ? 'http://localhost:3000/dashboard/publisher&client_id=ca_BwcFWisx5opzCTEBnz5M16ss7Oj6VKeK'

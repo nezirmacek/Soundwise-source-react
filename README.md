@@ -118,7 +118,7 @@ To run client (in second terminal, with same environment imports):
 npm run-script start
 ```
 
-### Start loppback api
+### Start loopback api
 
 ```
 node .
